@@ -1,0 +1,83 @@
+$page-header-height: 50px;
+$page-header-color: #444444;
+
+$page-menu-width: 200px;
+$page-menu-color: #333;
+
+$page-base: #F8F8F8;
+
+html, body {
+  overflow: hidden;
+}
+
+#app {
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #2c3e50;
+  margin-top: 60px;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+#app-logo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: $page-menu-width;
+  height: $page-header-height;
+  background: $page-header-color url("./assets/images/logo.png") no-repeat center center;
+  background-size: 60px 32px;
+}
+
+#app-page {
+  position: absolute;
+  left: $page-menu-width;
+  top: $page-header-height;
+  width: calc(100vw - #{$page-menu-width});
+  height: calc(100vh - #{$page-header-height});
+  background: $page-base;
+}
+
+#page-header {
+  position: absolute;
+  left: $page-menu-width;
+  top: 0;
+  width: calc(100vw - #{$page-menu-width});
+  height: 50px;
+  background: $page-header-color;
+  box-shadow: inset -1px 0 0 0 #222222;
+  color: white;
+  text-align: right;
+  font-weight: bold;
+
+  & > div {
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  & > .spliter {
+    display: inline-block;
+    height: $page-header-height;
+    border-left: 1px solid black;
+  }
+}
+
+#page-menu {
+  position: absolute;
+  left: 0;
+  top: $page-header-height;
+  width: 200px;
+  height: 100vh;
+  background: $page-menu-color;
+}
+
+.float-menu {
+  z-index: 10;
+  visibility: hidden;
+  position: absolute;
+  &.show {
+    visibility: visible;
+  }
+}
