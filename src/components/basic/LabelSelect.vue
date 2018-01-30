@@ -8,7 +8,7 @@
       {{ selected.name }}
     </div>
     <div class="icon" :style="{height: height, width: height, 'line-height': height}">
-      <div class="triangle" :style="{'border-top-color': color}"></div>
+      <div class="triangle" :style="{'border-top-color': color}" v-if="options.length > 1"></div>
     </div>
   </div>
   <div class="option-container float-menu" :class="{show: showOption}" :style="{width: width, top: height, 'line-height': height}" ref="optionContainer">
@@ -53,6 +53,10 @@ export default {
   methods: {
     toggleShowOptions() {
       const that = this;
+
+      if (that.options.length <= 1) {
+        return;
+      }
       if (that.$refs.optionContainer) {
         that.showOption = !that.showOption;
         if (that.showOption) {

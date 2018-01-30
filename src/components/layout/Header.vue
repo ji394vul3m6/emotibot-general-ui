@@ -1,7 +1,7 @@
 <template>
 <div id="page-header">
   <div class="spliter"></div>
-  <div v-if="enterpriseList && enterpriseList.length > 1" style="width: 200px;">
+  <div v-if="enterpriseList && enterpriseList.length > 0" style="width: 200px;">
     <label-select
       :options="enterpriseList"
       :value="enterpriseID" valueKey="enterpriseID" color="white"
@@ -10,7 +10,7 @@
     </label-select>
   </div>
   <div class="spliter"></div>
-  <div v-if="robotList && robotList.length > 1" style="width: 200px;">
+  <div v-if="robotList && robotList.length > 0" style="width: 200px;">
     <label-select
       :options="robotList"
       :value="robotID" valueKey="appid" color="white"
