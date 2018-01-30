@@ -8,7 +8,7 @@
 import { mapGetters } from 'vuex';
 
 export default {
-  name: 'HelloWorld',
+  name: 'Hello',
   computed: mapGetters([
     'robotName',
     'enterpriseName',
