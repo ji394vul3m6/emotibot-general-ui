@@ -1,10 +1,4 @@
-$page-header-height: 50px;
-$page-header-color: #444444;
-
-$page-menu-width: 200px;
-$page-menu-color: #333;
-
-$page-base: #F8F8F8;
+@import 'variable.scss';
 
 html, body {
   overflow: hidden;
