@@ -25,7 +25,6 @@
 <script>
 import { mapGetters, mapMutations } from 'vuex';
 import LabelSelect from '@/components/basic/LabelSelect';
-// import robotPNG from '@/assets/images/robot.svg';
 
 export default {
   data: () => ({
@@ -50,18 +49,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.robotIcon {
-  background: url("../../assets/images/robot.svg") no-repeat center center;
-  background-size: 20px 20px;
-  width: 100%;
-  height: 100%;
-}
-.enterpriseIcon {
-  background: url("../../assets/images/enterprise.png") no-repeat center center;
-  background-size: 40px 40px;
-  width: 100%;
-  height: 100%;
-}
-</style>

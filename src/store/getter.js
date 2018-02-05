@@ -35,3 +35,6 @@ export const enterpriseList = (s) => {
   });
   return ret;
 };
+
+export const privilegeList = s => s.privilegeList;
+export const menuPages = s => s.pageInfos;

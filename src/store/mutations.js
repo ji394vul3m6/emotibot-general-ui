@@ -25,6 +25,8 @@ export const state = {
       },
     },
   },
+  privilegeList: {},
+  pageInfos: {},
 };
 
 export const mutations = {
@@ -64,5 +66,11 @@ export const mutations = {
     } else {
       s.appid = '';
     }
+  },
+  [types.SET_PRIVILEGE_LIST]: (s, privilegeList) => {
+    s.privilegeList = privilegeList;
+  },
+  [types.SET_PAGES]: (s, pageInfos) => {
+    s.pageInfos = pageInfos;
   },
 };

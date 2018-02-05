@@ -87,7 +87,7 @@ module.exports = {
             loader: 'style-loader' // Adds CSS to the DOM by injecting a <style> tag
           },
           {
-            loader: 'css-loader' //  interprets @import and url() like import/require() and will resolve them.
+            loader: 'css-loader', //  interprets @import and url() like import/require() and will resolve them.
           },
           {
             loader: 'postcss-loader', // postcss loader so we can use autoprefixer
@@ -98,7 +98,7 @@ module.exports = {
             }
           },
           {
-            loader: 'sass-loader' // compiles Sass to CSS
+            loader: 'sass-loader', // compiles Sass to CSS
           }
         ],
       }

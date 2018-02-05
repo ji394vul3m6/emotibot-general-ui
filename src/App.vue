@@ -10,8 +10,11 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex';
+import modules from '@/modules';
 import PageHeader from '@/components/layout/Header';
 import PageMenu from '@/components/layout/Menu';
+import privilegeAPI from '@/api/privileges';
 
 export default {
   name: 'app',
@@ -20,24 +23,47 @@ export default {
     'page-menu': PageMenu,
   },
   methods: {
-    // hideFloatMenu(e) {
-    //   console.log(e.eventPhase);
-    //   const floats = document.querySelectorAll('.float-menu');
-    //   floats.forEach((floatMenu) => {
-    //     if (!e.target || !floatMenu.contains(e.target)) {
-    //       console.log(floatMenu);
-    //       floatMenu.classList.remove('show');
-    //     }
-    //   });
-    // },
+    ...mapMutations([
+      'setPrivilegeList',
+      'setPageInfos',
+    ]),
+    setupPages() {
+      const pages = [];
+      Object.keys(modules).forEach((moduleName) => {
+        const pageModule = modules[moduleName];
+        const modulePages = [];
+        Object.keys(pageModule.pages).forEach((pageName) => {
+          const page = pageModule.pages[pageName];
+          modulePages.push({
+            path: page.path,
+            name: page.name,
+            display: `pages.${pageModule.displayNameKey}.${page.displayNameKey}`,
+            privCode: page.privCode,
+            icon: `${page.icon}Icon`,
+          });
+        });
+        pages.push({
+          path: pageModule.path,
+          name: moduleName,
+          display: `pages.${pageModule.displayNameKey}.module_name`,
+          pages: modulePages,
+          icon: `${pageModule.icon}Icon`,
+        });
+      });
+      this.setPageInfos(pages);
+    },
   },
   mounted() {
-    // window.addEventListener('click', this.hideFloatMenu);
+    privilegeAPI.getPrivileges().then((privileges) => {
+      this.setPrivilegeList(privileges);
+    });
+    this.setupPages();
   },
 };
 </script>
 
 <style lang="scss">
-@import "./assets/styles/main.scss";
-@import "./assets/styles/reset.scss";
+@import "styles/reset.scss";
+@import "styles/variable";
+@import "styles/main.scss";
 </style>

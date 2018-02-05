@@ -1,5 +1,3 @@
-@import 'variable.scss';
-
 html, body {
   overflow: hidden;
 }
@@ -32,6 +30,8 @@ html, body {
   width: calc(100vw - #{$page-menu-width});
   height: calc(100vh - #{$page-header-height});
   background: $page-base;
+  padding: 10px;
+  box-sizing: border-box;
 }
 
 #page-header {
@@ -58,14 +58,6 @@ html, body {
   }
 }
 
-#page-menu {
-  position: absolute;
-  left: 0;
-  top: $page-header-height;
-  width: 200px;
-  height: 100vh;
-  background: $page-menu-color;
-}
 
 .float-menu {
   z-index: 10;
@@ -74,4 +66,88 @@ html, body {
   &.show {
     visibility: visible;
   }
+}
+
+.icon {
+  display: inline-block;
+  position: relative;
+  text-align: center;
+  width: $default-line-height;
+  height: $default-line-height;
+
+  &.button {
+    cursor: pointer;
+  }
+
+  .triangle {
+    display: block;
+    border-color: white transparent transparent transparent;
+    border-style: solid;
+    border-width: 0.5em 0.5em 0px 0.5em;
+    height: 0px;
+    width: 0px;
+    position: relative;
+    top: calc(50% - 0.25em);
+    left: calc(50% - 0.25em);
+  }
+  .enterpriseIcon {
+    background: url("./assets/images/enterprise.png") no-repeat center center;
+    background-size: 40px 40px;
+    width: 100%;
+    height: 100%;
+  }
+  &:hover {
+    .tooltip {
+      visibility: visible;
+    }
+  }
+  .tooltip {
+    visibility: hidden;
+    position: absolute;
+    background: $tool-tip-background;
+    color: $tool-tip-text;
+    padding: 5px;
+    border-radius: $input-border-radius;
+    top: calc(-100% + 5px);
+    left: -5px;
+    user-select: none;
+    white-space: nowrap;
+    &::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: $tool-tip-background transparent transparent transparent;
+    }
+  }
+  @mixin iconType($name) {
+    .#{$name}Icon {
+      background: url("./assets/images/#{$name}_icon.svg") no-repeat center center;
+      background-size: 15px 15px;
+      width: 100%;
+      height: 100%;
+      &.header {
+        background-size: 20px 20px;
+      }
+    }
+    &.button {
+      .#{$name}Icon:active {
+        margin-left: 1px;
+        margin-top: 1px;
+      }
+    }
+  }
+  @include iconType("search");
+  @include iconType("robot");
+  @include iconType("delete");
+  @include iconType("edit");
+  @include iconType("privilege");
+  @include iconType("role");
+  @include iconType("user");
+  @include iconType("white_privilege");
+  @include iconType("white_role");
+  @include iconType("white_user");
 }

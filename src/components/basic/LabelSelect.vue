@@ -1,13 +1,13 @@
 <template>
 <div class="label-select" :style="{height: height, width: width}">
   <div class="option-selected" :style="{color: color}" @click="toggleShowOptions">
-    <div class="icon" :style="{height: height, width: height, 'line-height': height}">
+    <div class="icon button" :style="{height: height, width: height, 'line-height': height}">
       <slot></slot>
     </div>
     <div class="text" :style="{width: textWidth}">
       {{ selected.name }}
     </div>
-    <div class="icon" :style="{height: height, width: height, 'line-height': height}">
+    <div class="icon button" :style="{height: height, width: height, 'line-height': height}">
       <div class="triangle" :style="{'border-top-color': color}" v-if="options.length > 1"></div>
     </div>
   </div>
@@ -111,9 +111,6 @@ export default {
   },
   mounted() {
     this.internalSelectedIdx = this.options.findIndex(opt => opt[this.valueKey] === this.value);
-    // if (this.internalSelectedIdx < 0) {
-    //   this.internalSelectedIdx = 0;
-    // }
   },
 };
 </script>
