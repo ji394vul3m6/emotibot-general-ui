@@ -28,7 +28,6 @@ export default {
   },
   methods: {
     toPage(page) {
-      console.log(page);
       this.$router.push({ name: page.name });
     },
   },
@@ -42,7 +41,7 @@ export default {
   position: absolute;
   left: 0;
   top: $page-header-height;
-  width: 200px;
+  width: $page-menu-width;
   height: 100vh;
   background: $page-menu-color;
   color: white;

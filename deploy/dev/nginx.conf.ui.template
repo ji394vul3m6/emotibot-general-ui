@@ -1,0 +1,40 @@
+user  nginx;
+worker_processes  5;
+
+error_log  /var/log/nginx/error.log warn;
+pid        /var/run/nginx.pid;
+
+
+events {
+    worker_connections  1024;
+}
+
+
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+
+    log_format auth_header 'NGINX: [$time_local] "$request" from:"$remote_addr $http_x_forwarded_for" '
+                      'ret:"code:$status size:$body_bytes_sent" info:[$http_referer][$http_user_agent]';
+
+    access_log /dev/null;
+
+    sendfile        on;
+
+    keepalive_timeout  1000;
+
+    client_max_body_size 100M;
+
+    limit_req_zone  $binary_remote_addr  zone=req_one:10m rate=150r/s;
+
+    server {
+        access_log /var/log/nginx/access.log auth_header;
+        proxy_max_temp_file_size 0;
+        listen 80;
+        listen [::]:80;
+
+        location / {
+            proxy_pass http://${SELF_IP}:8080;
+        }
+    }
+}
