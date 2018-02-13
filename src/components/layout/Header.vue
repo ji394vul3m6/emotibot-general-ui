@@ -6,7 +6,7 @@
       :options="enterpriseList"
       :value="enterpriseID" valueKey="enterpriseID" color="white"
       @change="setEnterprise">
-      <div class="enterpriseIcon"></div>  
+      <div class="enterprise_icon"></div>  
     </label-select>
   </div>
   <div class="spliter"></div>
@@ -15,7 +15,7 @@
       :options="robotList"
       :value="robotID" valueKey="appid" color="white"
       @change="setRobot">
-      <div class="robotIcon"></div>
+      <div class="robot_icon"></div>
     </label-select>
   </div>
   <div class="spliter"></div>

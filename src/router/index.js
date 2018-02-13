@@ -8,9 +8,10 @@ const routes = [];
 Object.keys(modules).forEach((moduleName) => {
   const pageModule = modules[moduleName];
   Object.keys(pageModule.pages).forEach((pageName) => {
+    const page = pageModule.pages[pageName];
     routes.push({
       path: `/${pageModule.pages[pageName].path}`,
-      name: pageModule.pages[pageName].name,
+      name: `${pageModule.displayNameKey}.${page.displayNameKey}`,
       component: pageModule.pages[pageName],
     });
   });

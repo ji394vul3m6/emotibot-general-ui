@@ -1,7 +1,7 @@
 <template>
   <div id='role-manage'>
     <div class="actions row">
-      <text-button main>{{$t('general.add')}}{{$t('privileges.role')}}</text-button>
+      <text-button main icon-type="white_add_icon">{{$t('general.add')}}{{$t('privileges.role')}}</text-button>
       <search-input v-model="keyword"></search-input>
     </div>
     <div class="header row">
@@ -24,11 +24,11 @@
         </div>
         <div class="actions">
           <div class="icon button">
-            <div class="editIcon"></div>
+            <div class="edit_icon"></div>
             <div class="tooltip">{{$t('general.edit')}}</div>
           </div>
           <div class="icon button">
-            <div class="deleteIcon"></div>
+            <div class="delete_icon"></div>
             <div class="tooltip">{{$t('general.delete')}}</div>
           </div>
         </div>
@@ -43,7 +43,6 @@ import * as mutationsType from './_store/mutations_type';
 import api from './_api/role';
 
 export default {
-  name: 'RoleManage',
   path: 'role-manage',
   privCode: 'management',
   displayNameKey: 'role_manage',

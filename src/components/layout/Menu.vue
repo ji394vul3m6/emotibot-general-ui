@@ -28,7 +28,7 @@ export default {
   },
   methods: {
     toPage(page) {
-      this.$router.push({ name: page.name });
+      this.$router.push({ path: page.path });
     },
   },
 };
@@ -47,11 +47,11 @@ export default {
   color: white;
 
   .category {
+    box-sizing: border-box;
     width: 100%;
+    padding: 0 5px;
     line-height: $page-menu-item-height;
-    .icon {
-      margin-right: 10px;
-    }
+    padding-top: $page-menu-category-padding;
     .category-name {
       height: $page-menu-category-height;
       line-height: $page-menu-category-height;

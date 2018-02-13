@@ -4,7 +4,6 @@
 </template>
 <script>
 export default {
-  name: 'UserManage',
   path: 'user-manage',
   privCode: 'management',
   displayNameKey: 'user_manage',

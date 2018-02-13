@@ -4,7 +4,8 @@
     <page-header></page-header>
     <page-menu></page-menu>
     <div id="app-page">
-      <router-view/>
+      <div class="app-header">{{$t(`pages.${pageName}`)}}</div>
+      <router-view class="app-body"/>
     </div>
   </div>
 </template>
@@ -22,6 +23,11 @@ export default {
     'page-header': PageHeader,
     'page-menu': PageMenu,
   },
+  computed: {
+    pageName() {
+      return this.$route.name;
+    },
+  },
   methods: {
     ...mapMutations([
       'setPrivilegeList',
@@ -36,10 +42,10 @@ export default {
           const page = pageModule.pages[pageName];
           modulePages.push({
             path: page.path,
-            name: page.name,
+            name: page.displayNameKey,
             display: `pages.${pageModule.displayNameKey}.${page.displayNameKey}`,
             privCode: page.privCode,
-            icon: `${page.icon}Icon`,
+            icon: `${page.icon}_icon`,
           });
         });
         pages.push({
@@ -47,7 +53,7 @@ export default {
           name: moduleName,
           display: `pages.${pageModule.displayNameKey}.module_name`,
           pages: modulePages,
-          icon: `${pageModule.icon}Icon`,
+          icon: `${pageModule.icon}_icon`,
         });
       });
       this.setPageInfos(pages);

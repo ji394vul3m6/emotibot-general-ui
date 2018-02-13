@@ -1,5 +1,7 @@
 html, body {
   overflow: hidden;
+  line-height: $default-line-height;
+  font-size: 16px;
 }
 
 #app {
@@ -30,8 +32,16 @@ html, body {
   width: calc(100vw - #{$page-menu-width});
   height: calc(100vh - #{$page-header-height});
   background: $page-base;
-  padding: 10px;
   box-sizing: border-box;
+  & > .app-header {
+    height: $default-line-height;
+    padding-left: 10px;
+  }
+  & > .app-body {
+    padding: 10px;
+    padding-top: 0;
+    height: calc(100% - #{$default-line-height});
+  }
 }
 
 #page-header {
@@ -90,7 +100,7 @@ html, body {
     top: calc(50% - 0.25em);
     left: calc(50% - 0.25em);
   }
-  .enterpriseIcon {
+  .enterprise_icon {
     background: url("./assets/images/enterprise.png") no-repeat center center;
     background-size: 40px 40px;
     width: 100%;
@@ -124,7 +134,7 @@ html, body {
     }
   }
   @mixin iconType($name) {
-    .#{$name}Icon {
+    .#{$name}_icon {
       background: url("./assets/images/#{$name}_icon.svg") no-repeat center center;
       background-size: 15px 15px;
       width: 100%;
@@ -150,4 +160,6 @@ html, body {
   @include iconType("white_privilege");
   @include iconType("white_role");
   @include iconType("white_user");
+  @include iconType("white_add");
+  @include iconType("white_setting");
 }

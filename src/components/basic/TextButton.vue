@@ -1,6 +1,11 @@
 <template>
-  <div class="text-button" :style="style" :class="{main: main}" @click="$emit('click')">
-    <slot></slot>
+  <div class="text-button" :style="style" :class="{main: main, 'icon-button': showIcon}" @click="$emit('click')">
+    <div class="icon button" v-if="showIcon">
+      <div :class="iconType"></div>
+    </div>
+    <div class="button-content">
+      <slot></slot>
+    </div>
   </div>
 </template>
 
@@ -15,6 +20,10 @@ export default {
       type: String,
       default: '',
     },
+    iconType: {
+      type: String,
+      default: '',
+    },
   },
   computed: {
     style() {
@@ -22,6 +31,9 @@ export default {
         return `height: ${this.height}; line-height: ${this.height}`;
       }
       return '';
+    },
+    showIcon() {
+      return this.iconType.trim() !== '';
     },
   },
 };
@@ -39,13 +51,21 @@ export default {
   cursor: pointer;
   user-select: none;
 
-  padding: 0 16px;
+  padding: 0 10px;
   width: auto;
   border-radius: $input-border-radius;
 
   height: $default-line-height;
   line-height: $default-line-height;
   margin-right: $line-element-between-width;
+  display: inline-flex;
+
+  &.icon-button {
+    padding-left: 0;
+  }
+  & > .button-content {
+    margin-top: 1px;
+  }
 
   &.main {
     background: $button-blue-bg;

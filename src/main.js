@@ -3,6 +3,7 @@
 import Vue from 'vue';
 import VueCookie from 'vue-cookie';
 import VueI18n from 'vue-i18n';
+import 'es6-promise/auto';
 
 import TextButton from '@/components/basic/TextButton';
 import SearchInput from '@/components/basic/SearchInput';
