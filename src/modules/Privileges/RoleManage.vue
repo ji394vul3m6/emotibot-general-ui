@@ -1,7 +1,7 @@
 <template>
   <div id='role-manage'>
     <div class="actions row">
-      <text-button main icon-type="white_add_icon">{{$t('general.add')}}{{$t('privileges.role')}}</text-button>
+      <text-button main icon-type="white_add">{{$t('general.add')}}{{$t('privileges.role')}}</text-button>
       <search-input v-model="keyword"></search-input>
     </div>
     <div class="header row">

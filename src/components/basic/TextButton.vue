@@ -1,7 +1,7 @@
 <template>
   <div class="text-button" :style="style" :class="{main: main, 'icon-button': showIcon}" @click="$emit('click')">
     <div class="icon button" v-if="showIcon">
-      <div :class="iconType"></div>
+      <div :class="`${iconType}_icon`"></div>
     </div>
     <div class="button-content">
       <slot></slot>

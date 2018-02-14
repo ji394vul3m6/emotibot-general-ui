@@ -2,7 +2,7 @@
 <div id="robot-profile">
   <div class="content">
     <div class="row" v-if="canEdit">
-      <text-button main v-on:click="rebuild()">{{$t('robot_setting.model_rebuild')}}</text-button>
+      <text-button main v-on:click="rebuild()" icon-type="white_refresh">{{$t('robot_setting.model_rebuild')}}</text-button>
     </div>
     <div class="row auto-height">
       {{ $t('robot_setting.rebuild_msg') }}
@@ -169,10 +169,13 @@ export default {
 
 <style lang="scss" scoped>
 .content {
-  display: flex;
-  flex-direction: column;
   height: 100%;
   overflow-y: auto;
+  padding-bottom: 10px;
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
   .table-container {
     flex: 1;
   }
