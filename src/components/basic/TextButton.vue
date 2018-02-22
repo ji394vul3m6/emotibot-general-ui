@@ -11,6 +11,7 @@
 
 <script>
 export default {
+  name: 'text-button',
   props: {
     main: {
       type: Boolean,

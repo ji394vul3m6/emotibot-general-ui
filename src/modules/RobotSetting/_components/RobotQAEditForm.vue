@@ -11,10 +11,10 @@
       </div>
       <div class="robot-qa-edit-data">
         <input :value="value.answers[idx - 1]" ref="answer">
-		    <button v-if="idx != 1" type="reset" v-on:click="resetAnswer(idx - 1)"></button>
+		    <!-- <button v-if="idx != 1" type="reset" v-on:click="resetAnswer(idx - 1)"></button> -->
       </div>
     </div>
-    <div class="robot-qa-edit-error" :class="{show: showEmptyError}">
+    <div class="robot-qa-edit-error" :class="{show: showEmptyError}" v-if="showEmptyError">
       {{ $t('error_msg.empty_answer') }}
     </div>
   </div>  
@@ -56,3 +56,112 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+@import "styles/variable";
+.robot-qa-edit {
+  .robot-qa-edit-error {
+    line-height: 40px;
+    color: red;
+    text-align: center;
+    visibility: hidden;
+    &.show {
+      visibility: inherit;
+    }
+  }
+  .robot-qa-edit-row {
+    line-height: $default-line-height;
+    margin: 10px 0;
+    & > div {
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .robot-qa-edit-title {
+      min-width: 100px;
+      &::after {
+        content: "：";
+      }
+    }
+    .robot-qa-edit-data {
+      position: relative;
+      input {
+        width: 400px;
+        padding: 5px;
+        font-size: 16px;
+      }
+      // TODO: use following structure to rewrite reset button
+/*
+      <div class="dynamic-button icon delete-icon">
+        <span @click="deleteRow(idx)">
+          <div class="row"></div>
+          <div class="vertical"></div>
+        </span>
+      </div>
+      input:hover ~ .delete-icon {
+        visibility: visible;
+      }
+      .row {
+        top: calc(0.5em - 1px);
+        width: 18px;
+        height: 2px;
+        background-color: black;
+        display: block;
+      }
+      .vertical {
+        top: calc(0.5em - 1px);
+        width: 18px;
+        height: 2px;
+        background-color: black;
+        display: block;
+        transform: rotate(90deg);
+      }
+      .delete-icon {
+        visibility: hidden;
+        opacity: 0.8;
+        background: white;
+        transform: rotate(45deg) scale(0.8, 0.8);
+        position: absolute;
+        left: 350px;
+        top: calc(50% - 8px);
+
+        &:hover {
+          visibility: visible;
+        }
+      }
+*/
+      // button {
+      //   visibility: hidden;
+      // }
+      // &:hover, &:focus {
+      //   button {
+      //     border:none;
+      //     background-color: transparent;
+      //     visibility: initial;
+      //     display: inline-block;
+      //     vertical-align: middle;
+      //     outline: 0;
+      //     cursor: pointer;
+      //     &:before {
+      //       content: 'X';
+      //       display: block;
+      //       width: 1em;
+      //       height: 1em;
+      //       line-height: 1em;
+      //       position: absolute;
+      //       background-color: $page-header-color;
+      //       z-index:1;
+      //       right: 2em;
+      //       top: 0;
+      //       bottom: 0;
+      //       margin: auto;
+      //       border-radius: 50%;
+      //       color: white;
+      //       box-shadow: 0 0 2px $page-header-color;
+      //       cursor: pointer;
+      //     }
+      //   }
+      // }
+    }
+  }
+}
+</style>
