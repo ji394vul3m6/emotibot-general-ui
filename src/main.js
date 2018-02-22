@@ -13,11 +13,15 @@ import router from './router';
 import store from './store';
 import messages from './i18n';
 import PopWindow from './plugins/PopWindow';
+import CustomNotification from './plugins/CustomNotification';
 
 Vue.config.productionTip = false;
 Vue.use(VueCookie);
 Vue.use(VueI18n);
 Vue.use(PopWindow);
+Vue.use(CustomNotification, {
+  delay: 4000,
+});
 
 Vue.component('text-button', TextButton);
 Vue.component('search-input', SearchInput);

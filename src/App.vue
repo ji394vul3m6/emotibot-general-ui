@@ -8,6 +8,7 @@
       <router-view class="app-body"/>
     </div>
     <pop-windows></pop-windows>
+    <notification></notification>
   </div>
 </template>
 
@@ -35,6 +36,7 @@ export default {
       'setPageInfos',
     ]),
     setupPages() {
+      const that = this;
       const pages = [];
       Object.keys(modules).forEach((moduleName) => {
         const pageModule = modules[moduleName];
@@ -57,7 +59,7 @@ export default {
           icon: `${pageModule.icon}_icon`,
         });
       });
-      this.setPageInfos(pages);
+      that.setPageInfos(pages);
     },
   },
   mounted() {
