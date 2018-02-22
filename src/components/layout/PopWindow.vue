@@ -1,6 +1,7 @@
 <template>
-  <div id="pop-window" :class="{hidden: !show}" v-on:mousedown="exitPop">
-    <div id="pop-content">
+<transition name="slide-in">
+  <div class="pop-window" :class="{hidden: !show}" v-on:mousedown="exitPop">
+    <div class="pop-content">
       <div class="title" v-if="title">
         <label>{{ title }}</label>
       </div>
@@ -24,6 +25,7 @@
       </div>
     </div>
   </div>
+</transition>
 </template>
 
 <script>
@@ -55,7 +57,7 @@ export default {
       if (!ok) {
         this.show = false;
         this.currentView = undefined;
-        this.$root.$emit('closeWindow', this);
+        this.$root.$emit('close-window', this);
         if (this.callCancel && typeof this.callCancel === 'function') {
           this.callCancel.call(this, this.data);
         }
@@ -72,7 +74,7 @@ export default {
     validatePass(customData) {
       this.show = false;
       this.currentView = undefined;
-      this.$root.$emit('closeWindow', this);
+      this.$root.$emit('close-window', this);
       if (this.callOk && typeof this.callOk === 'function') {
         if (customData) {
           this.callOk.call(this, customData);
@@ -143,7 +145,20 @@ export default {
 <style lang="scss" scoped>
 @import "styles/variable";
 
-#pop-window {
+@keyframes showup {
+  from {
+    margin-top: -20px;
+    opacity: 0;
+    min-height: 70%;
+  }
+  to {
+    margin-top: 0;
+    opacity: 1;
+    height: auto;
+  }
+}
+
+.pop-window {
   &.hidden {
     visibility: hidden;
   }
@@ -159,8 +174,31 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  &.slide-in-enter-active, &.slide-in-leave-active {
+    transition: all 0.5s ease-in;
+    .pop-content {
+      transition: all 0.5s ease-in;
+    }
+  }
+  &.slide-in-enter, &.slide-in-leave-to {
+    .pop-content {
+      margin-top: -20px;
+      opacity: 0;
+      min-height: 70%;
+    }
+  }
+  &.slide-in-enter-to, &.slide-in-leave {
+    .pop-content {
+      margin-top: 0;
+      opacity: 1;
+      height: auto;
+    }
+  }
 
-  #pop-content {
+  .pop-content {
+    // animation-name: showup;
+    // animation-duration: 0.5s;
+
     background: white;
     min-width: 300px;
     max-width: 90%;
