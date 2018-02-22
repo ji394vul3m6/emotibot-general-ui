@@ -34,21 +34,16 @@ export default {
         that.$refs.pops[idx].showWindow(option);
       });
     },
-    hidePopWindowCheck(e) {
-      const event = e || window.event;
-
-      // Close pop up window if press exit
-      if (event.keyCode === 27 && this.popWindows.length > 0) {
-        const idx = this.popWindows.length - 1;
-        this.$refs.pops[idx].hideWindow();
-
-        e.stopPropagation();
-        e.preventDefault();
+    closePopWindow(popWindow) {
+      const idx = this.$refs.pops.findIndex(p => p === popWindow);
+      if (idx >= 0) {
+        this.popWindows.splice(idx, 1);
       }
     },
   },
   mounted() {
     this.$root.$on('pop-window', this.showPopWindow);
+    this.$root.$on('close-window', this.closePopWindow);
   },
 };
 </script>
