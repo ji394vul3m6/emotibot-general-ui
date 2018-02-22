@@ -89,3 +89,25 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+@import "styles/variable";
+table {
+  width: 100%;
+  thead {
+    background: $table-header-background;
+  }
+  tbody {
+    background: $table-body-background;
+    tr {
+      border-bottom: 1px solid $table-border-color;
+      &:hover {
+        background: $table-body-hover-background;
+      }
+    }
+  }
+  td {
+    padding: 5px;
+  }
+}
+</style>

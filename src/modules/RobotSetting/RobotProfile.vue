@@ -7,7 +7,6 @@
     <div class="row auto-height">
       {{ $t('robot_setting.rebuild_msg') }}
     </div>
-    <!-- <general-table :contents="tableData" :headerInfo="tableHeader"></general-table> -->
     <div class="table-container">
       <flex-table :data="tableData" :columns="tableHeader"></flex-table>
     </div>
@@ -37,7 +36,6 @@ export default {
       tableData: [],
       tableHeader: [],
       dataCnt: 0,
-      i18n: {},
       editButtonList: [],
     };
   },
@@ -67,10 +65,11 @@ export default {
       this.showLoading = true;
       api.rebuildRobotQAModel().then((data) => {
         that.operationSuccess(data);
-      }, (err) => {
-        general.handleAPIError(that, err).catch(() => {
-          that.operationFail(err);
-        });
+      }, () => {
+        // TODO
+        // general.handleAPIError(that, err).catch(() => {
+        //   that.operationFail(err);
+        // });
       });
     },
     convertAPIData(datas) {
@@ -98,10 +97,11 @@ export default {
             qaData.answers = retData.filter(answer => true && answer);
             api.updateRobotQA(qaData).then((data) => {
               that.operationSuccess(data);
-            }, (err) => {
-              general.handleAPIError(that, err).catch(() => {
-                that.operationFail(err);
-              });
+            }, () => {
+              // TODO
+              // general.handleAPIError(that, err).catch(() => {
+              //   that.operationFail(err);
+              // });
             });
           },
         },

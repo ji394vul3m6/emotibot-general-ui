@@ -5,6 +5,9 @@
     </div>
     <div class="flex-table-header">
       <div class="flex-table-row">
+        <div class="flex-table-cell" v-if="showCheckBox">
+          <input type="checkbox">
+        </div>
         <div v-for="column in columns" :key="column.key" class="flex-table-cell" :style="customFlexWidth(column)">
           {{column.text}}
         </div>
@@ -15,6 +18,9 @@
     <div class="flex-table-body">
       <!-- TODO: add ability to use checkbox -->
       <div v-for="(row, idx) in data" :key="idx" class="flex-table-row">
+        <div class="flex-table-cell" v-if="showCheckBox">
+          <input type="checkbox">
+        </div>
         <div v-for="column in columns" :key="column.key" class="flex-table-cell" :style="customFlexWidth(column)">
           <template v-if="column.type === 'text'">
           {{row[column.key]}}
@@ -52,7 +58,7 @@ export default {
         return [];
       },
     },
-    checkBox: {
+    showCheckBox: {
       type: Boolean,
       required: false,
       default: false,
@@ -105,6 +111,9 @@ export default {
       display: flex;
       word-break: break-all;
       text-overflow: ellipsis;
+      input {
+        display: block;
+      }
     }
   }
 }
