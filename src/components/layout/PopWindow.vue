@@ -175,9 +175,9 @@ export default {
   align-items: center;
   justify-content: center;
   &.slide-in-enter-active, &.slide-in-leave-active {
-    transition: all 0.5s ease-in;
+    transition: all 0.25s ease-in;
     .pop-content {
-      transition: all 0.5s ease-in;
+      transition: all 0.25s ease-in;
     }
   }
   &.slide-in-enter, &.slide-in-leave-to {
