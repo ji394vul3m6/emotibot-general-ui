@@ -12,10 +12,12 @@ import App from './App';
 import router from './router';
 import store from './store';
 import messages from './i18n';
+import PopWindow from './plugins/PopWindow';
 
 Vue.config.productionTip = false;
 Vue.use(VueCookie);
 Vue.use(VueI18n);
+Vue.use(PopWindow);
 
 Vue.component('text-button', TextButton);
 Vue.component('search-input', SearchInput);

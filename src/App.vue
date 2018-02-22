@@ -7,6 +7,7 @@
       <div class="app-header">{{$t(`pages.${pageName}`)}}</div>
       <router-view class="app-body"/>
     </div>
+    <pop-windows></pop-windows>
   </div>
 </template>
 

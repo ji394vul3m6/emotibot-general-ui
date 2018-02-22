@@ -87,8 +87,8 @@ export default {
     editQA(idx) {
       const that = this;
       const qaData = this.tableData[idx];
-      that.$root.$emit('showWindow', {
-        title: this.$t('robot.modify_qas'),
+      that.$pop({
+        title: this.$t('robot_setting.modify_qas'),
         data: qaData,
         component: QAEditor,
         validate: true,
