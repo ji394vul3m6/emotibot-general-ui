@@ -14,6 +14,7 @@ import store from './store';
 import messages from './i18n';
 import PopWindow from './plugins/PopWindow';
 import CustomNotification from './plugins/CustomNotification';
+import './plugins/Polyfill';
 
 Vue.config.productionTip = false;
 Vue.use(VueCookie);
