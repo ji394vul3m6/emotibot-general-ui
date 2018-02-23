@@ -25,7 +25,7 @@ export default {
   path: 'robot-profile',
   privCode: 'robot_profile',
   displayNameKey: 'robot_profile',
-  icon: 'robot',
+  icon: 'white_robot',
   components: {
     'general-table': GeneralTable,
     FlexTable,

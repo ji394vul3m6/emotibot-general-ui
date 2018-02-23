@@ -151,12 +151,12 @@ html, body {
     }
   }
   @include iconType("search");
-  @include iconType("robot");
   @include iconType("delete");
   @include iconType("edit");
   @include iconType("privilege");
   @include iconType("role");
   @include iconType("user");
+  @include iconType("white_robot");
   @include iconType("white_privilege");
   @include iconType("white_role");
   @include iconType("white_user");
@@ -165,4 +165,12 @@ html, body {
   @include iconType("white_refresh");
   @include iconType("white_success");
   @include iconType("white_fail");
+
+  // robot icon should a little bit larger than other icons
+  .white_robot_icon {
+    background-size: 20px 20px;
+    &.header {
+      background-size: 25px 25px;
+    }
+  }
 }
