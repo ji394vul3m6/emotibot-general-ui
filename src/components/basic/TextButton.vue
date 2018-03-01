@@ -25,6 +25,7 @@ export default {
       type: String,
       default: '',
     },
+    // TODO disabled
   },
   computed: {
     style() {

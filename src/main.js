@@ -14,6 +14,7 @@ import store from './store';
 import messages from './i18n';
 import PopWindow from './plugins/PopWindow';
 import CustomNotification from './plugins/CustomNotification';
+import request from './plugins/request';
 import './plugins/Polyfill';
 
 Vue.config.productionTip = false;
@@ -23,6 +24,7 @@ Vue.use(PopWindow);
 Vue.use(CustomNotification, {
   delay: 4000,
 });
+Vue.use(request);
 
 Vue.component('text-button', TextButton);
 Vue.component('search-input', SearchInput);

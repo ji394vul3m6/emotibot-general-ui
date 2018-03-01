@@ -5,25 +5,28 @@ ex: add auth token, log request, etc.
 */
 import axios from 'axios';
 
-function addAdditionalHeader(config) {
+function getCustomHeader(config) {
+  let ret = config;
+  if (!config) {
+    ret = {};
+  }
   // TODO: correct header should add here
-  if (config.headers) {
-    config.headers['X-Custom-Header'] = 'test';
+  if (ret.headers) {
+    ret.headers['X-Custom-Header'] = 'test';
   } else {
-    config.headers = {
+    ret.headers = {
       'X-Custom-Header': 'test',
     };
   }
+  return ret;
 }
 
 function get(url, config) {
-  addAdditionalHeader(config);
-  return axios.get(url, config);
+  return axios.get(url, getCustomHeader(config));
 }
 
 function post(url, data, config) {
-  addAdditionalHeader(config);
-  return axios.post(url, data, config);
+  return axios.post(url, data, getCustomHeader(config));
 }
 
 function all(requests) {
@@ -31,8 +34,7 @@ function all(requests) {
 }
 
 function ajax(config) {
-  addAdditionalHeader(config);
-  return axios(config);
+  return axios(getCustomHeader(config));
 }
 
 export default {

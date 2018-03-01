@@ -1,3 +1,8 @@
+$default-line-height: 30px;
+$line-element-between-width: 5px;
+
+$break-small: 1024px;
+
 $page-header-height: 50px;
 $page-header-color: #444444;
 
@@ -8,9 +13,6 @@ $page-menu-item-height: 30px;
 $page-menu-category-padding: 10px;
 
 $page-base: #F8F8F8;
-
-$default-line-height: 30px;
-$line-element-between-width: 5px;
 
 $table-header-background: #EEEEEE;
 $table-body-background: white;
@@ -33,3 +35,11 @@ $notification-background: #5cd29d;
 $notification-fail-background: #fa7a7a;
 $notification-border-radius: 4px;
 $notification-width: 300px;
+
+@mixin auto-overflow() {
+    // overflow is for IE
+    overflow: auto;
+    // other browser support overlay will use overlay
+    overflow: overlay;
+    -ms-overflow-style: -ms-autohiding-scrollbar;
+}

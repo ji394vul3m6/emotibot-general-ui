@@ -1,8 +1,7 @@
 <template>
   <div>
-    {{ value.msg }}
-    <br><br>
-    {{ value.info }}
+    <div class="main">{{ value.msg }}</div>
+    <div class="info">{{ value.info }}</div>
   </div>  
 </template>
 

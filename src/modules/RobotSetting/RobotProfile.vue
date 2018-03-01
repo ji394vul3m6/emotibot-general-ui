@@ -17,7 +17,6 @@
 <script>
 import GeneralTable from '@/components/GeneralTable';
 import FlexTable from '@/components/FlexTable';
-import pop from '@/utils/pop';
 import api from './_api/robot';
 import QAEditor from './_components/RobotQAEditForm';
 
@@ -40,6 +39,7 @@ export default {
     };
   },
   methods: {
+    ...api,
     operationSuccess(data) {
       const res = data.data;
       if (res.status === 0) {
@@ -55,15 +55,17 @@ export default {
       this.showLoading = false;
     },
     showMessage(msg) {
-      pop.popErrorWindow(this, msg);
+      this.$notify({ text: msg });
+      // pop.popErrorWindow(this, msg);
     },
-    showError(err, info) {
-      pop.popErrorWindow(this, err, info);
+    showError(err) {
+      this.$notify({ text: err, type: 'fail' });
+      // pop.popErrorWindow(this, err, info);
     },
     rebuild() {
       const that = this;
       this.showLoading = true;
-      api.rebuildRobotQAModel().then((data) => {
+      this.rebuildRobotQAModel().then((data) => {
         that.operationSuccess(data);
       }, () => {
         // TODO
@@ -95,7 +97,7 @@ export default {
         callback: {
           ok(retData) {
             qaData.answers = retData.filter(answer => true && answer);
-            api.updateRobotQA(qaData).then((data) => {
+            that.updateRobotQA(qaData).then((data) => {
               that.operationSuccess(data);
             }, () => {
               // TODO
@@ -139,7 +141,7 @@ export default {
     initPage() {
       const that = this;
       this.showLoading = true;
-      api.getRobotQAList(this.curPage).then((data) => {
+      this.getRobotQAList(this.curPage).then((data) => {
         this.tableData = that.convertAPIData(data.qa_infos);
         this.dataCnt = data.count;
       }).catch(() => {

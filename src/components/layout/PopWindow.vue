@@ -184,14 +184,12 @@ export default {
     .pop-content {
       margin-top: -20px;
       opacity: 0;
-      min-height: 70%;
     }
   }
   &.slide-in-enter-to, &.slide-in-leave {
     .pop-content {
       margin-top: 0;
       opacity: 1;
-      height: auto;
     }
   }
 

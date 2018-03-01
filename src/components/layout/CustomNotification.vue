@@ -62,7 +62,7 @@ export default {
 }
 
 .notification {
-  height: 30px;
+  height: 50px;
   padding: 10px;
   margin-top: 5px;
   color: white;
@@ -70,6 +70,7 @@ export default {
   opacity: 1;
   border-radius: $notification-border-radius;
   width: $notification-width;
+  overflow: hidden;
 
   display: flex;
   label {
