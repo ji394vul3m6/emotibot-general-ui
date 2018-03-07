@@ -1,85 +1,27 @@
-@import './variable';
-html, body {
-  overflow: hidden;
-  line-height: $default-line-height;
-  font-size: 16px;
-}
+<template>
+  <div class="icon" :class="{button: button}" @click="$emit('click', $event)">
+    <div :class="`${iconType}_icon`"></div>
+  </div>
+</template>
 
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
-  margin-top: 60px;
-  overflow: hidden;
-  height: 100vh;
-  width: 100vw;
-}
+<script>
+export default {
+  name: 'icon',
+  props: {
+    iconType: {
+      type: String,
+      required: true,
+    },
+    button: {
+      type: Boolean,
+      default: false,
+    },
+  },
+};
+</script>
 
-#app-logo {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: $page-menu-width;
-  height: $page-header-height;
-  background: $page-header-color url("./assets/images/logo.png") no-repeat center center;
-  background-size: 60px 32px;
-}
-
-#app-page {
-  position: absolute;
-  left: $page-menu-width;
-  top: $page-header-height;
-  width: calc(100vw - #{$page-menu-width});
-  height: calc(100vh - #{$page-header-height});
-  background: $page-base;
-  box-sizing: border-box;
-  @include auto-overflow();
-  & > .app-header {
-    height: $default-line-height;
-    padding-left: 10px;
-  }
-  & > .app-body {
-    padding: 10px;
-    padding-top: 0;
-    height: calc(100% - #{$default-line-height});
-  }
-}
-
-#page-header {
-  position: absolute;
-  left: $page-menu-width;
-  top: 0;
-  width: calc(100vw - #{$page-menu-width});
-  height: 50px;
-  background: $page-header-color;
-  box-shadow: inset -1px 0 0 0 #222222;
-  color: white;
-  text-align: right;
-  font-weight: bold;
-
-  & > div {
-    display: inline-block;
-    vertical-align: middle;
-  }
-
-  & > .spliter {
-    display: inline-block;
-    height: $page-header-height;
-    border-left: 1px solid black;
-  }
-}
-
-
-.float-menu {
-  z-index: 10;
-  visibility: hidden;
-  position: absolute;
-  &.show {
-    visibility: visible;
-  }
-}
-
+<style lang="scss" scoped>
+@import "styles/variable";
 .icon {
   display: inline-block;
   position: relative;
@@ -104,7 +46,7 @@ html, body {
     left: calc(50% - 0.25em);
   }
   .enterprise_icon {
-    background: url("./assets/images/enterprise.png") no-repeat center center;
+    background: url("../../assets/images/enterprise.png") no-repeat center center;
     background-size: 40px 40px;
     width: 100%;
     height: 100%;
@@ -138,7 +80,7 @@ html, body {
   }
   @mixin iconType($name) {
     .#{$name}_icon {
-      background: url("./assets/icons/#{$name}_icon.svg") no-repeat center center;
+      background: url("../../assets/icons/#{$name}_icon.svg") no-repeat center center;
       // background: url("./icons/#{$name}_icon.svg") no-repeat center center;
       background-size: 20px 20px;
       width: 100%;
@@ -169,9 +111,15 @@ html, body {
   @include iconType("white_fail");
   @include iconType("white_wordbank");
   @include iconType("white_folder");
+  @include iconType("home");
+  @include iconType("folder");
+  @include iconType("dictionary");
+  @include iconType("folder_add");
+  @include iconType("dictionary_add");
 
   // robot icon should a little bit larger than other icons
   .white_robot_icon {
     background-size: 25px 25px;
   }
 }
+</style>

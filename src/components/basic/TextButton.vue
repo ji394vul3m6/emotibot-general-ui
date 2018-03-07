@@ -1,8 +1,6 @@
 <template>
-  <div class="text-button" :style="style" :class="{main: main, 'icon-button': showIcon}" @click="$emit('click')">
-    <div class="icon button" v-if="showIcon">
-      <div :class="`${iconType}_icon`"></div>
-    </div>
+  <div class="text-button" :style="style" :class="{main: main, 'icon-button': showIcon}" @click="$emit('click', $event)">
+    <icon :icon-type="iconType" v-if="showIcon"></icon>
     <div class="button-content">
       <slot></slot>
     </div>
@@ -10,6 +8,8 @@
 </template>
 
 <script>
+import Icon from './Icon';
+
 export default {
   name: 'text-button',
   props: {
@@ -26,6 +26,9 @@ export default {
       default: '',
     },
     // TODO disabled
+  },
+  components: {
+    icon: Icon,
   },
   computed: {
     style() {
@@ -67,6 +70,7 @@ export default {
   }
   & > .button-content {
     margin-top: 1px;
+    text-align: center;
   }
 
   &.main {

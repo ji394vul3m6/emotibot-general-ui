@@ -6,10 +6,14 @@
         <label>{{ title }}</label>
       </div>
       <div v-bind:class="[customContentClasses]" class="content">
-        <component v-on:validateSuccess="validatePass"  
+        <component v-if="bindValue === true" v-on:validateSuccess="validatePass"  
           v-on:disableOK="disableOK"
           v-on:enableOK="enableOK"
           :is="currentView" v-model="data" :extData="extData" ref="content"></component>
+        <component v-else v-on:validateSuccess="validatePass"  
+          v-on:disableOK="disableOK"
+          v-on:enableOK="enableOK"
+          :is="currentView" :origData="data" :extData="extData" ref="content"></component>
       </div>
       <div class="pop-button">
         <template v-for="button in custom_button">
@@ -39,7 +43,7 @@ export default {
   methods: {
     exitPop(e) {
       const target = e.target;
-      if (target.id === 'pop-window' && this.clickOutsideClose) {
+      if (target.className === 'pop-window' && this.clickOutsideClose) {
         this.click(false);
       }
     },
@@ -96,6 +100,7 @@ export default {
       this.disable_ok = option.disable_ok || false;
       this.custom_button = option.custom_button || [];
       this.clickOutsideClose = option.clickOutsideClose !== false;
+      this.bindValue = option.bindValue !== false;
       if (option.callback) {
         this.callOk = option.callback.ok;
         this.callCancel = option.callback.cancel;
@@ -137,6 +142,7 @@ export default {
       custom_button: [],
       customContentClasses: [],
       clickOutsideClose: true,
+      bindValue: true,
     };
   },
 };
@@ -242,6 +248,7 @@ export default {
       text-align: right;
       width: 100%;
       padding: 20px;
+      padding-top: 0px;
       box-sizing: border-box;
 
       .text-button {

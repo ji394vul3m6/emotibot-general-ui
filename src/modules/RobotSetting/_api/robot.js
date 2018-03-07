@@ -10,14 +10,15 @@ const CHATS_INFO_PATH = '/api/v1/robot/chats';
 function getFunctionsStatus() {
   return this.$reqGet(GET_FUNCTIONS_INFO_PATH);
 }
+
 function setFunctionStatus(functionKey, status) {
   const param = {
     status,
   };
 
-  console.log(this);
   return this.$reqPost(`${SET_FUNCTION_INFO_PATH}/${functionKey}`, param);
 }
+
 function setFunctionInfos(infos) {
   const param = {};
   infos.forEach((info) => {

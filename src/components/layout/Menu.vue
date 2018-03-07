@@ -52,18 +52,17 @@ export default {
     padding: 0 5px;
     line-height: $page-menu-item-height;
     padding-top: $page-menu-category-padding;
+    .name {
+      text-align: center;
+      margin-left: 5px;
+    }
+
     .category-name {
       height: $page-menu-category-height;
       line-height: $page-menu-category-height;
-      .name {
-        text-align: center;
-      }
     }
     .page {
       padding-left: 20px;
-      .name {
-        text-align: center;
-      }
     }
     .row {
       display: flex;

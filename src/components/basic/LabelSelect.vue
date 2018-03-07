@@ -53,7 +53,6 @@ export default {
   methods: {
     toggleShowOptions() {
       const that = this;
-
       if (that.options.length <= 1) {
         return;
       }

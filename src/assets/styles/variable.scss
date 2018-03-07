@@ -8,7 +8,7 @@ $page-header-color: #444444;
 
 $page-menu-width:150px;
 $page-menu-color: #333;
-$page-menu-category-height: 30px;
+$page-menu-category-height: 50px;
 $page-menu-item-height: 30px;
 $page-menu-category-padding: 10px;
 
@@ -35,6 +35,12 @@ $notification-background: #5cd29d;
 $notification-fail-background: #fa7a7a;
 $notification-border-radius: 4px;
 $notification-width: 300px;
+
+$tag-background-color: #444444;
+$tag-font-color: white;
+
+$error-color: #fa7a7a;
+$success-color: #5cd29d;
 
 @mixin auto-overflow() {
     // overflow is for IE
