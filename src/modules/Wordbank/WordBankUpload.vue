@@ -5,11 +5,12 @@
       <div class="last-result">
         {{ $t('wordbank.last_import_result') }}：
         <span class="last-result-text" :class="{success: isLastResultSuccess}">{{ lastResult }}</span>
-        -
-        <span class="last-result-info">{{ lastResultErr }}</span>
+        <div v-if="!isEmptyUploadRecord && !isLastResultSuccess" class="last-result-info">
+          <span>{{ lastResultErr }}</span>
+        </div>
       </div>
-      <div class="latest-upload">
-        <span>{{ $t("wordbank.version")}}：</span>
+      <div class="latest-upload" v-if="!isEmptyUploadRecord">
+        <span>{{ $t("wordbank.download_import_result")}}：</span>
         <ol v-if="lastFile || currentFile">
           <li v-if="currentFile != undefined">
             <a :href="currentFile.path" @click.prevent.stop="logExport(currentFile.path)">{{ $t("wordbank.current_version") }}</a> ({{currentFile.timeStr}})
@@ -30,13 +31,12 @@
         <text-button v-on:click="triggerUpload" id="file-selector">{{ $t("general.browse") }}</text-button>
         <span>{{ fileName }}</span>
         <input type="file" ref="uploadInput" v-on:change="changeFile()" accept=".xlsx">
-        <text-button v-on:click="upload()" v-if="fileName !== ''">{{ $t("general.upload") }}</text-button>
+        <text-button @click="upload()" v-if="fileName !== ''">{{ $t("general.upload") }}</text-button>
       </div>
       <div class="button-container">
         
       </div>
       {{ $t("wordbank.description") }}
-      <!-- <div v-html="desc"></div> -->
       <div>
         <ol>
           <li v-for="part in desc" :key="part.info">
@@ -53,9 +53,9 @@
 
 <script>
 import auditAPI from '@/api/audit';
-import TextButton from '../../components/basic/TextButton';
+import TextButton from '@/components/basic/TextButton';
 // import auth from '@/auth';
-import format from '../../utils/js/format';
+import format from '@/utils/js/format';
 import desc from './_data/wordbankImportDesc';
 import api from './_api/wordbank';
 
@@ -114,20 +114,20 @@ export default {
       const files = this.$refs.uploadInput.files;
       const file = files[0] || undefined;
       const that = this;
-
       if (!file) {
-        this.popErrorWindow(that.$t('error_msg.upload_file_undefined'));
+        that.popErrorWindow(that.$t('error_msg.upload_file_undefined'));
       } else if (file.size <= 0 || file.size > 2 * 1024 * 1024) {
-        this.popErrorWindow(that.$t('error_msg.upload_file_size_error'));
+        that.popErrorWindow(that.$t('error_msg.upload_file_size_error'));
       } else {
-        that.upload(file).then((data) => {
+        that.uploadFile(file).then((data) => {
+          debugger;
           const res = data.data;
           if (res.status === 0) {
-            this.popErrorWindow(that.$t('error_msg.wait_for_result'));
-            this.$refs.uploadInput.value = '';
-            this.changeFile();
+            that.popErrorWindow(that.$t('wordbank.wait_for_result'));
+            that.$refs.uploadInput.value = '';
+            that.changeFile();
           } else {
-            this.popErrorWindow(that.$t('error_msg.save_fail'), res.result);
+            that.popErrorWindow(that.$t('error_msg.save_fail'), res.result);
           }
         }, (err) => {
           that.$popError(that.i18n.error_msg.save_fail, err.errMsg);
@@ -137,17 +137,18 @@ export default {
     updateFileInfo(fileInfos) {
       const current = fileInfos.currentFile;
       const last = fileInfos.lastFile;
+      const that = this;
 
       if (current) {
-        this.currentFile = this.convertFileInfo(current);
+        that.currentFile = that.convertFileInfo(current);
       } else {
-        this.currentFile = undefined;
+        that.currentFile = undefined;
       }
 
       if (last) {
-        this.lastFile = this.convertFileInfo(last);
+        that.lastFile = that.convertFileInfo(last);
       } else {
-        this.lastFile = undefined;
+        that.lastFile = undefined;
       }
     },
     convertFileInfo(fileInfo) {
@@ -166,27 +167,25 @@ export default {
       };
     },
     popErrorWindow(msg, err) {
-      this.$root.$emit('showWindow', {
-        component: Error,
-        data: {
-          msg,
-          info: err,
-        },
-        buttons: ['ok'],
-      });
+      this.$popError(msg, err);
     },
-    loadAllAjaxStatus() {
+    loadAllAjaxStatus(background) {
       const that = this;
-      that.$emit('startLoading');
-      that.isLastResultSuccess = true;
+      if (!background) {
+        that.$emit('startLoading');
+      }
       that.getLastResult().then((data) => {
         const res = data.data;
         if (res.status === 0) {
           const handleResult = res.result;
-          if (handleResult && handleResult !== 0) {
-            that.lastResult = `${that.$t(`wordbank.result[${handleResult.status}]`)} ( ${format.datetimeToString(res.result.start_time)} )`;
+          if (handleResult && handleResult.length !== 0) {
+            const resultStatus = that.$t(`wordbank.result.${handleResult.status}`);
+            that.lastResult = `${resultStatus} ( ${format.datetimeToString(res.result.start_time)} )`;
             that.lastResultErr = res.result.message;
-            that.isLastResultSuccess = false;
+            that.isLastResultSuccess = handleResult.status === 'success';
+            setTimeout(() => {
+              that.loadAllAjaxStatus(true);
+            }, 10000);
           } else {
             that.lastResult = that.$t('wordbank.result.empty');
           }
@@ -196,7 +195,7 @@ export default {
       .then((data) => {
         const res = data.data;
         if (res.status === 0) {
-          this.updateFileInfo(res.result);
+          that.updateFileInfo(res.result);
         }
         that.$emit('endLoading');
       })
@@ -237,6 +236,9 @@ export default {
       // return auth.checkPrivilege(this.code, 'export');
       return true;
     },
+    isEmptyUploadRecord() {
+      return this.currentFile === undefined && this.lastFile === undefined;
+    },
   },
   mounted() {
     this.setUpDescription(this.$i18n.locale);
@@ -276,7 +278,7 @@ $row-height: 30px;
       list-style: decimal inside none;
       line-height: $row-height;
       p {
-        margin-left: 50px;
+        margin-left: 20px;
       }
     }
     span {
@@ -295,6 +297,12 @@ $row-height: 30px;
     }
     .last-result-info {
       color: gray;
+      margin-left: 20px;
+    }
+    .latest-upload {
+      ol {
+        margin-left: 20px;
+      }
     }
   }
 }

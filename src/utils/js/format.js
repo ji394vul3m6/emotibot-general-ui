@@ -1,14 +1,18 @@
+function paddingNumToTwo(num) {
+  return num >= 10 ? num.toString() : `0${num}`;
+}
+
 function datetimeToString(date) {
   if (typeof date !== 'string') {
     return '';
   }
   const time = new Date(date);
 
-  const month = this.paddingNumToTwo(time.getMonth() + 1);
-  const day = this.paddingNumToTwo(time.getDate());
-  const hour = this.paddingNumToTwo(time.getHours());
-  const min = this.paddingNumToTwo(time.getMinutes());
-  const sec = this.paddingNumToTwo(time.getSeconds());
+  const month = paddingNumToTwo(time.getMonth() + 1);
+  const day = paddingNumToTwo(time.getDate());
+  const hour = paddingNumToTwo(time.getHours());
+  const min = paddingNumToTwo(time.getMinutes());
+  const sec = paddingNumToTwo(time.getSeconds());
 
   return `${time.getFullYear()}/${month}/${day} ${hour}:${min}:${sec}`;
 }

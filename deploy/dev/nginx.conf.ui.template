@@ -33,6 +33,12 @@ http {
         listen 80;
         listen [::]:80;
 
+        location /Files {
+            proxy_pass http://${REMOTE_IP};
+        }
+        location /api {
+            proxy_pass http://${REMOTE_IP};
+        }
         location / {
             proxy_pass http://${SELF_IP}:8080;
         }

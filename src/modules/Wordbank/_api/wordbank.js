@@ -43,7 +43,7 @@ function getWordbanks() {
   });
 }
 
-function upload(file) {
+function uploadFile(file) {
   if (!file) {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
@@ -74,7 +74,7 @@ function getLastResult() {
 
 export default {
   getWordbanks,
-  upload,
+  uploadFile,
   getDownloadMeta,
   getLastResult,
 };

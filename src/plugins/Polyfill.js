@@ -1,6 +1,6 @@
 // Polyfill for Object.assign if not support
 if (typeof Object.assign !== 'function') {
-  const assign = function (target, ...varArgs) { // .length of function is 2
+  const assign = function assign(target, ...varArgs) { // .length of function is 2
     if (target == null) { // TypeError if undefined or null
       throw new TypeError('Cannot convert undefined or null to object');
     }

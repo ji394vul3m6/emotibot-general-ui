@@ -53,6 +53,8 @@ export default {
       loading: '导入中',
       empty: '尚未导入',
     },
+    wait_for_result: '导入处理中，请五分钟后查看结果',
+    download_import_result: '下载已导入词库',
   },
   pages: {
     privileges: {
