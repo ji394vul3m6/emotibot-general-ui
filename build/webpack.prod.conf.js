@@ -67,8 +67,24 @@ const webpackConfig = merge(baseWebpackConfig, {
         ? 'index.html'
         : config.build.index,
       template: 'index.html',
+      chunks: ["vendor", "manifest", "app"],
       inject: true,
       favicon: path.resolve(__dirname, '../static/favicon.ico'),
+      minify: {
+        removeComments: true,
+        collapseWhitespace: true,
+        removeAttributeQuotes: true
+        // more options:
+        // https://github.com/kangax/html-minifier#options-quick-reference
+      },
+      // necessary to consistently work with multiple chunks via CommonsChunkPlugin
+      chunksSortMode: 'dependency'
+    }),
+    new HtmlWebpackPlugin({
+      filename: 'login.html',
+      template: 'login.html',
+      chunks: ["vendor", "manifest", "login"],
+      inject: true,
       minify: {
         removeComments: true,
         collapseWhitespace: true,

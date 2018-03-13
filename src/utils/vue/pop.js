@@ -1,7 +1,7 @@
 import ErrorForm from '@/components/pop/ErrorAlert';
 
 function popErrorWindow(context, msg, err) {
-  context.$root.$emit('showWindow', {
+  context.$pop('showWindow', {
     component: ErrorForm,
     data: {
       msg,

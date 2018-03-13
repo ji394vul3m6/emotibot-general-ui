@@ -9,3 +9,148 @@ services:
         volumes:
             - ./nginx.conf:/etc/nginx/nginx.conf
         restart: always
+
+    # ========== DATABASE ==========
+    mysql:
+        image: mysql:${MYSQL_TAG}
+        container_name: mysql
+        ports:
+            - "${MYSQL_PORT}:${MYSQL_PORT}"
+        logging:
+            options:
+                max-size: "${DOCKER_LOG_OPT_MAX_SIZE}"
+                max-file: ${DOCKER_LOG_OPT_MAX_FILE}
+        environment:
+            MYSQL_ROOT_PASSWORD: ${MYSQL_MAIN_PASS} 
+        mem_limit: 5125m
+        volumes:
+            - ./database/mysql/my.cnf:/etc/mysql/my.cnf
+            - ./database/mysql:/var/local/database
+            - ./database/mysql/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh
+            - ${MYSQL_DATA_PATH}:/var/lib/mysql
+        restart: always
+        healthcheck:
+            test: "/usr/bin/mysql --user=${MYSQL_MAIN_USER} --password=${MYSQL_MAIN_PASS} --execute \"SHOW DATABASES;\""
+            interval: 3s
+            timeout: 1s
+            retries: 5
+    mysql-audit:
+        image: mysql:5.7
+        container_name: mysql-audit
+        ports:
+            - ${MYSQL_AUDIT_PORT}:3306
+        environment:
+            MYSQL_ROOT_PASSWORD: ${MYSQL_AUDIT_ROOT_PASSWORD} 
+        mem_limit: 5125m
+        volumes:
+            - ./database/mysql/my.cnf:/etc/mysql/my.cnf
+            - ./database/mysql/docker-entrypoint-audit.sh:/usr/local/bin/docker-entrypoint.sh
+            - ./database/mysql/audit_record.sql:/var/local/database/audit_record.sql
+            - ${MYSQL_AUDIT_DATA_PATH}:/var/lib/mysql
+        restart: always
+        healthcheck:
+            test: "/usr/bin/mysql --user=root --password=${MYSQL_AUDIT_ROOT_PASSWORD} --execute \"SHOW DATABASES;\""
+            interval: 3s
+            timeout: 1s
+            retries: 5
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        container_name: phpmyadmin
+        ports:
+            - "${PHPMYADMIN_PORT}:80" 
+        logging:
+            options:
+                max-size: "${DOCKER_LOG_OPT_MAX_SIZE}"
+                max-file: ${DOCKER_LOG_OPT_MAX_FILE}
+        mem_limit: 5125m
+        environment:
+            MYSQL_USERNAME: ${MYSQL_MAIN_USER}
+            MYSQL_PASSWORD: ${MYSQL_MAIN_PASS}
+        links:
+            - mysql:db
+        restart: always
+        depends_on:
+            "mysql":
+                condition: service_healthy
+
+    # ========== Authentication =========
+    authentication:
+        image: ${AUTH_IMAGE}:${AUTH_TAG}
+        container_name: ${AUTH_CONTAINER}
+        ports:
+            - "${AUTH_PORT}:${AUTH_PORT}"
+        mem_limit: 2048m
+        environment:
+            MYSQL_URL: ${AUTH_MYSQL_URL}
+            MYSQL_USER: ${AUTH_MYSQL_USER}
+            MYSQL_PASS: ${AUTH_MYSQL_PASS}
+            MYSQL_DB: ${AUTH_MYSQL_DATABASE}
+            AUDIT_MYSQL_URL: ${API_SERVER_AUDIT_MYSQL_URL}
+            AUDIT_MYSQL_USER: ${API_SERVER_AUDIT_MYSQL_USER}
+            AUDIT_MYSQL_PASS: ${API_SERVER_AUDIT_MYSQL_PASS}
+            AUDIT_MYSQL_DB: ${API_SERVER_AUDIT_MYSQL_DB}
+            CONSUL_URL: ${CONSUL_IP}:${CONSUL_PORT}
+        restart: always
+        depends_on:
+            "mysql":
+                condition: service_healthy
+            "consul":
+                condition: service_healthy
+
+    # ========== Consul ==========
+    consul:
+        image: consul:${CONSUL_TAG}
+        container_name: consul 
+        ports:
+            - "${CONSUL_PORT}:${CONSUL_PORT}"
+        logging:
+            options:
+                max-size: "${DOCKER_LOG_OPT_MAX_SIZE}"
+                max-file: ${DOCKER_LOG_OPT_MAX_FILE}
+        mem_limit: 2048m
+        volumes:
+            - "${CONSUL_DATA_PATH}:/consul/data"
+        restart: always
+        healthcheck:
+            test: "curl -XGET 'http://${CONSUL_IP}:${CONSUL_PORT}/v1/health/state/critical'"
+            interval: 3s
+            timeout: 1s
+            retries: 5
+
+    vipshop-admin-api:
+        image: ${API_IMAGE}:${API_TAG}
+        container_name: ${API_CONTAINER}
+        ports:
+            - "${API_SERVER_PORT}:${API_SERVER_PORT}"
+        mem_limit: 2048m
+        volumes:
+            - ${MC_MOUNT_FILES_PATH}:${API_SERVER_MOUNTED_PATH}
+        environment:
+            VIP_SERVER_PORT: ${API_SERVER_PORT}
+            VIP_SERVER_AUTH_URL: ${API_SERVER_AUTH_URL}
+            VIP_SERVER_MYSQL_URL: ${API_SERVER_MYSQL_URL}
+            VIP_SERVER_MYSQL_USER: ${API_SERVER_MYSQL_USER}
+            VIP_SERVER_MYSQL_PASS: ${API_SERVER_MYSQL_PASS}
+            VIP_SERVER_MYSQL_DB: ${API_SERVER_MYSQL_DB}
+            VIP_SERVER_AUDIT_MYSQL_URL: ${API_SERVER_AUDIT_MYSQL_URL}
+            VIP_SERVER_AUDIT_MYSQL_USER: ${API_SERVER_AUDIT_MYSQL_USER}
+            VIP_SERVER_AUDIT_MYSQL_PASS: ${API_SERVER_AUDIT_MYSQL_PASS}
+            VIP_SERVER_AUDIT_MYSQL_DB: ${API_SERVER_AUDIT_MYSQL_DB}
+            VIP_SERVER_MC_URL: ${API_SERVER_MC_URL}
+            VIP_SERVER_MOUNT_PATH: ${API_SERVER_MOUNTED_PATH}
+            VIP_SERVER_CONSUL_URL: ${API_SERVER_CONSUL_URL}
+            VIP_QA_TEST_URL: ${API_QA_TEST_URL}
+            VIP_STATISTIC_MYSQL_URL: ${API_STATISTIC_MYSQL_URL}
+            VIP_STATISTIC_MYSQL_USER: ${API_STATISTIC_MYSQL_USER}
+            VIP_STATISTIC_MYSQL_PASS: ${API_STATISTIC_MYSQL_PASS}
+            VIP_STATISTIC_MYSQL_DB: ${API_STATISTIC_MYSQL_DB}
+            VIP_UI_AUTH_SYSTEM: ${API_UI_AUTH_SYSTEM}
+            VIP_UI_AUTH_SUPER_ROLE: ${API_UI_AUTH_SUPER_ROLE}
+            VIP_MEDIABASE_MYSQL_URL: ${API_MEDIABASE_MYSQL_URL}
+            VIP_MEDIABASE_MYSQL_USER: ${API_MEDIABASE_MYSQL_USER}
+            VIP_MEDIABASE_MYSQL_PASS: ${API_MEDIABASE_MYSQL_PASS}
+            VIP_MEDIABASE_MYSQL_DB: ${API_MEDIABASE_MYSQL_DB}
+            VIP_MEDIABASE_VOLUME: ${API_MEDIABASE_VOLUME}
+            VIP_MEDIABASE_LOCATION: ${API_MEDIABASE_LOCATION}
+            VIP_MEDIABASE_SYNC_PERIOD_BY_SECONDS: ${API_MEDIABASE_SYNC_PERIOD_BY_SECONDS}
+        restart: always

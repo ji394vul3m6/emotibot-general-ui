@@ -1,5 +1,8 @@
 <template>
-  <div class="text-button" :style="style" :class="{main: main, 'icon-button': showIcon}" @click="$emit('click', $event)">
+  <div class="text-button"
+    :style="style"
+    :class="{main: main, 'icon-button': showIcon, fill: fill, disabled: disabled, 'custom-width': width !== ''}"
+    @click="$emit('click', $event)">
     <icon :icon-type="iconType" v-if="showIcon"></icon>
     <div class="button-content">
       <slot></slot>
@@ -17,6 +20,14 @@ export default {
       type: Boolean,
       default: false,
     },
+    fill: {
+      type: Boolean,
+      default: false,
+    },
+    width: {
+      type: String,
+      default: '',
+    },
     height: {
       type: String,
       default: '',
@@ -25,6 +36,10 @@ export default {
       type: String,
       default: '',
     },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
     // TODO disabled
   },
   components: {
@@ -32,10 +47,14 @@ export default {
   },
   computed: {
     style() {
+      let style = '';
       if (this.height !== '') {
-        return `height: ${this.height}; line-height: ${this.height}`;
+        style += `height: ${this.height}; line-height: ${this.height};`;
       }
-      return '';
+      if (this.width !== '') {
+        style += `width: ${this.width}`;
+      }
+      return style;
     },
     showIcon() {
       return this.iconType.trim() !== '';
@@ -73,6 +92,12 @@ export default {
     text-align: center;
   }
 
+  &.disabled {
+    opacity: 0.2;
+    cursor: no-drop;
+    pointer-events: none;
+  }
+
   &.main {
     background: $button-blue-bg;
     color: $button-blue-text;
@@ -82,6 +107,21 @@ export default {
     }
     &:active {
       color: $button-blue-active-text;
+    }
+  }
+  &.fill {
+    width: 100%;
+    margin: 0;
+    .button-content {
+      width: 100%;
+      text-align: center;
+    }
+  }
+  &.custom-width {
+    margin: 0;
+    .button-content {
+      width: 100%;
+      text-align: center;
     }
   }
 }

@@ -22,7 +22,8 @@ const createLintingRule = () => ({
 module.exports = {
   context: path.resolve(__dirname, '../'),
   entry: {
-    app: ['url-search-params-polyfill', './src/main.js']
+    app: ['url-search-params-polyfill', './src/main.js'],
+    login: './src/login.js'
   },
   output: {
     path: config.build.assetsRoot,

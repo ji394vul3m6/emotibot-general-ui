@@ -46,32 +46,31 @@ export default {
         this.showMessage(this.$t('error_msg.success'));
         this.initPage();
       } else {
-        this.showError(this.$t('error_msg.save_fail', res.message));
+        this.showError(this.$t('error_msg.request_fail'), res.message);
       }
-      this.showLoading = false;
+      this.$emit('endLoading');
     },
     operationFail(err) {
-      this.showError(this.$t('error_msg.save_fail', err.message));
-      this.showLoading = false;
+      this.showError(this.$t('error_msg.request_fail'), err.message);
+      this.$emit('endLoading');
     },
     showMessage(msg) {
       this.$notify({ text: msg });
       // pop.popErrorWindow(this, msg);
     },
-    showError(err) {
-      this.$notify({ text: err, type: 'fail' });
+    showError(err, info) {
+      let text = err;
+      if (info) {
+        text = `${err}: ${info}`;
+      }
+      this.$notify({ text, type: 'fail' });
       // pop.popErrorWindow(this, err, info);
     },
     rebuild() {
       const that = this;
-      this.showLoading = true;
+      that.$emit('startLoading');
       this.rebuildRobotQAModel().then((data) => {
         that.operationSuccess(data);
-      }, () => {
-        // TODO
-        // general.handleAPIError(that, err).catch(() => {
-        //   that.operationFail(err);
-        // });
       });
     },
     convertAPIData(datas) {
@@ -140,16 +139,17 @@ export default {
     },
     initPage() {
       const that = this;
-      this.showLoading = true;
+      // this.showLoading = true;
+      that.$emit('startLoading');
       this.getRobotQAList(this.curPage).then((data) => {
         this.tableData = that.convertAPIData(data.qa_infos);
         this.dataCnt = data.count;
+        that.$emit('endLoading');
       }).catch(() => {
         // general.handleAPIError(that, err).catch((value) => {
         //   that.showError(this.$t('error_msg.save_fail', value.errMsg));
         // });
-      }).finally(() => {
-        that.showLoading = false;
+        that.$emit('endLoading');
       });
     },
   },

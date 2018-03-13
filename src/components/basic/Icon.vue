@@ -116,6 +116,9 @@ export default {
   @include iconType("dictionary");
   @include iconType("folder_add");
   @include iconType("dictionary_add");
+  @include iconType("white_logout");
+  @include iconType("white_ssm");
+  @include iconType("white_chat");
 
   // robot icon should a little bit larger than other icons
   .white_robot_icon {

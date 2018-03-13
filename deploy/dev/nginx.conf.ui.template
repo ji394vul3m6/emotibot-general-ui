@@ -36,6 +36,9 @@ http {
         location /Files {
             proxy_pass http://${REMOTE_IP};
         }
+        location /auth {
+            proxy_pass http://${REMOTE_IP};
+        }
         location /api {
             proxy_pass http://${REMOTE_IP};
         }

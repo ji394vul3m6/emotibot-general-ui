@@ -6,17 +6,19 @@ After ajax finish, check error code automatically
 */
 import axios from 'axios';
 
-function getCustomHeader(config) {
+let appid = '';
+
+function addCustomHeader(config) {
   let option = Object.assign({}, config);
   if (!config) {
     option = {};
   }
   // TODO: correct header should add here
   if (option.headers) {
-    option.headers['X-Custom-Header'] = 'test';
+    option.headers['X-Custom-Header'] = appid;
   } else {
     option.headers = {
-      'X-Custom-Header': 'test',
+      'X-Custom-Header': appid,
     };
   }
   return option;
@@ -45,7 +47,10 @@ function checkAjaxError(context, error) {
     //   context.$t('error_msg.client_error'),
     //   `${context.$t(`http_status.${status.toString()}`)} ${status}`);
   } else if (status >= 500) {
-    context.$notify(`${context.$t('general.error_code')} ${status}`);
+    context.$notify({
+      text: `${context.$t('general.error_code')} ${status}`,
+      type: 'fail',
+    });
     // context.$popError(
     //   context.$t('error_msg.server_error'),
     //   `${context.$t('general.error_code')} ${status}`);
@@ -55,7 +60,8 @@ function checkAjaxError(context, error) {
 
 function ajax(config) {
   const that = this;
-  return axios(getCustomHeader(config)).catch((err) => {
+  const getConfigWithCustomHeader = addCustomHeader.bind(that);
+  return axios(getConfigWithCustomHeader(config)).catch((err) => {
     checkAjaxError(that, err);
   });
 }
@@ -86,6 +92,10 @@ const MyPlugin = {
     Vue.prototype.$reqGet = get;
     Vue.prototype.$reqPost = post;
     Vue.prototype.$reqAjax = ajax;
+
+    Vue.prototype.$setupRobot = function setupRobot(id) {
+      appid = id;
+    };
   },
 };
 

@@ -1,0 +1,98 @@
+<template>
+  <div>
+    <div>
+      {{ statsText }}
+    </div>
+    <br>
+    <div class="loader"></div>
+    <br>
+    <div>
+      <template v-if="showTimeStr !== ''">
+      {{ $t('qalist.check_exrpot_time') }}: {{ showTimeStr }}
+      </template>
+    </div>
+  </div>  
+</template>
+
+<script>
+// import i18nUtil from '@/utils/i18nUtil';
+import format from '@/utils/js/format';
+import QAapi from '../_api/qalist';
+
+export default {
+  props: {
+    value: {
+      type: Object,
+      default() {
+        return {};
+      },
+    },
+  },
+  data() {
+    return {
+      statsText: '',
+      showTime: new Date(),
+      // i18n: {},
+      currentTimeout: undefined,
+    };
+  },
+  methods: {
+    setUpMsg() {
+      this.statsText = this.$t('qalist.check_export_status');
+    },
+    pollingState(id) {
+      QAapi.queryOperationProgress(id).then((data) => {
+        if (data.status === 'running') {
+          setTimeout(() => {
+            this.pollingState.bind(this)(id);
+          }, 5000);
+        } else {
+          this.$emit('validateSuccess', data);
+        }
+      }).catch(() => {
+        const failedData = {
+          status: 'failed',
+        };
+        this.$emit('validateSuccess', failedData);
+      });
+    },
+  },
+  beforeDestroy() {
+    if (this.currentTimeout && clearTimeout) {
+      clearTimeout(this.currentTimeout);
+    }
+  },
+  mounted() {
+    const that = this;
+    // that.i18n = i18nUtil.getLocaleMsgs(that.$i18n);
+    that.setUpMsg();
+
+    const options = this.$store.state.qaQueryOptions;
+
+    QAapi.exportQuestions(options).then((data) => {
+      this.pollingState(data.stateId);
+    });
+  },
+  computed: {
+    showTimeStr() {
+      return format.datetimeToString(this.showTime.toString());
+    },
+  },
+};
+</script>
+
+<style scoped>
+.loader {
+    border: 5px solid #f3f3f3; /* Light grey */
+    border-top: 5px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+</style>

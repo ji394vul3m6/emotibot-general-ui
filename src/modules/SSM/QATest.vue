@@ -1,0 +1,366 @@
+<template>
+<div id="qatest" class="page">
+  <!-- <div class="qa-test-filter"> 
+    <div class="filter-list row">
+      {{ $t('qatest.user_dimension') }}：
+      <template v-if="noDimensionSelected">{{ $t('qatest.unselect') }}</template>
+      <template v-for="category in categoryList">
+      <template v-for="categoryType in category.categories" v-if="!categoryType.allChecked">
+        <div class="filter-item" v-for="value in categoryType.values" :key="value.text" v-if="value.checked" :data-key="categoryType.type" :data-val="value.text" ref="filters">
+          <span class="filter-item-text">
+            {{value.text}}
+            <span v-on:click="cancelFilter(categoryType, value)" class="filter-item-cancel">
+              x
+            </span>
+          </span>
+        </div>
+      </template>
+      </template>
+      <span v-on:click="cancelAllFilter()" class="clear-all" v-if="!noDimensionSelected">{{ $t('qatest.clear_all') }}</span>
+    </div>
+  </div> -->
+  <div class="content">
+    <div class="qa-test-main">
+      <div class="qa-test-title title">
+        {{ $t('qatest.qatest') }}
+      </div>
+      <div class="qa-test-list">
+        <div class="qa-test-container" ref="qaBox">
+          <div class="qa-test-inner-container">
+            <div v-for="chat in chatData" :class="chat.role" class="qa-test-row" :key="chat.text">
+              <div class="qa-test-text">
+                <span v-html="chat.text"></span>
+              </div>
+              <div class="empty-zone"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="qa-test-input">
+        <textarea v-model="userInput" v-on:keydown="checkKey"></textarea>
+      </div>
+      <div class="qa-test-control">
+        <text-button disabled main @click="sendText">{{ $t('qatest.submit') }}</text-button>
+      </div>
+    </div>
+    <div class="qa-test-info">
+      <div class="qa-test-info-block">
+        <div class="qa-test-info-title title">
+          {{ $t('qatest.analysis') }}
+        </div>
+        <div class="qa-test-info-content">
+          <div>intent： {{intent || $t('qatest.unknown') }}</div>
+          <div>emotion： {{emotion || $t('qatest.unknown')}}</div>
+          <div>{{ $t('qatest.token') }}： {{ tokens }}</div>
+        </div>
+      </div>
+      <div class="qa-test-info-block">
+        <div class="qa-test-info-title title">
+          {{ $t('qatest.match_result') }}
+        </div>
+        <div class="qa-test-info-content">
+          <div v-for="result in matchResult" :key="result.user_q">
+            <div>{{ $t('qatest.similar_question') }}：{{result.user_q}}</div>
+            <div>{{ $t('qatest.similar_score') }}：{{result.score}}</div>
+            <br>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</template>
+
+<script>
+import api from './_api/qatest';
+import TextButton from '@/components/basic/TextButton';
+
+export default {
+  path: 'qatest',
+  privCode: 'qatest',
+  displayNameKey: 'qatest',
+  icon: 'white_chat',
+  components: {
+    TextButton,
+  },
+  data() {
+    return {
+      i18n: {},
+      userInput: '',
+      chatData: [],
+      intent: '',
+      emotion: '',
+      tokens: '',
+      matchResult: [],
+    };
+  },
+  methods: {
+    ...api,
+    scrollToBottom() {
+      this.$refs.qaBox.scrollTop = this.$refs.qaBox.scrollHeight;
+    },
+    checkKey(e) {
+      if (e.keyCode === 13 || e.key === 'Enter') {
+        if (!e.shiftKey) {
+          if (this.userInput.trim().length > 0) {
+            this.sendText();
+          }
+          e.preventDefault();
+        }
+      }
+    },
+    sendText() {
+      const that = this;
+
+      if (that.userInput.trim().length <= 0) {
+        that.$popError(that.i18n.error_msg.input_empty);
+        return;
+      }
+      that.appendChat(that.userInput);
+
+      const filter = {};
+      if (this.$refs.filters) {
+        this.$refs.filters.forEach((item) => {
+          filter[item.dataset.key] = item.dataset.val;
+        });
+      }
+
+      api.QATest(that.userInput, filter).then((data) => {
+        const res = data.data;
+        if (res.status === 0 && res.result.answers && res.result.answers.length > 0) {
+          res.result.answers.forEach((answer) => {
+            that.appendChat(answer, 'robot');
+          });
+          this.$nextTick(this.scrollToBottom);
+
+          that.tokens = res.result.tokens.join(', ');
+          that.emotion = res.result.emotion || that.i18n.qatest.unknown;
+          that.intent = res.result.intent || that.i18n.qatest.unknown;
+          that.matchResult = res.result.similar_question || [];
+        } else {
+          that.$popError(that.i18n.error_msg.server_error, res.message);
+        }
+      }, () => {
+        // general.handleAPIError(that, err).catch((value) => {
+        //   general.popErrorWindow(that, that.i18n.error_msg.server_error, value.errMsg);
+        // });
+      });
+      that.userInput = '';
+    },
+    appendChat(text, role) {
+      const convertedText = text.replace(/<a/g, '<a target="_blank"');
+      this.chatData.push({
+        role: role || 'user',
+        text: convertedText,
+      });
+    },
+    cancelAllFilter() {
+      this.categoryList[0].categories.forEach((category) => {
+        category.allChecked = true;
+        category.values.forEach((value) => {
+          value.checked = false;
+        });
+      });
+    },
+    cancelFilter(categoryType, value) {
+      value.checked = false;
+      const allNotChecked = categoryType.values.reduce((ret, val) => !val.checked && ret, true);
+      categoryType.allChecked = allNotChecked;
+    },
+  },
+  mounted() {
+  },
+  computed: {
+    noDimensionSelected() {
+      if (this.categoryList.length > 0) {
+        return this.categoryList[0].categories.reduce((ret, val) => ret && val.allChecked, true);
+      }
+      return true;
+    },
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+@import "styles/variable";
+
+$row-height: 50px;
+#qatest {
+  .qa-test-filter {
+    min-height: $row-height;
+    line-height: $row-height;
+    
+    .filter-list {
+      // overwrite the height property of row
+      &.row {
+        height: auto;
+      }
+      div {
+        display: inline-block;
+      }
+
+      .filter-item {
+        .filter-item-text {
+          padding: 2px 5px;
+          margin: 0px 5px;
+          border: 1px solid $page-header-color;
+          border-radius: 0.5em;
+          background: $page-header-color;
+          color: white;
+          cursor: default;
+        }
+        .filter-item-cancel {
+          color: white;
+          margin: 0px 5px;
+          user-select: none;
+          cursor: pointer;
+        }
+      }
+
+      .clear-all {
+        display: inline-block;
+        color: blue;
+        text-decoration: underline;
+        font-size: 0.8em;
+        user-select: none;
+        cursor: pointer;
+      }
+    }
+  }
+  .content {
+    display: flex;
+    align-items: stretch;
+    // height: calc(100% - #{$row-height} - 20px);
+    height: calc(100% - 20px);
+
+    .qa-test-main {
+      width: 80%;
+      flex: 4 1 400px;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      
+      .qa-test-title {
+        border: 1px solid black;
+        border-bottom: none;
+      }
+
+      .qa-test-list {
+        flex: 1 1 auto;
+        padding: 0;
+        display: flex;
+        flex-direction: column-reverse;
+        align-items: stretch;
+        .qa-test-container {
+          flex: 1 1 100px;
+          background: white;
+          // border: 1px solid black;
+          overflow-y: auto;
+          align-items: stretch;
+          border: 1px solid black;
+          border-top: none;
+
+          .qa-test-inner-container {
+            display: flex;
+            flex-direction: column;
+            .qa-test-row {
+              display: flex;
+
+              &.robot {
+                .qa-test-text {
+                  ul, ol {
+                    list-style: initial;
+                    padding-left: 20px;
+                    padding-top: 10px;
+                    line-height: 15px;
+                  }
+                  ol {
+                    list-style: decimal;
+                  }
+                }
+              }
+              &.user {
+                flex-direction: row-reverse;
+                .qa-test-text {
+                  text-align: right;
+                  span {
+                    background: $page-menu-color;
+                    color: white;
+                  }
+                }
+              }
+              & > .qa-test-text {
+                flex: 1 1 500px;
+                margin: 0 10px;
+                margin-bottom: 10px;
+                & > span {
+                  display: inline-block;
+                  word-break: break-all;
+                  border: 1px solid $page-menu-color;
+                  border-radius: 10px;
+                  padding: 5px 10px;
+                  white-space: pre-line;
+
+                  a:visited {
+                    color: blue;
+                  }
+                }
+              }
+              .empty-zone {
+                flex: 1 1 100px;
+              }
+            }
+          }
+        }
+      }
+      .qa-test-input {
+        flex: 0 0 100px;
+        padding: 10px 0;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        
+        textarea {
+          resize: none;
+          height: 100%;
+          word-break: break-all;
+        }
+      }
+      .qa-test-control {
+        flex: 0 0 $row-height;
+        line-height: $row-height;
+        text-align: right;
+      }
+    }
+
+    .qa-test-info {
+      width: 20%;
+      flex: 1 0 200px;
+      padding: 0 10px;
+      padding-bottom: 0px;
+
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      .qa-test-info-block {
+        flex: 1 1 100px;
+        border: 1px solid $page-header-color;
+
+        &:not(:first-child) {
+          margin-top: 10px;
+        }
+      }
+      .qa-test-info-content {
+        line-height: $row-height;
+        padding: 0 10px;
+      }
+    }
+  }
+  .title {
+    text-align: center;
+    line-height: $row-height;
+    background: $page-header-color;
+    color:white;
+  }
+}
+</style>

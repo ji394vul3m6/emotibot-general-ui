@@ -2,15 +2,11 @@
 <div id="page-menu">
   <div class="category" v-for="directory in menuPages" :key="directory.name">
     <div class="category-name row">
-      <div class="icon">
-        <div :class="directory.icon"></div>
-      </div>
+      <icon :icon-type="directory.icon"/>
       <div class="name">{{$t(directory.display)}}</div>
     </div>
     <div class="page row" v-for="page in directory.pages" :key="page.name" @click="toPage(page)">
-      <div class="icon">
-        <div :class="page.icon"></div>
-      </div>
+      <icon :icon-type="page.icon"/>
       <div class="name">{{$t(page.display)}}</div>
     </div>
   </div>
@@ -19,12 +15,16 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import Icon from '@/components/basic/Icon';
 
 export default {
   computed: {
     ...mapGetters([
       'menuPages',
     ]),
+  },
+  components: {
+    icon: Icon,
   },
   methods: {
     toPage(page) {
@@ -42,9 +42,10 @@ export default {
   left: 0;
   top: $page-header-height;
   width: $page-menu-width;
-  height: 100vh;
+  height: calc(100vh - #{$page-header-height});
   background: $page-menu-color;
   color: white;
+  @include auto-overflow();
 
   .category {
     box-sizing: border-box;

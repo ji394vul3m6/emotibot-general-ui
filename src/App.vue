@@ -58,14 +58,20 @@ export default {
       Object.keys(modules).forEach((moduleName) => {
         const pageModule = modules[moduleName];
         const modulePages = [];
+        if (pageModule.hidden) {
+          return;
+        }
         Object.keys(pageModule.pages).forEach((pageName) => {
           const page = pageModule.pages[pageName];
+          if (page.hidden) {
+            return;
+          }
           modulePages.push({
             path: page.path,
             name: page.displayNameKey,
             display: `pages.${pageModule.displayNameKey}.${page.displayNameKey}`,
             privCode: page.privCode,
-            icon: `${page.icon}_icon`,
+            icon: `${page.icon}`,
           });
         });
         pages.push({
@@ -73,19 +79,10 @@ export default {
           name: moduleName,
           display: `pages.${pageModule.displayNameKey}.module_name`,
           pages: modulePages,
-          icon: `${pageModule.icon}_icon`,
+          icon: `${pageModule.icon}`,
         });
       });
       that.setPageInfos(pages);
-      // that.$notify({ text: '123123123123123123123123123123123123', type: 'fail' });
-      // setTimeout(() => {
-      //   that.$notify({ text: '456' });
-      // }, 2000);
-
-      that.startLoading('test');
-      setTimeout(() => {
-        that.endLoading();
-      }, 10000);
     },
   },
   mounted() {

@@ -15,6 +15,7 @@ import messages from './i18n';
 import PopWindow from './plugins/PopWindow';
 import CustomNotification from './plugins/CustomNotification';
 import request from './plugins/request';
+import auth from './plugins/auth';
 import './plugins/Polyfill';
 
 Vue.config.productionTip = false;
@@ -25,6 +26,7 @@ Vue.use(CustomNotification, {
   delay: 4000,
 });
 Vue.use(request);
+Vue.use(auth);
 
 Vue.component('text-button', TextButton);
 Vue.component('search-input', SearchInput);
