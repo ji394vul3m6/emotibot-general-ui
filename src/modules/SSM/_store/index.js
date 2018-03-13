@@ -33,6 +33,7 @@ const actions = {
 const getters = {
   doQueryState: s => s.qalist.doQuery,
   searchCategoryID: s => s.qaQueryOptions.category_id,
+  curPage: s => s.qaQueryOptions.cur_page,
 };
 
 // A Vuex instance is created by combining the state, mutations, actions,

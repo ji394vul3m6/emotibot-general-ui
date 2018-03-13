@@ -266,7 +266,6 @@ export default {
       this.categoryShowed = false;
     },
     createCategoryMap() {
-      debugger;
       let queue = [];
       queue.push(this.categories);
       while (queue.length > 0) {

@@ -119,6 +119,7 @@ export default {
   @include iconType("white_logout");
   @include iconType("white_ssm");
   @include iconType("white_chat");
+  @include iconType("white_SQ");
 
   // robot icon should a little bit larger than other icons
   .white_robot_icon {

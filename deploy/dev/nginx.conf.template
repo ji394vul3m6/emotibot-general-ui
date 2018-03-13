@@ -90,6 +90,15 @@ http {
             proxy_pass http://172.17.0.1:8089;
         }
 
+        location /php/ {
+            rewrite \/php\/(.*) /$1 break;
+            proxy_set_header Host 172.17.0.1;
+            proxy_set_header X-Appid $auth_cookie;
+            proxy_set_header X-UserID $user_id;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_pass http://172.17.0.1:8089;
+        }
+
         location /api {
             proxy_set_header Authorization $auth_cookie;
             proxy_set_header X-Appid $auth_cookie;

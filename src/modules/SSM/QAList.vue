@@ -41,7 +41,7 @@ export default {
   path: 'qalist',
   privCode: 'qalist',
   displayNameKey: 'qalist',
-  icon: 'white_qalist',
+  icon: 'white_SQ',
   data() {
     return {
       requestLock: false,
@@ -55,6 +55,7 @@ export default {
     ...mapGetters([
       'doQueryState',
       'searchCategoryID',
+      'curPage',
     ]),
     doQuery() {
       if (this.doQueryState) {
@@ -85,7 +86,7 @@ export default {
     }).catch(this.handleError.bind(this));
   },
   updated() {
-    this.$refs.qaTable.setPageIndex(this.$store.state.qaQueryOptions.cur_page);
+    this.$refs.qaTable.setPageIndex(this.curPage);
   },
   beforeDestroy() {
     if (this.checkingTimer) {
@@ -239,7 +240,6 @@ export default {
       });
     },
     addQuestion() {
-      debugger;
       const that = this;
       this.$pop({
       // this.$root.$emit('showWindow', {

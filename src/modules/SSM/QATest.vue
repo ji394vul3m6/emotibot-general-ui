@@ -40,7 +40,7 @@
         <textarea v-model="userInput" v-on:keydown="checkKey"></textarea>
       </div>
       <div class="qa-test-control">
-        <text-button disabled main @click="sendText">{{ $t('qatest.submit') }}</text-button>
+        <text-button main @click="sendText">{{ $t('qatest.submit') }}</text-button>
       </div>
     </div>
     <div class="qa-test-info">

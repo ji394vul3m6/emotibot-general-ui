@@ -143,7 +143,7 @@ export default {
     });
   },
   queryQuestionDetail(options) {
-    const url = '/php/api/ApiKey/vip_custom_question/custom_question.php?cmd=detail_query&table_prefix=vipshop';
+    const url = '/php/api/ApiKey/vip_custom_question/custom_question.php?cmd=detail_query&table_prefix=cmbc';
     const encodedOptions = qs.stringify(options);
     return axios.post(url, encodedOptions).then((response) => {
       const data = response.data;
@@ -156,10 +156,10 @@ export default {
     return txt.value;
   },
   getCategories() {
-    const url = '/php/api/ApiKey/vip_custom_question/Category_tree_load.php?cmd=query&table_prefix=vipshop';
+    const url = '/php/api/ApiKey/vip_custom_question/Category_tree_load.php?cmd=query&table_prefix=cmbc';
     return axios.post(url, {
       cmd: 'query',
-      table_prefix: 'vipshop',
+      table_prefix: 'cmbc',
     }).then((response) => {
       // unescape html code here, but should do it in api
       const data = JSON.parse(this.decodeHtml(JSON.stringify(response.data)));
@@ -171,7 +171,7 @@ export default {
   },
   getContent(options) {
     // 1. request QAs from server
-    const url = '/php/api/ApiKey/vip_custom_question/custom_question.php?cmd=query&table_prefix=vipshop';
+    const url = '/php/api/ApiKey/vip_custom_question/custom_question.php?cmd=query&table_prefix=cmbc';
     const encodedOptions = qs.stringify(options);
     return axios.post(url, encodedOptions).then((response) => {
       cachedQuestions = {
@@ -204,28 +204,28 @@ export default {
   deleteCategory(params) {
     const url = '/php/api/ApiKey/vip_custom_question/Category_tree_load.php';
     params.cmd = 'delete';
-    params.table_prefix = 'vipshop';
+    params.table_prefix = 'cmbc';
     return axios.get(url, { params });
   },
   renameCategory(params) {
     const url = '/php/api/ApiKey/vip_custom_question/Category_tree_load.php';
     params.cmd = 'update';
-    params.table_prefix = 'vipshop';
+    params.table_prefix = 'cmbc';
     return axios.get(url, { params });
   },
   addCategory(params) {
     const url = '/php/api/ApiKey/vip_custom_question/Category_tree_load.php';
     params.cmd = 'create';
-    params.table_prefix = 'vipshop';
+    params.table_prefix = 'cmbc';
     return axios.get(url, { params });
   },
   deleteQuestion(options) {
-    const url = '/php/api/ApiKey/vip_custom_question/custom_question.php?cmd=delete&table_prefix=vipshop';
+    const url = '/php/api/ApiKey/vip_custom_question/custom_question.php?cmd=delete&table_prefix=cmbc';
     const encodedOptions = qs.stringify(options);
     return axios.post(url, encodedOptions);
   },
   deleteAnswer(options) {
-    const url = '/php/api/ApiKey/vip_custom_question/custom_question.php?cmd=update&table_prefix=vipshop';
+    const url = '/php/api/ApiKey/vip_custom_question/custom_question.php?cmd=update&table_prefix=cmbc';
     const encodedOptions = qs.stringify(options);
     return axios.post(url, encodedOptions);
   },
@@ -233,7 +233,7 @@ export default {
     const url = '/php/api/ApiKey/vip_custom_question/vip_download.php';
     const options = {
       cmd: 'download',
-      appid: 'vipshop',
+      appid: 'cmbc',
     };
     const encodedOptions = qs.stringify(options);
     return axios.post(url, encodedOptions).then((response) => {
@@ -245,7 +245,7 @@ export default {
     const url = '/php/api/ApiKey/vip_custom_question/vip_download.php';
     const options = {
       cmd: 'check',
-      appid: 'vipshop',
+      appid: 'cmbc',
     };
     const encodedOptions = qs.stringify(options);
     return axios.post(url, encodedOptions).then((response) => {
@@ -268,7 +268,7 @@ export default {
     const url = '/php/api/ApiKey/vip_custom_question/vip_download.php';
     const options = {
       cmd: 'create',
-      appid: 'vipshop',
+      appid: 'cmbc',
     };
     const encodedOptions = qs.stringify(options);
     return axios.post(url, encodedOptions).then((response) => {
@@ -277,7 +277,7 @@ export default {
     });
   },
   querySimilarQuestions(options) {
-    const url = '/php/api/ApiKey/vip_custom_question/custom_question.php?cmd=detail_similar_question&table_prefix=vipshop';
+    const url = '/php/api/ApiKey/vip_custom_question/custom_question.php?cmd=detail_similar_question&table_prefix=cmbc';
     const encodedOptions = qs.stringify(options);
     return axios.post(url, encodedOptions).then((response) => {
       const data = response.data;
@@ -285,7 +285,7 @@ export default {
     });
   },
   addSimilarQuestion(options) {
-    const url = '/php/api/ApiKey/vip_custom_question/custom_question.php?cmd=add_similar_question&table_prefix=vipshop';
+    const url = '/php/api/ApiKey/vip_custom_question/custom_question.php?cmd=add_similar_question&table_prefix=cmbc';
     const encodedOptions = qs.stringify(options);
     return axios.post(url, encodedOptions).then((response) => {
       const data = response.data;
@@ -293,7 +293,7 @@ export default {
     });
   },
   deleteSimilarQuestion(options) {
-    const url = '/php/api/ApiKey/vip_custom_question/custom_question.php?cmd=delete_similar_question&table_prefix=vipshop';
+    const url = '/php/api/ApiKey/vip_custom_question/custom_question.php?cmd=delete_similar_question&table_prefix=cmbc';
     const encodedOptions = qs.stringify(options);
     return axios.post(url, encodedOptions).then((response) => {
       const data = response.data;
@@ -301,17 +301,17 @@ export default {
     });
   },
   updateSimilarQuestion(options) {
-    const url = '/php/api/ApiKey/vip_custom_question/custom_question.php?cmd=update_similar_question&table_prefix=vipshop';
+    const url = '/php/api/ApiKey/vip_custom_question/custom_question.php?cmd=update_similar_question&table_prefix=cmbc';
     const encodedOptions = qs.stringify(options);
     return axios.post(url, encodedOptions);
   },
   updateQuestion(options) {
-    const url = '/php/api/ApiKey/vip_custom_question/custom_question.php?cmd=update&table_prefix=vipshop';
+    const url = '/php/api/ApiKey/vip_custom_question/custom_question.php?cmd=update&table_prefix=cmbc';
     const encodedOptions = qs.stringify(options);
     return axios.post(url, encodedOptions);
   },
   createQuestion(options) {
-    const url = '/php/api/ApiKey/vip_custom_question/custom_question.php?cmd=create&table_prefix=vipshop';
+    const url = '/php/api/ApiKey/vip_custom_question/custom_question.php?cmd=create&table_prefix=cmbc';
     const encodedOptions = qs.stringify(options);
     return axios.post(url, encodedOptions);
   },
@@ -319,7 +319,7 @@ export default {
     const url = '/php/api/ApiKey/vip_custom_question/vip_download.php';
     const options = {
       cmd: 'edit',
-      appid: 'vipshop',
+      appid: 'cmbc',
     };
     const encodedOptions = qs.stringify(options);
     return axios.post(url, encodedOptions);
