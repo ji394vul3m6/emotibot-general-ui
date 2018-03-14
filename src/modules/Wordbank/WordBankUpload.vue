@@ -67,7 +67,7 @@ export default {
   path: 'wordbank-upload',
   privCode: 'wordbank_upload',
   displayNameKey: 'wordbank_upload',
-  icon: 'white_folder',
+  icon: 'white_wordbank_upload',
   components: {
     TextButton,
   },
