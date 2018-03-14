@@ -5,7 +5,7 @@
         <div class="cell">
           <div class="answer-title-group table">
             <div class="row">
-              <div id="tags" class="cell">{{ tags }}</div>
+              <!-- <div id="tags" class="cell">{{ tags }}</div> -->
               <div id="standard_a" class="cell">{{ standard_a }}</div>
               <div id="commands" class="cell">{{ commands }}</div>
               <div id="dynamic_menu" class="cell">{{ dynamic_menu }}</div>

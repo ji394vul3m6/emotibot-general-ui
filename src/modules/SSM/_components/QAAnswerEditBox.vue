@@ -4,10 +4,10 @@
       <div class="center-align" style="color:red;">*</div>
       <div class="center-align margin-left">{{ $t('general.default') }}{{ $t('qalist.standard_a') }} </div>
     </div>
-    <div class="qa-dimension clickable" @click="showDimensionSelector">
+    <!-- <div class="qa-dimension clickable" @click="showDimensionSelector">
       <div>{{ $t('qalist.tags') }}</div>
       <div class="fa fa-chevron-down"></div>
-    </div>
+    </div> -->
     <div class="margin-top flex" v-if="selectedDimensions.length > 0" style="flex-wrap: wrap;">
       <template v-for="(value, index) in selectedDimensions">
         <span class="filter-item-text margin-left margin-top" :key="index">

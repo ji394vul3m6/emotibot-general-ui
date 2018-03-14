@@ -1,0 +1,4 @@
+FROM node:latest
+
+ADD package.json build/package.json
+RUN cd build && npm install

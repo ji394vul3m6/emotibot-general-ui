@@ -50,7 +50,7 @@ export default {
   .category {
     box-sizing: border-box;
     width: 100%;
-    padding: 0 5px;
+    padding: 0 10%;
     line-height: $page-menu-item-height;
     padding-top: $page-menu-category-padding;
     .name {

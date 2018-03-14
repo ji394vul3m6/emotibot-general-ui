@@ -98,6 +98,10 @@ export default {
 @import "styles/reset.scss";
 @import "styles/variable";
 @import "styles/main.scss";
+@import "styles/editors.scss";
+
+@import './assets/styles/lib/font-awesome.css';
+
 #app-page > div.loading {
   @media screen and (max-width: $break-small) {
     left: 0;

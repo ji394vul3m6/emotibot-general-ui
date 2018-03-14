@@ -3,6 +3,7 @@ import editor from './editor';
 import i18nZhCn from './i18n/zh-cn';
 import i18nEnUs from './i18n/en-us';
 import mixin from './util/mixin';
+import '../../assets/styles/lib/font-awesome.css';
 
 /**
  * Vue html5 Editor

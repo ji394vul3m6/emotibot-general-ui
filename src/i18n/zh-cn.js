@@ -214,6 +214,7 @@ export default {
     },
   },
   general: {
+    all: '全部',
     add: '新增',
     actions: '操作',
     edit: '编辑',
