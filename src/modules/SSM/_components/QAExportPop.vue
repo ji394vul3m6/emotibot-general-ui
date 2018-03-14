@@ -16,6 +16,7 @@
 
 <script>
 // import i18nUtil from '@/utils/i18nUtil';
+import { mapGetters } from 'vuex';
 import format from '@/utils/js/format';
 import QAapi from '../_api/qalist';
 
@@ -67,13 +68,24 @@ export default {
     // that.i18n = i18nUtil.getLocaleMsgs(that.$i18n);
     that.setUpMsg();
 
-    const options = this.$store.state.qaQueryOptions;
+    const options = this.$store.qaQueryOptions;
 
     QAapi.exportQuestions(options).then((data) => {
-      this.pollingState(data.stateId);
+      that.pollingState(data.stateId);
+    }).catch((err) => {
+      this.$emit('validateSuccess', {
+        status: 'failed',
+      });
+      that.$notify({
+        text: `${err}`,
+        type: 'fail',
+      });
     });
   },
   computed: {
+    ...mapGetters([
+      'qaQueryOptions',
+    ]),
     showTimeStr() {
       return format.datetimeToString(this.showTime.toString());
     },

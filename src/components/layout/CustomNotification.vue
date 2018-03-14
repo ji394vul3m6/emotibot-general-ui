@@ -1,15 +1,21 @@
 <template>
   <transition-group tag="div" name="fade" class="notifications">
     <div v-for="notification in notifications" class="notification" :key="notification.id" :class="notification.type">
-      <div class="icon"><div :class="`white_${notification.type}_icon`"></div></div>
+      <!-- <div class="icon"><div :class="`white_${notification.type}_icon`"></div></div> -->
+      <icon :icon-type="`white_${notification.type}`"></icon>
       <label>{{ notification.msg }}</label>
     </div>
   </transition-group>
 </template>
 
 <script>
+import Icon from '../basic/Icon';
+
 export default {
   name: 'notification',
+  components: {
+    icon: Icon,
+  },
   data() {
     return {
       msg: '',

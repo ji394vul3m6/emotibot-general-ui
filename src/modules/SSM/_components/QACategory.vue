@@ -94,15 +94,16 @@ export default {
       return name.indexOf(this.filter) > -1;
     },
     showWarning(msg) {
-      const options = {
-        // component: CheckPop,
-        buttons: ['ok'],
-        data: {
-          msg,
-        },
-      };
+      // const options = {
+      //   // component: CheckPop,
+      //   buttons: ['ok'],
+      //   data: {
+      //     msg,
+      //   },
+      // };
       // this.$root.$emit('showWindow', options);
-      this.$popCheck(options);
+      this.$notify({ text: msg, type: 'fail' });
+      // this.$popCheck(options);
     },
     showUpdateFailedWarning() {
       const that = this;
