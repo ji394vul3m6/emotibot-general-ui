@@ -311,7 +311,7 @@ export default {
           // continue to go next parent
         }
       } else {
-        while (true) {
+        while (!forceBreak) {
           ret = getter.call(this, checkContainer);
           // if get url from current node, exit
           if (ret) {
@@ -343,9 +343,6 @@ export default {
               }
               // if node has no sibling, continue to go next parent
             }
-          }
-          if (forceBreak) {
-            break;
           }
         }
       }

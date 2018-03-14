@@ -155,7 +155,7 @@ export const removeFontStyle = (start, end) => {
   }
   let checkContainer = start;
   const forceBreak = false;
-  while (true) {
+  while (!forceBreak) {
     if (checkContainer.style && checkContainer.style.fontSize) {
       checkContainer.style.fontSize = '';
     }
@@ -182,9 +182,6 @@ export const removeFontStyle = (start, end) => {
         }
         // if node has no sibling, continue to go next parent
       }
-    }
-    if (forceBreak) {
-      break;
     }
   }
 };
