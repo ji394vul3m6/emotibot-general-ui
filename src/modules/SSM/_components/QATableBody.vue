@@ -64,6 +64,9 @@
       </div>
       
     </div>
+    <div class="empty-row" v-if="!tableData || tableData.length === 0">
+      {{ $t('qalist.no_question') }}
+    </div>
   </div>
 </template>
 
@@ -890,6 +893,15 @@ $fixed-height: 142px;
     .row {
         display:table-row;
         max-height: 50px;
+    }
+    .empty-row {
+      display: table-cell;
+      text-align: center;
+      height: 30px;
+      line-height: 30px;
+      font-size: 14px;
+      border: 1px solid black;
+      border-top: none;
     }
 
     .cell {

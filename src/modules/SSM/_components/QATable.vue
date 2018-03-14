@@ -1,12 +1,14 @@
 <template>
-  <div id="qa-table-container" style="width:100%; height:calc(100% - 30px);">
+  <div id="qa-table-container" style="width:100%; height:100%;">
     <qa-table-header :height="30"></qa-table-header>
     <div id="qa-table-body-container" :class="{'ie-scroll': useIE}">
       <qa-table-body ref="tableBody" @resetAllSelect="resetAllSelect" :tableData="retrieveContent"></qa-table-body>
     </div>
-    <input type="checkbox" class="all-select" @change="toggleAllSelect" v-model="allSelected" style="display: inline-block;">
-    <label class="all-select"> {{$t('qalist.page_selected')}} </label>
-    <v-pagination :total="totalRow" :pageIndex="pageWording" :pageSizeOption="[10]" :layout="['total', 'prev', 'pager', 'next', 'jumper']" v-on:page-change="handlePageChange"></v-pagination>
+    <div v-if="retrieveContent && retrieveContent.length > 10" class="navigation-bar">
+      <input type="checkbox" class="all-select" @change="toggleAllSelect" v-model="allSelected" style="display: inline-block;">
+      <label class="all-select"> {{$t('qalist.page_selected')}} </label>
+      <v-pagination :total="totalRow" :pageIndex="pageWording" :pageSizeOption="[10]" :layout="['total', 'prev', 'pager', 'next', 'jumper']" v-on:page-change="handlePageChange"></v-pagination>
+    </div>
   </div>
 </template>
 
@@ -102,7 +104,6 @@ $fill-parent: 100%;
   width: 100%;
   overflow-y: hidden; 
   overflow-x: hidden;
-  max-height: calc(100% - 80px);
 
   &.ie-scroll {
     overflow-y: auto;
@@ -123,5 +124,10 @@ $fill-parent: 100%;
 
 div {
   font-size: 12px;
+}
+.navigation-bar {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
 }
 </style>

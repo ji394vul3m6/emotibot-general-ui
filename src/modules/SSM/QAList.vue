@@ -1,8 +1,8 @@
 <template>
-  <div id="qa-list-page" class='page'>
-    <div style="height: 100%; min-width: 1235px; min-height: 900px;">
-      <qa-selectors ref="selector"></qa-selectors>
-      <div id="qalist-display">
+  <div id="qa-list-page">
+    <div class="qa-list-page-content" style="height: 100%; min-width: 1235px;">
+      <qa-selectors class="qalist-query-operations" ref="selector"></qa-selectors>
+      <div class="qalist-display">
         <div id="qa-category">
       	  <qa-category 
             v-on:categoryChanged="handleCategoryChanged" 
@@ -305,6 +305,11 @@ export default {
       }).catch(this.handleError.bind(this));
     },
   },
+  beforeRouteLeave(to, from, next) {
+    // hide all context menu before leave this page;
+    this.$hideContextMenu();
+    next();
+  },
 };
 </script>
 
@@ -345,7 +350,7 @@ $fill-parent: 100%;
 
 #qa-category {
   width: 200px;
-  height: $fill-parent;
+  // height: $fill-parent;
   margin-right: 30px;
 }
   
@@ -355,4 +360,17 @@ $fill-parent: 100%;
   display: inline-block;
 }
 
+.qa-list-page-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  .qalist-query-operations {
+    flex: 0 0 auto;
+  }
+  .qalist-display {
+    flex: 1;
+    display: flex;
+    align-items: stretch;
+  }
+}
 </style>

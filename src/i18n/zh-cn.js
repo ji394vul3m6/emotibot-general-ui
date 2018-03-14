@@ -71,6 +71,7 @@ export default {
     token: '分词',
   },
   qalist: {
+    no_question: '无标准问题',
     header_related_question: '关联问题',
     validated_duration: '生效时间',
     to: '至',
