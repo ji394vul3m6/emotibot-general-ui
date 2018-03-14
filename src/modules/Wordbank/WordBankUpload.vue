@@ -120,7 +120,6 @@ export default {
         that.popErrorWindow(that.$t('error_msg.upload_file_size_error'));
       } else {
         that.uploadFile(file).then((data) => {
-          debugger;
           const res = data.data;
           if (res.status === 0) {
             that.popErrorWindow(that.$t('wordbank.wait_for_result'));

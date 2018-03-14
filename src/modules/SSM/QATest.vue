@@ -72,8 +72,8 @@
 </template>
 
 <script>
-import api from './_api/qatest';
 import TextButton from '@/components/basic/TextButton';
+import api from './_api/qatest';
 
 export default {
   path: 'qatest',
