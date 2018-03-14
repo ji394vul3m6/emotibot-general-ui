@@ -83,6 +83,8 @@ export default {
   flex-direction: column;
   max-height: 100%;
   height: 100%;
+  line-height: $default-line-height;
+
   .flex-table-header {
     background: $table-header-background;
   }

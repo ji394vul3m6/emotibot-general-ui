@@ -170,11 +170,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import 'styles/variable.scss';
+
 .content {
   height: 100%;
   overflow-y: auto;
   padding-bottom: 10px;
   box-sizing: border-box;
+  line-height: $default-line-height;
 
   display: flex;
   flex-direction: column;
