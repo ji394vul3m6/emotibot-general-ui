@@ -187,7 +187,6 @@ export default {
     });
   },
   filterQuestions(params) {
-    debugger;
     const url = '/api/v1/faq/questions/filter';
     return axios.get(url, { params }).then((response) => {
       cachedQuestions = {

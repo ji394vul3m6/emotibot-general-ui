@@ -189,6 +189,19 @@ export default {
     import_fail_msg: '数据有误，请导出文档修改',
     export_file: '导出文档',
     question_exist: '已存在相同标准问题',
+    answer_command: {
+      no_order: '无指令',
+      order_track: '物流信息查询',
+      order_info: '订单信息查询',
+      scene_id: '场景标识',
+      cash: '提现',
+      order_cancel: '取消订单',
+      apply_for_return: '退货申请',
+      exchange_goods: '换货申请',
+      vip_finance: '唯品金融',
+      query_refund: '查询退款',
+      shopping: '购物',
+    },
   },
   pages: {
     null: '',
@@ -214,6 +227,10 @@ export default {
     },
   },
   general: {
+    yes: '是',
+    no: '否',
+    operation: '操作',
+    search: '搜寻',
     all: '全部',
     add: '新增',
     actions: '操作',
@@ -279,7 +296,9 @@ export default {
     client_error: '呼叫端口错误',
     server_error: '伺服器错误',
     request_fail: '请求失败',
+
     success: '设定成功',
+    time_format_error: '输入不符合规范，请重新输入',
   },
   http_status: {
     default: '伺服器错误',

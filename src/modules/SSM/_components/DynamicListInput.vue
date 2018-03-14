@@ -65,3 +65,84 @@ export default {
   },
 };
 </script>
+<style lang="scss" scoped>
+$row-height: 30px;
+.dynamic-list-input {
+  .dynamic-input {
+    height: $row-height;
+    line-height: $row-height;
+    width: 100%;
+    white-space: pre-wrap;
+    overflow: hidden;
+    white-space: nowrap;
+
+    input {
+      font-size: 16px;
+      position: relative;
+      padding: 5px;
+    }
+
+    .dynamic-title {
+      vertical-align: middle;
+      margin-right: 20px;
+    }
+
+    .dynamic-button {
+      display: inline;
+      text-align: center;
+      vertical-align: middle;
+      user-select: none;
+      cursor: pointer;
+      height: 1em;
+      width: 1em;
+
+      &.icon {
+        position: relative;
+        display: inline-block;
+
+        div {
+          display: inline;
+          position: absolute;
+        }
+        span {
+          display: block;
+          width: 100%;
+          height: 100%;
+        }
+        .row {
+          top: calc(0.5em - 1px);
+          width: 18px;
+          height: 2px;
+          background-color: black;
+          display: block;
+        }
+        .vertical {
+          top: calc(0.5em - 1px);
+          width: 18px;
+          height: 2px;
+          background-color: black;
+          display: block;
+          transform: rotate(90deg);
+        }
+        
+        &.disabled{
+          cursor: not-allowed;
+          span{
+            pointer-events: none;
+          }
+          .row{
+            background-color: #d7dde4;
+          }
+          .vertical{
+            background-color: #d7dde4;
+          }
+        }
+      }
+    }
+
+    input {
+      width: 380px;
+    }
+  }
+}
+</style>

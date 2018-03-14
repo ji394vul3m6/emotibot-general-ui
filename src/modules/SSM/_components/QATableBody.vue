@@ -148,7 +148,8 @@ export default {
           },
         },
       };
-      this.$root.$emit('showWindow', options);
+      // this.$root.$emit('showWindow', options);
+      this.$pop(options);
     },
     removeSecond(timeStr) {
       return (timeStr) ? timeStr.substring(0, timeStr.length - 3) : '';
@@ -307,7 +308,8 @@ export default {
           },
         },
       };
-      this.$root.$emit('showWindow', options);
+      // this.$root.$emit('showWindow', options);
+      this.$pop(options);
     },
     updateAnswerCommand(row, answer, data) {
       const that = this;
@@ -344,7 +346,7 @@ export default {
         return;
       }
       const msg = this.$i18n.messages[this.$i18n.locale];
-      const commands = AnswerCmdList.getLocaleData(msg);
+      const commands = AnswerCmdList.getLocaleData(msg.qalist);
 
       const options = {
         component: QACommandPop,
@@ -359,7 +361,8 @@ export default {
           },
         },
       };
-      this.$root.$emit('showWindow', options);
+      this.$pop(options);
+      // this.$root.$emit('showWindow', options);
     },
     getSelectedQuestions() {
       return this.selectedQuestions;
@@ -405,7 +408,8 @@ export default {
       const okMsg = that.$t('general.save');
       const cancelMsg = that.$t('general.cancel');
       QAapi.querySimilarQuestions(options).then((data) => {
-        this.$root.$emit('showWindow', {
+        this.$pop({
+        // this.$root.$emit('showWindow', {
           component: QASimilarQuestionPop,
           ok_msg: okMsg,
           cancel_msg: cancelMsg,
@@ -575,7 +579,8 @@ export default {
             },
             validate: true,
           };
-          this.$root.$emit('showWindow', options);
+          // this.$root.$emit('showWindow', options);
+          this.$pop(options);
         });
       });
     },
@@ -665,7 +670,8 @@ export default {
       } else {
         options.data.selected = 'not_indicate';
       }
-      this.$root.$emit('showWindow', options);
+      // this.$root.$emit('showWindow', options);
+      this.$pop(options);
     },
     updateStartEndTime(row, answer, data) {
       answer.start_time = PickerUtil.toTimeString(data.picker);
@@ -727,7 +733,8 @@ export default {
         },
         validate: true,
       };
-      this.$root.$emit('showWindow', options);
+      // this.$root.$emit('showWindow', options);
+      this.$pop(options);
     },
     handleRightClick(row, $event) {
       // show context menu

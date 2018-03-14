@@ -191,7 +191,8 @@ export default {
   },
 };
 </script>
-<style>
+<style lang="scss" scoped>
+$row-height: 30px;
 #relatedQ_and_dymanicMenu_container{
   width: 520px;
 }
@@ -241,5 +242,42 @@ export default {
 
 .category-value.disabledTip:hover .disabled-tip-text {
     visibility: visible;
+}
+.command-selector {
+  min-width: 500px;
+  .category-row {
+    display: flex;
+    line-height: $row-height;
+    .category-title {
+      min-width: 80px;
+    }
+    .category-all-check {
+      min-width: 120px;
+    }
+    .category-value-container {
+      display: inline-block;
+      .category-value {
+        display: inline-block;
+        margin: 0 10px;
+      }
+    }
+    
+    input {
+      display: none;
+
+      &:checked + label {
+        border-radius: 5px;
+        background: white;
+        color: #0099FF;
+        border: 1px solid #0099FF;
+      }
+
+      & + label {
+        padding: 2px 5px;
+        cursor: pointer;
+        user-select: none;
+      }
+    }
+  }
 }
 </style>
