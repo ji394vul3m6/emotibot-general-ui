@@ -31,7 +31,6 @@ COPY docker/conf/nginx.conf /etc/nginx/nginx.conf
 COPY docker/conf/www.conf /etc/php5/fpm.d/www.conf
 COPY docker/conf/php.ini /etc/php5/php.ini
 
-COPY --from=vip-auth /usr/local/bin /vipauth
 COPY --from=api-server /usr/local/share/resources /usr/local/share/resources
 
 COPY --from=houta-code /var/www/html /build/dist
@@ -39,7 +38,7 @@ COPY --from=api-server /usr/local/bin /api
 COPY --from=build-env /build/dist/index.html /build/dist/
 COPY --from=build-env /build/dist/login.html /build/dist/
 COPY --from=build-env /build/dist/static /build/dist/static
-# COPY --from=authentication /usr/local/bin /auth
+COPY --from=authentication /usr/local/bin /auth
 WORKDIR /build/dist
 
 COPY docker/file_init.sh file_init.sh

@@ -8,13 +8,10 @@ php-fpm -R
 crond -f &
 
 # start authentication 
-# /auth/authentication &
+/auth/authentication &
 
 # start api
 cd /api && ./entrypoint.sh env.template &
-
-# start vip auth adapter
-cd /vipauth && ./entrypoint.sh env.template &
 
 ./file_init.sh
 
