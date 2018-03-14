@@ -156,13 +156,21 @@ export default {
     return txt.value;
   },
   getCategories() {
-    const url = '/php/api/ApiKey/vip_custom_question/Category_tree_load.php?cmd=query&table_prefix=csbot';
-    return axios.post(url, {
-      cmd: 'query',
-      table_prefix: 'csbot',
-    }).then((response) => {
+    const url = '/api/v1/faq/categories';
+    return axios.get(url).then((response) => {
       // unescape html code here, but should do it in api
-      const data = JSON.parse(this.decodeHtml(JSON.stringify(response.data)));
+      // const data = JSON.parse(this.decodeHtml(JSON.stringify(response.data)));
+      const data = response.data;
+      const sortChildren = (cat) => {
+        if (cat.children) {
+          cat.children.sort((a, b) => a.id > b.id);
+          cat.children.forEach((child) => {
+            sortChildren(child);
+          });
+        }
+      };
+      data.sort((a, b) => a.id > b.id);
+      sortChildren(data);
       const tree = { children: data };
       return tree;
     }).catch((error) => {
@@ -202,22 +210,20 @@ export default {
     });
   },
   deleteCategory(params) {
-    const url = '/php/api/ApiKey/vip_custom_question/Category_tree_load.php';
-    params.cmd = 'delete';
-    params.table_prefix = 'csbot';
-    return axios.get(url, { params });
+    const url = `/api/v1/faq/category/${params.categoryid}`;
+    return axios.delete(url);
   },
   renameCategory(params) {
-    const url = '/php/api/ApiKey/vip_custom_question/Category_tree_load.php';
-    params.cmd = 'update';
-    params.table_prefix = 'csbot';
-    return axios.get(url, { params });
+    const url = `/api/v1/faq/category/${params.categoryid}`;
+    // params.cmd = 'update';
+    // params.table_prefix = 'csbot';
+    const encodedParams = qs.stringify(params);
+    return axios.post(url, encodedParams);
   },
   addCategory(params) {
-    const url = '/php/api/ApiKey/vip_custom_question/Category_tree_load.php';
-    params.cmd = 'create';
-    params.table_prefix = 'csbot';
-    return axios.get(url, { params });
+    const url = '/api/v1/faq/category';
+    const encodedParams = qs.stringify(params);
+    return axios.put(url, encodedParams).then(data => data.id);
   },
   deleteQuestion(options) {
     const url = '/php/api/ApiKey/vip_custom_question/custom_question.php?cmd=delete&table_prefix=csbot';
