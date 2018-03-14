@@ -1,6 +1,6 @@
 #!/bin/bash
 REPO=docker-reg.emotibot.com.cn:55688
-CONTAINER=vipshop-admin
+CONTAINER=admin-ui
 LAST_RELEASE_TAG="20171208-e04c85e"
 DATE=`date +%Y%m%d`
 GIT_HEAD="$(git rev-parse --short HEAD)"

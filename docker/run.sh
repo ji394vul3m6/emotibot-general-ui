@@ -1,6 +1,6 @@
 #!/bin/bash
 REPO=docker-reg.emotibot.com.cn:55688
-CONTAINER=vipshop-admin
+CONTAINER=admin-ui
 
 TAG=$2
 if [ "$TAG" == "" ]; then
