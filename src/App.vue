@@ -13,6 +13,7 @@
     </div>
     <pop-windows></pop-windows>
     <notification></notification>
+    <context-menu></context-menu>
   </div>
 </template>
 

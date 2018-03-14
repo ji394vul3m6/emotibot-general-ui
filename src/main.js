@@ -13,6 +13,7 @@ import router from './router';
 import store from './store';
 import messages from './i18n';
 import PopWindow from './plugins/PopWindow';
+import ContextMenu from './plugins/ContextMenu';
 import CustomNotification from './plugins/CustomNotification';
 import request from './plugins/request';
 import auth from './plugins/auth';
@@ -22,6 +23,7 @@ Vue.config.productionTip = false;
 Vue.use(VueCookie);
 Vue.use(VueI18n);
 Vue.use(PopWindow);
+Vue.use(ContextMenu);
 Vue.use(CustomNotification, {
   delay: 4000,
 });
@@ -35,7 +37,6 @@ const i18n = new VueI18n({
   locale: 'zh-cn',
   messages,
 });
-
 
 /* eslint-disable no-new */
 new Vue({
