@@ -2,7 +2,8 @@
   <div id="qa-batch-import">
     <div id="upload-title"> {{ $t('qalist.select_import_file') }}</div>
     <div class="row">
-      <div @click="showUploadFile" id="preview-button" class="text-button"> {{ $t('qalist.preview') }}</div>
+      <text-button @click="showUploadFile" width="80px" >{{ $t('qalist.preview') }}</text-button>
+      <!-- <div @click="showUploadFile" id="preview-button" class="text-button"> {{ $t('qalist.preview') }}</div> -->
       <input id="qa-file-inpput" style="display:none" type="file" @change="onFileChange">
       <div v-if="!selected" class="text margin"> {{ $t('qalist.file_not_select') }} </div>
       <div v-else class="text" style="max-width: 350px;"> {{ filename }}</div>
@@ -12,9 +13,12 @@
       <label for="two" class="text"> {{ $t('qalist.alpha_update') }} </label>
     </div>
     <div class="row">
-      <div @click="downloadTemplate(template)" class="text-button download-button"> {{ $t('qalist.download_template') }} </div>
-      <div @click="download(lastTime)" class="text-button download-button margin" v-if="lastTime"> {{ lastTimeMsg }} </div>
-      <div @click="download(lastTwice)" class="text-button download-button margin" v-if="lastTwice"> {{ lastTwiceMsg }} </div>
+      <text-button @click="downloadTemplate(template)">{{ $t('qalist.download_template') }}</text-button>
+      <text-button @click="download(lastTime)" v-if="lastTime">{{ lastTimeMsg }}</text-button>
+      <text-button @click="download(lastTwice)" v-if="lastTwice">{{ lastTwiceMsg }}</text-button>
+      <!-- <div @click="downloadTemplate(template)" class="text-button download-button"> {{ $t('qalist.download_template') }} </div> -->
+      <!-- <div @click="download(lastTime)" class="text-button download-button margin" v-if="lastTime"> {{ lastTimeMsg }} </div>
+      <div @click="download(lastTwice)" class="text-button download-button margin" v-if="lastTwice"> {{ lastTwiceMsg }} </div> -->
     </div>
   </div>
 </template>

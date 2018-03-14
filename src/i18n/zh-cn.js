@@ -249,6 +249,7 @@ export default {
     save: '保存',
     default: '默认',
     indicate: '指定',
+    force_cancel: '强制取消',
   },
   dimension: {
     categories: {

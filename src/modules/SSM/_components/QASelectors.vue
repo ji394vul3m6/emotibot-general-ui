@@ -237,7 +237,8 @@ export default {
         cancel_msg: that.$t('general.force_cancel'),
         validate: true,
       };
-      this.$root.$emit('showWindow', options);
+      // this.$root.$emit('showWindow', options);
+      this.$pop(options);
     },
     popEditor() {
       if (!this.canCreate) {
@@ -328,7 +329,8 @@ export default {
       if (!this.canImport) {
         return;
       }
-      this.$root.$emit('showWindow', {
+      this.$pop({
+      // this.$root.$emit('showWindow', {
         component: ImportPop,
         data: {
           file: undefined,
@@ -397,7 +399,8 @@ export default {
     },
     handleDimensionClick() {
       const originCategories = JSON.parse(JSON.stringify(this.category.categories));
-      this.$root.$emit('showWindow', {
+      this.$pop({
+      // this.$root.$emit('showWindow', {
         component: DimensionSelector,
         data: this.category.categories,
         callback: {
@@ -432,7 +435,8 @@ export default {
     },
     handleCommandClick() {
       const originCommands = JSON.parse(JSON.stringify(this.commands));
-      this.$root.$emit('showWindow', {
+      this.$pop({
+      // this.$root.$emit('showWindow', {
         component: CommandSelector,
         data: this.commands,
         callback: {
