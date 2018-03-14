@@ -38,6 +38,15 @@ const i18n = new VueI18n({
   messages,
 });
 
+router.beforeEach((to, from, next) => {
+  const index = document.cookie.search(/appid=[a-zA-Z0-9]+(;.+)?$/);
+  if (index < 0) {
+    window.location = '/login.html';
+  } else {
+    next();
+  }
+});
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

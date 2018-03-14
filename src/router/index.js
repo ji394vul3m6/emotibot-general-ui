@@ -4,7 +4,12 @@ import modules from '@/modules';
 
 Vue.use(Router);
 
-const routes = [];
+const routes = [
+  {
+    path: '/',
+    redirect: '/statistic-dash',
+  },
+];
 Object.keys(modules).forEach((moduleName) => {
   const pageModule = modules[moduleName];
   Object.keys(pageModule.pages).forEach((pageName) => {

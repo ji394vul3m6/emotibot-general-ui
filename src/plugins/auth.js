@@ -6,7 +6,8 @@ import 'babel-polyfill';
 const LOGIN_PATH = '/auth/v1/user/login';
 const LIST_PRIV_PATH = '/admin/v1/privileges';
 // const LIST_PRIV_PATH = '/cauth/v1/cauth/privileges';
-const USER_PRIV_PATH = '/cauth/v1/cauth/user';
+// const USER_PRIV_PATH = '/cauth/v1/cauth/user';
+const USER_PRIV_PATH = '/auth/v1/user';
 
 function apiPrivConverter(apiPriv, privileges) {
   const newPriv = {};
@@ -49,7 +50,7 @@ function getPrivilegeList() {
   const that = this;
   const appid = that.$cookie.get('appid');
 
-  return axios.get(LIST_PRIV_PATH, {
+  return that.$reqGet(`${LIST_PRIV_PATH}a`, {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
       Authorization: appid,

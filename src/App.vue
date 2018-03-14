@@ -87,8 +87,8 @@ export default {
     },
   },
   mounted() {
-    privilegeAPI.getPrivileges().then((privileges) => {
-      this.setPrivilegeList(privileges);
+    this.$getPrivilegeList().then((privileges) => {
+      this.setPrivilegeList(privileges.result);
     });
     this.setupPages();
   },

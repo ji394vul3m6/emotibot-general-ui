@@ -81,6 +81,7 @@ export default {
   display: flex;
   label {
     margin-top: 1px;
+    line-height: $default-line-height;
   }
 
   &.success {

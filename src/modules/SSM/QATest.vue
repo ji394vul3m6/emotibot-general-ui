@@ -113,32 +113,32 @@ export default {
       const that = this;
 
       if (that.userInput.trim().length <= 0) {
-        that.$popError(that.i18n.error_msg.input_empty);
+        that.$popError(that.$t('error_msg.input_empty'));
         return;
       }
       that.appendChat(that.userInput);
 
       const filter = {};
-      if (this.$refs.filters) {
-        this.$refs.filters.forEach((item) => {
+      if (that.$refs.filters) {
+        that.$refs.filters.forEach((item) => {
           filter[item.dataset.key] = item.dataset.val;
         });
       }
 
-      api.QATest(that.userInput, filter).then((data) => {
+      that.QATest(that.userInput, filter).then((data) => {
         const res = data.data;
         if (res.status === 0 && res.result.answers && res.result.answers.length > 0) {
           res.result.answers.forEach((answer) => {
             that.appendChat(answer, 'robot');
           });
-          this.$nextTick(this.scrollToBottom);
+          that.$nextTick(that.scrollToBottom);
 
           that.tokens = res.result.tokens.join(', ');
-          that.emotion = res.result.emotion || that.i18n.qatest.unknown;
-          that.intent = res.result.intent || that.i18n.qatest.unknown;
+          that.emotion = res.result.emotion || that.$t('qatest.unknown');
+          that.intent = res.result.intent || that.$t('qatest.unknown');
           that.matchResult = res.result.similar_question || [];
         } else {
-          that.$popError(that.i18n.error_msg.server_error, res.message);
+          that.$popError(that.$t('error_msg.server_error'), res.message);
         }
       }, () => {
         // general.handleAPIError(that, err).catch((value) => {
