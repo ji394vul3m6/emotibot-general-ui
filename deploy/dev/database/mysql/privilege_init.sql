@@ -55,11 +55,11 @@ INSERT INTO `privilege_list` (`privilege_id`, `privilege_name`, `cmd_list`) VALU
 (12, 'role-manage', 'edit');
 
 INSERT INTO `enterprise_list` (`enterprise_id`, `enterprise_name`, `created_time`, `industry`, `phone_number`, `address`, `people_numbers`, `app_id`) VALUES
-('a3121bb5cdac2990dbd59a3fa7dc0bc4', 'CMBC', '2017-10-17 08:55:38', '电商', '0000000000', 'cmbc', 50, 'cmbc');
+('a3121bb5cdac2990dbd59a3fa7dc0bc4', 'CSBOT', '2017-10-17 08:55:38', '电商', '0000000000', 'CSBOT', 50, 'CSBOT');
 INSERT INTO `appid_list` (`app_id`, `created_time`, `api_cnt`, `expiration_time`, `analysis_time`, `activation`) VALUES
-('cmbc', '2017-10-17 08:55:38', 1000, '2017-07-25 20:10:00', 100000, 1);
+('csbot', '2017-10-17 08:55:38', 1000, '2017-07-25 20:10:00', 100000, 1);
 INSERT INTO `user_list` (`user_id`, `user_name`, `user_type`, `password`, `role_id`, `email`, `enterprise_id`) VALUES
-('787a1b57da75fa43bacb49339bcd3b25', 'cmbcadmin', 0, '8579350ce43178049c13448a3f73655e', NULL, 'cmbc@cmbc.com', 'a3121bb5cdac2990dbd59a3fa7dc0bc4');
+('787a1b57da75fa43bacb49339bcd3b25', 'csbotadmin', 0, 'ac04367d3155bb651df2e4220bdb8303', NULL, 'csbot@emotibot.com', 'a3121bb5cdac2990dbd59a3fa7dc0bc4');
 
 COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
