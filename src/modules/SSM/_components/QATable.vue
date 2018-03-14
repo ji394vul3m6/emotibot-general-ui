@@ -130,4 +130,8 @@ div {
   align-items: center;
   flex: 0 0 auto;
 }
+#qa-table-container {
+  display: flex;
+  flex-direction: column;
+}
 </style>
