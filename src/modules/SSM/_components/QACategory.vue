@@ -22,6 +22,7 @@
 
 <script>
 import Vue from 'vue';
+import { mapGetters } from 'vuex';
 // import auth from '@/auth';
 // import i18nutils from '@/utils/i18nUtil';
 // import CheckPop from '@/components/popForm/CheckPop';
@@ -230,13 +231,9 @@ export default {
       return idStr;
     },
     deleteCategory(category) {
-      const childenIds = [];
-      this.getChildren(category.node, childenIds);
-      const ids = this.getDeletedIdStr(childenIds);
-
       this.$emit('categoryChanged');
       const param = {
-        categoryid: ids,
+        categoryid: category.node.id,
         cid: category.parent,
       };
       QAapi.deleteCategory(param)
@@ -259,7 +256,7 @@ export default {
         callback: {
           ok: () => {
             // check if the deleted category is current selected category
-            const currentCategory = this.$store.state.qaQueryOptions.category_id;
+            const currentCategory = this.searchCategoryID;
             if (item.node.id === currentCategory) {
               const queryOptions = {
                 category_id: 0,
@@ -304,14 +301,10 @@ export default {
       if (level >= that.levelLimit) {
         menu.splice(0, 1);
       }
-      let safeY = args.y;
-      if ((window.innerHeight - safeY) < 114) {
-        safeY = args.y - 114;
-      }
       that.$root.$emit('showContextMenu', {
         menu,
         x: args.x,
-        y: safeY,
+        y: args.y,
       });
     },
     shouldKeep(node) {
@@ -366,6 +359,9 @@ export default {
     },
   },
   computed: {
+    ...mapGetters([
+      'searchCategoryID',
+    ]),
     canEdit() {
       // return auth.checkPrivilege('qalist', 'edit');
       return true;
