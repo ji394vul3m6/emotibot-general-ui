@@ -56,6 +56,8 @@ export default {
       'doQueryState',
       'searchCategoryID',
       'curPage',
+      'qaQueryOptions',
+      'qaQueryDimension',
     ]),
     doQuery() {
       if (this.doQueryState) {
@@ -258,6 +260,7 @@ export default {
       });
     },
     handleError() {
+      this.loading = false;
       // const that = this;
       // general.handleAPIError(that, error).catch(() => {
       //   that.showLoadingFailPop();
@@ -282,10 +285,10 @@ export default {
       if (!that.loading) {
         that.loadingWord = that.$t('general.loading');
         that.loading = true;
-        const options = JSON.parse(JSON.stringify(that.$store.state.qaQueryOptions));
-        options.dimension = JSON.stringify(that.$store.state.qaQueryOptions.dimension);
+        const options = JSON.parse(JSON.stringify(that.qaQueryOptions));
+        options.dimension = JSON.stringify(that.qaQueryDimension);
 
-        return qaAPI.filterQuestions(that.$store.state.qaQueryOptions).then((data) => {
+        return qaAPI.filterQuestions(that.qaQueryOptions).then((data) => {
           that.rawData = data;
           that.loading = false;
         }).catch(that.handleError.bind(that));
