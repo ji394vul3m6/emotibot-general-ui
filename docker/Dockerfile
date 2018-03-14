@@ -1,4 +1,4 @@
-FROM docker-reg.emotibot.com.cn:55688/node-base:latest AS build-env
+FROM docker-reg.emotibot.com.cn:55688/general-node-base:latest AS build-env
 
 # ADD . build
 ADD src build/src
@@ -6,7 +6,7 @@ ADD build build/build
 ADD config build/config
 ADD static build/static
 ADD .babelrc .postcssrc.js .eslintrc.js .eslintignore login.html index.html package.json build/
-RUN cd build && npm install && npm run build
+RUN cd build && npm install --production && npm run build
 
 FROM docker-reg.emotibot.com.cn:55688/houta:d5e03a6_vipshop AS houta-code
 FROM docker-reg.emotibot.com.cn:55688/authentication:2017110101_vipshop AS authentication
