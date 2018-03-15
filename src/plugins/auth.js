@@ -50,7 +50,7 @@ function getPrivilegeList() {
   const that = this;
   const appid = that.$cookie.get('appid');
 
-  return that.$reqGet(`${LIST_PRIV_PATH}a`, {
+  return that.$reqGet(LIST_PRIV_PATH, {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
       Authorization: appid,
