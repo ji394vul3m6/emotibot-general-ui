@@ -9,7 +9,7 @@
     </div>
     <div class="wordbank-list">
       <div v-for="entry in currentWordBank" :key="entry.name" class="wordbank-entry" @click="goWordbankChildren(entry)">
-        <template v-if="entry.type === 'directory'">
+        <template v-if="entry.type === 0">
           <icon icon-type="folder"></icon>
         </template>
         <template v-else>
@@ -52,6 +52,7 @@ export default {
     };
   },
   methods: {
+    ...api,
     goRoot() {
       this.currentWordBank = this.wordbank;
       this.paths = [];
@@ -67,14 +68,14 @@ export default {
     },
     goWordbankChildren(wordbank) {
       const that = this;
-      if (wordbank.type === 'directory') {
+      if (wordbank.type === 0) {
         // if wordbank type is directory, go into directory
         that.paths.push({
           name: wordbank.name,
           wordbank,
         });
         that.currentWordBank = wordbank.children || [];
-      } else if (wordbank.type === 'dict') {
+      } else if (wordbank.type === 1) {
         // if type is dictionary, open pop to edit it.
         that.$pop({
           title: that.$t('wordbank.edit_dictionary'),
@@ -90,13 +91,12 @@ export default {
     loadWordbanks() {
       const that = this;
       that.$emit('startLoading');
-      api.getWordbanks().then((data) => {
+      that.getWordbanks().then((data) => {
         that.wordbank = data;
         that.currentWordBank = data;
         that.$emit('endLoading');
-      }).catch((err) => {
+      }).catch(() => {
         that.$emit('endLoading');
-        that.$popError(err);
       });
     },
   },
@@ -125,6 +125,7 @@ export default {
   }
 }
 .wordbank-list {
+  line-height: $default-line-height;
   display: flex;
   flex-direction: column;
   .wordbank-entry {
