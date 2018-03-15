@@ -91,11 +91,6 @@ services:
             AUDIT_MYSQL_DB: ${API_SERVER_AUDIT_MYSQL_DB}
             CONSUL_URL: ${CONSUL_IP}:${CONSUL_PORT}
         restart: always
-        depends_on:
-            "mysql":
-                condition: service_healthy
-            "consul":
-                condition: service_healthy
 
     # ========== Consul ==========
     consul:
@@ -153,6 +148,8 @@ services:
             VIP_MEDIABASE_VOLUME: ${API_MEDIABASE_VOLUME}
             VIP_MEDIABASE_LOCATION: ${API_MEDIABASE_LOCATION}
             VIP_MEDIABASE_SYNC_PERIOD_BY_SECONDS: ${API_MEDIABASE_SYNC_PERIOD_BY_SECONDS}
+            VIP_QA_CONTROLLER_URL: ${API_QA_CONTROLLER_URL}
+            VIP_QA_TEST_TYPE: ${API_QA_TEST_TYPE}
         restart: always
 
     old-vipshop-houta: 
