@@ -57,6 +57,9 @@ http {
         if ($http_authorization != "") {
             set $auth_cookie $http_authorization;
         }
+        if ($http_x_userid != "") {
+            set $user_id $http_x_userid;
+        }
 
         listen 80;
         listen [::]:80;
