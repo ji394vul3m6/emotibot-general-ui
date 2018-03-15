@@ -4,7 +4,7 @@
     <div id="qa-table-body-container" :class="{'ie-scroll': useIE}">
       <qa-table-body ref="tableBody" @resetAllSelect="resetAllSelect" :tableData="retrieveContent"></qa-table-body>
     </div>
-    <div v-if="retrieveContent && retrieveContent.length > 10" class="navigation-bar">
+    <div v-if="totalRow > 10" class="navigation-bar">
       <input type="checkbox" class="all-select" @change="toggleAllSelect" v-model="allSelected" style="display: inline-block;">
       <label class="all-select"> {{$t('qalist.page_selected')}} </label>
       <v-pagination :total="totalRow" :pageIndex="pageWording" :pageSizeOption="[10]" :layout="['total', 'prev', 'pager', 'next', 'jumper']" v-on:page-change="handlePageChange"></v-pagination>

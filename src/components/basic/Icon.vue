@@ -121,6 +121,8 @@ export default {
   @include iconType("white_chat");
   @include iconType("white_SQ");
   @include iconType("white_wordbank_upload");
+  @include iconType("white_dashboard");
+  @include iconType("white_statistics");
 
   // robot icon should a little bit larger than other icons
   .white_robot_icon {

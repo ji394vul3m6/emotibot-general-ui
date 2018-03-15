@@ -59,7 +59,7 @@ export default {
   path: 'statistic-dash',
   privCode: 'statistic_dash',
   displayNameKey: 'statistic_dash',
-  icon: 'white_dash',
+  icon: 'white_dashboard',
   components: {
     VueC3,
     StatsChart,

@@ -59,17 +59,16 @@ export default {
     }
 
     .category-name {
-      height: $page-menu-category-height;
-      line-height: $page-menu-category-height;
+      // height: $page-menu-category-height;
+      // line-height: $page-menu-category-height;
     }
     .page {
       padding-left: 20px;
+      cursor: pointer;
     }
     .row {
       display: flex;
       align-items: center;
-
-      cursor: pointer;
       user-select: none;
     }
   }
