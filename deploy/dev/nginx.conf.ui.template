@@ -33,6 +33,15 @@ http {
         listen 80;
         listen [::]:80;
 
+        location /stats {
+            proxy_pass http://${REMOTE_IP};
+        }
+        location /admin {
+            proxy_pass http://${REMOTE_IP};
+        }
+        location /php {
+            proxy_pass http://${REMOTE_IP};
+        }
         location /Files {
             proxy_pass http://${REMOTE_IP};
         }

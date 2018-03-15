@@ -17,6 +17,14 @@ function datetimeToString(date) {
   return `${time.getFullYear()}/${month}/${day} ${hour}:${min}:${sec}`;
 }
 
+function dateToString(date) {
+  const month = paddingNumToTwo(date.getMonth() + 1);
+  const day = paddingNumToTwo(date.getDate());
+
+  return `${date.getFullYear()}${month}${day}`;
+}
+
 export default {
   datetimeToString,
+  dateToString,
 };

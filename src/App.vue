@@ -22,7 +22,6 @@ import { mapMutations } from 'vuex';
 import modules from '@/modules';
 import PageHeader from '@/components/layout/Header';
 import PageMenu from '@/components/layout/Menu';
-import privilegeAPI from '@/api/privileges';
 
 export default {
   name: 'app',
