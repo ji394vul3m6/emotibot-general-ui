@@ -19,7 +19,7 @@
       </div>
     </div>
     <div slot="footer" class="tool-bar" v-if="currentWordBank !== wordbank">
-      <text-button icon-type="folder_add">
+      <text-button icon-type="folder_add" v-if="paths.length < 4">
         {{ $t('wordbank.add_folder') }}
       </text-button>
       <text-button icon-type="dictionary_add">

@@ -71,7 +71,7 @@ export default {
       that.showLoading = true;
       that.$login(that.input).then(() => {
         that.showLoading = false;
-        window.location = '/#/qalist';
+        window.location = '/#/statistic-dash';
       }, () => {
         that.showLoading = false;
         that.$popError('登录失败').then(() => {

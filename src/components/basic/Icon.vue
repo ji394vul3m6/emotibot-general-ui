@@ -123,6 +123,7 @@ export default {
   @include iconType("white_wordbank_upload");
   @include iconType("white_dashboard");
   @include iconType("white_statistics");
+  @include iconType("white_audit");
 
   // robot icon should a little bit larger than other icons
   .white_robot_icon {

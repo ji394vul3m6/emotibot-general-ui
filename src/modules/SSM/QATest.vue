@@ -37,7 +37,10 @@
         </div>
       </div>
       <div class="qa-test-input">
-        <textarea v-model="userInput" v-on:keydown="checkKey"></textarea>
+        <textarea v-model="userInput"
+          @keydown="checkKey"
+          @compositionstart="inComposition = true"
+          @compositionend="inComposition = false"/>
       </div>
       <div class="qa-test-control">
         <text-button main @click="sendText">{{ $t('qatest.submit') }}</text-button>
@@ -92,6 +95,7 @@ export default {
       emotion: '',
       tokens: '',
       matchResult: [],
+      inComposition: false,
     };
   },
   methods: {
@@ -101,6 +105,11 @@ export default {
     },
     checkKey(e) {
       if (e.keyCode === 13 || e.key === 'Enter') {
+        // If user is typping in composition mode,
+        // skip Enter which made composition finish fist
+        if (this.inComposition) {
+          return;
+        }
         if (!e.shiftKey) {
           if (this.userInput.trim().length > 0) {
             this.sendText();
@@ -185,6 +194,9 @@ export default {
 @import "styles/variable";
 
 $row-height: 50px;
+$column-header-color: $table-header-background;
+$column-border-color: black;
+
 #qatest {
   .qa-test-filter {
     min-height: $row-height;
@@ -203,9 +215,9 @@ $row-height: 50px;
         .filter-item-text {
           padding: 2px 5px;
           margin: 0px 5px;
-          border: 1px solid $page-header-color;
+          border: 1px solid $column-border-color;
           border-radius: 0.5em;
-          background: $page-header-color;
+          background: $column-header-color;
           color: white;
           cursor: default;
         }
@@ -242,7 +254,6 @@ $row-height: 50px;
       
       .qa-test-title {
         border: 1px solid black;
-        border-bottom: none;
       }
 
       .qa-test-list {
@@ -344,7 +355,7 @@ $row-height: 50px;
       align-items: stretch;
       .qa-test-info-block {
         flex: 1 1 100px;
-        border: 1px solid $page-header-color;
+        border: 1px solid $column-border-color;
 
         &:not(:first-child) {
           margin-top: 10px;
@@ -359,8 +370,8 @@ $row-height: 50px;
   .title {
     text-align: center;
     line-height: $row-height;
-    background: $page-header-color;
-    color:white;
+    background: $column-header-color;
+    border-bottom: 1px solid $column-border-color;
   }
 }
 </style>

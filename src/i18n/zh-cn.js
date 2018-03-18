@@ -326,6 +326,7 @@ export default {
     statistics: {
       module_name: '统计图表',
       statistic_dash: '统计概览',
+      statistic_audit: '操作日志',
     },
   },
   general: {
@@ -352,6 +353,9 @@ export default {
     default: '默认',
     indicate: '指定',
     force_cancel: '强制取消',
+    export: '导出',
+    success: '成功',
+    fail: '失败',
   },
   dimension: {
     categories: {
