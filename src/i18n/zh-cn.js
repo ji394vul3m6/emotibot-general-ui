@@ -301,6 +301,9 @@ export default {
       shopping: '购物',
     },
   },
+  task_engine: {
+    download_template: '下载模板',
+  },
   pages: {
     null: '',
     privileges: {
@@ -327,6 +330,11 @@ export default {
       module_name: '统计图表',
       statistic_dash: '统计概览',
       statistic_audit: '操作日志',
+    },
+    task_engine: {
+      module_name: '任务引擎',
+      task_engine_scenario: '场景编辑',
+      task_engine_upload: '上传转换数据',
     },
   },
   general: {
@@ -356,6 +364,8 @@ export default {
     export: '导出',
     success: '成功',
     fail: '失败',
+    description: '提示',
+    file: '档案',
   },
   dimension: {
     categories: {
@@ -407,6 +417,7 @@ export default {
     success: '设定成功',
     time_format_error: '输入不符合规范，请重新输入',
     empty_data: '无资料',
+    data_format_err: '资料格式错误',
   },
   http_status: {
     default: '伺服器错误',

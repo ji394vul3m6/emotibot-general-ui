@@ -108,6 +108,9 @@ table {
   }
   td {
     padding: 5px;
+    &.table-content-empty-row {
+      text-align: center;
+    }
   }
 }
 </style>
