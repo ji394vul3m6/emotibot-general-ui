@@ -156,12 +156,29 @@ export default {
       });
       that.userInput = '';
     },
+    handleTextNode(node) {
+      if (node.subType === 'text') {
+        return node.value;
+      }
+      const convertedText = node.value.replace(/<a/g, '<a target="_blank"');
+      return convertedText;
+    },
     appendChat(text, role) {
-      const convertedText = text.replace(/<a/g, '<a target="_blank"');
-      this.chatData.push({
-        role: role || 'user',
-        text: convertedText,
-      });
+      const that = this;
+      try {
+        const answerObj = JSON.parse(text);
+        console.log(answerObj);
+        that.chatData.push({
+          role: role || 'user',
+          text: that.handleTextNode(answerObj),
+        });
+        //
+      } catch (err) {
+        that.chatData.push({
+          role: role || 'user',
+          text,
+        });
+      }
     },
     cancelAllFilter() {
       this.categoryList[0].categories.forEach((category) => {
