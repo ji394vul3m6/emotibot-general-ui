@@ -142,7 +142,6 @@ export default {
           //   that.appendChat(answer, 'robot');
           // });
           that.appendChatArrayDelay(res.result.answers, 'robot');
-          that.$nextTick(that.scrollToBottom);
 
           that.tokens = res.result.tokens.join(', ');
           that.emotion = res.result.emotion || that.$t('qatest.unknown');
@@ -190,6 +189,7 @@ export default {
           text,
         });
       }
+      that.$nextTick(that.scrollToBottom);
     },
     cancelAllFilter() {
       this.categoryList[0].categories.forEach((category) => {
