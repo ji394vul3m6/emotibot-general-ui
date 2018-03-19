@@ -110,7 +110,6 @@ export default {
       keywordType: 'all',
       keyword: '',
       userID: '',
-      i18n: undefined,
       startValidity: true,
       endValidity: true,
       pageIndex: 1,
@@ -241,7 +240,7 @@ export default {
         }
 
         if (header.key === 'brand') {
-          header.text = that.i18n.statistics.brand;
+          header.text = that.$t('statistics.brand');
         }
 
         if (nowrapCols.indexOf(header.key) >= 0) {
@@ -265,7 +264,7 @@ export default {
           component: ChatRecordPop,
           buttons: ['ok'],
         }, (err) => {
-          that.$popError(that.i18n.error_msg.get_stats_error, err.message);
+          that.$popError(that.$t('error_msg.get_stats_error'), err.message);
           that.$emit('endLoading');
         });
         that.$emit('endLoading');

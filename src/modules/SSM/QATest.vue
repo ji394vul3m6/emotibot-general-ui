@@ -137,9 +137,10 @@ export default {
       that.QATest(that.userInput, filter).then((data) => {
         const res = data.data;
         if (res.status === 0 && res.result.answers && res.result.answers.length > 0) {
-          res.result.answers.forEach((answer) => {
-            that.appendChat(answer, 'robot');
-          });
+          // res.result.answers.forEach((answer) => {
+          //   that.appendChat(answer, 'robot');
+          // });
+          that.appendChatArrayDelay(res.result.answers, 'robot');
           that.$nextTick(that.scrollToBottom);
 
           that.tokens = res.result.tokens.join(', ');
@@ -162,6 +163,15 @@ export default {
       }
       const convertedText = node.value.replace(/<a/g, '<a target="_blank"');
       return convertedText;
+    },
+    appendChatArrayDelay(chats, char) {
+      const that = this;
+      that.appendChat(chats[0], char);
+      if (chats.length > 1) {
+        setTimeout(() => {
+          that.appendChatArrayDelay(chats.slice(1), char);
+        }, 2000);
+      }
     },
     appendChat(text, role) {
       const that = this;
