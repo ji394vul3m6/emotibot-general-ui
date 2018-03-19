@@ -68,6 +68,7 @@ $active-color: white;
   width: auto;
   display: inline-flex;
   align-items: center;
+  margin: 0 5px;
 }
 
 .option {

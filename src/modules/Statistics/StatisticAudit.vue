@@ -39,7 +39,7 @@
         <label class="error_msg">{{ $t('error_msg.time_range_error') }}</label>
       </div>
       <div class="button-container row">
-        <text-button v-on:click="doSearch(1)" :disabled="!validFormInput">{{ $t('general.search') }}</text-button>
+        <text-button v-on:click="doSearch(1)" :disabled="!validFormInput" main>{{ $t('general.search') }}</text-button>
         <!-- <div v-on:click="doSearch(1)" class="text-button primary" :class="{disabled: !validFormInput}">
           {{ $t('general.search') }}
         </div> -->

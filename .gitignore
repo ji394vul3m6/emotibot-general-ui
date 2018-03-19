@@ -16,6 +16,8 @@ selenium-debug.log
 *.njsproj
 *.sln
 
+*.ai
+
 package-lock.json
 
 deploy/dev/nginx.conf

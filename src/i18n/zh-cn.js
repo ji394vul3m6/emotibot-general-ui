@@ -330,6 +330,7 @@ export default {
       module_name: '统计图表',
       statistic_dash: '统计概览',
       statistic_audit: '操作日志',
+      statistic_daily: '日志管理',
     },
     task_engine: {
       module_name: '任务引擎',

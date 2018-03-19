@@ -7,7 +7,7 @@
     </div>
     <div class="page row" v-for="page in directory.pages" :key="page.name" @click="toPage(page)">
       <icon :icon-type="page.icon"/>
-      <div class="name">{{$t(page.display)}}</div>
+      <div class="name" :class="{active: page.path === currentRoute}">{{$t(page.display)}}</div>
     </div>
   </div>
 </div>  
@@ -22,6 +22,9 @@ export default {
     ...mapGetters([
       'menuPages',
     ]),
+    currentRoute() {
+      return this.$route.path.split('/')[1];
+    },
   },
   components: {
     icon: Icon,
@@ -30,6 +33,9 @@ export default {
     toPage(page) {
       this.$router.push({ path: page.path });
     },
+  },
+  mounted() {
+    console.log(this.$route);
   },
 };
 </script>
@@ -56,6 +62,10 @@ export default {
     .name {
       text-align: center;
       margin-left: 5px;
+      &.active {
+        color: $active-color;
+        font-weight: bold;
+      }
     }
 
     .category-name {
