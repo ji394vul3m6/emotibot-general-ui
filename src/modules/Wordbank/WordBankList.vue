@@ -18,12 +18,15 @@
         <span>{{ entry.name }}</span>
       </div>
     </div>
-    <div slot="footer" class="tool-bar" v-if="currentWordBank !== wordbank">
-      <text-button icon-type="folder_add" v-if="paths.length < 4">
+    <div slot="footer" class="tool-bar">
+      <text-button icon-type="folder_add" v-if="paths.length < 4 && currentWordBank !== wordbank">
         {{ $t('wordbank.add_folder') }}
       </text-button>
-      <text-button icon-type="dictionary_add">
+      <text-button icon-type="dictionary_add" v-if="currentWordBank !== wordbank">
         {{ $t('wordbank.add_dictionary') }}
+      </text-button>
+      <text-button icon-type="download">
+        {{ $t('wordbank.download_current_dictionary') }}
       </text-button>
     </div>
   </basic-page>

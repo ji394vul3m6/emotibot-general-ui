@@ -145,10 +145,11 @@ export default {
     batch_import: '批量导入词库',
     batch_export: '批量导出词库',
     download_batch_import_template: '下载批量导入词库模板',
+    download_current_dictionary: '下载当前词库',
     description: '提示：',
     version: '词库版本',
     last_version: '上一个版本',
-    current_version: '当前版本',
+    current_version: '最后导入版本',
     last_import_result: '上次上传结果',
     result: {
       success: '导入成功',

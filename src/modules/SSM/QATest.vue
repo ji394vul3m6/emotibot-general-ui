@@ -96,6 +96,7 @@ export default {
       tokens: '',
       matchResult: [],
       inComposition: false,
+      multiAnswerDelay: 2000, // milliseconds
     };
   },
   methods: {
@@ -170,7 +171,7 @@ export default {
       if (chats.length > 1) {
         setTimeout(() => {
           that.appendChatArrayDelay(chats.slice(1), char);
-        }, 2000);
+        }, that.multiAnswerDelay);
       }
     },
     appendChat(text, role) {
