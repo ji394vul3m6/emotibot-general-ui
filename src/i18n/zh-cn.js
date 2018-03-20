@@ -302,6 +302,12 @@ export default {
       shopping: '购物',
     },
   },
+  chat_skill: {
+    group_basic: '基本话术',
+    group_timeout: '答案失效话术',
+    group_emotion: '情绪相关话术',
+    save_success_msg: '保存{item}成功',
+  },
   task_engine: {
     download_template: '下载模板',
   },
@@ -326,6 +332,7 @@ export default {
       module_name: '问答管理',
       qalist: '问答库',
       qatest: '对话测试',
+      qa_chat_skill: '话术设置',
     },
     statistics: {
       module_name: '统计图表',
@@ -360,6 +367,7 @@ export default {
     upload: '上传',
     browse: '浏览',
     save: '保存',
+    saving: '保存中',
     default: '默认',
     indicate: '指定',
     force_cancel: '强制取消',
@@ -368,6 +376,7 @@ export default {
     fail: '失败',
     description: '提示',
     file: '档案',
+    finish: '完成',
   },
   dimension: {
     categories: {
@@ -423,6 +432,7 @@ export default {
   },
   http_status: {
     default: '伺服器错误',
+    400: '请求内容错误',
     401: '授权已失效，请重新登录',
     404: '伺服器错误，API未实作',
     413: '上传文档大小超过要求',

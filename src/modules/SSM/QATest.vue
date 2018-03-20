@@ -83,6 +83,7 @@ export default {
   privCode: 'qatest',
   displayNameKey: 'qatest',
   icon: 'white_chat',
+  name: 'qa-test',
   components: {
     TextButton,
   },
@@ -182,7 +183,6 @@ export default {
           role: role || 'user',
           text: that.handleTextNode(answerObj),
         });
-        //
       } catch (err) {
         that.chatData.push({
           role: role || 'user',

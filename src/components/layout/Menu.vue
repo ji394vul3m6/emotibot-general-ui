@@ -35,7 +35,6 @@ export default {
     },
   },
   mounted() {
-    console.log(this.$route);
   },
 };
 </script>
@@ -66,11 +65,6 @@ export default {
         color: $active-color;
         font-weight: bold;
       }
-    }
-
-    .category-name {
-      // height: $page-menu-category-height;
-      // line-height: $page-menu-category-height;
     }
     .page {
       padding-left: 20px;

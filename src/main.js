@@ -17,6 +17,7 @@ import ContextMenu from './plugins/ContextMenu';
 import CustomNotification from './plugins/CustomNotification';
 import request from './plugins/request';
 import auth from './plugins/auth';
+import api from './plugins/api';
 import './plugins/Polyfill';
 
 Vue.config.productionTip = false;
@@ -29,6 +30,7 @@ Vue.use(CustomNotification, {
 });
 Vue.use(request);
 Vue.use(auth);
+Vue.use(api);
 
 Vue.component('text-button', TextButton);
 Vue.component('search-input', SearchInput);

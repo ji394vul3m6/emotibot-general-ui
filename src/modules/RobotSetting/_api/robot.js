@@ -5,8 +5,6 @@ const GET_QA_LIST_PATH = '/api/v1/robot/qas';
 const QA_OPERATION_PATH = '/api/v1/robot/qa';
 const REBUILD_QA_PATH = '/api/v1/robot/qabuild';
 
-const CHATS_INFO_PATH = '/api/v1/robot/chats';
-
 function getFunctionsStatus() {
   return this.$reqGet(GET_FUNCTIONS_INFO_PATH);
 }
@@ -53,14 +51,6 @@ function updateRobotQA(info) {
   return this.$reqPost(`${QA_OPERATION_PATH}/${info.id}`, info);
 }
 
-function getRobotChatList() {
-  return this.$reqGet(CHATS_INFO_PATH);
-}
-
-function updateRobotChat(param) {
-  return this.$reqPost(CHATS_INFO_PATH, param);
-}
-
 export default {
   getFunctionsStatus,
 
@@ -69,6 +59,4 @@ export default {
   getRobotQAList,
   rebuildRobotQAModel,
   updateRobotQA,
-  getRobotChatList,
-  updateRobotChat,
 };
