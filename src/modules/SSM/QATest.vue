@@ -27,7 +27,7 @@
       <div class="qa-test-list">
         <div class="qa-test-container" ref="qaBox">
           <div class="qa-test-inner-container">
-            <div v-for="chat in chatData" :class="chat.role" class="qa-test-row" :key="chat.text">
+            <div v-for="(chat, idx) in chatData" :class="chat.role" class="qa-test-row" :key="idx">
               <div class="qa-test-text">
                 <span v-html="chat.text"></span>
               </div>
@@ -161,6 +161,8 @@ export default {
     handleTextNode(node) {
       if (node.subType === 'text') {
         return node.value;
+      } else if (node.subType === 'relatedList') {
+        return `${node.value}\n${node.data.join('\n')}`;
       }
       const convertedText = node.value.replace(/<a/g, '<a target="_blank"');
       return convertedText;
