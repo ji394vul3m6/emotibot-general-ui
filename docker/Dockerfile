@@ -1,10 +1,10 @@
 FROM docker-reg.emotibot.com.cn:55688/general-node-base:latest AS build-env
 
 # ADD . build
-ADD src build/src
 ADD build build/build
 ADD config build/config
 ADD static build/static
+ADD src build/src
 ADD .babelrc .postcssrc.js .eslintrc.js .eslintignore login.html index.html package.json build/
 RUN cd build && npm install --production && npm run build
 
