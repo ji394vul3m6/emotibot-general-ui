@@ -125,6 +125,7 @@ export default {
   @include iconType("white_statistics");
   @include iconType("white_audit");
   @include iconType("download");
+  @include iconType("white_task_engine");
 
   // robot icon should a little bit larger than other icons
   .white_robot_icon {

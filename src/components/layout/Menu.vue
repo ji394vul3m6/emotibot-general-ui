@@ -6,7 +6,7 @@
       <div class="name">{{$t(directory.display)}}</div>
     </div>
     <div class="page row" v-for="page in directory.pages" :key="page.name" @click="toPage(page)">
-      <icon :icon-type="page.icon"/>
+      <!-- <icon :icon-type="page.icon"/> -->
       <div class="name" :class="{active: page.path === currentRoute}">{{$t(page.display)}}</div>
     </div>
   </div>
