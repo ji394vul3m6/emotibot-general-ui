@@ -298,6 +298,7 @@ $column-border-color: black;
           align-items: stretch;
           border: 1px solid black;
           border-top: none;
+          padding: 10px 0;
 
           .qa-test-inner-container {
             display: flex;

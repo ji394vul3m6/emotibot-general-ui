@@ -7,14 +7,14 @@ import 'es6-promise/auto';
 
 import Login from './LoginPage';
 import messages from './i18n';
-import PopWindow from './plugins/PopWindow';
+import CustomNotification from './plugins/CustomNotification';
 import request from './plugins/request';
 import auth from './plugins/auth';
 import './plugins/Polyfill';
 
 Vue.use(VueCookie);
 Vue.use(VueI18n);
-Vue.use(PopWindow);
+Vue.use(CustomNotification);
 Vue.use(request);
 Vue.use(auth);
 

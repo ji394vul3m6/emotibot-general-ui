@@ -1,24 +1,37 @@
 <template>
-  <div>
-    <text-button main disabled v-if="state === 'loading'">
+  <div :class="{fill: fill}">
+    <text-button main :fill=fill :height=height disabled v-if="state === 'loading'">
       <slot name="loading"></slot>
     </text-button>
-    <text-button v-else-if="state === 'init' " main :disabled="disabled" @click="click">
+    <text-button v-else-if="state === 'init' " main :fill=fill :height=height :disabled="disabled" @click="click">
       <slot name="init"></slot>
     </text-button>
-    <text-button v-else main :disabled="disabled" @click="click">
+    <text-button v-else main :disabled="disabled" :fill=fill :height=height @click="click">
       <slot name="finish"></slot>
     </text-button>
   </div>
 </template>
 
 <script>
+import TextButton from './TextButton';
+
 export default {
   name: 'loading-button',
+  components: {
+    TextButton,
+  },
   props: {
     disabled: {
       type: Boolean,
       default: false,
+    },
+    fill: {
+      type: Boolean,
+      default: false,
+    },
+    height: {
+      type: String,
+      default: '',
     },
   },
   data() {
@@ -43,7 +56,15 @@ export default {
     that.$on('reset', () => {
       this.state = 'init';
     });
+    that.$on('forceClick', () => {
+      this.click();
+    });
   },
 };
 </script>
 
+<style lang="scss" scoped>
+.fill {
+  width: 100%;
+}
+</style>

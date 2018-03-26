@@ -50,8 +50,12 @@
           {{ $t('general.export') }}
         </div> -->
       </div>
-      <general-table v-if="showTable" :contents="tableData" :headerInfo="headerInfo"></general-table>
-      <v-pagination v-if="showPagination" :pageIndex="pageIndex" v-on:page-change="doSearch" :total="totalCount" :page-size="20" :layout="['total', 'prev', 'pager', 'next', 'jumper']"></v-pagination>
+      <div class="table-container">
+        <general-table v-if="showTable" :contents="tableData" :headerInfo="headerInfo"></general-table>
+      </div>
+      <div class="row">
+        <v-pagination v-if="showPagination" :pageIndex="pageIndex" v-on:page-change="doSearch" :total="totalCount" :page-size="20" :layout="['total', 'prev', 'pager', 'next', 'jumper']"></v-pagination>
+      </div>
     </div>
   </div>
 </template>
@@ -70,8 +74,8 @@ import auditAPI from '@/api/audit';
 import api from './_api/statistic';
 // import auth from '@/auth';
 
-const timeFormatWithoutSecond = '%Y-%m-%d %H:%M';
-const timeFormatFull = '%Y-%m-%d %H:%M:%s';
+const timeFormatWithoutSecond = 'YYYY-MM-DD hh:mm';
+const timeFormatFull = 'YYYY-MM-DD hh:mm:ss';
 
 export default {
   path: 'statistic-audit',
@@ -199,25 +203,28 @@ export default {
           key: 'user_id',
           type: 'text',
           wrap: true,
-          width: '20%',
+          width: '10%',
         },
         {
           text: that.$t('statistics.audit.op_module'),
           key: 'module',
           type: 'map-text',
           map: this.moduleList,
+          width: '10%',
         },
         {
           text: that.$t('statistics.audit.op_type'),
           key: 'operation',
           type: 'map-text',
           map: this.actionList,
+          width: '10%',
         },
         {
           text: that.$t('statistics.audit.content'),
           key: 'content',
           type: 'raw-text',
           wrap: true,
+          width: '40%',
         },
         {
           text: that.$t('statistics.audit.result'),
@@ -227,16 +234,19 @@ export default {
             0: that.$t('general.fail'),
             1: that.$t('general.success'),
           },
+          width: '10%',
         },
         {
           text: that.$t('statistics.audit.create_time'),
           key: 'create_time',
           type: 'text',
+          width: '10%',
         },
         {
           text: that.$t('statistics.audit.ip_source'),
           key: 'user_ip',
           type: 'text',
+          width: '10%',
         },
       ];
     },
@@ -360,5 +370,9 @@ $row-height: $default-line-height;
       margin-right: 20px;
     }
   }
+}
+
+.table-container {
+  width: 100%;
 }
 </style>

@@ -35,6 +35,7 @@ export default {
   displayNameKey: 'task_engine_upload',
   icon: 'white_task_engine_upload',
   name: 'task-engine-upload',
+  api,
   components: {
     generalTable,
   },
@@ -80,7 +81,7 @@ export default {
         that.$popError(that.$t('error_msg.upload_file_size_error'));
       } else {
         that.$emit('startLoading');
-        api.uploadMapping(appid, file).then((data) => {
+        that.$api.uploadMapping(appid, file).then((data) => {
           const res = data.data;
           if (res.return === 0) {
             that.$popError(that.$t('error_msg.success'));
@@ -102,7 +103,7 @@ export default {
       const fileName = that.tableData[idx].file_name;
 
       that.$emit('startLoading');
-      api.deleteMappingList(fileName).then(() => {
+      that.$api.deleteMappingList(fileName).then(() => {
         that.$emit('endLoading');
         that.$popError(that.$t('error_msg.delete_success'));
         that.loadList();
@@ -117,7 +118,7 @@ export default {
       const user = that.tableData[idx].user;
 
       that.$emit('startLoading');
-      api.downloadMappingList(fileName, user).then((data) => {
+      that.$api.downloadMappingList(fileName, user).then((data) => {
         that.$emit('endLoading');
         const mappingTable = JSON.parse(data.data);
         const mappingDataArray = mappingTable.mapping_table;
@@ -178,7 +179,7 @@ export default {
       that.tableData = [];
       const userid = that.$cookie.get('userid');
       if (userid !== '4c8cad6375894d487327cd1e7c5d5ef4') { // add template data for none template user
-        api.getTemplateMappingList().then((data) => {
+        that.$api.getTemplateMappingList().then((data) => {
           const files = data.data;
           files.forEach((file) => {
             that.tableData.push({
@@ -194,7 +195,7 @@ export default {
           that.$emit('endLoading');
         });
       }
-      api.getMappingList().then((data) => {
+      that.$api.getMappingList().then((data) => {
         const files = data.data;
         if (files) {
           files.forEach((file) => {

@@ -18,6 +18,8 @@
 </template>
 
 <script>
+import misc from '@/utils/js/misc';
+
 export default {
   name: 'input-list-table',
   props: {
@@ -62,25 +64,32 @@ export default {
       this.inputs = temp;
     },
     handleKeyup(e, idx) {
-      if (!this.inComposition) {
+      const that = this;
+      if (!that.inComposition) {
         let target;
         if (e.keyCode === 38 && idx > 0) {
           // key down
-          target = this.$refs.input[idx - 1];
-          // console.log(this.$refs.input[idx - 2]);
-        } else if (e.keyCode === 40 && idx < this.maxValues) {
+          target = that.$refs.input[idx - 1];
+          // console.log(that.$refs.input[idx - 2]);
+        } else if (e.keyCode === 40 && idx < that.maxValues) {
           // key up
-          target = this.$refs.input[idx + 1];
-          // console.log(this.$refs.input[idx]);
+          target = that.$refs.input[idx + 1];
+          // console.log(that.$refs.input[idx]);
         }
         if (target !== undefined) {
           // select content in input after update UI, use next Tick
-          this.$nextTick(() => {
+          that.$nextTick(() => {
             target.select();
           });
         }
+
+        if (e.keyCode === 13) {
+          that.$emit('submit');
+        }
+        if (!misc.controlKeyOnly(e)) {
+          that.$emit('input', this.updateValue);
+        }
       }
-      this.$emit('input', this.updateValue);
     },
   },
   computed: {

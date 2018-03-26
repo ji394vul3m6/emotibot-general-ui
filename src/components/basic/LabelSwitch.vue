@@ -72,6 +72,7 @@ $active-color: white;
 }
 
 .option {
+  white-space: nowrap;
   font-size: 0.8em;
   line-height: 1.5em;
   display: inline-block;

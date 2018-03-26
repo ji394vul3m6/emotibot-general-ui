@@ -20,7 +20,27 @@ function downloadRawFile(blobData, filename) {
   document.body.removeChild(link);
 }
 
+const passKeys = [
+  16, // shift
+  17, // ctrl
+  18, // alt
+  91, // meta
+  93, // meta
+  9, // tab
+  20, // caps lock
+];
+// e is keyboard event, check if press controll key only
+function controlKeyOnly(e) {
+  for (let i = 0; i < passKeys.length; i += 1) {
+    if (e.keyCode === passKeys[i]) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export default {
   useIE,
   downloadRawFile,
+  controlKeyOnly,
 };

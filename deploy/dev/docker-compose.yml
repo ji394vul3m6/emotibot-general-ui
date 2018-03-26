@@ -152,7 +152,34 @@ services:
             VIP_QA_TEST_TYPE: ${API_QA_TEST_TYPE}
         restart: always
 
-    old-vipshop-houta: 
+    # === bfb-service === 
+    bfb-service:
+        image: ${BFB_IMAGE}:${BFB_TAG}
+        container_name: ${BFB_CONTAINER}
+        ports:
+            - "${BFB_PORT}:${BFB_PORT}"
+        mem_limit: 2048m
+        environment:
+            BFB_PORT: ${BFB_PORT}
+            BFB_MYSQL_DB_SERVER: ${BFB_MYSQL_DB_SERVER}
+            BFB_MYSQL_DB_USER: ${BFB_MYSQL_DB_USER}
+            BFB_MYSQL_DB_PASSWORD: ${BFB_MYSQL_DB_PASSWORD}
+            BFB_MONGO_SERVER: ${BFB_MONGO_SERVER}
+            BFB_MONGO_PORT: ${BFB_MONGO_PORT}
+            BFB_CONSUL_SERVER: ${BFB_CONSUL_SERVER}
+            BFB_CONSUL_KEY: ${BFB_CONSUL_KEY}
+            BFB_CONSUL_APP: ${BFB_CONSUL_APP}
+            BFB_CONSUL_MAPPING_TABLE: ${BFB_CONSUL_MAPPING_TABLE}
+            BFB_CONSUL_MAPPING_TABLE_ALL: ${BFB_CONSUL_MAPPING_TABLE_ALL}
+            BFB_DATABASE_TYPE: ${BFB_DATABASE_TYPE}
+            BFB_STATIC_MYSQL_DB_SERVER: ${BFB_STATIC_MYSQL_DB_SERVER}
+            BFB_STATIC_MYSQL_DB_USER: ${BFB_STATIC_MYSQL_DB_USER}
+            BFB_STATIC_MYSQL_DB_PASSWORD: ${BFB_STATIC_MYSQL_DB_PASSWORD}
+            BFB_STATIC_DFT_APPID: ${BFB_STATIC_DFT_APPID}
+        restart: always
+
+
+    old-houta: 
         image: ${OLD_HOUTA_IMAGE}:${OLD_HOUTA_TAG} 
         container_name: ${OLD_HOUTA_CONTAINER} 
         ports: 

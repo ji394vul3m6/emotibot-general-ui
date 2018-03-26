@@ -11,8 +11,6 @@
         <div v-for="column in columns" :key="column.key" class="flex-table-cell" :style="customFlexWidth(column)">
           {{column.text}}
         </div>
-        <div style="flex: 0 0 20px;">
-        </div>
       </div>
     </div>
     <div class="flex-table-body">
@@ -26,12 +24,8 @@
           {{row[column.key]}}
           </template>
           <template v-if="column.type === 'icon-button'">
-            <div class="icon button">
-              <div :class="`${column.icon}_icon`" @click="column.iconCallback(idx)"></div>
-            </div>
+            <text-button :icon="column.icon" @click="column.iconCallback(idx)">{{ column.btn_text }}</text-button>
           </template>
-        </div>
-        <div style="flex: 0 0 20px;">
         </div>
       </div>
     </div>

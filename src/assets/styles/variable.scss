@@ -54,3 +54,8 @@ $success-color: #5cd29d;
     overflow: overlay;
     -ms-overflow-style: -ms-autohiding-scrollbar;
 }
+
+@mixin click-button() {
+    cursor: pointer;
+    user-select: none;
+}

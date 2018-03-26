@@ -15,11 +15,12 @@
             :maxLength=200
             :maxValues="maxNums[id] || 5"
             v-model="skillInfos[id].contents"
-            @input="inputChange(id)"></input-list-table>
+            @input="inputChange(id, $event)"
+            @submit="submitChange(id)"></input-list-table>
             <transition name="fade">
             <!-- <div class="card-button-container"> -->
             <div class="card-button-container" v-if="buttonEnable[id] === true">
-              <loading-button @click="saveChange(id, $event)">
+              <loading-button @click="saveChange(id, $event)" :ref="`chat_${id}_button`">
                 <template slot="loading">{{ $t('general.saving') }}</template>
                 <template slot="init">{{ $t('general.save') }}</template>
                 <template slot="finish">{{ $t('general.finish') }}</template>
@@ -30,25 +31,31 @@
       </div>
     </fieldset>
     <div class="fix-top fixed" ref='top-fix'>
-      <div v-for="group in infoGroups" :key="group.name" class="quick-link-container">
-        <div v-for="id in group.infoIDs"
+      <div v-for="(group, groupIdx) in infoGroups" :key="group.name" class="quick-link-container">
+        <div v-for="(id, idx) in group.infoIDs"
           :key="skillInfos[id].name"
           v-if="skillInfos[id] !== undefined"
           class="quick-link"
           :class="{show: infoPos[id] === -1}"
-          @click="scrollTo(id)">
+          :data-group="groupIdx"
+          :data-idx="idx"
+          :data-type-id="id"
+          @click="clickAndScroll">
           {{ skillInfos[id].name }}
         </div>
       </div>
     </div>
     <div class="fix-bottom fixed" ref='bottom-fix'>
-      <div v-for="group in infoGroups" :key="group.name" class="quick-link-container">
-        <div v-for="id in group.infoIDs"
+      <div v-for="(group, groupIdx) in infoGroups" :key="group.name" class="quick-link-container">
+        <div v-for="(id, idx) in group.infoIDs"
           :key="skillInfos[id].name"
           v-if="skillInfos[id] !== undefined && infoPos[id] === 1"
           class="quick-link"
           :class="{show: infoPos[id] === 1}"
-          @click="scrollTo(id)">
+          :data-group="groupIdx"
+          :data-idx="idx"
+          :data-type-id="id"
+          @click="clickAndScroll">
           {{ skillInfos[id].name }}
         </div>
       </div>
@@ -72,13 +79,40 @@ export default {
     LoadingButton,
   },
   methods: {
+    submitChange(id) {
+      const btns = this.$refs[`chat_${id}_button`];
+      console.log(btns);
+      if (btns && btns[0]) {
+        btns[0].$emit('forceClick');
+      }
+    },
     scrollTo(id) {
       const that = this;
       const card = that.$refs[that.skillInfos[id].name][0];
       const page = that.$refs.page;
-      // const topFix = that.$refs['top-fix'];
-      console.log(`${card.offsetTop} - ${parseInt(id / 2, 10) * 30} = ${card.offsetTop - (parseInt(id / 2, 10) * 30)}`);
       page.scrollTop = card.offsetTop - (parseInt(id / 2, 10) * 30);
+      that.$nextTick(() => {
+        that.scrolling();
+      });
+    },
+    clickAndScroll(e) {
+      const that = this;
+      const data = e.target.dataset;
+      const groupIdx = parseInt(data.group, 10);
+      const idxInGroup = parseInt(data.idx, 10);
+      const typeId = data.typeId;
+
+      const card = that.$refs[that.skillInfos[typeId].name][0];
+      const page = that.$refs.page;
+      let count = 0;
+      // count remaining counts;
+      for (let i = 0; i < groupIdx; i += 1) {
+        let countInGroup = that.infoGroups[i].infoIDs.length;
+        countInGroup = countInGroup % 2 === 0 ? countInGroup : countInGroup + 1;
+        count += countInGroup;
+      }
+      count += idxInGroup;
+      page.scrollTop = (card.offsetTop - 30) - (parseInt(count / 2, 10) * 30);
       that.$nextTick(() => {
         that.scrolling();
       });
@@ -177,7 +211,7 @@ export default {
       infoGroups: [
         {
           name: this.$t('chat_skill.group_basic'),
-          infoIDs: [1, 2, 3, 4],
+          infoIDs: [1, 13, 2, 4, 3],
         },
         {
           name: this.$t('chat_skill.group_emotion'),
@@ -267,6 +301,7 @@ fieldset {
         height: 30px;
         line-height: 30px;
       }
+      @include click-button();
     }
   }
 }

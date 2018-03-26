@@ -1,8 +1,10 @@
 <template>
   <div class="text-button"
+    tabindex="0"
     :style="style"
     :class="{main: main, 'icon-button': showIcon, fill: fill, disabled: disabled, 'custom-width': width !== ''}"
-    @click="$emit('click', $event)">
+    @click="$emit('click', $event)"
+    @keyup.enter="$emit('click', $event)">
     <icon :icon-type="iconType" v-if="showIcon"></icon>
     <div class="button-content">
       <slot></slot>
@@ -83,6 +85,13 @@ export default {
   line-height: $default-line-height;
   margin-right: $line-element-between-width;
   display: inline-flex;
+
+  &:focus {
+    outline: none;
+  }
+  &:active {
+    background: darken(white, 15%); 
+  }
 
   &.icon-button {
     padding-left: 0;

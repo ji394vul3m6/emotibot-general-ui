@@ -19,15 +19,14 @@
           <input ref="password" type="password" v-model="input.password" :placeholder="$t('login.password_place')" @keydown="passwordKey">
         </div>
         <div class="input-button-row">
-          <text-button main fill @click="submit" height="50px">{{ $t('login.login') }}</text-button>
+          <loading-button main fill @click="submit" height="50px" ref="btn">
+            <template slot="init">{{ $t('login.login') }}</template>
+            <template slot="loading">{{ $t('login.login') }}ing</template>
+          </loading-button>
         </div>
       </div>
     </div>
-    <pop-windows></pop-windows>
-    <div v-if="showLoading" class="loading">
-      <div class='loader'></div>
-      {{ $t('general.loading') }}
-    </div>
+    <notification></notification>
   </div>
 </template>
 
@@ -35,13 +34,13 @@
 // import auth from '@/auth';
 // import Error from '@/components/ErrorAlert';
 import Icon from './components/basic/Icon';
-import TextButton from './components/basic/TextButton';
+import LoadingButton from './components/basic/LoadingButton';
 
 export default {
   name: 'login',
   components: {
     icon: Icon,
-    TextButton,
+    LoadingButton,
   },
   data() {
     return {
@@ -52,35 +51,33 @@ export default {
       hasError: false,
       i18n: {},
       redirect: '',
-      showLoading: false,
     };
   },
   methods: {
     submit() {
       const that = this;
+      that.$refs.user.blur();
+      that.$refs.password.blur();
       if (!that.input.account || !that.input.password) {
-        that.$popError('请输入帐密').then(() => {
-          if (!that.input.account) {
-            that.$refs.user.focus();
-          } else {
-            that.$refs.password.focus();
-          }
-        });
+        that.$notify({ text: '请输入帐密', type: 'fail' });
+        if (!that.input.account) {
+          that.$refs.user.focus();
+        } else {
+          that.$refs.password.focus();
+        }
         return;
       }
-      that.showLoading = true;
+      that.$refs.btn.$emit('loading');
       that.$login(that.input).then(() => {
-        that.showLoading = false;
         window.location = '/#/statistic-dash';
       }, () => {
-        that.showLoading = false;
-        that.$popError('登录失败').then(() => {
-          that.$refs.user.focus();
-        });
+        that.$notify({ text: '登录失败', type: 'fail' });
+        that.$refs.user.focus();
+        that.$refs.btn.$emit('reset');
       });
     },
     passwordKey(e) {
-      if (!this.showLoading && e.keyCode === 13) {
+      if (e.keyCode === 13) {
         this.submit();
       }
     },

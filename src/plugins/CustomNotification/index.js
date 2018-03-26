@@ -5,11 +5,13 @@ let globalOption = {};
 function popNotification(option) {
   const localOption = {};
   Object.assign(localOption, option);
-  Object.keys(globalOption).forEach((k) => {
-    if (option[k] === undefined) {
-      localOption[k] = globalOption[k];
-    }
-  });
+  if (globalOption !== undefined) {
+    Object.keys(globalOption).forEach((k) => {
+      if (option[k] === undefined) {
+        localOption[k] = globalOption[k];
+      }
+    });
+  }
   this.$root.$emit('notification', localOption);
 }
 

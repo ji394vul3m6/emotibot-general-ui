@@ -109,32 +109,33 @@ export default {
       });
     },
     setUpMsg() {
-      // const that = this;
-      this.tableHeader = [
+      const that = this;
+      that.tableHeader = [
         {
           key: 'main_question',
-          text: this.$t('general.question'),
+          text: that.$t('general.question'),
           type: 'text',
           width: 1,
         },
         {
           key: 'show_answer',
-          text: this.$t('general.answer'),
+          text: that.$t('general.answer'),
           type: 'text',
           width: 2,
         },
       ];
-      if (this.canEdit) {
-        this.tableHeader.push({
+      if (that.canEdit) {
+        that.tableHeader.push({
           text: '',
+          btn_text: that.$t('general.edit'),
           type: 'icon-button',
           icon: 'edit',
-          iconCallback: this.editQA,
-          width: '30px',
+          iconCallback: that.editQA,
+          width: '70px',
           fixed: true,
         });
       } else {
-        this.editButtonList = [];
+        that.editButtonList = [];
       }
     },
     initPage() {

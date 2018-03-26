@@ -40,6 +40,11 @@ export default {
       loadingMsg: '',
     };
   },
+  watch: {
+    $route() {
+      this.endLoading();
+    },
+  },
   methods: {
     ...mapMutations([
       'setPrivilegeList',

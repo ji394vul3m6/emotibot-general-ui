@@ -1,5 +1,5 @@
 <template>
-  <table class="general-table">
+  <table class="general-table" :class="{'fix-table': fixed}">
     <thead>
       <tr class="table-header">
         <td v-if="checkBox" class="check-container"></td>
@@ -77,6 +77,11 @@ export default {
         return () => true;
       },
     },
+    fixed: {
+      type: Boolean,
+      required: false,
+      default: () => false,
+    },
   },
   methods: {
     getClassObj(header) {
@@ -94,6 +99,11 @@ export default {
 @import "styles/variable";
 table {
   width: 100%;
+
+  &.fix-table {
+    table-layout: fixed;
+  }
+
   thead {
     background: $table-header-background;
   }
@@ -110,6 +120,12 @@ table {
     padding: 5px;
     &.table-content-empty-row {
       text-align: center;
+    }
+    &.wrap {
+      word-break: break-all;
+      pre {
+        white-space: pre-wrap;
+      }
     }
   }
 }

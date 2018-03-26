@@ -22,9 +22,11 @@
         </template>
         <text-button main :disable=disable_ok
           v-on:click="click(true)"
+          ref="okBtn"
           v-if="buttons.indexOf('ok') != -1">{{ ok_msg }}</text-button>
         <text-button main :disable=disable_ok
           v-on:click="click(false)"
+          ref="cancelBtn"
           v-if="buttons.indexOf('cancel') != -1">{{ cancel_msg }}</text-button>
       </div>
     </div>
@@ -88,30 +90,31 @@ export default {
       }
     },
     showWindow(option) {
-      this.show = true;
-      this.title = option.title;
-      this.buttons = option.buttons || ['ok', 'cancel'];
-      this.ok_msg = option.ok_msg || this.dft_ok_msg;
-      this.cancel_msg = option.cancel_msg || this.dft_cancel_msg;
-      this.data = option.data;
-      this.extData = option.extData || {};
-      this.currentView = option.component;
-      this.validate = option.validate;
-      this.disable_ok = option.disable_ok || false;
-      this.custom_button = option.custom_button || [];
-      this.clickOutsideClose = option.clickOutsideClose !== false;
-      this.bindValue = option.bindValue !== false;
+      const that = this;
+      that.show = true;
+      that.title = option.title;
+      that.buttons = option.buttons || ['ok', 'cancel'];
+      that.ok_msg = option.ok_msg || that.dft_ok_msg;
+      that.cancel_msg = option.cancel_msg || that.dft_cancel_msg;
+      that.data = option.data;
+      that.extData = option.extData || {};
+      that.currentView = option.component;
+      that.validate = option.validate;
+      that.disable_ok = option.disable_ok || false;
+      that.custom_button = option.custom_button || [];
+      that.clickOutsideClose = option.clickOutsideClose !== false;
+      that.bindValue = option.bindValue !== false;
       if (option.callback) {
-        this.callOk = option.callback.ok;
-        this.callCancel = option.callback.cancel;
+        that.callOk = option.callback.ok;
+        that.callCancel = option.callback.cancel;
       } else {
-        this.callOk = undefined;
-        this.callCancel = undefined;
+        that.callOk = undefined;
+        that.callCancel = undefined;
       }
       if (option.customContentClasses !== undefined) {
-        this.customContentClasses = option.customContentClasses;
+        that.customContentClasses = option.customContentClasses;
       } else {
-        this.customContentClasses = [];
+        that.customContentClasses = [];
       }
     },
     hideWindow() {
