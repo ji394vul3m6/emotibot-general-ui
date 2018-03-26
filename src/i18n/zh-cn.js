@@ -167,6 +167,8 @@ export default {
     analysis: '句子分析',
     match_result: '匹配结果',
     token: '分词',
+    similar_question: '相似问题',
+    similar_score: '相似分数',
   },
   qalist: {
     no_question: '无标准问题',
