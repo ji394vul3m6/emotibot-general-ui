@@ -17,8 +17,9 @@
         @keydown.up="toPrevSelect()"
         @keydown.down="toNextSelect()"
         @keydown.enter="addTagBySelector(curSelectItemIdx)"
-        @compositionstart="isInputing=true"
-        @compositionend="isInputing=false">
+        @compositionstart="startInputing()"
+        @compositionend="endInputing()"
+        @compositionupdate="countInputingLength($event)">
     </div>
     <div class="tags-selector" v-if="showSelector">
       <div class="tags-selector-items" v-for="(item, idx) in selectItems"
@@ -81,6 +82,7 @@ export default {
     return {
       inputTag: '',
       isInputing: false,
+      inputingLength: 0,
       selectedTags: [],
       errorWording: '',
       curSelectItemIdx: 0,
@@ -89,7 +91,7 @@ export default {
   },
   computed: {
     inputSize() {
-      return this.inputTag.length + 4;
+      return this.inputTag.length + this.inputingLength + 4;
     },
     showSelector() {
       return this.allowTypeahead && (this.selectItems.length > 0) && (!this.isExceedMax());
@@ -127,6 +129,19 @@ export default {
     },
     escapeRegExp(string) {
       return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+    },
+    /**
+     * Handle Input Compositioning
+     * */
+    startInputing() {
+      this.isInputing = true;
+    },
+    endInputing() {
+      this.isInputing = false;
+      this.inputingLength = 0;
+    },
+    countInputingLength(e) {
+      this.inputingLength = e.data.length;
     },
     /**
      * Handle Add Tag
@@ -262,7 +277,7 @@ export default {
       this.selectedTags.splice(idx, 1);
     },
     deleteTag(e) {
-      if (this.inputTag.length === 0) {
+      if (this.inputTag.length === 0 && !this.isInputing) {
         const prevTag = e.target.previousElementSibling;
         if (prevTag) {
           if (!prevTag.classList.contains('tag-focus')) {
