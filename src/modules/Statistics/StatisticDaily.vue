@@ -115,7 +115,11 @@ export default {
       pageIndex: 1,
       startDisableDate: undefined,
       endDisableDate: undefined,
-      keywordOption: [],
+      keywordOption: [
+        { val: 'all', text: this.$t('general.all') },
+        { val: 'question', text: this.$t('general.question') },
+        { val: 'answer', text: this.$t('general.answer') },
+      ],
 
     };
   },
@@ -341,11 +345,6 @@ export default {
     };
   },
   mounted() {
-    this.keywordOption = [
-      { val: 'all', text: this.$t('general.all') },
-      { val: 'question', text: this.$t('general.question') },
-      { val: 'answer', text: this.$t('general.answer') },
-    ];
     // this.categoryList = CategoryList.getLocaleData(this.$i18n.locale);
   },
   activated() {
