@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # add env to php-fpm config
-env | grep VIP_HT | sed -e "s/^VIP_//" | sed -e "s/^\([A-Z_a-z0-9]*\)=\"\{0,1\}\([^\"]*\)\"\{0,1\}/env[\1] = \"\2\"/g" >> /etc/php5/fpm.d/www.conf
+env | grep VIP_HT | sed -e "s/^ADMIN_//" | sed -e "s/^\([A-Z_a-z0-9]*\)=\"\{0,1\}\([^\"]*\)\"\{0,1\}/env[\1] = \"\2\"/g" >> /etc/php5/fpm.d/www.conf
 php-fpm -R
 
 # start crond
