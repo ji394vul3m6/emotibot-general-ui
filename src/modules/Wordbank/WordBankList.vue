@@ -8,7 +8,7 @@
       </template>
     </div>
     <div class="wordbank-list">
-      <div v-for="entry in currentWordBank" :key="entry.name" class="wordbank-entry" @click="goWordbankChildren(entry)">
+      <div v-for="entry in currentWordBank" :key="entry.name" class="wordbank-entry" @click="goWordbankChildren(entry, currentWordBank)">
         <template v-if="entry.type === 0">
           <icon icon-type="folder"></icon>
         </template>
@@ -54,8 +54,8 @@ export default {
       currentWordBank: [],
     };
   },
+  api,
   methods: {
-    ...api,
     goRoot() {
       this.currentWordBank = this.wordbank;
       this.paths = [];
@@ -69,7 +69,7 @@ export default {
       that.currentWordBank = that.paths[idx].wordbank.children;
       that.paths = that.paths.slice(0, idx + 1);
     },
-    goWordbankChildren(wordbank) {
+    goWordbankChildren(wordbank, siblings) {
       const that = this;
       if (wordbank.type === 0) {
         // if wordbank type is directory, go into directory
@@ -79,22 +79,52 @@ export default {
         });
         that.currentWordBank = wordbank.children || [];
       } else if (wordbank.type === 1) {
+        const existedNames = [];
+        siblings.forEach((sibling) => {
+          if (sibling.id !== wordbank.id) {
+            existedNames.push(sibling.name);
+          }
+        });
+
         // if type is dictionary, open pop to edit it.
-        that.$pop({
+        const options = {
           title: that.$t('wordbank.edit_dictionary'),
           component: EditPop,
           buttons: ['ok'],
           data: wordbank,
+          extData: {
+            existedNames,
+          },
           validate: true,
           clickOutsideClose: true,
           bindValue: false,
-        });
+          callback: {
+            ok(retData) {
+              that.updateWordbank(retData).then(() => {
+                wordbank.name = retData.name;
+                wordbank.text = retData.text;
+                wordbank.similar_words = retData.similar_words;
+                wordbank.answer = retData.answer;
+              });
+            },
+          },
+        };
+        if (that.paths[0].name === that.$t('wordbank.sensitive_wordbank')) {
+          options.extData.setupAnswer = true;
+        }
+        that.$pop(options);
       }
+    },
+    updateWordbank(data) {
+      const that = this;
+      return that.$api.updateWordbank(data).then(() => {
+        that.$notify({ text: that.$t('error_msg.success') });
+      });
     },
     loadWordbanks() {
       const that = this;
       that.$emit('startLoading');
-      that.getWordbanks().then((data) => {
+      that.$api.getWordbanks().then((data) => {
         that.wordbank = data;
         that.currentWordBank = data;
         that.$emit('endLoading');

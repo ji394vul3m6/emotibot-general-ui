@@ -1,58 +1,27 @@
 const META_PATH = '/api/v1/dictionary/download-meta';
 const CHECK_PATH = '/api/v1/dictionary/full-check';
 const UPLOAD_PATH = '/api/v1/dictionary/upload';
-const WORDBANK_PATH = '/api/v1/dictionary/wordbanks';
+const WORDBANKS_PATH = '/api/v1/dictionary/wordbanks';
+const WORDBANK_PATH = '/api/v1/dictionary/wordbank';
+
+const CHATS_INFO_PATH = '/api/v1/robot/chat';
 
 function getWordbanks() {
-  // const mockData = [{
-  //   type: 0,
-  //   name: 'dir1',
-  //   children: [{
-  //     type: 0,
-  //     name: 'dir1-1',
-  //     children: [{
-  //       type: 1,
-  //       name: 'dict1-1-1',
-  //       text: ['123', '456', '789'],
-  //     }],
-  //   }],
-  // }, {
-  //   type: 0,
-  //   name: 'dir2',
-  //   children: [{
-  //     type: 0,
-  //     name: 'dir2-1',
-  //     children: [{
-  //       type: 1,
-  //       name: 'dict1-1-1',
-  //       text: ['123', '456', '789'],
-  //     }],
-  //   }, {
-  //     type: 1,
-  //     name: 'dict2-2',
-  //     text: ['123', '456', '789'],
-  //   }, {
-  //     type: 0,
-  //     name: 'dir2-3 no children',
-  //   }],
-  // }];
-
-  // return new Promise((resolve) => {
-  //   setTimeout(() => {
-  //     resolve(mockData);
-  //   }, 500);
-  // });
   function convertData(wordbank) {
     if (wordbank.similar_words) {
       wordbank.text = wordbank.similar_words.split(',');
     }
+    // note: Support only one custom answer for now.
+    // if (wordbank.answer) {
+    //   wordbank.answers = wordbank.answer.split(',');
+    // }
     if (wordbank.children && wordbank.children.length > 0) {
       wordbank.children.forEach((child) => {
         convertData(child);
       });
     }
   }
-  return this.$reqGet(WORDBANK_PATH).then((rsp) => {
+  return this.$reqGet(WORDBANKS_PATH).then((rsp) => {
     if (rsp.data && rsp.data.length > 0) {
       rsp.data.forEach((wordbank) => {
         convertData(wordbank);
@@ -60,6 +29,14 @@ function getWordbanks() {
     }
     return rsp.data;
   });
+}
+
+function getDefaultSensitiveAnswer() {
+  return this.$reqGet(`${CHATS_INFO_PATH}/12`).then(res => res.data.result.contents);
+}
+
+function updateWordbank(data) {
+  return this.$reqPost(WORDBANK_PATH, data);
 }
 
 function uploadFile(file) {
@@ -96,4 +73,6 @@ export default {
   uploadFile,
   getDownloadMeta,
   getLastResult,
+  getDefaultSensitiveAnswer,
+  updateWordbank,
 };

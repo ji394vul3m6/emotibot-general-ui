@@ -16,14 +16,18 @@ const MyPlugin = {
             functions.forEach((mod) => {
               Object.getOwnPropertyNames(mod).forEach((key) => {
                 checkExistedFunction(ret, key);
-                ret[key] = mod[key].bind(that);
+                if (typeof mod[key] === 'function') {
+                  ret[key] = mod[key].bind(that);
+                }
               });
             });
             this.$api = ret;
           } else {
             Object.getOwnPropertyNames(functions).forEach((key) => {
               checkExistedFunction(ret, key);
-              ret[key] = functions[key].bind(that);
+              if (typeof functions[key] === 'function') {
+                ret[key] = functions[key].bind(that);
+              }
             });
           }
           this.$api = ret;

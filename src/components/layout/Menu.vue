@@ -67,8 +67,26 @@ export default {
       }
     }
     .page {
-      padding-left: 20px;
+      margin-left: 20px;
       cursor: pointer;
+
+      &:not(:last-child) {
+        border-left: 1px solid white;
+        & > div::before {
+          left: -6px;
+        }
+      }
+      & > div::before {
+        content: '';
+        display: inline-block;
+        position: relative;
+        border-left: 1px solid white;
+        border-bottom: 1px solid white;
+        top: -8px;
+        left: -5px;
+        height: 12px;
+        width: 12px;
+      }
     }
     .row {
       display: flex;

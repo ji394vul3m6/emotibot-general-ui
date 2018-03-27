@@ -130,11 +130,17 @@ export default {
   wordbank: {
     add_folder: '新增目录',
     add_dictionary: '新增词库',
-
     edit_dictionary: '编辑词库',
+
     word: '词语',
     synonym: '同义词',
-    synonym_note: '单个词长度最多35，总长度不可超过5000',
+    synonym_note: '单个词长度最多35，各单词间使用 "," 隔开，总长度不可超过5000',
+    sensitive_wordbank: '敏感词库',
+    sensitive_answer: '敏感問回答',
+    sensitive_answer_note: '当用户问句中包含此敏感词库时，可自订回复答案',
+    default_answer: '预设答案',
+    custom_answer: '自订答案',
+    custom_answer_note: '请输入自订的机器人回答',
 
     err_synonym_length: '单个词长度超过{length}',
     err_synonym_total_length: '总长度超过{length}',
