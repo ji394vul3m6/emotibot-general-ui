@@ -38,22 +38,13 @@ function checkAjaxError(context, error) {
     handleUnAuthenticated();
   }
 
-  if (status >= 400 && status < 500) {
-    context.$notify({
-      text: `${context.$t(`http_status.${status.toString()}`)} ${status}`,
-      type: 'fail',
-    });
-    // context.$popError(
-    //   context.$t('error_msg.client_error'),
-    //   `${context.$t(`http_status.${status.toString()}`)} ${status}`);
-  } else if (status >= 500) {
+  // handle only 500 series status code in plugin
+  // 400 series may has different meanings for different modules
+  if (status >= 500) {
     context.$notify({
       text: `${context.$t('general.error_code')} ${status}`,
       type: 'fail',
     });
-    // context.$popError(
-    //   context.$t('error_msg.server_error'),
-    //   `${context.$t('general.error_code')} ${status}`);
   }
   throw error;
 }
