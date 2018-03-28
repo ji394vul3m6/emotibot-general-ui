@@ -232,7 +232,7 @@ export default {
     },
     receiveAPIHeader(headerData) {
       // TODO bfb output format with appid
-      const showCols = ['user_id', 'session_id', 'user_q', 'std_q', 'created_time', 'score', 'emotion', 'qtype'];
+      const showCols = ['user_id', 'user_q', 'std_q', 'created_time', 'score', 'emotion', 'qtype'];
       const nowrapCols = ['user_q', 'created_time', 'platform', 'qtype', 'brand', 'sex', 'age', 'hobbies'];
       const that = this;
       const showHeaders = [];
