@@ -93,18 +93,12 @@ export default {
       chartInfo.param.t1 = format.dateToString(startDate);
       chartInfo.param.t2 = format.dateToString(endDate);
       chartInfo.finish = false;
-      chartInfo.handler.$emit('redraw');
-    },
-    tableSelectChange(tableInfo) {
-      const selectedOpt = window.event.currentTarget.querySelector(':checked');
-      tableInfo.param.days = selectedOpt.dataset.days;
-      tableInfo.finish = false;
-      const range = getTimeRange(selectedOpt.dataset.days);
-      const startDate = range[0];
-      const endDate = range[1];
-      tableInfo.param.t1 = format.dateToString(startDate);
-      tableInfo.param.t2 = format.dateToString(endDate);
-      tableInfo.tableHandler.$emit('redraw');
+      if (chartInfo.handler) {
+        chartInfo.handler.$emit('redraw');
+      }
+      if (chartInfo.tableHandler) {
+        chartInfo.tableHandler.$emit('redraw');
+      }
     },
     setUpMsgs() {
       const that = this;
@@ -130,52 +124,52 @@ export default {
             return datas.quantities;
           },
         },
-        {
-          handler: new Vue(),
-          finish: false,
-          name: `${that.$t('statistics.visit_record')}(${that.$t('statistics.dimension')})`,
-          type: 'bar',
-          param: {
-            days: 1,
-            type: 'barchart',
-            filter: 'category',
-            category: 'platform',
-          },
-          getData: that.getVisitStats2,
-          keyMaps: {
-            total_asks: that.$t('statistics.total_asks_num'),
-          },
-          nameKey: 'name',
-          wrapWidth: 20,
-          customData(datas) {
-            datas.forEach((data) => {
-              data.total_asks = data.q.total_asks;
-            });
-            return datas;
-          },
-          types: [
-            {
-              key: 'platform',
-              msg: that.$t('statistics.platform'),
-            },
-            {
-              key: 'brand',
-              msg: that.$t('statistics.brand'),
-            },
-            {
-              key: 'sex',
-              msg: that.$t('statistics.sex'),
-            },
-            {
-              key: 'age',
-              msg: that.$t('statistics.age'),
-            },
-            {
-              key: 'hobbies',
-              msg: that.$t('statistics.hobbies'),
-            },
-          ],
-        },
+        // {
+        //   handler: new Vue(),
+        //   finish: false,
+        //   name: `${that.$t('statistics.visit_record')}(${that.$t('statistics.dimension')})`,
+        //   type: 'bar',
+        //   param: {
+        //     days: 1,
+        //     type: 'barchart',
+        //     filter: 'category',
+        //     category: 'platform',
+        //   },
+        //   getData: that.getVisitStats2,
+        //   keyMaps: {
+        //     total_asks: that.$t('statistics.total_asks_num'),
+        //   },
+        //   nameKey: 'name',
+        //   wrapWidth: 20,
+        //   customData(datas) {
+        //     datas.forEach((data) => {
+        //       data.total_asks = data.q.total_asks;
+        //     });
+        //     return datas;
+        //   },
+        //   types: [
+        //     {
+        //       key: 'platform',
+        //       msg: that.$t('statistics.platform'),
+        //     },
+        //     {
+        //       key: 'brand',
+        //       msg: that.$t('statistics.brand'),
+        //     },
+        //     {
+        //       key: 'sex',
+        //       msg: that.$t('statistics.sex'),
+        //     },
+        //     {
+        //       key: 'age',
+        //       msg: that.$t('statistics.age'),
+        //     },
+        //     {
+        //       key: 'hobbies',
+        //       msg: that.$t('statistics.hobbies'),
+        //     },
+        //   ],
+        // },
         {
           handler: new Vue(),
           finish: false,
