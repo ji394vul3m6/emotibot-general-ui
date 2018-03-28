@@ -7,10 +7,9 @@
             <div class="row">
               <!-- <div id="tags" class="cell">{{ tags }}</div> -->
               <div id="standard_a" class="cell">{{ standard_a }}</div>
-              <div id="commands" class="cell">{{ commands }}</div>
-              <div id="dynamic_menu" class="cell">{{ dynamic_menu }}</div>
-              <div id="start_time" class="cell">{{ start_time }}</div>
-              <div id="end_time" class="cell">{{ end_time }}</div>
+              <!-- <div id="commands" class="cell">{{ commands }}</div>
+              <div id="dynamic_menu" class="cell">{{ dynamic_menu }}</div> -->
+              <div class="cell valid_time">{{ $t('qalist.valid_time') }}</div>
             </div>
           </div>
         </div>
@@ -150,6 +149,10 @@ $width_5percent: 5%;
 
         #end_time {
             width: $width_5percent;
+        }
+
+        .valid_time {
+            width: 2 * $width_5percent;
         }
     }
 }

@@ -32,7 +32,7 @@
               <div class="cell standard_a block-with-text" @dblclick="showEditor(row, answer)" >
                 <qa-answer-content :answerContent="answer.standard_a"></qa-answer-content>
               </div>
-              <div id="commands" class="cell default-box padding" @dblclick="showCommandSelector(row, answer)"> {{ answer.command }}</div>
+              <!-- <div id="commands" class="cell default-box padding" @dblclick="showCommandSelector(row, answer)"> {{ answer.command }}</div>
               <div id="dynamic_menu" class="cell default-box padding" @dblclick="showRelatedQDynamicMenuEditor(row, answer)" 
                 style="word-break: break-all;">
                 <div class="dynamic-menu-container">
@@ -56,9 +56,17 @@
                     <div class="text">...</div>
                   </div>
                 </div>
+              </div> -->
+              <!-- <div id="start_time" class="cell default-box padding" @dblclick="showDatePicker(row, answer)">{{ removeSecond(answer.start_time) }}</div>
+              <div id="end_time" class="cell default-box padding" @dblclick="showDatePicker(row, answer)">{{ removeSecond(answer.end_time) }}</div> -->
+              <div class="valid_time cell default-box padding" @dblclick="showDatePicker(row, answer)">
+                <template v-if="isForever(answer.start_time, answer.end_time)">{{ $t('qalist.forever_valid') }}</template>
+                <template v-else>
+                  <div>{{ getShowTimeString(answer.start_time, 'start') }}</div>
+                  <div>{{ $t('qalist.to') }}</div>
+                  <div>{{ getShowTimeString(answer.end_time, 'end') }}</div>
+                </template>
               </div>
-              <div id="start_time" class="cell default-box padding" @dblclick="showDatePicker(row, answer)">{{ removeSecond(answer.start_time) }}</div>
-              <div id="end_time" class="cell default-box padding" @dblclick="showDatePicker(row, answer)">{{ removeSecond(answer.end_time) }}</div>
             </div>
           </div>
       </div>
@@ -113,6 +121,28 @@ export default {
     this.$root.$off('QASimilarQuestionPop::backToQASimilarQuestionPop', this.showSimilarQuestionPop);
   },
   methods: {
+    isStartTimeForever(time) {
+      return time === '' || time === PickerUtil.FOREVER_START_TIME;
+    },
+    isEndTimeForever(time) {
+      return time === '' || time === PickerUtil.FOREVER_END_TIME;
+    },
+    isForever(start, end) {
+      return this.isEndTimeForever(end) && this.isStartTimeForever(start);
+    },
+    getShowTimeString(time, showType) {
+      const that = this;
+      if (showType === 'start') {
+        if (that.isStartTimeForever(time)) {
+          return that.$t('qalist.no_limit');
+        }
+        return that.removeSecond(time);
+      }
+      if (that.isEndTimeForever(time)) {
+        return that.$t('qalist.no_limit');
+      }
+      return that.removeSecond(time);
+    },
     resetAllSelect() {
       // reset allSelect when checkbox values change
       this.$emit('resetAllSelect');
@@ -1016,6 +1046,16 @@ $fixed-height: 142px;
     #end_time {
         width: $width_5percent;
       //  border-right: solid black 1px;
+    }
+
+    .valid_time {
+        width: 2 * $width_5percent;
+        vertical-align: middle;
+        & > div {
+          display: block;
+          text-align: center;
+          line-height: 2em;
+        }
     }
 
     .question-text {

@@ -177,6 +177,8 @@ export default {
     similar_score: '相似分数',
   },
   qalist: {
+    no_limit: '无期限',
+    forever_valid: '永久有效',
     no_question: '无标准问题',
     header_related_question: '关联问题',
     validated_duration: '生效时间',
@@ -204,6 +206,7 @@ export default {
     standard_a: '标准答案',
     dynamic_menu: '动态菜单',
     related_question: '相关问',
+    valid_time: '有效时间',
     start_time: '开始时间',
     end_time: '结束时间',
     detail: '详情',

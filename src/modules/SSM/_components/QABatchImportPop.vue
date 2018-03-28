@@ -12,10 +12,10 @@
       <input type="radio" class="text margin" id="two" value="1" v-model="value.module">
       <label for="two" class="text"> {{ $t('qalist.alpha_update') }} </label>
     </div>
-    <div class="row">
-      <text-button @click="downloadTemplate(template)">{{ $t('qalist.download_template') }}</text-button>
-      <text-button @click="download(lastTime)" v-if="lastTime">{{ lastTimeMsg }}</text-button>
-      <text-button @click="download(lastTwice)" v-if="lastTwice">{{ lastTwiceMsg }}</text-button>
+    <div class="row multi-line">
+      <div class="line"><text-button @click="downloadTemplate(template)">{{ $t('qalist.download_template') }}</text-button></div>
+      <div class="line"><text-button @click="download(lastTime)" v-if="lastTime">{{ lastTimeMsg }}</text-button></div>
+      <div class="line"><text-button @click="download(lastTwice)" v-if="lastTwice">{{ lastTwiceMsg }}</text-button></div>
       <!-- <div @click="downloadTemplate(template)" class="text-button download-button"> {{ $t('qalist.download_template') }} </div> -->
       <!-- <div @click="download(lastTime)" class="text-button download-button margin" v-if="lastTime"> {{ lastTimeMsg }} </div>
       <div @click="download(lastTwice)" class="text-button download-button margin" v-if="lastTwice"> {{ lastTwiceMsg }} </div> -->
@@ -61,10 +61,10 @@ export default {
           const d = new Date(record.updatedTime);
           if (index === 0) {
             this.lastTime = record;
-            this.lastTimeMsg = `${lastDownloadSuccessMsg}${pickerUtil.toTimeStingByDatetime(d)}`;
+            this.lastTimeMsg = `${lastDownloadSuccessMsg} - ${pickerUtil.toTimeStingByDatetime(d)}`;
           } else if (index === 1) {
             this.lastTwice = record;
-            this.lastTwiceMsg = `${lastDownloadSuccessMsg}${pickerUtil.toTimeStingByDatetime(d)}`;
+            this.lastTwiceMsg = `${lastDownloadSuccessMsg} - ${pickerUtil.toTimeStingByDatetime(d)}`;
           }
         });
       }
@@ -103,7 +103,13 @@ $height: 30px;
 
   .row {
       display: flex;
-      margin-top: 15px;
+      margin-top: 10px;
+      &.multi-line {
+        flex-direction: column;
+        .line:not(:first-child) {
+          margin-top: 10px;
+        }
+      }
   }
 
   .text {

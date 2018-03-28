@@ -1,6 +1,6 @@
 <template>
   <div id="qa-list-page">
-    <div class="qa-list-page-content" style="height: 100%; min-width: 1235px;">
+    <div class="qa-list-page-content" style="height: 100%; min-width: 1080px;">
       <qa-selectors class="qalist-query-operations" ref="selector"></qa-selectors>
       <div class="qalist-display">
         <div id="qa-category">
@@ -15,9 +15,6 @@
     	  	<qa-table ref="qaTable" :tableData="rawData"></qa-table>
     	  </div> 
       </div>
-    </div>
-    <div class="loading" v-if="loading">
-      {{ loadingWord }}
     </div>
     <div style="display:none;"> {{ doQuery }} </div>
   </div>
@@ -47,7 +44,6 @@ export default {
       requestLock: false,
       rawData: [],
       loading: true,
-      loadingWord: '',
       checkingTimer: null,
     };
   },
@@ -83,6 +79,7 @@ export default {
         this.pollingServerImportStatus(data.records[0].stateId);
       } else {
         this.loading = false;
+        this.$emit('endLoading');
         this.queryQA();
       }
     }).catch(this.handleError.bind(this));
@@ -137,27 +134,29 @@ export default {
       this.$root.$off('QAList::loaded', this.hideLoading);
     },
     showLoading() {
-      this.loadingWord = this.$t('general.loading');
       this.loading = true;
+      this.$emit('startLoading');
     },
     hideLoading() {
       this.loading = false;
+      this.$emit('endLoading');
     },
     handleFileImported() {
       // reset search options
       this.resetSearchOptions();
 
       this.loading = false;
+      this.$emit('endLoading');
       this.refreshQAList();
     },
     showFileUploading() {
-      this.loadingWord = this.$t('qalist.in_uploading');
       this.loading = true;
+      this.$emit('startLoading', this.$t('qalist.in_uploading'));
     },
     showFileImporting() {
       // in FQA import status
-      this.loadingWord = this.$t('qalist.import_success');
       this.loading = true;
+      this.$emit('startLoading', this.$t('qalist.import_success'));
     },
     showImportError(msg, id) {
       const that = this;
@@ -195,9 +194,11 @@ export default {
     },
     handleCategoryChanged() {
       this.loading = true;
+      this.$emit('startLoading');
     },
     handleCategoryChangedDone() {
       this.loading = false;
+      this.$emit('endLoading');
       this.refreshQAList();
     },
     deleteQuestions() {
@@ -261,6 +262,7 @@ export default {
     },
     handleError() {
       this.loading = false;
+      this.$emit('endLoading');
       // const that = this;
       // general.handleAPIError(that, error).catch(() => {
       //   that.showLoadingFailPop();
@@ -271,6 +273,7 @@ export default {
       // show loading failed message
       const that = this;
       that.loading = false;
+      that.$emit('endLoading');
       const warningOptions = {
         buttons: ['ok'],
         data: {
@@ -283,25 +286,29 @@ export default {
     queryQA() {
       const that = this;
       if (!that.loading) {
-        that.loadingWord = that.$t('general.loading');
         that.loading = true;
+        that.$emit('startLoading');
         const options = JSON.parse(JSON.stringify(that.qaQueryOptions));
         options.dimension = JSON.stringify(that.qaQueryDimension);
 
         return qaAPI.filterQuestions(that.qaQueryOptions).then((data) => {
           that.rawData = data;
           that.loading = false;
+          that.$emit('endLoading');
         }).catch(that.handleError.bind(that));
       }
       return Promise.resolve(null);
     },
     refreshQAList() {
       this.loading = false;
+      this.$emit('endLoading');
       this.queryQA().then(() => {
         this.loading = true;
+        this.$emit('startLoading');
         return this.$refs.category.updateCategory();
       }).then(() => {
         this.loading = false;
+        this.$emit('endLoading');
       }).catch(this.handleError.bind(this));
     },
   },
