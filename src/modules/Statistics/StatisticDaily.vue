@@ -270,14 +270,14 @@ export default {
       const that = this;
       that.$emit('startLoading');
       that.getContinueRecords(param).then((data) => {
-        that.$root.$emit('showWindow', {
+        that.$emit('endLoading');
+        that.$pop({
           data: data.data,
           component: ChatRecordPop,
           buttons: ['ok'],
-        }, (err) => {
-          that.$popError(that.$t('error_msg.get_stats_error'), err.message);
-          that.$emit('endLoading');
         });
+      }, (err) => {
+        that.$popError(that.$t('error_msg.get_stats_error'), err.message);
         that.$emit('endLoading');
       });
     },
