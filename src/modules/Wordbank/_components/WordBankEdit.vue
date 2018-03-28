@@ -31,7 +31,7 @@
       </div>
       <div class="row">
         <template v-if="answerType === 'default'">
-          <loading size="30px" v-if="defaultAnswers.length === 0"/>
+          <loading size="30px" v-if="defaultAnswers === undefined"/>
           <div v-for="(answer, idx) in defaultAnswers" :key="idx" class='list-input-container'>
             <input disabled :value="answer" size=50/>
           </div>
@@ -75,7 +75,7 @@ export default {
         { text: this.$t('wordbank.default_answer'), val: 'default' },
         { text: this.$t('wordbank.custom_answer'), val: 'custom' },
       ],
-      defaultAnswers: [],
+      defaultAnswers: undefined,
     };
   },
   components: {
@@ -88,11 +88,11 @@ export default {
       if (answerType === 'custom') {
         return;
       }
-      if (that.defaultAnswers.length <= 0) {
-        that.$api.getDefaultSensitiveAnswer().then((data) => {
-          that.defaultAnswers = data;
-        });
-      }
+      // reload default answer every time
+      that.defaultAnswers = undefined;
+      that.$api.getDefaultSensitiveAnswer().then((data) => {
+        that.defaultAnswers = data;
+      });
     },
     validate() {
       const that = this;

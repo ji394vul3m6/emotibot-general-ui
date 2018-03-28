@@ -6,21 +6,27 @@ const WORDBANK_PATH = '/api/v1/dictionary/wordbank';
 
 const CHATS_INFO_PATH = '/api/v1/robot/chat';
 
-function getWordbanks() {
-  function convertData(wordbank) {
-    if (wordbank.similar_words) {
-      wordbank.text = wordbank.similar_words.split(',');
-    }
-    // note: Support only one custom answer for now.
-    // if (wordbank.answer) {
-    //   wordbank.answers = wordbank.answer.split(',');
-    // }
-    if (wordbank.children && wordbank.children.length > 0) {
-      wordbank.children.forEach((child) => {
-        convertData(child);
-      });
-    }
+function convertData(wordbank) {
+  if (wordbank.similar_words) {
+    wordbank.text = wordbank.similar_words.split(',');
   }
+  if (wordbank.children && wordbank.children.length > 0) {
+    wordbank.children.forEach((child) => {
+      convertData(child);
+    });
+  }
+}
+
+function getWordbank(id) {
+  return this.$reqGet(`${WORDBANK_PATH}/${id}`).then((rsp) => {
+    if (rsp.data) {
+      convertData(rsp.data);
+    }
+    return rsp.data;
+  });
+}
+
+function getWordbanks() {
   return this.$reqGet(WORDBANKS_PATH).then((rsp) => {
     if (rsp.data && rsp.data.length > 0) {
       rsp.data.forEach((wordbank) => {
@@ -69,6 +75,7 @@ function getLastResult() {
 }
 
 export default {
+  getWordbank,
   getWordbanks,
   uploadFile,
   getDownloadMeta,

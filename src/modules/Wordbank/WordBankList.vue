@@ -8,7 +8,7 @@
       </template>
     </div>
     <div class="wordbank-list">
-      <div v-for="entry in currentWordBank" :key="entry.name" class="wordbank-entry" @click="goWordbankChildren(entry, currentWordBank)">
+      <div v-for="entry in currentWordBank" :key="entry.name" class="wordbank-entry" @click="goWordbankChildren(entry)">
         <template v-if="entry.type === 0">
           <icon icon-type="folder"></icon>
         </template>
@@ -69,7 +69,7 @@ export default {
       that.currentWordBank = that.paths[idx].wordbank.children;
       that.paths = that.paths.slice(0, idx + 1);
     },
-    goWordbankChildren(wordbank, siblings) {
+    goWordbankChildren(wordbank) {
       const that = this;
       if (wordbank.type === 0) {
         // if wordbank type is directory, go into directory
@@ -79,23 +79,13 @@ export default {
         });
         that.currentWordBank = wordbank.children || [];
       } else if (wordbank.type === 1) {
-        const existedNames = [];
-        siblings.forEach((sibling) => {
-          if (sibling.id !== wordbank.id) {
-            existedNames.push(sibling.name);
-          }
-        });
-
-        // if type is dictionary, open pop to edit it.
+        that.$emit('startLoading');
         const options = {
           title: that.$t('wordbank.edit_dictionary'),
           component: EditPop,
           buttons: ['ok'],
-          data: wordbank,
-          extData: {
-            existedNames,
-          },
           validate: true,
+          extData: {},
           clickOutsideClose: true,
           bindValue: false,
           callback: {
@@ -109,10 +99,19 @@ export default {
             },
           },
         };
+
+        // if type is dictionary, open pop to edit it.
         if (that.paths[0].name === that.$t('wordbank.sensitive_wordbank')) {
           options.extData.setupAnswer = true;
         }
-        that.$pop(options);
+        that.$api.getWordbank(wordbank.id).then((latest) => {
+          options.data = latest;
+          that.$emit('endLoading');
+          that.$pop(options);
+        }, (err) => {
+          console.log(err);
+          that.$emit('startLoading');
+        });
       }
     },
     updateWordbank(data) {
