@@ -437,9 +437,11 @@ export default {
     request_fail: '请求失败',
 
     success: '设定成功',
+    save_success: '保存成功',
     time_format_error: '输入不符合规范，请重新输入',
     empty_data: '无资料',
     data_format_err: '资料格式错误',
+    update_qa_error: '问答更新失败',
   },
   http_status: {
     default: '伺服器错误',

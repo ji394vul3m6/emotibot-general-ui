@@ -202,24 +202,26 @@ export default {
     showUpdateFailWarning() {
       const that = this;
       // const msg = i18nutils.getLocaleMsgs(this.$i18n);
-      const options = {
-        buttons: ['ok'],
-        data: {
-          msg: that.$t('error_msg.update_qa_error'),
-        },
-      };
-      that.$popCheck(options);
+      // const options = {
+      //   buttons: ['ok'],
+      //   data: {
+      //     msg: that.$t('error_msg.update_qa_error'),
+      //   },
+      // };
+      // that.$popCheck(options);
+      this.$notify({ text: that.$t('error_msg.update_qa_error'), type: 'fail' });
       // this.$root.$emit('showWindow', options);
       this.$root.$emit('QATable::SQUpdated');
     },
     updateAnswer(row, answer, index, updatedValue) {
+      const that = this;
       const testDiv = document.createElement('div');
       testDiv.innerHTML = updatedValue.newContent;
 
       if (!(/\S/.test(testDiv.innerText)) && testDiv.innerHTML.indexOf('<img') === -1) {
         return;
       }
-      answer.standard_a = this.encodedContent(updatedValue.newContent);
+      answer.standard_a = that.encodedContent(updatedValue.newContent);
 
       QAapi.queryQuestionDetail({ question_id: row.questionID })
         .then((data) => {
@@ -230,10 +232,14 @@ export default {
             categoryid: row.categoryID,
             similar_question_count: parseInt(row.similar_count, 10),
             question_id: row.questionID,
-            answer_json: JSON.stringify(this.createAnswerJson(data.answerItem)),
-            edituser: this.$cookie.get('userid'),
+            answer_json: JSON.stringify(that.createAnswerJson(data.answerItem)),
+            edituser: that.$cookie.get('userid'),
           };
-          return QAapi.updateQuestion(options).then(() => this.$root.$emit('QATable::SQUpdated'));
+          return QAapi.updateQuestion(options).then(() => {
+            that.$root.$emit('QATable::SQUpdated');
+          }).then(() => {
+            that.$notify({ text: that.$t('error_msg.save_success') });
+          });
         }).then(() => QAapi.activeQA()).catch((err) => {
           this.showUpdateFailWarning(err);
         });
@@ -265,6 +271,7 @@ export default {
     updateAnswerDimensions(row, answer, dimensions) {
       let tags = '';
       let first = true;
+      const that = this;
       const selectedDimensions = [];
       const originAnswerFormatDimension = [];
       // display
@@ -296,8 +303,8 @@ export default {
       answer.tags = tags;
 
       QAapi.queryQuestionDetail({ question_id: row.questionID }).then((data) => {
-        const index = this.findAnswerIndex(data.answerItem, answer);
-        const localIndex = this.findAnswerIndex(row.originAnswers, answer);
+        const index = that.findAnswerIndex(data.answerItem, answer);
+        const localIndex = that.findAnswerIndex(row.originAnswers, answer);
 
         row.originAnswers[localIndex].dimension = originAnswerFormatDimension;
         data.answerItem[index].tags = selectedDimensions;
@@ -306,12 +313,16 @@ export default {
           categoryid: row.categoryID,
           similar_question_count: parseInt(row.similar_count, 10),
           question_id: row.questionID,
-          answer_json: JSON.stringify(this.createAnswerJson(data.answerItem)),
-          edituser: this.$cookie.get('userid'),
+          answer_json: JSON.stringify(that.createAnswerJson(data.answerItem)),
+          edituser: that.$cookie.get('userid'),
         };
-        return QAapi.updateQuestion(options).then(() => this.$root.$emit('QATable::SQUpdated'));
+        return QAapi.updateQuestion(options).then(() => {
+          that.$root.$emit('QATable::SQUpdated');
+        }).then(() => {
+          that.$notify({ text: that.$t('error_msg.save_success') });
+        });
       }).then(() => QAapi.activeQA()).catch((err) => {
-        this.showUpdateFailWarning(err);
+        that.showUpdateFailWarning(err);
       });
     },
     showDimensionSelector(row, answer) {
