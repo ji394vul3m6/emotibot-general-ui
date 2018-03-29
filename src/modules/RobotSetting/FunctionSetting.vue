@@ -1,23 +1,17 @@
 <template>
-<div id="robot-skill" class="page">
-  <div class="content">
-    <text-button main v-if="canEdit" v-on:click="setAll(true)" :disabled=allActive>{{ $t("robot_setting.all_active") }}</text-button>
-    <text-button main v-if="canEdit" v-on:click="setAll(false)" :disabled=allDeactive>{{ $t("robot_setting.all_deactive") }}</text-button>
-    <div>
-      <div v-for="skill in moduleList" :key="skill.id" class="skill-container" :class="{checked: skill.checked}">
-        <div class="skill-name">{{ skill.text }}</div>
-        <div class="skill-icon-container">
-          <img :src="skill.img" class="skill-icon">
-        </div>
-        <div class="skill-info">{{ skill.info }}</div>
-        <div class="skill-switch" v-if="canEdit" v-on:click.stop.prevent="toggleSkill(skill)">
-          <span class="skill-switch-base">
-            <input type="checkbox" :id="`skill_${skill.id}`" v-model="skill.checked">
-            <label :for="`skill_${skill.id}`"></label>
-          </span>
-        </div>
-        <div class="skill-switch" v-else style="cursor: default;"></div>
+<div id="robot-skill">
+  <text-button main v-if="canEdit" v-on:click="setAll(true)" :disabled=allActive>{{ $t("robot_setting.all_active") }}</text-button>
+  <text-button main v-if="canEdit" v-on:click="setAll(false)" :disabled=allDeactive>{{ $t("robot_setting.all_deactive") }}</text-button>
+  <div class="skill-card-container">
+    <div v-for="skill in moduleList" :key="skill.id" class="skill-card" :class="{checked: skill.checked}">
+      <div class="skill-icon-container">
+        <img :src="skill.img" class="skill-icon">
       </div>
+      <div class="skill-text">{{ skill.text }}</div>
+      <div class="skill-switch" v-if="canEdit">
+        <toggle v-model="skill.checked" @change="updateSkill(skill)"/>
+      </div>
+      <div class="skill-switch" v-else style="cursor: default;"></div>
     </div>
   </div>
 </div>
@@ -198,83 +192,54 @@ export default {
 @import "styles/variable";
 #robot-skill {
   @include auto-overflow();
-  .skill-container {
-    width: 200px;
-    text-align: center;
-    float: left;
-    margin-right: 20px;
+  .skill-card-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-content: flex-start;
     margin-top: 20px;
-    background: white;
-    border: 1px solid $page-header-color;
 
-    &:not(.checked) {
-      opacity: 0.2;
+    .skill-card {
+      flex: 300px;
+
+      background: white;
       border: 1px solid $page-header-color;
-    }
+      margin-right: 20px;
+      margin-bottom: 20px;
+      padding: 5px 0;
+      border-radius: $input-border-radius;
 
-    .skill-icon-container {
-      box-sizing: border-box;
-      height: 120px;
-      padding: 20px;
+      display: flex;
+      align-items: center;
 
-      img {
-        display: inline-block;
-        width: 80px;
-        height: 80px;
-      }
-    }
-    .skill-name {
-      font-size: 1.5em;
-      line-height: $default-line-height;
-      color: white;
-      background: $page-header-color;
-    }
+      $icon-height: 80px;
+      .skill-icon-container {
+        flex: 0 0 $icon-height/2;
+        margin: 0 10px;
+        box-sizing: border-box;
+        height: $icon-height;
+        display: flex;
+        align-items: center;
+        justify-content: center;
 
-    .skill-info {
-      color: lighten($page-header-color, 15%);
-    }
-  }
-
-
-  .skill-switch {
-    vertical-align: middle;
-    padding: 10px;
-    cursor: pointer;
-
-    .skill-switch-base {
-      display: inline-block;
-      background: $page-header-color;
-      width: 60px;
-      height: 26px;
-      border-radius: 20px;
-      position: relative;
-      padding: 3px;
-      input {
-        visibility: hidden;
-        &:checked + label {
-          left: 36px;
-        }
-        &::before {
-          content: 'ON';
-          color: white;
-        }
-        &::after {
-          content: 'OFF';
-          color: white;
+        img {
+          display: inline-block;
+          width: $icon-height / 4 * 3;
+          height: $icon-height / 4 * 3;
         }
       }
-      label {
-        display: block;
-        position: absolute;
-        width: 20px;
-        height: 20px;
-        background: white;
-        top: 3px;
-        left: 3px;
-        border-radius: 20px;
-        user-select: none;
-        cursor: pointer;
-        transition: all 0.4s ease;
+      .skill-text {
+        flex: auto;
+        word-break: break-all;
+      }
+      .skill-switch {
+        flex: 0 0 70px;
+        padding: 0 5px;
+      }
+
+      &:not(.checked) {
+        opacity: 0.2;
+        border: 1px solid $page-header-color;
       }
     }
   }

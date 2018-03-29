@@ -8,6 +8,7 @@ import 'es6-promise/auto';
 import TextButton from '@/components/basic/TextButton';
 import SearchInput from '@/components/basic/SearchInput';
 import Loading from '@/components/basic/Loading';
+import Toggle from '@/components/basic/Toggle';
 
 import App from './App';
 import router from './router';
@@ -36,6 +37,7 @@ Vue.use(api);
 Vue.component('text-button', TextButton);
 Vue.component('search-input', SearchInput);
 Vue.component('loading', Loading);
+Vue.component('toggle', Toggle);
 
 const i18n = new VueI18n({
   locale: 'zh-cn',
