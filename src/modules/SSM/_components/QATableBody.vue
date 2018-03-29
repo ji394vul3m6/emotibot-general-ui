@@ -237,10 +237,13 @@ export default {
           };
           return QAapi.updateQuestion(options).then(() => {
             that.$root.$emit('QATable::SQUpdated');
-          }).then(() => {
-            that.$notify({ text: that.$t('error_msg.save_success') });
           });
-        }).then(() => QAapi.activeQA()).catch((err) => {
+        })
+        .then(() => QAapi.activeQA())
+        .then(() => {
+          that.$notify({ text: that.$t('error_msg.save_success') });
+        })
+        .catch((err) => {
           this.showUpdateFailWarning(err);
         });
     },
@@ -318,10 +321,13 @@ export default {
         };
         return QAapi.updateQuestion(options).then(() => {
           that.$root.$emit('QATable::SQUpdated');
-        }).then(() => {
-          that.$notify({ text: that.$t('error_msg.save_success') });
         });
-      }).then(() => QAapi.activeQA()).catch((err) => {
+      })
+      .then(() => QAapi.activeQA())
+      .then(() => {
+        that.$notify({ text: that.$t('error_msg.save_success') });
+      })
+      .catch((err) => {
         that.showUpdateFailWarning(err);
       });
     },
