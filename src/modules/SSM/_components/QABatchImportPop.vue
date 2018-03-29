@@ -13,7 +13,7 @@
       <label for="two" class="text"> {{ $t('qalist.alpha_update') }} </label>
     </div>
     <div class="row multi-line">
-      <div class="line"><text-button @click="downloadTemplate(template)">{{ $t('qalist.download_template') }}</text-button></div>
+      <!-- <div class="line"><text-button @click="downloadTemplate(template)">{{ $t('qalist.download_template') }}</text-button></div> -->
       <div class="line"><text-button @click="download(lastTime)" v-if="lastTime">{{ lastTimeMsg }}</text-button></div>
       <div class="line"><text-button @click="download(lastTwice)" v-if="lastTwice">{{ lastTwiceMsg }}</text-button></div>
       <!-- <div @click="downloadTemplate(template)" class="text-button download-button"> {{ $t('qalist.download_template') }} </div> -->

@@ -1,7 +1,7 @@
 <template>
   <div>
     <input :maxlength="value.maxlength" :placeholder="value.inputName" v-model="value.value">
-    <div class="error" v-if="showError">{{ errorMsg }}</div>
+    <div class="err-msg" v-if="showError">{{ errorMsg }}</div>
   </div>  
 </template>
 
@@ -42,14 +42,20 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import 'styles/variable.scss';
 input {
   width: 100%;
   font-size: 1em;
 }
 
-.error {
-  margin-top: 10px;
-  color: red;
-  font-size: 1em;
+.err-msg {
+  color: $error-color;
+  font-weight: bold;
+}
+div.err-msg {
+  margin-top: 5px;
+}
+span.err-msg {
+  margin-left: 5px;
 }
 </style>

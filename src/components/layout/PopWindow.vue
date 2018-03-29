@@ -20,11 +20,11 @@
           <text-button :main=button.primary
             v-on:click="customClick(button)" :key="button.msg">{{ button.msg }}</text-button>
         </template>
-        <text-button main :disable=disable_ok
+        <text-button main :disabled=disable_ok
           v-on:click="click(true)"
           ref="okBtn"
           v-if="buttons.indexOf('ok') != -1">{{ ok_msg }}</text-button>
-        <text-button main :disable=disable_ok
+        <text-button main :disabled=disable_ok
           v-on:click="click(false)"
           ref="cancelBtn"
           v-if="buttons.indexOf('cancel') != -1">{{ cancel_msg }}</text-button>

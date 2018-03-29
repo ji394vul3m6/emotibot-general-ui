@@ -145,6 +145,7 @@ export default {
     err_synonym_length: '单个词长度超过{length}',
     err_synonym_total_length: '总长度超过{length}',
     err_name_empty: '词语不可为空',
+    err_wordbank_not_found: '该词库已被删除',
 
     import_history: '导入纪录',
 
@@ -389,6 +390,7 @@ export default {
     description: '提示',
     file: '档案',
     finish: '完成',
+    folder: '目录',
   },
   dimension: {
     categories: {
@@ -443,6 +445,7 @@ export default {
     empty_data: '无资料',
     data_format_err: '资料格式错误',
     update_qa_error: '问答更新失败',
+    input_empty: '输入不可为空',
   },
   http_status: {
     default: '伺服器错误',

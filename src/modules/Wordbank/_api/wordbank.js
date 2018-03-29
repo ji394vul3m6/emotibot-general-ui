@@ -1,10 +1,34 @@
+import qs from 'qs';
+
 const META_PATH = '/api/v1/dictionary/download-meta';
 const CHECK_PATH = '/api/v1/dictionary/full-check';
 const UPLOAD_PATH = '/api/v1/dictionary/upload';
 const WORDBANKS_PATH = '/api/v1/dictionary/wordbanks';
 const WORDBANK_PATH = '/api/v1/dictionary/wordbank';
-
 const CHATS_INFO_PATH = '/api/v1/robot/chat';
+
+function addFolder(paths, name) {
+  let i = 0;
+  const data = {};
+  for (i = 0; i < paths.length; i += 1) {
+    data[`level${i + 1}`] = paths[i].name;
+  }
+  data[`level${i + 1}`] = name;
+  return this.$reqPut(WORDBANK_PATH, qs.stringify(data)).then(res => res.data);
+}
+
+function addWordbank(paths, wordbank) {
+  const data = {
+    name: wordbank.name,
+    answer: wordbank.answer,
+    similar_words: wordbank.similar_words,
+    type: 1,
+  };
+  for (let i = 0; i < paths.length; i += 1) {
+    data[`level${i + 1}`] = paths[i].name;
+  }
+  return this.$reqPut(WORDBANK_PATH, qs.stringify(data)).then(res => res.data);
+}
 
 function convertData(wordbank) {
   if (wordbank.similar_words) {
@@ -75,6 +99,8 @@ function getLastResult() {
 }
 
 export default {
+  addWordbank,
+  addFolder,
   getWordbank,
   getWordbanks,
   uploadFile,

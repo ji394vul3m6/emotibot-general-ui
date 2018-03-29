@@ -2,8 +2,13 @@
   <div>
     <div class="row">
       <span>{{ $t('wordbank.word') }}：</span>
-      <!-- <input v-model="name"> -->
-      <span> {{ name }} </span>
+      <template v-if="extData.nameEditable">
+        <input v-model="name" ref="nameInput" :class="{error: showNameError}" @blur="checkName">
+        <span class="err-msg" v-if="showNameError">{{ $t('wordbank.err_name_empty') }}</span>
+      </template>
+      <template v-else>
+        <span> {{ name }} </span>
+      </template>
     </div>
     <div class="block">
       <div class="row">
@@ -76,6 +81,7 @@ export default {
         { text: this.$t('wordbank.custom_answer'), val: 'custom' },
       ],
       defaultAnswers: undefined,
+      showNameError: false,
     };
   },
   components: {
@@ -83,6 +89,16 @@ export default {
     'label-switch': LabelSwitch,
   },
   methods: {
+    checkName() {
+      const that = this;
+      if (that.name === undefined || that.name === '') {
+        that.showNameError = true;
+        that.$emit('disableOK');
+      } else {
+        that.showNameError = false;
+        that.$emit('enableOK');
+      }
+    },
     typeChange(answerType) {
       const that = this;
       if (answerType === 'custom') {
@@ -96,17 +112,28 @@ export default {
     },
     validate() {
       const that = this;
-      if (that.isSynonymsValid) {
-        const retObj = Object.assign({}, that.origData);
-        retObj.text = that.text;
-        retObj.similar_words = retObj.text.join(',');
-        retObj.name = that.name;
-        retObj.answer = that.customAnswer;
-        if (that.answerType === 'default') {
-          retObj.answer = '';
-        }
-        that.$emit('validateSuccess', retObj);
+      if (that.name === undefined || that.name === '') {
+        that.showNameError = true;
+        that.$nextTick(() => {
+          that.$refs.nameInput.focus();
+        });
+        that.$emit('disableOK');
+        return;
       }
+
+      if (!that.isSynonymsValid) {
+        return;
+      }
+
+      const retObj = Object.assign({}, that.origData);
+      retObj.text = that.text;
+      retObj.similar_words = retObj.text.join(',');
+      retObj.name = that.name;
+      retObj.answer = that.customAnswer;
+      if (that.answerType === 'default') {
+        retObj.answer = '';
+      }
+      that.$emit('validateSuccess', retObj);
     },
     updateSynonyms(synonyms) {
       const that = this;
@@ -136,6 +163,9 @@ export default {
     } else {
       that.answerType = 'default';
     }
+    that.$nextTick(() => {
+      that.$refs.nameInput.focus();
+    });
 
     if (that.origData.name) {
       that.name = that.origData.name;
@@ -160,6 +190,9 @@ export default {
   input {
     border: 1px solid black;
     padding: 10px;
+    &.error {
+      border: 1px solid $error-color;
+    }
   }
   .list-input-container {
     &:not(:last-child) {
@@ -175,6 +208,12 @@ export default {
   .err-msg {
     color: $error-color;
     font-weight: bold;
+  }
+  div.err-msg {
+    margin-top: 5px;
+  }
+  span.err-msg {
+    margin-left: 5px;
   }
 }
 </style>
