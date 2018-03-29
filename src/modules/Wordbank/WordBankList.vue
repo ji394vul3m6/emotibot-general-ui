@@ -102,6 +102,7 @@ export default {
 
         // if type is dictionary, open pop to edit it.
         if (that.paths[0].name === that.$t('wordbank.sensitive_wordbank')) {
+          // only sensitive wordbank can setup custom answer
           options.extData.setupAnswer = true;
         }
         that.$api.getWordbank(wordbank.id).then((latest) => {

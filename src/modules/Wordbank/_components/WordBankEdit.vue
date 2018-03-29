@@ -21,7 +21,7 @@
         <div class="err-msg" v-if="!isSynonymsTooMany">{{ $t('wordbank.err_synonym_total_length', {length: maxTotalLength}) }}</div>
       </div>
     </div>
-    <div class="block">
+    <div class="block" v-if="extData.setupAnswer">
       <div class="row">
         <span>{{ $t('wordbank.sensitive_answer') }}：</span>
         <span class="info">{{ $t('wordbank.sensitive_answer_note') }}</span>
