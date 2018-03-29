@@ -144,6 +144,7 @@ export default {
 
     err_synonym_length: '单个词长度超过{length}',
     err_synonym_total_length: '总长度超过{length}',
+    err_name_empty: '词语不可为空',
 
     import_history: '导入纪录',
 

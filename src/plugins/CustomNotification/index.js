@@ -15,6 +15,10 @@ function popNotification(option) {
   this.$root.$emit('notification', localOption);
 }
 
+function popFailNotification(text) {
+  this.$notify({ text, type: 'fail' });
+}
+
 const MyPlugin = {
   install(Vue, option) {
     // user can use notifications as tag to use notification in web
@@ -30,6 +34,7 @@ const MyPlugin = {
 
     // user can use vue.$notify to use notification
     Vue.prototype.$notify = popNotification;
+    Vue.prototype.$notifyFail = popFailNotification;
   },
 };
 

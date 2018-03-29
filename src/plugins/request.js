@@ -67,6 +67,17 @@ function get(url, config) {
   return this.$reqAjax(option);
 }
 
+function put(url, data, config) {
+  let option = Object.assign({}, config);
+  if (!config) {
+    option = {};
+  }
+  option.data = data;
+  option.method = 'put';
+  option.url = url;
+  return this.$reqAjax(option);
+}
+
 function post(url, data, config) {
   let option = Object.assign({}, config);
   if (!config) {
@@ -82,6 +93,7 @@ const MyPlugin = {
   install(Vue) {
     Vue.prototype.$reqGet = get;
     Vue.prototype.$reqPost = post;
+    Vue.prototype.$reqPut = put;
     Vue.prototype.$reqAjax = ajax;
 
     Vue.prototype.$setupRobot = function setupRobot(id) {
