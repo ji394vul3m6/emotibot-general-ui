@@ -68,8 +68,7 @@ export default {
     // that.i18n = i18nUtil.getLocaleMsgs(that.$i18n);
     that.setUpMsg();
 
-    const options = this.$store.qaQueryOptions;
-
+    const options = this.qaQueryOptions;
     QAapi.exportQuestions(options).then((data) => {
       that.pollingState(data.stateId);
     }).catch((err) => {
