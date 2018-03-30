@@ -1,15 +1,28 @@
 export default {
   privileges: {
     role: '角色',
+    user: '用户',
+    password: '密碼',
     role_name: '角色名',
+    user_name: '用户名',
     privileges: '权限',
 
-    no_roles: '无存在角色',
+    placeholder_user_name: '请输入用户名',
+    placeholder_password: '请输入密码',
+    placeholder_modify_password: '若要變更則輸入密碼',
+
+    system_admin: '系统管理员',
+
+    no_roles: '无角色存在',
+    no_users: '无用户存在',
     all_active: '开启全部',
     all_deactive: '关闭全部',
 
-    check_delete: '確認要刪除角色：{role}',
-    delete_success: '刪除角色成功',
+    check_delete: '确认要删除角色：{role}',
+    check_delete_user: '确认要删除用戶：{user}',
+    delete_success: '删除角色成功',
+    err_need_create_role: '请先新增角色',
+    err_role_empty: '角色不可为空',
 
     actions: {
       edit: '编辑',

@@ -69,3 +69,13 @@ $success-color: #5cd29d;
     }
     margin-left: 10px;
 }
+
+@mixin general-select {
+    padding: 10px;
+    width: 150px;
+    height: 30px;
+    margin-left: 10px;
+    &.error {
+      border: 1px solid $error-color;
+    }
+}

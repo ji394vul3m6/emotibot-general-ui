@@ -90,8 +90,8 @@ function patch(url, data, config) {
   return this.$reqCustom(url, 'patch', data, config);
 }
 
-function deleteReq(url, data, config) {
-  return this.$reqCustom(url, 'delete', data, config);
+function deleteReq(url, config) {
+  return this.$reqCustom(url, 'delete', {}, config);
 }
 
 const MyPlugin = {

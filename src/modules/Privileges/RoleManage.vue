@@ -112,6 +112,7 @@ export default {
         data: {
           name: '',
         },
+        title: `${that.$t('general.add')}${that.$t('privileges.role')}`,
         validate: true,
         bindValue: false,
         callback: {
@@ -129,9 +130,13 @@ export default {
     },
     loadRoles() {
       const that = this;
+      that.$emit('startLoading');
       that.$api.getRoles().then((roles) => {
         that.roles = roles;
+      }, () => {
+        // TODO
       });
+      that.$emit('endLoading');
     },
   },
   mounted() {
