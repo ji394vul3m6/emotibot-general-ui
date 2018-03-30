@@ -31,8 +31,9 @@ USE `authentication`;
 --
 
 CREATE TABLE IF NOT EXISTS `privilege_list` (
-  `privilege_id` int(11) NOT NULL,
+  `privilege_id` int(11) NOT NULL AUTO_INCREMENT,
   `privilege_name` varchar(32) NOT NULL,
+  `cmd_list` varchar(64) NOT NULL DEFAULT '',
   PRIMARY KEY (`privilege_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -40,19 +41,16 @@ CREATE TABLE IF NOT EXISTS `privilege_list` (
 -- 資料表的匯出資料 `privilege_list`
 --
 
-INSERT INTO `privilege_list` (`privilege_id`, `privilege_name`, `cmd_list`) VALUES
-(1, 'statistic-daily', 'view'),
-(2, 'statistic-analysis', 'view'),
-(3, 'statistic-audit', 'view'),
-(4, 'qalist', 'view,edit,create,delete,export,import'),
-(5, 'qatest', 'view'),
-(6, 'dictionary', 'view,import,export'),
-(7, 'robot-profile', 'view,edit'),
-(8, 'robot-skill', 'view,edit'),
-(9, 'robot-chat', 'view,edit'),
-(10, 'switch-manage', 'view,edit'),
-(11, 'user-manage', 'edit'),
-(12, 'role-manage', 'edit');
+INSERT INTO `privilege_list` (`privilege_name`, `cmd_list`) VALUES
+('statistic_dash', 'view'),
+('statistic_daily', 'view'),
+('statistic_audit', 'view'),
+('qalist', 'view,edit,create,delete,export,import'),
+('qatest', 'view'),
+('qa_chat_skill', 'view,edit'),
+('robot_profile', 'view,edit'),
+('wordbank', 'view,edit,create,delete,export,import'),
+('management', 'edit');
 
 INSERT INTO `enterprise_list` (`enterprise_id`, `enterprise_name`, `created_time`, `industry`, `phone_number`, `address`, `people_numbers`, `app_id`) VALUES
 ('a3121bb5cdac2990dbd59a3fa7dc0bc4', 'CSBOT', '2017-10-17 08:55:38', '电商', '0000000000', 'CSBOT', 50, 'CSBOT');

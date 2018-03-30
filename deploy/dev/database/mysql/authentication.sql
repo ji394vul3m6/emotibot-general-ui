@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS `enterprise_list` (
 --
 
 CREATE TABLE IF NOT EXISTS `privilege_list` (
-  `privilege_id` int(11) NOT NULL,
+  `privilege_id` int(11) NOT NULL AUTO_INCREMENT,
   `privilege_name` varchar(32) NOT NULL,
   `cmd_list` varchar(64) NOT NULL DEFAULT '',
   PRIMARY KEY (`privilege_id`)
