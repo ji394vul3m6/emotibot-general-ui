@@ -1,8 +1,6 @@
 <template>
   <div class="search-input">
-    <div class="icon" @click="$refs.input.focus()">
-      <div class="searchIcon"></div>
-    </div>
+    <icon icon-type="search"/>
     <input v-model="keyword"
       ref="input"
       @keypress.enter="$emit('search', keyword)"

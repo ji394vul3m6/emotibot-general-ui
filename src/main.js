@@ -9,6 +9,7 @@ import TextButton from '@/components/basic/TextButton';
 import SearchInput from '@/components/basic/SearchInput';
 import Loading from '@/components/basic/Loading';
 import Toggle from '@/components/basic/Toggle';
+import Icon from '@/components/basic/Icon';
 
 import App from './App';
 import router from './router';
@@ -38,6 +39,7 @@ Vue.component('text-button', TextButton);
 Vue.component('search-input', SearchInput);
 Vue.component('loading', Loading);
 Vue.component('toggle', Toggle);
+Vue.component('icon', Icon);
 
 const i18n = new VueI18n({
   locale: 'zh-cn',

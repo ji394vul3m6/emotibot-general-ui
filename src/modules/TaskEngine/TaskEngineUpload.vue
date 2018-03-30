@@ -31,7 +31,7 @@ import importDesc from './_data/taskEngineImportDesc';
 
 export default {
   path: 'task-engine-upload',
-  privCode: 'task-engine',
+  privCode: 'task_engine',
   displayNameKey: 'task_engine_upload',
   icon: 'white_task_engine_upload',
   name: 'task-engine-upload',

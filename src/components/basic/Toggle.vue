@@ -1,5 +1,5 @@
 <template>
-  <div class="toggle-base" v-on:click="toggle">
+  <div class="toggle-base" v-on:click="toggle" :class="{checked: checked, big: big}">
     <input type="checkbox" :id="id" v-model="checked">
     <label :for="id"></label>
   </div>
@@ -9,6 +9,10 @@
 export default {
   props: {
     value: {
+      type: Boolean,
+      default: false,
+    },
+    big: {
       type: Boolean,
       default: false,
     },
@@ -30,9 +34,9 @@ export default {
     },
   },
   data() {
-    const now = new Date();
+    const random = parseInt(Math.random() * 1000, 10);
     return {
-      id: `toggle_${now.getTime()}`,
+      id: `toggle_${random}`,
       checked: false,
     };
   },
@@ -47,31 +51,28 @@ export default {
 .toggle-base {
   cursor: pointer;
   display: inline-block;
-  background: $active-color;
-  width: 60px;
-  height: 26px;
-  border-radius: 20px;
+  width: 40px;
   position: relative;
+  background: $deactive-color;
+  height: 20px;
+  border-radius: 14px;
   padding: 3px;
+
+  &.checked {
+    background: $active-color;
+  }
+  transition: background-color 500ms;
   input {
     visibility: hidden;
     &:checked + label {
-      left: 36px;
-    }
-    &::before {
-      content: 'ON';
-      color: white;
-    }
-    &::after {
-      content: 'OFF';
-      color: white;
+      left: 23px;
     }
   }
   label {
     display: block;
     position: absolute;
-    width: 20px;
-    height: 20px;
+    width: 14px;
+    height: 14px;
     background: white;
     top: 3px;
     left: 3px;
@@ -79,6 +80,23 @@ export default {
     user-select: none;
     cursor: pointer;
     transition: all 0.4s ease;
+  }
+  
+  &.big {
+    width: 60px;
+    height: 26px;
+    border-radius: 20px;
+    padding: 3px;
+    label {
+      width: 20px;
+      height: 20px;
+    }
+    input {
+      visibility: hidden;
+      &:checked + label {
+        left: 36px;
+      }
+    }
   }
 }
 </style>

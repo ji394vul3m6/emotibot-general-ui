@@ -81,7 +81,6 @@ export default {
   methods: {
     submitChange(id) {
       const btns = this.$refs[`chat_${id}_button`];
-      console.log(btns);
       if (btns && btns[0]) {
         btns[0].$emit('forceClick');
       }

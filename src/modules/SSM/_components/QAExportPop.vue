@@ -65,7 +65,6 @@ export default {
   },
   mounted() {
     const that = this;
-    // that.i18n = i18nUtil.getLocaleMsgs(that.$i18n);
     that.setUpMsg();
 
     const options = this.qaQueryOptions;

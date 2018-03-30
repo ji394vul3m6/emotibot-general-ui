@@ -7,7 +7,7 @@
 <script>
 export default {
   path: 'task-engine-scenario',
-  privCode: 'task-engine',
+  privCode: 'task_engine',
   displayNameKey: 'task_engine_scenario',
   icon: 'white_task_engine',
   name: 'task-engine-scenario',

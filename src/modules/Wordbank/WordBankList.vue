@@ -41,7 +41,7 @@ import EditPop from './_components/WordBankEdit';
 
 export default {
   path: 'wordbank-list',
-  privCode: 'wordbank_list',
+  privCode: 'wordbank',
   displayNameKey: 'wordbank_list',
   icon: 'white_folder',
   components: {

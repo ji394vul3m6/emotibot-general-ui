@@ -9,8 +9,8 @@
           :maxlength="maxLength"
           v-model="inputs[idx]"
           @compositionstart="inComposition=true"
-          @compositionend="inComposition=false"
-          @keyup="handleKeyup($event, idx)"
+          @compositionend="endComposition"
+          @keydown="handleKeyup($event, idx)"
           @change="handleChange">
       </div>
     </div>
@@ -56,6 +56,12 @@ export default {
     inputs: [],
   }),
   methods: {
+    endComposition() {
+      this.inComposition = false;
+      this.$nextTick(() => {
+        this.$emit('input', this.updateValue);
+      });
+    },
     handleChange() {
       const temp = this.inputs.filter(input => input !== '');
       while (temp.length < this.maxValues) {
@@ -87,7 +93,9 @@ export default {
           that.$emit('submit');
         }
         if (!misc.controlKeyOnly(e)) {
-          that.$emit('input', this.updateValue);
+          that.$nextTick(() => {
+            that.$emit('input', that.updateValue);
+          });
         }
       }
     },

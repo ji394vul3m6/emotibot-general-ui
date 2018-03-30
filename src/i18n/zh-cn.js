@@ -4,10 +4,36 @@ export default {
     role_name: '角色名',
     privileges: '权限',
 
+    no_roles: '无存在角色',
+    all_active: '开启全部',
+    all_deactive: '关闭全部',
+
+    check_delete: '確認要刪除角色：{role}',
+    delete_success: '刪除角色成功',
+
     actions: {
       edit: '编辑',
       view: '查看',
-      add: '新增',
+      create: '新增',
+      delete: '删除',
+      export: '导出',
+      import: '导入',
+    },
+
+    modules: {
+      statistic_dash: '统计概览',
+      statistic_daily: '日志管理',
+      statistic_audit: '操作日志',
+
+      qalist: '问答库',
+      qatest: '对话测试',
+      qa_chat_skill: '话术设置',
+
+      robot_profile: '机器人形象',
+      wordbank: '词库',
+      task_engine: '任务引擎',
+
+      management: '权限管理',
     },
   },
   login: {
@@ -136,7 +162,7 @@ export default {
     synonym: '同义词',
     synonym_note: '单个词长度最多35，各单词间使用 "," 隔开，总长度不可超过5000',
     sensitive_wordbank: '敏感词库',
-    sensitive_answer: '敏感問回答',
+    sensitive_answer: '敏感问回答',
     sensitive_answer_note: '当用户问句中包含此敏感词库时，可自订回复答案',
     default_answer: '预设答案',
     custom_answer: '自订答案',

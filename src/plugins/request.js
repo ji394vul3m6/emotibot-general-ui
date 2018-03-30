@@ -57,6 +57,17 @@ function ajax(config) {
   });
 }
 
+function customType(url, type, data, config) {
+  let option = Object.assign({}, config);
+  if (!config) {
+    option = {};
+  }
+  option.data = data;
+  option.method = type;
+  option.url = url;
+  return this.$reqAjax(option);
+}
+
 function get(url, config) {
   let option = Object.assign({}, config);
   if (!config) {
@@ -68,32 +79,29 @@ function get(url, config) {
 }
 
 function put(url, data, config) {
-  let option = Object.assign({}, config);
-  if (!config) {
-    option = {};
-  }
-  option.data = data;
-  option.method = 'put';
-  option.url = url;
-  return this.$reqAjax(option);
+  return this.$reqCustom(url, 'put', data, config);
 }
 
 function post(url, data, config) {
-  let option = Object.assign({}, config);
-  if (!config) {
-    option = {};
-  }
-  option.data = data;
-  option.method = 'post';
-  option.url = url;
-  return this.$reqAjax(option);
+  return this.$reqCustom(url, 'post', data, config);
+}
+
+function patch(url, data, config) {
+  return this.$reqCustom(url, 'patch', data, config);
+}
+
+function deleteReq(url, data, config) {
+  return this.$reqCustom(url, 'delete', data, config);
 }
 
 const MyPlugin = {
   install(Vue) {
     Vue.prototype.$reqGet = get;
+    Vue.prototype.$reqCustom = customType;
     Vue.prototype.$reqPost = post;
     Vue.prototype.$reqPut = put;
+    Vue.prototype.$reqDelete = deleteReq;
+    Vue.prototype.$reqPatch = patch;
     Vue.prototype.$reqAjax = ajax;
 
     Vue.prototype.$setupRobot = function setupRobot(id) {

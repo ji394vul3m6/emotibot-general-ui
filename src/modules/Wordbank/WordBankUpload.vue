@@ -65,7 +65,7 @@ function getPadedNum(num) {
 
 export default {
   path: 'wordbank-upload',
-  privCode: 'wordbank_upload',
+  privCode: 'wordbank',
   displayNameKey: 'wordbank_upload',
   icon: 'white_wordbank_upload',
   components: {

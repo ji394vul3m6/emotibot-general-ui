@@ -1,45 +1,52 @@
 <template>
   <div id='role-manage'>
     <div class="actions row">
-      <text-button main icon-type="white_add">{{$t('general.add')}}{{$t('privileges.role')}}</text-button>
+      <text-button main icon-type="white_add" @click="popAddRole">{{$t('general.add')}}{{$t('privileges.role')}}</text-button>
       <search-input v-model="keyword"></search-input>
     </div>
     <div class="header row">
       <div class="check"></div>
       <div class="name">{{$t('privileges.role_name')}}</div>
-      <div class="privileges">{{$t('privileges.privileges')}}</div>
+      <!-- <div class="privileges">{{$t('privileges.privileges')}}</div> -->
       <div class="actions">{{$t('general.actions')}}</div>
     </div>
     <div class="lists">
-      <div v-for="role in roles" v-if="role.name.indexOf(keyword) !== -1" :key="role.id" class='role-row row'>
+      <template v-if="roles.length > 0">
+      <div v-for="role in roles" v-if="role.role_name.indexOf(keyword) !== -1" :key="role.role_id" class='role-row row'>
         <div class="check">
-          <input type="checkbox">
+          <!-- <input type="checkbox"> -->
         </div>
-        <div class="name">{{role.name}}</div>
-        <div class="privileges">
+        <div class="name">{{role.role_name}}</div>
+        <!-- <div class="privileges">
           <div v-for="(actions, privilege) in role.privileges" :key="privilege">
             {{privilegeList[privilege].name}}:
             <span v-for="action in actions" :key="action">{{$t(`privileges.actions.${action}`)}}</span>
           </div>
-        </div>
+        </div> -->
         <div class="actions">
-          <div class="icon button">
-            <div class="edit_icon"></div>
+          <div class="icon button" @click="popEditRole(role)">
+            <icon icon-type="edit"/>
             <div class="tooltip">{{$t('general.edit')}}</div>
           </div>
           <div class="icon button">
-            <div class="delete_icon"></div>
+            <icon icon-type="delete" @click="deleteRole(role)"/>
             <div class="tooltip">{{$t('general.delete')}}</div>
           </div>
         </div>
       </div>
+      </template>
+      <template v-else>
+        <div class='role-row row empty'>
+          {{ $t('privileges.no_roles') }}
+        </div>
+      </template>
     </div>
   </div>
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex';
-import * as mutationsType from './_store/mutations_type';
+import { mapGetters } from 'vuex';
+import RoleEdit from './_components/RoleEdit';
 import api from './_api/role';
 
 export default {
@@ -47,26 +54,88 @@ export default {
   privCode: 'management',
   displayNameKey: 'role_manage',
   icon: 'white_role',
+  api,
   data() {
     return {
       keyword: '',
+      roles: [],
     };
   },
   computed: {
     ...mapGetters([
-      'roles',
       'privilegeList',
+      'privilegeMap',
     ]),
   },
   methods: {
-    ...mapMutations({
-      setRoles: mutationsType.SET_ROLES,
-    }),
+    popEditRole(role) {
+      const that = this;
+      that.$pop({
+        component: RoleEdit,
+        data: {
+          name: role.role_name,
+          privileges: role.privileges,
+        },
+        validate: true,
+        bindValue: false,
+        callback: {
+          ok(retData) {
+            that.$api.updateRole(role.role_id, retData).then(() => {
+              that.notifySuccess();
+              that.loadRoles();
+            });
+          },
+        },
+      });
+    },
+    deleteRole(role) {
+      const that = this;
+      that.$popCheck({
+        data: {
+          msg: that.$t('privileges.check_delete', { role: role.role_name }),
+        },
+        callback: {
+          ok() {
+            that.$api.deleteRole(role.role_id).then(() => {
+              that.$notify({ text: that.$t('privileges.delete_success') });
+              that.loadRoles();
+            });
+          },
+        },
+        bindValue: true,
+      });
+    },
+    popAddRole() {
+      const that = this;
+      that.$pop({
+        component: RoleEdit,
+        data: {
+          name: '',
+        },
+        validate: true,
+        bindValue: false,
+        callback: {
+          ok(retData) {
+            that.$api.addRole(retData.name, retData.privileges).then(() => {
+              that.notifySuccess();
+              that.loadRoles();
+            });
+          },
+        },
+      });
+    },
+    notifySuccess() {
+      this.$notify({ text: this.$t('error_msg.success') });
+    },
+    loadRoles() {
+      const that = this;
+      that.$api.getRoles().then((roles) => {
+        that.roles = roles;
+      });
+    },
   },
   mounted() {
-    api.getRoles().then((roles) => {
-      this.setRoles(roles);
-    });
+    this.loadRoles();
   },
 };
 </script>
@@ -91,6 +160,9 @@ export default {
     display: flex;
     flex-direction: column;
     .role-row {
+      &.empty {
+        justify-content: center;
+      }
       &:hover {
         background: $table-body-hover-background;
       }
@@ -109,7 +181,7 @@ export default {
       flex: 0 0 50px;
     }
     .name {
-      flex: 0.5 1 100px;
+      flex: 1 1 100px;
     }
     .privileges {
       flex: 3 1 300px;

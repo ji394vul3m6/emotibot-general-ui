@@ -38,3 +38,10 @@ export const enterpriseList = (s) => {
 
 export const privilegeList = s => s.privilegeList;
 export const menuPages = s => s.pageInfos;
+export const privilegeMap = (s) => {
+  const map = {};
+  s.privilegeList.forEach((priv) => {
+    map[priv.privilege_name] = priv;
+  });
+  return map;
+};
