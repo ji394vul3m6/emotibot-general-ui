@@ -175,12 +175,7 @@ export default {
     }
   }
   .row {
-    flex: 0 0 auto;
-    min-height: $table-row-height;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    padding: 0 10px;
+    @include flex-row();
 
     .check {
       flex: 0 0 50px;

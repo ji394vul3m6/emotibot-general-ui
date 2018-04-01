@@ -1,6 +1,8 @@
 import QAList from './QAList';
 import QATest from './QATest';
 import QAChatSkill from './QAChatSkill';
+import QATag from './QATag';
+import QAActivity from './QAActivity';
 
 export default {
   displayNameKey: 'ssm',
@@ -9,5 +11,7 @@ export default {
     QAList,
     QATest,
     QAChatSkill,
+    QATag,
+    QAActivity,
   },
 };

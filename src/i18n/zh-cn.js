@@ -41,6 +41,8 @@ export default {
       qalist: '问答库',
       qatest: '对话测试',
       qa_chat_skill: '话术设置',
+      qa_tag: '标签管理',
+      qa_activity: '活动管理',
 
       robot_profile: '机器人形象',
       wordbank: '词库',
@@ -354,6 +356,40 @@ export default {
       shopping: '购物',
     },
   },
+  qa_tag: {
+    tag: '标签',
+    tag_id: 'ID',
+    tag_name: '标签名称',
+    activity_count: '活动连结数',
+    actions: '操作',
+    delete_tag_name: '确定要删除标签：{tag}',
+    err_detele_tag_has_activity: '无法删除有活动的标签',
+    err_existed_tag: '标签名已存在',
+  },
+  qa_activity: {
+    activity: '活动',
+    activity_id: 'ID',
+    activity_name: '名称',
+    tag_name: '标签',
+    activity_content: '内容',
+    activity_time: '活动时间',
+    activity_status: '活动状态',
+    publish: '发布',
+
+    status_forever: '永久',
+    status_timeout: '已过期',
+    status_valid: '有效中',
+    custom_date: '自订日期',
+
+    delete_activity_name: '确定要删除标签：{activity}',
+    update_status_success: '更新活动 {activity} 成功',
+    err_activity_invalid: '活动已失效',
+
+    err_existed_activity: '活动名称已存在',
+    err_content_too_long: '活动内容最多200字',
+    err_need_tag_to_publish: '请先设定活动对应的标签',
+    err_time_range: '结束时间不可早于开始时间',
+  },
   chat_skill: {
     group_basic: '基本话术',
     group_timeout: '答案失效话术',
@@ -385,6 +421,8 @@ export default {
       qalist: '问答库',
       qatest: '对话测试',
       qa_chat_skill: '话术设置',
+      qa_tag: '标签管理',
+      qa_activity: '活动管理',
     },
     statistics: {
       module_name: '统计图表',

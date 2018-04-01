@@ -111,7 +111,7 @@ http {
             proxy_set_header X-Appid $auth_cookie;
             proxy_set_header X-UserID $user_id;
             proxy_set_header X-Real-IP $remote_addr;
-            proxy_pass http://${SELF_IP}:8182;
+            proxy_pass http://${SELF_IP}:8181;
         }
 
         # Used for task-engine

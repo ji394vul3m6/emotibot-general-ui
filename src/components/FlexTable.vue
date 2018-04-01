@@ -5,17 +5,20 @@
     </div>
     <div class="flex-table-header">
       <div class="flex-table-row">
+        <div class="flex-table-cell blank"></div>
         <div class="flex-table-cell" v-if="showCheckBox">
           <input type="checkbox">
         </div>
         <div v-for="column in columns" :key="column.key" class="flex-table-cell" :style="customFlexWidth(column)">
           {{column.text}}
         </div>
+        <div class="flex-table-cell blank"></div>
       </div>
     </div>
     <div class="flex-table-body">
       <!-- TODO: add ability to use checkbox -->
       <div v-for="(row, idx) in data" :key="idx" class="flex-table-row">
+        <div class="flex-table-cell blank"></div>
         <div class="flex-table-cell" v-if="showCheckBox">
           <input type="checkbox">
         </div>
@@ -24,9 +27,13 @@
           {{row[column.key]}}
           </template>
           <template v-if="column.type === 'icon-button'">
-            <text-button :icon="column.icon" @click="column.iconCallback(idx)">{{ column.btn_text }}</text-button>
+            <text-button :icon-type="column.icon" @click="column.iconCallback(idx, row)">{{ column.btn_text }}</text-button>
+          </template>
+          <template v-if="column.type === 'toggle'">
+            <toggle v-model="row[column.key]" @change="column.toggleCallback(idx, row)"/>
           </template>
         </div>
+        <div class="flex-table-cell blank"></div>
       </div>
     </div>
     <div class="flex-table-footer">
@@ -101,6 +108,7 @@ export default {
   }
   .flex-table-row {
     display: flex;
+    align-items: center;
     flex-direction: row;
     .flex-table-cell {
       padding: 5px;
@@ -109,6 +117,9 @@ export default {
       text-overflow: ellipsis;
       input {
         display: block;
+      }
+      &.blank {
+        flex: 0 0 20px;
       }
     }
   }

@@ -188,17 +188,9 @@ export default {
 
 <style lang="scss" scoped>
 @import 'styles/variable.scss';
-.block {
-  margin-top: 20px;
-}
-.spliter {
-  margin-top: 20px;
-  border-bottom: 1px solid $area-border-color;
-}
+
+@include popForm(0px);
 .row {
-  display: flex;
-  align-items: center;
-  margin-top: 10px;
   .cell {
     flex: 0 0 80px;
 
@@ -215,14 +207,6 @@ export default {
       width: 20px;
       display: inline-block;
     }
-  }
-  input {
-    @include general-input();
-  }
-  .err-msg {
-    color: $error-color;
-    font-weight: bold;
-    margin-left: 10px;
   }
 }
 </style>

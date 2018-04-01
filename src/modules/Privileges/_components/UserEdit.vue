@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class='user-edit'>
     <div class="row">
       <span class="row-name">{{ $t('privileges.user_name') }}</span>
       <template v-if="addMode">
@@ -124,34 +124,8 @@ export default {
 
 <style lang="scss" scoped>
 @import 'styles/variable.scss';
-.block {
-  margin-top: 20px;
-}
-.spliter {
-  margin-top: 20px;
-  border-bottom: 1px solid $area-border-color;
-}
-.row {
-  display: flex;
-  align-items: center;
-  margin-top: 10px;
-  .row-name {
-    width: 60px;
-  }
-  .row-val {
-    margin-left: 10px;
-  }
-  input {
-    @include general-input();
-  }
-  select {
-    @include general-select();
-  }
-}
-.err-msg {
-  color: $error-color;
-  font-weight: bold;
-  margin-top: 10px;
-  margin-left: 70px;
+
+.user-edit {
+  @include popForm(60px);
 }
 </style>

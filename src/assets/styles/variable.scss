@@ -79,3 +79,68 @@ $success-color: #5cd29d;
       border: 1px solid $error-color;
     }
 }
+
+@mixin general-textarea {
+    border: 1px solid black;
+    padding: 10px;
+    width: 300px;
+    resize: none;
+    height: 6em;
+    &.error {
+      border: 1px solid $error-color;
+    }
+    margin-left: 10px;
+}
+
+@mixin flex-row {
+    flex: 0 0 auto;
+    min-height: $table-row-height;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0 10px;
+}
+
+@mixin err-msg {
+    color: $error-color;
+    font-weight: bold;
+}
+
+@mixin popForm($name-width) {
+    .block {
+      margin-top: 20px;
+    }
+    .spliter {
+      margin-top: 20px;
+      border-bottom: 1px solid $area-border-color;
+    }
+    .row {
+      display: flex;
+      align-items: center;
+      margin-top: 10px;
+      & > .err-msg {
+        @include err-msg();
+        margin-left: 10px;
+      }
+    }
+    input {
+      @include general-input();
+    }
+    select {
+      @include general-select();
+    }
+    textarea {
+      @include general-textarea();
+    }
+    .row-name {
+      width: $name-width;
+    }
+    .row-val {
+      margin-left: 10px;
+    }
+    & > .err-msg {
+      @include err-msg();
+      margin-top: 10px;
+      margin-left: calc(#{$name-width} + 10px);
+    }
+}
