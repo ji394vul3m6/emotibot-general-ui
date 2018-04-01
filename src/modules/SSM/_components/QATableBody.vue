@@ -27,8 +27,8 @@
       <div id="answer-container" class="cell">
           <div  class="table answer-row with-right-border no-left-border">
             <div class="row" v-for="(answer, index) in row.answers" @contextmenu.stop.prevent="handleAnswerRightClick(row, answer, $event)" :key="index">
-              <!-- <div id="tags" class="cell padding" @dblclick="showDimensionSelector(row, answer)" v-if="answer.tags !== ''"> {{answer.tags}} </div>
-              <div id="tags" class="cell padding" @dblclick="showDimensionSelector(row, answer)" v-else> {{$t('qalist.all_dimensions')}} </div> -->
+              <div id="tags" class="cell padding" @dblclick="showDimensionSelector(row, answer)" v-if="answer.tags !== ''"> {{answer.tags}} </div>
+              <div id="tags" class="cell padding" @dblclick="showDimensionSelector(row, answer)" v-else> {{$t('qalist.all_dimensions')}} </div>
               <div class="cell standard_a block-with-text" @dblclick="showEditor(row, answer)" >
                 <qa-answer-content :answerContent="answer.standard_a"></qa-answer-content>
               </div>

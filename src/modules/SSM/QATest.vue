@@ -1,6 +1,6 @@
 <template>
 <div id="qatest" class="page">
-  <!-- <div class="qa-test-filter"> 
+  <div class="qa-test-filter"> 
     <div class="filter-list row">
       {{ $t('qatest.user_dimension') }}：
       <template v-if="noDimensionSelected">{{ $t('qatest.unselect') }}</template>
@@ -18,7 +18,7 @@
       </template>
       <span v-on:click="cancelAllFilter()" class="clear-all" v-if="!noDimensionSelected">{{ $t('qatest.clear_all') }}</span>
     </div>
-  </div> -->
+  </div>
   <div class="content">
     <div class="qa-test-main">
       <div class="qa-test-title title">
@@ -43,6 +43,7 @@
           @compositionend="inComposition = false"/>
       </div>
       <div class="qa-test-control">
+        <text-button @click="selectDimension">{{ $t('qatest.dimension') }}</text-button>
         <text-button main @click="sendText">{{ $t('qatest.submit') }}</text-button>
       </div>
     </div>
@@ -77,6 +78,8 @@
 <script>
 import TextButton from '@/components/basic/TextButton';
 import api from './_api/qatest';
+import CategoryList from './_data/categoryList';
+import DimensionSelector from './_components/DimensionSelector';
 
 export default {
   path: 'qatest',
@@ -98,10 +101,21 @@ export default {
       matchResult: [],
       inComposition: false,
       multiAnswerDelay: 2000, // milliseconds
+      categoryList: [],
     };
   },
+  api,
   methods: {
-    ...api,
+    selectDimension() {
+      const category = this.categoryList[0];
+      this.$pop({
+        component: DimensionSelector,
+        data: category.categories,
+        extData: {
+          type: 'radio',
+        },
+      });
+    },
     scrollToBottom() {
       this.$refs.qaBox.scrollTop = this.$refs.qaBox.scrollHeight;
     },
@@ -136,7 +150,7 @@ export default {
         });
       }
 
-      that.QATest(that.userInput, filter).then((data) => {
+      that.$api.QATest(that.userInput, filter).then((data) => {
         const res = data.data;
         if (res.status === 0 && res.result.answers && res.result.answers.length > 0) {
           // res.result.answers.forEach((answer) => {
@@ -208,6 +222,8 @@ export default {
     },
   },
   mounted() {
+    const msg = this.$i18n.messages[this.$i18n.locale];
+    this.categoryList = CategoryList.getLocaleData(msg);
   },
   computed: {
     noDimensionSelected() {
@@ -248,11 +264,9 @@ $column-border-color: black;
           border: 1px solid $column-border-color;
           border-radius: 0.5em;
           background: $column-header-color;
-          color: white;
           cursor: default;
         }
         .filter-item-cancel {
-          color: white;
           margin: 0px 5px;
           user-select: none;
           cursor: pointer;

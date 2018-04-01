@@ -211,7 +211,11 @@ export default {
   },
   qatest: {
     submit: '送出',
+    dimension: '维度',
     unknown: '未知',
+    unselect: '未选择',
+    user_dimension: '用户维度',
+    clear_all: '取消全部',
     qatest: '对话测试',
     analysis: '句子分析',
     match_result: '匹配结果',
@@ -475,15 +479,10 @@ export default {
       platform: '平台',
       brand: {
         title: '渠道',
-        special_app: '特卖会APP',
-        baby_app: '母婴APP',
-        pc: 'PC端',
-        wap: 'WAP端',
-        wechat_public: '微信公众号',
-        vshhc: '花海仓',
-        spiceal_app_new: '特卖会app准新客',
-        qq_public: 'QQ公众号',
-        lefeng_app: '乐蜂APP',
+
+        phone: '手机银行',
+        bejing: '北京分行',
+        guangzhou: '广州分行',
       },
       sex: {
         title: '性别',

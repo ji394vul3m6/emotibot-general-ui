@@ -4,10 +4,10 @@
       <div class="center-align" style="color:red;">*</div>
       <div class="center-align margin-left">{{ $t('general.default') }}{{ $t('qalist.standard_a') }} </div>
     </div>
-    <!-- <div class="qa-dimension clickable" @click="showDimensionSelector">
+    <div class="qa-dimension clickable" @click="showDimensionSelector">
       <div>{{ $t('qalist.tags') }}</div>
       <div class="fa fa-chevron-down"></div>
-    </div> -->
+    </div>
     <div class="margin-top flex" v-if="selectedDimensions.length > 0" style="flex-wrap: wrap;">
       <template v-for="(value, index) in selectedDimensions">
         <span class="filter-item-text margin-left margin-top" :key="index">
@@ -22,31 +22,7 @@
     </div>
     <div class="margin-top"></div>
     <qa-editor :extData="{fitParent: true}" :value="data.editorOptions" v-on:updateData="handleEditorChange" v-on:disableOK="disableOK" v-on:enableOK="enableOk"></qa-editor>
-    <div class="margin-top flex">
-      <div class="flex center-align button" @click="showRelatedQuestionInput" 
-        :class="{buttonChecked: data.relatedQuestions.length > 0}"> {{ $t('general.indicate') }}{{ $t('qalist.related_question') }} </div>
-      <div class="flex center-align button margin-left" @click="showDynamicMenuInput"
-        :class="{buttonChecked: data.dynamicMenu.length > 0}"> {{ $t('general.indicate') }}{{ $t('qalist.dynamic_menu') }} </div>
-      <div class="flex center-align button margin-left"
-       :class="{buttonChecked: data.notShowInRelativeQ}" @click="toggleShowInRelativeQ"> {{ $t('qalist.not_in_suggestion') }} </div>
-    </div>
-    <div class="margin-top flex">
-      <div class="flex center-align"> {{ $t('qalist.add') }}{{ $t('qalist.command') }} </div>
-      <select style="margin-left: 3px;" v-model="data.command">
-        <option value="">无指令</option>
-        <option value="order_track">物流信息查询</option>
-        <option value="order_info">订单信息查询</option>
-        <option value="scene_id">场景标识</option>
-        <option value="cash">提现</option>
-        <option value="order_cancel">取消订单</option>
-        <option value="apply_for_return">退货申请</option>
-        <option value="exchange_goods">换货申请</option>
-        <option value="vip_finance">唯品金融</option>
-        <option value="query_refund">查询退款</option>
-        <option value="shopping">购物</option>
-      </select>
-      <input v-if="data.command === 'shopping'" v-model="data.commandMsg" class="margin-left">
-    </div>
+    <!-- <div class="margin-top  -->
     <div class="margin-top flex">
       <input class="center-align" type="radio" value="forever" v-model="data.timeType">
       <label class="center-align">{{ $t('qalist.permanent') }}</label>
@@ -67,12 +43,14 @@
         <div class="error-text center-align" style="margin-left: 20px;" v-if="!validTimeRange"> {{ $t('qalist.starttime_later_than_endtime_warning') }} </div>
       </div>
     </div>
-    <div class="margin-top center-align" style="display: inline-flex; width: 100px; cursor: pointer;" @click="onAddAnswer"> 
+    <text-button @click="onAddAnswer">{{ $t('general.add') }}{{ $t('qalist.standard_a') }}</text-button>
+    <text-button @click="onRemoveAnswer" v-if="!data.defaultAnswer">{{ $t('general.delete') }}{{ $t('qalist.standard_a') }}</text-button>
+    <!-- <div class="margin-top center-align" style="display: inline-flex; width: 100px; cursor: pointer;" @click="onAddAnswer"> 
       {{ $t('general.add') }}{{ $t('qalist.standard_a') }}
-    </div>
-    <div class="margin-top center-align" style="display: inline-flex; width: 100px; cursor: pointer;" @click="onRemoveAnswer" v-if="!data.defaultAnswer"> 
+    </div> -->
+    <!-- <div class="margin-top center-align" style="display: inline-flex; width: 100px; cursor: pointer;" @click="onRemoveAnswer" v-if="!data.defaultAnswer"> 
       {{ $t('general.delete') }}{{ $t('qalist.standard_a') }}
-    </div>
+    </div> -->
   </div>
 </template>
 

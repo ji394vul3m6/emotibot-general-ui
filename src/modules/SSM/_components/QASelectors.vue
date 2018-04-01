@@ -32,7 +32,7 @@
     	</div>
     	<div class="row">
     	  <!-- <div class="title">{{ $t("qalist.filter") }}:</div> -->
-        <!-- <text-button @click="handleDimensionClick" :width="buttonWidth">{{ $t("qalist.tags") }}</text-button> -->
+        <text-button @click="handleDimensionClick" :width="buttonWidth">{{ $t("qalist.tags") }}</text-button>
     	  <!-- <div @click="handleDimensionClick" class="text-button qalist-button datetime">{{ $t("qalist.tags") }}</div> -->
     	  <div id="keyword-text" class="title">{{ $t("qalist.keyword_search") }}:</div>
     	  <select v-model="keywordType">
