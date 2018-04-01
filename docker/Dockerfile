@@ -15,7 +15,7 @@ FROM docker-reg.emotibot.com.cn:55688/admin-api:20180401-bb6fc95 AS api-server
 FROM nginx:1.13-alpine
 
 RUN apk update --no-cache \
-  && apk add tzdata openrc php5 php5-fpm php5-opcache php5-gd php5-mysqli php5-zlib php5-curl php5-json php5-zip curl \
+  && apk add tzdata openrc php5 php5-fpm php5-opcache php5-gd php5-mysqli php5-zlib php5-curl php5-json php5-zip php5-xml curl \
   && rc-update add php-fpm default
 
 # FIXME: since chroot cause basic cli not found, copy one of them to make command work.
