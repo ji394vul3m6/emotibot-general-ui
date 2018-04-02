@@ -32,11 +32,11 @@ function getRobotQAList(page, perPage) {
 
   // input validation
   const pageInt = parseInt(page, 10);
-  if (pageInt) {
+  if (pageInt !== undefined) {
     params.page = pageInt;
   }
   const perPageInt = parseInt(perPage, 10);
-  if (perPageInt) {
+  if (perPageInt !== undefined) {
     params.per_page = perPageInt;
   }
   return this.$reqGet(GET_QA_LIST_PATH, { params })

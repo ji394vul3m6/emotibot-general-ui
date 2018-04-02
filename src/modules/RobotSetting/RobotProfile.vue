@@ -31,7 +31,7 @@ export default {
   },
   data() {
     return {
-      curPage: 1,
+      curPage: 0,
       tableData: [],
       tableHeader: [],
       dataCnt: 0,
@@ -142,7 +142,7 @@ export default {
       const that = this;
       // this.showLoading = true;
       that.$emit('startLoading');
-      this.getRobotQAList(this.curPage).then((data) => {
+      this.getRobotQAList(this.curPage, 0).then((data) => {
         this.tableData = that.convertAPIData(data.qa_infos);
         this.dataCnt = data.count;
         that.$emit('endLoading');

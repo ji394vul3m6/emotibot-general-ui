@@ -43,21 +43,21 @@ function convertData(wordbank) {
 
 function getWordbank(id) {
   return this.$reqGet(`${WORDBANK_PATH}/${id}`).then((rsp) => {
-    if (rsp.data) {
-      convertData(rsp.data);
+    if (rsp.data.result) {
+      convertData(rsp.data.result);
     }
-    return rsp.data;
+    return rsp.data.result;
   });
 }
 
 function getWordbanks() {
   return this.$reqGet(WORDBANKS_PATH).then((rsp) => {
-    if (rsp.data && rsp.data.length > 0) {
-      rsp.data.forEach((wordbank) => {
+    if (rsp.data && rsp.data.result && rsp.data.result.length > 0) {
+      rsp.data.result.forEach((wordbank) => {
         convertData(wordbank);
       });
     }
-    return rsp.data;
+    return rsp.data.result;
   });
 }
 
