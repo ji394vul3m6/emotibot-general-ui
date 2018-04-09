@@ -26,7 +26,7 @@ RUN for n in `ls -L /bin` ; do if [ ! -d /bin/$n ]; then cp /bin/$n /build/dist/
 RUN for n in `ls -L /usr/bin` ; do if [ ! -d /usr/bin/$n ]; then cp /usr/bin/$n /build/dist/usr/bin/ ; fi ;  done
 RUN cp -a /dev/zero /dev/urandom /dev/null /build/dist/dev/
 
-COPY docker/conf/nginx.conf /etc/nginx/nginx.conf
+COPY docker/conf/nginx.conf.template /etc/nginx/nginx.conf.template
 COPY docker/conf/www.conf /etc/php5/fpm.d/www.conf
 COPY docker/conf/php.ini /etc/php5/php.ini
 

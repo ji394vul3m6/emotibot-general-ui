@@ -22,4 +22,9 @@ echo "Fix chroot issue"
 mkdir /build/dist/etc
 for n in `ls -L /etc` ; do if [ ! -d /etc/$n ]; then cp /etc/$n /build/dist/etc/ ; fi ;  done
 
+cd /etc/nginx
+while read line
+do 
+  echo $line | sed -e "s/\${SELF_IP}/$SELF_IP/g" | sed -e "s/\${REMOTE_IP}/$REMOTE_IP/g">> nginx.conf
+done < nginx.conf.ui.template
 nginx -g "daemon off;"
