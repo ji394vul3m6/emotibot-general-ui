@@ -55,7 +55,7 @@ export default {
           key: 'content',
           text: this.$t('qa_activity.activity_content'),
           type: 'text',
-          width: 4,
+          width: 3,
         },
         {
           key: 'status_text',
