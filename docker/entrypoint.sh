@@ -25,6 +25,6 @@ for n in `ls -L /etc` ; do if [ ! -d /etc/$n ]; then cp /etc/$n /build/dist/etc/
 cd /etc/nginx
 while read line
 do 
-  echo $line | sed -e "s/\${SELF_IP}/$SELF_IP/g" | sed -e "s/\${REMOTE_IP}/$REMOTE_IP/g">> nginx.conf
+  echo $line | sed -e "s/\${ADMIN_TASK_SERVER_URL}/$ADMIN_TASK_SERVER_URL/g" >> nginx.conf
 done < nginx.conf.template
 nginx -g "daemon off;"
