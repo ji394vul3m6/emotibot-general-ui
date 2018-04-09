@@ -78,7 +78,7 @@ http {
         }
         
         location /stats {
-            proxy_pass http://${ADMIN_STAT_SERVER_URL}:15501;
+            proxy_pass http://${ADMIN_STAT_SERVER_URL};
         }
 
         # ========== legacy houta ==========
