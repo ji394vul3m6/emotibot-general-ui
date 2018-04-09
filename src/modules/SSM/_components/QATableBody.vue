@@ -29,6 +29,9 @@
             <div class="row" v-for="(answer, index) in row.answers" @contextmenu.stop.prevent="handleAnswerRightClick(row, answer, $event)" :key="index">
               <div id="tags" class="cell padding" @dblclick="showDimensionSelector(row, answer)" v-if="answer.tags !== ''"> {{answer.tags}} </div>
               <div id="tags" class="cell padding" @dblclick="showDimensionSelector(row, answer)" v-else> {{$t('qalist.all_dimensions')}} </div>
+              <div class="label cell padding" @dblclick="showLabelEditor(row, answer)">
+                {{answer.labelName || $t('qalist.empty_label')}}
+              </div>
               <div class="cell standard_a block-with-text" @dblclick="showEditor(row, answer)" >
                 <qa-answer-content :answerContent="answer.standard_a"></qa-answer-content>
               </div>
@@ -121,6 +124,10 @@ export default {
     this.$root.$off('QASimilarQuestionPop::backToQASimilarQuestionPop', this.showSimilarQuestionPop);
   },
   methods: {
+    showLabelEditor(row, answer) {
+      console.log(row);
+      console.log(answer);
+    },
     isStartTimeForever(time) {
       return time === '' || time === PickerUtil.FOREVER_START_TIME;
     },
@@ -967,6 +974,11 @@ $fixed-height: 142px;
         width: 100%;
         height: 100%;
 
+        .label {
+          width: $width_5percent;
+          word-break: break-all;
+        }
+
         .standard_a {
             width: 50%;
         }
@@ -995,6 +1007,10 @@ $fixed-height: 142px;
     }
 
     #commands {
+        width: $width_5percent;
+    }
+
+    .label {
         width: $width_5percent;
     }
 

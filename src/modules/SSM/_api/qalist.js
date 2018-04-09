@@ -78,6 +78,7 @@ function transformAnswers(answers) {
     transformedAnswer.start_time = element.Begin_Time;
     transformedAnswer.end_time = element.End_Time;
     transformedAnswer.tags = parseTags(element.dimension);
+    transformedAnswer.label = element.label;
 
     const answerCommand = parseAnswerCommand(element.Answer_CMD);
     transformedAnswer.command = `指令:${answerCommand}`;

@@ -224,6 +224,8 @@ export default {
     similar_score: '相似分数',
   },
   qalist: {
+    empty_label: '无标签',
+    answer_label: '标签',
     sentence: '句子',
     add_answer_sentence: '新增答案句子',
     multi_answer_explain: '答案最多可包含五句',
