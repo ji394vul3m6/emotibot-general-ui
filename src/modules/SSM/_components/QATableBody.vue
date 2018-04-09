@@ -1,6 +1,6 @@
 <template>
   <div id="qa-table-body" class="table">
-    <div class="row" v-for="row in tableData" style="width:100%;" :key=row.standard_q>
+    <div class="row" v-for="row in tableData" style="width:100%;" :key="row.standard_q">
       <div @contextmenu.stop.prevent="handleRightClick(row, $event)"
         id="standard_q" class="cell padding"> 
         <div class="standard-q-column">
@@ -94,7 +94,7 @@ import QADynamicMenuPop from './QADynamicMenuPop';
 import QADatePickerPop from './QADatePickerPop';
 import qaAnswerContent from './QAAnswerContent';
 import QASimilarQuestionPop from './QASimilarQuestionPop';
-import QAEditorPop from './QAEditorPop';
+import QAAnswerEditorPop from './QAAnswerEditorPop';
 import QAQuestionCategoryPop from './QAQuestionCategoryPop';
 import QAUpdatePop from './QAUpdatePop';
 
@@ -263,7 +263,7 @@ export default {
           callback: {
             ok: (updatedValue) => { that.updateAnswer(row, answer, index, updatedValue); },
           },
-          component: QAEditorPop,
+          component: QAAnswerEditorPop,
           data: {
             content: answerContent,
             newContent: '',

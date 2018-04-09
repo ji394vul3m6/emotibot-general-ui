@@ -23,6 +23,7 @@ export default {
       show: false,
       // used for preventing content larger than container slightly, but can not show
       safeMargin: 10,
+      isJSONAnswer: false,
     };
   },
   updated() {
@@ -51,13 +52,21 @@ export default {
       this.expand = !this.expand;
     },
     escape(value) {
-      let escapedValue = value.replace(/@E@/g, '<br>');
-      escapedValue = escapedValue.replace(/<script>/g, '<x-script>');
-      escapedValue = escapedValue.replace(/<\/script>/g, '</x-script>');
-      escapedValue = escapedValue.replace(/<a/g, '<a target="_blank"');
+      let escapedValue = '';
+      try {
+        const answers = JSON.parse(value);
+        // Hack for now, the display method will be discussed with UI/UX later
+        escapedValue = answers.map(ans => ans.value).join('<br><div style="border-bottom: 1px dotted black; width: 100%; margin: 5px 0;"></div>');
+      } catch (e) {
+        // Old style answer
+        escapedValue = value.replace(/@E@/g, '<br>');
+        escapedValue = escapedValue.replace(/<script>/g, '<x-script>');
+        escapedValue = escapedValue.replace(/<\/script>/g, '</x-script>');
+        escapedValue = escapedValue.replace(/<a/g, '<a target="_blank"');
 
       // transform @E@ into <br>
-      escapedValue = escapedValue.replace(/@E@/g, '<br>');
+        escapedValue = escapedValue.replace(/@E@/g, '<br>');
+      }
       return escapedValue;
     },
   },

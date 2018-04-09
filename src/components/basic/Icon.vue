@@ -93,6 +93,7 @@ export default {
       }
     }
   }
+  @include iconType("add");
   @include iconType("search");
   @include iconType("delete");
   @include iconType("edit");

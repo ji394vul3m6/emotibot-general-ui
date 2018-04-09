@@ -2,14 +2,14 @@ export default {
   privileges: {
     role: '角色',
     user: '用户',
-    password: '密碼',
+    password: '密码',
     role_name: '角色名',
     user_name: '用户名',
     privileges: '权限',
 
     placeholder_user_name: '请输入用户名',
     placeholder_password: '请输入密码',
-    placeholder_modify_password: '若要變更則輸入密碼',
+    placeholder_modify_password: '若要变更则输入密码',
 
     system_admin: '系统管理员',
 
@@ -19,7 +19,7 @@ export default {
     all_deactive: '关闭全部',
 
     check_delete: '确认要删除角色：{role}',
-    check_delete_user: '确认要删除用戶：{user}',
+    check_delete_user: '确认要删除用户：{user}',
     delete_success: '删除角色成功',
     err_need_create_role: '请先新增角色',
     err_role_empty: '角色不可为空',
@@ -224,6 +224,9 @@ export default {
     similar_score: '相似分数',
   },
   qalist: {
+    sentence: '句子',
+    add_answer_sentence: '新增答案句子',
+    multi_answer_explain: '答案最多可包含五句',
     no_limit: '无期限',
     forever_valid: '永久有效',
     no_question: '无标准问题',

@@ -61,7 +61,7 @@ import DatetimePicker from '@/components/DateTimePicker';
 import PickerUtil from '@/utils/vue/DatePickerUtil';
 import DynamicListInput from './DynamicListInput';
 import DimensionSelector from './DimensionSelector';
-import QAEditorPop from './QAEditorPop';
+import QAAnswerEditorPop from './QAAnswerEditorPop';
 
 export default {
   name: 'QAAnswerEditBox',
@@ -330,7 +330,7 @@ export default {
     },
   },
   components: {
-    'qa-editor': QAEditorPop,
+    'qa-editor': QAAnswerEditorPop,
     'datetime-picker': DatetimePicker,
     'dimension-selector': DimensionSelector,
   },
