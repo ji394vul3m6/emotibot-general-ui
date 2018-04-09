@@ -23,6 +23,7 @@ mkdir /build/dist/etc
 for n in `ls -L /etc` ; do if [ ! -d /etc/$n ]; then cp /etc/$n /build/dist/etc/ ; fi ;  done
 
 cd /etc/nginx
+rm nginx.conf
 while read line
 do 
   echo $line | sed -e "s/\${ADMIN_STAT_SERVER_URL}/$ADMIN_STAT_SERVER_URL/g" >> nginx.conf
