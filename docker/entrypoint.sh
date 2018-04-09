@@ -26,5 +26,5 @@ cd /etc/nginx
 while read line
 do 
   echo $line | sed -e "s/\${SELF_IP}/$SELF_IP/g" | sed -e "s/\${REMOTE_IP}/$REMOTE_IP/g">> nginx.conf
-done < nginx.conf.ui.template
+done < nginx.conf.template
 nginx -g "daemon off;"
