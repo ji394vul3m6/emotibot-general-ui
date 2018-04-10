@@ -7,10 +7,10 @@
       <input id="qa-file-inpput" style="display:none" type="file" @change="onFileChange">
       <div v-if="!selected" class="text margin"> {{ $t('qalist.file_not_select') }} </div>
       <div v-else class="text" style="max-width: 350px;"> {{ filename }}</div>
-      <input type="radio" class="text margin" id="one" value="0" v-model="value.module">
+      <!-- <input type="radio" class="text margin" id="one" value="0" v-model="value.module">
       <label for="one" class="text">{{ $t('qalist.all_update') }}</label>
       <input type="radio" class="text margin" id="two" value="1" v-model="value.module">
-      <label for="two" class="text"> {{ $t('qalist.alpha_update') }} </label>
+      <label for="two" class="text"> {{ $t('qalist.alpha_update') }} </label> -->
     </div>
     <div class="row multi-line">
       <!-- <div class="line"><text-button @click="downloadTemplate(template)">{{ $t('qalist.download_template') }}</text-button></div> -->

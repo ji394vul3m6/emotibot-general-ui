@@ -7,6 +7,7 @@ export default {
         text: msg.dimension.categories.title,
         categories: [
           {
+            id: 1,
             type: 'platform',
             text: msg.dimension.categories.platform,
             allChecked: true,
@@ -38,6 +39,7 @@ export default {
             ],
           },
           {
+            id: 2,
             type: 'brand',
             text: msg.dimension.categories.brand.title,
             allChecked: true,
@@ -62,25 +64,26 @@ export default {
               },
             ],
           },
-          // {
-          //   type: 'sex',
-          //   text: msg.dimension.categories.sex.title,
-          //   allChecked: true,
-          //   values: [
-          //     {
-          //       id: '0',
-          //       text: msg.dimension.categories.sex['0'],
-          //       checked: false,
-          //       tagId: 8,
-          //     },
-          //     {
-          //       id: '1',
-          //       text: msg.dimension.categories.sex['1'],
-          //       checked: false,
-          //       tagId: 7,
-          //     },
-          //   ],
-          // },
+          {
+            id: 3,
+            type: 'sex',
+            text: msg.dimension.categories.sex.title,
+            allChecked: true,
+            values: [
+              {
+                id: '0',
+                text: msg.dimension.categories.sex['0'],
+                checked: false,
+                tagId: 8,
+              },
+              {
+                id: '1',
+                text: msg.dimension.categories.sex['1'],
+                checked: false,
+                tagId: 7,
+              },
+            ],
+          },
           // {
           //   type: 'age',
           //   text: msg.dimension.categories.age,

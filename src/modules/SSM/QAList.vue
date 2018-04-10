@@ -300,7 +300,6 @@ export default {
           });
           return qaAPI.filterQuestions(that.qaQueryOptions);
         }).then((data) => {
-          console.log(data);
           data.content.forEach((q) => {
             q.answers.forEach((a) => {
               a.labelName = labels[a.label];

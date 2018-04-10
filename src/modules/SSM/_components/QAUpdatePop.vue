@@ -276,6 +276,27 @@ export default {
         this.categorymap[category.id] = category.text;
       }
     },
+    getDimensionsFromMap(answerDimensionMap) {
+      const that = this;
+      const msg = that.$i18n.messages[that.$i18n.locale];
+      const dimensions = CategoryList.getLocaleData(msg)[0].categories;
+      const dimensionMap = {};
+      dimensions.forEach((d) => {
+        dimensionMap[d.id] = d;
+      });
+      Object.keys(answerDimensionMap).forEach((id) => {
+        const answerValues = answerDimensionMap[id].toLowerCase().split(',');
+        const allValue = dimensionMap[id].values;
+        allValue.forEach((value) => {
+          const valueIndex = answerValues.indexOf(value.text.toLowerCase());
+          if (valueIndex >= 0) {
+            value.checked = true;
+            dimensionMap[id].allChecked = false;
+          }
+        });
+      });
+      return dimensions;
+    },
     getDimensions(answerDimensions) {
       const that = this;
       const msg = that.$i18n.messages[that.$i18n.locale];
@@ -319,7 +340,7 @@ export default {
           content: answer.Content_String,
           newContent: answer.Content_String,
         },
-        dimensions: this.getDimensions(answer.dimension),
+        dimensions: this.getDimensionsFromMap(answer.dimension_map),
         picker,
         endPicker,
         timeType,
