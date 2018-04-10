@@ -10,7 +10,7 @@ RUN cd build && npm install --production && npm run build
 
 FROM docker-reg.emotibot.com.cn:55688/houta:7ab30c2_vipshop AS houta-code
 FROM docker-reg.emotibot.com.cn:55688/authentication:20180410-69bd9c2 AS authentication
-FROM docker-reg.emotibot.com.cn:55688/admin-api:20180410-71af3fa AS api-server
+FROM docker-reg.emotibot.com.cn:55688/admin-api:20180410-184102c AS api-server
 
 FROM nginx:1.13-alpine
 
