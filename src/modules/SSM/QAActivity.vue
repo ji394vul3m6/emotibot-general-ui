@@ -13,7 +13,7 @@
 <script>
 import FlexTable from '@/components/FlexTable';
 import ActivityEditPop from './_components/QAActivityEdit';
-import tagAPI from './_api/qatag';
+import labelAPI from './_api/qalabel';
 import activityAPI from './_api/qaactivity';
 
 export default {
@@ -25,12 +25,12 @@ export default {
   components: {
     'flex-table': FlexTable,
   },
-  api: [tagAPI, activityAPI],
+  api: [labelAPI, activityAPI],
   data() {
     return {
       keyword: '',
       activities: [],
-      tagMap: {},
+      labelMap: {},
       tableHeader: [
         {
           key: 'id',
@@ -40,8 +40,8 @@ export default {
           width: '40px',
         },
         {
-          key: 'tag_name',
-          text: this.$t('qa_activity.tag_name'),
+          key: 'label_name',
+          text: this.$t('qa_activity.label_name'),
           type: 'text',
           width: 1,
         },
@@ -95,8 +95,8 @@ export default {
   methods: {
     toggleActivityPublish(idx, activity) {
       const that = this;
-      if (activity.publish_status && !activity.tag) {
-        that.$notifyFail(that.$t('qa_activity.err_need_tag_to_publish'));
+      if (activity.publish_status && !activity.label) {
+        that.$notifyFail(that.$t('qa_activity.err_need_label_to_publish'));
         activity.publish_status = false;
         that.loadActivities();
       } else if (!activity.status_valid) {
@@ -119,7 +119,7 @@ export default {
         validate: true,
         data: {
           existActivities: that.activities.map(act => act.name),
-          existTags: that.tagMap,
+          existTags: that.labelMap,
           addMode: true,
         },
         bindValue: false,
@@ -148,7 +148,7 @@ export default {
           existActivities: that.activities
             .filter(act => act.id !== activity.id)
             .map(act => act.name),
-          existTags: that.tagMap,
+          existTags: that.labelMap,
           activity,
           addMode: false,
         },
@@ -179,7 +179,7 @@ export default {
             that.$api.deleteActivity(activity.id)
             .then(() => that.loadActivities(), () => {
               // TODO: handle delete error
-              that.$notifyFail(that.$t('qa_tag.err_detele_tag_has_activity'));
+              that.$notifyFail(that.$t('qa_label.err_detele_label_has_activity'));
             })
             .then(() => {
               that.$emit('endLoading');
@@ -192,17 +192,17 @@ export default {
       const that = this;
       that.activities = [];
       that.$emit('startLoading');
-      return that.$api.loadTags().then((tags) => {
-        that.tagMap = {};
-        tags.forEach((tag) => {
-          that.tagMap[tag.id] = tag.tag_name;
+      return that.$api.loadLabels().then((labels) => {
+        that.labelMap = {};
+        labels.forEach((label) => {
+          that.labelMap[label.id] = label.name;
         });
         return that.$api.loadActivities();
       })
       .then((activities) => {
         const now = new Date();
         activities.forEach((activity) => {
-          activity.tag_name = that.tagMap[activity.tag] || '';
+          activity.label_name = that.labelMap[activity.label] || '';
           if (activity.start_time === null && activity.end_time === null) {
             activity.status_valid = true;
             activity.status_text = that.$t('qa_activity.status_forever');

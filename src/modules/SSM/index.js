@@ -1,7 +1,7 @@
 import QAList from './QAList';
 import QATest from './QATest';
 import QAChatSkill from './QAChatSkill';
-import QATag from './QATag';
+import QALabel from './QALabel';
 import QAActivity from './QAActivity';
 
 export default {
@@ -11,7 +11,7 @@ export default {
     QAList,
     QATest,
     QAChatSkill,
-    QATag,
+    QALabel,
     QAActivity,
   },
 };

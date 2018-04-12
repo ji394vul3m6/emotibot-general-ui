@@ -1,7 +1,7 @@
 <template>
-  <div class='qa-tag'>
+  <div class='qa-label'>
     <div class="actions row">
-      <text-button main icon-type="white_add" @click="popAddTag">{{$t('general.add')}}{{$t('qa_tag.tag')}}</text-button>
+      <text-button main icon-type="white_add" @click="popAddTag">{{$t('general.add')}}{{$t('qa_label.label')}}</text-button>
       <search-input v-model="keyword"></search-input>
     </div>
     <div class="table-container">
@@ -12,15 +12,15 @@
 
 <script>
 import FlexTable from '@/components/FlexTable';
-import api from './_api/qatag';
+import api from './_api/qalabel';
 import EditTagPop from './_components/QATagEdit';
 
 export default {
-  path: 'qa-tag',
-  privCode: 'qa_tag',
-  displayNameKey: 'qa_tag',
+  path: 'qa-label',
+  privCode: 'qa_label',
+  displayNameKey: 'qa_label',
   icon: 'white_chat',
-  name: 'qa-tag',
+  name: 'qa-label',
   components: {
     'flex-table': FlexTable,
   },
@@ -28,24 +28,24 @@ export default {
   data() {
     return {
       keyword: '',
-      tags: [],
+      labels: [],
       tableHeader: [
         {
           key: 'id',
-          text: this.$t('qa_tag.tag_id'),
+          text: this.$t('qa_label.label_id'),
           type: 'text',
           fixed: true,
           width: '40px',
         },
         {
-          key: 'tag_name',
-          text: this.$t('qa_tag.tag_name'),
+          key: 'name',
+          text: this.$t('qa_label.label_name'),
           type: 'text',
           width: 'auto',
         },
         {
           key: 'activity_count',
-          text: this.$t('qa_tag.activity_count'),
+          text: this.$t('qa_label.activity_count'),
           type: 'text',
           width: '150px',
           fixed: true,
@@ -74,18 +74,18 @@ export default {
   computed: {
     tableData() {
       const that = this;
-      return that.tags.filter(tag => that.keyword === '' || tag.tag_name.indexOf(that.keyword) >= 0);
+      return that.labels.filter(label => that.keyword === '' || label.name.indexOf(that.keyword) >= 0);
     },
   },
   methods: {
-    popEditTag(idx, tag) {
+    popEditTag(idx, label) {
       const that = this;
       that.$pop({
-        title: `${that.$t('general.add')}${that.$t('qa_tag.tag')}`,
+        title: `${that.$t('general.add')}${that.$t('qa_label.label')}`,
         component: EditTagPop,
         data: {
-          name: tag.tag_name,
-          id: tag.id,
+          name: label.name,
+          id: label.id,
           addMode: false,
         },
         bindValue: false,
@@ -93,28 +93,28 @@ export default {
         callback: {
           ok(retData) {
             that.$emit('startLoading');
-            that.$api.updateTag(tag.id, retData).then(() => {
-              that.loadTags();
+            that.$api.updateTag(label.id, retData).then(() => {
+              that.loadLabels();
             });
           },
         },
       });
     },
-    popDeleteTag(idx, tag) {
+    popDeleteTag(idx, label) {
       const that = this;
       that.$popCheck({
-        title: `${that.$t('general.delete')}${that.$t('qa_tag.tag')}`,
+        title: `${that.$t('general.delete')}${that.$t('qa_label.label')}`,
         data: {
-          msg: that.$t('qa_tag.delete_tag_name', { tag: tag.tag_name }),
+          msg: that.$t('qa_label.delete_label_name', { label: label.name }),
         },
         callback: {
           ok() {
             that.$emit('startLoading');
-            that.$api.deleteTag(tag.id).then(() => {
-              that.loadTags();
+            that.$api.deleteTag(label.id).then(() => {
+              that.loadLabels();
             }, () => {
               // TODO: handle delete error
-              that.$notifyFail(that.$t('qa_tag.err_detele_tag_has_activity'));
+              that.$notifyFail(that.$t('qa_label.err_detele_label_has_activity'));
             })
             .then(() => {
               that.$emit('endLoading');
@@ -126,18 +126,18 @@ export default {
     popAddTag() {
       const that = this;
       that.$pop({
-        title: `${that.$t('general.add')}${that.$t('qa_tag.tag')}`,
+        title: `${that.$t('general.add')}${that.$t('qa_label.label')}`,
         component: EditTagPop,
         validate: true,
         data: {
-          existTags: that.tags.map(tag => tag.tag_name),
+          existTags: that.labels.map(label => label.name),
         },
         bindValue: false,
         callback: {
           ok(name) {
             that.$emit('startLoading');
             that.$api.addTag(name).then(() => {
-              that.loadTags();
+              that.loadLabels();
             }, (err) => {
               // TODO: handle add error
               console.log(err);
@@ -149,11 +149,11 @@ export default {
         },
       });
     },
-    loadTags() {
+    loadLabels() {
       const that = this;
       that.$emit('startLoading');
-      that.$api.loadTags().then((tags) => {
-        that.tags = tags;
+      that.$api.loadLabels().then((labels) => {
+        that.labels = labels;
       }, () => {
         // TODO: handle error if status code is not 500,
       })
@@ -163,14 +163,14 @@ export default {
     },
   },
   mounted() {
-    this.loadTags();
+    this.loadLabels();
   },
 };
 </script>
 
 <style lang="scss" scoped>
 @import 'styles/variable.scss';
-.qa-tag {
+.qa-label {
   display: flex;
   flex-direction: column;
   .row {

@@ -24,7 +24,7 @@
 import { mapGetters, mapMutations } from 'vuex';
 import Vue from 'vue';
 import qaAPI from './_api/qalist';
-import tagAPI from './_api/qatag';
+import labelAPI from './_api/qalabel';
 import QASelectors from './_components/QASelectors';
 import QACategory from './_components/QACategory';
 import QATable from './_components/QATable';
@@ -294,9 +294,9 @@ export default {
 
         const labels = {};
 
-        return tagAPI.loadTags.bind(this)().then((data) => {
+        return labelAPI.loadLabels.bind(this)().then((data) => {
           data.forEach((d) => {
-            labels[d.id] = d.tag_name;
+            labels[d.id] = d.name;
           });
           return qaAPI.filterQuestions(that.qaQueryOptions);
         }).then((data) => {

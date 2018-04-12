@@ -3,20 +3,20 @@ import qs from 'qs';
 const TAGS_URL = '/api/v1/faq/tags';
 const TAG_URL = '/api/v1/faq/tag';
 
-function loadTags() {
+function loadLabels() {
   return this.$reqGet(TAGS_URL).then(rsp => rsp.data.result);
 }
 
-function addTag(name) {
+function addLabel(name) {
   const params = {
     name,
   };
   return this.$reqPut(TAG_URL, qs.stringify(params)).then(rsp => rsp.data);
 }
-function deleteTag(id) {
+function deleteLabel(id) {
   return this.$reqDelete(`${TAG_URL}/${id}`).then(rsp => rsp.data);
 }
-function updateTag(id, name) {
+function updateLabel(id, name) {
   const params = {
     name,
   };
@@ -24,8 +24,8 @@ function updateTag(id, name) {
 }
 
 export default {
-  loadTags,
-  addTag,
-  deleteTag,
-  updateTag,
+  loadLabels,
+  addLabel,
+  deleteLabel,
+  updateLabel,
 };
