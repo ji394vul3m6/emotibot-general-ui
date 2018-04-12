@@ -22,6 +22,16 @@ Object.keys(modules).forEach((moduleName) => {
   });
 });
 
-export default new Router({
+const router = new Router({
   routes,
 });
+
+// TODO: check privilege here, if has no privilege, go "/"
+router.beforeEach((to, from, next) => {
+  // If match no module, go root
+  if (to.matched.length === 0) {
+    window.location = '/';
+  }
+  next();
+});
+export default router;

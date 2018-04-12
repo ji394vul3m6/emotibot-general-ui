@@ -29,9 +29,9 @@
             <div class="row" v-for="(answer, index) in row.answers" @contextmenu.stop.prevent="handleAnswerRightClick(row, answer, $event)" :key="index">
               <div id="tags" class="cell padding" @dblclick="showDimensionSelector(row, answer)" v-if="answer.tags !== ''"> {{answer.tags}} </div>
               <div id="tags" class="cell padding" @dblclick="showDimensionSelector(row, answer)" v-else> {{$t('qalist.all_dimensions')}} </div>
-              <div class="label cell padding" @dblclick="showLabelEditor(row, answer)">
+              <!-- <div class="label cell padding" @dblclick="showLabelEditor(row, answer)">
                 {{answer.labelName || $t('qalist.empty_label')}}
-              </div>
+              </div> -->
               <div class="cell standard_a block-with-text" @dblclick="showEditor(row, answer)" >
                 <qa-answer-content :answerContent="answer.standard_a"></qa-answer-content>
               </div>
