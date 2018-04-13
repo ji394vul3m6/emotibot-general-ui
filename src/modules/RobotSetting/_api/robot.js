@@ -1,3 +1,5 @@
+import qs from 'qs';
+
 const GET_FUNCTIONS_INFO_PATH = '/api/v1/robot/functions';
 const SET_FUNCTION_INFO_PATH = '/api/v1/robot/function';
 const SET_ALL_FUNCTIONS_INFO_PATH = '/api/v1/robot/functions';
@@ -6,25 +8,26 @@ const QA_OPERATION_PATH = '/api/v1/robot/qa';
 const REBUILD_QA_PATH = '/api/v1/robot/qabuild';
 
 function getFunctionsStatus() {
-  return this.$reqGet(GET_FUNCTIONS_INFO_PATH);
+  return this.$reqGet(GET_FUNCTIONS_INFO_PATH).then(rsp => rsp.data.result);
 }
 
-function setFunctionStatus(functionKey, status) {
+function setFunctionStatus(key, status) {
   const param = {
-    status,
+    active: status,
   };
 
-  return this.$reqPost(`${SET_FUNCTION_INFO_PATH}/${functionKey}`, param);
+  return this.$reqPost(`${SET_FUNCTION_INFO_PATH}/${key}`, qs.stringify(param));
 }
 
-function setFunctionInfos(infos) {
-  const param = {};
+function setFunctionInfos(infos, val) {
+  const statusMap = {};
   infos.forEach((info) => {
-    param[`function_${info.id}module`] = {
-      status: info.checked,
-    };
+    statusMap[info.code] = val;
   });
-  return this.$reqPost(SET_ALL_FUNCTIONS_INFO_PATH, param);
+  const param = {
+    active: JSON.stringify(statusMap),
+  };
+  return this.$reqPost(SET_ALL_FUNCTIONS_INFO_PATH, qs.stringify(param));
 }
 
 function getRobotQAList(page, perPage) {
