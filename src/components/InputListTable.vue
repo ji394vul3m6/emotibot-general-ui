@@ -10,7 +10,8 @@
           v-model="inputs[idx]"
           @compositionstart="inComposition=true"
           @compositionend="endComposition"
-          @keydown="handleKeyup($event, idx)"
+          @keydown="handleKeyDown($event)"
+          @keyup="handleKeyup($event, idx)"
           @change="handleChange">
       </div>
     </div>
@@ -69,6 +70,14 @@ export default {
       }
       this.inputs = temp;
     },
+    handleKeyDown(e) {
+      const that = this;
+      if (!that.inComposition) {
+        if (e.keyCode === 13) {
+          that.$emit('submit');
+        }
+      }
+    },
     handleKeyup(e, idx) {
       const that = this;
       if (!that.inComposition) {
@@ -87,10 +96,6 @@ export default {
           that.$nextTick(() => {
             target.select();
           });
-        }
-
-        if (e.keyCode === 13) {
-          that.$emit('submit');
         }
         if (!misc.controlKeyOnly(e)) {
           that.$nextTick(() => {
