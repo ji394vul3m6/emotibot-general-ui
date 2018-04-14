@@ -29,7 +29,7 @@ function addWordbank(paths, wordbank) {
   for (let i = 0; i < paths.length; i += 1) {
     data[`level${i + 1}`] = paths[i].name;
   }
-  return this.$reqPut(WORDBANK_PATH, qs.stringify(data)).then(res => res.data);
+  return this.$reqPut(WORDBANK_PATH, qs.stringify(data)).then(res => res.data.result);
 }
 
 function convertData(wordbank) {
