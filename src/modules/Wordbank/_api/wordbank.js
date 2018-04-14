@@ -1,8 +1,10 @@
 import qs from 'qs';
 
 const META_PATH = '/api/v1/dictionary/download-meta';
+const DOWNLOAD_PATH = '/api/v2/dictionary/download';
 const CHECK_PATH = '/api/v1/dictionary/full-check';
 const UPLOAD_PATH = '/api/v1/dictionary/upload';
+const UPLOAD_V2_PATH = '/api/v2/dictionary/upload';
 const WORDBANKS_PATH = '/api/v1/dictionary/wordbanks';
 const WORDBANK_PATH = '/api/v1/dictionary/wordbank';
 const CHATS_INFO_PATH = '/api/v1/robot/chat';
@@ -69,6 +71,27 @@ function updateWordbank(data) {
   return this.$reqPost(WORDBANK_PATH, data);
 }
 
+function uploadFileV2(file) {
+  if (!file) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        reject('Empty file');
+      }, 0);
+    });
+  } else if (file.size <= 0 || file.size > 2 * 1024 * 1024) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        reject('File size need more than 0, less than 2MB');
+      }, 0);
+    });
+  }
+
+  const data = new FormData();
+  data.append('file', file);
+
+  return this.$reqPost(UPLOAD_V2_PATH, data);
+}
+
 function uploadFile(file) {
   if (!file) {
     return new Promise((resolve, reject) => {
@@ -104,8 +127,10 @@ export default {
   getWordbank,
   getWordbanks,
   uploadFile,
+  uploadFileV2,
   getDownloadMeta,
   getLastResult,
   getDefaultSensitiveAnswer,
   updateWordbank,
+  DOWNLOAD_PATH,
 };

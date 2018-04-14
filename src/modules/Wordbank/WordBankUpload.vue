@@ -71,23 +71,25 @@ export default {
   components: {
     TextButton,
   },
+  api: [api, auditAPI],
   methods: {
-    ...auditAPI,
-    ...api,
     logExport(path) {
-      const paths = path.split('/');
-      const filename = paths[paths.length - 1];
-      const that = this;
-      const module = 'dictionary';
+      window.open(path, '_blank');
 
-      that.auditExportLog({
-        module,
-        filename,
-      }).then(() => {
-        window.open(path, '_blank');
-      }, (err) => {
-        that.$popError(that.$t('error_msg.export_fail'), err.errMsg);
-      });
+      // download audit will be add in v2 API
+      // const paths = path.split('/');
+      // const filename = paths[paths.length - 1];
+      // const that = this;
+      // const module = 'dictionary';
+
+      // that.$api.auditExportLog({
+      //   module,
+      //   filename,
+      // }).then(() => {
+      //   window.open(path, '_blank');
+      // }, (err) => {
+      //   that.$popError(that.$t('error_msg.export_fail'), err.errMsg);
+      // });
     },
     downloadTemplate() {
       window.open('/Files/wordbank_template.xlsx', '_blank');
@@ -119,7 +121,7 @@ export default {
       } else if (file.size <= 0 || file.size > 2 * 1024 * 1024) {
         that.popErrorWindow(that.$t('error_msg.upload_file_size_error'));
       } else {
-        that.uploadFile(file).then((data) => {
+        that.$api.uploadFileV2(file).then((data) => {
           const res = data.data;
           if (res.status === 0) {
             that.popErrorWindow(that.$t('wordbank.wait_for_result'));
@@ -152,8 +154,6 @@ export default {
     },
     convertFileInfo(fileInfo) {
       const time = new Date(fileInfo.time);
-      const appid = this.$cookie.get('appid');
-
       const month = time.getMonth() + 1;
       const day = time.getDate();
       const hour = time.getHours();
@@ -162,7 +162,7 @@ export default {
 
       return {
         timeStr: `${time.getFullYear()}-${getPadedNum(month)}-${getPadedNum(day)} ${getPadedNum(hour)}:${getPadedNum(min)}:${getPadedNum(seconds)}`,
-        path: `/Files/settings/${appid}/${fileInfo.filename}`,
+        path: `${api.DOWNLOAD_PATH}/${fileInfo.filename}`,
       };
     },
     popErrorWindow(msg, err) {
@@ -173,7 +173,7 @@ export default {
       if (!background) {
         that.$emit('startLoading');
       }
-      that.getLastResult().then((data) => {
+      that.$api.getLastResult().then((data) => {
         const res = data.data;
         if (res.status === 0) {
           const handleResult = res.result;
@@ -190,7 +190,7 @@ export default {
           }
         }
       })
-      .then(() => that.getDownloadMeta())
+      .then(() => that.$api.getDownloadMeta())
       .then((data) => {
         const res = data.data;
         if (res.status === 0) {
