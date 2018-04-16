@@ -8,7 +8,7 @@
     </div> 
     <div class="margin-top" style="display:flex; justify-content: space-between; align-items:baseline">
       <h3> {{ $t('qalist.similar_question') }}: {{ filteredQuestion.length }} </h3>
-      <div id="batch-button" class="text-button" @click="batchAddQuestion" >{{ $t('qalist.batch_add') }}</div>
+      <text-button @click="batchAddQuestion" >{{ $t('qalist.batch_add') }}</text-button>
     </div>
     
     <div id="qa-similar-question-table" class="margin-top">
@@ -43,7 +43,7 @@
       <div id="add-similar-question" class="margin-top">
         <h3> {{ $t('general.add') }}{{ $t('qalist.similar_question') }}: </h3>
         <input style="margin-left: 5px;" id="add-question" maxlength="200" :placeholder="$t('qalist.add_similar_question')" v-model="tempQuestion">
-        <div id="add-button" class="text-button" style="margin-left: 15px;" @click="addQuestionFromInput()"> {{ $t('general.add') }} </div>
+        <text-button style="margin-left: 15px;" @click="addQuestionFromInput()"> {{ $t('general.add') }} </text-button>
       </div>
     </div>
     <v-pagination size="small" :pageIndex="pageWording" :total="filteredQuestion.length" :pageSize="this.listPerPage" :layout="['total', 'prev', 'pager', 'next', 'jumper']" v-on:page-change="handlePageChange"></v-pagination>
@@ -201,7 +201,7 @@ export default {
           },
         },
       };
-      this.$root.$emit('showWindow', options);
+      this.$pop(options);
     },
     pushNewQuestion(question) {
       this.value.copiedQuestions = this.value.copiedQuestions.concat([{ content: question }]);
@@ -381,13 +381,6 @@ $height: 30px;
 
     #add-question {
       width: 150px;
-    }
-
-    #add-button, #batch-button{
-        width: 100px;
-        height: 30px;
-        line-height: 30px;
-        border-radius: 5px;
     }
 
     .cell-little {
