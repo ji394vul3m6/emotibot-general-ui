@@ -208,6 +208,9 @@ export default {
     },
     wait_for_result: '导入处理中，请五分钟后查看结果',
     download_import_result: '下载已导入词库',
+
+    delete_wordbank_name: '确定要删除词库 {name}',
+    delete_wordbank_dir: '确定要删除词库目录 {name} 与其底下所有的词库',
   },
   qatest: {
     submit: '送出',

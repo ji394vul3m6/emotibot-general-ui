@@ -8,6 +8,17 @@ const UPLOAD_V2_PATH = '/api/v2/dictionary/upload';
 const WORDBANKS_PATH = '/api/v1/dictionary/wordbanks';
 const WORDBANK_PATH = '/api/v1/dictionary/wordbank';
 const CHATS_INFO_PATH = '/api/v1/robot/chat';
+const WORDBANK_DIR_PATH = '/api/v1/dictionary/wordbank-dir';
+
+function deleteWordbank(id) {
+  return this.$reqDelete(`${WORDBANK_PATH}/${id}`);
+}
+function deleteWordbankDir(paths, dirName) {
+  const strs = paths.map(p => p.name);
+  strs.push(dirName);
+  const pathStr = encodeURIComponent(strs.join('/'));
+  return this.$reqDelete(`${WORDBANK_DIR_PATH}/dir?path=${pathStr}`);
+}
 
 function addFolder(paths, name) {
   let i = 0;
@@ -132,5 +143,7 @@ export default {
   getLastResult,
   getDefaultSensitiveAnswer,
   updateWordbank,
+  deleteWordbank,
+  deleteWordbankDir,
   DOWNLOAD_PATH,
 };

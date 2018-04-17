@@ -10,19 +10,20 @@
     <div class="wordbank-list">
       <div v-for="entry in currentWordBank" :key="entry.name" class="wordbank-entry" @click="goWordbankChildren(entry)">
         <template v-if="entry.type === 0">
-          <icon icon-type="folder"></icon>
+          <icon icon-type="folder"/>
         </template>
         <template v-else>
-          <icon icon-type="dictionary"></icon>
+          <icon icon-type="dictionary"/>
         </template>
-        <span>{{ entry.name }}</span>
+        <div class="wordbank-name">{{ entry.name }}</div>
+        <icon icon-type="delete" v-if="!atRoot" @click.stop="popDeleteWordbank(entry)"/>
       </div>
     </div>
     <div slot="footer" class="tool-bar">
-      <text-button icon-type="folder_add" v-if="paths.length < 4 && currentWordBank !== wordbank" @click="popAddFolder">
+      <text-button icon-type="folder_add" v-if="paths.length < 4 && !atRoot" @click="popAddFolder">
         {{ $t('wordbank.add_folder') }}
       </text-button>
-      <text-button icon-type="dictionary_add" v-if="currentWordBank !== wordbank" @click="popAddWordbank">
+      <text-button icon-type="dictionary_add" v-if="!atRoot" @click="popAddWordbank">
         {{ $t('wordbank.add_dictionary') }}
       </text-button>
       <!-- <text-button icon-type="download">
@@ -38,6 +39,9 @@ import Icon from '@/components/basic/Icon';
 import InputPop from '@/components/pop/InputPop';
 import api from './_api/wordbank';
 import EditPop from './_components/WordBankEdit';
+
+const TYPE_DIR = 0;
+const TYPE_ENTRY = 1;
 
 export default {
   path: 'wordbank-list',
@@ -56,7 +60,31 @@ export default {
     };
   },
   api,
+  computed: {
+    atRoot() {
+      return this.currentWordBank === this.wordbank;
+    },
+  },
   methods: {
+    popDeleteWordbank(entry) {
+      const that = this;
+      const option = {
+        data: {
+          msg: '',
+        },
+        callback: {
+          ok: () => {
+            that.deleteWordbank(entry);
+          },
+        },
+      };
+      if (entry.type === TYPE_DIR) {
+        option.data.msg = that.$t('wordbank.delete_wordbank_dir', { name: entry.name });
+      } else if (entry.type === TYPE_ENTRY) {
+        option.data.msg = that.$t('wordbank.delete_wordbank_name', { name: entry.name });
+      }
+      that.$popCheck(option);
+    },
     popAddFolder() {
       const that = this;
       const data = {
@@ -196,6 +224,24 @@ export default {
         that.$emit('endLoading');
       });
     },
+    deleteWordbank(entry) {
+      const that = this;
+      that.$emit('startLoading');
+      let promise;
+      if (entry.type === TYPE_ENTRY) {
+        promise = that.$api.deleteWordbank(entry.id);
+      } else {
+        promise = that.$api.deleteWordbankDir(that.paths, entry.name);
+      }
+      promise.then(() => {
+        const idx = that.currentWordBank.indexOf(entry);
+        that.currentWordBank.splice(idx, 1);
+      }, (err) => {
+        that.$notifyFail(`${that.$t('error_msg.request_fail')}: ${err.response.data.result}`);
+        window.test = err;
+      });
+      that.$emit('endLoading');
+    },
     addWordbank(wordbank) {
       const that = this;
       that.$emit('startLoading');
@@ -252,12 +298,19 @@ export default {
   .wordbank-entry {
     display: flex;
     flex-direction: row;
+    justify-content: center;
     padding: 10px;
     cursor: pointer;
     border-bottom: 1px solid $table-border-color;
 
     &:hover {
       background: $table-body-hover-background;
+    }
+    .wordbank-name {
+      flex: 1;
+    }
+    .wordbank-icon {
+      flex: 0 0 30px;
     }
   }
 }
