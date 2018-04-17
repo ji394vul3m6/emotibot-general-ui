@@ -29,7 +29,12 @@
           <div class="qa-test-inner-container">
             <div v-for="(chat, idx) in chatData" :class="chat.role" class="qa-test-row" :key="idx">
               <div class="qa-test-text">
-                <span v-html="chat.text"></span>
+                <span>
+                  <span v-html="chat.text"></span>
+                  <span class="link" v-for="(line, idx) in chat.data" :key="idx" @click="sendUserText(line)">
+                    {{ idx + 1 }}. {{ line }}
+                  </span>
+                </span>
               </div>
               <div class="empty-zone"></div>
             </div>
@@ -134,14 +139,9 @@ export default {
         }
       }
     },
-    sendText() {
+    sendUserText(text) {
       const that = this;
-
-      if (that.userInput.trim().length <= 0) {
-        that.$popError(that.$t('error_msg.input_empty'));
-        return;
-      }
-      that.appendChat(that.userInput);
+      that.appendChat(text);
 
       const filter = {};
       if (that.$refs.filters) {
@@ -150,12 +150,9 @@ export default {
         });
       }
 
-      that.$api.QATest(that.userInput, filter).then((data) => {
+      that.$api.QATest(text, filter).then((data) => {
         const res = data.data;
         if (res.status === 0 && res.result.answers && res.result.answers.length > 0) {
-          // res.result.answers.forEach((answer) => {
-          //   that.appendChat(answer, 'robot');
-          // });
           that.appendChatArrayDelay(res.result.answers, 'robot');
 
           that.tokens = res.result.tokens.join(', ');
@@ -170,13 +167,22 @@ export default {
         //   general.popErrorWindow(that, that.i18n.error_msg.server_error, value.errMsg);
         // });
       });
+    },
+    sendText() {
+      const that = this;
+
+      if (that.userInput.trim().length <= 0) {
+        that.$popError(that.$t('error_msg.input_empty'));
+        return;
+      }
+      that.sendUserText(that.userInput);
       that.userInput = '';
     },
     handleTextNode(node) {
       if (node.subType === 'text') {
         return node.value;
-      } else if (node.subType === 'relatedList') {
-        return `${node.value}\n${node.data.join('\n')}`;
+      } else if (node.subType === 'relatelist' || node.subType === 'guslist') {
+        return node.value;
       }
       const convertedText = node.value.replace(/<a/g, '<a target="_blank"');
       return convertedText;
@@ -198,6 +204,7 @@ export default {
         that.chatData.push({
           role: role || 'user',
           text: that.handleTextNode(answerObj),
+          data: answerObj.data,
         });
       } catch (err) {
         that.chatData.push({
@@ -334,6 +341,11 @@ $column-border-color: black;
                     list-style: decimal;
                   }
                 }
+                .link {
+                  text-decoration: underline;
+                  color: #2b85e4;
+                  cursor: pointer;
+                }
               }
               &.user {
                 flex-direction: row-reverse;
@@ -356,6 +368,9 @@ $column-border-color: black;
                   border-radius: 10px;
                   padding: 5px 10px;
                   white-space: pre-line;
+                  & > span {
+                    line-height: 1.2em;
+                  }
 
                   a:visited {
                     color: blue;
