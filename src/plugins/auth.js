@@ -1,4 +1,5 @@
 import md5 from 'js-md5';
+import qs from 'qs';
 import 'babel-polyfill';
 
 const LOGIN_PATH = '/auth/v2/login';
@@ -63,13 +64,14 @@ function setInfoWithToken(token) {
 
 function login(input) {
   const that = this;
-  const params = new URLSearchParams();
-  params.append('account', input.account);
-  params.append('passwd', md5(input.password));
+  const params = {
+    account: input.account,
+    passwd: md5(input.password),
+  };
 
   let token;
 
-  return that.$reqPost(LOGIN_PATH, params, {
+  return that.$reqPost(LOGIN_PATH, qs.stringify(params), {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
