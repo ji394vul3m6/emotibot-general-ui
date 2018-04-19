@@ -13,6 +13,9 @@ function parseJwt(token) {
 
 function setInfoWithToken(token) {
   const that = this;
+  if (token === undefined || token === '') {
+    return new Promise((r, j) => { j('Invalid token'); });
+  }
   const jwt = parseJwt(token);
   const userInfo = jwt.custom;
   const enterprise = userInfo.enterprise;
