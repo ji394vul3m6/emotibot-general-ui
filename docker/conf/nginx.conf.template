@@ -14,7 +14,7 @@ http {
     include       /etc/nginx/mime.types;
     default_type  application/octet-stream;
 
-    log_format auth_header 'NGINX: [$time_local] “$request”  auth:"$user_id@$auth_cookie" from:"$remote_addr $http_x_forwarded_for" '
+    log_format auth_header 'NGINX: [$time_local] “$request”  auth:"$user_id@$http_x_appid" from:"$remote_addr $http_x_forwarded_for" '
                       'ret:"code:$status size:$body_bytes_sent" info:[$http_referer][$http_user_agent]';
 #    access_log  /var/log/nginx/access.log  main;
     access_log /dev/null;
