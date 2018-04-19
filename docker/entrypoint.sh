@@ -8,7 +8,7 @@ php-fpm -R
 crond -f &
 
 # start authentication 
-/auth/authentication &
+/auth/token-auth &
 
 # start api
 cd /api && ./entrypoint.sh env.template &

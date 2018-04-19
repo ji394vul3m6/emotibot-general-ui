@@ -4,6 +4,44 @@ const USER_URL = '/admin/v1/user';
 const USERS_URL = '/admin/v1/users';
 const USER_REGISTER_URL = '/admin/v1/user/register';
 
+const V2_PREFIX = '/auth/v2';
+
+function getUsersURL(enterprise) {
+  return `${V2_PREFIX}/enterprise/${enterprise}/users`;
+}
+function getUserURL(enterprise) {
+  return `${V2_PREFIX}/enterprise/${enterprise}/user`;
+}
+
+function getEnterpriseUsers(enterprise) {
+  const usersURL = getUsersURL(enterprise);
+  return this.$reqGet(usersURL).then(rsp => rsp.data.result);
+}
+function getEnterpriseUser(enterprise, id) {
+  const userURL = getUserURL(enterprise);
+  return this.$reqGet(`${userURL}/${id}`).then(rsp => rsp.data.result);
+}
+function updateEnterpriseUser(enterprise, id, user) {
+  const userURL = getUserURL(enterprise);
+  return this.$reqPut(`${userURL}/${id}`, qs.stringify(user), {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+  });
+}
+function addEnterpriseUser(enterprise, user) {
+  const userURL = getUserURL(enterprise);
+  return this.$reqPost(userURL, qs.stringify(user), {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+  });
+}
+function deleteEnterpriseUser(enterprise, id) {
+  const userURL = getUserURL(enterprise);
+  return this.$reqDelete(`${userURL}/${id}`).then(rsp => rsp.data.result);
+}
+
 function getUsers() {
   return this.$reqGet(USERS_URL).then(rsp => rsp.data.result);
 }
@@ -36,4 +74,10 @@ export default {
   addUser,
   updateUser,
   deleteUser,
+
+  getEnterpriseUsers,
+  getEnterpriseUser,
+  updateEnterpriseUser,
+  addEnterpriseUser,
+  deleteEnterpriseUser,
 };

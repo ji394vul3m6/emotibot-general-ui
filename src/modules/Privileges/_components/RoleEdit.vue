@@ -2,8 +2,13 @@
   <div>
     <div class="row" :style="{width:width}">
       <span>{{ $t('privileges.role_name') }}</span>
-      <input v-model="name" :class="{error: isNameError}" @blur="checkName" ref="nameInput">
-      <span v-if="isNameError" class="err-msg">{{ $t('error_msg.input_empty') }}</span>
+      <template v-if="addMode">
+        <input v-model="name" :class="{error: isNameError}" @blur="checkName" ref="nameInput">
+        <span v-if="isNameError" class="err-msg">{{ $t('error_msg.input_empty') }}</span>
+      </template>
+      <template v-else>
+        <span class='row-val'>{{name}}</span>
+      </template>
     </div>
     <div class="spliter"></div>
     <div class="block">
@@ -54,6 +59,7 @@ export default {
       cmds: [],
       width: 'auto',
       isNameError: false,
+      addMode: false,
     };
   },
   computed: {
@@ -95,10 +101,10 @@ export default {
       const that = this;
       const ret = [];
       that.privilegeList.forEach((priv) => {
-        const cmdList = priv.cmd_list.split(',');
+        const cmdList = priv.commands;
         const localPriv = {
-          id: priv.privilege_id,
-          name: priv.privilege_name,
+          id: priv.code,
+          name: priv.code,
           cmds: {},
         };
         cmdList.forEach((cmd) => {
@@ -112,10 +118,10 @@ export default {
       const that = this;
       const ret = [];
       that.privilegeList.forEach((priv) => {
-        const cmdList = priv.cmd_list.split(',');
+        const cmdList = priv.commands;
         const localPriv = {
-          id: priv.privilege_id,
-          name: priv.privilege_name,
+          id: priv.code,
+          name: priv.code,
           cmds: {},
         };
         const apiPriv = apiPrivileges[localPriv.id];
@@ -136,7 +142,7 @@ export default {
       const cmds = [];
       const that = this;
       that.privilegeList.forEach((priv) => {
-        const cmdList = priv.cmd_list.split(',');
+        const cmdList = priv.commands;
         cmdList.forEach((cmd) => {
           if (cmds.indexOf(cmd) < 0) {
             cmds.push(cmd);
@@ -157,7 +163,7 @@ export default {
 
       this.privileges.forEach((priv) => {
         const enableCmd = Object.keys(priv.cmds).filter(cmd => priv.cmds[cmd]);
-        ret[priv.id] = enableCmd.join(',');
+        ret[priv.id] = enableCmd;
       });
 
       return ret;
@@ -172,6 +178,7 @@ export default {
   mounted() {
     const that = this;
     that.name = that.origData.name;
+    that.addMode = that.origData.addMode;
 
     that.cmds = that.getAllCmds();
     if (that.origData.privileges === undefined) {

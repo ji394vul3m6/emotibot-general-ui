@@ -7,16 +7,18 @@
     <div class="header row">
       <div class="check"></div>
       <div class="name">{{$t('privileges.role_name')}}</div>
+        <div class="count">{{$t('privileges.user_count')}}</div>
       <!-- <div class="privileges">{{$t('privileges.privileges')}}</div> -->
       <div class="actions">{{$t('general.actions')}}</div>
     </div>
     <div class="lists">
       <template v-if="roles.length > 0">
-      <div v-for="role in roles" v-if="role.role_name.indexOf(keyword) !== -1" :key="role.role_id" class='role-row row'>
+      <div v-for="role in roles" v-if="role.name.toLowerCase().indexOf(keyword.toLowerCase()) !== -1" :key="role.id" class='role-row row'>
         <div class="check">
           <!-- <input type="checkbox"> -->
         </div>
-        <div class="name">{{role.role_name}}</div>
+        <div class="name">{{role.name}}</div>
+        <div class="count">{{role.user_count}}</div>
         <!-- <div class="privileges">
           <div v-for="(actions, privilege) in role.privileges" :key="privilege">
             {{privilegeList[privilege].name}}:
@@ -28,7 +30,7 @@
             <icon icon-type="edit"/>
             <div class="tooltip">{{$t('general.edit')}}</div>
           </div>
-          <div class="icon button">
+          <div class="icon button" v-if="role.user_count <= 0">
             <icon icon-type="delete" @click="deleteRole(role)"/>
             <div class="tooltip">{{$t('general.delete')}}</div>
           </div>
@@ -59,6 +61,7 @@ export default {
     return {
       keyword: '',
       roles: [],
+      enterprise: {},
     };
   },
   computed: {
@@ -73,14 +76,14 @@ export default {
       that.$pop({
         component: RoleEdit,
         data: {
-          name: role.role_name,
+          name: role.name,
           privileges: role.privileges,
         },
         validate: true,
         bindValue: false,
         callback: {
           ok(retData) {
-            that.$api.updateRole(role.role_id, retData).then(() => {
+            that.$api.updateEnterpriseRole(that.enterprise.id, role.id, retData).then(() => {
               that.notifySuccess();
               that.loadRoles();
             });
@@ -111,6 +114,7 @@ export default {
         component: RoleEdit,
         data: {
           name: '',
+          addMode: true,
         },
         title: `${that.$t('general.add')}${that.$t('privileges.role')}`,
         validate: true,
@@ -131,7 +135,7 @@ export default {
     loadRoles() {
       const that = this;
       that.$emit('startLoading');
-      that.$api.getRoles().then((roles) => {
+      that.$api.getEnterpriseRoles(that.enterprise.id).then((roles) => {
         that.roles = roles;
       }, () => {
         // TODO
@@ -140,6 +144,7 @@ export default {
     },
   },
   mounted() {
+    this.enterprise = this.$getUserEnterprises();
     this.loadRoles();
   },
 };
@@ -182,6 +187,9 @@ export default {
     }
     .name {
       flex: 1 1 100px;
+    }
+    .count {
+      flex: 0 0 100px;
     }
     .privileges {
       flex: 3 1 300px;

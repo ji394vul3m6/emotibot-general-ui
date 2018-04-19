@@ -27,15 +27,17 @@ export const state = {
   },
   privilegeList: [],
   pageInfos: {},
+  userID: '',
+  userRole: {},
 };
 
 export const mutations = {
   [types.SET_PRIVILEGED_ENTERPRISES]: (s, enterpriseList) => {
-    s.enterpriseList = enterpriseList;
-    const keys = Object.prototype.getOwnPropertyNames(enterpriseList);
+    const keys = Object.getOwnPropertyNames(enterpriseList);
     if (keys.length > 0) {
       s.enterpriseID = keys[0];
     }
+    s.enterpriseList = enterpriseList;
   },
   [types.SET_ROBOT]: (s, appid) => {
     if (s.appid === appid) {
@@ -72,5 +74,11 @@ export const mutations = {
   },
   [types.SET_PAGES]: (s, pageInfos) => {
     s.pageInfos = pageInfos;
+  },
+  [types.SET_USER]: (s, userID) => {
+    s.userID = userID;
+  },
+  [types.SET_USER_ROLE]: (s, role) => {
+    s.userRole = role;
   },
 };

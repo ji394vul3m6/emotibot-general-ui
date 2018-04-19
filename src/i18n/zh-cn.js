@@ -6,12 +6,13 @@ export default {
     role_name: '角色名',
     user_name: '用户名',
     privileges: '权限',
+    user_count: '用户数',
 
     placeholder_user_name: '请输入用户名',
     placeholder_password: '请输入密码',
     placeholder_modify_password: '若要变更则输入密码',
 
-    system_admin: '系统管理员',
+    enterprise_admin: '企业管理员',
 
     no_roles: '无角色存在',
     no_users: '无用户存在',
@@ -20,7 +21,7 @@ export default {
 
     check_delete: '确认要删除角色：{role}',
     check_delete_user: '确认要删除用户：{user}',
-    delete_success: '删除角色成功',
+    delete_success: '删除成功',
     err_need_create_role: '请先新增角色',
     err_role_empty: '角色不可为空',
 
@@ -447,6 +448,7 @@ export default {
       task_engine_scenario: '场景编辑',
       task_engine_upload: '上传转换数据',
     },
+    error: '',
   },
   general: {
     yes: '是',
@@ -530,6 +532,8 @@ export default {
     data_format_err: '资料格式错误',
     update_qa_error: '问答更新失败',
     input_empty: '输入不可为空',
+    auth_expire: '授权已失效，请重新登入',
+    no_page_priv: '无法浏览此页面',
   },
   http_status: {
     default: '伺服器错误',

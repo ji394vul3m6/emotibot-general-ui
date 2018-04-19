@@ -7,6 +7,7 @@ After ajax finish, check error code automatically
 import axios from 'axios';
 
 let appid = '';
+let token = '';
 
 function addCustomHeader(config) {
   let option = Object.assign({}, config);
@@ -14,13 +15,11 @@ function addCustomHeader(config) {
     option = {};
   }
   // TODO: correct header should add here
-  if (option.headers) {
-    option.headers['X-Custom-Header'] = appid;
-  } else {
-    option.headers = {
-      'X-Custom-Header': appid,
-    };
+  if (!option.headers) {
+    option.headers = {};
   }
+  option.headers['X-Appid'] = appid;
+  option.headers.Authorization = `Bearer ${token}`;
   return option;
 }
 
@@ -104,7 +103,10 @@ const MyPlugin = {
     Vue.prototype.$reqPatch = patch;
     Vue.prototype.$reqAjax = ajax;
 
-    Vue.prototype.$setupRobot = function setupRobot(id) {
+    Vue.prototype.$setReqToken = function setUpToken(t) {
+      token = t;
+    };
+    Vue.prototype.$setReqAppid = function setupRobot(id) {
       appid = id;
     };
   },

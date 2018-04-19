@@ -1,6 +1,6 @@
 <template>
 <div id="page-header">
-  <!-- <div class="spliter"></div>
+  <div class="spliter"></div>
   <div v-if="enterpriseList && enterpriseList.length > 0">
     <label-select
       :options="enterpriseList"
@@ -18,7 +18,7 @@
       <div class="white_robot_icon header"></div>
     </label-select>
   </div>
-  <div class="spliter"></div> -->
+  <div class="spliter"></div>
   <div class="logout" @click="logout">
     <icon icon-type="white_logout"/>
   </div>

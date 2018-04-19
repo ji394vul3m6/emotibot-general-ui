@@ -1,15 +1,15 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import modules from '@/modules';
+import ErrorPage from '@/components/layout/ErrorPage';
 
 Vue.use(Router);
 
-const routes = [
-  {
-    path: '/',
-    redirect: '/statistic-dash',
-  },
-];
+const routes = [{
+  path: '/error',
+  name: 'error',
+  component: ErrorPage,
+}];
 Object.keys(modules).forEach((moduleName) => {
   const pageModule = modules[moduleName];
   Object.keys(pageModule.pages).forEach((pageName) => {
@@ -24,14 +24,5 @@ Object.keys(modules).forEach((moduleName) => {
 
 const router = new Router({
   routes,
-});
-
-// TODO: check privilege here, if has no privilege, go "/"
-router.beforeEach((to, from, next) => {
-  // If match no module, go root
-  if (to.matched.length === 0) {
-    window.location = '/';
-  }
-  next();
 });
 export default router;

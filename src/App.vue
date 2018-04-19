@@ -3,7 +3,7 @@
     <div id="app-logo"></div>
     <page-header></page-header>
     <page-menu></page-menu>
-    <div id="app-page">
+    <div id="app-page" v-if="ready">
       <div class="app-header">{{$t(`pages.${pageName}`)}}</div>
       <router-view class="app-body" @startLoading="startLoading" @endLoading="endLoading"/>
       <div v-if="showLoading" class="loading">
@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex';
+import { mapMutations, mapGetters } from 'vuex';
 import modules from '@/modules';
 import PageHeader from '@/components/layout/Header';
 import PageMenu from '@/components/layout/Menu';
@@ -33,15 +33,31 @@ export default {
     pageName() {
       return this.$route.name;
     },
+    ...mapGetters([
+      'robotID',
+      'userID',
+      'userRole',
+    ]),
   },
   data() {
     return {
       showLoading: false,
       loadingMsg: '',
+      ready: false,
+      userInfo: {},
     };
   },
   watch: {
+    robotID() {
+      this.$cookie.set('appid', this.robotID);
+      this.$setReqAppid(this.robotID);
+    },
+    userID() {
+      this.$cookie.set('userid', this.userID);
+      console.log(this.userID);
+    },
     $route() {
+      this.checkPrivilege();
       this.endLoading();
     },
   },
@@ -49,7 +65,41 @@ export default {
     ...mapMutations([
       'setPrivilegeList',
       'setPageInfos',
+      'setPrivilegedEnterprise',
+      'setRobot',
+      'setUser',
+      'setUserRole',
     ]),
+    checkPrivilege() {
+      const that = this;
+      if (that.userInfo.type < 2) {
+        // system admin and enterprise admin can use all module
+        return;
+      }
+      const privileges = that.userRole.privileges;
+      const codes = Object.keys(privileges);
+      // If user has no privileges, invalid user
+      if (codes.length === 0) {
+        window.location = '/login.html?invalid=1';
+      }
+
+      // const viewCode = codes.find(code => privileges[code].indexOf('view') >= 0);
+      // const routes = this.$router.options.routes;
+      // const target = routes.find(route => route.component.privCode === viewCode);
+
+      if (that.$route.matched.length <= 0) {
+        that.$router.push('error');
+        return;
+      }
+      const route = this.$route.matched[0];
+      if (!route.components.default) {
+        return;
+      }
+      const component = route.components.default;
+      if (codes.indexOf(component.privCode) < 0) {
+        that.$router.push('error');
+      }
+    },
     startLoading(msg) {
       this.showLoading = true;
       this.loadingMsg = msg;
@@ -60,6 +110,8 @@ export default {
     setupPages() {
       const that = this;
       const pages = [];
+      const privileges = that.userRole.privileges || {};
+      const privKeys = Object.keys(privileges);
       Object.keys(modules).forEach((moduleName) => {
         const pageModule = modules[moduleName];
         const modulePages = [];
@@ -71,6 +123,15 @@ export default {
           if (page.hidden) {
             return;
           }
+          if (that.userInfo.type >= 2) {
+            if (privKeys.indexOf(page.privCode) < 0) {
+            // Not in privilege list
+              return;
+            } else if (privileges[page.privCode].indexOf('view') < 0) {
+            // In list, but has no view privilege
+              return;
+            }
+          }
           modulePages.push({
             path: page.path,
             name: page.displayNameKey,
@@ -79,6 +140,9 @@ export default {
             icon: `${page.icon}`,
           });
         });
+        if (modulePages.length <= 0) {
+          return;
+        }
         pages.push({
           path: pageModule.path,
           name: moduleName,
@@ -91,10 +155,39 @@ export default {
     },
   },
   mounted() {
-    this.$getPrivilegeList().then((privileges) => {
-      this.setPrivilegeList(privileges.result);
+    const that = this;
+    const token = that.$getToken();
+    that.$setReqToken(token);
+    that.$setIntoWithToken(token).then(() => {
+      const enterprise = that.$getUserEnterprises();
+      const robots = {};
+      enterprise.apps.forEach((app) => {
+        robots[app.id] = app.name;
+      });
+      const enterpriseList = {};
+      enterpriseList[enterprise.id] = {
+        name: enterprise.name,
+        robots,
+      };
+      const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+      that.userInfo = userInfo;
+
+      const userPrivilege = JSON.parse(localStorage.getItem('role'));
+      that.$setReqAppid(enterprise.apps[0].id);
+
+      that.setUser(userInfo.id);
+      that.setPrivilegedEnterprise(enterpriseList);
+      that.setRobot(enterprise.apps[0].id);
+      that.setUserRole(userPrivilege);
+      that.setPrivilegeList(that.$getPrivModules());
+
+      that.setupPages();
+      that.checkPrivilege();
+      that.ready = true;
+    }).catch((err) => {
+      console.log(err);
+      window.location = '/login.html?invalid=1';
     });
-    this.setupPages();
   },
 };
 </script>

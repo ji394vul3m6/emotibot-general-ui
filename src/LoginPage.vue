@@ -31,8 +31,6 @@
 </template>
 
 <script>
-// import auth from '@/auth';
-// import Error from '@/components/ErrorAlert';
 import Icon from './components/basic/Icon';
 import LoadingButton from './components/basic/LoadingButton';
 
@@ -70,10 +68,11 @@ export default {
       that.$refs.btn.$emit('loading');
       that.$login(that.input).then(() => {
         window.location = '/#/statistic-dash';
-      }, () => {
+      }, (err) => {
         that.$notify({ text: '登录失败', type: 'fail' });
         that.$refs.user.focus();
         that.$refs.btn.$emit('reset');
+        console.log(err);
       });
     },
     passwordKey(e) {
@@ -83,10 +82,17 @@ export default {
     },
   },
   mounted() {
-    // if (auth.checkAuth(this)) {
-    //   this.$router.push({ path: this.redirect });
-    // }
-    this.$refs.user.focus();
+    const that = this;
+    that.$refs.user.focus();
+    const querys = document.location.search.substr(1).split('&');
+    const queryMap = {};
+    querys.forEach((query) => {
+      const idx = query.indexOf('=');
+      queryMap[query.substr(0, idx)] = query.substr(idx);
+    });
+    if (Object.keys(queryMap).indexOf('invalid') >= 0) {
+      that.$notifyFail(that.$t('error_msg.auth_expire'));
+    }
   },
 };
 </script>

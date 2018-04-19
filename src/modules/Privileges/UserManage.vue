@@ -12,13 +12,13 @@
     </div>
     <div class="lists">
       <template v-if="users.length > 0">
-      <div v-for="user in users" v-if="user.user_name.indexOf(keyword) !== -1" :key="user.user_id" class='user-row row'>
+      <div v-for="user in users" v-if="user.user_name.toLowerCase().indexOf(keyword.toLowerCase()) !== -1" :key="user.user_id" class='user-row row'>
         <div class="check">
         </div>
         <div class="name">{{user.user_name}}</div>
         <div class="role">{{getRoleShowName(user)}}</div>
         <div class="actions">
-          <template v-if="user.user_type !== adminType">
+          <template v-if="user.type !== enterpriseAdminType">
           <div class="icon button" @click="popEditUser(user)">
             <icon icon-type="edit"/>
             <div class="tooltip">{{$t('general.edit')}}</div>
@@ -55,24 +55,26 @@ export default {
       keyword: '',
       users: [],
       roleMap: {},
-      adminType: 0,
+      enterpriseAdminType: 1,
+      systemAdminType: 0,
+      enterprise: {},
     };
   },
   methods: {
     getRoleShowName(user) {
       const that = this;
-      if (user.user_type === that.adminType) {
-        return that.$t('privileges.system_admin');
+      if (user.type === that.enterpriseAdminType) {
+        return that.$t('privileges.enterprise_admin');
       }
-      if (that.roleMap[user.role_id] !== undefined) {
-        return that.roleMap[user.role_id];
+      if (that.roleMap[user.role] !== undefined) {
+        return that.roleMap[user.role];
       }
-      return user.role_id;
+      return user.role;
     },
     popEditUser(user) {
       const that = this;
       that.$emit('startLoading');
-      that.$api.getRoles().then((roles) => {
+      that.$api.getEnterpriseRoles(that.enterprise.id).then((roles) => {
         if (roles.length <= 0) {
           that.$notifyFail(that.$t('privileges.err_need_create_role'));
           return;
@@ -81,7 +83,7 @@ export default {
           component: UserEdit,
           data: {
             name: user.user_name,
-            role: user.role_id,
+            role: user.role,
             roles,
             addMode: false,
           },
@@ -90,10 +92,11 @@ export default {
           bindValue: false,
           callback: {
             ok(retData) {
-              if (retData.password === undefined && retData.role_id === user.role_id) {
+              if (retData.password === undefined && retData.role === user.role) {
                 return;
               }
-              that.$api.updateUser(user.user_id, retData).then(() => {
+              console.log(retData);
+              that.$api.updateEnterpriseUser(that.enterprise.id, user.id, retData).then(() => {
                 that.notifySuccess();
                 that.loadUsers();
               });
@@ -114,7 +117,7 @@ export default {
         },
         callback: {
           ok() {
-            that.$api.deleteUser(user.user_id).then(() => {
+            that.$api.deleteEnterpriseUser(that.enterprise.id, user.id).then(() => {
               that.$notify({ text: that.$t('privileges.delete_success') });
               that.loadUsers();
             });
@@ -126,7 +129,7 @@ export default {
     popAddUser() {
       const that = this;
       that.$emit('startLoading');
-      that.$api.getRoles().then((roles) => {
+      that.$api.getEnterpriseRoles(that.enterprise.id).then((roles) => {
         if (roles.length <= 0) {
           that.$notifyFail(that.$t('privileges.err_need_create_role'));
           return;
@@ -143,7 +146,9 @@ export default {
           bindValue: false,
           callback: {
             ok(retData) {
-              that.$api.addUser(retData).then(() => {
+              retData.username = retData.name;
+              console.log(retData);
+              that.$api.addEnterpriseUser(that.enterprise.id, retData).then(() => {
                 that.notifySuccess();
                 that.loadUsers();
               });
@@ -161,18 +166,23 @@ export default {
     },
     loadUsers() {
       const that = this;
-      that.$api.getRoles().then((roles) => {
+      that.$emit('startLoading');
+      that.$api.getEnterpriseRoles(that.enterprise.id).then((roles) => {
         roles.forEach((role) => {
-          that.roleMap[role.role_id] = role.role_name;
+          that.roleMap[role.id] = role.name;
         });
       })
-      .then(() => that.$api.getUsers())
+      .then(() => that.$api.getEnterpriseUsers(that.enterprise.id))
       .then((users) => {
         that.users = users;
+      })
+      .finally(() => {
+        that.$emit('endLoading');
       });
     },
   },
   mounted() {
+    this.enterprise = this.$getUserEnterprises();
     this.loadUsers();
   },
 };

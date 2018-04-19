@@ -68,8 +68,8 @@
           {{ $t('qatest.match_result') }}
         </div>
         <div class="qa-test-info-content">
-          <div v-for="result in matchResult" :key="result.user_q">
-            <div>{{ $t('qatest.similar_question') }}：{{result.user_q}}</div>
+          <div v-for="result in matchResult" :key="result.std_q" class="similar-group">
+            <div>{{ $t('qatest.similar_question') }}：{{result.std_q}}</div>
             <div>{{ $t('qatest.similar_score') }}：{{result.score}}</div>
             <br>
           </div>

@@ -23,7 +23,7 @@
     <div class="row">
       <span class="row-name">{{ $t('privileges.role') }}</span>
       <select v-model="role" v-on:change="checkRole">
-        <option v-for="role in origData.roles" :key="role.role_id" :value="role.role_id">{{role.role_name}}</option>
+        <option v-for="role in origData.roles" :key="role.id" :value="role.id">{{role.name}}</option>
       </select>
     </div>
     <div v-if="isRoleError" class="err-msg">{{ $t('privileges.err_role_empty') }}</div>
@@ -66,7 +66,7 @@ export default {
       return true;
     },
     isRoleValid() {
-      return this.role !== '';
+      return this.role !== undefined && this.role !== '';
     },
   },
   methods: {
@@ -102,7 +102,7 @@ export default {
       if (that.checkName() && that.checkPassword() && that.checkRole()) {
         const retObj = {
           name: that.name,
-          role_id: that.role,
+          role: that.role,
         };
         if (that.password !== '') {
           retObj.password = md5(that.password);

@@ -4,6 +4,33 @@ const ROLE_URL = '/admin/v1/role';
 const ROLES_URL = '/admin/v1/roles';
 const ROLE_REGISTER_URL = '/admin/v1/role/register';
 
+const V2_PREFIX = '/auth/v2';
+
+function getRolesURL(enterpriseID) {
+  return `${V2_PREFIX}/enterprise/${enterpriseID}/roles`;
+}
+function getRoleURL(enterpriseID) {
+  return `${V2_PREFIX}/enterprise/${enterpriseID}/role`;
+}
+
+function getEnterpriseRoles(enterprise) {
+  const usersURL = getRolesURL(enterprise);
+  return this.$reqGet(usersURL).then(rsp => rsp.data.result);
+}
+function updateEnterpriseRole(enterprise, id, role) {
+  const userURL = getRoleURL(enterprise);
+  const options = {
+    name: role.name,
+    privilege: JSON.stringify(role.privileges),
+  };
+
+  return this.$reqPut(`${userURL}/${id}`, qs.stringify(options), {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+  });
+}
+
 function deleteRole(id) {
   return this.$reqDelete(`${ROLE_URL}/${id}`).then(rsp => rsp.data);
 }
@@ -65,4 +92,7 @@ export default {
   addRole,
   updateRole,
   deleteRole,
+
+  getEnterpriseRoles,
+  updateEnterpriseRole,
 };

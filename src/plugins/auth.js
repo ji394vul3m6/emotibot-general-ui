@@ -1,146 +1,85 @@
 import md5 from 'js-md5';
-import axios from 'axios';
-import object from '@/utils/js/object';
 import 'babel-polyfill';
 
-const LOGIN_PATH = '/auth/v1/user/login';
-const LIST_PRIV_PATH = '/admin/v1/privileges';
-// const LIST_PRIV_PATH = '/cauth/v1/cauth/privileges';
-// const USER_PRIV_PATH = '/cauth/v1/cauth/user';
-const USER_PRIV_PATH = '/auth/v1/user';
+const LOGIN_PATH = '/auth/v2/login';
+const ENTERPRISE_PATH = '/auth/v2/enterprise';
+const TOKEN_PATH = '/auth/v2/token';
 
-function apiPrivConverter(apiPriv, privileges) {
-  const newPriv = {};
-  if (apiPriv) {
-    const privMap = {};
-    privileges.forEach((priv) => {
-      privMap[priv.privilege_id] = priv.privilege_name;
-    });
-
-    const privKeys = Object.keys(apiPriv);
-    privKeys.forEach((id) => {
-      newPriv[privMap[id]] = apiPriv[id];
-    });
-  }
-  return newPriv;
+function parseJwt(token) {
+  const base64Url = token.split('.')[1];
+  const base64 = base64Url.replace('-', '+').replace('_', '/');
+  return JSON.parse(window.atob(base64));
 }
 
-function getUserPrivilege(context) {
-  const userID = context.$cookie.get('userid');
-  const getURL = `${USER_PRIV_PATH}/${userID}`;
-  return axios.get(getURL).then(res => res.data);
-}
-
-function checkPrivilegeChange(context) {
-  return getUserPrivilege(context).then((data) => {
-    const privilegeList = JSON.parse(localStorage.getItem('privileges'));
-    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-    const origPriv = JSON.parse(userInfo.privilege);
-
-    const apiNowPriv = JSON.parse(data.status === 0 ? data.result.privileges : '{}');
-    const nowPriv = apiPrivConverter(apiNowPriv, privilegeList);
-    return object.jsonEqual(origPriv, nowPriv);
-  });
-}
-
-function getPrivilegeListFromLocal() {
-  return JSON.parse(localStorage.getItem('privileges'));
-}
-function getPrivilegeList() {
+function setInfoWithToken(token) {
   const that = this;
-  const appid = that.$cookie.get('appid');
+  const jwt = parseJwt(token);
+  const userInfo = jwt.custom;
+  const enterprise = userInfo.enterprise;
+  let enterpriseInfo = {};
+  let modules = [];
+  let role = {};
 
-  return that.$reqGet(LIST_PRIV_PATH, {
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      Authorization: appid,
-    },
-  }).then((res) => {
-    const data = res.data;
-    if (data.status !== 0) {
-      return data;
+  that.$setReqToken(token);
+  return that.$reqGet(`${TOKEN_PATH}`).then(() => {
+    if (userInfo.type >= 2) {
+      if (userInfo.role === '') {
+        throw new Error('Invalid role');
+      }
+      return that.$reqGet(`${ENTERPRISE_PATH}/${enterprise}/role/${userInfo.role}`);
     }
-
-    const privList = data.result;
-    privList.forEach((priv) => {
-      if (priv.id) {
-        priv.privilege_id = priv.id;
-        delete priv.id;
-      }
-
-      if (priv.name) {
-        priv.privilege_name = priv.name;
-        delete priv.name;
-      }
-
-      if (priv.cmdlist) {
-        priv.cmd_list = priv.cmdlist;
-        delete priv.cmdlist;
-      }
+    return new Promise((r) => {
+      r();
     });
-    return data;
-  });
+  })
+  .then((rsp) => {
+    if (userInfo.type >= 2) {
+      role = rsp.data.result;
+    }
+  })
+  .then(() => that.$reqGet(`${ENTERPRISE_PATH}/${enterprise}`))
+  .then((rsp) => {
+    const data = rsp.data;
+    enterpriseInfo = data.result;
+  })
+  .then(() => that.$reqGet(`${ENTERPRISE_PATH}/${enterprise}/modules`))
+  .then((rsp) => {
+    const data = rsp.data;
+    modules = data.result;
+  })
+  .then(() => new Promise((r) => {
+    localStorage.setItem('userInfo', JSON.stringify(userInfo));
+    localStorage.setItem('token', token);
+    localStorage.setItem('enterpriseInfo', JSON.stringify(enterpriseInfo));
+    localStorage.setItem('enterprise', JSON.stringify(enterprise));
+    localStorage.setItem('modules', JSON.stringify(modules));
+    localStorage.setItem('role', JSON.stringify(role));
+    r(userInfo);
+  }));
 }
 
 function login(input) {
   const that = this;
   const params = new URLSearchParams();
-  params.append('user_name', input.account);
-  params.append('password', md5(input.password));
-  params.append('raw_password', input.password);
+  params.append('account', input.account);
+  params.append('passwd', md5(input.password));
 
-  let tempUserInfo;
+  let token;
 
-  return axios.post(LOGIN_PATH, params, {
+  return that.$reqPost(LOGIN_PATH, params, {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
-  }).then((data) => {
-    const ret = data.data;
-    if (ret.status === 0) {
-      tempUserInfo = ret.result;
-      that.$cookie.set('appid', ret.result.appid || '', 1);
-      that.$cookie.set('userid', ret.result.user_id || '', 1);
-      const robotData = {
-        appid: ret.result.appid,
-      };
-      const str = JSON.stringify(robotData);
-      const expires = new Date();
-      expires.setTime(expires.getTime() + (24 * 60 * 60 * 1000));
-      // no using that.$cookie because of it will encoded cookie value
-      document.cookie = `robotDataJson=${str}; expires=${expires.toGMTString()};path=/`;
-      // that.$cookie.set('robotDataJson', str);
-
-      that.$cookie.set('locale', 'zh-cn');
-    }
   })
-  .then(() => getPrivilegeList.bind(that)())
-  .then(ret => new Promise((resolve, reject) => {
-    if (ret.status !== 0) {
-      setTimeout(() => {
-        reject(ret.message);
-      }, 0);
-    }
+  .then((rsp) => {
+    const data = rsp.data;
+    token = data.result.token;
+    localStorage.setItem('token', token);
+  });
+}
 
-    const userPriv = JSON.parse(tempUserInfo.privilege);
-    const newPriv = {};
-    if (userPriv) {
-      const privMap = {};
-      ret.result.forEach((priv) => {
-        privMap[priv.privilege_id] = priv.privilege_name;
-      });
-
-      const privKeys = Object.keys(userPriv);
-      privKeys.forEach((id) => {
-        newPriv[privMap[id]] = userPriv[id];
-      });
-      tempUserInfo.privilege = JSON.stringify(newPriv);
-    }
-
-    localStorage.setItem('privileges', JSON.stringify(ret.result));
-    localStorage.setItem('userInfo', JSON.stringify(tempUserInfo));
-    resolve(ret);
-  }));
+function checkToken(token) {
+  return this.$reqGet(`${TOKEN_PATH}/${token}`);
 }
 
 function checkAuth(context) {
@@ -176,6 +115,11 @@ function clearAuth() {
   this.$cookie.delete('appid');
   this.$cookie.delete('user_id');
   localStorage.removeItem('userInfo');
+  localStorage.removeItem('token');
+  localStorage.removeItem('enterpriseInfo');
+  localStorage.removeItem('enterprise');
+  localStorage.removeItem('modules');
+  localStorage.removeItem('role');
 }
 
 function logout() {
@@ -183,16 +127,35 @@ function logout() {
   window.location = '/login.html';
 }
 
+function getToken() {
+  return localStorage.getItem('token');
+}
+
+function getUserEnterprises() {
+  try {
+    return JSON.parse(localStorage.getItem('enterpriseInfo'));
+  } catch (e) {
+    logout();
+    return {};
+  }
+}
+
+function getPrivModules() {
+  return JSON.parse(localStorage.getItem('modules'));
+}
 
 const MyPlugin = {
   install(Vue) {
-    Vue.prototype.$login = login;
-    Vue.prototype.$logout = logout;
-    Vue.prototype.$getPrivilegeList = getPrivilegeList;
-    Vue.prototype.$getPrivilegeListFromLocal = getPrivilegeListFromLocal;
     Vue.prototype.$checkPrivilege = checkPrivilege;
     Vue.prototype.$checkAuth = checkAuth;
-    Vue.prototype.$checkPrivilegeChange = checkPrivilegeChange;
+
+    Vue.prototype.$login = login;
+    Vue.prototype.$checkToken = checkToken;
+    Vue.prototype.$getToken = getToken;
+    Vue.prototype.$logout = logout;
+    Vue.prototype.$setIntoWithToken = setInfoWithToken;
+    Vue.prototype.$getUserEnterprises = getUserEnterprises;
+    Vue.prototype.$getPrivModules = getPrivModules;
   },
 };
 

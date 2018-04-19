@@ -47,9 +47,9 @@ const i18n = new VueI18n({
 });
 
 router.beforeEach((to, from, next) => {
-  const index = document.cookie.search(/appid=[a-zA-Z0-9]+(;.+)?$/);
-  if (index < 0) {
-    window.location = '/login.html';
+  const token = localStorage.getItem('token');
+  if (token === '') {
+    window.location = '/login.html?invalid=1';
   } else {
     next();
   }

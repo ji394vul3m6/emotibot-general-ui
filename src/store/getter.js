@@ -45,3 +45,6 @@ export const privilegeMap = (s) => {
   });
   return map;
 };
+
+export const userID = s => s.userID;
+export const userRole = s => s.userRole;
