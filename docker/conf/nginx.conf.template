@@ -158,6 +158,7 @@ http {
 
         # golang /api/v1
         location /api {
+            auth_request /auth/v2/token;
             add_header Cache-Control no-store;  
             add_header Cache-Control private;  
             proxy_set_header Authorization $auth_cookie;
