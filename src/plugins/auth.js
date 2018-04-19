@@ -13,7 +13,7 @@ function parseJwt(token) {
 
 function setInfoWithToken(token) {
   const that = this;
-  if (token === undefined || token === '') {
+  if (token === undefined || token === '' || token === null) {
     return new Promise((r, j) => { j('Invalid token'); });
   }
   const jwt = parseJwt(token);
