@@ -29,6 +29,7 @@ export default {
       },
     },
   },
+  api: QAapi,
   data() {
     return {
       statsText: '',
@@ -42,7 +43,7 @@ export default {
       this.statsText = this.$t('qalist.check_export_status');
     },
     pollingState(id) {
-      QAapi.queryOperationProgress(id).then((data) => {
+      this.$api.queryOperationProgress(id).then((data) => {
         if (data.status === 'running') {
           setTimeout(() => {
             this.pollingState.bind(this)(id);
@@ -68,7 +69,7 @@ export default {
     that.setUpMsg();
 
     const options = this.qaQueryOptions;
-    QAapi.exportQuestions(options).then((data) => {
+    this.$api.exportQuestions(options).then((data) => {
       that.pollingState(data.stateId);
     }).catch((err) => {
       this.$emit('validateSuccess', {

@@ -37,6 +37,7 @@ export default {
       },
     },
   },
+  api: QAapi,
   data() {
     return {
       selected: false,
@@ -54,7 +55,7 @@ export default {
       action: 'full_import',
       status: 'success',
     };
-    QAapi.queryOperations(queryOptions).then((data) => {
+    this.$api.queryOperations(queryOptions).then((data) => {
       if (data.records && data.records.length > 0) {
         const lastDownloadSuccessMsg = this.$t('qalist.download_last_success');
         data.records.forEach((record, index) => {
@@ -75,7 +76,7 @@ export default {
       window.open(path);
     },
     download(record) {
-      QAapi.downloadFile(record.stateId);
+      this.$api.downloadFile(record.stateId);
     },
     showUploadFile() {
       document.getElementById('qa-file-inpput').click();

@@ -111,6 +111,7 @@ import QAapi from '../_api/qalist';
 
 export default {
   name: 'qa-selectors',
+  api: QAapi,
   components: {
     'qa-datetime-picker': DatetimePicker,
     TextButton,
@@ -200,7 +201,7 @@ export default {
           buttons: ['ok'],
           callback: {
             ok: () => {
-              QAapi.downloadFile(response.stateId);
+              this.$api.downloadFile(response.stateId);
             },
           },
           data: {
@@ -275,12 +276,12 @@ export default {
         ok_msg: popOptions.ok_msg,
         cancel_msg: that.$t('general.close'),
         callback: {
-          ok: () => { QAapi.downloadFile(id); },
+          ok: () => { this.$api.downloadFile(id); },
         },
       });
     },
     checkImportStatus(id) {
-      QAapi.queryOperationProgress(id).then((data) => {
+      this.$api.queryOperationProgress(id).then((data) => {
         if (data.status === 'success') {
           this.showCheckPop(this.$t('dictionary.result.success'));
           this.$root.$emit('QASelector::fileimported');
@@ -308,7 +309,7 @@ export default {
       const that = this;
       that.$root.$emit('QASelector::fileimportStart');
       const importType = (values.module === '0') ? 'full' : 'incre';
-      QAapi.importQuestions(that.$cookie.get('userid'), importType, values.file).then((data) => {
+      this.$api.importQuestions(that.$cookie.get('userid'), importType, values.file).then((data) => {
         // upload success, start polling
         const options = {
           // component: CheckPop,
@@ -369,7 +370,7 @@ export default {
             element.allChecked = allUnChecked;
           } else {
             const dimensionObj = {
-              typeId: QAapi.getDiemensionTypeId(element.type),
+              typeId: this.$api.getDiemensionTypeId(element.type),
               tagContent: '',
             };
 

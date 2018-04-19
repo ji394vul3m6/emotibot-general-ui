@@ -36,6 +36,7 @@ const WORD_LIMIT = 20;
 
 export default {
   name: 'qacategory',
+  api: QAapi,
   data() {
     return {
       msg: 'Welcome to Your Vue.js App',
@@ -80,7 +81,7 @@ export default {
   },
   methods: {
     updateCategory() {
-      return QAapi.getCategories().then((updatedData) => {
+      return this.$api.getCategories().then((updatedData) => {
         this.data = updatedData;
         this.filteredData = this.filterData();
       });
@@ -153,7 +154,7 @@ export default {
                 level: (category) ? parseInt(category.level, 10) + 1 : 1,
               };
 
-              QAapi.addCategory(params)
+              this.$api.addCategory(params)
               .then(() => {
                 that.updateCategory();
                 that.$emit('categoryChangedDone');
@@ -198,7 +199,7 @@ export default {
               edituser: that.$cookie.get('userid'),
               categoryid: category.node.id,
             };
-            QAapi.renameCategory(params)
+            this.$api.renameCategory(params)
             .then(() => {
               that.updateCategory();
             }).then(() => that.$emit('categoryChangedDone')).catch(that.showUpdateFailedWarning);
@@ -236,7 +237,7 @@ export default {
         categoryid: category.node.id,
         cid: category.parent,
       };
-      QAapi.deleteCategory(param)
+      this.$api.deleteCategory(param)
       .then(() => {
         this.updateCategory();
         this.$emit('categoryChangedDone');

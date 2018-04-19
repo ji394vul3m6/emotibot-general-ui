@@ -48,6 +48,7 @@ export default {
       checkingTimer: null,
     };
   },
+  api: qaAPI,
   computed: {
     ...mapGetters([
       'doQueryState',
@@ -66,24 +67,25 @@ export default {
   },
   mounted() {
     // register event listener
-    this.bindEvent();
-    this.resetSearchOptions();
+    const that = this;
+    that.bindEvent();
+    that.resetSearchOptions();
     const queryOptions = {
       num: 1,
       action: 'full_import',
       status: 'running',
     };
-    qaAPI.queryOperations(queryOptions).then((data) => {
+    that.$api.queryOperations(queryOptions).then((data) => {
       if (data.records && data.records.length > 0) {
         // someone is importing
-        this.showFileImporting();
-        this.pollingServerImportStatus(data.records[0].stateId);
+        that.showFileImporting();
+        that.pollingServerImportStatus(data.records[0].stateId);
       } else {
-        this.loading = false;
-        this.$emit('endLoading');
-        this.queryQA();
+        that.loading = false;
+        that.$emit('endLoading');
+        that.queryQA();
       }
-    }).catch(this.handleError.bind(this));
+    }).catch(that.handleError.bind(that));
   },
   updated() {
     this.$refs.qaTable.setPageIndex(this.curPage);
@@ -169,13 +171,13 @@ export default {
         ok_msg: this.$t('qalist.export_file'),
         cancel_msg: that.$t('general.close'),
         callback: {
-          ok: () => { qaAPI.downloadFile(id); },
+          ok: () => { that.$api.downloadFile(id); },
         },
       };
       that.$popCheck(option);
     },
     pollingServerImportStatus(id) {
-      qaAPI.queryOperationProgress(id).then((data) => {
+      this.$api.queryOperationProgress(id).then((data) => {
         if (data.status === 'running') {
           this.checkingTimer = setTimeout(() => {
             this.pollingServerImportStatus.bind(this)(id);
@@ -238,9 +240,9 @@ export default {
     },
     requestAddQuestion(q) {
       q.answer_json = JSON.stringify(q.answer_json);
-      return qaAPI.createQuestion(q).then(() => {
+      return this.$api.createQuestion(q).then(() => {
         this.queryQA();
-        return qaAPI.activeQA();
+        return this.$api.activeQA();
       });
     },
     addQuestion() {
@@ -298,7 +300,7 @@ export default {
           data.forEach((d) => {
             labels[d.id] = d.name;
           });
-          return qaAPI.filterQuestions(that.qaQueryOptions);
+          return that.$api.filterQuestions(that.qaQueryOptions);
         }).then((data) => {
           data.content.forEach((q) => {
             q.answers.forEach((a) => {

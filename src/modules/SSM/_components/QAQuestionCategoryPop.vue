@@ -28,6 +28,7 @@ import TreeItem from './TreeItem';
 import QAapi from '../_api/qalist';
 
 export default {
+  api: QAapi,
   props: {
     value: {
       type: Object,
@@ -48,7 +49,7 @@ export default {
     const that = this;
     // const msg = i18nUtil.getLocaleMsgs(this.$i18n);
     that.unCategory = { text: that.$t('qalist.un_category'), children: {}, id: -1 };
-    QAapi.getCategories().then((data) => {
+    this.$api.getCategories().then((data) => {
       that.trees = data.children;
     });
   },

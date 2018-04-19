@@ -104,6 +104,7 @@ import QAUpdatePop from './QAUpdatePop';
 Vue.component('qa-answer-content', qaAnswerContent);
 
 export default {
+  api: QAapi,
   watch: {
     tableData() {
       // reset allSelect when tableData change
@@ -170,7 +171,7 @@ export default {
             const oldId = parseInt(data.categoryID, 10);
             const newId = parseInt(data.newCategoryID, 10);
             if (oldId !== newId) {
-              QAapi.queryQuestionDetail({ question_id: row.questionID }).then((detail) => {
+              this.$api.queryQuestionDetail({ question_id: row.questionID }).then((detail) => {
                 const updateOptions = {
                   content: row.standard_q,
                   categoryid: data.newCategoryID.toString(),
@@ -179,7 +180,7 @@ export default {
                   answer_json: JSON.stringify(this.createAnswerJson(detail.answerItem)),
                   edituser: this.$cookie.get('userid'),
                 };
-                return QAapi.updateQuestion(updateOptions).then(() => this.$root.$emit('QATable::SQUpdated'));
+                return this.$api.updateQuestion(updateOptions).then(() => this.$root.$emit('QATable::SQUpdated'));
               }).then(() => {
                 // update table
                 this.$root.$emit('QATable::SQUpdated');
@@ -230,7 +231,7 @@ export default {
       }
       answer.standard_a = that.encodedContent(updatedValue.newContent);
 
-      QAapi.queryQuestionDetail({ question_id: row.questionID })
+      this.$api.queryQuestionDetail({ question_id: row.questionID })
         .then((data) => {
           data.answerItem[index].answerContent = updatedValue.newContent;
           // row.originAnswers = data.answerItem;
@@ -242,11 +243,11 @@ export default {
             answer_json: JSON.stringify(that.createAnswerJson(data.answerItem)),
             edituser: that.$cookie.get('userid'),
           };
-          return QAapi.updateQuestion(options).then(() => {
+          return this.$api.updateQuestion(options).then(() => {
             that.$root.$emit('QATable::SQUpdated');
           });
         })
-        .then(() => QAapi.activeQA())
+        .then(() => this.$api.activeQA())
         .then(() => {
           that.$notify({ text: that.$t('error_msg.save_success') });
         })
@@ -260,7 +261,7 @@ export default {
         return;
       }
       // const originAnswer = JSON.parse(JSON.stringify(answer));
-      QAapi.queryQuestionDetail({ question_id: row.questionID }).then((response) => {
+      this.$api.queryQuestionDetail({ question_id: row.questionID }).then((response) => {
         const index = that.findAnswerIndex(response.answerItem, answer);
         let answerContent = response.answerItem[index].answerContent;
         answerContent = decodeURIComponent(answerContent);
@@ -312,7 +313,7 @@ export default {
       });
       answer.tags = tags;
 
-      QAapi.queryQuestionDetail({ question_id: row.questionID }).then((data) => {
+      this.$api.queryQuestionDetail({ question_id: row.questionID }).then((data) => {
         const index = that.findAnswerIndex(data.answerItem, answer);
         const localIndex = that.findAnswerIndex(row.originAnswers, answer);
 
@@ -326,11 +327,11 @@ export default {
           answer_json: JSON.stringify(that.createAnswerJson(data.answerItem)),
           edituser: that.$cookie.get('userid'),
         };
-        return QAapi.updateQuestion(options).then(() => {
+        return this.$api.updateQuestion(options).then(() => {
           that.$root.$emit('QATable::SQUpdated');
         });
       })
-      .then(() => QAapi.activeQA())
+      .then(() => this.$api.activeQA())
       .then(() => {
         that.$notify({ text: that.$t('error_msg.save_success') });
       })
@@ -371,13 +372,13 @@ export default {
     updateAnswerCommand(row, answer, data) {
       const that = this;
       // const msg = i18nutils.getLocaleMsgs(this.$i18n);
-      const answerCmdStr = (data.selected === 'shopping') ? data.answerCMDMsg : QAapi.parseAnswerCommand(data.selected);
-      answer.command = `${that.$t('qalist.command')}:${QAapi.parseAnswerCommand(data.selected)}`;
+      const answerCmdStr = (data.selected === 'shopping') ? data.answerCMDMsg : this.$api.parseAnswerCommand(data.selected);
+      answer.command = `${that.$t('qalist.command')}:${this.$api.parseAnswerCommand(data.selected)}`;
       if (data.selected === 'shopping') {
         answer.command += `[${answerCmdStr}]`;
       }
 
-      QAapi.queryQuestionDetail({ question_id: row.questionID }).then((detailQ) => {
+      this.$api.queryQuestionDetail({ question_id: row.questionID }).then((detailQ) => {
         const index = this.findAnswerIndex(detailQ.answerItem, answer);
         const localIndex = this.findAnswerIndex(row.originAnswers, answer);
         detailQ.answerItem[index].answerCMD = data.selected;
@@ -393,8 +394,8 @@ export default {
           answer_json: JSON.stringify(this.createAnswerJson(detailQ.answerItem)),
           edituser: this.$cookie.get('userid'),
         };
-        return QAapi.updateQuestion(options).then(() => this.$root.$emit('QATable::SQUpdated'));
-      }).then(() => QAapi.activeQA()).catch((err) => {
+        return this.$api.updateQuestion(options).then(() => this.$root.$emit('QATable::SQUpdated'));
+      }).then(() => this.$api.activeQA()).catch((err) => {
         this.showUpdateFailWarning(err);
       });
     },
@@ -441,7 +442,7 @@ export default {
             const deleteOptions = {
               question_id: ids,
             };
-            return QAapi.deleteQuestion(deleteOptions).then(() => {
+            return this.$api.deleteQuestion(deleteOptions).then(() => {
               this.$root.$emit('QATable::rowDeleted');
               this.selectedQuestions = [];
             });
@@ -464,7 +465,7 @@ export default {
       };
       const okMsg = that.$t('general.save');
       const cancelMsg = that.$t('general.cancel');
-      QAapi.querySimilarQuestions(options).then((data) => {
+      this.$api.querySimilarQuestions(options).then((data) => {
         this.$pop({
         // this.$root.$emit('showWindow', {
           component: QASimilarQuestionPop,
@@ -485,7 +486,7 @@ export default {
             ok: (props) => {
               if (that.canEdit && props.everChange) {
                 this.$root.$emit('QAList::loading', this.showLoading);
-                QAapi.addSimilarQuestions(props.questionId, this.$cookie.get('userid'), props.copiedQuestions).then(() => {
+                this.$api.addSimilarQuestions(props.questionId, this.$cookie.get('userid'), props.copiedQuestions).then(() => {
                   this.$root.$emit('QAList::loaded', this.showLoading);
                   this.$root.$emit('QATable::SQUpdated');
                 }).catch((err) => {
@@ -512,7 +513,7 @@ export default {
           dynamicMenu: answer.dynamicMenu || [],
           not_show_in_relative_q: answer.notShow === '1',
           answerCMD: (answer.answerCMD === 'no-order') ? '' : answer.answerCMD,
-          answerCMDMsg: (answer.answerCMD === 'shopping') ? answer.answerCMDMsg : QAapi.parseAnswerCommand(answer.answerCMD),
+          answerCMDMsg: (answer.answerCMD === 'shopping') ? answer.answerCMDMsg : this.$api.parseAnswerCommand(answer.answerCMD),
         };
         answerJsons.push(answerJson);
       });
@@ -529,7 +530,7 @@ export default {
         return;
       }
 
-      QAapi.queryQuestionDetail({ question_id: row.questionID })
+      this.$api.queryQuestionDetail({ question_id: row.questionID })
         .then((data) => {
           const index = row.answers.indexOf(answer);
           row.answers.splice(index, 1);
@@ -545,7 +546,7 @@ export default {
             edituser: this.$cookie.get('userid'),
           };
 
-          return QAapi.deleteAnswer(options);
+          return this.$api.deleteAnswer(options);
         });
     },
     confirmDeleteAnswer(row, answer) {
@@ -587,7 +588,7 @@ export default {
       const options = {
         question_id: [row.questionID],
       };
-      QAapi.deleteQuestion(options)
+      this.$api.deleteQuestion(options)
         .then(() => {
           this.$root.$emit('QATable::rowDeleted', row);
         });
@@ -608,7 +609,7 @@ export default {
       });
     },
     showQuestionEdtior(row) {
-      QAapi.queryQuestionDetail({ question_id: row.questionID }).then((response) => {
+      this.$api.queryQuestionDetail({ question_id: row.questionID }).then((response) => {
         response.answerItem.forEach((answer, index) => {
           const originAnswer = row.originAnswers[index];
           const answerContent = answer.answerContent;
@@ -626,9 +627,9 @@ export default {
               ok: (q) => {
                 q.question_id = row.questionID;
                 q.answer_json = JSON.stringify(q.answer_json);
-                QAapi.updateQuestion(q).then(() => {
+                this.$api.updateQuestion(q).then(() => {
                   this.$root.$emit('QATable::SQUpdated');
-                  return QAapi.activeQA();
+                  return this.$api.activeQA();
                 }).catch((error) => {
                   this.showUpdateFailWarning(error);
                 });
@@ -669,7 +670,7 @@ export default {
       }
       answer.not_show_in_relative_q = data.not_show;
 
-      QAapi.queryQuestionDetail({ question_id: row.questionID }).then((response) => {
+      this.$api.queryQuestionDetail({ question_id: row.questionID }).then((response) => {
         const index = this.findAnswerIndex(response.answerItem, answer);
         const localIndex = this.findAnswerIndex(row.originAnswers, answer);
         if (data.selected === 'dynamic_menu') {
@@ -694,8 +695,8 @@ export default {
           answer_json: JSON.stringify(this.createAnswerJson(response.answerItem)),
           edituser: this.$cookie.get('userid'),
         };
-        return QAapi.updateQuestion(options).then(() => this.$root.$emit('QATable::SQUpdated'));
-      }).then(() => QAapi.activeQA()).catch((err) => {
+        return this.$api.updateQuestion(options).then(() => this.$root.$emit('QATable::SQUpdated'));
+      }).then(() => this.$api.activeQA()).catch((err) => {
         this.showUpdateFailWarning(err);
       });
     },
@@ -733,7 +734,7 @@ export default {
     updateStartEndTime(row, answer, data) {
       answer.start_time = PickerUtil.toTimeString(data.picker);
       answer.end_time = PickerUtil.toTimeString(data.endPicker);
-      QAapi.queryQuestionDetail({ question_id: row.questionID }).then((response) => {
+      this.$api.queryQuestionDetail({ question_id: row.questionID }).then((response) => {
         const index = this.findAnswerIndex(response.answerItem, answer);
         const localIndex = this.findAnswerIndex(row.originAnswers, answer);
 
@@ -749,8 +750,8 @@ export default {
           answer_json: JSON.stringify(this.createAnswerJson(response.answerItem)),
           edituser: this.$cookie.get('userid'),
         };
-        return QAapi.updateQuestion(options).then(() => this.$root.$emit('QATable::SQUpdated'));
-      }).then(() => QAapi.activeQA()).catch((err) => {
+        return this.$api.updateQuestion(options).then(() => this.$root.$emit('QATable::SQUpdated'));
+      }).then(() => this.$api.activeQA()).catch((err) => {
         this.showUpdateFailWarning(err);
       });
     },

@@ -1,4 +1,3 @@
-import axios from 'axios';
 import qs from 'qs';
 
 const SEPARATE_TOKEN = '#SEPARATE_TOKEN#';
@@ -138,7 +137,7 @@ export default {
   getDiemensionTypeId,
   queryDimension() {
     const url = '/php/api/ApiKey/vip_custom_question/Tag_query.php';
-    return axios.get(url).then((response) => {
+    return this.$reqGet(url).then((response) => {
       const data = response.data;
       return data;
     });
@@ -146,7 +145,7 @@ export default {
   queryQuestionDetail(options) {
     const url = '/php/api/ApiKey/vip_custom_question/custom_question.php?cmd=detail_query&table_prefix=csbot';
     const encodedOptions = qs.stringify(options);
-    return axios.post(url, encodedOptions).then((response) => {
+    return this.$reqPost(url, encodedOptions).then((response) => {
       const data = response.data;
       return data;
     });
@@ -158,7 +157,7 @@ export default {
   },
   getCategories() {
     const url = '/api/v1/faq/categories';
-    return axios.get(url).then((response) => {
+    return this.$reqGet(url).then((response) => {
       // unescape html code here, but should do it in api
       // const data = JSON.parse(this.decodeHtml(JSON.stringify(response.data)));
       const data = response.data;
@@ -182,7 +181,7 @@ export default {
     // 1. request QAs from server
     const url = '/php/api/ApiKey/vip_custom_question/custom_question.php?cmd=query&table_prefix=csbot';
     const encodedOptions = qs.stringify(options);
-    return axios.post(url, encodedOptions).then((response) => {
+    return this.$reqPost(url, encodedOptions).then((response) => {
       cachedQuestions = {
         content: [],
       };
@@ -197,7 +196,7 @@ export default {
   },
   filterQuestions(params) {
     const url = '/api/v1/faq/questions/filter';
-    return axios.get(url, { params }).then((response) => {
+    return this.$reqGet(url, { params }).then((response) => {
       cachedQuestions = {
         content: [],
       };
@@ -212,29 +211,29 @@ export default {
   },
   deleteCategory(params) {
     const url = `/api/v1/faq/category/${params.categoryid}`;
-    return axios.delete(url);
+    return this.$reqDelete(url);
   },
   renameCategory(params) {
     const url = `/api/v1/faq/category/${params.categoryid}`;
     // params.cmd = 'update';
     // params.table_prefix = 'csbot';
     const encodedParams = qs.stringify(params);
-    return axios.post(url, encodedParams);
+    return this.$reqPost(url, encodedParams);
   },
   addCategory(params) {
     const url = '/api/v1/faq/category';
     const encodedParams = qs.stringify(params);
-    return axios.put(url, encodedParams).then(data => data.id);
+    return this.$reqDut(url, encodedParams).then(data => data.id);
   },
   deleteQuestion(options) {
     const url = '/php/api/ApiKey/vip_custom_question/custom_question.php?cmd=delete&table_prefix=csbot';
     const encodedOptions = qs.stringify(options);
-    return axios.post(url, encodedOptions);
+    return this.$reqPost(url, encodedOptions);
   },
   deleteAnswer(options) {
     const url = '/php/api/ApiKey/vip_custom_question/custom_question.php?cmd=update&table_prefix=csbot';
     const encodedOptions = qs.stringify(options);
-    return axios.post(url, encodedOptions);
+    return this.$reqPost(url, encodedOptions);
   },
   queryQAImportFileStatus() {
     const url = '/php/api/ApiKey/vip_custom_question/vip_download.php';
@@ -243,7 +242,7 @@ export default {
       appid: 'csbot',
     };
     const encodedOptions = qs.stringify(options);
-    return axios.post(url, encodedOptions).then((response) => {
+    return this.$reqPost(url, encodedOptions).then((response) => {
       const data = response.data.data;
       return data;
     });
@@ -255,14 +254,14 @@ export default {
       appid: 'csbot',
     };
     const encodedOptions = qs.stringify(options);
-    return axios.post(url, encodedOptions).then((response) => {
+    return this.$reqPost(url, encodedOptions).then((response) => {
       const data = response.data;
       return data;
     });
   },
   importFile(form) {
     const url = '/php/api/ApiKey/vip_custom_question/vip_upload.php';
-    return axios.post(url, form, {
+    return this.$reqPost(url, form, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -278,7 +277,7 @@ export default {
       appid: 'csbot',
     };
     const encodedOptions = qs.stringify(options);
-    return axios.post(url, encodedOptions).then((response) => {
+    return this.$reqPost(url, encodedOptions).then((response) => {
       const data = response.data;
       return data;
     });
@@ -286,7 +285,7 @@ export default {
   querySimilarQuestions(options) {
     const url = '/php/api/ApiKey/vip_custom_question/custom_question.php?cmd=detail_similar_question&table_prefix=csbot';
     const encodedOptions = qs.stringify(options);
-    return axios.post(url, encodedOptions).then((response) => {
+    return this.$reqPost(url, encodedOptions).then((response) => {
       const data = response.data;
       return data;
     });
@@ -294,7 +293,7 @@ export default {
   addSimilarQuestion(options) {
     const url = '/php/api/ApiKey/vip_custom_question/custom_question.php?cmd=add_similar_question&table_prefix=csbot';
     const encodedOptions = qs.stringify(options);
-    return axios.post(url, encodedOptions).then((response) => {
+    return this.$reqPost(url, encodedOptions).then((response) => {
       const data = response.data;
       return data;
     });
@@ -302,7 +301,7 @@ export default {
   deleteSimilarQuestion(options) {
     const url = '/php/api/ApiKey/vip_custom_question/custom_question.php?cmd=delete_similar_question&table_prefix=csbot';
     const encodedOptions = qs.stringify(options);
-    return axios.post(url, encodedOptions).then((response) => {
+    return this.$reqPost(url, encodedOptions).then((response) => {
       const data = response.data;
       return data;
     });
@@ -310,17 +309,17 @@ export default {
   updateSimilarQuestion(options) {
     const url = '/php/api/ApiKey/vip_custom_question/custom_question.php?cmd=update_similar_question&table_prefix=csbot';
     const encodedOptions = qs.stringify(options);
-    return axios.post(url, encodedOptions);
+    return this.$reqPost(url, encodedOptions);
   },
   updateQuestion(options) {
     const url = '/php/api/ApiKey/vip_custom_question/custom_question.php?cmd=update&table_prefix=csbot';
     const encodedOptions = qs.stringify(options);
-    return axios.post(url, encodedOptions);
+    return this.$reqPost(url, encodedOptions);
   },
   createQuestion(options) {
     const url = '/php/api/ApiKey/vip_custom_question/custom_question.php?cmd=create&table_prefix=csbot';
     const encodedOptions = qs.stringify(options);
-    return axios.post(url, encodedOptions);
+    return this.$reqPost(url, encodedOptions);
   },
   activeQA() {
     const url = '/php/api/ApiKey/vip_custom_question/vip_download.php';
@@ -329,7 +328,7 @@ export default {
       appid: 'csbot',
     };
     const encodedOptions = qs.stringify(options);
-    return axios.post(url, encodedOptions);
+    return this.$reqPost(url, encodedOptions);
   },
   addSimilarQuestions(qid, user, newSimilarQuestions) {
     const url = `/api/v1/faq/question/${qid}/similar-questions`;
@@ -338,11 +337,11 @@ export default {
       similarQuestions: newSimilarQuestions,
     };
 
-    return axios.post(url, body).then(() => this.activeQA());
+    return this.$reqPost(url, body).then(() => this.activeQA());
   },
   queryOperations(params) {
     const url = '/api/v1/qa/questions/operations';
-    return axios.get(url, { params }).then((response) => {
+    return this.$reqGet(url, { params }).then((response) => {
       const data = {
         records: [],
       };
@@ -365,7 +364,7 @@ export default {
   },
   queryOperationProgress(id) {
     const url = `/api/v1/qa/questions/operations/${id}/progress`;
-    return axios.get(url).then((response) => {
+    return this.$reqGet(url).then((response) => {
       const data = {
         stateId: response.data.state_id,
         status: response.data.status,
@@ -386,7 +385,7 @@ export default {
     formData.append('mode', mode);
     formData.append('file', file);
 
-    return axios.post(url, formData, {
+    return this.$reqPost(url, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -401,7 +400,7 @@ export default {
   exportQuestions(filterOptions) {
     const url = '/api/v1/qa/questions/operations/export';
     const encodedOptions = qs.stringify(filterOptions);
-    return axios.post(url, encodedOptions).then((response) => {
+    return this.$reqPost(url, encodedOptions).then((response) => {
       const data = {
         stateId: response.data.state_id,
         createdTime: response.data.created_time,
@@ -415,7 +414,7 @@ export default {
       content,
     };
 
-    return axios.get(url, { params }).then((response) => {
+    return this.$reqGet(url, { params }).then((response) => {
       const data = response.data;
       const transformedQuestion = {
         questionID: data.questionId,

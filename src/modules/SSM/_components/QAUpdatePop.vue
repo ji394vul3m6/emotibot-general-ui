@@ -46,12 +46,13 @@ import CategoryList from '../_data/categoryList';
 import TreeItem from './TreeItem';
 import QAAnswerEditBox from './QAAnswerEditBox';
 // import CheckPop from '@/components/popForm/CheckPop';
-import qaAPI from '../_api/qalist';
+import QAapi from '../_api/qalist';
 
 const FOREVER_START_TIME = '1970-01-01 00:00:00';
 const FOREVER_END_TIME = '2999-12-31 23:59:00';
 
 export default {
+  api: QAapi,
   props: {
     value: {
       type: Object,
@@ -90,7 +91,7 @@ export default {
     const that = this;
     that.un_category = { text: that.$t('qalist.un_category'), children: {}, id: -1 };
     that.$on('validate', that.validateQuestion);
-    qaAPI.getCategories().then((updatedData) => {
+    this.$api.getCategories().then((updatedData) => {
       that.categories = updatedData;
       that.createCategoryMap();
       that.categorymap[that.un_category.id] = that.un_category.text;
@@ -145,7 +146,7 @@ export default {
         const questionChanged = (that.originQuestionText !== '') && (that.questionText !== that.originQuestionText);
         const shouldCheck = addQuestion || questionChanged;
         if (shouldCheck) {
-          qaAPI.querySingleQuestion(that.questionText)
+          this.$api.querySingleQuestion(that.questionText)
           .then(() => {
             that.showWarning(that.$t('qalist.question_exist'));
           })
@@ -182,7 +183,7 @@ export default {
             dynamicMenu: answer.dynamicMenu,
             relatedQ: answer.relatedQuestions,
             answerCMD: answer.command,
-            answerCMDMsg: (answer.command === 'shopping') ? answer.commandMsg : qaAPI.parseAnswerCommand(answer.command),
+            answerCMDMsg: (answer.command === 'shopping') ? answer.commandMsg : this.$api.parseAnswerCommand(answer.command),
             not_show_in_relative_q: answer.notShowInRelativeQ,
             image: '',
           };
