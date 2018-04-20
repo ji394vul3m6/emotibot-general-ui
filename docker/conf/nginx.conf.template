@@ -43,18 +43,18 @@ http {
 
     server {
         access_log /var/log/nginx/access.log auth_header;
-        set $auth_cookie "";
+        set $appid "";
         set $user_id "";
         if ($http_cookie ~* "appid=([a-z0-9]+)(?:;|$)") {
-            set $auth_cookie $1;
+            set $appid $1;
+        }
+
+        if ($appid = "") {
+            set $appid $http_x_appid;
         }
 
         if ($http_cookie ~* "userid=([.%\-a-zA-Z0-9_]+)(?:;|$)") {
             set $user_id $1;
-        }
-
-        if ($http_authorization != "") {
-            set $auth_cookie $http_authorization;
         }
 
         if ($http_x_userid != "") {
@@ -96,7 +96,7 @@ http {
 
         # legacy php code, from 2.0 UI
         location ~ ^/php/ {
-            if ($auth_cookie = "") {
+            if ($appid = "") {
                 return 401;
             }
             if ($user_id = "") {
@@ -109,7 +109,7 @@ http {
 
             include fastcgi_params;
             fastcgi_param HTTP_HOST 172.17.0.1;
-            fastcgi_param HTTP_X_APPID $auth_cookie;
+            fastcgi_param HTTP_X_APPID $appid;
             fastcgi_param HTTP_X_USERID $user_id;
             fastcgi_param HTTP_X_REAL_IP $remote_addr;
 
@@ -148,9 +148,9 @@ http {
 
         # golang /api/v1
         location /api {
-            auth_request /auth/v2/token;
             add_header Cache-Control no-store;  
             add_header Cache-Control private;
+            proxy_set_header X-AppID $appid;
             proxy_set_header X-UserID $user_id;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_pass http://127.0.0.1:8181;
@@ -159,6 +159,7 @@ http {
         location /Files {
             add_header Cache-Control no-store;  
             add_header Cache-Control private;
+            proxy_set_header X-AppID $appid;
             proxy_set_header X-UserID $user_id;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_pass http://127.0.0.1:8181;
