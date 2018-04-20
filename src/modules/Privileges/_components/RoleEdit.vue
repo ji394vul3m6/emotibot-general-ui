@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="popForm">
     <div class="row" :style="{width:width}">
       <span>{{ $t('privileges.role_name') }}</span>
       <template v-if="addMode">
@@ -196,7 +196,9 @@ export default {
 <style lang="scss" scoped>
 @import 'styles/variable.scss';
 
-@include popForm(0px);
+.popForm {
+  @include popForm(0px);
+}
 .row {
   .cell {
     flex: 0 0 80px;
