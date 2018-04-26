@@ -1,14 +1,21 @@
 <template>
 <div id="page-menu">
   <div class="category" v-for="directory in menuPages" :key="directory.name">
-    <div class="category-name row">
+    <div class="category-name row" @click="toPage(directory)"
+      :class="{clicable: directory.path, active: directory.path === currentRoute}">
       <icon :icon-type="directory.icon"/>
       <div class="name">{{$t(directory.display)}}</div>
     </div>
-    <div class="page row" v-for="page in directory.pages" :key="page.name" @click="toPage(page)">
-      <!-- <icon :icon-type="page.icon"/> -->
-      <div class="name" :class="{active: page.path === currentRoute}">{{$t(page.display)}}</div>
-    </div>
+    <template v-if="directory.pages && directory.pages.length > 0">
+      <div class="page row clicable"
+        v-for="page in directory.pages"
+        :key="page.name"
+        :class="{active: page.path === currentRoute}"
+        @click="toPage(page)">
+        <!-- <icon :icon-type="page.icon"/> -->
+        <div class="name">{{$t(page.display)}}</div>
+      </div>
+    </template>
   </div>
 </div>  
 </template>
@@ -58,17 +65,24 @@ export default {
     padding: 0 10%;
     line-height: $page-menu-item-height;
     padding-top: $page-menu-category-padding;
-    .name {
-      text-align: center;
-      margin-left: 5px;
+
+    .category-name {
       &.active {
         color: $active-color;
         font-weight: bold;
       }
     }
+    .name {
+      text-align: center;
+      margin-left: 5px; 
+    }
     .page {
       margin-left: 20px;
       cursor: pointer;
+      &.active {
+        color: $active-color;
+        font-weight: bold;
+      }
 
       &:not(:last-child) {
         border-left: 1px solid white;
@@ -92,6 +106,10 @@ export default {
       display: flex;
       align-items: center;
       user-select: none;
+
+      &.clicable {
+        @include click-button();
+      }
     }
   }
 }
