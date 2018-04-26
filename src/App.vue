@@ -48,9 +48,18 @@ export default {
     };
   },
   watch: {
-    robotID() {
-      this.$cookie.set('appid', this.robotID);
-      this.$setReqAppid(this.robotID);
+    robotID(val) {
+      this.$cookie.set('appid', val);
+      this.$setReqAppid(val);
+
+      const robotData = {
+        appid: val,
+      };
+      const str = JSON.stringify(robotData);
+      const expires = new Date();
+      expires.setTime(expires.getTime() + (24 * 60 * 60 * 1000));
+      // no using context.$cookie because of it will encoded cookie value
+      document.cookie = `robotDataJson=${str}; expires=${expires.toGMTString()};path=/`;
     },
     userID() {
       this.$cookie.set('userid', this.userID);
@@ -140,9 +149,6 @@ export default {
             icon: `${page.icon}`,
           });
         });
-        if (modulePages.length <= 0) {
-          return;
-        }
         pages.push({
           path: pageModule.path,
           name: moduleName,
@@ -173,11 +179,9 @@ export default {
       that.userInfo = userInfo;
 
       const userPrivilege = JSON.parse(localStorage.getItem('role'));
-      that.$setReqAppid(enterprise.apps[0].id);
-
-      that.setUser(userInfo.id);
       that.setPrivilegedEnterprise(enterpriseList);
       that.setRobot(enterprise.apps[0].id);
+      that.setUser(userInfo.id);
       that.setUserRole(userPrivilege);
       that.setPrivilegeList(that.$getPrivModules());
 
