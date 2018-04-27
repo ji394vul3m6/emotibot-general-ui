@@ -12,6 +12,15 @@ const routes = [{
 }];
 Object.keys(modules).forEach((moduleName) => {
   const pageModule = modules[moduleName];
+
+  if (pageModule.path && pageModule.component) {
+    routes.push({
+      path: `/${pageModule.path}`,
+      name: pageModule.displayNameKey,
+      component: pageModule.component,
+    });
+  }
+
   Object.keys(pageModule.pages).forEach((pageName) => {
     const page = pageModule.pages[pageName];
     routes.push({
