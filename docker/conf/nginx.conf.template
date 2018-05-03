@@ -79,16 +79,19 @@ http {
 
         # ========== legacy houta ==========
         location = /php/api/ApiKey/task_engine_app.php { 
+            proxy_set_header X-AppID $appid;
             proxy_set_header X-UserID $user_id; 
             proxy_set_header X-Real-IP $remote_addr; 
             proxy_pass http://127.0.0.1:8181/api/v1/task/apps; 
         }
         location = /php/api/ApiKey/task_engine_scenario.php { 
+            proxy_set_header X-AppID $appid;
             proxy_set_header X-UserID $user_id; 
             proxy_set_header X-Real-IP $remote_addr; 
             proxy_pass http://127.0.0.1:8181/api/v1/task/scenarios; 
         }
         location = /php/api/ApiKey/scenario_json_upload.php { 
+            proxy_set_header X-AppID $appid;
             proxy_set_header X-UserID $user_id; 
             proxy_set_header X-Real-IP $remote_addr; 
             proxy_pass http://127.0.0.1:8181/api/v1/task/scenarios-upload; 
