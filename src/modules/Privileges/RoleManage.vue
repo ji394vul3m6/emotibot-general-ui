@@ -99,7 +99,7 @@ export default {
         },
         callback: {
           ok() {
-            that.$api.deleteRole(role.role_id).then(() => {
+            that.$api.deleteEnterpriseRole(that.enterprise.id, role.id).then(() => {
               that.$notify({ text: that.$t('privileges.delete_success') });
               that.loadRoles();
             });
@@ -121,7 +121,7 @@ export default {
         bindValue: false,
         callback: {
           ok(retData) {
-            that.$api.addRole(retData.name, retData.privileges).then(() => {
+            that.$api.addEnterpriseRole(that.enterprise.id, retData).then(() => {
               that.notifySuccess();
               that.loadRoles();
             });
@@ -166,6 +166,7 @@ export default {
   .lists {
     flex: 1 1 100px;
     background: $table-body-background;
+    @include auto-overflow();
 
     display: flex;
     flex-direction: column;

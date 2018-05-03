@@ -18,13 +18,34 @@ function getEnterpriseRoles(enterprise) {
   return this.$reqGet(usersURL).then(rsp => rsp.data.result);
 }
 function updateEnterpriseRole(enterprise, id, role) {
-  const userURL = getRoleURL(enterprise);
+  const roleURL = getRoleURL(enterprise);
   const options = {
     name: role.name,
     privilege: JSON.stringify(role.privileges),
   };
 
-  return this.$reqPut(`${userURL}/${id}`, qs.stringify(options), {
+  return this.$reqPut(`${roleURL}/${id}`, qs.stringify(options), {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+  });
+}
+function addEnterpriseRole(enterprise, role) {
+  const roleURL = getRoleURL(enterprise);
+  const options = {
+    name: role.name,
+    privilege: JSON.stringify(role.privileges),
+  };
+
+  return this.$reqPost(`${roleURL}`, qs.stringify(options), {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+  });
+}
+function deleteEnterpriseRole(enterprise, id) {
+  const roleURL = getRoleURL(enterprise);
+  return this.$reqDelete(`${roleURL}/${id}`, {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
@@ -95,4 +116,6 @@ export default {
 
   getEnterpriseRoles,
   updateEnterpriseRole,
+  addEnterpriseRole,
+  deleteEnterpriseRole,
 };
