@@ -46,6 +46,9 @@ http {
             proxy_pass http://${REMOTE_IP};
         }
         location /auth {
+            proxy_pass http://${SELF_IP}:8088;
+        }
+        location /BF {
             proxy_pass http://${REMOTE_IP};
         }
         location /api {
