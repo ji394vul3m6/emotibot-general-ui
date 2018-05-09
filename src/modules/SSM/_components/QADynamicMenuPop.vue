@@ -42,7 +42,6 @@
 import Vue from 'vue';
 import { VPagination } from 'vue-easytable';
 import DynamicList from './DynamicList';
-// import CheckPop from '@/components/popForm/CheckPop';
 
 Vue.component(VPagination.name, VPagination);
 
@@ -148,7 +147,6 @@ export default {
     popNoticeDuplicateWindow() {
       const that = this;
       const options = {
-        // component: CheckPop,
         ok_msg: this.$t('general.ok'),
         cancel_msg: this.$t('general.cancel'),
         callback: {
@@ -162,8 +160,7 @@ export default {
           msg: that.$t('qalist.warn_auto_deduplicate_input_questions'),
         },
       };
-      // that.$root.$emit('showWindow', options);
-      this.$checkPop(options);
+      this.$popCheck(options);
     },
     getDeduplicated(content) {
       const ret = [];

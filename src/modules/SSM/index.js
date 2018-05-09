@@ -1,8 +1,8 @@
 import QAList from './QAList';
 import QATest from './QATest';
 import QAChatSkill from './QAChatSkill';
-// import QALabel from './QALabel';
-// import QAActivity from './QAActivity';
+import QALabel from './QALabel';
+import QARule from './QARule';
 
 export default {
   displayNameKey: 'ssm',
@@ -11,7 +11,7 @@ export default {
     QAList,
     QATest,
     QAChatSkill,
-    // QALabel,
-    // QAActivity,
+    QALabel,
+    QARule,
   },
 };

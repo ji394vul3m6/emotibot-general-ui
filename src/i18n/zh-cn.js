@@ -388,6 +388,8 @@ export default {
     rule_time: '有效时间',
     rule_status: '规则状态',
     label_count: '连结标签数',
+    link: '连结',
+    link_label: '连结标签',
 
     rule_answer: '文本',
     rule_statue: '状态',
@@ -414,6 +416,8 @@ export default {
     err_existed_rule: '规则名称已存在',
     err_need_label_to_publish: '请先设定活动对应的标签',
     err_time_range: '结束时间不可早于开始时间',
+
+    add_label: '新增标签',
   },
   chat_skill: {
     group_basic: '基本话术',
@@ -495,7 +499,7 @@ export default {
       qatest: '对话测试',
       qa_chat_skill: '话术设置',
       qa_label: '标签管理',
-      qa_rule: '活动管理',
+      qa_rule: '规则管理',
       qa_learning: '自学习',
     },
     statistics: {

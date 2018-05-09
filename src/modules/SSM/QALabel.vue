@@ -35,7 +35,7 @@ export default {
           text: this.$t('qa_label.label_id'),
           type: 'text',
           fixed: true,
-          width: '40px',
+          width: '60px',
         },
         {
           key: 'name',
@@ -44,8 +44,8 @@ export default {
           width: 'auto',
         },
         {
-          key: 'activity_count',
-          text: this.$t('qa_label.activity_count'),
+          key: 'rule_count',
+          text: this.$t('qa_label.rule_count'),
           type: 'text',
           width: '150px',
           fixed: true,
@@ -56,7 +56,7 @@ export default {
           fixed: true,
           width: '90px',
           icon: 'edit',
-          iconCallback: this.popEditTag,
+          iconCallback: this.popEditLabel,
           btn_text: this.$t('general.edit'),
         },
         {
@@ -65,7 +65,7 @@ export default {
           fixed: true,
           width: '90px',
           icon: 'delete',
-          iconCallback: this.popDeleteTag,
+          iconCallback: this.popDeleteLabel,
           btn_text: this.$t('general.delete'),
         },
       ],
@@ -78,7 +78,7 @@ export default {
     },
   },
   methods: {
-    popEditTag(idx, label) {
+    popEditLabel(idx, label) {
       const that = this;
       that.$pop({
         title: `${that.$t('general.add')}${that.$t('qa_label.label')}`,
@@ -100,7 +100,7 @@ export default {
         },
       });
     },
-    popDeleteTag(idx, label) {
+    popDeleteLabel(idx, label) {
       const that = this;
       that.$popCheck({
         title: `${that.$t('general.delete')}${that.$t('qa_label.label')}`,
@@ -110,11 +110,11 @@ export default {
         callback: {
           ok() {
             that.$emit('startLoading');
-            that.$api.deleteTag(label.id).then(() => {
+            that.$api.deleteLabel(label.id).then(() => {
               that.loadLabels();
             }, () => {
               // TODO: handle delete error
-              that.$notifyFail(that.$t('qa_label.err_detele_label_has_activity'));
+              that.$notifyFail(that.$t('qa_label.err_detele_label_has_rule'));
             })
             .then(() => {
               that.$emit('endLoading');

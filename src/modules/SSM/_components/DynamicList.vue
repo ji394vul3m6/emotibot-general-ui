@@ -160,7 +160,7 @@ export default {
         },
       };
       // this.$root.$emit('showWindow', options);
-      this.$checkPop(options);
+      this.$popCheck(options);
     },
     isDuplicate(index, val) {
       if (val === '') {
