@@ -7,10 +7,16 @@ const STATS_RECORD_LIST = '/stats/record';
 const STATS_DETAIL_RECORD_LIST = '/stats/detail_record';
 
 const STATS_UNRESOLVE_PATH = '/api/v1/statistic/question';
+const TAGS_PATH = '/api/v1/faq/tag-types';
 
 const requestID = 'statistics';
 
+function getFAQTagTypes() {
+  return this.$reqGet(TAGS_PATH).then(rsp => rsp.data.result);
+}
+
 export default {
+  getFAQTagTypes,
   // days: 1, 7, 30
   // type: 'time', 'barchart'
   getVisitStats2(params) {

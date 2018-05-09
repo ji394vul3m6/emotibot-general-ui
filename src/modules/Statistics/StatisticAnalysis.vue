@@ -125,7 +125,6 @@ import formatUtil from '@/utils/js/format';
 import api from './_api/statistic';
 import StatsChart from './_components/StatsChart';
 import StatsTable from './_components/StatsTable';
-// import auth from '@/auth';
 
 export default {
   path: 'statistic-analysis',
@@ -222,8 +221,26 @@ export default {
         chartInfo.tableHandler.$emit('redraw');
       }
     },
+    setUp() {
+      const that = this;
+      that.setUpTagTypes().then(() => {
+        that.setUpMsgs();
+      });
+    },
+    setUpTagTypes() {
+      const that = this;
+      return that.$api.getFAQTagTypes().then((data) => {
+        that.tagTypes = data;
+      });
+    },
     setUpMsgs() {
       const that = this;
+
+      const tagTypes = that.tagTypes.map(t => ({
+        key: t.code,
+        msg: t.name,
+      }));
+
       that.chartInfos = [
         {
           handler: new Vue(),
@@ -280,28 +297,7 @@ export default {
             });
             return datas;
           },
-          types: [
-            {
-              key: 'platform',
-              msg: that.$t('statistics.platform'),
-            },
-            {
-              key: 'brand',
-              msg: that.$t('statistics.brand'),
-            },
-            {
-              key: 'sex',
-              msg: that.$t('statistics.sex'),
-            },
-            {
-              key: 'age',
-              msg: that.$t('statistics.age'),
-            },
-            {
-              key: 'hobbies',
-              msg: that.$t('statistics.hobbies'),
-            },
-          ],
+          types: tagTypes,
           header_info: [
             {
               text: '',
@@ -432,6 +428,7 @@ export default {
       i18n: {},
       latestDate,
       earliestDate,
+      tagTypes: [],
     };
   },
   activated() {
@@ -449,7 +446,7 @@ export default {
     });
   },
   mounted() {
-    this.setUpMsgs();
+    this.setUp();
   },
   computed: {
     canExport() {
