@@ -32,6 +32,23 @@ http {
         proxy_max_temp_file_size 0;
         listen 80;
         listen [::]:80;
+        set $appid "";
+        set $user_id "";
+        if ($http_cookie ~* "appid=([a-z0-9]+)(?:;|$)") {
+            set $appid $1;
+        }
+
+        if ($appid = "") {
+            set $appid $http_x_appid;
+        }
+
+        if ($http_cookie ~* "userid=([.%\-a-zA-Z0-9_]+)(?:;|$)") {
+            set $user_id $1;
+        }
+
+        if ($http_x_userid != "") {
+            set $user_id $http_x_userid;
+        }
 
         location /stats {
             proxy_pass http://${REMOTE_IP};
