@@ -1,13 +1,13 @@
 import Privileges from './Privileges';
 import Robot from './RobotSetting';
 import Wordbank from './Wordbank';
-import SSM from './SSM';
+import FAQ from './FAQ';
 import Statistics from './Statistics';
 import TaskEngine from './TaskEngine';
 
 export default {
   Statistics,
-  SSM,
+  FAQ,
   Robot,
   Wordbank,
   TaskEngine,
