@@ -9,7 +9,7 @@ ADD .babelrc .postcssrc.js .eslintrc.js .eslintignore login.html index.html pack
 RUN cd build && npm install --production && npm run build
 
 FROM docker-reg.emotibot.com.cn:55688/houta:7ab30c2_vipshop AS houta-code
-FROM docker-reg.emotibot.com.cn:55688/token-auth:20180503-7226f53 AS authentication
+FROM docker-reg.emotibot.com.cn:55688/token-auth:20180511-51b1a55 AS authentication
 FROM docker-reg.emotibot.com.cn:55688/admin-api:20180510-37e56c4 AS api-server
 
 FROM nginx:1.13-alpine
