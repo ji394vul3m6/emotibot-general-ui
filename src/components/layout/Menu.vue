@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapMutations, mapGetters } from 'vuex';
 import Icon from '@/components/basic/Icon';
 
 export default {
@@ -37,7 +37,11 @@ export default {
     icon: Icon,
   },
   methods: {
+    ...mapMutations([
+      'setCurrentPage',
+    ]),
     toPage(page) {
+      this.setCurrentPage(page);
       this.$router.push({ path: page.path });
     },
   },

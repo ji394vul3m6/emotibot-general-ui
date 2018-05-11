@@ -4,8 +4,8 @@
     <page-header></page-header>
     <page-menu></page-menu>
     <div id="app-page" v-if="ready">
-      <div class="app-header">{{$t(`pages.${pageName}`)}}</div>
-      <router-view class="app-body" @startLoading="startLoading" @endLoading="endLoading"/>
+      <div class="app-header" v-if="!isIFrame">{{ pageName }}</div>
+      <router-view class="app-body" :class="{iframe: isIFrame}" @startLoading="startLoading" @endLoading="endLoading"/>
       <div v-if="showLoading" class="loading">
         <div class='loader'></div>
         {{ loadingMsg || $t('general.loading') }}
@@ -31,12 +31,16 @@ export default {
   },
   computed: {
     pageName() {
-      return this.$route.name;
+      return this.$t(this.currentPage.display);
+    },
+    isIFrame() {
+      return this.currentPage.isIFrame;
     },
     ...mapGetters([
       'robotID',
       'userID',
       'userRole',
+      'currentPage',
     ]),
   },
   data() {
@@ -63,7 +67,6 @@ export default {
     },
     userID() {
       this.$cookie.set('userid', this.userID);
-      console.log(this.userID);
     },
     $route() {
       this.checkPrivilege();
@@ -78,6 +81,7 @@ export default {
       'setRobot',
       'setUser',
       'setUserRole',
+      'setCurrentPage',
     ]),
     checkPrivilege() {
       const that = this;
@@ -127,35 +131,48 @@ export default {
         if (pageModule.hidden) {
           return;
         }
-        Object.keys(pageModule.pages).forEach((pageName) => {
-          const page = pageModule.pages[pageName];
-          if (page.hidden) {
-            return;
-          }
-          if (that.userInfo.type >= 2) {
-            if (privKeys.indexOf(page.privCode) < 0) {
-            // Not in privilege list
-              return;
-            } else if (privileges[page.privCode].indexOf('view') < 0) {
-            // In list, but has no view privilege
+        if (pageModule.pages) {
+          Object.keys(pageModule.pages).forEach((pageName) => {
+            const page = pageModule.pages[pageName];
+            if (page.hidden) {
               return;
             }
-          }
-          modulePages.push({
-            path: page.path,
-            name: page.displayNameKey,
-            display: `pages.${pageModule.displayNameKey}.${page.displayNameKey}`,
-            privCode: page.privCode,
-            icon: `${page.icon}`,
+            if (that.userInfo.type >= 2) {
+              if (privKeys.indexOf(page.privCode) < 0) {
+              // Not in privilege list
+                return;
+              } else if (privileges[page.privCode].indexOf('view') < 0) {
+              // In list, but has no view privilege
+                return;
+              }
+            }
+            const newPage = {
+              path: page.path,
+              name: `${pageModule.displayNameKey}.${page.displayNameKey}`,
+              display: `pages.${pageModule.displayNameKey}.${page.displayNameKey}`,
+              privCode: page.privCode,
+              icon: `${page.icon}`,
+              isIFrame: page.isIFrame && true,
+            };
+            console.log(page);
+            modulePages.push(newPage);
+            if (that.$route.matched.length > 0 && `/${page.path}` === this.$route.matched[0].path) {
+              that.setCurrentPage(newPage);
+            }
           });
-        });
-        pages.push({
+        }
+        const newPage = {
           path: pageModule.path,
-          name: moduleName,
+          name: `${pageModule.displayNameKey}.module_name`,
           display: `pages.${pageModule.displayNameKey}.module_name`,
           pages: modulePages,
           icon: `${pageModule.icon}`,
-        });
+          isIFrame: pageModule.isIFrame && true,
+        };
+        pages.push(newPage);
+        if (that.$route.matched.length > 0 && `/${newPage.path}` === this.$route.matched[0].path) {
+          that.setCurrentPage(newPage);
+        }
       });
       that.setPageInfos(pages);
     },
@@ -181,6 +198,7 @@ export default {
       const userPrivilege = JSON.parse(localStorage.getItem('role'));
       that.setPrivilegedEnterprise(enterpriseList);
       that.setRobot(enterprise.apps[0].id);
+      console.log(userInfo.id);
       that.setUser(userInfo.id);
       that.setUserRole(userPrivilege);
       that.setPrivilegeList(that.$getPrivModules());

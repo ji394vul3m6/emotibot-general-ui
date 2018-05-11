@@ -27,6 +27,7 @@ export const state = {
   },
   privilegeList: [],
   pageInfos: {},
+  curPage: {},
   userID: '',
   userRole: {},
 };
@@ -80,5 +81,8 @@ export const mutations = {
   },
   [types.SET_USER_ROLE]: (s, role) => {
     s.userRole = role;
+  },
+  [types.SET_CUR_PAGE]: (s, curPage) => {
+    s.curPage = curPage;
   },
 };

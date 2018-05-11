@@ -44,6 +44,11 @@ html, body {
     padding: 20px;
     padding-top: 0;
     height: calc(100% - #{$default-line-height});
+    &.iframe {
+      padding: 0px;
+      height: 100%;
+      overflow: hidden;
+    }
   }
 }
 

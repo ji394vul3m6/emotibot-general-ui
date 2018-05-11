@@ -11,6 +11,7 @@ export default {
   displayNameKey: 'task_engine_scenario',
   icon: 'white_task_engine',
   name: 'task-engine-scenario',
+  isIFrame: true,
   data() {
     return {};
   },

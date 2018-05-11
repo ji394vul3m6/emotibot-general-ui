@@ -494,6 +494,9 @@ export default {
       wordbank_upload: '词库导入',
     },
     ssm: {
+      module_name: '标准问答',
+    },
+    faq: {
       module_name: '问答管理',
       qalist: '问答库',
       qatest: '对话测试',
