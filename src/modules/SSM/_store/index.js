@@ -26,6 +26,7 @@ const state = {
       totalRecords: 0,
     },
   },
+  tagTypes: [],
 };
 
 // mutations are operations that actually mutates the state.
@@ -64,6 +65,9 @@ const mutations = {
       },
     };
   },
+  setTagTypes(_, newTypes) {
+    state.tagTypes = newTypes;
+  },
 };
 
 // actions are functions that cause side effects and can involve
@@ -93,6 +97,7 @@ const getters = {
   curPage: s => s.qaQueryOptions.cur_page,
   qaQueryOptions: s => s.qaQueryOptions,
   qaQueryDimension: s => s.qaQueryOptions.dimension,
+  qaTagTypes: s => s.tagTypes,
   learningState: s => s.learning.state,
   learningType: s => s.learning.type,
   learningCollectionName: s => s.learning.selectedCollection.title,

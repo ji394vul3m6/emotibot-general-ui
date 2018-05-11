@@ -4,8 +4,7 @@
     <div class="filter-list row">
       {{ $t('qatest.user_dimension') }}：
       <template v-if="noDimensionSelected">{{ $t('qatest.unselect') }}</template>
-      <template v-for="category in categoryList">
-      <template v-for="categoryType in category.categories" v-if="!categoryType.allChecked">
+      <template v-for="categoryType in tagTypes" v-if="!categoryType.allChecked">
         <div class="filter-item" v-for="value in categoryType.values" :key="value.text" v-if="value.checked" :data-key="categoryType.type" :data-val="value.text" ref="filters">
           <span class="filter-item-text">
             {{value.text}}
@@ -14,7 +13,6 @@
             </span>
           </span>
         </div>
-      </template>
       </template>
       <span v-on:click="cancelAllFilter()" class="clear-all" v-if="!noDimensionSelected">{{ $t('qatest.clear_all') }}</span>
     </div>
@@ -81,10 +79,11 @@
 </template>
 
 <script>
+import DimensionSelector from '@/components/DimensionSelector';
 import TextButton from '@/components/basic/TextButton';
+import tagAPI from '@/api/tagType';
 import api from './_api/qatest';
-import CategoryList from './_data/categoryList';
-import DimensionSelector from './_components/DimensionSelector';
+import listAPI from './_api/qalist';
 
 export default {
   path: 'qatest',
@@ -95,6 +94,7 @@ export default {
   components: {
     TextButton,
   },
+  api: [api, listAPI, tagAPI],
   data() {
     return {
       i18n: {},
@@ -106,16 +106,14 @@ export default {
       matchResult: [],
       inComposition: false,
       multiAnswerDelay: 2000, // milliseconds
-      categoryList: [],
+      tagTypes: [],
     };
   },
-  api,
   methods: {
     selectDimension() {
-      const category = this.categoryList[0];
       this.$pop({
         component: DimensionSelector,
-        data: category.categories,
+        data: this.tagTypes,
         extData: {
           type: 'radio',
         },
@@ -215,7 +213,7 @@ export default {
       that.$nextTick(that.scrollToBottom);
     },
     cancelAllFilter() {
-      this.categoryList[0].categories.forEach((category) => {
+      this.tagTypes.forEach((category) => {
         category.allChecked = true;
         category.values.forEach((value) => {
           value.checked = false;
@@ -229,15 +227,14 @@ export default {
     },
   },
   mounted() {
-    const msg = this.$i18n.messages[this.$i18n.locale];
-    this.categoryList = CategoryList.getLocaleData(msg);
+    const that = this;
+    this.$api.getTagTypes().then((data) => {
+      that.tagTypes = data;
+    });
   },
   computed: {
     noDimensionSelected() {
-      if (this.categoryList.length > 0) {
-        return this.categoryList[0].categories.reduce((ret, val) => ret && val.allChecked, true);
-      }
-      return true;
+      return this.tagTypes.reduce((ret, val) => ret && val.allChecked, true);
     },
   },
 };

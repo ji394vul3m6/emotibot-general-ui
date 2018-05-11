@@ -23,6 +23,7 @@
 <script>
 import { mapGetters, mapMutations } from 'vuex';
 import Vue from 'vue';
+import tagAPI from '@/api/tagType';
 import qaAPI from './_api/qalist';
 import labelAPI from './_api/qalabel';
 import QASelectors from './_components/QASelectors';
@@ -48,7 +49,7 @@ export default {
       checkingTimer: null,
     };
   },
-  api: qaAPI,
+  api: [qaAPI, tagAPI],
   computed: {
     ...mapGetters([
       'doQueryState',
@@ -75,9 +76,13 @@ export default {
       action: 'full_import',
       status: 'running',
     };
-    that.$api.queryOperations(queryOptions).then((data) => {
+    that.$api.getTagTypes().then((data) => {
+      that.setTagTypes(data);
+    })
+    .then(() => that.$api.queryOperations(queryOptions))
+    .then((data) => {
       if (data.records && data.records.length > 0) {
-        // someone is importing
+          // someone is importing
         that.showFileImporting();
         that.pollingServerImportStatus(data.records[0].stateId);
       } else {
@@ -85,7 +90,8 @@ export default {
         that.$emit('endLoading');
         that.queryQA();
       }
-    }).catch(that.handleError.bind(that));
+    })
+    .catch(that.handleError.bind(that));
   },
   updated() {
     this.$refs.qaTable.setPageIndex(this.curPage);
@@ -99,6 +105,7 @@ export default {
   methods: {
     ...mapMutations({
       setDoQuery: 'doQuery',
+      setTagTypes: 'setTagTypes',
     }),
     resetSearchOptions() {
       const defaultOption = qaListUtil.genDefaultQueryOptions();

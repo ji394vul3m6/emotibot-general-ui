@@ -62,7 +62,7 @@
           </div>
         </div>
         <div class="button-container">
-          <div class="text-button" v-on:click="exportCSV(chartInfo)" v-if="canExport">{{ $t('general.export') }}</div>
+          <text-button v-on:click="exportCSV(chartInfo)" v-if="canExport">{{ $t('general.export') }}</text-button>
         </div>
         <div class="statistic-content">
           <stats-chart :ref="chartInfo.code" v-on:finish="chartInfo.finish=true" v-model="chartInfos[index]"></stats-chart>
@@ -106,7 +106,7 @@
           </div>
         </div>
         <div class="button-container">
-          <div class="text-button" v-on:click="exportCSV(tableInfo)" v-if="canExport">{{ $t('general.export') }}</div>
+          <text-button v-on:click="exportCSV(tableInfo)" v-if="canExport">{{ $t('general.export') }}</text-button>
         </div>
         <div class="statistic-content">
           <stats-table :ref="tableInfo.code" v-on:finish="tableInfo.finish=true" v-model="tableInfos[index]"></stats-table>
@@ -122,6 +122,7 @@ import VueC3 from 'vue-c3';
 import DatePicker from '@/components/DateTimePicker/DatePicker';
 import general from '@/utils/js/misc';
 import formatUtil from '@/utils/js/format';
+import auditAPI from '@/api/audit';
 import api from './_api/statistic';
 import StatsChart from './_components/StatsChart';
 import StatsTable from './_components/StatsTable';
@@ -138,7 +139,7 @@ export default {
     StatsTable,
     DatePicker,
   },
-  api,
+  api: [api, auditAPI],
   methods: {
     exportCSV(chartInfo) {
       const that = this;

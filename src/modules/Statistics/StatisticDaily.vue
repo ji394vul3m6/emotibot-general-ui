@@ -3,11 +3,6 @@
     <div class="content">
       <div class="row">
         <div class="row-title">{{ $t('statistics.keyword_search') }}</div>
-        <!-- <select v-model="keywordType">
-          <option value="all">{{ $t('general.all') }}</option>
-          <option value="question">{{ $t('general.question') }}</option>
-          <option value="answer">{{ $t('general.answer') }}</option>
-        </select> -->
         <label-switch v-model="keywordType" :options="keywordOption"/>
         <input v-model="keyword">
       </div>
@@ -31,9 +26,9 @@
         <div class="row-title">{{ $t('statistics.user_id') }}</div>
         <input v-model="userID">
       </div>
-      <!-- <div class="filter-btn-container row">
+      <div class="filter-btn-container row">
         {{ $t('statistics.filter') }}：
-        <div class="text-button" v-on:click="popCategorySelect(category)" v-for="category in categoryList" :key="category.text">{{category.text}}</div>
+        <text-button v-on:click="popCategorySelect(category)" v-for="category in categoryList" :key="category.text">{{category.text}}</text-button>
       </div>
       <div class="filter-list row">
         <template v-for="category in categoryList">
@@ -49,7 +44,7 @@
         </template>
         </template>
         <span v-on:click="cancelAllFilter()" class="clear-all" v-if="!noDimensionSelected">{{ $t('qatest.clear_all') }}</span>
-      </div> -->
+      </div>
       <div class="row" v-if="!validTimeRange">
         <label class="error_msg">{{ $t('error_msg.time_range_error') }}</label>
       </div>
@@ -76,13 +71,15 @@ import DatetimePicker from '@/components/DateTimePicker';
 import LabelSwitch from '@/components/basic/LabelSwitch';
 import pickerUtil from '@/utils/vue/DatePickerUtil';
 
-// import CategoryList from '@/data/categoryList';
-// import DimensionSelector from '@/components/general/DimensionSelector';
+import DimensionSelector from '@/components/DimensionSelector';
 
 // import i18nUtil from '@/utils/i18nUtil';
 // import general from '@/utils/general';
 // import auth from '@/auth';
 import misc from '@/utils/js/misc';
+import tagAPI from '@/api/tagType';
+import auditAPI from '@/api/audit';
+import CategoryList from '../SSM/_data/categoryList';
 import api from './_api/statistic';
 import ChatRecordPop from './_components/ChatRecordPop';
 
@@ -99,6 +96,7 @@ export default {
     'v-table': VTable,
     'v-pagination': VPagination,
   },
+  api: [tagAPI, api, auditAPI],
   data() {
     return {
       start: pickerUtil.createDateObj(),
@@ -124,7 +122,6 @@ export default {
     };
   },
   methods: {
-    ...api,
     cancelFilter(categoryType, value) {
       value.checked = false;
       const allChecked = categoryType.values.reduce((ret, val) => val.checked && ret, true);
@@ -188,7 +185,7 @@ export default {
       that.auditExportLog({
         module,
         filename,
-      }).then(() => that.getRecords(params)).then((data) => {
+      }).then(() => that.$api.getRecords(params)).then((data) => {
         const csvData = data.data;
         const blobData = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvData], { type: 'text/csv' });
         misc.downloadRawFile(blobData, filename);
@@ -204,7 +201,7 @@ export default {
 
       params.page = page;
       that.$emit('startLoading');
-      that.getRecords(params).then((data) => {
+      that.$api.getRecords(params).then((data) => {
         const res = data.data;
         that.tableData = that.receiveAPIData(res.data);
         that.headerInfo = that.receiveAPIHeader(res.table_header);
@@ -215,18 +212,18 @@ export default {
         that.$emit('endLoading');
       });
     },
-    // popCategorySelect(category) {
-    //   const origCategory = JSON.parse(JSON.stringify(category.categories));
-    //   this.$root.$emit('showWindow', {
-    //     component: DimensionSelector,
-    //     data: category.categories,
-    //     callback: {
-    //       cancel() {
-    //         category.categories = origCategory;
-    //       },
-    //     },
-    //   });
-    // },
+    popCategorySelect(category) {
+      const origCategory = JSON.parse(JSON.stringify(category.categories));
+      this.$pop({
+        component: DimensionSelector,
+        data: category.categories,
+        callback: {
+          cancel() {
+            category.categories = origCategory;
+          },
+        },
+      });
+    },
     receiveAPIData(datas) {
       return datas;
     },
@@ -269,7 +266,7 @@ export default {
       };
       const that = this;
       that.$emit('startLoading');
-      that.getContinueRecords(param).then((data) => {
+      that.$api.getContinueRecords(param).then((data) => {
         that.$emit('endLoading');
         that.$pop({
           data: data.data,
@@ -327,7 +324,6 @@ export default {
           }
           return false;
         }, true);
-        // return this.categoryList[0].categories.reduce((ret, val) => ret && val.allChecked, true);
       }
       return true;
     },
@@ -352,7 +348,17 @@ export default {
     };
   },
   mounted() {
-    // this.categoryList = CategoryList.getLocaleData(this.$i18n.locale);
+    const that = this;
+    that.$emit('startLoading');
+    const msg = this.$i18n.messages[this.$i18n.locale];
+    that.categoryList = CategoryList.getLocaleData(msg);
+    that.$api.getTagTypes().then((data) => {
+      that.categoryList[0].categories = data;
+    }, (err) => {
+      console.log(err);
+    }).finally(() => {
+      that.$emit('endLoading');
+    });
   },
   activated() {
     this.cancelAllFilter();

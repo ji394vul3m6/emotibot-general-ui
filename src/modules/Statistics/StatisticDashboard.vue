@@ -40,6 +40,7 @@ import Vue from 'vue';
 import VueC3 from 'vue-c3';
 import format from '@/utils/js/format';
 import LabelSwitch from '@/components/basic/LabelSwitch';
+import tagAPI from '@/api/tagType';
 
 import StatsChart from './_components/StatsChart';
 import StatsTable from './_components/StatsTable';
@@ -59,6 +60,7 @@ export default {
   privCode: 'statistic_dash',
   displayNameKey: 'statistic_dash',
   icon: 'white_dashboard',
+  api: [tagAPI, API],
   components: {
     VueC3,
     StatsChart,
@@ -66,7 +68,6 @@ export default {
     LabelSwitch,
   },
   methods: {
-    ...API,
     typesToOption(types) {
       return types.map(type => ({
         text: type.msg,
@@ -113,7 +114,7 @@ export default {
             type: 'time',
           },
           cols: 2,
-          getData: that.getVisitStats2,
+          getData: that.$api.getVisitStats2,
           keyMaps: {
             total_asks: that.$t('statistics.total_asks_num'),
             conversations: that.$t('statistics.session_num'),
@@ -124,52 +125,31 @@ export default {
             return datas.quantities;
           },
         },
-        // {
-        //   handler: new Vue(),
-        //   finish: false,
-        //   name: `${that.$t('statistics.visit_record')}(${that.$t('statistics.dimension')})`,
-        //   type: 'bar',
-        //   param: {
-        //     days: 1,
-        //     type: 'barchart',
-        //     filter: 'category',
-        //     category: 'platform',
-        //   },
-        //   getData: that.getVisitStats2,
-        //   keyMaps: {
-        //     total_asks: that.$t('statistics.total_asks_num'),
-        //   },
-        //   nameKey: 'name',
-        //   wrapWidth: 20,
-        //   customData(datas) {
-        //     datas.forEach((data) => {
-        //       data.total_asks = data.q.total_asks;
-        //     });
-        //     return datas;
-        //   },
-        //   types: [
-        //     {
-        //       key: 'platform',
-        //       msg: that.$t('statistics.platform'),
-        //     },
-        //     {
-        //       key: 'brand',
-        //       msg: that.$t('statistics.brand'),
-        //     },
-        //     {
-        //       key: 'sex',
-        //       msg: that.$t('statistics.sex'),
-        //     },
-        //     {
-        //       key: 'age',
-        //       msg: that.$t('statistics.age'),
-        //     },
-        //     {
-        //       key: 'hobbies',
-        //       msg: that.$t('statistics.hobbies'),
-        //     },
-        //   ],
-        // },
+        {
+          handler: new Vue(),
+          finish: false,
+          name: `${that.$t('statistics.visit_record')}(${that.$t('statistics.dimension')})`,
+          type: 'bar',
+          param: {
+            days: 1,
+            type: 'barchart',
+            filter: 'category',
+            category: 'platform',
+          },
+          getData: that.$api.getVisitStats2,
+          keyMaps: {
+            total_asks: that.$t('statistics.total_asks_num'),
+          },
+          nameKey: 'name',
+          wrapWidth: 20,
+          customData(datas) {
+            datas.forEach((data) => {
+              data.total_asks = data.q.total_asks;
+            });
+            return datas;
+          },
+          types: that.tagTypes,
+        },
         {
           handler: new Vue(),
           finish: false,
@@ -180,7 +160,7 @@ export default {
             type: 'barchart',
             filter: 'qtype',
           },
-          getData: that.getVisitStats2,
+          getData: that.$api.getVisitStats2,
           keyMaps: {
             total_asks: that.$t('statistics.total_asks_num'),
           },
@@ -202,7 +182,7 @@ export default {
             days: 1,
             type: 'top',
           },
-          getData: that.getTopQuestions2,
+          getData: that.$api.getTopQuestions2,
           tableColumns: {
             question: {
               text: that.$t('statistics.user_question'),
@@ -222,7 +202,7 @@ export default {
             days: 1,
             type: 'unused',
           },
-          getData: that.getTopQuestions2,
+          getData: that.$api.getTopQuestions2,
           tableColumns: {
             question: {
               text: that.$t('statistics.user_question'),
@@ -252,20 +232,32 @@ export default {
     return {
       chartInfos: [],
       tableInfos: [],
+      tagTypes: [],
     };
   },
   deactivated() {
     this.chartInfos = [];
     this.tableInfos = [];
   },
-  activated() {
-  },
   mounted() {
-    this.setUpMsgs();
-    this.chartInfos.forEach((chartInfo) => {
+    const that = this;
+    that.$emit('startLoading');
+    that.$api.getTagTypes().then((data) => {
+      that.tagTypes = data.map(d => ({
+        key: d.type,
+        msg: d.text,
+      }));
+      that.setUpMsgs();
+    }, (err) => {
+      console.log(err);
+    })
+    .finally(() => {
+      that.$emit('endLoading');
+    });
+    that.chartInfos.forEach((chartInfo) => {
       chartInfo.handler.$emit('redraw');
     });
-    this.tableInfos.forEach((tableInfo) => {
+    that.tableInfos.forEach((tableInfo) => {
       tableInfo.tableHandler.$emit('redraw');
     });
   },

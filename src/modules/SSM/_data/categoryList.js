@@ -12,30 +12,6 @@ export default {
             text: msg.dimension.categories.platform,
             allChecked: true,
             values: [
-              {
-                id: 'weixin',
-                text: 'weixin',
-                checked: false,
-                tagId: 1,
-              },
-              {
-                id: 'app',
-                text: 'app',
-                checked: false,
-                tagId: 2,
-              },
-              {
-                id: 'web',
-                text: 'web',
-                checked: false,
-                tagId: 3,
-              },
-              {
-                id: 'ios',
-                text: 'ios',
-                checked: false,
-                tagId: 25,
-              },
             ],
           },
           {

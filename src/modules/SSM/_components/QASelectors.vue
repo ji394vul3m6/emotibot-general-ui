@@ -97,6 +97,8 @@
 <script>
 // import i18nUtil from '@/utils/i18nUtil';
 // import CheckPop from '@/components/popForm/CheckPop';
+import { mapGetters } from 'vuex';
+import DimensionSelector from '@/components/DimensionSelector';
 import DatetimePicker from '@/components/DateTimePicker';
 import pickerUtil from '@/utils/vue/DatePickerUtil';
 import TextButton from '@/components/basic/TextButton';
@@ -105,7 +107,6 @@ import TextButton from '@/components/basic/TextButton';
 import ImportPop from './QABatchImportPop';
 import ExportPop from './QAExportPop';
 import CommandSelector from './CommandSelector';
-import DimensionSelector from './DimensionSelector';
 import CategoryList from '../_data/categoryList';
 import QAapi from '../_api/qalist';
 
@@ -142,6 +143,9 @@ export default {
     };
   },
   computed: {
+    ...mapGetters([
+      'qaTagTypes',
+    ]),
     showed() {
       return (this.dimensionShowed || this.commandShowed);
     },
@@ -560,6 +564,7 @@ export default {
     const msg = this.$i18n.messages[this.$i18n.locale];
     pickerUtil.initTime(this);
     const categories = CategoryList.getLocaleData(msg);
+    categories[0].categories = this.qaTagTypes;
     this.category = categories[0];
 
     // this.initCommand();

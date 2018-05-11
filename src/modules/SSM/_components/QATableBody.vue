@@ -83,15 +83,15 @@
 
 <script>
 import Vue from 'vue';
+import { mapGetters } from 'vuex';
 // import i18nutils from '@/utils/i18nUtil';
 import PickerUtil from '@/utils/vue/DatePickerUtil';
+import DimensionSelector from '@/components/DimensionSelector';
 import QAapi from '../_api/qalist';
 
-import CategoryList from '../_data/categoryList';
 import AnswerCmdList from '../_data/answerCommandList';
 // import auth from '@/auth';
 
-import DimensionSelector from './DimensionSelector';
 import QACommandPop from './QACommandPop';
 import QADynamicMenuPop from './QADynamicMenuPop';
 import QADatePickerPop from './QADatePickerPop';
@@ -344,8 +344,7 @@ export default {
         return;
       }
 
-      const msg = this.$i18n.messages[this.$i18n.locale];
-      const dimensions = CategoryList.getLocaleData(msg)[0].categories;
+      const dimensions = this.qaTagTypes;
       const selectedValues = answer.tags.toLowerCase().split(',');
       dimensions.forEach((dimension) => {
         const values = dimension.values;
@@ -842,6 +841,9 @@ export default {
   },
   props: ['tableData'],
   computed: {
+    ...mapGetters([
+      'qaTagTypes',
+    ]),
     canEdit() {
       // return auth.checkPrivilege('qalist', 'edit');
       return true;

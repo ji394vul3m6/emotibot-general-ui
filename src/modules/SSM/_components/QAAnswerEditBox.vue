@@ -55,12 +55,12 @@
 </template>
 
 <script>
+import DimensionSelector from '@/components/DimensionSelector';
 import DatetimePicker from '@/components/DateTimePicker';
 // import CheckPop from '@/components/popForm/CheckPop';
 // import i18nUtil from '@/utils/i18nUtil';
 import PickerUtil from '@/utils/vue/DatePickerUtil';
 import DynamicListInput from './DynamicListInput';
-import DimensionSelector from './DimensionSelector';
 import QAAnswerEditorPop from './QAAnswerEditorPop';
 
 export default {

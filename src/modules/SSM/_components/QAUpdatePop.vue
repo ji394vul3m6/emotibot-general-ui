@@ -40,8 +40,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import pickerUtil from '@/utils/vue/DatePickerUtil';
-import CategoryList from '../_data/categoryList';
 // import i18nUtil from '@/utils/i18nUtil';
 import TreeItem from './TreeItem';
 import QAAnswerEditBox from './QAAnswerEditBox';
@@ -77,6 +77,9 @@ export default {
     };
   },
   computed: {
+    ...mapGetters([
+      'qaTagTypes',
+    ]),
     categoryText() {
       const that = this;
       if (this.selectedCategory === -1) {
@@ -232,8 +235,7 @@ export default {
     },
     createEmptyAnswerObj() {
       const that = this;
-      const msg = that.$i18n.messages[that.$i18n.locale];
-      const dimensions = CategoryList.getLocaleData(msg)[0].categories;
+      const dimensions = that.qaTagTypes;
       const picker = pickerUtil.createYesterdayFromNowPicker();
       const endPicker = pickerUtil.createNowPicker();
       return {
@@ -279,8 +281,7 @@ export default {
     },
     getDimensionsFromMap(answerDimensionMap) {
       const that = this;
-      const msg = that.$i18n.messages[that.$i18n.locale];
-      const dimensions = CategoryList.getLocaleData(msg)[0].categories;
+      const dimensions = that.qaTagTypes;
       const dimensionMap = {};
       dimensions.forEach((d) => {
         dimensionMap[d.id] = d;
@@ -300,8 +301,7 @@ export default {
     },
     getDimensions(answerDimensions) {
       const that = this;
-      const msg = that.$i18n.messages[that.$i18n.locale];
-      const dimensions = CategoryList.getLocaleData(msg)[0].categories;
+      const dimensions = that.qaTagTypes;
       answerDimensions.forEach((answerDimension, dimensionIndex) => {
         const answerValues = answerDimension.toLowerCase().split(',');
         const allValue = dimensions[dimensionIndex].values;
