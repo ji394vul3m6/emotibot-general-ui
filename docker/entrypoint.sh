@@ -11,9 +11,7 @@ crond -f &
 /auth/token-auth &
 
 # start api
-cd /api && ./entrypoint.sh env.template &
-
-./file_init.sh
+cd /api && ./file_init.sh && ./entrypoint.sh env.template &
 
 # Add tmp dir for fastcgi php usage, used for uploaded file
 mkdir /build/dist/tmp && chmod 777 /build/dist/tmp
