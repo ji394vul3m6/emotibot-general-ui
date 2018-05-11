@@ -210,7 +210,7 @@ export default {
       infoGroups: [
         {
           name: this.$t('chat_skill.group_basic'),
-          infoIDs: [1, 13, 2, 4, 3],
+          infoIDs: [1, 13, 2, 4, 3, 12],
         },
         {
           name: this.$t('chat_skill.group_emotion'),
