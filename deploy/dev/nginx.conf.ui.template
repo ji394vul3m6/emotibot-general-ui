@@ -63,7 +63,7 @@ http {
             proxy_pass http://${REMOTE_IP};
         }
         location /auth {
-            proxy_pass http://${SELF_IP}:8088;
+            proxy_pass http://${REMOTE_IP};
         }
         location /BF {
             proxy_pass http://${REMOTE_IP};
