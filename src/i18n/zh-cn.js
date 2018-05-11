@@ -560,6 +560,12 @@ export default {
         phone: '手机银行',
         bejing: '北京分行',
         guangzhou: '广州分行',
+
+        sms: '短信',
+        wechat: '微信',
+        phone_app: '手机APP',
+        e_line: 'E线通',
+        fortune_group: '财富圈',
       },
       sex: {
         title: '性别',
