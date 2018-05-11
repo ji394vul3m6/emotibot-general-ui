@@ -73,23 +73,18 @@ services:
             "mysql":
                 condition: service_healthy
 
-    # ========== Authentication =========
-    authentication:
+    # ========== Token-auth =========
+    token-auth:
         image: ${AUTH_IMAGE}:${AUTH_TAG}
         container_name: ${AUTH_CONTAINER}
         ports:
             - "${AUTH_PORT}:${AUTH_PORT}"
         mem_limit: 2048m
         environment:
-            MYSQL_URL: ${AUTH_MYSQL_URL}
-            MYSQL_USER: ${AUTH_MYSQL_USER}
-            MYSQL_PASS: ${AUTH_MYSQL_PASS}
-            MYSQL_DB: ${AUTH_MYSQL_DATABASE}
-            ADMIN_AUDIT_MYSQL_URL: ${API_SERVER_AUDIT_MYSQL_URL}
-            ADMIN_AUDIT_MYSQL_USER: ${API_SERVER_AUDIT_MYSQL_USER}
-            ADMIN_AUDIT_MYSQL_PASS: ${API_SERVER_AUDIT_MYSQL_PASS}
-            ADMIN_AUDIT_MYSQL_DB: ${API_SERVER_AUDIT_MYSQL_DB}
-            CONSUL_URL: ${CONSUL_IP}:${CONSUL_PORT}
+            ADMIN_AUTH_MYSQL_URL: ${AUTH_MYSQL_URL}
+            ADMIN_AUTH_MYSQL_USER: ${AUTH_MYSQL_USER}
+            ADMIN_AUTH_MYSQL_PASS: ${AUTH_MYSQL_PASS}
+            ADMIN_AUTH_MYSQL_DB: ${AUTH_MYSQL_DB}
         restart: always
 
     # ========== Consul ==========
