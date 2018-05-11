@@ -79,7 +79,7 @@ import DimensionSelector from '@/components/DimensionSelector';
 import misc from '@/utils/js/misc';
 import tagAPI from '@/api/tagType';
 import auditAPI from '@/api/audit';
-import CategoryList from '../SSM/_data/categoryList';
+import CategoryList from '../FAQ/_data/categoryList';
 import api from './_api/statistic';
 import ChatRecordPop from './_components/ChatRecordPop';
 
