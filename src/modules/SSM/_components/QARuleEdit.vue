@@ -253,7 +253,9 @@ export default {
           begin_time: new Date(that.startDate),
           end_time: new Date(that.endDate),
           labels: that.labels.map(l => l.id),
-          status: that.status ? 1 : 0,
+          status: 1,
+          // TODO: set status in UI
+          // status: that.status ? 1 : 0,
         };
         if (that.dateType === 'forever') {
           ret.begin_time = null;
