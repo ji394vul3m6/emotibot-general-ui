@@ -4,7 +4,7 @@
     <page-header></page-header>
     <page-menu></page-menu>
     <div id="app-page" v-if="ready">
-      <div class="app-header" v-if="!isIFrame">{{ pageName }}</div>
+      <!-- <div class="app-header" v-if="!isIFrame">{{ pageName }}</div> -->
       <router-view class="app-body" :class="{iframe: isIFrame}" @startLoading="startLoading" @endLoading="endLoading"/>
       <div v-if="showLoading" class="loading">
         <div class='loader'></div>

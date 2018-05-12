@@ -494,7 +494,8 @@ export default {
       wordbank_upload: '词库导入',
     },
     ssm: {
-      module_name: '标准问答',
+      module_name: '问答管理',
+      ssm: '常用标准问题',
     },
     faq: {
       module_name: '问答管理',
@@ -506,11 +507,11 @@ export default {
       qa_learning: '自学习',
     },
     statistics: {
-      module_name: '统计图表',
+      module_name: '数据优化',
       statistic_dash: '统计概览',
-      statistic_analysis: '統計分析',
-      statistic_audit: '操作日志',
+      statistic_analysis: '统计分析',
       statistic_daily: '日志管理',
+      statistic_audit: '操作日志',
     },
     task_engine: {
       module_name: '任务引擎',

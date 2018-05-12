@@ -1,6 +1,6 @@
 <template>
-  <div class="icon" :class="{button: button}" @click="$emit('click', $event)">
-    <div :class="`${iconType}_icon`"></div>
+  <div class="icon" :class="{button: button}" @click="$emit('click', $event)" :style="containerStyle">
+    <div :class="`${iconType}_icon`" :style="styleObj"></div>
   </div>
 </template>
 
@@ -8,6 +8,11 @@
 export default {
   name: 'icon',
   props: {
+    size: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
     iconType: {
       type: String,
       required: true,
@@ -15,6 +20,25 @@ export default {
     button: {
       type: Boolean,
       default: false,
+    },
+  },
+  computed: {
+    iconSize() {
+      if (this.size !== 0) {
+        return `${this.size}px`;
+      }
+      return '';
+    },
+    styleObj() {
+      return {
+        'background-size': `${this.iconSize} ${this.iconSize}`,
+      };
+    },
+    containerStyle() {
+      return {
+        height: `${this.iconSize}`,
+        width: `${this.iconSize}`,
+      };
     },
   },
 };
@@ -26,9 +50,6 @@ export default {
   display: inline-block;
   position: relative;
   text-align: center;
-  width: $default-line-height;
-  height: $default-line-height;
-  flex: 0 0 30px;
 
   &.button {
     cursor: pointer;
@@ -127,6 +148,8 @@ export default {
   @include iconType("white_audit");
   @include iconType("download");
   @include iconType("white_task_engine");
+
+  @include iconType("white_expand");
 
   // robot icon should a little bit larger than other icons
   .white_robot_icon {
