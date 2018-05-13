@@ -149,7 +149,13 @@ export default {
   @include iconType("download");
   @include iconType("white_task_engine");
 
-  @include iconType("white_expand");
+  @include iconType("menu_expand");
+  @include iconType("menu_statistics");
+  @include iconType("menu_ssm");
+  @include iconType("menu_robot");
+  @include iconType("menu_wordbank");
+  @include iconType("menu_te");
+  @include iconType("menu_privilege");
 
   // robot icon should a little bit larger than other icons
   .white_robot_icon {

@@ -10,6 +10,7 @@ export default {
   privCode: 'ssm',
   displayNameKey: 'ssm',
   name: 'ssm',
+  isIFrame: true,
 };
 </script>
 

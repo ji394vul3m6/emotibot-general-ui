@@ -3,7 +3,7 @@ import UserManage from './UserManage';
 
 export default {
   displayNameKey: 'privileges',
-  icon: 'white_privilege',
+  icon: 'menu_privilege',
   pages: {
     RoleManage,
     UserManage,

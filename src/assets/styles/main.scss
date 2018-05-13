@@ -41,6 +41,9 @@ html, body {
   //   line-height: $default-line-height;
   //   padding-left: 10px;
   // }
+  &.iframe {
+    padding: 0px;
+  }
   & > .app-body {
     background: white;
     border-radius: 5px;

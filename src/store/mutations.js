@@ -85,4 +85,11 @@ export const mutations = {
   [types.SET_CUR_PAGE]: (s, curPage) => {
     s.curPage = curPage;
   },
+  [types.TOGGLE_PAGE_CATEGORY]: (s, name) => {
+    const idx = s.pageInfos.findIndex(page => page.name === name);
+    if (idx < 0) {
+      return;
+    }
+    s.pageInfos[idx].expanded = !s.pageInfos[idx].expanded;
+  },
 };

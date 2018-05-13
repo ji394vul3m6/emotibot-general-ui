@@ -1,14 +1,14 @@
 <template>
 <div id="page-menu">
-  <div class="category" v-for="directory in menuPages" :key="directory.name">
-    <div class="category-name row" @click="toPage(directory)"
+  <div class="category" v-for="directory in menuPages" :key="directory.name" :class="{expanded: directory.expanded}">
+    <div class="category-name row" @click="clickCategory(directory)"
       :class="{clickable: directory.path, active: directory.path === currentRoute}">
       <div class="space"></div>
       <icon class="page-icon" :icon-type="directory.icon" :size=15 />
       <div class="name">{{$t(directory.display)}}</div>
-      <icon class="expand-icon" icon-type="white_expand" :size=12 />
+      <icon class="expand-icon" icon-type="menu_expand" :size=12 />
     </div>
-    <template v-if="directory.pages && directory.pages.length > 0">
+    <div v-if="directory.pages && directory.pages.length > 0" class="children" :style="childrenStyle(directory)">
       <div class="page row clickable"
         v-for="page in directory.pages"
         :key="page.name"
@@ -19,7 +19,7 @@
           <span>{{$t(page.display)}}</span>
         </div>
       </div>
-    </template>
+    </div>
   </div>
 </div>  
 </template>
@@ -27,6 +27,8 @@
 <script>
 import { mapMutations, mapGetters } from 'vuex';
 import Icon from '@/components/basic/Icon';
+
+const lineHeight = 40;
 
 export default {
   computed: {
@@ -43,10 +45,23 @@ export default {
   methods: {
     ...mapMutations([
       'setCurrentPage',
+      'toggleCategory',
     ]),
+    clickCategory(category) {
+      this.toggleCategory(category.name);
+    },
     toPage(page) {
       this.setCurrentPage(page);
       this.$router.push({ path: page.path });
+    },
+    childrenStyle(category) {
+      let height = 0;
+      if (category.expanded) {
+        height = lineHeight * category.pages.length;
+      }
+      return {
+        height: `${height}px`,
+      };
     },
   },
   mounted() {
@@ -76,6 +91,16 @@ $menu-active-color: #3D80FF;
   @include auto-overflow();
 
   .category {
+    overflow: hidden;
+    .children {
+      transition: height .5s ease-in-out;
+      overflow: hidden;
+    }
+    &:not(.expanded) {
+      .expand-icon {
+        transform: rotate(-90deg);
+      }
+    }
     .row {
       display: flex;
       align-items: center;
@@ -96,6 +121,7 @@ $menu-active-color: #3D80FF;
       .expand-icon {
         flex: 0 0 12px;
         margin-right: 9px;
+        transition: transform .5s ease-in-out;
       }
 
       &.active {

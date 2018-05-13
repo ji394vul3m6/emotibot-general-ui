@@ -3,7 +3,7 @@ import FunctionSetting from './FunctionSetting';
 
 export default {
   displayNameKey: 'robot_setting',
-  icon: 'white_setting',
+  icon: 'menu_robot',
   pages: {
     FunctionSetting,
     RobotProfile,

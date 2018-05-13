@@ -3,7 +3,7 @@ import WordbankUpload from './WordBankUpload';
 
 export default {
   displayNameKey: 'wordbank',
-  icon: 'white_wordbank',
+  icon: 'menu_wordbank',
   pages: {
     WordbankList,
     WordbankUpload,

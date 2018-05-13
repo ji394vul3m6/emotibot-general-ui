@@ -3,7 +3,7 @@
     <div id="app-logo"></div>
     <page-header></page-header>
     <page-menu></page-menu>
-    <div id="app-page" v-if="ready">
+    <div id="app-page" v-if="ready" :class="{iframe: isIFrame}">
       <!-- <div class="app-header" v-if="!isIFrame">{{ pageName }}</div> -->
       <router-view class="app-body" :class="{iframe: isIFrame}" @startLoading="startLoading" @endLoading="endLoading"/>
       <div v-if="showLoading" class="loading">
@@ -168,6 +168,7 @@ export default {
           pages: modulePages,
           icon: `${pageModule.icon}`,
           isIFrame: pageModule.isIFrame && true,
+          expanded: true,
         };
         pages.push(newPage);
         if (that.$route.matched.length > 0 && `/${newPage.path}` === this.$route.matched[0].path) {

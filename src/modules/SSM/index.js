@@ -2,7 +2,7 @@ import List from './SSM';
 
 export default {
   displayNameKey: 'ssm',
-  icon: 'ssm',
+  icon: 'menu_ssm',
   pages: {
     List,
   },
