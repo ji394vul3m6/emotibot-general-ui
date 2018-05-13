@@ -139,6 +139,8 @@ $menu-active-color: #3D80FF;
       &.category-name {
         background: $menu-category-background;
         justify-content: flex-end;
+
+        @include click-button();
         .space {
           flex: 0 0 0px;
         }

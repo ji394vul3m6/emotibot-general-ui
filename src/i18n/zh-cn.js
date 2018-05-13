@@ -553,6 +553,7 @@ export default {
     file: '档案',
     finish: '完成',
     folder: '目录',
+    search_placeholder: '请输入搜索内容',
   },
   dimension: {
     categories: {

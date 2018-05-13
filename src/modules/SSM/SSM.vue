@@ -1,6 +1,6 @@
 <template>
   <div>
-    <iframe ref="iframe" src="/BF/login.html"></iframe>
+    <iframe ref="iframe" src="/BF/index.html#index"></iframe>
   </div>
 </template>
 

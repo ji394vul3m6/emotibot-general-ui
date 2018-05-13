@@ -38,6 +38,7 @@ export default {
       return {
         height: `${this.iconSize}`,
         width: `${this.iconSize}`,
+        flex: `0 0 ${this.iconSize}`,
       };
     },
   },

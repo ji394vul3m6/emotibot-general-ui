@@ -1,11 +1,11 @@
 <template>
   <div id='role-manage'>
     <div class="actions row">
-      <text-button main icon-type="white_add" @click="popAddRole">{{$t('general.add')}}{{$t('privileges.role')}}</text-button>
+      <text-button main @click="popAddRole">{{$t('general.add')}}{{$t('privileges.role')}}</text-button>
       <search-input v-model="keyword"></search-input>
     </div>
     <div class="header row">
-      <div class="check"></div>
+      <!-- <div class="check"></div> -->
       <div class="name">{{$t('privileges.role_name')}}</div>
         <div class="count">{{$t('privileges.user_count')}}</div>
       <!-- <div class="privileges">{{$t('privileges.privileges')}}</div> -->
@@ -14,25 +14,19 @@
     <div class="lists">
       <template v-if="roles.length > 0">
       <div v-for="role in roles" v-if="role.name.toLowerCase().indexOf(keyword.toLowerCase()) !== -1" :key="role.id" class='role-row row'>
-        <div class="check">
-          <!-- <input type="checkbox"> -->
-        </div>
+        <!-- <div class="check">
+          <input type="checkbox">
+        </div> -->
         <div class="name">{{role.name}}</div>
         <div class="count">{{role.user_count}}</div>
-        <!-- <div class="privileges">
-          <div v-for="(actions, privilege) in role.privileges" :key="privilege">
-            {{privilegeList[privilege].name}}:
-            <span v-for="action in actions" :key="action">{{$t(`privileges.actions.${action}`)}}</span>
-          </div>
-        </div> -->
         <div class="actions">
-          <div class="icon button" @click="popEditRole(role)">
-            <icon icon-type="edit"/>
-            <div class="tooltip">{{$t('general.edit')}}</div>
+          <div class="button" @click="popEditRole(role)">
+            <div>{{$t('general.edit')}}</div>
           </div>
-          <div class="icon button" v-if="role.user_count <= 0">
-            <icon icon-type="delete" @click="deleteRole(role)"/>
-            <div class="tooltip">{{$t('general.delete')}}</div>
+          /
+          <div class="button" @click="deleteRole(role)"
+            :class="{disable: role.user_count > 0}">
+            <div>{{$t('general.delete')}}</div>
           </div>
         </div>
       </div>
@@ -135,12 +129,13 @@ export default {
     loadRoles() {
       const that = this;
       that.$emit('startLoading');
-      that.$api.getEnterpriseRoles(that.enterprise.id).then((roles) => {
+      that.$api.getEnterpriseRoles(that.enterprise.id)
+      .then((roles) => {
         that.roles = roles;
-      }, () => {
-        // TODO
+      })
+      .finally(() => {
+        that.$emit('endLoading');
       });
-      that.$emit('endLoading');
     },
   },
   mounted() {
@@ -153,19 +148,28 @@ export default {
 <style lang="scss" scoped>
 @import "styles/variable";
 
+$role-header-background: #F7F7F7;
+$role-body-background: white;
+$role-list-height: 50px;
+
 #role-manage {
   display: flex;
   flex-direction: column;
   height: 100%;
   .actions {
-    flex: 0 0 $table-row-height;
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 10px;
   }
   .header {
-    background: $table-header-background;
+    background: $role-header-background;
+    margin-top: 10px;
+    box-shadow: inset 0 1px 0 0 #E9E9E9, inset 0 -1px 0 0 #E9E9E9;
   }
   .lists {
     flex: 1 1 100px;
-    background: $table-body-background;
+    background: $role-body-background;
     @include auto-overflow();
 
     display: flex;
@@ -181,37 +185,32 @@ export default {
     }
   }
   .row {
+    height: $role-list-height;
     @include flex-row();
+    & > div {
+      padding: 0 15px;
+    }
 
     .check {
-      flex: 0 0 50px;
+      flex: 0 0 0;
     }
     .name {
       flex: 1 1 100px;
     }
     .count {
-      flex: 0 0 100px;
-    }
-    .privileges {
-      flex: 3 1 300px;
-
-      & > div {
-        display: inline-block;
-        float: left;
-        padding: 5px;
-        background: $table-header-background;
-        margin: 5px;
-        margin-left: 0;
-        border-radius: 4px;
-        span {
-          &:not(:last-child):after {
-            content: ", ";
-          }
-        }
-      }
+      flex: 0 0 170px;
     }
     .actions {
-      flex: 0 0 90px;
+      flex: 0 0 130px;
+      justify-content: flex-start;
+      .button {
+        @include click-button();
+        &.disable {
+          opacity: 0.2;
+          cursor: unset;
+          pointer-events: none;
+        }
+      }
     }
   }
 }

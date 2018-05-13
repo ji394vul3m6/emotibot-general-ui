@@ -1,14 +1,16 @@
 <template>
   <div id="app">
-    <div id="app-logo"></div>
-    <page-header></page-header>
-    <page-menu></page-menu>
-    <div id="app-page" v-if="ready" :class="{iframe: isIFrame}">
-      <!-- <div class="app-header" v-if="!isIFrame">{{ pageName }}</div> -->
-      <router-view class="app-body" :class="{iframe: isIFrame}" @startLoading="startLoading" @endLoading="endLoading"/>
-      <div v-if="showLoading" class="loading">
-        <div class='loader'></div>
-        {{ loadingMsg || $t('general.loading') }}
+    <div :class="{blur: isPopOpen}">
+      <div id="app-logo"></div>
+      <page-header></page-header>
+      <page-menu></page-menu>
+      <div id="app-page" v-if="ready" :class="{iframe: isIFrame}">
+        <!-- <div class="app-header" v-if="!isIFrame">{{ pageName }}</div> -->
+        <router-view class="app-body" :class="{iframe: isIFrame}" @startLoading="startLoading" @endLoading="endLoading"/>
+        <div v-if="showLoading" class="loading">
+          <div class='loader'></div>
+          {{ loadingMsg || $t('general.loading') }}
+        </div>
       </div>
     </div>
     <pop-windows></pop-windows>
@@ -49,6 +51,7 @@ export default {
       loadingMsg: '',
       ready: false,
       userInfo: {},
+      isPopOpen: false,
     };
   },
   watch: {
@@ -154,7 +157,6 @@ export default {
               icon: `${page.icon}`,
               isIFrame: page.isIFrame && true,
             };
-            console.log(page);
             modulePages.push(newPage);
             if (that.$route.matched.length > 0 && `/${page.path}` === this.$route.matched[0].path) {
               that.setCurrentPage(newPage);
@@ -199,7 +201,6 @@ export default {
       const userPrivilege = JSON.parse(localStorage.getItem('role'));
       that.setPrivilegedEnterprise(enterpriseList);
       that.setRobot(enterprise.apps[0].id);
-      console.log(userInfo.id);
       that.setUser(userInfo.id);
       that.setUserRole(userPrivilege);
       that.setPrivilegeList(that.$getPrivModules());
@@ -210,6 +211,13 @@ export default {
     }).catch((err) => {
       console.log(err);
       window.location = '/login.html?invalid=1';
+    });
+
+    that.$root.$on('pop-window', () => {
+      that.isPopOpen = that.$isPopOpen();
+    });
+    that.$root.$on('close-window', () => {
+      that.isPopOpen = that.$isPopOpen();
     });
   },
 };

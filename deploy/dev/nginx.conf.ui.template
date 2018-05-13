@@ -97,8 +97,8 @@ http {
             return 301 http://${SELF_IP}/login.html;
         }
 
-        location /login$ {
-            proxy_pass http://172.16.101.66:3000;
+        location = /BF_login {
+            proxy_pass http://172.16.101.66:3000/login;
         }
         location /BF {
             proxy_pass http://172.16.101.66:3000;

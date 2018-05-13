@@ -31,14 +31,18 @@ export default {
       const idx = this.popWindows.length - 1;
       const that = this;
       Vue.nextTick(() => {
-        that.$refs.pops[idx].showWindow(option);
+        if (idx >= 0 && idx < that.$refs.pops.length) {
+          that.$refs.pops[idx].showWindow(option);
+        }
       });
+      that.$setPopCount(that.popWindows.length);
     },
     closePopWindow(popWindow) {
       const idx = this.$refs.pops.findIndex(p => p === popWindow);
       if (idx >= 0) {
         this.popWindows.splice(idx, 1);
       }
+      this.$setPopCount(this.popWindows.length);
     },
   },
   mounted() {

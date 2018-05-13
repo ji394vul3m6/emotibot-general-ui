@@ -20,7 +20,7 @@
   </div>
   <div class="spliter"></div>
   <div class="logout" @click="logout">
-    <icon icon-type="white_logout"/>
+    <icon icon-type="white_logout" :size=16 />
   </div>
 </div>
 </template>
