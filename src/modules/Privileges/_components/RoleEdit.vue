@@ -203,6 +203,7 @@ export default {
 $role-edit-font-size: 14px;
 $role-edit-err-size: 12px;
 $role-edit-err-color: $error-color;
+$role-edit-block-border-radius: 4px;
 
 .popForm {
   padding: 0 25px;
@@ -232,6 +233,7 @@ $role-edit-err-color: $error-color;
   .block {
     width: 100%;
     border: 1px solid #D9D9D9;
+    border-radius: $role-edit-block-border-radius;
     display: flex;
     flex-direction: column;
     .row {
