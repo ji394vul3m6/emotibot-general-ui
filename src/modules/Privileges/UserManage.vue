@@ -200,35 +200,8 @@ $user-list-height: 50px;
   display: flex;
   flex-direction: column;
   height: 100%;
-  .actions {
-    flex: 0 0 auto;
-    display: flex;
-    justify-content: space-between;
-    padding: 10px;
-  }
-  .header {
-    margin-top: 10px;
-    background: $user-header-background;
-  }
-  .lists {
-    flex: 1 1 100px;
-    background: $user-body-background;
-
-    display: flex;
-    flex-direction: column;
-    .user-row {
-      &.empty {
-        justify-content: center;
-      }
-      &:hover {
-        background: $table-body-hover-background;
-      }
-      border-bottom: 1px solid $table-border-color;
-    }
-    @include auto-overflow();
-  }
   .row {
-    height: $user-list-height;
+    flex: 0 0 $user-list-height;
     @include flex-row();
     & > div {
       padding: 0 15px;
@@ -256,6 +229,32 @@ $user-list-height: 50px;
         }
       }
     }
+  }
+  .row.actions {
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+  }
+  .header {
+    background: $user-header-background;
+  }
+  .lists {
+    flex: 1 1 100px;
+    background: $user-body-background;
+
+    display: flex;
+    flex-direction: column;
+    .user-row {
+      &.empty {
+        justify-content: center;
+      }
+      &:hover {
+        background: $table-body-hover-background;
+      }
+      border-bottom: 1px solid $table-border-color;
+    }
+    @include auto-overflow();
   }
 }
 </style>

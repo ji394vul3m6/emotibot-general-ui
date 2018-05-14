@@ -156,15 +156,44 @@ $role-list-height: 50px;
   display: flex;
   flex-direction: column;
   height: 100%;
-  .actions {
+  .row {
+    flex: 0 0 $role-list-height;
+    @include flex-row();
+    & > div {
+      padding: 0 15px;
+    }
+
+    .check {
+      flex: 0 0 0;
+    }
+    .name {
+      flex: 1 1 100px;
+    }
+    .count {
+      flex: 0 0 170px;
+    }
+    .actions {
+      flex: 0 0 130px;
+      display: flex;
+      justify-content: flex-start;
+      .button {
+        @include click-button();
+        &.disable {
+          opacity: 0.2;
+          cursor: unset;
+          pointer-events: none;
+        }
+      }
+    }
+  }
+  .row.actions {
     flex: 0 0 auto;
     display: flex;
     justify-content: space-between;
-    padding: 0 10px;
+    padding: 20px;
   }
   .header {
     background: $role-header-background;
-    margin-top: 10px;
     box-shadow: inset 0 1px 0 0 #E9E9E9, inset 0 -1px 0 0 #E9E9E9;
   }
   .lists {
@@ -182,35 +211,6 @@ $role-list-height: 50px;
         background: $table-body-hover-background;
       }
       border-bottom: 1px solid $table-border-color;
-    }
-  }
-  .row {
-    height: $role-list-height;
-    @include flex-row();
-    & > div {
-      padding: 0 15px;
-    }
-
-    .check {
-      flex: 0 0 0;
-    }
-    .name {
-      flex: 1 1 100px;
-    }
-    .count {
-      flex: 0 0 170px;
-    }
-    .actions {
-      flex: 0 0 130px;
-      justify-content: flex-start;
-      .button {
-        @include click-button();
-        &.disable {
-          opacity: 0.2;
-          cursor: unset;
-          pointer-events: none;
-        }
-      }
     }
   }
 }

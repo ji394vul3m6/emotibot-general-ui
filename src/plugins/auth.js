@@ -88,7 +88,10 @@ function login(input) {
     token = data.result.token;
     localStorage.setItem('token', token);
   })
-  .then(() => that.$reqPost(BF_LOGIN, { email: 'zhengyang@emotibot.com', password: 'df10ef8509dc176d733d59549e7dbfaf' }))
+  .then(() => that.$reqPost(BF_LOGIN, {
+    email: input.account,
+    password: md5(input.password),
+  }))
   .then((rsp) => {
     const data = rsp.data;
     if (data.error_code !== 0) {
