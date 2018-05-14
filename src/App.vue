@@ -170,7 +170,7 @@ export default {
           pages: modulePages,
           icon: `${pageModule.icon}`,
           isIFrame: pageModule.isIFrame && true,
-          expanded: true,
+          expanded: pageModule.dftOpen,
         };
         pages.push(newPage);
         if (that.$route.matched.length > 0 && `/${newPage.path}` === this.$route.matched[0].path) {

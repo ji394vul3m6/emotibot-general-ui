@@ -6,6 +6,7 @@ import Analysis from './StatisticAnalysis';
 export default {
   displayNameKey: 'statistics',
   icon: 'menu_statistics',
+  dftOpen: true,
   pages: {
     Dashboard,
     Analysis,
