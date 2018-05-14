@@ -116,7 +116,7 @@ $menu-active-color: #3D80FF;
       }
       .name {
         flex: auto;
-        margin-left: 10px;
+        margin-left: 14px;
       }
       .expand-icon {
         flex: 0 0 12px;
