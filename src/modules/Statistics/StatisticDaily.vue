@@ -182,7 +182,7 @@ export default {
 
       params.export = true;
       that.$emit('startLoading');
-      that.auditExportLog({
+      that.$api.auditExportLog({
         module,
         filename,
       }).then(() => that.$api.getRecords(params)).then((data) => {

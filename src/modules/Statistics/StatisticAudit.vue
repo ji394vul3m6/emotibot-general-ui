@@ -83,6 +83,7 @@ export default {
   displayNameKey: 'statistic_audit',
   icon: 'white_audit',
   name: 'statistic-audit',
+  api: [api, auditAPI],
   components: {
     DatetimePicker,
     GeneralTable,
@@ -91,8 +92,6 @@ export default {
     'v-pagination': VPagination,
   },
   methods: {
-    ...api,
-    ...auditAPI,
     listToOptions(actions) {
       const keys = Object.keys(actions);
       keys.sort();
@@ -134,10 +133,10 @@ export default {
       }
       that.$emit('startLoading');
 
-      that.auditExportLog({
+      that.$api.auditExportLog({
         module,
         filename,
-      }).then(() => that.getAuditLog(params)).then((data) => {
+      }).then(() => that.$api.getAuditLog(params)).then((data) => {
         let recordArray = data.data.result.data;
         recordArray = that.convertAPIDataToTable(recordArray);
         recordArray = that.mapCodeToString(recordArray);
@@ -166,7 +165,7 @@ export default {
       }
 
       that.$emit('startLoading');
-      that.getAuditLog(params).then((data) => {
+      that.$api.getAuditLog(params).then((data) => {
         const res = data.data;
         if (res.status === 0) {
           that.showTable = true;
