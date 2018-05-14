@@ -168,6 +168,70 @@ http {
             proxy_pass http://127.0.0.1:8181;
         }
 
+        location /BF/login.html {
+            return 301 /login.html;
+        }
+        location = /BF_login {
+            proxy_pass http://${ADMIN_BF_SERVER_URL}/login;
+        }
+        location /BF {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
+        location /ai {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
+        location /dal {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
+        location /eqlq {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
+        location /export {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
+        location /ml_test {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
+        location /sherlock {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
+        location /sq {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
+        location /tag {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
+        location /upload {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
+        location /ent_config_version {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
+        location /frontend_visible {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
+        location /config {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
+        location /robots {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
+        location /version {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
+        location /chatlog {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
+        location /solution_stage_status {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
+        location /robot {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
+        location /sentenceAccociation {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
+
         # /Files will go here
         location / {
             root   /build/dist;
