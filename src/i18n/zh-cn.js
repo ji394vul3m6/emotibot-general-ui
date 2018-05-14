@@ -496,6 +496,7 @@ export default {
     ssm: {
       module_name: '问答管理',
       ssm: '常用标准问题',
+      qatest: '对话测试',
     },
     faq: {
       module_name: '问答管理',
