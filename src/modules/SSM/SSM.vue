@@ -11,6 +11,17 @@ export default {
   displayNameKey: 'ssm',
   name: 'ssm',
   isIFrame: true,
+  methods: {
+    checkIFrameMsg(e) {
+      console.log(e);
+    },
+  },
+  mounted() {
+    window.addEventListener('message', this.checkIFrameMsg);
+  },
+  beforeDestroy() {
+    window.removeEventListener('message', this.checkIFrameMsg);
+  },
 };
 </script>
 
