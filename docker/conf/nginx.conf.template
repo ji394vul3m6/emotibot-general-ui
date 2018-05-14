@@ -16,6 +16,7 @@ http {
 
     log_format auth_header 'NGINX: [$time_local] “$request”  auth:"$user_id@$http_x_appid" from:"$remote_addr $http_x_forwarded_for" '
                       'ret:"code:$status size:$body_bytes_sent" info:[$http_referer][$http_user_agent]';
+    underscores_in_headers on;
 #    access_log  /var/log/nginx/access.log  main;
     access_log /dev/null;
     rewrite_log on;
