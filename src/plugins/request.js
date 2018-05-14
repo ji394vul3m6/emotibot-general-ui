@@ -24,7 +24,7 @@ function addCustomHeader(config) {
 }
 
 function handleUnAuthenticated() {
-
+  this.$logout();
 }
 
 function checkAjaxError(context, error) {
@@ -34,7 +34,7 @@ function checkAjaxError(context, error) {
   }
 
   if (status === 401) {
-    handleUnAuthenticated();
+    handleUnAuthenticated.bind(this)();
   }
 
   // handle only 500 series status code in plugin
@@ -52,7 +52,7 @@ function ajax(config) {
   const that = this;
   const getConfigWithCustomHeader = addCustomHeader.bind(that);
   return axios(getConfigWithCustomHeader(config)).catch((err) => {
-    checkAjaxError(that, err);
+    checkAjaxError.bind(this)(that, err);
   });
 }
 

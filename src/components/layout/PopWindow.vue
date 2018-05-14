@@ -20,14 +20,15 @@
           <text-button :main=button.primary
             v-on:click="customClick(button)" :key="button.msg">{{ button.msg }}</text-button>
         </template>
-        <text-button main :disabled=disable_ok
-          v-on:click="click(true)"
-          ref="okBtn"
-          v-if="buttons.indexOf('ok') != -1">{{ ok_msg }}</text-button>
-        <text-button main
+        <text-button
           v-on:click="click(false)"
           ref="cancelBtn"
           v-if="buttons.indexOf('cancel') != -1">{{ cancel_msg }}</text-button>
+        <text-button :disabled=disable_ok
+          color="purple"
+          v-on:click="click(true)"
+          ref="okBtn"
+          v-if="buttons.indexOf('ok') != -1">{{ ok_msg }}</text-button>
       </div>
     </div>
   </div>
@@ -154,6 +155,9 @@ export default {
 <style lang="scss" scoped>
 @import "styles/variable";
 
+$pop-title-font-size: 20px;
+$pop-title-font-color: #333333;
+
 @keyframes showup {
   from {
     margin-top: -20px;
@@ -207,7 +211,7 @@ export default {
     // animation-duration: 0.5s;
 
     background: white;
-    min-width: 300px;
+    // min-width: 300px;
     max-width: 90%;
     max-height: 90vh;
 
@@ -216,10 +220,15 @@ export default {
     
     align-items: center;
     justify-content: left;
-
-    border: 1px solid black;
+    box-shadow: 0 0 18px 0 rgba(0,0,0,0.24);
+    border-radius: 4px;
+    padding: 5px;
 
     & > .title {
+      line-height: $pop-title-font-size;
+      font-size: $pop-title-font-size;
+      padding: 25px;
+
       width: 100%;
       & > label {
         display: inline-block;
@@ -227,17 +236,12 @@ export default {
         overflow: hidden;
         text-overflow: ellipsis;
       }
-      height: 40px;
-      background: $page-header-color;
-      color: white;
-      box-sizing: border-box;
-      padding: 10px;
     }
 
     & > .content {
       min-height: 30px;
       max-height: calc(90vh - #{2 * 30px});
-      padding: 20px;
+      // padding: 20px;
       box-sizing: border-box;
       width: 100%;
       overflow: auto;
@@ -250,7 +254,7 @@ export default {
     .pop-button {
       text-align: right;
       width: 100%;
-      padding: 20px;
+      padding: 25px;
       padding-top: 0px;
       box-sizing: border-box;
 

@@ -73,6 +73,7 @@ export default {
           name: role.name,
           privileges: role.privileges,
         },
+        title: `${that.$t('general.edit')}${that.$t('privileges.role')}`,
         validate: true,
         bindValue: false,
         callback: {

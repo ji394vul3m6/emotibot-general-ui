@@ -1,10 +1,10 @@
 <template>
-  <div>
+  <div class="check-pop">
     <div>
       {{ value.msg }}
     </div>
     <br>
-    <div>
+    <div v-if="value.info && value.info !== ''">
       <pre>
         {{ value.info }}
       </pre>
@@ -24,3 +24,10 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.check-pop {
+  padding: 20px;
+  font-size: 14px;
+}
+</style>

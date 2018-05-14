@@ -28,7 +28,7 @@
 import { mapMutations, mapGetters } from 'vuex';
 import Icon from '@/components/basic/Icon';
 
-const lineHeight = 45;
+const lineHeight = 40;
 
 export default {
   computed: {
@@ -72,7 +72,7 @@ export default {
 <style lang="scss" scoped>
 @import "styles/variable";
 
-$menu-line-height: 45px;
+$menu-line-height: 40px;
 $menu-category-background: #444444;
 $menu-background: $page-menu-color;
 $menu-width: $page-menu-width;

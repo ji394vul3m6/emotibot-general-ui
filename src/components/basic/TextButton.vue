@@ -2,7 +2,7 @@
   <div class="text-button"
     tabindex="0"
     :style="style"
-    :class="{main: main, 'icon-button': showIcon, fill: fill, disabled: disabled, 'custom-width': width !== ''}"
+    :class="classObj"
     @click="$emit('click', $event)"
     @keyup.enter="$emit('click', $event)">
     <icon :icon-type="iconType" v-if="showIcon"></icon>
@@ -42,12 +42,31 @@ export default {
       type: Boolean,
       default: false,
     },
+    color: {
+      type: String,
+      default: '',
+    },
     // TODO disabled
   },
   components: {
     icon: Icon,
   },
+  method: {
+  },
   computed: {
+    classObj() {
+      const ret = {
+        main: this.main,
+        'icon-button': this.showIcon,
+        fill: this.fill,
+        disabled: this.disabled,
+        'custom-width': this.width !== '',
+      };
+      if (this.color !== '') {
+        ret[this.color] = true;
+      }
+      return ret;
+    },
     style() {
       let style = '';
       if (this.height !== '') {
@@ -71,6 +90,7 @@ export default {
 $btn-dft-height: 28px;
 $btn-dft-width: 90px;
 $btn-radius: 4px;
+$btn-dft-color: #666666;
 
 .text-button {
   width: $btn-dft-width;
@@ -80,7 +100,8 @@ $btn-radius: 4px;
   justify-content: center;
   align-items: center;
   border-radius: $btn-radius;
-  padding: 5px;
+  padding: 5px 10px;
+  color: $btn-dft-color;
 
   @include click-button();
 
@@ -113,7 +134,7 @@ $btn-radius: 4px;
   }
 
   &.main {
-    background: $button-blue-bg;
+    background: $app-active-color;
     color: $button-blue-text;
     border: none;
     &:hover {
@@ -137,6 +158,11 @@ $btn-radius: 4px;
       width: 100%;
       text-align: center;
     }
+  }
+
+  &.purple {
+    background: #4B4B64;
+    color: white;
   }
 }
 </style>

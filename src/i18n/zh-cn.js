@@ -7,10 +7,12 @@ export default {
     user_name: '用户名',
     privileges: '权限',
     user_count: '用户数',
+    function_priv: '功能权限',
 
     placeholder_user_name: '请输入用户名',
     placeholder_password: '请输入密码',
     placeholder_modify_password: '若要变更则输入密码',
+    placeholder_input_role_name: '请输入角色名',
 
     enterprise_admin: '企业管理员',
 

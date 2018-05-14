@@ -1,7 +1,7 @@
 <template>
   <div class='user-edit'>
-    <div class="row">
-      <span class="row-name">{{ $t('privileges.user_name') }}</span>
+    <div class="input-row">
+      <span class="row-name">{{ $t('privileges.user_name') }}：</span>
       <template v-if="addMode">
         <input v-model="name" ref="nameInput"
           :class="{error: isNameError}"
@@ -11,17 +11,17 @@
       <template v-else>
         <span class='row-val'>{{name}}</span>
       </template>
+      <div v-if="isNameError" class="err-msg">{{ $t('error_msg.input_empty') }}</div>
     </div>
-    <div v-if="isNameError" class="err-msg">{{ $t('error_msg.input_empty') }}</div>
-    <div class="row">
-      <span class="row-name">{{ $t('privileges.password') }}</span>
+    <div class="input-row">
+      <span class="row-name">{{ $t('privileges.password') }}：</span>
       <input type="password" v-model="password"
         @blur="checkPassword"
         :placeholder="addMode ? $t('privileges.placeholder_password') : $t('privileges.placeholder_modify_password')">
+      <div v-if="isPasswordError" class="err-msg">{{ $t('error_msg.input_empty') }}</div>
     </div>
-    <div v-if="isPasswordError" class="err-msg">{{ $t('error_msg.input_empty') }}</div>
-    <div class="row">
-      <span class="row-name">{{ $t('privileges.role') }}</span>
+    <div class="input-row">
+      <span class="row-name">{{ $t('privileges.role') }}：</span>
       <select v-model="role" v-on:change="checkRole">
         <option v-for="role in origData.roles" :key="role.id" :value="role.id">{{role.name}}</option>
       </select>
@@ -125,7 +125,32 @@ export default {
 <style lang="scss" scoped>
 @import 'styles/variable.scss';
 
+$user-edit-font-size: 14px;
+$user-edit-err-size: 12px;
+$user-edit-err-color: $error-color;
+
 .user-edit {
-  @include popForm(60px);
+  width: 395px;
+  .input-row {
+    display: flex;
+    flex-direction: column;
+    padding: 0 25px;
+    font-size: $user-edit-font-size;
+    margin-bottom: 20px;
+    .row-name {
+      margin-bottom: 10px;
+    }
+    input {
+      @include general-input();
+    }
+    select {
+      @include general-select();
+    }
+    .err-msg {
+      color: $user-edit-err-color;
+      font-size: $user-edit-err-size;
+      margin-top: 10px;
+    }
+  }
 }
 </style>
