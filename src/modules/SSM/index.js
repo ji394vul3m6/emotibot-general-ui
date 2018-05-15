@@ -1,11 +1,11 @@
 import List from './SSM';
-import Test from './QATest';
+import Label from './QALabel';
 
 export default {
   displayNameKey: 'ssm',
   icon: 'menu_ssm',
   pages: {
     List,
-    Test,
+    Label,
   },
 };

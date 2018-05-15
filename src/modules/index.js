@@ -4,12 +4,14 @@ import Wordbank from './Wordbank';
 import SSM from './SSM';
 import Statistics from './Statistics';
 import TaskEngine from './TaskEngine';
+import Status from './Status';
 
 export default {
-  Statistics,
+  Status,
   SSM,
-  Robot,
-  Wordbank,
   TaskEngine,
+  Wordbank,
+  Statistics,
+  Robot,
   Privileges,
 };

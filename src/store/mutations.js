@@ -31,6 +31,7 @@ export const state = {
   userID: '',
   userRole: {},
   chatTest: false,
+  userInfo: {},
 };
 
 export const mutations = {
@@ -98,5 +99,8 @@ export const mutations = {
   },
   [types.CLOSE_CHAT_TEST]: (s) => {
     s.chatTest = false;
+  },
+  [types.SET_USER_INFO]: (s, info) => {
+    s.userInfo = info;
   },
 };

@@ -98,9 +98,14 @@ export default {
       'setCurrentPage',
       'openChatTest',
       'closeChatTest',
+      'setUserInfo',
     ]),
     checkPrivilege() {
       const that = this;
+      if (that.$route.matched.length <= 0) {
+        that.$router.push('error');
+        return;
+      }
       if (that.userInfo.type < 2) {
         // system admin and enterprise admin can use all module
         return;
@@ -116,10 +121,6 @@ export default {
       // const routes = this.$router.options.routes;
       // const target = routes.find(route => route.component.privCode === viewCode);
 
-      if (that.$route.matched.length <= 0) {
-        that.$router.push('error');
-        return;
-      }
       const route = this.$route.matched[0];
       if (!route.components.default) {
         return;
@@ -215,6 +216,7 @@ export default {
       that.setPrivilegedEnterprise(enterpriseList);
       that.setRobot(enterprise.apps[0].id);
       that.setUser(userInfo.id);
+      that.setUserInfo(userInfo);
       that.setUserRole(userPrivilege);
       that.setPrivilegeList(that.$getPrivModules());
 

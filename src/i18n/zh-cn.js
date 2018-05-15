@@ -480,6 +480,15 @@ export default {
   },
   pages: {
     null: '',
+    status: {
+      module_name: '数据总览',
+      statistic_dash: '统计概览',
+    },
+    ssm: {
+      module_name: '问答管理',
+      ssm: '常用标准问题',
+      qa_label: '标签管理',
+    },
     privileges: {
       module_name: '权限管理',
       role_manage: '角色管理',
@@ -488,17 +497,14 @@ export default {
     robot_setting: {
       module_name: '机器人设置',
       robot_profile: '机器人形象',
-      robot_function: '机器人功能',
+      robot_function: '技能开关',
+      robot_chat_skill: '话术设置',
+      robot_command: '指令设置',
     },
     wordbank: {
       module_name: '词库',
       wordbank_list: '词库关系',
       wordbank_upload: '词库导入',
-    },
-    ssm: {
-      module_name: '问答管理',
-      ssm: '常用标准问题',
-      qatest: '对话测试',
     },
     faq: {
       module_name: '问答管理',
@@ -511,10 +517,10 @@ export default {
     },
     statistics: {
       module_name: '数据优化',
-      statistic_dash: '统计概览',
       statistic_analysis: '统计分析',
       statistic_daily: '日志管理',
-      statistic_audit: '操作日志',
+      statistic_audit: '操作纪录',
+      statistic_learning: '负反馈',
     },
     task_engine: {
       module_name: '任务引擎',

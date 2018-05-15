@@ -1,14 +1,14 @@
 <template>
 <div id="page-header">
   <div class="spliter"></div>
-  <div v-if="enterpriseList && enterpriseList.length > 0">
+  <!-- <div v-if="enterpriseList && enterpriseList.length > 0">
     <label-select
       :options="enterpriseList"
       :value="enterpriseID" valueKey="enterpriseID" color="white"
       @change="setEnterprise">
       <div class="enterprise_icon header"></div>  
     </label-select>
-  </div>
+  </div> -->
   <div class="spliter"></div>
   <div v-if="robotList && robotList.length > 0">
     <label-select
@@ -18,6 +18,9 @@
       <div class="white_robot_icon header"></div>
     </label-select>
   </div>
+  <div class="spliter"></div>
+  <div class="spliter"></div>
+  <div class="user-name">{{ userInfo.display_name }}</div>
   <div class="spliter"></div>
   <div class="logout" @click="logout">
     <icon icon-type="white_logout" :size=16 />
@@ -41,6 +44,7 @@ export default {
     'enterpriseID',
     'robotList',
     'enterpriseList',
+    'userInfo',
   ]),
   methods: {
     ...mapMutations([
@@ -78,13 +82,18 @@ export default {
     display: flex;
     align-items: center;
     vertical-align: middle;
-    padding: 0 10px;
+    padding: 0 20px;
   }
 
   & > .spliter {
     height: $page-header-height;
     border-left: 1px solid black;
   }
+
+  .user-name {
+    padding: 0 20px;
+  }
+
   .logout {
     width: $page-header-height;
     justify-content: center;

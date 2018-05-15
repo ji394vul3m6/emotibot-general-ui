@@ -42,9 +42,9 @@ import format from '@/utils/js/format';
 import LabelSwitch from '@/components/basic/LabelSwitch';
 import tagAPI from '@/api/tagType';
 
-import StatsChart from './_components/StatsChart';
-import StatsTable from './_components/StatsTable';
-import API from './_api/statistic';
+import StatsChart from '../Statistics/_components/StatsChart';
+import StatsTable from '../Statistics/_components/StatsTable';
+import API from '../Statistics/_api/statistic';
 
 function getTimeRange(days) {
   const now = new Date();
