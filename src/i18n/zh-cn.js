@@ -228,6 +228,7 @@ export default {
     similar_score: '相似分数',
   },
   qalist: {
+    total_row: '共 {num} 条',
     empty_label: '无标签',
     answer_label: '标签',
     sentence: '句子',
@@ -505,7 +506,7 @@ export default {
     statistics: {
       module_name: '统计图表',
       statistic_dash: '统计概览',
-      statistic_analysis: '統計分析',
+      statistic_analysis: '统计分析',
       statistic_audit: '操作日志',
       statistic_daily: '日志管理',
     },

@@ -4,10 +4,15 @@
     <div id="qa-table-body-container" :class="{'ie-scroll': useIE}">
       <qa-table-body ref="tableBody" @resetAllSelect="resetAllSelect" :tableData="retrieveContent"></qa-table-body>
     </div>
-    <div v-if="totalRow > 10" class="navigation-bar">
+    <div class="navigation-bar">
       <input type="checkbox" class="all-select" @change="toggleAllSelect" v-model="allSelected" style="display: inline-block;">
       <label class="all-select"> {{$t('qalist.page_selected')}} </label>
+      <template v-if="totalRow <= 10">
+        <div class="total">{{$t("qalist.total_row", {num: totalRow})}}</div>
+      </template>
+      <template v-if="totalRow > 10">
       <v-pagination :total="totalRow" :pageIndex="pageWording" :pageSizeOption="[10]" :layout="['total', 'prev', 'pager', 'next', 'jumper']" v-on:page-change="handlePageChange"></v-pagination>
+      </template>
     </div>
   </div>
 </template>
@@ -120,6 +125,10 @@ $fill-parent: 100%;
   vertical-align: top;
   display: inline-flex;
   align-items: center;
+}
+.total {
+  margin-left: 10px;
+  font-size: 14px;
 }
 
 div {
