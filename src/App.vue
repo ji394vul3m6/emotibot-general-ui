@@ -12,6 +12,11 @@
           {{ loadingMsg || $t('general.loading') }}
         </div>
       </div>
+      <transition name="slide-in">
+      <div id="chat-test-pop" v-if="isChatOpen">
+        <component :is="testComponent"></component>
+      </div>
+      </transition>
     </div>
     <pop-windows></pop-windows>
     <notification></notification>
@@ -24,6 +29,7 @@ import { mapMutations, mapGetters } from 'vuex';
 import modules from '@/modules';
 import PageHeader from '@/components/layout/Header';
 import PageMenu from '@/components/layout/Menu';
+import QATest from '@/modules/SSM/QATest';
 
 export default {
   name: 'app',
@@ -43,6 +49,7 @@ export default {
       'userID',
       'userRole',
       'currentPage',
+      'isChatOpen',
     ]),
   },
   data() {
@@ -52,6 +59,7 @@ export default {
       ready: false,
       userInfo: {},
       isPopOpen: false,
+      testComponent: QATest,
     };
   },
   watch: {
@@ -85,6 +93,8 @@ export default {
       'setUser',
       'setUserRole',
       'setCurrentPage',
+      'openChatTest',
+      'closeChatTest',
     ]),
     checkPrivilege() {
       const that = this;
@@ -219,6 +229,14 @@ export default {
     that.$root.$on('close-window', () => {
       that.isPopOpen = that.$isPopOpen();
     });
+    that.$root.$on('open-chat-test', () => {
+      that.openChatTest();
+      console.log('open-chat-test');
+    });
+    that.$root.$on('close-chat-test', () => {
+      that.closeChatTest();
+      console.log('close-chat-test');
+    });
   },
 };
 </script>
@@ -263,6 +281,28 @@ export default {
     width: 40px;
     height: 40px;
     animation: spin 2s linear infinite;
+  }
+}
+#chat-test-pop {
+  position: fixed;
+  right: 0;
+  top: 0;
+  height: 100vh;
+  width: 700px;
+  background: #EEEEEE;
+  box-shadow: 0 0 5px #CCCCCC;
+  .page {
+    height: 100%;
+  }
+
+  &.slide-in-enter-active, &.slide-in-leave-active {
+    transition: all 1s ease-in-out;
+  }
+  &.slide-in-enter, &.slide-in-leave-to {
+    right: -700px;
+  }
+  &.slide-in-enter-to, &.slide-in-leave {
+    right: 0;
   }
 }
 </style>

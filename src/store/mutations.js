@@ -30,6 +30,7 @@ export const state = {
   curPage: {},
   userID: '',
   userRole: {},
+  chatTest: false,
 };
 
 export const mutations = {
@@ -91,5 +92,11 @@ export const mutations = {
       return;
     }
     s.pageInfos[idx].expanded = !s.pageInfos[idx].expanded;
+  },
+  [types.OPEN_CHAT_TEST]: (s) => {
+    s.chatTest = true;
+  },
+  [types.CLOSE_CHAT_TEST]: (s) => {
+    s.chatTest = false;
   },
 };

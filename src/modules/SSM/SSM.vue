@@ -13,7 +13,11 @@ export default {
   isIFrame: true,
   methods: {
     checkIFrameMsg(e) {
-      console.log(e);
+      if (e.data === 'open-chat-test') {
+        this.$root.$emit('open-chat-test');
+      } else if (e.data === 'close-chat-test') {
+        this.$root.$emit('close-chat-test');
+      }
     },
   },
   mounted() {

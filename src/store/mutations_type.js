@@ -7,3 +7,6 @@ export const SET_CUR_PAGE = 'setCurrentPage';
 export const SET_USER = 'setUser';
 export const SET_USER_ROLE = 'setUserRole';
 export const TOGGLE_PAGE_CATEGORY = 'toggleCategory';
+
+export const OPEN_CHAT_TEST = 'openChatTest';
+export const CLOSE_CHAT_TEST = 'closeChatTest';
