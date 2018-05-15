@@ -306,7 +306,7 @@ export default {
   }
 
   &.slide-in-enter-active, &.slide-in-leave-active {
-    transition: all 1s ease-in-out;
+    transition: all .5s ease-in-out;
   }
   &.slide-in-enter, &.slide-in-leave-to {
     right: -700px;
