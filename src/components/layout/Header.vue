@@ -9,7 +9,7 @@
       <div class="enterprise_icon header"></div>  
     </label-select>
   </div> -->
-  <div class="spliter"></div>
+  <!-- <div class="spliter"></div> -->
   <div v-if="robotList && robotList.length > 0">
     <label-select
       :options="robotList"
@@ -19,6 +19,9 @@
     </label-select>
   </div>
   <div class="spliter"></div>
+  <div class="chat-test" @click="showChatTest">
+    {{$t('general.chat_test')}}
+  </div>
   <div class="spliter"></div>
   <div class="user-name">{{ userInfo.display_name }}</div>
   <div class="spliter"></div>
@@ -53,6 +56,9 @@ export default {
     ]),
     logout() {
       this.$logout();
+    },
+    showChatTest() {
+      this.$root.$emit('open-chat-test');
     },
   },
   components: {
@@ -90,8 +96,8 @@ export default {
     border-left: 1px solid black;
   }
 
-  .user-name {
-    padding: 0 20px;
+  & > .chat-test {
+    @include click-button();
   }
 
   .logout {

@@ -530,6 +530,7 @@ export default {
     error: '',
   },
   general: {
+    chat_test: '对话测试',
     custom: '自订',
     yes: '是',
     no: '否',
