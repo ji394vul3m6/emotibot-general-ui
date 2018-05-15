@@ -403,6 +403,9 @@ export default {
       });
     },
     handleDimensionClick() {
+      if (this.category.categories === undefined) {
+        this.category.categories = JSON.parse(JSON.stringify(this.qaTagTypes));
+      }
       const originCategories = JSON.parse(JSON.stringify(this.category.categories));
       this.$pop({
       // this.$root.$emit('showWindow', {
@@ -564,8 +567,8 @@ export default {
     const msg = this.$i18n.messages[this.$i18n.locale];
     pickerUtil.initTime(this);
     const categories = CategoryList.getLocaleData(msg);
-    categories[0].categories = this.qaTagTypes;
     this.category = categories[0];
+    this.category.categories = undefined;
 
     // this.initCommand();
   },
