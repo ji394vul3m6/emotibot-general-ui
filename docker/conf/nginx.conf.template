@@ -175,6 +175,9 @@ http {
         location = /BF_login {
             proxy_pass http://${ADMIN_BF_SERVER_URL}/login;
         }
+        location /BF/scenario {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
         location /BF {
             proxy_pass http://${ADMIN_BF_SERVER_URL};
         }
