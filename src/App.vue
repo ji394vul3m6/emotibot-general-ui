@@ -14,6 +14,9 @@
       </div>
       <transition name="slide-in">
       <div id="chat-test-pop" v-if="isChatOpen">
+        <div class='closs-button'>
+        <text-button @click="closeChatTest">close</text-button>
+        </div>
         <component :is="testComponent"></component>
       </div>
       </transition>
@@ -293,6 +296,11 @@ export default {
   box-shadow: 0 0 5px #CCCCCC;
   .page {
     height: 100%;
+  }
+  .closs-button {
+    position: absolute;
+    right: 20px;
+    top: 20px;
   }
 
   &.slide-in-enter-active, &.slide-in-leave-active {

@@ -176,7 +176,8 @@ http {
             proxy_pass http://${ADMIN_BF_SERVER_URL}/login;
         }
         location /BF/scenario {
-            proxy_pass http://${ADMIN_BF_SERVER_URL};
+            root   /build/dist;
+            index  index.html index.htm;
         }
         location /BF {
             proxy_pass http://${ADMIN_BF_SERVER_URL};
