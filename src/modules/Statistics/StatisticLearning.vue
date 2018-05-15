@@ -82,7 +82,7 @@ import LearningType from './_data/learningType';
 
 export default {
   path: 'statistic-learning',
-  privCode: 'statistic_learning',
+  privCode: 'ssm',
   displayNameKey: 'statistic_learning',
   name: 'statistic-learning',
   components: {

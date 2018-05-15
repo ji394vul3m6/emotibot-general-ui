@@ -255,7 +255,6 @@ $pop-title-font-color: #333333;
       text-align: right;
       width: 100%;
       padding: 25px;
-      padding-top: 0px;
       box-sizing: border-box;
 
       .text-button {

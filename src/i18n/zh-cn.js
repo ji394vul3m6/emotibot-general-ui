@@ -39,7 +39,11 @@ export default {
     modules: {
       statistic_dash: '统计概览',
       statistic_daily: '日志管理',
-      statistic_audit: '操作日志',
+      statistic_audit: '操作记录',
+      statistic_analysis: '统计分析',
+
+      ssm: '常用标准问题',
+      qa_label: '标签管理',
 
       qalist: '问答库',
       qatest: '对话测试',
@@ -48,6 +52,9 @@ export default {
       qa_activity: '活动管理',
 
       robot_profile: '机器人形象',
+      robot_chat_skill: '话术设置',
+      robot_function: '技能设置',
+      robot_command: '指令设置',
       wordbank: '词库',
       task_engine: '任务引擎',
 
@@ -497,7 +504,7 @@ export default {
     robot_setting: {
       module_name: '机器人设置',
       robot_profile: '机器人形象',
-      robot_function: '技能开关',
+      robot_function: '技能设置',
       robot_chat_skill: '话术设置',
       robot_command: '指令设置',
     },
@@ -519,7 +526,7 @@ export default {
       module_name: '数据优化',
       statistic_analysis: '统计分析',
       statistic_daily: '日志管理',
-      statistic_audit: '操作纪录',
+      statistic_audit: '操作记录',
       statistic_learning: '负反馈',
     },
     task_engine: {

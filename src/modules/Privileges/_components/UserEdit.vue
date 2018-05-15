@@ -151,6 +151,9 @@ $user-edit-err-color: $error-color;
       font-size: $user-edit-err-size;
       margin-top: 10px;
     }
+    &:last-child {
+      margin-bottom: 0px;
+    }
   }
 }
 </style>

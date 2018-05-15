@@ -143,6 +143,7 @@ export default {
       const privileges = that.userRole.privileges || {};
       const privKeys = Object.keys(privileges);
       Object.keys(modules).forEach((moduleName) => {
+        let moduleExpand = false;
         const pageModule = modules[moduleName];
         const modulePages = [];
         if (pageModule.hidden) {
@@ -158,7 +159,7 @@ export default {
               if (privKeys.indexOf(page.privCode) < 0) {
               // Not in privilege list
                 return;
-              } else if (privileges[page.privCode].indexOf('view') < 0) {
+              } else if (privileges[page.privCode].indexOf('view') < 0 && privileges[page.privCode].indexOf('edit') < 0) {
               // In list, but has no view privilege
                 return;
               }
@@ -174,8 +175,12 @@ export default {
             modulePages.push(newPage);
             if (that.$route.matched.length > 0 && `/${page.path}` === this.$route.matched[0].path) {
               that.setCurrentPage(newPage);
+              moduleExpand = true;
             }
           });
+        }
+        if (modulePages.length === 0) {
+          return;
         }
         const newPage = {
           path: pageModule.path,
@@ -184,7 +189,7 @@ export default {
           pages: modulePages,
           icon: `${pageModule.icon}`,
           isIFrame: pageModule.isIFrame && true,
-          expanded: pageModule.dftOpen,
+          expanded: moduleExpand,
         };
         pages.push(newPage);
         if (that.$route.matched.length > 0 && `/${newPage.path}` === this.$route.matched[0].path) {

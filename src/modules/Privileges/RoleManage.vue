@@ -78,9 +78,13 @@ export default {
         bindValue: false,
         callback: {
           ok(retData) {
+            that.$emit('startLoading');
             that.$api.updateEnterpriseRole(that.enterprise.id, role.id, retData).then(() => {
               that.notifySuccess();
-              that.loadRoles();
+              return that.loadRoles();
+            })
+            .finally(() => {
+              that.$emit('endLoading');
             });
           },
         },
