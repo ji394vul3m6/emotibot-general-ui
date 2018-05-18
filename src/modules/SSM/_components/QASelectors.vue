@@ -504,7 +504,7 @@ export default {
         queryOptions.timeset = true;
       }
 
-      queryOptions.key_word = this.keyword;
+      queryOptions.key_word = this.keyword.trim();
 
       if (this.keywordType === 'question') {
         queryOptions.search_question = true;
