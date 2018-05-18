@@ -1,7 +1,6 @@
 import QAListUtil from './QAListUtil';
 import LearningState from '../_data/learningState';
 import LearningType from '../_data/learningType';
-import LearningUtil from './LearningUtil';
 
 // root state object.
 // each Vuex instance is just a single state tree.

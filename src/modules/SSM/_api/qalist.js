@@ -233,7 +233,7 @@ export default {
   addCategory(params) {
     const url = '/api/v1/faq/category';
     const encodedParams = qs.stringify(params);
-    return this.$reqDut(url, encodedParams).then(data => data.id);
+    return this.$reqPut(url, encodedParams).then(data => data.id);
   },
   deleteQuestion(options) {
     const url = '/php/api/ApiKey/vip_custom_question/custom_question.php?cmd=delete&table_prefix=csbot';
