@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapMutations, mapGetters } from 'vuex';
 import LearnAPI from '../../_api/learning';
 import LearningState from '../../_data/learningState';
 
@@ -50,6 +50,10 @@ export default {
     },
   },
   methods: {
+    ...mapMutations([
+      'setLearningState',
+      'setSelectedCollection',
+    ]),
     setCollections(collections) {
       this.collections = collections.sort((a, b) => {
         if (a.title < b.title) {
@@ -62,13 +66,22 @@ export default {
       this.collectionCount = collections.length;
     },
     selectCollection(collection) {
-      this.$store.dispatch('setSelectedCollection', collection)
+      const that = this;
+      this.$api.queryCollection(collection.id).then((clusters) => {
+        const fullCollection = {
+          id: collection.id,
+          title: collection.title,
+          clusters,
+          totalRecords: collection.totalRecordSize,
+        };
+        that.setSelectedCollection(fullCollection);
+      })
       .then(() => {
-        this.$store.commit('setLearningState', LearningState.CLUSTERS);
+        that.setLearningState(LearningState.CLUSTERS);
       }).catch((error) => {
         console.error(error);
-        const msg = this.$t('error_msg.handle_learning_error');
-        this.showMessagePop(msg);
+        const msg = that.$t('error_msg.handle_learning_error');
+        that.showMessagePop(msg);
       });
     },
     showMessagePop(msg) {

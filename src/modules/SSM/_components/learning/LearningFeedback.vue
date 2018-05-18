@@ -72,7 +72,7 @@
         </div>
         <div v-if="inSearching" class="cover">
           <div class="wording">
-            {{ $t('general.in_progress') }}
+            {{ $t('general.loading') }}
           </div>
         </div>
        </div>
@@ -85,7 +85,7 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapGetters } from 'vuex';
+import { mapMutations, mapGetters } from 'vuex';
 import SimilarQuestionsPop from '../../_components/learning/SimilarQuestionsPop';
 import QAUpdatePop from '../../_components/QAUpdatePop';
 // import CheckPop from '@/components/popForm/CheckPop';
@@ -111,10 +111,8 @@ export default {
     };
   },
   computed: {
-    ...mapActions([
-      'changeLearningRecordPage',
-    ]),
     ...mapGetters([
+      'learningSelectedCollection',
       'learningSelectedCluster',
       'searchCategoryID',
     ]),
@@ -141,7 +139,24 @@ export default {
   methods: {
     ...mapMutations([
       'doQuery',
+      'setSelectedCluster',
     ]),
+    changeLearningRecordPage(page) {
+      const that = this;
+      const collection = that.learningSelectedCollection;
+      const cluster = that.learningSelectedCluster;
+
+      return that.$api.queryRecords(collection.id, cluster.id, page, 10)
+      .then((records) => {
+        const fullCluster = {
+          id: cluster.id,
+          label: cluster.label,
+          records,
+          totalRecords: cluster.totalRecords,
+        };
+        that.setSelectedCluster(fullCluster);
+      });
+    },
     isRecordDisabled(record) {
       return record.resolved || record.content.length > 150;
     },
@@ -177,7 +192,7 @@ export default {
         cur_page: 0,
       };
       this.inSearching = true;
-      QAAPI.getContent(queryOptions)
+      this.$api.getContent(queryOptions)
       .then(this.parseQuestions)
       .catch(() => {
         const msg = this.$t('error_msg.handle_learning_error');
@@ -218,14 +233,14 @@ export default {
       // 1. query similar questions of the standard question
       // 2. add the record to similar questions and update
       // 3. notify learning api
-      this.wording = this.$t('general.in_progress');
+      this.wording = this.$t('general.loading');
       return this.querySimilarQuestions(selectedQuestion.id)
       .then(response => this.parseSimilarQuestions(response))
       .then(similarQuestions => this.updateSimiarQuestions(selectedQuestion, similarQuestions))
       .then(() => this.setRecordResolved(selectedQuestion))
       .then(() => this.block(500))
       .then(() => this.changeLearningRecordPage(this.currentPage))
-      .then(() => this.$doQuery(true))
+      .then(() => this.doQuery(true))
       .catch((err) => {
         console.error(err);
         const msg = this.$t('error_msg.handle_learning_error');
@@ -243,7 +258,7 @@ export default {
         page_limit: 10000,
         cur_page: 0,
       };
-      return QAAPI.querySimilarQuestions(queryOptions);
+      return this.$api.querySimilarQuestions(queryOptions);
     },
     parseSimilarQuestions(response) {
       const similarQuestions = [];
@@ -259,7 +274,7 @@ export default {
         similarQuestions.push({ content: record.content });
       });
 
-      return QAAPI.addSimilarQuestions(selectedQuestion.id, user, similarQuestions);
+      return this.$api.addSimilarQuestions(selectedQuestion.id, user, similarQuestions);
     },
     removeFromSiliarQuestions(record, similarQuestions) {
       const newSimilarQuestions = [];
@@ -275,7 +290,7 @@ export default {
       this.selectedRecords.forEach((record) => {
         resolvedRecords.push(record.id);
       });
-      return LearningAPI.resolveRecords(selectedQuestion.content, resolvedRecords);
+      return this.$api.resolveRecords(selectedQuestion.content, resolvedRecords);
     },
     block(time) {
       return new Promise((resolve) => {
@@ -309,13 +324,13 @@ export default {
         buttons: ['ok'],
         ok_msg: this.$t('general.close'),
       };
-      this.$root.$emit('showWindow', options);
+      this.$pop(options);
     },
     setSelected(selected) {
       this.selected = selected;
     },
     addNewQuestion() {
-      this.$root.$emit('showWindow', {
+      this.$pop({
         component: QAUpdatePop,
         ok_msg: this.$t('general.save'),
         cancel_msg: this.$t('general.cancel'),
@@ -328,15 +343,15 @@ export default {
               ans.images = this.checkInsertedImageId(ans.answer, ans.images);
             });
             question.answer_json = JSON.stringify(question.answer_json);
-            return QAAPI.createQuestion(question)
-                  .then(() => QAAPI.querySingleQuestion(question.content))
+            return this.$api.createQuestion(question)
+                  .then(() => this.$api.querySingleQuestion(question.content))
                   .then((newQuesiton) => {
                     const id = newQuesiton.questionID;
                     const content = question.content;
                     return this.addToQuestionImpl({ id, content });
                   })
-                  .then(() => QAAPI.activeQA())
-                  .then(() => this.$store.commit('doQuery', true));
+                  .then(() => this.$api.activeQA())
+                  .then(() => this.doQuery(true));
           },
         },
         validate: true,
@@ -368,9 +383,9 @@ export default {
       // 3. notify learning api
 
       let cachedQuestion;
-      this.wording = this.$t('general.in_progress');
+      this.wording = this.$t('general.loading');
       this.inProgress = true;
-      return QAAPI.querySingleQuestion(record.stdQuestion)
+      return this.$api.querySingleQuestion(record.stdQuestion)
       .then((question) => {
         cachedQuestion = question;
         return cachedQuestion;
@@ -380,7 +395,7 @@ export default {
       .then(similarQuestions => this.removeFromSiliarQuestions(record, similarQuestions))
       .then((similarQuestions) => {
         const user = this.$cookie.get('userid');
-        return QAAPI.addSimilarQuestions(cachedQuestion.questionID, user, similarQuestions);
+        return this.$api.addSimilarQuestions(cachedQuestion.questionID, user, similarQuestions);
       })
       .catch((error) => {
         const NotFoundMsg = 'Request failed with status code 404';
@@ -392,9 +407,9 @@ export default {
           throw error;
         }
       })
-      .then(() => LearningAPI.revokeRecord(record))
-      .then(() => this.$store.dispatch('changeRecordPage', this.currentPage))
-      .then(() => this.$store.commit('doQuery', true))
+      .then(() => this.$api.revokeRecord(record))
+      .then(() => this.changeLearningRecordPage(this.currentPage))
+      .then(() => this.doQuery(true))
       .then(() => {
         const msg = this.$t('learning.feedback.revoke_success');
         this.showMessagePop(msg);
@@ -419,8 +434,8 @@ export default {
     handlePageChange(pageIndex) {
       this.currentPage = pageIndex - 1;
       this.inProgress = true;
-      this.wording = this.$t('general.in_progress');
-      this.$store.dispatch('changeRecordPage', this.currentPage)
+      this.wording = this.$t('general.loading');
+      this.changeLearningRecordPage(this.currentPage)
       .catch(() => {
         const msg = this.$t('error_msg.handle_learning_error');
         this.showMessagePop(msg);
@@ -448,7 +463,7 @@ export default {
         this.showMessagePop(msg);
       } else {
         const requestRecords = this.selectedRecords.map(record => record.content);
-        LearningAPI.queryRecommendForMe(requestRecords)
+        this.$api.queryRecommendForMe(requestRecords)
         .then((response) => {
           this.recommendQs = response.slice(0, 15).map(ques => ({
             id: ques.questionId,

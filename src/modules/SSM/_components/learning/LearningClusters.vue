@@ -35,7 +35,10 @@
 </template>
 
 <script>
+import { mapMutations, mapGetters } from 'vuex';
+import LearnAPI from '../../_api/learning';
 import LearningState from '../../_data/learningState';
+import LearningUtil from '../../_store/LearningUtil';
 
 export default {
   data() {
@@ -45,24 +48,46 @@ export default {
       pageWording: 1,
     };
   },
+  api: LearnAPI,
   computed: {
+    ...mapGetters([
+      'learningSelectedCollection',
+    ]),
     clusters() {
-      const clusters = this.$store.state.learning.selectedCollection.clusters;
+      const clusters = this.learningSelectedCollection.clusters;
       const start = this.currentPage * this.pageRow;
       const end = start + this.pageRow;
       const pagedCluster = clusters.slice(start, end);
       return pagedCluster;
     },
     clusterCount() {
-      const count = this.$store.state.learning.selectedCollection.clusters.length;
+      const count = this.learningSelectedCollection.clusters.length;
       return count;
     },
   },
   methods: {
+    ...mapMutations([
+      'setSelectedCluster',
+      'setLearningState',
+    ]),
     selectCluster(cluster) {
-      this.$store.dispatch('setSelectedCluster', cluster)
+      const that = this;
+      that.$api.queryRecords(that.learningSelectedCollection.id, cluster.id, 0, 10)
+      .then((records) => {
+        const checkedRecords = LearningUtil.checkRecords(records);
+        return checkedRecords;
+      })
+      .then((records) => {
+        const fullCluster = {
+          id: cluster.id,
+          label: cluster.label,
+          records,
+          totalRecords: cluster.recordCount,
+        };
+        that.setSelectedCluster(fullCluster);
+      })
       .then(() => {
-        this.$store.commit('setLearningState', LearningState.FEEDBACK);
+        that.setLearningState(LearningState.FEEDBACK);
       });
     },
     handlePageChange(pageIndex) {

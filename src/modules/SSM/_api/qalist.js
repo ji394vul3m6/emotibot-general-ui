@@ -129,6 +129,16 @@ function getDiemensionTypeId(type) {
 }
 let cachedQuestions = [];
 
+function activeQA() {
+  const url = '/php/api/ApiKey/vip_custom_question/vip_download.php';
+  const options = {
+    cmd: 'edit',
+    appid: 'csbot',
+  };
+  const encodedOptions = qs.stringify(options);
+  return this.$reqPost(url, encodedOptions);
+}
+
 export default {
   parseAnswerCommand,
   parseTags,
@@ -321,23 +331,16 @@ export default {
     const encodedOptions = qs.stringify(options);
     return this.$reqPost(url, encodedOptions);
   },
-  activeQA() {
-    const url = '/php/api/ApiKey/vip_custom_question/vip_download.php';
-    const options = {
-      cmd: 'edit',
-      appid: 'csbot',
-    };
-    const encodedOptions = qs.stringify(options);
-    return this.$reqPost(url, encodedOptions);
-  },
+  activeQA,
   addSimilarQuestions(qid, user, newSimilarQuestions) {
+    const vueObj = this;
     const url = `/api/v1/faq/question/${qid}/similar-questions`;
     const body = {
       user,
       similarQuestions: newSimilarQuestions,
     };
 
-    return this.$reqPost(url, body).then(() => this.activeQA());
+    return this.$reqPost(url, body).then(() => activeQA.bind(vueObj)());
   },
   queryOperations(params) {
     const url = '/api/v1/qa/questions/operations';

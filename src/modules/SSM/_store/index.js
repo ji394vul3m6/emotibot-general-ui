@@ -41,6 +41,12 @@ const mutations = {
   doQuery(_, toDqQuery) {
     state.qalist.doQuery = toDqQuery;
   },
+  setSelectedCollection(_, collection) {
+    state.learning.selectedCollection = collection;
+  },
+  setSelectedCluster(_, cluster) {
+    state.learning.selectedCluster = cluster;
+  },
   setLearningState(_, newState) {
     state.learning.state = newState;
   },
@@ -73,21 +79,6 @@ const mutations = {
 // actions are functions that cause side effects and can involve
 // asynchronous operations.
 const actions = {
-  changeLearningRecordPage: ({ commit }, page) => {
-    const collection = state.learning.selectedCollection;
-    const cluster = state.learning.selectedCluster;
-
-    LearningUtil.queryRecords(collection.id, cluster.id, page, 10)
-    .then((records) => {
-      const fullCluster = {
-        id: cluster.id,
-        label: cluster.label,
-        records,
-        totalRecords: cluster.totalRecords,
-      };
-      commit('setSelectedCluster', fullCluster);
-    });
-  },
 };
 
 // getters are functions

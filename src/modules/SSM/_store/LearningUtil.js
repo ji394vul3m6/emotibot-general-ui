@@ -1,5 +1,3 @@
-import LearningAPI from '../_api/learning';
-
 export default {
   checkRecords(records) {
     records.forEach((record) => {
@@ -9,12 +7,5 @@ export default {
       }
     });
     return records;
-  },
-  queryRecords(collectionId, clusterId, page, num) {
-    return LearningAPI.queryRecords(collectionId, clusterId, page, num)
-    .then((records) => {
-      const checkedRecords = this.checkRecords(records);
-      return checkedRecords;
-    });
   },
 };
