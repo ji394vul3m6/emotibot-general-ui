@@ -136,9 +136,9 @@ export default {
         { value: 'all', text: this.$t('qalist.all') },
         { value: 'question', text: this.$t('qalist.question') },
         { value: 'answer', text: this.$t('qalist.answer') },
-        { value: 'dynamic_menu', text: this.$t('qalist.select_dynamic_menu') },
-        { value: 'related_question', text: this.$t('qalist.select_related_questions') },
-        { value: 'not_show', text: this.$t('qalist.select_not_in_recommendation') },
+        // { value: 'dynamic_menu', text: this.$t('qalist.select_dynamic_menu') },
+        // { value: 'related_question', text: this.$t('qalist.select_related_questions') },
+        // { value: 'not_show', text: this.$t('qalist.select_not_in_recommendation') },
       ],
     };
   },
