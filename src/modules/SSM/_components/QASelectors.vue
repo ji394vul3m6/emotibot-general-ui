@@ -287,7 +287,7 @@ export default {
     checkImportStatus(id) {
       this.$api.queryOperationProgress(id).then((data) => {
         if (data.status === 'success') {
-          this.showCheckPop(this.$t('dictionary.result.success'));
+          this.showCheckPop(this.$t('error_msg.import_success'));
           this.$root.$emit('QASelector::fileimported');
         } else if (data.status === 'running') {
           this.checkTimer = setTimeout(() => {

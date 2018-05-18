@@ -609,6 +609,8 @@ export default {
     input_empty: '输入不可为空',
     auth_expire: '授权已失效，请重新登入',
     no_page_priv: '无法浏览此页面',
+
+    import_success: '导入成功',
   },
   http_status: {
     default: '伺服器错误',
