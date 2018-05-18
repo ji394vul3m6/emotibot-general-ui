@@ -228,6 +228,7 @@ export default {
     similar_score: '相似分数',
   },
   qalist: {
+    import_desc: '导入时将会覆盖所有问答库资料',
     total_row: '共 {num} 条',
     empty_label: '无标签',
     answer_label: '标签',
@@ -246,8 +247,8 @@ export default {
     keywords_enter: '请输入关键字',
     keyword_search: '查询',
     query: '查询',
-    batch_import: '批量导入',
-    batch_export: '批量导出',
+    batch_import: '备份还原',
+    batch_export: '资料备份',
     add_qa: '新增问答',
     delete: '删除',
     tags: '维度',

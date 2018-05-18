@@ -2,6 +2,9 @@
   <div id="qa-batch-import">
     <div id="upload-title"> {{ $t('qalist.select_import_file') }}</div>
     <div class="row">
+      {{$t('qalist.import_desc')}}
+    </div>
+    <div class="row">
       <text-button @click="showUploadFile" width="80px" >{{ $t('qalist.preview') }}</text-button>
       <!-- <div @click="showUploadFile" id="preview-button" class="text-button"> {{ $t('qalist.preview') }}</div> -->
       <input id="qa-file-inpput" style="display:none" type="file" @change="onFileChange">
