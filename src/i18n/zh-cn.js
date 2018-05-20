@@ -36,16 +36,19 @@ export default {
 
     modules: {
       statistic_dash: '统计概览',
+      statistic_analysis: '统计分析',
       statistic_daily: '日志管理',
       statistic_audit: '操作日志',
 
       qalist: '问答库',
       qatest: '对话测试',
       qa_chat_skill: '话术设置',
-      qa_tag: '标签管理',
-      qa_activity: '活动管理',
+      qa_label: '标签管理',
+      qa_rule: '规则管理',
 
+      robot_function: '机器人功能',
       robot_profile: '机器人形象',
+
       wordbank: '词库',
       task_engine: '任务引擎',
 
