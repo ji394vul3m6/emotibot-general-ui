@@ -27,7 +27,7 @@
       <div class="button-container" v-on:click="downloadTemplate()">
         <text-button>{{ $t("wordbank.download_batch_import_template") }}</text-button>
       </div>
-      <div class="button-container">
+      <div class="button-container" v-if="canImport">
         <text-button v-on:click="triggerUpload" id="file-selector">{{ $t("general.browse") }}</text-button>
         <span>{{ fileName }}</span>
         <input type="file" ref="uploadInput" v-on:change="changeFile()" accept=".xlsx">
@@ -228,12 +228,10 @@ export default {
   },
   computed: {
     canImport() {
-      // return auth.checkPrivilege(this.code, 'import');
-      return true;
+      return this.$checkPrivilege(this.code, 'import');
     },
     canExport() {
-      // return auth.checkPrivilege(this.code, 'export');
-      return true;
+      return this.$checkPrivilege(this.code, 'export');
     },
     isEmptyUploadRecord() {
       return this.currentFile === undefined && this.lastFile === undefined;

@@ -139,7 +139,9 @@ export default {
       return ret;
     },
     getAllCmds() {
-      const cmds = [];
+      // note: set normal commands in default, which can
+      // controller order of commands
+      const cmds = ['view', 'edit', 'create', 'delete', 'import', 'export'];
       const that = this;
       that.privilegeList.forEach((priv) => {
         const cmdList = priv.commands;

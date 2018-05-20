@@ -397,6 +397,11 @@ export default {
     link_label: '连结标签',
 
     rule_answer: '文本',
+    answer_type_text: '文字',
+    answer_type_cmd: '指令',
+    answer_cmd_content: '指令内容',
+    answer_text_content: '文本内容',
+
     rule_statue: '状态',
     rule_target: '检查对象',
     rule_target_std: '标准问题',

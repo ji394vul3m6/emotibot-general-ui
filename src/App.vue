@@ -136,7 +136,7 @@ export default {
             if (privKeys.indexOf(page.privCode) < 0) {
             // Not in privilege list
               return;
-            } else if (privileges[page.privCode].indexOf('view') < 0) {
+            } else if (privileges[page.privCode].indexOf('view') < 0 && privileges[page.privCode].indexOf('edit') < 0) {
             // In list, but has no view privilege
               return;
             }

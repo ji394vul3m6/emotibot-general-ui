@@ -87,31 +87,19 @@ function checkToken(token) {
   return this.$reqGet(`${TOKEN_PATH}/${token}`);
 }
 
-function checkAuth(context) {
-  const userInfoStr = localStorage.getItem('userInfo');
-  const session = context.$cookie.get('appid');
-  if (session && userInfoStr) {
-    context.$store.commit('setUserInfo', JSON.parse(userInfoStr));
-  } else {
-    this.clearAuth(context);
-  }
-  return context.$store.getters.isLogin;
-}
-
 function checkPrivilege(moduleCode, cmd) {
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-  const privilege = JSON.parse(userInfo.privilege);
-  const isAdmin = userInfo.user_type === 0;
+  const isAdmin = userInfo.user_type <= 1;
 
   if (isAdmin) {
     return true;
   }
 
+  const roleInfo = JSON.parse(localStorage.getItem('role'));
+  const privilege = roleInfo.privileges;
+
   if (Object.keys(privilege).indexOf(moduleCode) !== -1) {
-    if (privilege[moduleCode].length === 0) {
-      return true;
-    }
-    return privilege[moduleCode].indexOf(cmd) !== -1 || (privilege && privilege.length === 0);
+    return privilege[moduleCode].indexOf(cmd) !== -1;
   }
   return false;
 }
@@ -152,7 +140,6 @@ function getPrivModules() {
 const MyPlugin = {
   install(Vue) {
     Vue.prototype.$checkPrivilege = checkPrivilege;
-    Vue.prototype.$checkAuth = checkAuth;
 
     Vue.prototype.$login = login;
     Vue.prototype.$checkToken = checkToken;
