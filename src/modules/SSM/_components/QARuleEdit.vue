@@ -17,10 +17,18 @@
       </div>
       <div class="row">
         <span class='row-name'>{{ $t('qa_rule.rule_target') }}</span>
-        <label-switch :options="targetOption" v-model="ruleTarget"/>
+        <label-switch :options="targetOption" v-model="ruleTarget" @input="checkAnswer"/>
       </div>
       <div class="row">
         <span class='row-name'>{{ $t('qa_rule.rule_answer') }}</span>
+        <label-switch :options="answerOption" v-model="answerType" @input="checkAnswer"/>
+      </div>
+      <div class="row" v-if="answerType === 'cmd'">
+        <span class='row-name'>{{ $t('qa_rule.answer_cmd_content') }}</span>
+        <input v-model="cmd" @keyup="checkAnswer"/>
+      </div>
+      <div class="row" v-else>
+        <span class='row-name'>{{ $t('qa_rule.answer_text_content') }}</span>
         <textarea v-model="answer" @keyup="checkAnswer"/>
       </div>
       <div class="err-msg" v-if="isAnswerError">
@@ -70,9 +78,9 @@
         <span>{{ $t('qa_rule.link_label') }}</span>
       </div>
       <div class="text-area-wrapper">
-        <textarea rows="1"
+          <input class="label-input"
           :placeholder="$t('qa_rule.add_label')"
-          @keydown.13.stop="addLabel" v-model="labelAdded"/>
+          @keydown.13.stop="addLabel" v-model="labelAdded">
       </div>
       <div class="label-container">
         <div v-for="(label, idx) in labels" :key="idx" class="label-row">
@@ -109,9 +117,11 @@ export default {
       content: [],
       ruleTarget: 0,
       ruleType: 0,
+      cmd: '',
       answer: '',
       labels: [],
       labelAdded: '',
+      answerType: '',
 
       startDate: moment(new Date()).format('YYYY-MM-DD'),
       endDate: moment(new Date()).format('YYYY-MM-DD'),
@@ -169,6 +179,16 @@ export default {
         {
           val: 2,
           text: this.$t('qa_rule.rule_type_behind'),
+        },
+      ],
+      answerOption: [
+        {
+          val: 'text',
+          text: this.$t('qa_rule.answer_type_text'),
+        },
+        {
+          val: 'cmd',
+          text: this.$t('qa_rule.answer_type_cmd'),
         },
       ],
     };
@@ -243,12 +263,23 @@ export default {
         type: c.type,
         value: [c.value],
       }));
+
+      let answerObj = that.answer;
+      if (that.answerType === 'cmd') {
+        answerObj = {
+          type: 'cmd',
+          subType: that.cmd,
+          value: '',
+          data: [],
+        };
+      }
+
       if (that.checkAll()) {
         const ret = {
           name: that.name,
           rule: rules,
           target: that.ruleTarget,
-          answer: that.answer,
+          answer: answerObj,
           type: that.ruleType,
           begin_time: new Date(that.startDate),
           end_time: new Date(that.endDate),
@@ -279,10 +310,16 @@ export default {
     },
     checkAnswer() {
       const that = this;
+      let checkValue = '';
+      if (that.answerType === 'cmd') {
+        checkValue = that.cmd;
+      } else {
+        checkValue = that.answer;
+      }
 
-      if (that.answer === '') {
+      if (checkValue === '') {
         that.answerErrorType = 'empty';
-      } else if (that.answer.length > maxContentLength) {
+      } else if (checkValue.length > maxContentLength) {
         that.answerErrorType = 'length';
       } else {
         that.answerErrorType = '';
@@ -406,6 +443,15 @@ export default {
     overflow-y: hidden;
     border: 1px solid black;
     height: $default-line-height;
+    input {
+      display: block;
+      width: 100%;
+      height: 90%;
+      border: none; 
+      &:focus {
+        outline: none;
+      }
+    }
     textarea {
       resize: none;
       white-space: nowrap;
