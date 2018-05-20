@@ -89,7 +89,7 @@ function checkToken(token) {
 
 function checkPrivilege(moduleCode, cmd) {
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-  const isAdmin = userInfo.user_type <= 1;
+  const isAdmin = userInfo.type <= 1;
 
   if (isAdmin) {
     return true;
