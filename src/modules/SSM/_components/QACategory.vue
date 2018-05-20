@@ -22,7 +22,7 @@
 
 <script>
 import Vue from 'vue';
-import { mapGetters } from 'vuex';
+import { mapMutations, mapGetters } from 'vuex';
 // import auth from '@/auth';
 // import i18nutils from '@/utils/i18nUtil';
 // import CheckPop from '@/components/popForm/CheckPop';
@@ -80,6 +80,9 @@ export default {
     },
   },
   methods: {
+    ...mapMutations([
+      'setQAQueryOptions',
+    ]),
     updateCategory() {
       return this.$api.getCategories().then((updatedData) => {
         this.data = updatedData;
@@ -262,7 +265,7 @@ export default {
               const queryOptions = {
                 category_id: 0,
               };
-              this.$store.commit('setQAQueryOptions', queryOptions);
+              this.setQAQueryOptions(queryOptions);
             }
             this.deleteCategory(item);
           },

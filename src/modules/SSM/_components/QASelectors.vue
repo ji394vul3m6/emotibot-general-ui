@@ -97,7 +97,7 @@
 <script>
 // import i18nUtil from '@/utils/i18nUtil';
 // import CheckPop from '@/components/popForm/CheckPop';
-import { mapGetters } from 'vuex';
+import { mapMutations, mapGetters } from 'vuex';
 import DimensionSelector from '@/components/DimensionSelector';
 import DatetimePicker from '@/components/DateTimePicker';
 import pickerUtil from '@/utils/vue/DatePickerUtil';
@@ -146,28 +146,29 @@ export default {
     ...mapGetters([
       'qaTagTypes',
     ]),
+    storeCategories() {
+      if (this.category.categories === undefined) {
+        this.category.categories = JSON.parse(JSON.stringify(this.qaTagTypes));
+      }
+      return this.category.categories;
+    },
     showed() {
       return (this.dimensionShowed || this.commandShowed);
     },
     canEdit() {
-      // return auth.checkPrivilege('qalist', 'edit');
-      return true;
+      return this.$checkPrivilege('qalist', 'edit');
     },
     canCreate() {
-      // return auth.checkPrivilege('qalist', 'create');
-      return true;
+      return this.$checkPrivilege('qalist', 'create');
     },
     canDelete() {
-      // return auth.checkPrivilege('qalist', 'delete');
-      return true;
+      return this.$checkPrivilege('qalist', 'delete');
     },
     canExport() {
-      // return auth.checkPrivilege('qalist', 'export');
-      return true;
+      return this.$checkPrivilege('qalist', 'export');
     },
     canImport() {
-      // return auth.checkPrivilege('qalist', 'import');
-      return true;
+      return this.$checkPrivilege('qalist', 'import');
     },
     validInputString() {
       return this.startValidity && this.endValidity;
@@ -183,6 +184,9 @@ export default {
     },
   },
   methods: {
+    ...mapMutations([
+      'setQAQueryOptions',
+    ]),
     reset() {
       this.timeType = 'forever';
       this.keyword = '';
@@ -223,7 +227,7 @@ export default {
         cur_page: 0,
       };
       this.setSearchQueryOptions(updateQueryOptions);
-      this.$store.commit('setQAQueryOptions', updateQueryOptions);
+      this.setQAQueryOptions(updateQueryOptions);
 
       // const msg = i18nUtil.getLocaleMsgs(this.$i18n);
       const options = {
@@ -366,7 +370,7 @@ export default {
     updateDimenstion() {
       // parse selected dimension and update state in store
       const dimensions = [];
-      this.category.categories.forEach((element) => {
+      this.storeCategories.forEach((element) => {
         if (!element.allChecked) {
           const values = element.values;
           const allUnChecked = values.reduce((ret, v) => ret && !v.checked, true);
@@ -399,14 +403,11 @@ export default {
           this.dimensionShowed = false;
         }
 
-        this.$store.commit('setQAQueryOptions', { dimension: JSON.stringify(dimensions) });
+        this.setQAQueryOptions({ dimension: JSON.stringify(dimensions) });
       });
     },
     handleDimensionClick() {
-      if (this.category.categories === undefined) {
-        this.category.categories = JSON.parse(JSON.stringify(this.qaTagTypes));
-      }
-      const originCategories = JSON.parse(JSON.stringify(this.category.categories));
+      const originCategories = JSON.parse(JSON.stringify(this.storeCategories));
       this.$pop({
       // this.$root.$emit('showWindow', {
         component: DimensionSelector,
@@ -439,7 +440,7 @@ export default {
       });
 
       this.commandShowed = shouldShow;
-      this.$store.commit('setQAQueryOptions', updateQueryOptions);
+      this.setQAQueryOptions(updateQueryOptions);
     },
     handleCommandClick() {
       const originCommands = JSON.parse(JSON.stringify(this.commands));
@@ -528,7 +529,7 @@ export default {
 
       this.setSearchQueryOptions(updateQueryOptions);
 
-      this.$store.commit('setQAQueryOptions', updateQueryOptions);
+      this.setQAQueryOptions(updateQueryOptions);
 
       this.$root.$emit('QASelector::doQuery');
     },
@@ -544,7 +545,7 @@ export default {
       // });
       // this.updateCommands();
 
-      this.category.categories.forEach((element) => {
+      this.storeCategories.forEach((element) => {
         element.allChecked = true;
         const values = element.values;
 

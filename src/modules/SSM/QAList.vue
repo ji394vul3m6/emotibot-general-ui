@@ -62,7 +62,7 @@ export default {
       if (this.doQueryState) {
         this.refreshQAList();
       }
-      this.$store.commit('doQuery', false);
+      this.setDoQuery(false);
       return '';
     },
   },
@@ -106,10 +106,11 @@ export default {
     ...mapMutations({
       setDoQuery: 'doQuery',
       setTagTypes: 'setTagTypes',
+      setQAQueryOptions: 'setQAQueryOptions',
     }),
     resetSearchOptions() {
       const defaultOption = qaListUtil.genDefaultQueryOptions();
-      this.$store.commit('setQAQueryOptions', defaultOption);
+      this.setQAQueryOptions(defaultOption);
     },
     bindEvent() {
       // bind event
@@ -237,12 +238,12 @@ export default {
     handleTreeItemClicked(categoryID) {
       const updateOptions = qaListUtil.genDefaultQueryOptions();
       updateOptions.category_id = categoryID;
-      this.$store.commit('setQAQueryOptions', updateOptions);
+      this.setQAQueryOptions(updateOptions);
       this.$refs.selector.reset();
       this.queryQA();
     },
     hanldePageChanged(pageIndex) {
-      this.$store.commit('setQAQueryOptions', { cur_page: pageIndex - 1 });
+      this.setQAQueryOptions({ cur_page: pageIndex - 1 });
       this.queryQA();
     },
     requestAddQuestion(q) {
