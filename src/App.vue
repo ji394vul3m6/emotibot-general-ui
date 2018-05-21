@@ -107,6 +107,12 @@ export default {
       const component = route.components.default;
       if (codes.indexOf(component.privCode) < 0) {
         that.$router.push('error');
+        return;
+      }
+
+      const commands = privileges[component.privCode];
+      if (commands.indexOf('view') < 0 && commands.indexOf('edit') < 0) {
+        that.$router.push('error');
       }
     },
     startLoading(msg) {
@@ -149,6 +155,9 @@ export default {
             icon: `${page.icon}`,
           });
         });
+        if (modulePages.length <= 0 && (pageModule.path === undefined || pageModule.path === '')) {
+          return;
+        }
         pages.push({
           path: pageModule.path,
           name: moduleName,
