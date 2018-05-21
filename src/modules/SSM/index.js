@@ -1,4 +1,5 @@
 import QAList from './QAList';
+import QAGreeting from './QAGreeting';
 import QATest from './QATest';
 import QAChatSkill from './QAChatSkill';
 import QALabel from './QALabel';
@@ -9,6 +10,7 @@ export default {
   icon: 'white_ssm',
   pages: {
     QAList,
+    QAGreeting,
     QATest,
     QAChatSkill,
     QALabel,

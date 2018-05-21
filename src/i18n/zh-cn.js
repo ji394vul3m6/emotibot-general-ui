@@ -429,6 +429,11 @@ export default {
 
     add_label: '新增标签',
   },
+  qa_greeting: {
+    question: '问题',
+    answer: '答案',
+    load_fail: '载入失败',
+  },
   chat_skill: {
     group_basic: '基本话术',
     group_timeout: '答案失效话术',
@@ -506,6 +511,7 @@ export default {
     ssm: {
       module_name: '问答管理',
       qalist: '问答库',
+      qa_greeting: '寒暄库',
       qatest: '对话测试',
       qa_chat_skill: '话术设置',
       qa_label: '标签管理',
