@@ -54,6 +54,19 @@ export default {
 
       management: '权限管理',
     },
+    tools: {
+      encrypt: {
+        title: '加密工具',
+        button: '加密',
+        copy_button: '复制',
+        placeholder: {
+          encrypt_from: '输入欲加密的文字',
+          encrypt_to: '加密结果会显示在这里',
+        },
+        fail: '加密失败',
+        copied: '已复制加密文字',
+      },
+    },
   },
   login: {
     title: '用户登陆',
@@ -497,6 +510,7 @@ export default {
       module_name: '权限管理',
       role_manage: '角色管理',
       user_manage: '用户管理',
+      other_tools: '其他工具',
     },
     robot_setting: {
       module_name: '机器人设置',
