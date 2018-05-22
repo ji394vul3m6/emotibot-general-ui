@@ -3,7 +3,8 @@
     <div class="tooltip-container" v-if="showTooltip">
       <div class="tooltip"> {{ errorWording }} </div>
     </div>
-    <div class="tags-container" @click="$refs.taginput.focus()">
+    <div class="tags-container" @click="$refs.taginput.focus()"
+      :class="{'tags-area': area}">
       <span class="tags" v-for="(tag, idx) in selectedTags" :key="tag" :data-index="idx">
         <span>{{ tag }}</span><span class="tag-remove-btn" @click="removeTag(idx)">x</span>
       </span>
@@ -76,6 +77,12 @@ export default {
           DuplicateTagWording: '已存在重复标签',
           InvalidTagWording: '标签格式不符',
         };
+      },
+    },
+    area: {
+      type: Boolean,
+      default() {
+        return false;
       },
     },
   },
@@ -379,10 +386,20 @@ $row-height: 40px;
     overflow: scroll;
     white-space: nowrap;
 
+    &.tags-area {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      align-content: flex-start;
+      height: calc(#{$row-height} * 5);
+      overflow-y: scroll;
+    }
+
     .tags-input {
+      
       display: inline-block;
       border: 0;
-      height: $row-height;
       line-height: $row-height;
       padding: 0 5px;
 
@@ -394,10 +411,11 @@ $row-height: 40px;
     .tags {
       color: $tag-font-color;
       background-color: $tag-background-color;
-      margin: 0px 3px;
+      margin: 5px 3px;
       padding: 2px 5px;
       border-radius: 5px;
-
+      font-size: 16px;
+      line-height: 22px;
       &.tag-focus {
         background-color: darken($tag-background-color, 15%);
       }
