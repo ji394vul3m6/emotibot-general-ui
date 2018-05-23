@@ -21,6 +21,7 @@
           :allowTagErrorTooltip=false
           :origTags=origData.text
           @selectedTagsChanged=updateSynonyms
+          area
         ></tag-input>
         <div class="err-msg" v-if="!isSynonymsTooLong">{{ $t('wordbank.err_synonym_length', {length: maxTagLength}) }}</div>
         <div class="err-msg" v-if="!isSynonymsTooMany">{{ $t('wordbank.err_synonym_total_length', {length: maxTotalLength}) }}</div>
