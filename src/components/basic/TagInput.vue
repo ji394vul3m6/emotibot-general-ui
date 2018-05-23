@@ -12,7 +12,6 @@
         v-model="inputTag"
         @keydown="handleKeyDown()"
         @keyup.188="addTagByInput(inputTag)"
-        @keyup.space="addTagByInput(inputTag)"
         @keydown.delete="deleteTag($event)"
         @keydown.left="toPrevTag()"
         @keydown.right="toNextTag()"
