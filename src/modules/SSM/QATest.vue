@@ -82,8 +82,8 @@
 import DimensionSelector from '@/components/DimensionSelector';
 import TextButton from '@/components/basic/TextButton';
 import tagAPI from '@/api/tagType';
-import api from './_api/qatest';
-import listAPI from './_api/qalist';
+import api from '../FAQ/_api/qatest';
+import listAPI from '../FAQ/_api/qalist';
 
 export default {
   path: 'qatest',
@@ -248,6 +248,7 @@ $column-header-color: $table-header-background;
 $column-border-color: black;
 
 #qatest {
+  padding: 10px;
   .qa-test-filter {
     min-height: $row-height;
     line-height: $row-height;
@@ -291,7 +292,7 @@ $column-border-color: black;
     display: flex;
     align-items: stretch;
     // height: calc(100% - #{$row-height} - 20px);
-    height: calc(100% - 20px);
+    height: calc(100% - 50px);
 
     .qa-test-main {
       width: 80%;
@@ -404,8 +405,7 @@ $column-border-color: black;
     .qa-test-info {
       width: 20%;
       flex: 1 0 200px;
-      padding: 0 10px;
-      padding-bottom: 0px;
+      padding: 0 0 0 10px;
 
       display: flex;
       flex-direction: column;

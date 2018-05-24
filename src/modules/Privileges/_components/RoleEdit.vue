@@ -1,24 +1,28 @@
 <template>
   <div class="popForm">
-    <div class="row" :style="{width:width}">
-      <span>{{ $t('privileges.role_name') }}</span>
+    <div class="input-row" :style="{width:width}">
+      <div class="row-name">{{ $t('privileges.role_name') }}：</div>
       <template v-if="addMode">
-        <input v-model="name" :class="{error: isNameError}" @blur="checkName" ref="nameInput">
+        <input v-model="name" 
+          :class="{error: isNameError}"
+          @blur="checkName"
+          :placeholder="$t('privileges.placeholder_input_role_name')"
+          ref="nameInput">
         <span v-if="isNameError" class="err-msg">{{ $t('error_msg.input_empty') }}</span>
       </template>
       <template v-else>
         <span class='row-val'>{{name}}</span>
       </template>
     </div>
-    <div class="spliter"></div>
-    <div class="block">
-      <div class="row">
+    <div class="input-row" :style="{width:width}">
+      <div class="row-name">{{ $t('privileges.function_priv') }}：</div>
+      <div>
         <text-button main @click="setAll(true)">{{ $t('privileges.all_active') }}</text-button>
         <text-button @click="setAll(false)">{{ $t('privileges.all_deactive') }}</text-button>
       </div>
     </div>
     <div class="block">
-      <div class="row">
+      <div class="row header">
         <div class="cell name"></div>
         <div class="cell" v-for="cmd in cmds" :key="cmd">
           {{ $t(`privileges.actions.${cmd}`) }}
@@ -188,7 +192,7 @@ export default {
     } else {
       that.privileges = that.convertPrivilege(that.origData.privileges);
     }
-    that.width = `${100 + (that.cmds.length * 80)}px`;
+    that.width = `${100 + (that.cmds.length * 64)}px`;
 
     that.$on('validate', that.validate);
   },
@@ -198,25 +202,67 @@ export default {
 <style lang="scss" scoped>
 @import 'styles/variable.scss';
 
-.popForm {
-  @include popForm(0px);
-}
-.row {
-  .cell {
-    flex: 0 0 80px;
+$role-edit-font-size: 14px;
+$role-edit-err-size: 12px;
+$role-edit-err-color: $error-color;
+$role-edit-block-border-radius: 4px;
 
+.popForm {
+  padding: 0 25px;
+  font-size: $role-edit-font-size;
+
+  .input-row {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    &.name {
-      flex: 0 0 100px;
-      // text-overflow: ellipsis;
-      // overflow: hidden;
+    flex-direction: column;
+    font-size: $role-edit-font-size;
+    margin-bottom: 20px;
+    .row-name {
+      margin-bottom: 10px;
     }
-    .ignore {
-      border-top: 1px solid black;
-      width: 20px;
-      display: inline-block;
+    input {
+      @include general-input();
+    }
+    select {
+      @include general-select();
+    }
+    .err-msg {
+      color: $role-edit-err-color;
+      font-size: $role-edit-err-size;
+      margin-top: 10px;
+    }
+  }
+
+  .block {
+    width: 100%;
+    border: 1px solid #D9D9D9;
+    border-radius: $role-edit-block-border-radius;
+    display: flex;
+    flex-direction: column;
+    .row {
+      display: flex;
+      padding: 10px 0;
+
+      &.header {
+        padding: 5px 0;
+        flex: 0 0 50px;
+        display: flex;
+        align-items: center;
+      }
+
+      .cell {
+        flex: 0 0 64px;
+        text-align: center;
+      }
+      .name {
+        flex: 0 0 70px;
+        text-align: left;
+        margin-left: 10px;
+      }
+      .ignore { 
+        border-top: 1px solid black; 
+        width: 5px; 
+        display: inline-block; 
+      }
     }
   }
 }

@@ -16,6 +16,7 @@ http {
 
     log_format auth_header 'NGINX: [$time_local] "$request" from:"$remote_addr $http_x_forwarded_for" '
                       'ret:"code:$status size:$body_bytes_sent" info:[$http_referer][$http_user_agent]';
+    underscores_in_headers on;
 
     access_log /dev/null;
 
@@ -56,6 +57,30 @@ http {
         location /admin {
             proxy_pass http://${REMOTE_IP};
         }
+        location = /php/api/ApiKey/task_engine_app.php {
+            proxy_set_header Authorization $appid;
+            proxy_set_header X-Appid $appid;
+            proxy_set_header X-UserID $user_id;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_pass http://${SELF_IP}:8182/api/v1/task/apps;
+            # proxy_pass http://${SELF_IP}:8099/api/ApiKey/task_engine_app.php;
+        }
+        location = /php/api/ApiKey/task_engine_scenario.php {
+            proxy_set_header Authorization $appid;
+            proxy_set_header X-Appid $appid;
+            proxy_set_header X-UserID $user_id;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_pass http://${SELF_IP}:8182/api/v1/task/scenarios;
+            # proxy_pass http://${SELF_IP}:8099/api/ApiKey/task_engine_scenario.php;
+        }
+        location = /php/api/ApiKey/scenario_json_upload.php { 
+            proxy_set_header Authorization $appid; 
+            proxy_set_header X-Appid $appid; 
+            proxy_set_header X-UserID $user_id; 
+            proxy_set_header X-Real-IP $remote_addr; 
+            proxy_pass http://${SELF_IP}:8182/api/v1/task/scenarios-upload; 
+            # proxy_pass http://${SELF_IP}:8099/api/ApiKey/scenario_json_upload.php;
+        } 
         location /php {
             proxy_pass http://${REMOTE_IP};
         }
@@ -65,11 +90,81 @@ http {
         location /auth {
             proxy_pass http://${REMOTE_IP};
         }
-        location /BF {
+        location /login.html {
+            proxy_pass http://${SELF_IP}:8080;
+        }
+        location /BF/scenario {
             proxy_pass http://${REMOTE_IP};
         }
+        location /BF/login.html {
+            return 301 http://${SELF_IP}/login.html;
+        }
+        location = /BF_login {
+            proxy_pass http://${BF_IP}/login;
+        }
+        location /BF {
+            proxy_pass http://${BF_IP};
+        }
+        location /ai {
+            proxy_pass http://${BF_IP};
+        }
+        location /dal {
+            proxy_pass http://${BF_IP};
+        }
+        location /eqlq {
+            proxy_pass http://${BF_IP};
+        }
+        location /export {
+            proxy_pass http://${BF_IP};
+        }
+        location /ml_test {
+            proxy_pass http://${BF_IP};
+        }
+        location /sherlock {
+            proxy_pass http://${BF_IP};
+        }
+        location /sq {
+            proxy_pass http://${BF_IP};
+        }
+        location /tag {
+            proxy_pass http://${BF_IP};
+        }
+        location /upload {
+            proxy_pass http://${BF_IP};
+        }
+        location /ent_config_version {
+            proxy_pass http://${BF_IP};
+        }
+        location /frontend_visible {
+            proxy_pass http://${BF_IP};
+        }
+        location /config {
+            proxy_pass http://${BF_IP};
+        }
+        location /robots {
+            proxy_pass http://${BF_IP};
+        }
+        location /version {
+            proxy_pass http://${BF_IP};
+        }
+        location /chatlog {
+            proxy_pass http://${BF_IP};
+        }
+        location /solution_stage_status/set {
+            proxy_pass http://${BF_IP};
+        }
+        location /robot/template {
+            proxy_pass http://${BF_IP};
+        }
+        location /sentenceAccociation/sentenceAccociation {
+            proxy_pass http://${BF_IP};
+        }
+
         location /api {
-            proxy_pass http://${REMOTE_IP};
+            proxy_set_header X-AppID $appid;
+            proxy_set_header X-UserID $user_id;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_pass http://${SELF_IP}:8182;
         }
         location / {
             proxy_pass http://${SELF_IP}:8080;

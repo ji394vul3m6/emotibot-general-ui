@@ -1,10 +1,11 @@
 <template>
   <div class="search-input">
-    <icon icon-type="search"/>
     <input v-model="keyword"
       ref="input"
+      :placeholder="$t('general.search_placeholder')"
       @keypress.enter="$emit('search', keyword)"
       @keyup="$emit('input', keyword)">
+    <icon icon-type="search" :size=12 />
   </div>
 </template>
 
@@ -27,24 +28,34 @@ export default {
 <style lang="scss" scoped>
 @import "styles/variable";
 
+$input-dft-height: 28px;
+$input-dft-width: 160px;
+$input-radius: 4px;
+$input-dft-border: #D9D9D9;
+
 .search-input {
-  height: $default-line-height;
-  line-height: $default-line-height;
-  margin-right: $line-element-between-width;
-  border: 1px solid $input-border-color;
-  border-radius: $input-border-radius;
+  height: $input-dft-height;
+  width: $input-dft-width;
+  border-radius: $input-radius;
+  padding: 0 8px;
+
+  border: 1px solid $input-dft-border;
   background: white;
-  vertical-align: middle;
 
   display: flex;
+  align-items: center;
 
   input {
     box-sizing: border-box;
     display: inline-block;
+    width: 160px;
     border: none;
     &:focus {
       outline: none;
     }
+  }
+  ::placeholder {
+    color: #CCCCCC;
   }
 }
 </style>

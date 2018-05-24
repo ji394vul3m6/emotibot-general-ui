@@ -41,10 +41,13 @@ function popError(msg, info) {
 const MyPlugin = {
   install(Vue) {
     Vue.component(PopWindows.name, PopWindows);
+    let popCount = 0;
 
     Vue.prototype.$pop = popWindow;
     Vue.prototype.$popError = popError;
     Vue.prototype.$popCheck = popCheck;
+    Vue.prototype.$isPopOpen = () => popCount > 0;
+    Vue.prototype.$setPopCount = (c) => { popCount = c; };
   },
 };
 

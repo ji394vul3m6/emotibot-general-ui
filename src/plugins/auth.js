@@ -6,6 +6,13 @@ const LOGIN_PATH = '/auth/v2/login';
 const ENTERPRISE_PATH = '/auth/v2/enterprise';
 const TOKEN_PATH = '/auth/v2/token';
 
+const BF_LOGIN = '/BF_login';
+
+function LoginException(message) {
+  this.message = message;
+  this.name = 'LoginException';
+}
+
 function parseJwt(token) {
   const base64Url = token.split('.')[1];
   const base64 = base64Url.replace('-', '+').replace('_', '/');
@@ -80,6 +87,18 @@ function login(input) {
     const data = rsp.data;
     token = data.result.token;
     localStorage.setItem('token', token);
+  })
+  .then(() => that.$reqPost(BF_LOGIN, {
+    email: input.account,
+    password: md5(input.password),
+  }))
+  .then((rsp) => {
+    const data = rsp.data;
+    if (data.error_code !== 0) {
+      throw new LoginException('bf logging fail');
+    }
+    const accessToken = data.data.access_token;
+    that.$cookie.set('access_token', accessToken);
   });
 }
 

@@ -16,17 +16,20 @@ Object.keys(modules).forEach((moduleName) => {
   if (pageModule.path && pageModule.component) {
     routes.push({
       path: `/${pageModule.path}`,
-      name: pageModule.displayNameKey,
+      name: `${pageModule.displayNameKey}.module_name`,
       component: pageModule.component,
     });
   }
 
+  if (!pageModule.pages) {
+    return;
+  }
   Object.keys(pageModule.pages).forEach((pageName) => {
     const page = pageModule.pages[pageName];
     routes.push({
       path: `/${pageModule.pages[pageName].path}`,
       name: `${pageModule.displayNameKey}.${page.displayNameKey}`,
-      component: pageModule.pages[pageName],
+      component: page,
     });
   });
 });

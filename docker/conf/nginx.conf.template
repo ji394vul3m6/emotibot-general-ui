@@ -16,6 +16,7 @@ http {
 
     log_format auth_header 'NGINX: [$time_local] “$request”  auth:"$user_id@$http_x_appid" from:"$remote_addr $http_x_forwarded_for" '
                       'ret:"code:$status size:$body_bytes_sent" info:[$http_referer][$http_user_agent]';
+    underscores_in_headers on;
 #    access_log  /var/log/nginx/access.log  main;
     access_log /dev/null;
     rewrite_log on;
@@ -166,6 +167,74 @@ http {
             proxy_set_header X-UserID $user_id;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_pass http://127.0.0.1:8181;
+        }
+
+        location /BF/login.html {
+            return 301 /login.html;
+        }
+        location = /BF_login {
+            proxy_pass http://${ADMIN_BF_SERVER_URL}/login;
+        }
+        location /BF/scenario {
+            root   /build/dist;
+            index  index.html index.htm;
+        }
+        location /BF {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
+        location /ai {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
+        location /dal {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
+        location /eqlq {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
+        location /export {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
+        location /ml_test {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
+        location /sherlock {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
+        location /sq {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
+        location /tag {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
+        location /upload {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
+        location /ent_config_version {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
+        location /frontend_visible {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
+        location /config {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
+        location /robots {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
+        location /version {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
+        location /chatlog {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
+        location /solution_stage_status {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
+        location /robot {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
+        location /sentenceAccociation {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
         }
 
         # /Files will go here

@@ -7,10 +7,12 @@ export default {
     user_name: '用户名',
     privileges: '权限',
     user_count: '用户数',
+    function_priv: '功能权限',
 
     placeholder_user_name: '请输入用户名',
     placeholder_password: '请输入密码',
     placeholder_modify_password: '若要变更则输入密码',
+    placeholder_input_role_name: '请输入角色名',
 
     enterprise_admin: '企业管理员',
 
@@ -38,17 +40,20 @@ export default {
       statistic_dash: '统计概览',
       statistic_analysis: '统计分析',
       statistic_daily: '日志管理',
-      statistic_audit: '操作日志',
+      statistic_audit: '操作记录',
+
+      ssm: '常用标准问题',
+      qa_label: '标签管理',
 
       qalist: '问答库',
       qatest: '对话测试',
       qa_chat_skill: '话术设置',
-      qa_label: '标签管理',
       qa_rule: '规则管理',
 
-      robot_function: '机器人功能',
       robot_profile: '机器人形象',
-
+      robot_chat_skill: '话术设置',
+      robot_function: '技能设置',
+      robot_command: '指令设置',
       wordbank: '词库',
       task_engine: '任务引擎',
 
@@ -506,6 +511,15 @@ export default {
   },
   pages: {
     null: '',
+    status: {
+      module_name: '数据总览',
+      statistic_dash: '统计概览',
+    },
+    ssm: {
+      module_name: '问答管理',
+      ssm: '常用标准问题',
+      qa_label: '标签管理',
+    },
     privileges: {
       module_name: '权限管理',
       role_manage: '角色管理',
@@ -515,14 +529,16 @@ export default {
     robot_setting: {
       module_name: '机器人设置',
       robot_profile: '机器人形象',
-      robot_function: '机器人功能',
+      robot_function: '技能设置',
+      robot_chat_skill: '话术设置',
+      robot_command: '指令设置',
     },
     wordbank: {
       module_name: '词库',
       wordbank_list: '词库关系',
       wordbank_upload: '词库导入',
     },
-    ssm: {
+    faq: {
       module_name: '问答管理',
       qalist: '问答库',
       qa_greeting: '寒暄库',
@@ -533,11 +549,11 @@ export default {
       qa_learning: '自学习',
     },
     statistics: {
-      module_name: '统计图表',
-      statistic_dash: '统计概览',
+      module_name: '数据优化',
       statistic_analysis: '统计分析',
-      statistic_audit: '操作日志',
       statistic_daily: '日志管理',
+      statistic_audit: '操作记录',
+      statistic_learning: '负反馈',
     },
     task_engine: {
       module_name: '任务引擎',
@@ -547,6 +563,7 @@ export default {
     error: '',
   },
   general: {
+    chat_test: '对话测试',
     custom: '自订',
     yes: '是',
     no: '否',
@@ -579,6 +596,7 @@ export default {
     file: '档案',
     finish: '完成',
     folder: '目录',
+    search_placeholder: '请输入搜索内容',
   },
   dimension: {
     categories: {

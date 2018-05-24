@@ -1,19 +1,11 @@
-import QAList from './QAList';
-import QAGreeting from './QAGreeting';
-import QATest from './QATest';
-import QAChatSkill from './QAChatSkill';
-import QALabel from './QALabel';
-import QARule from './QARule';
+import List from './SSM';
+import Label from './QALabel';
 
 export default {
   displayNameKey: 'ssm',
-  icon: 'white_ssm',
+  icon: 'menu_ssm',
   pages: {
-    QAList,
-    QAGreeting,
-    QATest,
-    QAChatSkill,
-    QALabel,
-    QARule,
+    List,
+    Label,
   },
 };

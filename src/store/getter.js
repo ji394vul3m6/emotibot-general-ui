@@ -48,3 +48,6 @@ export const privilegeMap = (s) => {
 
 export const userID = s => s.userID;
 export const userRole = s => s.userRole;
+export const currentPage = s => s.curPage;
+export const isChatOpen = s => s.chatTest;
+export const userInfo = s => s.userInfo;

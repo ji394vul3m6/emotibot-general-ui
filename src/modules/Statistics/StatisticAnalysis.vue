@@ -468,6 +468,7 @@ $light-main: lighten($main-color, 15%);
 
 #statistic-analysis {
   .content {
+    position: relative;
     .radio-container {
       div {
         display: inline-block;

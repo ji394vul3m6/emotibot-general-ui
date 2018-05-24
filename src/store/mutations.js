@@ -27,8 +27,11 @@ export const state = {
   },
   privilegeList: [],
   pageInfos: {},
+  curPage: {},
   userID: '',
   userRole: {},
+  chatTest: false,
+  userInfo: {},
 };
 
 export const mutations = {
@@ -80,5 +83,31 @@ export const mutations = {
   },
   [types.SET_USER_ROLE]: (s, role) => {
     s.userRole = role;
+  },
+  [types.SET_CUR_PAGE]: (s, curPage) => {
+    s.curPage = curPage;
+  },
+  [types.TOGGLE_PAGE_CATEGORY]: (s, name) => {
+    const expandIdx = s.pageInfos.findIndex(page => page.name === name);
+    if (expandIdx < 0) {
+      return;
+    }
+    s.pageInfos[expandIdx].expanded = !s.pageInfos[expandIdx].expanded;
+    if (s.pageInfos[expandIdx].expanded) {
+      s.pageInfos.forEach((info, idx) => {
+        if (idx !== expandIdx) {
+          info.expanded = false;
+        }
+      });
+    }
+  },
+  [types.OPEN_CHAT_TEST]: (s) => {
+    s.chatTest = true;
+  },
+  [types.CLOSE_CHAT_TEST]: (s) => {
+    s.chatTest = false;
+  },
+  [types.SET_USER_INFO]: (s, info) => {
+    s.userInfo = info;
   },
 };

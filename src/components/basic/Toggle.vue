@@ -48,34 +48,37 @@ export default {
 
 <style lang="scss" scoped>
 @import 'styles/variable.scss';
+
+$toggle-active-color: #3d80ff;
+
 .toggle-base {
   cursor: pointer;
   display: inline-block;
-  width: 40px;
+  width: 28px;
   position: relative;
   background: $deactive-color;
-  height: 20px;
+  height: 14px;
   border-radius: 14px;
   padding: 3px;
 
   &.checked {
-    background: $active-color;
+    background: $toggle-active-color;
   }
   transition: background-color 500ms;
   input {
     visibility: hidden;
     &:checked + label {
-      left: 23px;
+      left: 15px;
     }
   }
   label {
     display: block;
     position: absolute;
-    width: 14px;
-    height: 14px;
+    width: 12px;
+    height: 12px;
     background: white;
-    top: 3px;
-    left: 3px;
+    top: 1px;
+    left: 1px;
     border-radius: 20px;
     user-select: none;
     cursor: pointer;

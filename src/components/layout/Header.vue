@@ -1,15 +1,15 @@
 <template>
 <div id="page-header">
   <div class="spliter"></div>
-  <div v-if="enterpriseList && enterpriseList.length > 0">
+  <!-- <div v-if="enterpriseList && enterpriseList.length > 0">
     <label-select
       :options="enterpriseList"
       :value="enterpriseID" valueKey="enterpriseID" color="white"
       @change="setEnterprise">
       <div class="enterprise_icon header"></div>  
     </label-select>
-  </div>
-  <div class="spliter"></div>
+  </div> -->
+  <!-- <div class="spliter"></div> -->
   <div v-if="robotList && robotList.length > 0">
     <label-select
       :options="robotList"
@@ -19,8 +19,14 @@
     </label-select>
   </div>
   <div class="spliter"></div>
+  <div class="chat-test" @click="showChatTest">
+    {{$t('general.chat_test')}}
+  </div>
+  <div class="spliter"></div>
+  <div class="user-name">{{ userInfo.display_name }}</div>
+  <div class="spliter"></div>
   <div class="logout" @click="logout">
-    <icon icon-type="white_logout"/>
+    <icon icon-type="white_logout" :size=16 />
   </div>
 </div>
 </template>
@@ -41,6 +47,7 @@ export default {
     'enterpriseID',
     'robotList',
     'enterpriseList',
+    'userInfo',
   ]),
   methods: {
     ...mapMutations([
@@ -49,6 +56,9 @@ export default {
     ]),
     logout() {
       this.$logout();
+    },
+    showChatTest() {
+      this.$root.$emit('open-chat-test');
     },
   },
   components: {
@@ -78,13 +88,18 @@ export default {
     display: flex;
     align-items: center;
     vertical-align: middle;
-    padding: 0 10px;
+    padding: 0 20px;
   }
 
   & > .spliter {
     height: $page-header-height;
     border-left: 1px solid black;
   }
+
+  & > .chat-test {
+    @include click-button();
+  }
+
   .logout {
     width: $page-header-height;
     justify-content: center;
