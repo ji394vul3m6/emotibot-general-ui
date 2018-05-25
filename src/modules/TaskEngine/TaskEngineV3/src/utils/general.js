@@ -1,6 +1,7 @@
 import * as cookie from 'tiny-cookie';
 import ErrorAlert from '../components/ErrorAlert';
 
+
 export default {
   getAppId() {
     const robotDataJson = JSON.parse(cookie.getRaw('robotDataJson'));
@@ -22,5 +23,9 @@ export default {
   },
   getLocalDateTimeIsoString() {
     return new Date().toISOString().slice(0, 19).replace('T', ' ');
+  },
+  composePath(childPath) {
+    const PAGE_PATH = '/task-engine-scenario-v3';
+    return `${PAGE_PATH}/${childPath}`;
   },
 };

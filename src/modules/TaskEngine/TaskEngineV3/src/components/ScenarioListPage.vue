@@ -1,14 +1,14 @@
 <template lang="html">
 <div id="scenario-list-page" class="scenario-list-page page">
   <div class="header-row">
-    <button class="btn-basic btn-border" @click="createNewScenario">{{$t("scenario_list_page.button_create_new_scenario")}}</button>
+    <button class="btn-basic btn-border" @click="createNewScenario">{{$t("task_engine_v3.scenario_list_page.button_create_new_scenario")}}</button>
     <input class="search_input border_bottom" type="text" name="key_word" 
-      :placeholder="$t('scenario_list_page.placeholder_search')"
+      :placeholder="$t('task_engine_v3.scenario_list_page.placeholder_search')"
     >
   </div>
   <div class="table">
     <div class="table-row table-row-title">
-      {{$t("scenario_list_page.scenario_list")}}
+      {{$t("task_engine_v3.scenario_list_page.scenario_list")}}
     </div>
     <template v-for="(scenario, index) in scenarioList">
       <div class="table-row table-row-content clickable">
@@ -83,7 +83,8 @@ export default {
                 const metadata = data.template.metadata;
                 const scenarioId = metadata.scenario_id;
                 this.updateInitialScenario(metadata).then(() => {
-                  this.$router.replace(`/scenario/${scenarioId}`);
+                  const path = general.composePath(`scenario/${scenarioId}`);
+                  this.$router.replace(path);
                 });
               } else {
                 general.popErrorWindow(this, this.i18n.error_msg.create_new_scenario_failed, '');
@@ -117,8 +118,9 @@ export default {
         general.popErrorWindow(this, 'saveScenario error', err.message);
       });
     },
-    editScenario(scenarioID) {
-      this.$router.replace({ path: `/scenario/${scenarioID}` });
+    editScenario(scenarioId) {
+      const path = general.composePath(`scenario/${scenarioId}`);
+      this.$router.replace(path);
     },
     deleteScenario(scenario) {
       const options = {
@@ -161,7 +163,7 @@ export default {
   beforeMount() {},
   mounted() {
     this.i18n = i18nUtils.getLocaleMsgs(this.$i18n);
-    this.appId = general.getAppId(),
+    this.appId = general.getAppId();
     this.listAllScenarios();
   },
 };

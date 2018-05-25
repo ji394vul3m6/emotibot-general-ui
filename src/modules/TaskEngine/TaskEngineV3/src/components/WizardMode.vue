@@ -1,8 +1,8 @@
 <template>
 <div id="wizard_mode">
   <div class="side-menu">
-    <div @click="routeTo('/task-engine-scenario-v3/scenarios')" class="clickable side-menu-item">{{$t("task_engine_3.wizard_mode.side_menu_tab.scenario_list")}}</div>
-    <div @click="routeTo('/task-engine-scenario-v3/entity')" class="clickable side-menu-item">{{$t("task_engine_3.wizard_mode.side_menu_tab.entity_list")}}</div>
+    <div @click="routeTo('/task-engine-scenario-v3/scenarios')" class="clickable side-menu-item">{{$t("task_engine_v3.wizard_mode.side_menu_tab.scenario_list")}}</div>
+    <div @click="routeTo('/task-engine-scenario-v3/entity')" class="clickable side-menu-item">{{$t("task_engine_v3.wizard_mode.side_menu_tab.entity_list")}}</div>
   </div>
   <div class="main-content">
     <router-view></router-view>
