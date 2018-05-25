@@ -1,4 +1,5 @@
 import TaskEngine from './TaskEngine';
+import TaskEngineV3 from './TaskEngineV3';
 import TaskEngineUpload from './TaskEngineUpload';
 
 export default {
@@ -6,6 +7,7 @@ export default {
   icon: 'menu_te',
   pages: {
     TaskEngine,
+    TaskEngineV3,
     TaskEngineUpload,
   },
 };
