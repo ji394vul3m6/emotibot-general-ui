@@ -6,7 +6,7 @@
       <input
         ref="scenarioName"
         v-model="scenarioName"
-        :placeholder="$t('scenario_edit_page.placeholder_name_the_scenario')"
+        :placeholder="$t('task_engine_v3.scenario_edit_page.placeholder_name_the_scenario')"
         @input="resizeScenarioNameInput">
       </input>
       <a>:</a>
@@ -47,11 +47,10 @@
 </template>
 
 <script>
-import axios from 'axios';
-import SkillEditPage from './SkillEditPage.vue';
-import TriggerPage from './TriggerPage.vue';
-import EntityCollectingPage from './EntityCollectingPage.vue';
-import ActionPage from './ActionPage.vue';
+import SkillEditPage from './SkillEditPage';
+import TriggerPage from './TriggerPage';
+import EntityCollectingPage from './EntityCollectingPage';
+import ActionPage from './ActionPage';
 import i18nUtils from '../utils/i18nUtil';
 import api from './_api/taskEngine';
 import general from '../utils/general';
@@ -65,7 +64,7 @@ export default {
     'entity-collecting-page': EntityCollectingPage,
     'action-page': ActionPage,
   },
-  data () {
+  data() {
     return {
       i18n: {},
       appId: '',
@@ -79,33 +78,33 @@ export default {
       pages: {},
       currentPage: 'triggerPage',
       idToNerMap: {},
-    }
+    };
   },
   computed: {
     currentSkillName: {
-      get: function () {
-        if (this.skills[this.currentSkillId] !== undefined){
+      get() {
+        if (this.skills[this.currentSkillId] !== undefined) {
           return {
-            'skillId': this.currentSkillId,
-            'skillName': this.skills[this.currentSkillId].skillName,
-          }
+            skillId: this.currentSkillId,
+            skillName: this.skills[this.currentSkillId].skillName,
+          };
         }
+        return {};
       },
-      set: function (newValue) {
+      set(newValue) {
         this.currentSkillId = newValue.skillId;
       },
     },
-    saveButtonText(){
-      if (this.currentPage === 'actionPage'){
+    saveButtonText() {
+      if (this.currentPage === 'actionPage') {
         return this.i18n.general.save_change;
-      }else{
-        return this.i18n.scenario_edit_page.button_save_and_next_step;
       }
+      return this.i18n.task_engine_v3.scenario_edit_page.button_save_and_next_step;
     },
   },
   watch: {
     skills: {
-      handler(newSkills, oldSkills) {
+      handler() {
         this.updateSkillNameList();
       },
       deep: true,
@@ -116,10 +115,10 @@ export default {
         if (this.skills[newSkillId] === undefined) return;
 
         // update pages
-        if (newSkillId === 'mainSkill'){
+        if (newSkillId === 'mainSkill') {
           this.pages = this.allPages;
           this.currentPage = 'triggerPage';
-        }else{
+        } else {
           // remove triggerPage
           const { triggerPage, ...newPages } = this.allPages;
           this.pages = newPages;
@@ -134,36 +133,34 @@ export default {
     },
   },
   methods: {
-    pageChange(key){
+    pageChange(key) {
       this.currentPage = key;
     },
-    updateSkill(newSkill){
+    updateSkill(newSkill) {
       this.skills[this.currentSkillId] = newSkill;
     },
-    updateSkillNameList(){
-      this.skillNameList = Object.keys(this.skills).map((skillId) => {
-        return {
-          'skillId': skillId,
-          'skillName': this.skills[skillId].skillName,
-        }
-      });
+    updateSkillNameList() {
+      this.skillNameList = Object.keys(this.skills).map(skillId => ({
+        skillId,
+        skillName: this.skills[skillId].skillName,
+      }));
     },
-    addNewSkill(skillName){
+    addNewSkill(skillName) {
       const skillId = this.$uuid.v1();
       this.skills[skillId] = {
-        "skillName": skillName,
-        "entityCollectorList": [],
-        "actionGroupList": [],
-        "relatedEntities": {
-          "relatedEntityCollectorList": [],
-          "relatedEntityMatrix": []
+        skillName,
+        entityCollectorList: [],
+        actionGroupList: [],
+        relatedEntities: {
+          relatedEntityCollectorList: [],
+          relatedEntityMatrix: [],
         },
       };
       this.updateSkillNameList();
       // route to new skill
       this.currentSkillId = skillId;
     },
-    updateIdToNerMap(idToNerMap){
+    updateIdToNerMap(idToNerMap) {
       // save new nerMap
       this.idToNerMap = idToNerMap;
       window.moduleData.idToNerMap = this.idToNerMap;
@@ -180,23 +177,23 @@ export default {
         general.popErrorWindow(this, 'loadScenario error', err.message);
       });
     },
-    resizeScenarioNameInput(){
-      this.$refs.scenarioName.style.width = ((this.scenarioName.length+1) * 16) + 'px'
+    resizeScenarioNameInput() {
+      this.$refs.scenarioName.style.width = `${(this.scenarioName.length + 1) * 16}px`;
     },
-    renderData(modulData){
+    renderData(modulData) {
       // propagate currentSkill
       this.skills = moduleData.skills;
-      const currentSkill = this.skills[this.currentSkillId]
+      const currentSkill = this.skills[this.currentSkillId];
       this.$refs.skillEditPage.$emit('propSkill', currentSkill);
       // propagate ner map (entity map)
       this.idToNerMap = moduleData.idToNerMap;
     },
-    saveScenario(content){
+    saveScenario(content) {
       return api.saveScenario(
         this.appId,
         this.scenarioId,
         JSON.stringify(content),
-        JSON.stringify(window.moduleDataLayouts)
+        JSON.stringify(window.moduleDataLayouts),
       ).then((data) => {
         window.moduleData = content;
         // TODO use toast instead
@@ -205,46 +202,46 @@ export default {
         general.popErrorWindow(this, 'saveScenario error', err.message);
       });
     },
-    toNextPage(){
+    toNextPage() {
       const keys = Object.keys(this.pages);
       const idx = keys.indexOf(this.currentPage) + 1;
-      if (idx < keys.length){
+      if (idx < keys.length) {
         this.currentPage = keys[idx];
       }
       this.saveScenarioContent();
     },
-    saveScenarioContent(){
-      if(!this.isValidScenario()){
+    saveScenarioContent() {
+      if (!this.isValidScenario()) {
         return;
       }
-      let content = {
-        "version": "2.0",
-        "setting": window.moduleData.setting,
-        "metadata": window.moduleData.metadata,
-        "msg_confirm": window.moduleData.msg_confirm,
-        "skills": this.skills,
-        "idToNerMap": this.idToNerMap,
+      const content = {
+        version: '2.0',
+        setting: window.moduleData.setting,
+        metadata: window.moduleData.metadata,
+        msg_confirm: window.moduleData.msg_confirm,
+        skills: this.skills,
+        idToNerMap: this.idToNerMap,
       };
       content.metadata.scenario_name = this.scenarioName;
       content.metadata.update_time = general.getLocalDateTimeIsoString();
-      this.saveScenario(content).then(()=>{
-        this.$vueOnToast.pop('success', this.i18n.scenario_edit_page.toast_save_success, '')
+      this.saveScenario(content).then(() => {
+        this.$vueOnToast.pop('success', this.i18n.task_engine_v3.scenario_edit_page.toast_save_success, '');
         this.registerNluTdeScenario(content);
         this.publishScenario(content);
       });
     },
-    registerNluTdeScenario(content){
+    registerNluTdeScenario(content) {
       Object.keys(content.skills).map((skillId) => {
         const skill = content.skills[skillId];
-        if(skill.entityCollectorList.length > 0){
+        if (skill.entityCollectorList.length > 0) {
           const data = scenarioConvertor.convertToRegistryData(skill, skillId);
           api.registerNluTdeScenario(data);
         }
       });
     },
-    publishScenario(content){
+    publishScenario(content) {
       const convertedContent = scenarioConvertor.convertToNodes(content);
-      this.saveScenario(convertedContent).then(()=>{
+      this.saveScenario(convertedContent).then(() => {
         api.publishScenario(this.appId, this.scenarioId).then((data) => {
           console.log('场景已发布');
           this.enableScenario();
@@ -253,16 +250,16 @@ export default {
         });
       });
     },
-    enableScenario(){
+    enableScenario() {
       api.switchScenario(this.appId, this.scenarioId, true).then((data) => {
         console.log('场景已开启');
       }, (err) => {
         general.popErrorWindow(this, 'enableScenario error', err.message);
-      });;
+      });
     },
-    isValidScenario(){
-      if(this.scenarioName == ''){
-        general.popErrorWindow(this, this.i18n.error_msg.please_enter_the_scenario_name, '')
+    isValidScenario() {
+      if (this.scenarioName == '') {
+        general.popErrorWindow(this, this.i18n.task_engine_v3.error_msg.please_enter_the_scenario_name, '');
         return false;
       }
       return true;
@@ -270,28 +267,28 @@ export default {
   },
   beforeMount() {
     this.appId = general.getAppId();
-    this.scenarioId = this.$route.params.id
+    this.scenarioId = this.$route.params.id;
     this.i18n = i18nUtils.getLocaleMsgs(this.$i18n);
     this.currentSkillId = 'mainSkill';
     this.loadScenario(this.scenarioId);
   },
   mounted() {
     this.allPages = {
-      'triggerPage': {
-        'name': this.i18n.scenario_edit_page.tab.trigger,
-        'component': 'trigger-page',
+      triggerPage: {
+        name: this.i18n.task_engine_v3.scenario_edit_page.tab.trigger,
+        component: 'trigger-page',
       },
-      'entityCollectingPage': {
-        'name': this.i18n.scenario_edit_page.tab.entity_collecting,
-        'component': 'entity-collecting-page',
+      entityCollectingPage: {
+        name: this.i18n.task_engine_v3.scenario_edit_page.tab.entity_collecting,
+        component: 'entity-collecting-page',
       },
-      'actionPage': {
-        'name': this.i18n.scenario_edit_page.tab.action,
-        'component': 'action-page',
+      actionPage: {
+        name: this.i18n.task_engine_v3.scenario_edit_page.tab.action,
+        component: 'action-page',
       },
     };
     this.pages = this.allPages;
     this.$root.$on('addNewSkill', this.addNewSkill);
   },
-}
+};
 </script>

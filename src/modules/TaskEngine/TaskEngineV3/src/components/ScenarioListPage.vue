@@ -35,8 +35,8 @@
 import i18nUtils from '../utils/i18nUtil';
 import scenarioConvertor from '../utils/scenarioConvertor';
 import general from '../utils/general';
-import CreateScenarioPop from './CreateScenarioPop.vue';
-import ConfirmPop from './ConfirmPop.vue';
+import CreateScenarioPop from './CreateScenarioPop';
+import ConfirmPop from './ConfirmPop';
 import taskEngineApi from './_api/taskEngine';
 
 
@@ -112,7 +112,7 @@ export default {
         metadata.scenario_id,
         JSON.stringify(editingContent),
         JSON.stringify(editingLayout),
-      ).then((data) => {
+      ).then(() => {
         console.log('场景已更新');
       }, (err) => {
         general.popErrorWindow(this, 'saveScenario error', err.message);
@@ -136,7 +136,7 @@ export default {
         callback: {
           ok: () => {
             taskEngineApi.deleteScenario(scenario.scenarioID).then((data) => {
-              if ('msg' in data && data.msg == 'Update success') {
+              if ('msg' in data && data.msg === 'Update success') {
                 this.listAllScenarios();
               } else {
                 general.popErrorWindow(this, 'deleteScenario error', 'failed to delete scenario.');
@@ -154,7 +154,7 @@ export default {
       this.$root.$emit('showWindow', options);
     },
     switchScenario(scenario) {
-      taskEngineApi.switchScenario(this.appId, scenario.scenarioID, scenario.enable).then((data) => {
+      taskEngineApi.switchScenario(this.appId, scenario.scenarioID, scenario.enable).then(() => {
       }, (err) => {
         general.popErrorWindow(this, 'switchScenario error', err.message);
       });

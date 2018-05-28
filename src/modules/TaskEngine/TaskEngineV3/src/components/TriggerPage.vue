@@ -51,35 +51,35 @@ export default {
       required: true,
     },
   },
-  data () {
+  data() {
     return {
       i18n: {},
       appId: '',
       triggerList: JSON.parse(JSON.stringify(this.initialTriggerList)),
       intentList: [],
       intentOptionList: [],
-    }
+    };
   },
   computed: {},
   watch: {
     triggerList() {
       this.$emit('update', this.triggerList);
-    }
+    },
   },
   methods: {
-    addNewTrigger(){
+    addNewTrigger() {
       this.triggerList.push(null);
     },
-    deleteThisTrigger(index){
+    deleteThisTrigger(index) {
       this.triggerList.splice(index, 1);
     },
-    isTriggerEditable(trigger){
-      if (trigger === null || trigger.editable === false || trigger.intent_name === null){
+    isTriggerEditable(trigger) {
+      if (trigger === null || trigger.editable === false || trigger.intent_name === null) {
         return false;
       }
       return true;
     },
-    checkIntent(intentName){
+    checkIntent(intentName) {
       intentEngineApi.checkIntent(this.appId, intentName).then((data) => {
         console.log('checkIntent:');
         console.log(data);
@@ -87,7 +87,7 @@ export default {
         general.popErrorWindow(this, 'checkIntent error', err.message);
       });
     },
-    loadIntentOptionList(){
+    loadIntentOptionList() {
       intentEngineApi.listIntents(this.appId).then((data) => {
         this.intentList = data.content;
         this.intentOptionList = [
@@ -102,11 +102,11 @@ export default {
           //   'editable': false
           // },
         ];
-        data.content.forEach((op)=>{
-          let object = {
-            'intent_name': op.intent_name,
-            'type': 'intent_engine',
-            'editable': true
+        data.content.forEach((op) => {
+          const object = {
+            intent_name: op.intent_name,
+            type: 'intent_engine',
+            editable: true,
           };
           this.intentOptionList.push(object);
         });
@@ -122,8 +122,8 @@ export default {
         data: {
           editor_type: 'add_new_intent',
           app_id: general.getAppId(),
-          intent_id: "",
-          intent_name: "",
+          intent_id: '',
+          intent_name: '',
           sentences: [],
         },
         ok_msg: this.$t('general.add'),
@@ -132,16 +132,16 @@ export default {
           ok: (newIntent) => {
             this.updateIntent(newIntent);
             const trigger = {
-              'intent_name': newIntent.intent_name,
-              'type': 'intent_engine',
-              'editable': true,
+              intent_name: newIntent.intent_name,
+              type: 'intent_engine',
+              editable: true,
             };
             this.triggerList[triggerIndex] = trigger;
           },
         },
         customPopContentStyle: {
-          width: "70%",
-          height: "70%",
+          width: '70%',
+          height: '70%',
           'min-width': '700px',
           'min-height': '500px',
         },
@@ -169,8 +169,8 @@ export default {
           },
         },
         customPopContentStyle: {
-          width: "70%",
-          height: "70%",
+          width: '70%',
+          height: '70%',
           'min-width': '700px',
           'min-height': '500px',
         },
@@ -186,21 +186,21 @@ export default {
         },
         cancel_msg: this.$t('general.close'),
         customPopContentStyle: {
-          width: "70%",
-          height: "70%",
+          width: '70%',
+          height: '70%',
           'min-width': '700px',
           'min-height': '500px',
         },
       };
       this.$root.$emit('showWindow', options);
     },
-    updateIntent(intent){
-      intent.sentences = intent.sentences.map((sentence)=>{
+    updateIntent(intent) {
+      intent.sentences = intent.sentences.map((sentence) => {
         sentence.sentenceid = this.$uuid.v1();
         return sentence;
       });
       intentEngineApi.updateIntent(this.appId, JSON.stringify([intent])).then((data) => {
-        if (data.code !== 0){
+        if (data.code !== 0) {
           general.popErrorWindow(this, 'updateIntent error', `code: ${data.code}`);
         }
         this.loadIntentOptionList();
@@ -208,9 +208,9 @@ export default {
         general.popErrorWindow(this, 'updateIntent error', err.message);
       });
     },
-    deleteIntent(intentName){
+    deleteIntent(intentName) {
       intentEngineApi.deleteIntent(this.appId, intentName).then((data) => {
-        if (data.code !== 0){
+        if (data.code !== 0) {
           general.popErrorWindow(this, 'deleteIntent error', `code: ${data.code}`);
         }
         this.loadIntentOptionList();
@@ -218,7 +218,7 @@ export default {
         general.popErrorWindow(this, 'deleteIntent error', err.message);
       });
     },
-    rerender(){
+    rerender() {
       this.triggerList = JSON.parse(JSON.stringify(this.initialTriggerList));
     },
   },
@@ -234,5 +234,5 @@ export default {
   activated() {
     this.rerender();
   },
-}
+};
 </script>

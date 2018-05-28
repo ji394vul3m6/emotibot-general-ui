@@ -52,7 +52,7 @@ export default {
     },
     toPage(page) {
       this.setCurrentPage(page);
-      this.$router.push({ path: page.path });
+      this.$router.push({ path: `/${page.path}` });
     },
     childrenStyle(category) {
       let height = 0;
