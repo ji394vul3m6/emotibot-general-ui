@@ -172,10 +172,6 @@ export default {
     },
     reloadChartWithRange(info, type) {
       const that = this;
-      if (info.startDate < that.earliestDate) {
-        info.startDate = that.earliestDate;
-        that.$refs[`${info.code}_start_picker`][0].$emit('setDate', info.startDate);
-      }
       if (info.startDate > info.endDate) {
         if (type === 'start') {
           info.endDate = info.startDate;

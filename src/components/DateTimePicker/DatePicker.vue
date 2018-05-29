@@ -215,9 +215,9 @@ export default {
     };
   },
   watch: {
-    value(value) {
-      this.setValue(value);
-    },
+    // value(value) {
+    //   this.setValue(value);
+    // },
     openDate() {
       this.setPageDate();
     },
@@ -498,7 +498,19 @@ export default {
       return true;
     },
     setDate(timestamp) {
-      const date = new Date(timestamp);
+      // validate date constraints
+      let date = new Date(timestamp);
+      if ((this.disabled) && (this.disabled.to || this.disabled.from)) {
+        if (date < this.disabled.to) {
+          date = this.disabled.to;
+          this.setValue(date);
+        }
+
+        if (date > this.disabled.from) {
+          date = this.disabled.from;
+          this.setValue(date);
+        }
+      }
       this.selectedDate = new Date(date);
       this.setPageDate(date);
       this.$emit('input', new Date(date));
@@ -923,6 +935,7 @@ export default {
         this.selectedDate = null;
         return;
       }
+      this.displayDate = moment(date).format('YYYY/MM/DD');
       this.selectedDate = dateCopy;
       this.setPageDate(dateCopy);
     },
@@ -975,7 +988,11 @@ export default {
     },
   },
   mounted() {
-    this.init();
+    const that = this;
+    that.init();
+    that.$on('setDate', (val) => {
+      that.setValue(val);
+    });
   },
 };
 </script>
