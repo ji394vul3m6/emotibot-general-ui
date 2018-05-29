@@ -236,6 +236,9 @@ http {
         location /sentenceAccociation {
             proxy_pass http://${ADMIN_BF_SERVER_URL};
         }
+        location /dimension {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
 
         # /Files will go here
         location / {
