@@ -1,4 +1,4 @@
-FROM docker-reg.emotibot.com.cn:55688/general-node-base:20180513-9968d96 AS build-env
+FROM docker-reg.emotibot.com.cn:55688/general-node-base:20180530-d11d8a1 AS build-env
 
 # ADD . build
 ADD build build/build
