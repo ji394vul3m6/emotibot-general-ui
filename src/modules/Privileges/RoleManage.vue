@@ -1,41 +1,43 @@
 <template>
   <div id='role-manage'>
-    <div class="actions row">
-      <text-button main @click="popAddRole">{{$t('general.add')}}{{$t('privileges.role')}}</text-button>
-      <search-input v-model="keyword"></search-input>
-    </div>
-    <div class="header row">
-      <!-- <div class="check"></div> -->
-      <div class="name">{{$t('privileges.role_name')}}</div>
-        <div class="count">{{$t('privileges.user_count')}}</div>
-      <!-- <div class="privileges">{{$t('privileges.privileges')}}</div> -->
-      <div class="actions">{{$t('general.actions')}}</div>
-    </div>
-    <div class="lists">
-      <template v-if="roles.length > 0">
-      <div v-for="role in roles" v-if="role.name.toLowerCase().indexOf(keyword.toLowerCase()) !== -1" :key="role.id" class='role-row row'>
-        <!-- <div class="check">
-          <input type="checkbox">
-        </div> -->
-        <div class="name">{{role.name}}</div>
-        <div class="count">{{role.user_count}}</div>
-        <div class="actions">
-          <div class="button" @click="popEditRole(role)">
-            <div>{{$t('general.edit')}}</div>
-          </div>
-          /
-          <div class="button" @click="deleteRole(role)"
-            :class="{disable: role.user_count > 0}">
-            <div>{{$t('general.delete')}}</div>
-          </div>
-        </div>
+    <div class="card h-fill">
+      <div class="actions row">
+        <text-button button-type="primary" @click="popAddRole">{{$t('general.add')}}{{$t('privileges.role')}}</text-button>
+        <search-input v-model="keyword"></search-input>
       </div>
-      </template>
-      <template v-else>
-        <div class='role-row row empty'>
-          {{ $t('privileges.no_roles') }}
+      <div class="header row">
+        <!-- <div class="check"></div> -->
+        <div class="name">{{$t('privileges.role_name')}}</div>
+          <div class="count">{{$t('privileges.user_count')}}</div>
+        <!-- <div class="privileges">{{$t('privileges.privileges')}}</div> -->
+        <div class="actions">{{$t('general.actions')}}</div>
+      </div>
+      <div class="lists">
+        <template v-if="roles.length > 0">
+        <div v-for="role in roles" v-if="role.name.toLowerCase().indexOf(keyword.toLowerCase()) !== -1" :key="role.id" class='role-row row'>
+          <!-- <div class="check">
+            <input type="checkbox">
+          </div> -->
+          <div class="name">{{role.name}}</div>
+          <div class="count">{{role.user_count}}</div>
+          <div class="actions">
+            <div class="button" @click="popEditRole(role)">
+              <div>{{$t('general.edit')}}</div>
+            </div>
+            /
+            <div class="button" @click="deleteRole(role)"
+              :class="{disable: role.user_count > 0}">
+              <div>{{$t('general.delete')}}</div>
+            </div>
+          </div>
         </div>
-      </template>
+        </template>
+        <template v-else>
+          <div class='role-row row empty'>
+            {{ $t('privileges.no_roles') }}
+          </div>
+        </template>
+      </div>
     </div>
   </div>
 </template>
