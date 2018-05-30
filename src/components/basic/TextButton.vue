@@ -23,10 +23,7 @@ export default {
     buttonType: {
       type: String,
       default: 'default',
-      validator: (value) => {
-        console.log(value);
-        return buttonTypes.indexOf(value) > -1;
-      },
+      validator: value => buttonTypes.indexOf(value) > -1,
     },
     width: {
       type: String,
@@ -51,11 +48,6 @@ export default {
     icon: Icon,
   },
   method: {
-  },
-  watch: {
-    buttonType(val) {
-      console.log(val);
-    },
   },
   computed: {
     primary() {

@@ -1,6 +1,6 @@
 <template>
   <div :class="{fill: fill}">
-    <text-button button-type="primary" :width="fill ? '100%':auto" :height=height disabled v-if="state === 'loading'">
+    <text-button button-type="disable" :width="fill ? '100%':auto" :height=height v-if="state === 'loading'">
       <slot name="loading"></slot>
     </text-button>
     <text-button v-else-if="state === 'init' " button-type="primary" :width="fill ? '100%':auto" :height=height :disabled="disabled" @click="click">
