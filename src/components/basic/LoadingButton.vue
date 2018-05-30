@@ -1,12 +1,12 @@
 <template>
   <div :class="{fill: fill}">
-    <text-button main :fill=fill :height=height disabled v-if="state === 'loading'">
+    <text-button button-type="primary" :width="fill ? '100%':auto" :height=height disabled v-if="state === 'loading'">
       <slot name="loading"></slot>
     </text-button>
-    <text-button v-else-if="state === 'init' " main :fill=fill :height=height :disabled="disabled" @click="click">
+    <text-button v-else-if="state === 'init' " button-type="primary" :width="fill ? '100%':auto" :height=height :disabled="disabled" @click="click">
       <slot name="init"></slot>
     </text-button>
-    <text-button v-else main :disabled="disabled" :fill=fill :height=height @click="click">
+    <text-button v-else button-type="primary" :disabled="disabled" :width="fill ? '100%':auto" :height=height @click="click">
       <slot name="finish"></slot>
     </text-button>
   </div>
