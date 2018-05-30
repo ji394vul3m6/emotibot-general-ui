@@ -15,16 +15,18 @@
 <script>
 import Icon from './Icon';
 
+const buttonTypes = ['default', 'fill', 'primary', 'disable'];
+
 export default {
   name: 'text-button',
   props: {
-    main: {
-      type: Boolean,
-      default: false,
-    },
-    fill: {
-      type: Boolean,
-      default: false,
+    buttonType: {
+      type: String,
+      default: 'default',
+      validator: (value) => {
+        console.log(value);
+        return buttonTypes.indexOf(value) > -1;
+      },
     },
     width: {
       type: String,
@@ -38,25 +40,39 @@ export default {
       type: String,
       default: '',
     },
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
     color: {
       type: String,
       default: '',
     },
-    // TODO disabled
+  },
+  mounted() {
   },
   components: {
     icon: Icon,
   },
   method: {
   },
+  watch: {
+    buttonType(val) {
+      console.log(val);
+    },
+  },
   computed: {
+    primary() {
+      return this.buttonType === 'primary';
+    },
+    fill() {
+      return this.buttonType === 'fill';
+    },
+    default() {
+      return this.buttonType === 'default';
+    },
+    disabled() {
+      return this.buttonType === 'disable';
+    },
     classObj() {
       const ret = {
-        main: this.main,
+        primary: this.primary,
         'icon-button': this.showIcon,
         fill: this.fill,
         disabled: this.disabled,
@@ -90,7 +106,19 @@ export default {
 $btn-dft-height: 28px;
 $btn-dft-width: 90px;
 $btn-radius: 4px;
+
+$btn-dft-bg-color: white;
 $btn-dft-color: #666666;
+$btn-dft-border-color: #e9e9e9;
+
+$btn-fill-bg-color: #4b4b64;
+$btn-fill-color: #ffffff;
+
+$btn-disable-bg-color: #f7f7f7;
+$btn-disable-color: #cccccc;
+
+$btn-primary-bg-color: #1875f0;
+$btn-primary-color: #ffffff;
 
 .text-button {
   width: $btn-dft-width;
@@ -101,13 +129,13 @@ $btn-dft-color: #666666;
   align-items: center;
   border-radius: $btn-radius;
   padding: 5px 10px;
-  color: $btn-dft-color;
+  color: $btn-dft-bg-color;
 
   @include click-button();
 
-  background: white;
-  color: black;
-  border: 1px solid $input-border-color;
+  background: $btn-dft-bg-color;
+  color: $btn-dft-color;
+  border: 1px solid $btn-dft-border-color;
   box-sizing: border-box;
   white-space: nowrap;
 
@@ -128,14 +156,14 @@ $btn-dft-color: #666666;
   }
 
   &.disabled {
-    opacity: 0.2;
-    cursor: no-drop;
-    pointer-events: none;
+    background: $btn-disable-bg-color;
+    color: $btn-disable-color;
+    user-select: none;
+    cursor: not-allowed;
   }
-
-  &.main {
-    background: $app-active-color;
-    color: $button-blue-text;
+  &.primary {
+    background: $btn-primary-bg-color;
+    color: $btn-primary-color;
     border: none;
     &:hover {
       background: $button-blue-hover;
@@ -145,12 +173,8 @@ $btn-dft-color: #666666;
     }
   }
   &.fill {
-    width: 100%;
-    margin: 0;
-    .button-content {
-      width: 100%;
-      text-align: center;
-    }
+    background: $btn-fill-bg-color;
+    color: $btn-fill-color;
   }
   &.custom-width {
     margin: 0;
