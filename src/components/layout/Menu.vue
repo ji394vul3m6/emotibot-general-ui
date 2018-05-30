@@ -96,7 +96,7 @@ $menu-active-color: #3D80FF;
     }
     &:not(.expanded) {
       .expand-icon {
-        transform: rotate(-90deg);
+        transform: rotate(180deg);
       }
     }
     .row {
