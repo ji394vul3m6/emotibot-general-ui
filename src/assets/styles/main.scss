@@ -48,14 +48,39 @@ html, body {
     padding: 0px;
   }
   & > .app-body {
-    background: white;
-    border-radius: 5px;
-    // padding: 10px;
-    height: 100%;
-    box-shadow: 0px 0px 5px rgba(102,102,102, 0.08);
     &:not(.iframe) {
-      @include auto-overflow();
+      .card {
+        @include auto-overflow();
+      }
     }
+    .card {
+      background: white;
+      border-radius: 5px;
+      box-shadow: 0px 0px 5px rgba(102,102,102, 0.08);
+
+      &.h-fill {
+        height: 100%;
+      }
+      &.h-half {
+        height: 50%;
+      }
+      &.h-auto {
+        height: auto;
+      }
+      &.w-fill {
+        width: 100%;
+      }
+      &.w-half {
+        width: 50%;
+      }
+      &.w-auto {
+        width: auto;
+      }
+    }
+    // background: white;
+    // border-radius: 5px;
+    // box-shadow: 0px 0px 5px rgba(102,102,102, 0.08);
+    height: 100%;
     &.iframe {
       padding: 0px;
       height: 100%;
