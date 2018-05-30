@@ -26,7 +26,7 @@ export const state = {
     },
   },
   privilegeList: [],
-  pageInfos: {},
+  pageInfos: [],
   curPage: {},
   userID: '',
   userRole: {},
@@ -86,6 +86,14 @@ export const mutations = {
   },
   [types.SET_CUR_PAGE]: (s, curPage) => {
     s.curPage = curPage;
+    // current page may set before all page info is set
+    s.pageInfos.forEach((info) => {
+      if (info.pages.indexOf(curPage) >= 0) {
+        info.expanded = true;
+      } else {
+        info.expanded = false;
+      }
+    });
   },
   [types.TOGGLE_PAGE_CATEGORY]: (s, name) => {
     const expandIdx = s.pageInfos.findIndex(page => page.name === name);
@@ -97,6 +105,9 @@ export const mutations = {
       s.pageInfos.forEach((info, idx) => {
         if (idx !== expandIdx) {
           info.expanded = false;
+        }
+        if (info.pages.indexOf(s.curPage) >= 0) {
+          info.expanded = true;
         }
       });
     }
