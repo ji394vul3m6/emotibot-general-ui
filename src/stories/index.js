@@ -1,11 +1,11 @@
 // import Vue from 'vue';
 
 import { storiesOf } from '@storybook/vue';
+import { withKnobs } from '@storybook/addon-knobs';
 
-import TextButton from '../components/basic/TextButton';
+import TextButtonStory from './TextButton';
 
-storiesOf('TextButton', module)
-  .add('Normal', () => ({
-    components: { TextButton },
-    template: '<text-button :rounded="true">TextButton</text-button>',
-  }));
+let textButtonStory = storiesOf('Textbutton', module).addDecorator(withKnobs);
+TextButtonStory.forEach((story) => {
+  textButtonStory = textButtonStory.add(story.name, story.func);
+});
