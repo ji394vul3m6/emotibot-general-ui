@@ -102,6 +102,17 @@ $success-color: #5cd29d;
   user-select: none;
 }
 
+@mixin button-hover-opacity(){
+  &:hover {
+    opacity: 0.9;
+  }
+}
+@mixin button-active-background($color) {
+  &:active {
+    background: darken($color, 10%); 
+  }
+}
+
 @mixin general-input {
   background: white;
   border-radius: $general-input-radius;

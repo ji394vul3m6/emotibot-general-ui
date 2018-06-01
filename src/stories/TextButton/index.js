@@ -13,6 +13,7 @@ export default [
         fill: '一般按鈕',
         primary: '主要按鈕',
         disable: '失效按鈕',
+        error: '錯誤按鈕',
       };
       const buttonType = select('按鈕類型', buttonTypes, 'default');
       const template = `
