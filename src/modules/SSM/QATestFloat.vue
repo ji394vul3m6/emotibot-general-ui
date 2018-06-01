@@ -13,7 +13,7 @@
           <span>{{ $t('qatest.sentence_analysis') }}</span>
           <toggle v-model="showAnalysis"></toggle>
         </div>
-        <div class="close-button">
+        <div class="close-button" @click="closeQATest">
           <icon icon-type="close" :size=16 />
         </div>
       </div>
@@ -107,6 +107,9 @@ export default {
     });
   },
   methods: {
+    closeQATest() {
+      this.$root.$emit('close-chat-test');
+    },
     selectDimension() {
       this.$pop({
         component: DimensionSelector,
@@ -286,6 +289,7 @@ $chat-info-bg: #eeeeee;
     }
     .close-button {
       padding: 20px;
+      @include click-button();
     }
   }
 }
