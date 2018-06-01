@@ -366,9 +366,6 @@ $column-border-color: black;
                   border-radius: 10px;
                   padding: 5px 10px;
                   white-space: pre-line;
-                  & > span {
-                    line-height: 1.2em;
-                  }
 
                   a:visited {
                     color: blue;
