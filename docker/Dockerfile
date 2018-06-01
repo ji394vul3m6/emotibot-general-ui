@@ -20,6 +20,7 @@ RUN apk update --no-cache \
 
 # FIXME: since chroot cause basic cli not found, copy one of them to make command work.
 RUN mkdir -p /php/lib /php/usr/lib /php/bin /php/usr/bin /php/dev
+WORKDIR /php
 RUN for n in `ls -L /lib` ; do if [ ! -d /lib/$n ]; then cp /lib/$n /php/lib/ ; fi ;  done
 RUN for n in `ls -L /usr/lib` ; do if [ ! -d /usr/lib/$n ]; then cp /usr/lib/$n /php/usr/lib/ ; fi ;  done
 RUN for n in `ls -L /bin` ; do if [ ! -d /bin/$n ]; then cp /bin/$n /php/bin/ ; fi ;  done
