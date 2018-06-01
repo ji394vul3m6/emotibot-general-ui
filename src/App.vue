@@ -34,6 +34,8 @@ import PageHeader from '@/components/layout/Header';
 import PageMenu from '@/components/layout/Menu';
 import QATest from '@/modules/SSM/QATest';
 
+const defaultPath = '/statistic-dash';
+
 export default {
   name: 'app',
   components: {
@@ -103,7 +105,11 @@ export default {
     checkPrivilege() {
       const that = this;
       if (that.$route.matched.length <= 0) {
-        that.$router.push('error');
+        if (that.$route.fullPath === '/') {
+          that.$router.push(defaultPath);
+        } else {
+          that.$router.push('error');
+        }
         return;
       }
       if (that.userInfo.type < 2) {
@@ -117,11 +123,7 @@ export default {
         window.location = '/login.html?invalid=1';
       }
 
-      // const viewCode = codes.find(code => privileges[code].indexOf('view') >= 0);
-      // const routes = this.$router.options.routes;
-      // const target = routes.find(route => route.component.privCode === viewCode);
-
-      const route = this.$route.matched[0];
+      const route = that.$route.matched[0];
       if (!route.components.default) {
         return;
       }
@@ -147,8 +149,6 @@ export default {
       const that = this;
       const pages = [];
       const privileges = that.userRole.privileges || {};
-      console.log(that.userRole);
-      console.log(privileges);
       const privKeys = Object.keys(privileges);
       Object.keys(modules).forEach((moduleName) => {
         let moduleExpand = false;
