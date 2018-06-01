@@ -45,7 +45,7 @@
             <div>[{{ $t('qatest.intent') }}]：{{ data.analysis.intent }}</div>
             <div>[{{ $t('qatest.emotion') }}]：{{ data.analysis.emotion }}</div>
             <div>[{{ $t('qatest.module') }}]：{{ data.analysis.module }}</div>
-            <div>[{{ $t('qatest.token') }}]：{{ data.analysis.token }}</div>
+            <div>[{{ $t('qatest.token') }}]：{{ data.analysis.tokens }}</div>
           </div>  
         </div>
       </div>
@@ -178,10 +178,12 @@ export default {
         if (that.showAnalysis) {
           if (sentenceInfo === undefined) {
             // old format analysis infomation in 'result' part in return obj, too
+            console.log(res.result.tokens);
             chatNode.analysis = {
               tokens: res.result.tokens ? res.result.tokens.join(', ') : '',
               emotion: res.result.emotion || that.$t('qatest.unknown'),
               intent: res.result.intent || that.$t('qatest.unknown'),
+              module: res.result.module || '',
               matchResult: res.result.similar_question || [],
             };
           } else {
