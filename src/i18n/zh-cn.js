@@ -244,9 +244,19 @@ export default {
     qatest: '对话测试',
     analysis: '句子分析',
     match_result: '匹配结果',
-    token: '分词',
     similar_question: '相似问题',
     similar_score: '相似分数',
+
+    sentence_analysis: '句子分析',
+    intent: '意图',
+    emotion: '情绪',
+    module: '来源',
+    token: '分词',
+
+    cmd: '指令',
+    cmdlist: {
+      human: '转人工',
+    },
   },
   qalist: {
     import_desc: '导入时将会覆盖所有问答库资料',

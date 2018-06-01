@@ -158,6 +158,7 @@ export default {
   @include iconType("menu_te");
   @include iconType("menu_privilege");
   @include iconType("menu_dashboard");
+  @include iconType("close");
 
   // robot icon should a little bit larger than other icons
   .white_robot_icon {

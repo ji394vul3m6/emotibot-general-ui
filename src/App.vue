@@ -14,9 +14,6 @@
       </div>
       <transition name="slide-in">
       <div id="chat-test-pop" v-if="isChatOpen">
-        <div class='closs-button'>
-        <text-button @click="closeChatTest">close</text-button>
-        </div>
         <component :is="testComponent"></component>
       </div>
       </transition>
@@ -32,7 +29,7 @@ import { mapMutations, mapGetters } from 'vuex';
 import modules from '@/modules';
 import PageHeader from '@/components/layout/Header';
 import PageMenu from '@/components/layout/Menu';
-import QATest from '@/modules/SSM/QATest';
+import QATest from '@/modules/SSM/QATestFloat';
 
 const defaultPath = '/statistic-dash';
 
@@ -248,11 +245,9 @@ export default {
     });
     that.$root.$on('open-chat-test', () => {
       that.openChatTest();
-      console.log('open-chat-test');
     });
     that.$root.$on('close-chat-test', () => {
       that.closeChatTest();
-      console.log('close-chat-test');
     });
   },
 };
@@ -310,11 +305,6 @@ export default {
   box-shadow: 0 0 5px #CCCCCC;
   .page {
     height: 100%;
-  }
-  .closs-button {
-    position: absolute;
-    right: 20px;
-    top: 20px;
   }
 
   &.slide-in-enter-active, &.slide-in-leave-active {
