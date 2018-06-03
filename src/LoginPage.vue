@@ -67,7 +67,11 @@ export default {
       }
       that.$refs.btn.$emit('loading');
       that.$login(that.input).then(() => {
-        window.location = '/#/statistic-dash';
+        if (that.redirect && that.redirect !== '') {
+          window.location = `/#${that.redirect}`;
+        } else {
+          window.location = '/#/statistic-dash';
+        }
       }, (err) => {
         that.$notify({ text: '登录失败', type: 'fail' });
         that.$refs.user.focus();
@@ -88,10 +92,13 @@ export default {
     const queryMap = {};
     querys.forEach((query) => {
       const idx = query.indexOf('=');
-      queryMap[query.substr(0, idx)] = query.substr(idx);
+      queryMap[query.substr(0, idx)] = query.substr(idx + 1);
     });
     if (Object.keys(queryMap).indexOf('invalid') >= 0) {
       that.$notifyFail(that.$t('error_msg.auth_expire'));
+    }
+    if (Object.keys(queryMap).indexOf('redirect') >= 0) {
+      that.redirect = decodeURIComponent(queryMap.redirect);
     }
   },
 };

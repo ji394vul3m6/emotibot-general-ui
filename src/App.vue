@@ -234,7 +234,8 @@ export default {
       that.ready = true;
     }).catch((err) => {
       console.log(err);
-      window.location = '/login.html?invalid=1';
+      const fullPath = that.$route.fullPath;
+      window.location = `/login.html?invalid=1&redirect=${encodeURIComponent(fullPath)}`;
     });
 
     that.$root.$on('pop-window', () => {
