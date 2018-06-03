@@ -3,6 +3,9 @@ import qs from 'qs';
 const GET_FUNCTIONS_INFO_PATH = '/api/v1/robot/functions';
 const SET_FUNCTION_INFO_PATH = '/api/v1/robot/function';
 const SET_ALL_FUNCTIONS_INFO_PATH = '/api/v1/robot/functions';
+const GET_FUNCTIONS_INFO_PATH_V2 = '/api/v2/robot/functions';
+const SET_FUNCTION_INFO_PATH_V2 = '/api/v2/robot/function';
+const SET_ALL_FUNCTIONS_INFO_PATH_V2 = '/api/v2/robot/functions';
 const GET_QA_LIST_PATH = '/api/v1/robot/qas';
 const QA_OPERATION_PATH = '/api/v1/robot/qa';
 const REBUILD_QA_PATH = '/api/v1/robot/qabuild';
@@ -28,6 +31,29 @@ function setFunctionInfos(infos, val) {
     active: JSON.stringify(statusMap),
   };
   return this.$reqPost(SET_ALL_FUNCTIONS_INFO_PATH, qs.stringify(param));
+}
+
+function getFunctionsStatusV2() {
+  return this.$reqGet(GET_FUNCTIONS_INFO_PATH_V2).then(rsp => rsp.data.result);
+}
+
+function setFunctionStatusV2(key, status) {
+  const param = {
+    active: status,
+  };
+
+  return this.$reqPost(`${SET_FUNCTION_INFO_PATH_V2}/${key}`, qs.stringify(param));
+}
+
+function setFunctionInfosV2(infos, val) {
+  const statusMap = {};
+  infos.forEach((info) => {
+    statusMap[info.code] = val;
+  });
+  const param = {
+    active: JSON.stringify(statusMap),
+  };
+  return this.$reqPost(SET_ALL_FUNCTIONS_INFO_PATH_V2, qs.stringify(param));
 }
 
 function getRobotQAList(page, perPage) {
@@ -56,9 +82,13 @@ function updateRobotQA(info) {
 
 export default {
   getFunctionsStatus,
-
   setFunctionStatus,
   setFunctionInfos,
+
+  getFunctionsStatusV2,
+  setFunctionStatusV2,
+  setFunctionInfosV2,
+
   getRobotQAList,
   rebuildRobotQAModel,
   updateRobotQA,

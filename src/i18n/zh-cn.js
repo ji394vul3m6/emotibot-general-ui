@@ -189,6 +189,7 @@ export default {
     chengyu: '成语模块',
     all_active: '全部开启',
     all_deactive: '全部关闭',
+    general_function: '通用技能',
   },
   wordbank: {
     add_folder: '新增目录',
