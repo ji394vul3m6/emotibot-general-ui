@@ -1,6 +1,6 @@
 import RobotProfile from './RobotProfile';
 import FunctionSetting from './FunctionSetting';
-import ChatSkill from './RobotChatSkill';
+import ChatSkill from './RobotWords';
 import Command from './RobotCommand';
 
 export default {

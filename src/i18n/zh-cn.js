@@ -463,10 +463,14 @@ export default {
     load_fail: '载入失败',
   },
   chat_skill: {
+    chat_skill: '话术',
     group_basic: '基本话术',
     group_timeout: '答案失效话术',
     group_emotion: '情绪相关话术',
     save_success_msg: '保存{item}成功',
+    add_new_msg: '新增个{item}吧',
+    errorDuplicate: '内容已存在',
+    delete_check_msg: '是否要删除话术：{item}',
   },
   task_engine: {
     download_template: '下载模板',
