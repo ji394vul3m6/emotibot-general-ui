@@ -6,9 +6,12 @@ const SET_ALL_FUNCTIONS_INFO_PATH = '/api/v1/robot/functions';
 const GET_FUNCTIONS_INFO_PATH_V2 = '/api/v2/robot/functions';
 const SET_FUNCTION_INFO_PATH_V2 = '/api/v2/robot/function';
 const SET_ALL_FUNCTIONS_INFO_PATH_V2 = '/api/v2/robot/functions';
+
 const GET_QA_LIST_PATH = '/api/v1/robot/qas';
 const QA_OPERATION_PATH = '/api/v1/robot/qa';
 const REBUILD_QA_PATH = '/api/v1/robot/qabuild';
+const GET_QA_LIST_PATH_V2 = '/api/v2/robot/qas';
+const QA_OPERATION_PATH_V2 = '/api/v2/robot/qa';
 
 function getFunctionsStatus() {
   return this.$reqGet(GET_FUNCTIONS_INFO_PATH).then(rsp => rsp.data.result);
@@ -80,6 +83,26 @@ function updateRobotQA(info) {
   return this.$reqPost(`${QA_OPERATION_PATH}/${info.id}`, info);
 }
 
+function getRobotQAListV2(page, perPage) {
+  const params = {};
+
+  // input validation
+  const pageInt = parseInt(page, 10);
+  if (pageInt !== undefined) {
+    params.page = pageInt;
+  }
+  const perPageInt = parseInt(perPage, 10);
+  if (perPageInt !== undefined) {
+    params.per_page = perPageInt;
+  }
+  return this.$reqGet(GET_QA_LIST_PATH_V2, { params })
+    .then(data => data.data.result);
+}
+
+function updateRobotQAV2(info) {
+  return this.$reqPost(`${QA_OPERATION_PATH_V2}/${info.id}`, info);
+}
+
 export default {
   getFunctionsStatus,
   setFunctionStatus,
@@ -92,4 +115,7 @@ export default {
   getRobotQAList,
   rebuildRobotQAModel,
   updateRobotQA,
+
+  getRobotQAListV2,
+  updateRobotQAV2,
 };

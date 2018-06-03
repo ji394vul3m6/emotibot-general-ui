@@ -1,20 +1,33 @@
 <template>
 <div id="robot-profile">
-  <div class="content">
-    <div class="row" v-if="canEdit">
-      <text-button main v-on:click="rebuild()" icon-type="white_refresh">{{$t('robot_setting.model_rebuild')}}</text-button>
+  <div class="card w-fill h-fill">
+    <div class="header">
+      {{ $t('robot_setting.chat_info_desc', {name: robotName}) }}
     </div>
-    <div class="row auto-height">
-      {{ $t('robot_setting.rebuild_msg') }}
+    <div class="table-header-container">
+      <div class="row header">
+        <div class="question">{{$t('general.question')}}</div>
+        <div class="answer">{{$t('general.answer')}}</div>
+        <div class="command"></div>
+      </div>
     </div>
     <div class="table-container">
-      <flex-table :data="tableData" :columns="tableHeader"></flex-table>
+      <!-- TODO: use new flex-table -->
+      <div class="row"
+        v-for="(data, idx) in tableData" :key="idx">
+        <div class="question">{{data.main_question}}</div>
+        <div class="answer">{{data.show_answer}}</div>
+        <div class="command edit" @click="editQA(idx)">
+          {{$t('general.edit')}}
+        </div>
+      </div>
     </div>
   </div>
 </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import GeneralTable from '@/components/GeneralTable';
 import FlexTable from '@/components/FlexTable';
 import api from './_api/robot';
@@ -38,8 +51,17 @@ export default {
       editButtonList: [],
     };
   },
+  computed: {
+    ...mapGetters([
+      'robotName',
+    ]),
+    canEdit() {
+      return true;
+      // return auth.checkPrivilege('robot-profile', 'edit');
+    },
+  },
+  api,
   methods: {
-    ...api,
     operationSuccess(data) {
       const res = data.data;
       if (res.status === 0) {
@@ -96,7 +118,7 @@ export default {
         callback: {
           ok(retData) {
             qaData.answers = retData.filter(answer => true && answer);
-            that.updateRobotQA(qaData).then((data) => {
+            that.$api.updateRobotQAV2(qaData).then((data) => {
               that.operationSuccess(data);
             }, () => {
               // TODO
@@ -121,7 +143,7 @@ export default {
           key: 'show_answer',
           text: that.$t('general.answer'),
           type: 'text',
-          width: 2,
+          width: 1,
         },
       ];
       if (that.canEdit) {
@@ -142,7 +164,7 @@ export default {
       const that = this;
       // this.showLoading = true;
       that.$emit('startLoading');
-      this.getRobotQAList(this.curPage, 0).then((data) => {
+      this.$api.getRobotQAListV2(this.curPage, 0).then((data) => {
         this.tableData = that.convertAPIData(data.qa_infos);
         this.dataCnt = data.count;
         that.$emit('endLoading');
@@ -161,19 +183,21 @@ export default {
     this.setUpMsg();
     this.initPage();
   },
-  computed: {
-    canEdit() {
-      return true;
-      // return auth.checkPrivilege('robot-profile', 'edit');
-    },
-  },
 };
 </script>
 
 <style lang="scss" scoped>
 @import 'styles/variable.scss';
 
-.content {
+$header-height: 70px;
+$header-font-size: 16px;
+$header-color: #333333;
+
+$table-header-bg: #f7f7f7;
+$table-row-height: 40px;
+$edit-color: #1875f0;
+
+.card {
   height: 100%;
   overflow-y: auto;
   padding-bottom: 10px;
@@ -182,8 +206,59 @@ export default {
 
   display: flex;
   flex-direction: column;
+  & > .header {
+    font-size: $header-font-size;
+    color: $header-color;
+    flex: 0 0 $header-height;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+  }
+  .table-header-container {
+    flex: 0 0 $table-row-height;
+    display: flex;
+    flex-direction: column;
+  }
   .table-container {
     flex: 1;
+    @include auto-overflow();
+
+    display: flex;
+    flex-direction: column;
+  }
+  .row {
+    flex: 0 0 $table-row-height;
+    box-shadow: inset 0 -1px 0 0 #eeeeee;
+    &.header {
+      background: $table-header-bg;
+    }
+
+    display: flex;
+    align-items: center;
+    .question {
+      flex: 1;
+      padding: 0 20px;
+
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    .answer {
+      flex: 1;
+      padding: 0 20px;
+
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    .command {
+      flex: 0 0 50px;
+
+      @include click-button();
+      &.edit {
+        color: $edit-color;
+      }
+    }
   }
 }
 </style>

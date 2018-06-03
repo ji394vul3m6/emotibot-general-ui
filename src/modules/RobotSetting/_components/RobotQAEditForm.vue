@@ -7,15 +7,16 @@
     <div class="robot-qa-edit-row" v-for="idx in 5" :key="idx">
       <div class="robot-qa-edit-title">
         <template v-if="idx === 1">{{ $t('general.answer') }}</template>
-        <template v-else>{{ $t('general.ext_answer') }}</template>
+        <template v-else>{{ $t('general.ext_answer') }}{{idx-1}}</template>
       </div>
       <div class="robot-qa-edit-data">
-        <input :value="value.answers[idx - 1]" ref="answer">
+        <input :value="value.answers[idx - 1]" ref="answer"
+          :placeholder="idx === 1 ? $t('robot_setting.input_qa_placeholder') : $t('robot_setting.input_qa_ext_placeholder')">
 		    <!-- <button v-if="idx != 1" type="reset" v-on:click="resetAnswer(idx - 1)"></button> -->
       </div>
     </div>
     <div class="robot-qa-edit-error" :class="{show: showEmptyError}" v-if="showEmptyError">
-      {{ $t('error_msg.empty_answer') }}
+      {{ $t('error_msg.input_empty') }}
     </div>
   </div>  
 </template>
@@ -59,6 +60,9 @@ export default {
 
 <style lang="scss" scoped>
 @import "styles/variable";
+
+$title-font-size: 14px;
+
 .robot-qa-edit {
   .robot-qa-edit-error {
     line-height: 40px;
@@ -72,22 +76,25 @@ export default {
   .robot-qa-edit-row {
     line-height: $default-line-height;
     margin: 10px 0;
+    padding: 0 30px;
     & > div {
       display: inline-block;
       vertical-align: middle;
     }
     .robot-qa-edit-title {
+      font-size: $title-font-size;
       min-width: 100px;
       &::after {
         content: "：";
       }
     }
     .robot-qa-edit-data {
+      font-size: $title-font-size;
       position: relative;
       input {
         width: 400px;
-        padding: 5px;
-        font-size: 16px;
+        padding: 5px 8px;
+        font-size: 12px;
       }
       // TODO: use following structure to rewrite reset button
 /*

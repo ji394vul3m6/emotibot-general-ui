@@ -179,7 +179,10 @@ export default {
   robot_setting: {
     model_rebuild: '重新建模',
     rebuild_msg: '点击“重新建模”，您的所有配置将于10分钟左右生效，在此期间将不能再次点击按钮，建议将所有修改都完成后再点“重新建模”，避免您的等待时间。如果忘记点击也没关系，自动重新建模是一小时一次。',
+    chat_info_desc: '我的名字叫 {name}，你可以在下面设置我的形象喔',
     modify_qas: '修改语料',
+    input_qa_placeholder: '请输入答案',
+    input_qa_ext_placeholder: '请输入答案扩展',
 
     weather: '天气模块',
     computation: '数学计算模块',
