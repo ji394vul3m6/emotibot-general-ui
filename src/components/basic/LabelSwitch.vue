@@ -68,10 +68,10 @@ $active-background: $button-blue-active-text;
 $active-border-color: #1875f0;
 
 .label-switch {
+  background: #ffffff;
   width: auto;
   display: inline-flex;
   align-items: center;
-  margin: 0 5px;
   font-size: $font-size;
   line-height: $line-height;
 }

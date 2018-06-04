@@ -116,6 +116,8 @@ export default {
     action: '动作',
 
     filter: '筛选条件',
+    export_mode: '高级筛选',
+    total_audit_records: '共有 {num} 条日志',
 
     categories: {
       title: '维度',
