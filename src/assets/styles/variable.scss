@@ -113,6 +113,14 @@ $success-color: #5cd29d;
   }
 }
 
+@mixin general-checkbox {
+  width: 14px;
+  height: 14px;
+  &:hover {
+    cursor: pointer;
+  }
+}
+
 @mixin general-input {
   background: white;
   border-radius: $general-input-radius;
