@@ -20,6 +20,7 @@ function addCustomHeader(config) {
   }
   option.headers['X-Appid'] = appid;
   option.headers.Authorization = `Bearer ${token}`;
+  option.headers.Access_token = this.$cookie.get('access_token');
   return option;
 }
 
