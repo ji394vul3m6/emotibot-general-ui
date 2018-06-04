@@ -100,7 +100,7 @@ export default {
             const params = {
               appid: that.appid,
               tagid: item.id,
-            }
+            };
             that.$api.deleteLabel(params).then((res) => {
               if (res.error_code === 0) {
                 that.loadLabels();
@@ -131,7 +131,7 @@ export default {
           name: item.name,
           type: 'userdefine',
           category: 'sq',
-        }
+        };
         if (item.isadd) {
           that.$api.addLabel(params).then((res) => {
             if (res.error_code === 0) {
@@ -203,7 +203,7 @@ export default {
         }
 
         if (c.indexOf(label) !== -1) {
-          appId = c.substring(label.length, c.length)
+          appId = c.substring(label.length, c.length);
           return true;
         }
 
