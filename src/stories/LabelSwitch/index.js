@@ -35,7 +35,7 @@ export default [{
       },
       methods: {
         chooseLabel(val) {
-          action('choose label switch')(val);
+          action('chage')(val);
         },
       },
       template,

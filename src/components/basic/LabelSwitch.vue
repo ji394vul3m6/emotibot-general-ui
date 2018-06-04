@@ -59,29 +59,33 @@ export default {
 <style lang="scss" scoped>
 @import 'styles/variable';
 
-$border-color: $area-border-color;
-$border-radius: $input-border-radius;
+$border-color: #e9e9e9;
+$border-radius: 2px;
+$font-size: 12px;
+$line-height: 18px;
+
 $active-background: $button-blue-active-text;
-$active-color: white;
+$active-border-color: #1875f0;
 
 .label-switch {
   width: auto;
   display: inline-flex;
   align-items: center;
   margin: 0 5px;
+  font-size: $font-size;
+  line-height: $line-height;
 }
 
 .option {
+  padding: 4px 15px;
+
   white-space: nowrap;
-  font-size: 0.8em;
-  line-height: 1.5em;
   display: inline-block;
-  padding: 0 5px;
   border: 1px solid $border-color;
   border-left: none;
   cursor: pointer;
   user-select: none;
-  transition: background-color 300ms, border-color 300ms;
+  transition: border-color 300ms;
 
   &:first-child {
     border-left: 1px solid $border-color;
@@ -94,9 +98,8 @@ $active-color: white;
   }
 
   &.selected {
-    background: $active-background;
-    color: $active-color;
-    border: 1px solid gray;
+    box-shadow: inset 0 -1px 0 0 $active-border-color;
+    border-bottom: solid 1px $active-border-color;
   }
 }
 
