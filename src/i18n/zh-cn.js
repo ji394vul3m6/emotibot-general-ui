@@ -395,8 +395,10 @@ export default {
   qa_label: {
     label: '标签',
     label_id: 'ID',
+    label_row: '个',
     label_name: '标签名称',
     rule_count: '规则连结数',
+    length: '请输入标签, 长度不超过10个字',
     actions: '操作',
     delete_label_name: '确定要删除标签：{tag}',
     err_detele_label_has_rule: '无法删除有规则的标签',
