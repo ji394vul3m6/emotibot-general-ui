@@ -1,5 +1,5 @@
 <template>
-  <table class="general-table">
+  <table class="general-table" :class="[autoHeight ? 'auto-height': '', fontClass]">
     <thead>
       <tr>
         <td v-if="checkbox" class="table-col-checkbox">
@@ -22,7 +22,7 @@
           :style="{width: header.width}"
           :class="{'fixed': header.width}">
           <template v-if="header.type === 'tag'">
-            <tag class="tags" v-for="tag in data[header.key]" :key="tag">{{ tag }}</tag>
+            <tag class="tags" v-for="tag in data[header.key]" :key="tag" :fontClass="fontClass">{{ tag }}</tag>
           </template>
           <template v-else>{{ data[header.key] }}</template>
         </td>
@@ -70,6 +70,16 @@ export default {
         return [];
       },
     },
+    autoHeight: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    fontClass: {
+      type: String,
+      required: false,
+      default: 'font-14',
+    },
   },
   computed: {
     hasAction() {
@@ -87,7 +97,15 @@ $table-data-background: $color-white;
 $table-color-borderline: $color-borderline;
 $table-row-height: 50px;
 table {
-  @include font-14px();
+  &.font-16 {
+    @include font-16px();
+  }
+  &.font-14 {
+    @include font-14px();
+  }
+  &.font-12 {
+    @include font-12px();
+  }
   width: 100%;
   table-layout: fixed;
   border-spacing: 0px;
@@ -135,6 +153,9 @@ table {
         &.fixed {
           flex: 0 0 auto;
         }
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
       }
       td:first-child {
         padding-left: 20px;
@@ -161,6 +182,25 @@ table {
           &:hover {
             cursor:pointer;
           }
+        }
+      }
+    }
+  }
+
+  &.auto-height {
+    thead {
+      tr {
+        height: auto;
+      }
+    }
+    tbody {
+      tr {
+        height: auto;
+        td {
+          text-overflow: unset;
+          overflow: unset;
+          white-space: unset;
+          word-break: break-all;
         }
       }
     }
