@@ -161,10 +161,7 @@ http {
         }
 
         location /api {
-            proxy_set_header X-AppID $appid;
-            proxy_set_header X-UserID $user_id;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_pass http://${SELF_IP}:8182;
+            proxy_pass http://${REMOTE_IP};
         }
         location / {
             proxy_pass http://${SELF_IP}:8080;
