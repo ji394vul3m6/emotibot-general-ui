@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import ActionGroup from '../components/ActionGroup.vue';
+import ActionGroup from '../components/ActionGroup';
 
 export default {
   name: 'action-page',

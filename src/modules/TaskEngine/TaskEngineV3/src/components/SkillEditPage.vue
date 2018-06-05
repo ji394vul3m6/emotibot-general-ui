@@ -27,14 +27,10 @@
 </template>
 
 <script>
-import axios from 'axios';
-import TriggerPage from './TriggerPage.vue';
-import EntityCollectingPage from './EntityCollectingPage.vue';
-import ActionPage from './ActionPage.vue';
+import TriggerPage from './TriggerPage';
+import EntityCollectingPage from './EntityCollectingPage';
+import ActionPage from './ActionPage';
 import i18nUtils from '../utils/i18nUtil';
-import api from './_api/taskEngine';
-import general from '../utils/general';
-import scenarioConvertor from '../utils/scenarioConvertor';
 
 export default {
   name: 'skill-editor',

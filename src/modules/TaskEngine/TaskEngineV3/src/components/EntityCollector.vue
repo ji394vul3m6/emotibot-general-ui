@@ -91,7 +91,7 @@ export default {
       if (val === null) {
         const oldVal = this.entityCollector.ner;
         this.entityCollector.ner = undefined;
-        this.$nextTick(function () {
+        this.$nextTick(() => {
           this.entityCollector.ner = oldVal;
         });
         return;
@@ -105,7 +105,7 @@ export default {
       if (val === null) {
         const oldVal = this.entityCollector.entityCategory;
         this.entityCollector.entityCategory = null;
-        this.$nextTick(function () {
+        this.$nextTick(() => {
           this.entityCollector.entityCategory = oldVal;
         });
         return;

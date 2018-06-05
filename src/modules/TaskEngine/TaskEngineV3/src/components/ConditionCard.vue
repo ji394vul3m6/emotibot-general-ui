@@ -141,7 +141,8 @@ export default {
     },
     isTargetItemActive(column, index) {
       const displayText = this.targetItems[column][index].displayText;
-      return this.condition.target.type === column && this.condition.target.displayText === displayText;
+      return this.condition.target.type === column &&
+        this.condition.target.displayText === displayText;
     },
     isComparisonItemActive(column, index) {
       const displayText = this.comparisonItems[column][index].displayText;
@@ -152,7 +153,8 @@ export default {
       this.condition.target.displayText = this.targetItems[column][index].displayText;
       this.condition.target.type = column;
       if (this.comparisonItems[column] !== undefined && this.comparisonItems[column].length > 0) {
-        this.condition.comparisonOperator = JSON.parse(JSON.stringify(this.comparisonItems[column][0]));
+        this.condition.comparisonOperator = JSON.parse(
+          JSON.stringify(this.comparisonItems[column][0]));
       }
       this.showTargetItemMenu(false);
     },

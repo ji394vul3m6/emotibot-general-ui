@@ -66,7 +66,7 @@
 </template>
 
 <script>
-import CustomEntityTypeEditorPop from './CustomEntityTypeEditorPop.vue';
+import CustomEntityTypeEditorPop from './CustomEntityTypeEditorPop';
 
 export default {
   name: 'entity-management',

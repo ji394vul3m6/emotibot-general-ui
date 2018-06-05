@@ -41,8 +41,8 @@
 
 <script>
 import i18nUtils from '../utils/i18nUtil';
-import ConditionCard from '../components/ConditionCard.vue';
-import ActionCard from '../components/ActionCard.vue';
+import ConditionCard from '../components/ConditionCard';
+import ActionCard from '../components/ActionCard';
 
 export default {
   name: 'action-group',

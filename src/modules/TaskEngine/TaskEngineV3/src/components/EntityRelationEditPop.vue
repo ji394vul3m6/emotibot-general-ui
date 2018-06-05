@@ -14,7 +14,7 @@
   </div>
   <div class="entity-relation-contaientityCollector">
     <div class="edit_column">{{$t("task_engine_v3.entity-relation-editor-pop.entity_type")}}</div>
-    <div class="edit_column"
+    <div class="edit_column" 
         v-for="(entityCollector, entityCollectorIndex) in relatedEntityCollectorList">
         <v-select
           class="select"
@@ -69,7 +69,7 @@ export default {
   methods: {
     addRelatedEntity() {
       const tmpArray = [];
-      for (let i = 0; i < this.relatedEntityCollectorList.length; i++) {
+      for (let i = 0; i < this.relatedEntityCollectorList.length; i += 1) {
         tmpArray.push(this.relatedEntityCollectorList[i].ner.entitySynonymsList[0]);
       }
       this.relatedEntityMatrix.push(tmpArray);
@@ -83,14 +83,14 @@ export default {
     },
     deleteEntityType(index) {
       this.relatedEntityCollectorList.splice(index, 1);
-      for (let i = 0; i < this.relatedEntityMatrix.length; i++) {
+      for (let i = 0; i < this.relatedEntityMatrix.length; i += 1) {
         this.relatedEntityMatrix[i].splice(index, 1);
       }
       this.$forceUpdate();
     },
     hasEntity(entityList, entity) {
       if (entity === undefined) { return false; }
-      for (let i = 0; i < entityList.length; i++) {
+      for (let i = 0; i < entityList.length; i += 1) {
         if (entityList[i].entity === entity.entity &&
            entityList[i].synonyms === entity.synonyms
           ) { return true; }
@@ -102,15 +102,17 @@ export default {
         const oldVal = this.relatedEntityCollectorList[index];
         this.relatedEntityCollectorList[index] = null;
         this.$forceUpdate();
-        this.$nextTick(function () {
+        this.$nextTick(() => {
           this.relatedEntityCollectorList[index] = oldVal;
           this.$forceUpdate();
         });
       } else {
         this.relatedEntityCollectorList[index] = entityCollector;
-        for (let i = 0; i < this.relatedEntityMatrix.length; i++) {
-          if (!this.hasEntity(this.relatedEntityCollectorList[index].ner.entitySynonymsList, this.relatedEntityMatrix[i][index])) {
-            this.relatedEntityMatrix[i][index] = this.relatedEntityCollectorList[index].ner.entitySynonymsList[0];
+        for (let i = 0; i < this.relatedEntityMatrix.length; i += 1) {
+          if (!this.hasEntity(this.relatedEntityCollectorList[index].ner.entitySynonymsList,
+          this.relatedEntityMatrix[i][index])) {
+            this.relatedEntityMatrix[i][index] =
+              this.relatedEntityCollectorList[index].ner.entitySynonymsList[0];
           }
         }
         this.$forceUpdate();
@@ -121,7 +123,7 @@ export default {
         const oldVal = this.relatedEntityMatrix[entityArrayIndex][entityIndex];
         this.relatedEntityMatrix[entityArrayIndex][entityIndex] = null;
         this.$forceUpdate();
-        this.$nextTick(function () {
+        this.$nextTick(() => {
           this.relatedEntityMatrix[entityArrayIndex][entityIndex] = oldVal;
           this.$forceUpdate();
         });
@@ -130,7 +132,10 @@ export default {
       }
     },
     validateDate() {
-      const rtnObj = { relatedEntityCollectorList: this.relatedEntityCollectorList, relatedEntityMatrix: this.relatedEntityMatrix };
+      const rtnObj = {
+        relatedEntityCollectorList: this.relatedEntityCollectorList,
+        relatedEntityMatrix: this.relatedEntityMatrix,
+      };
       this.$emit('validateSuccess', JSON.parse(JSON.stringify(rtnObj)));
     },
   },

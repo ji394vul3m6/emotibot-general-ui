@@ -268,7 +268,7 @@ export default {
     },
   },
   beforeMount() {
-    this.appId = general.getAppId();
+    this.appId = this.$cookie.get('appid');
     this.scenarioId = this.$route.params.id;
     this.i18n = i18nUtils.getLocaleMsgs(this.$i18n);
     this.loadScenario(this.scenarioId);

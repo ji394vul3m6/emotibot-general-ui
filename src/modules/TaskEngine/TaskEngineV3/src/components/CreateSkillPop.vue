@@ -36,7 +36,7 @@ export default {
   watch: {},
   methods: {
     validate() {
-      if (this.skillName == '') {
+      if (this.skillName === '') {
         general.popErrorWindow(this,
           this.i18n.task_engine_v3.error_msg.please_enter_the_skill_name,
           '',

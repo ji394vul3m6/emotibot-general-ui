@@ -79,7 +79,7 @@ export default {
   },
   methods: {
     propEntityCollectorList(newList) {
-      this.entityCollectorList = JSON.parse(JSON.stringify(this.newList));
+      this.entityCollectorList = JSON.parse(JSON.stringify(newList));
     },
     addCustomNer(customNer) {
       this.idToNerMap[customNer.id] = customNer;
@@ -158,14 +158,15 @@ export default {
           },
         ],
       };
-      Object.keys(this.idToNerMap).map((id) => {
-        const ner = this.idToNerMap[id];
+      Object.keys(idToNerMap).map((id) => {
+        const ner = idToNerMap[id];
         const category = ner.entityCategory;
         if (this.categoryToNerTypeMap[category] === undefined) {
           this.categoryToNerTypeMap[category] = [ner];
         } else {
           this.categoryToNerTypeMap[category].push(ner);
         }
+        return id;
       });
     },
     updateData(index, newEntityCollector) {

@@ -120,7 +120,7 @@ export default {
         validate: true,
         data: {
           editor_type: 'add_new_intent',
-          app_id: general.getAppId(),
+          app_id: this.appId,
           intent_id: '',
           intent_name: '',
           sentences: [],
@@ -222,7 +222,7 @@ export default {
     },
   },
   beforeMount() {
-    this.appId = general.getAppId();
+    this.appId = this.$cookie.get('appid');
     this.loadIntentOptionList();
     this.$on('rerender', this.rerender);
   },

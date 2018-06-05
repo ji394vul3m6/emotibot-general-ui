@@ -55,12 +55,9 @@ export default {
   watch: {},
   methods: {
     listAllScenarios() {
-      console.log('listAllScenarios');
       taskEngineApi.listScenarios(this.appId).then((data) => {
         if (typeof (data) === 'object' && 'msg' in data) {
-          console.log(data.msg);
           this.scenarioList = data.msg.filter(scenario => scenario.version === '2.0');
-          console.log(this.scenarioList);
         } else {
           general.popErrorWindow(this, 'listAllScenarios error',
             `unexpected return value from listScenarios API: ${data}`);
@@ -166,7 +163,7 @@ export default {
   beforeMount() {},
   mounted() {
     this.i18n = i18nUtils.getLocaleMsgs(this.$i18n);
-    this.appId = general.getAppId();
+    this.appId = this.$cookie.get('appid');
     this.listAllScenarios();
   },
 };

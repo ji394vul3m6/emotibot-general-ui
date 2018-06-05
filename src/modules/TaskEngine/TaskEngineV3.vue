@@ -4,7 +4,6 @@
   </div>
 </template>
 
-
 <script>
 import Vue from 'vue';
 import VueSelect from 'vue-select';
@@ -28,7 +27,6 @@ export default {
   path: 'task-engine-scenario-v3',
   childrenPath: [
     { path: '', component: ScenarioListPage },
-    { path: 'scenarios', component: ScenarioListPage },
     { path: 'scenario/:id', component: ScenarioEditPage },
     { path: 'entity', component: EntityManagementPage },
   ],

@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import EntitySynonyms from './EntitySynonyms.vue';
+import EntitySynonyms from './EntitySynonyms';
 
 export default {
   name: 'custom-entity-type-editor-pop',
