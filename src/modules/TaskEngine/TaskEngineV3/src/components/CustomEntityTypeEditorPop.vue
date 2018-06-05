@@ -1,16 +1,16 @@
 <template lang="html">
 <div id="custom-entity-type-editor-pop" class="custom-entity-type-editor-pop">
-  <h1 class="header-title">{{$t("custom_entity_type_editor_pop.title")}}</h1>
+  <h1 class="header-title">{{$t("task_engine_v3.custom_entity_type_editor_pop.title")}}</h1>
   <div class="row">
-    <div class="title_column">{{$t("custom_entity_type_editor_pop.entity_type")}}</div>
+    <div class="title_column">{{$t("task_engine_v3.custom_entity_type_editor_pop.entity_type")}}</div>
     <div class="input_column"><input type="text" v-model="entityObj.entityType"></div>
   </div>
   <div class="row">
-    <div class="title_column">{{$t("custom_entity_type_editor_pop.entity_type_description")}}</div>
+    <div class="title_column">{{$t("task_engine_v3.custom_entity_type_editor_pop.entity_type_description")}}</div>
     <div class="input_column"><input type="text" v-model="entityObj.entityTypeDescription"></div>
   </div>
   <div class="row">
-    <div class="title_column">{{$t("custom_entity_type_editor_pop.entity_category")}}</div>
+    <div class="title_column">{{$t("task_engine_v3.custom_entity_type_editor_pop.entity_category")}}</div>
     <div class="input_column">
       <v-select
         class="entity_category_select"
@@ -21,8 +21,8 @@
     </div>
   </div>
   <div class="entity-synonyms-container">
-    <div class="entity_column">{{$t("custom_entity_type_editor_pop.synonyms_table.entity")}}</div>
-    <div class="synonyms_column">{{$t("custom_entity_type_editor_pop.synonyms_table.synonyms")}}</div>
+    <div class="entity_column">{{$t("task_engine_v3.custom_entity_type_editor_pop.synonyms_table.entity")}}</div>
+    <div class="synonyms_column">{{$t("task_engine_v3.custom_entity_type_editor_pop.synonyms_table.synonyms")}}</div>
   </div>
   <div v-for="(entitySynonyms, index) in entityObj.entitySynonymsList" :key="entitySynonyms.entity">
     <entity-synonyms
@@ -33,8 +33,8 @@
   </div>
   <button class="btn-basic"
     @click="addNewEntitySynonyms"
-  >{{$t("custom_entity_type_editor_pop.add_row")}}</button>
-  <button class="btn-basic">{{$t("custom_entity_type_editor_pop.upload_entity_table")}}</button>
+  >{{$t("task_engine_v3.custom_entity_type_editor_pop.add_row")}}</button>
+  <button class="btn-basic">{{$t("task_engine_v3.custom_entity_type_editor_pop.upload_entity_table")}}</button>
 </div>
 </template>
 

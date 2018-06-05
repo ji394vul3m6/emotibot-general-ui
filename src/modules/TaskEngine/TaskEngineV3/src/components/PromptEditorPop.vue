@@ -1,14 +1,14 @@
 <template lang="html">
 <div id="prompt-editor-pop">
-  <h1>{{$t("prompt_editor_pop.title")}}</h1>
+  <h1>{{$t("task_engine_v3.prompt_editor_pop.title")}}</h1>
   <div>
     <input type="checkbox" v-model="promptObj.must_retry">
-    {{$t("prompt_editor_pop.set_retry_num")}}：
+    {{$t("task_engine_v3.prompt_editor_pop.set_retry_num")}}：
     <input type="number" v-model="promptObj.retry_num">
   </div>
   <div>
     <input type="checkbox" v-model="promptObj.required">
-    {{$t("prompt_editor_pop.set_as_required")}}
+    {{$t("task_engine_v3.prompt_editor_pop.set_as_required")}}
   </div>
 </div>
 </template>

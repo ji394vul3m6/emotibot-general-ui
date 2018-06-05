@@ -38,7 +38,7 @@ export default {
     validate() {
       if (this.scenarioName === '') {
         general.popErrorWindow(this,
-          this.i18n.error_msg.please_enter_the_scenario_name,
+          this.i18n.task_engine_v3.error_msg.please_enter_the_scenario_name,
           '',
           '30%',
           '10%',

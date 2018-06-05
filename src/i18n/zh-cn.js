@@ -740,6 +740,8 @@ export default {
     search_placeholder: '请输入搜索内容',
     close: '关闭',
     test: '测试',
+    modify: '修改',
+    save_change: '储存变更',
   },
   dimension: {
     categories: {

@@ -4,7 +4,7 @@
   <div class="button-add-new-condition margin-top-bottom"
     v-if="actionGroup.conditionList.length == 0"
     @click="addNewCondition">
-    {{$t("action_card.btn_add_new_condition")}}
+    {{$t("task_engine_v3.action_card.btn_add_new_condition")}}
   </div>
   <div class="condition-list-container">
     <template v-for="(condition, index) in actionGroup.conditionList">

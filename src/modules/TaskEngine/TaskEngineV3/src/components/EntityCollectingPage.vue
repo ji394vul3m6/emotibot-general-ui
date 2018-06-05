@@ -1,16 +1,16 @@
 <template lang="html">
 <div id="entity-collecting-page" class="page entity-collecting-page">
   <div class="title-container">
-    <div class="title">{{$t("entity_collecting_page.title")}}</div>
-    <div class="title-description">{{$t("entity_collecting_page.description")}}</div>
+    <div class="title">{{$t("task_engine_v3.entity_collecting_page.title")}}</div>
+    <div class="title-description">{{$t("task_engine_v3.entity_collecting_page.description")}}</div>
   </div>
   <div class="hr"><hr/></div>
   <div class="entity-collector-container">
-    <div class="order_column">{{$t("entity_collecting_page.order")}}</div>
-    <div class="entity_name_column">{{$t("entity_collecting_page.entity_name")}}</div>
-    <div class="entity_category_column">{{$t("entity_collecting_page.entity_category")}}</div>
-    <div class="entity_type_column">{{$t("entity_collecting_page.entity_type")}}</div>
-    <div class="prompt_column">{{$t("entity_collecting_page.prompt")}}</div>
+    <div class="order_column">{{$t("task_engine_v3.entity_collecting_page.order")}}</div>
+    <div class="entity_name_column">{{$t("task_engine_v3.entity_collecting_page.entity_name")}}</div>
+    <div class="entity_category_column">{{$t("task_engine_v3.entity_collecting_page.entity_category")}}</div>
+    <div class="entity_type_column">{{$t("task_engine_v3.entity_collecting_page.entity_type")}}</div>
+    <div class="prompt_column">{{$t("task_engine_v3.entity_collecting_page.prompt")}}</div>
   </div>
   <div v-for="(entityCollector, index) in entityCollectorList" :key="entityCollector.id">
     <entity-collector
@@ -27,16 +27,16 @@
   </div>
   <button class="btn-basic add-new-entity-button"
       @click="addNewEntityCollector"
-    >{{$t("entity_collecting_page.add_new_entity_collector")}}</button>
+    >{{$t("task_engine_v3.entity_collecting_page.add_new_entity_collector")}}</button>
   <button class="btn-basic edit-entity-relation-button"
       @click="editEntityRelation"
-    >{{$t("entity_collecting_page.edit_entity_relation")}}</button>
+    >{{$t("task_engine_v3.entity_collecting_page.edit_entity_relation")}}</button>
 </div>
 </template>
 
 <script>
-import EntityCollector from './EntityCollector.vue';
-import EntityRelationEditPop from './EntityRelationEditPop.vue';
+import EntityCollector from './EntityCollector';
+import EntityRelationEditPop from './EntityRelationEditPop';
 import i18nUtils from '../utils/i18nUtil';
 import general from '../utils/general';
 
@@ -202,7 +202,7 @@ export default {
       const customEntityCollectorList = this.entityCollectorList.filter(collector => collector.ner.sourceType === 'custom');
       if (customEntityCollectorList.length < 2) {
         general.popErrorWindow(this,
-          this.i18n.error_msg.custom_entity_list_length_must_greater_than_two,
+          this.i18n.task_engine_v3.error_msg.custom_entity_list_length_must_greater_than_two,
           '',
           '30%',
           '10%',

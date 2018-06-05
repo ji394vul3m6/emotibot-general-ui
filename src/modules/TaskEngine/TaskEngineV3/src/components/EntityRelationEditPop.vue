@@ -1,19 +1,19 @@
 <template lang="html">
 <div id="entity-relation-editor-pop" class="entity-relation-editor-pop">
-  <h1>{{$t("entity-relation-editor-pop.title")}}</h1>
-  <button class="btn-basic" @click="addRelatedEntity">{{$t("entity-relation-editor-pop.add_row")}}</button>
-  <button class="btn-basic"@click="addEntityType">{{$t("entity-relation-editor-pop.add_column")}}</button>
+  <h1>{{$t("task_engine_v3.entity-relation-editor-pop.title")}}</h1>
+  <button class="btn-basic" @click="addRelatedEntity">{{$t("task_engine_v3.entity-relation-editor-pop.add_row")}}</button>
+  <button class="btn-basic"@click="addEntityType">{{$t("task_engine_v3.entity-relation-editor-pop.add_column")}}</button>
   <div class="entity-relation-contaientityCollector">
     <div class="edit_column"></div>
     <div class="edit_column"
       v-for="(entityCollector, entityCollectorIndex) in relatedEntityCollectorList">
-      <div v-if="entityCollectorIndex===0">{{$t("entity-relation-editor-pop.main_entity")}}</div>
-      <div v-else>{{$t("entity-relation-editor-pop.related_entity")}}</div>
+      <div v-if="entityCollectorIndex===0">{{$t("task_engine_v3.entity-relation-editor-pop.main_entity")}}</div>
+      <div v-else>{{$t("task_engine_v3.entity-relation-editor-pop.related_entity")}}</div>
       <div class="delete-button clickable" @click="deleteEntityType(entityCollectorIndex)" v-if="entityCollectorIndex > 1">X</div>
     </div>
   </div>
   <div class="entity-relation-contaientityCollector">
-    <div class="edit_column">{{$t("entity-relation-editor-pop.entity_type")}}</div>
+    <div class="edit_column">{{$t("task_engine_v3.entity-relation-editor-pop.entity_type")}}</div>
     <div class="edit_column"
         v-for="(entityCollector, entityCollectorIndex) in relatedEntityCollectorList">
         <v-select
@@ -28,7 +28,7 @@
   </div>
   <div class="entity-relation-contaientityCollector"
     v-for="(entityArray, entityArrayIndex) in relatedEntityMatrix">
-    <div class="edit_column">{{$t("entity-relation-editor-pop.entity")}}</div>
+    <div class="edit_column">{{$t("task_engine_v3.entity-relation-editor-pop.entity")}}</div>
     <div class="edit_column"
         v-for="(entity, entityIndex) in entityArray">
         <v-select

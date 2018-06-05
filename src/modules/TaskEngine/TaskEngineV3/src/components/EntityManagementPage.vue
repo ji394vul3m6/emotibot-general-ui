@@ -1,6 +1,6 @@
 <template lang="html">
 <div id="entity-management-page" class="entity-management-page page">
-  <h1>{{$t('entity_management.title')}}</h1>
+  <h1>{{$t('task_engine_v3.entity_management.title')}}</h1>
   <hr>
   <div class="row">
     <div class="filter_column">
@@ -14,30 +14,30 @@
     </div>
     <div class="search_column">
       <input class="no_border" type="text" name="key_word" 
-        :placeholder="$t('entity_management.search_placeholder')"
+        :placeholder="$t('task_engine_v3.entity_management.search_placeholder')"
       >
     </div>
     <div class="add_new_column">
       <button class="btn-basic" @click="addCustomEntityType">
-        {{$t('entity_management.create_new_entity_type')}}
+        {{$t('task_engine_v3.entity_management.create_new_entity_type')}}
       </button>
     </div>
   </div>
   <div class="entity-container">
     <div class="entity_type_column">
-      {{$t('entity_management.entity_type')}}
+      {{$t('task_engine_v3.entity_management.entity_type')}}
     </div>
     <div class="create_date_column">
-      {{$t('entity_management.create_date')}}
+      {{$t('task_engine_v3.entity_management.create_date')}}
     </div>
     <div class="category_column">
-      {{$t('entity_management.cagegory')}}
+      {{$t('task_engine_v3.entity_management.cagegory')}}
     </div>
     <div class="description_column">
-      {{$t('entity_management.description')}}
+      {{$t('task_engine_v3.entity_management.description')}}
     </div>
     <div class="operation_column">
-      {{$t('entity_management.operation')}}
+      {{$t('task_engine_v3.entity_management.operation')}}
     </div>
   </div>
   <div v-for="(entity, index) in entityList" :key="entity.entityType" class="entity-container">

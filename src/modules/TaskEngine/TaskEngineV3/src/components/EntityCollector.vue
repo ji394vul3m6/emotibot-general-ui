@@ -6,7 +6,7 @@
     </div>
     <div class="entity_name_column">
       <input class="no_border full_width" type="text" name="entity_name" 
-        :placeholder="$t('entity_collecting_page.entity_name_placeholder')"
+        :placeholder="$t('task_engine_v3.entity_collecting_page.entity_name_placeholder')"
         v-model="entityCollector.entityName"
         @input="updateData"
       >
@@ -35,7 +35,7 @@
     </div>
     <div class="prompt_column">
       <input class="no_border full_width" type="text" name="prompt" 
-        :placeholder="$t('entity_collecting_page.prompt_placeholder')"
+        :placeholder="$t('task_engine_v3.entity_collecting_page.prompt_placeholder')"
         v-model="entityCollector.prompt"
         @input="updateData"
       >
@@ -46,9 +46,8 @@
 </template>
 
 <script>
-import i18nUtils from '../utils/i18nUtil';
-import CustomEntityTypeEditorPop from './CustomEntityTypeEditorPop.vue';
-import PromptEditorPop from './PromptEditorPop.vue';
+import CustomEntityTypeEditorPop from './CustomEntityTypeEditorPop';
+import PromptEditorPop from './PromptEditorPop';
 
 export default {
   name: 'entity-collector',
@@ -78,7 +77,7 @@ export default {
   methods: {
     hasNER(nerList, ner) {
       if (ner === undefined) { return false; }
-      for (let i = 0; i < nerList.length; i++) {
+      for (let i = 0; i < nerList.length; i += 1) {
         if (nerList[i].entityCategory === ner.entityCategory &&
            nerList[i].entityType === ner.entityType &&
            nerList[i].sourceType === ner.sourceType &&
@@ -117,7 +116,7 @@ export default {
         if (!this.hasNER(this.categoryToNerTypeMap[val], this.entityCollector.ner)) {
           this.entityCollector.ner = this.categoryToNerTypeMap[val][0];
         } // else: NER remain the same.
-      }else {
+      } else {
         this.entityCollector.ner = undefined;
       }
       this.updateData();
@@ -195,8 +194,8 @@ export default {
         },
         callback: {
           ok: (response) => {
-            this.entityCollector.must_retry = response.must_retry,
-            this.entityCollector.retry_num = response.retry_num,
+            this.entityCollector.must_retry = response.must_retry;
+            this.entityCollector.retry_num = response.retry_num;
             this.entityCollector.required = response.required;
             this.updateData();
           },

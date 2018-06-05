@@ -1,8 +1,8 @@
 <template lang="html">
 <div id="condition-card">
   <div class="delete-condition-button" @click="deleteThisCondition">X</div>
-  <div class="condition-text" v-if="index==0">{{$t("condition_card.if")}}</div>
-  <div class="condition-text" v-if="index!=0">{{$t("condition_card.and")}}</div>
+  <div class="condition-text" v-if="index==0">{{$t("task_engine_v3.condition_card.if")}}</div>
+  <div class="condition-text" v-if="index!=0">{{$t("task_engine_v3.condition_card.and")}}</div>
   <div class="condition-input-with-menu"
     v-click-outside="{method:'showTargetItemMenu', parameters:false, exceptClasses:['item']}">
     <input type="text" v-model="condition.target.displayText"
@@ -15,7 +15,7 @@
       <div class="condition-input-menu-table">
         <div v-for="column in columns" class="condition-input-menu-column" :class="[`${column}-column`]">
           <div>
-            <label class="column-label">{{$t(`condition_card.columns.${column}`)}}</label>
+            <label class="column-label">{{$t(`task_engine_v3.condition_card.columns.${column}`)}}</label>
             <div v-for="(item, index) in targetItems[column]"
               class="item"
               :class="{'active-item': isTargetItemActive(column, index)}"
@@ -97,7 +97,7 @@ export default {
       return this.contexts.map((context) => {
         const object = {
           name: context,
-          displayText: this.i18n.condition_card.context_status[context],
+          displayText: this.i18n.task_engine_v3.condition_card.context_status[context],
         };
         return object;
       });
@@ -169,35 +169,35 @@ export default {
     this.comparisonOperators = [
       {
         // 存在
-        displayText: this.i18n.condition_card.comparison_operators.present,
+        displayText: this.i18n.task_engine_v3.condition_card.comparison_operators.present,
         functionName: 'contain_key',
         source: 'global_info',
         needContent: false,
       },
       {
         // 不存在
-        displayText: this.i18n.condition_card.comparison_operators.not_present,
+        displayText: this.i18n.task_engine_v3.condition_card.comparison_operators.not_present,
         functionName: 'not_contain_key',
         source: 'global_info',
         needContent: false,
       },
       {
         // 包含
-        displayText: this.i18n.condition_card.comparison_operators.contain,
+        displayText: this.i18n.task_engine_v3.condition_card.comparison_operators.contain,
         functionName: 'value_contains',
         source: 'global_info',
         needContent: true,
       },
       {
         // 不包含
-        displayText: this.i18n.condition_card.comparison_operators.not_contain,
+        displayText: this.i18n.task_engine_v3.condition_card.comparison_operators.not_contain,
         functionName: 'value_not_contains',
         source: 'global_info',
         needContent: true,
       },
       {
         // 大于
-        displayText: this.i18n.condition_card.comparison_operators.greater_than,
+        displayText: this.i18n.task_engine_v3.condition_card.comparison_operators.greater_than,
         functionName: 'key_val_match',
         source: 'global_info',
         needContent: true,
@@ -205,7 +205,7 @@ export default {
       },
       {
         // 小于
-        displayText: this.i18n.condition_card.comparison_operators.smaller_than,
+        displayText: this.i18n.task_engine_v3.condition_card.comparison_operators.smaller_than,
         functionName: 'key_val_match',
         source: 'global_info',
         needContent: true,
@@ -213,7 +213,7 @@ export default {
       },
       {
         // 等于
-        displayText: this.i18n.condition_card.comparison_operators.equal_to,
+        displayText: this.i18n.task_engine_v3.condition_card.comparison_operators.equal_to,
         functionName: 'key_val_match',
         source: 'global_info',
         needContent: true,
@@ -221,7 +221,7 @@ export default {
       },
       {
         // 不等于
-        displayText: this.i18n.condition_card.comparison_operators.not_equal_to,
+        displayText: this.i18n.task_engine_v3.condition_card.comparison_operators.not_equal_to,
         functionName: 'key_val_match',
         source: 'global_info',
         needContent: true,
@@ -229,14 +229,14 @@ export default {
       },
       {
         // 属于
-        displayText: this.i18n.condition_card.comparison_operators.belong_to,
+        displayText: this.i18n.task_engine_v3.condition_card.comparison_operators.belong_to,
         functionName: 'value_in',
         source: 'global_info',
         needContent: true,
       },
       {
         // 不属于
-        displayText: this.i18n.condition_card.comparison_operators.not_belong_to,
+        displayText: this.i18n.task_engine_v3.condition_card.comparison_operators.not_belong_to,
         functionName: 'value_not_in',
         source: 'global_info',
         needContent: true,

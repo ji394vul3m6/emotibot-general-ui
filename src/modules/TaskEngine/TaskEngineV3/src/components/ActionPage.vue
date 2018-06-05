@@ -1,7 +1,7 @@
 <template lang="html">
 <div id="action-page" class="page action-page">
   <div class="title-container">
-    <div class="title">{{$t("action_page.label_title")}}</div>
+    <div class="title">{{$t("task_engine_v3.action_page.label_title")}}</div>
   </div>
   <div class="content-container">
     <div class="action-group-list-container">
@@ -16,9 +16,9 @@
       </template>
     </div>
     <div class="add-new-action-container">
-      <div class="add-new-action-btn" @click="addNewActionGroup('msg')">{{$t("action_page.button_add_new_msg")}}</div>
-      <div class="add-new-action-btn" @click="addNewActionGroup('webhook')">{{$t("action_page.button_add_new_webhook")}}</div>
-      <div class="add-new-action-btn" @click="addNewActionGroup('goto')">{{$t("action_page.button_add_new_goto")}}</div>
+      <div class="add-new-action-btn" @click="addNewActionGroup('msg')">{{$t("task_engine_v3.action_page.button_add_new_msg")}}</div>
+      <div class="add-new-action-btn" @click="addNewActionGroup('webhook')">{{$t("task_engine_v3.action_page.button_add_new_webhook")}}</div>
+      <div class="add-new-action-btn" @click="addNewActionGroup('goto')">{{$t("task_engine_v3.action_page.button_add_new_goto")}}</div>
     </div>
   </div>
 </div>

@@ -2,14 +2,14 @@
 <div id="entity-synonyms" class="entity-synonyms-container">
   <div class="entity_column">
     <input type="text" class="no_border full_width"
-      :placeholder="$t('custom_entity_type_editor_pop.synonyms_table.entity_placeholder')"
+      :placeholder="$t('task_engine_v3.custom_entity_type_editor_pop.synonyms_table.entity_placeholder')"
       v-model="entitySynonyms.entity"
       @input="updateData"
     >
   </div>
   <div class="synonyms_column">
     <input type="text" class="no_border full_width"
-      :placeholder="$t('custom_entity_type_editor_pop.synonyms_table.synonyms_placeholder')"
+      :placeholder="$t('task_engine_v3.custom_entity_type_editor_pop.synonyms_table.synonyms_placeholder')"
       v-model="entitySynonyms.synonyms"
       @input="updateData"
     >
