@@ -10,7 +10,7 @@
             <span v-else> {{ $t('wordbank.setting') }} </span>
           </div>
         </div>
-        <search-input v-model="categoryNameKeyword"></search-input>
+        <search-input ref="categorySearchBox" v-model="categoryNameKeyword"></search-input>
       </div>
       <div id="card-category-add-root" v-if="isEditMode" @click="addRootCategory"> 
         <input id="add-root" type="text"
@@ -24,7 +24,11 @@
       </div>
     </div>
     <div id="card-category-content" ref="cardCategoryContent">
+      <div v-if="!hasSearchResult" id="no-category-search-result">
+        {{ $t('wordbank.empty_category_search_result') }}
+      </div>
       <category-tree v-for="(child, idx) in wordbank.children" 
+        v-if="child.visible"
         :treeItem="child"
         :ref="`${child.cid}-${child.name}`"
         :key="`${child.name}-${idx}`"></category-tree>
@@ -60,6 +64,7 @@ export default {
       rootName: '',
       compositionState: false,
       wasCompositioning: false,
+      hasSearchResult: true,
     };
   },
   computed: {
@@ -67,7 +72,22 @@ export default {
       'wordbank',
       'currentCategory',
       'isEditMode',
+      'isFilterMode',
     ]),
+  },
+  watch: {
+    categoryNameKeyword() {
+      if (this.categoryNameKeyword !== '') {
+        this.setFilterMode(true);
+      } else {
+        this.setFilterMode(false);
+      }
+      this.filterCategory(this.categoryNameKeyword);
+      this.hasSearchResult = false;
+      this.wordbank.children.forEach((child) => {
+        this.hasSearchResult = child.visible || this.hasSearchResult;
+      });
+    },
   },
   methods: {
     ...mapMutations([
@@ -77,6 +97,8 @@ export default {
       'appendToRootCategory',
       'appendSubCategory',
       'removeCurrentCategory',
+      'setFilterMode',
+      'filterCategory',
     ]),
     addRootCategory() {
       if (!this.isAddingRoot) {
@@ -155,6 +177,7 @@ export default {
       .finally(() => {
         this.rootName = '';
         this.isAddingRoot = false;
+        this.categoryNameKeyword = '';
       });
     },
     popDeleteCategory() {
@@ -248,6 +271,11 @@ export default {
   #card-category-content {
     flex: 1 1 auto;
     overflow-y: scroll;
+    #no-category-search-result {
+      height: 36px;
+      line-height: 36px;
+      text-align: center;
+    }
   }
   #card-category-footer {
     flex: 0 0 auto;

@@ -209,6 +209,7 @@ export default {
     delete_category: '删除分类',
     delete_category_msg: '确定要删除分类 {name} 及其子分类吗？',
     placeholder_category_name: '输入分类名称',
+    empty_category_search_result: '无符合分类',
     batch_import: '批量导入',
     export_all: '全部导出',
     error: {

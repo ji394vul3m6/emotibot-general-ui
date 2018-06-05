@@ -25,13 +25,9 @@
   </div>
 </template>
 <script>
-// import Vue from 'vue';
 import { mapGetters, mapMutations } from 'vuex';
 import CategoryCard from './_components/CategoryCard';
-// import CategoryTree from './_components/CategoryTree';
 import api from './_api/wordbank';
-
-// Vue.component('category-tree', CategoryTree);
 
 export default {
   path: 'wordbank-list',

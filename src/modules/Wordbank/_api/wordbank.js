@@ -42,6 +42,9 @@ function addCategory(pid, name, layer) {
       category.layer = layer;
       category.showChild = false;
       category.isActive = true;
+      if (layer === 1) {
+        category.visible = true;
+      }
       return category;
     });
 }
@@ -60,12 +63,16 @@ function addWordbank(cid, wordbank) {
 // 1. by GET method, children and wordbanks attribute should always be array
 // However, API may sometimes return null
 // Therefore we use this function to convert wrong data types
-// 2. add attributes for displaying category-tree
+// 2. add attributes 'layer', 'showChild', 'isActive' for displaying category-tree
+// 3. add attribute 'visible' to layer 1 for displaying category-tree search result
 let layer = 0;
 function convertData(wordbank) {
   wordbank.layer = layer;
   wordbank.showChild = false;
   wordbank.isActive = false;
+  if (wordbank.layer === 1) {
+    wordbank.visible = true;
+  }
   if (wordbank.similar_words === null) {
     wordbank.similar_words = [];
   }
@@ -117,6 +124,7 @@ function parseWordbank(wordbank) {
       children: [],
       wordbanks: wordbank.wordbanks,
       cid: -2,
+      visible: true,
     });
 
     // all
@@ -128,6 +136,7 @@ function parseWordbank(wordbank) {
       layer: 1,
       children: [],
       cid: -3,
+      visible: true,
     });
   }
   if (wordbank.wordbanks && wordbank.wordbanks.length > 0) {

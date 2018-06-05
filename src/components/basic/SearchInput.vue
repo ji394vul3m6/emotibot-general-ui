@@ -37,6 +37,11 @@ export default {
       isFocus: false,
     };
   },
+  watch: {
+    value() {
+      this.keyword = this.value;
+    },
+  },
   methods: {
     toggleFocus() {
       this.isFocus = !this.isFocus;

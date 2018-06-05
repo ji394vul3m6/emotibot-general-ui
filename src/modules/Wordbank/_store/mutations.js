@@ -24,10 +24,46 @@ function findParent(wordbank, cid) {
   return undefined;
 }
 
+function hasKeyword(wordbank, keyword) {
+  if (wordbank.name.includes(keyword)) {
+    return true;
+  }
+  let found = false;
+  if (wordbank.children && wordbank.children.length > 0) {
+    wordbank.children.forEach((child) => {
+      const newfound = hasKeyword(child, keyword);
+      found = (newfound === true) ? newfound : found;
+    });
+  }
+  return found;
+}
+
+function setShowChild(wordbank, keyword) {
+  let shouldOpen = false;
+  if (wordbank.children && wordbank.children.length > 0) {
+    wordbank.children.forEach((child) => {
+      const shouldOpenForChild = setShowChild(child, keyword);
+      shouldOpen = shouldOpen || shouldOpenForChild;
+    });
+  }
+  wordbank.showChild = shouldOpen;
+  return shouldOpen || wordbank.name.includes(keyword);
+}
+
+function closeAllChild(wordbank) {
+  wordbank.showChild = false;
+  if (wordbank.children && wordbank.children.length > 0) {
+    wordbank.children.forEach((child) => {
+      closeAllChild(child);
+    });
+  }
+}
+
 export const state = {
   wordbank: {},
   currentCategory: undefined,
   isEditMode: false,
+  isFilterMode: false,
 };
 
 export const mutations = {
@@ -47,6 +83,29 @@ export const mutations = {
       resetActive(state.wordbank);
       state.currentCategory = state.wordbank.children[0];
       state.currentCategory.isActive = true;
+    }
+  },
+  [types.SET_FILTER_MODE]: (_, bool) => {
+    state.isFilterMode = bool;
+  },
+  [types.FILTER_CATEGORY]: (_, keyword) => {
+    if (keyword === '') {
+      state.wordbank.children.forEach((child) => {
+        child.visible = true;
+      });
+      state.wordbank.children.forEach((child) => {
+        closeAllChild(child, keyword);
+      });
+    } else {
+      state.wordbank.children.forEach((child) => {
+        const foundKeyword = hasKeyword(child, keyword);
+        if (!foundKeyword) {
+          child.visible = false;
+        }
+      });
+      state.wordbank.children.forEach((child) => {
+        setShowChild(child, keyword);
+      });
     }
   },
   [types.APPEND_TO_ROOT_CATEGORY]: (_, category) => {
