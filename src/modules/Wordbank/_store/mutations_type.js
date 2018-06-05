@@ -1,0 +1,9 @@
+export const SET_WORDBANK = 'setWordbank';
+export const SET_CURRENT_CATEGORY = 'setCurrentCategory';
+export const RESET_ACTIVE_CATEGORY = 'resetActiveCategory';
+export const TOGGLE_EDIT_MODE = 'toggleEditMode';
+export const APPEND_TO_ROOT_CATEGORY = 'appendToRootCategory';
+export const APPEND_SUB_CATEGORY = 'appendSubCategory';
+export const ADD_TO_CURRENT_CATEGORY = 'addToCurrentCategory';
+export const CANCEL_ADD_FROM_CURRENT_CATEGORY = 'cancelAddFromCurrentCategory';
+export const REMOVE_CURRENT_CATEGORY = 'removeCurrentCategory';
