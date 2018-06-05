@@ -85,6 +85,7 @@ export default {
       if (!this.ifedit) {
         this.$set(this, 'ifedit', true);
         this.$set(item, 'ifedit', true);
+        this.$set(item, 'namebak', JSON.parse(JSON.stringify(item.name)));
       }
     },
     removeLabel(item) {
@@ -132,6 +133,11 @@ export default {
           type: 'userdefine',
           category: 'sq',
         };
+        if (item.name === item.namebak) {
+          this.$set(this, 'ifedit', false);
+          this.$set(item, 'ifedit', false);
+          return;
+        }
         if (item.isadd) {
           that.$api.addLabel(params).then((res) => {
             if (res.error_code === 0) {
