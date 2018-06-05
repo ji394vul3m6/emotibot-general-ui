@@ -239,6 +239,8 @@ a {
 }
 .qa-label {
   display: flex;
+  background-color: #fff;
+  overflow: auto;
   flex-direction: column;
   .row {
     padding: 20px;
