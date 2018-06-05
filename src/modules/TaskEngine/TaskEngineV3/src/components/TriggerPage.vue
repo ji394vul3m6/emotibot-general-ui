@@ -1,25 +1,25 @@
 <template lang="html">
 <div id="trigger-page" class="page trigger-page">
   <div class="title-container">
-    <div class="title">{{$t("trigger_page.label_title")}}</div>
-    <div class="title-description">{{$t("trigger_page.label_title_description")}}</div>
+    <div class="title">{{$t("task_engine_v3.trigger_page.label_title")}}</div>
+    <div class="title-description">{{$t("task_engine_v3.trigger_page.label_title_description")}}</div>
   </div>
   <div class="hr"><hr/></div>
-  <div class="label-intent-setting">{{$t("trigger_page.label_intent_setting")}}</div>
+  <div class="label-intent-setting">{{$t("task_engine_v3.trigger_page.label_intent_setting")}}</div>
   <div class="content-container">
     <template v-for="(trigger, triggerIndex) in triggerList">
       <div class="intent-editor-box">
         <div class="delete-intent-button" @click="deleteThisTrigger(triggerIndex)">X</div>
         <div class="intent-editor-container">
           <div class="left">
-            <div class="label-choose-intent">{{$t("trigger_page.label_choose_intent")}}</div>
+            <div class="label-choose-intent">{{$t("task_engine_v3.trigger_page.label_choose_intent")}}</div>
             <v-select
               v-model="triggerList[triggerIndex]"
               :options="intentOptionList"
               :searchable="false"
               label="intent_name">
             </v-select>
-            <button class="btn-basic btn-hightlight-border" @click="addNewIntent(triggerIndex)">{{$t("trigger_page.button_add_new_intent")}}</button>
+            <button class="btn-basic btn-hightlight-border" @click="addNewIntent(triggerIndex)">{{$t("task_engine_v3.trigger_page.button_add_new_intent")}}</button>
           </div>
           <div class="right">
             <button class="btn-basic btn-white" @click="editIntent(trigger)" v-bind:class="{disabled: !isTriggerEditable(trigger)}">{{$t("general.edit")}}</button>
@@ -28,7 +28,7 @@
         </div>
       </div>
     </template>
-    <div class="button-add-new-trigger" @click="addNewTrigger">{{$t("trigger_page.btn_add_new_trigger")}}</div>
+    <div class="button-add-new-trigger" @click="addNewTrigger">{{$t("task_engine_v3.trigger_page.btn_add_new_trigger")}}</div>
   </div>
 </div>
 </template>
@@ -37,8 +37,8 @@
 import intentEngineApi from './_api/intentEngine';
 import i18nUtils from '../utils/i18nUtil';
 import general from '../utils/general';
-import IntentEditorPop from './IntentEditorPop.vue';
-import IntentTesterPop from './IntentTesterPop.vue';
+import IntentEditorPop from './IntentEditorPop';
+import IntentTesterPop from './IntentTesterPop';
 
 export default {
   name: 'trigger-page',

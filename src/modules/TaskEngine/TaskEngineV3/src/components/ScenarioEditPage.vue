@@ -1,6 +1,6 @@
 <template>
 <div id="scenario_edit_page">
-  <div id="page-header" class="page-header">
+  <div id="te-page-header" class="te-page-header">
     <div class="scenario-name">
       <div class="arrow">&lt;</div>
       <input
@@ -180,7 +180,8 @@ export default {
     resizeScenarioNameInput() {
       this.$refs.scenarioName.style.width = `${(this.scenarioName.length + 1) * 16}px`;
     },
-    renderData(modulData) {
+    renderData(moduleData) {
+      this.currentSkillId = 'mainSkill';
       // propagate currentSkill
       this.skills = moduleData.skills;
       const currentSkill = this.skills[this.currentSkillId];
@@ -194,7 +195,7 @@ export default {
         this.scenarioId,
         JSON.stringify(content),
         JSON.stringify(window.moduleDataLayouts),
-      ).then((data) => {
+      ).then(() => {
         window.moduleData = content;
         // TODO use toast instead
         console.log('场景已更新');
@@ -237,12 +238,13 @@ export default {
           const data = scenarioConvertor.convertToRegistryData(skill, skillId);
           api.registerNluTdeScenario(data);
         }
+        return skillId;
       });
     },
     publishScenario(content) {
       const convertedContent = scenarioConvertor.convertToNodes(content);
       this.saveScenario(convertedContent).then(() => {
-        api.publishScenario(this.appId, this.scenarioId).then((data) => {
+        api.publishScenario(this.appId, this.scenarioId).then(() => {
           console.log('场景已发布');
           this.enableScenario();
         }, (err) => {
@@ -251,14 +253,14 @@ export default {
       });
     },
     enableScenario() {
-      api.switchScenario(this.appId, this.scenarioId, true).then((data) => {
+      api.switchScenario(this.appId, this.scenarioId, true).then(() => {
         console.log('场景已开启');
       }, (err) => {
         general.popErrorWindow(this, 'enableScenario error', err.message);
       });
     },
     isValidScenario() {
-      if (this.scenarioName == '') {
+      if (this.scenarioName === '') {
         general.popErrorWindow(this, this.i18n.task_engine_v3.error_msg.please_enter_the_scenario_name, '');
         return false;
       }
@@ -269,7 +271,6 @@ export default {
     this.appId = general.getAppId();
     this.scenarioId = this.$route.params.id;
     this.i18n = i18nUtils.getLocaleMsgs(this.$i18n);
-    this.currentSkillId = 'mainSkill';
     this.loadScenario(this.scenarioId);
   },
   mounted() {

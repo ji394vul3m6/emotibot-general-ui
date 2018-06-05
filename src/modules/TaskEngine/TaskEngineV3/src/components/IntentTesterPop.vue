@@ -1,20 +1,20 @@
 <template lang="html">
 <div id="intent-tester-pop">
   <div class="intent-tester-title">
-    <div>{{$t("intent_tester_pop.label_test_intent")}}</div>
+    <div>{{$t("task_engine_v3.intent_tester_pop.label_test_intent")}}</div>
   </div>
   <div class="intent-tester-box">
-    <div class="label">{{$t("intent_tester_pop.label_intent_test_phrase")}}</div>
+    <div class="label">{{$t("task_engine_v3.intent_tester_pop.label_intent_test_phrase")}}</div>
     <div class="row-container">
-      <input v-model="testPhrase" :placeholder="$t('intent_tester_pop.placeholder_user_says')"></input>
-      <button class="btn-basic btn-white" @click="">{{$t("intent_tester_pop.button_start_to_predict")}}</button>
+      <input v-model="testPhrase" :placeholder="$t('task_engine_v3.intent_tester_pop.placeholder_user_says')"></input>
+      <button class="btn-basic btn-white" @click="">{{$t("task_engine_v3.intent_tester_pop.button_start_to_predict")}}</button>
     </div>
-    <div class="label">{{$t("intent_tester_pop.label_intent_predict_result")}}</div>
+    <div class="label">{{$t("task_engine_v3.intent_tester_pop.label_intent_predict_result")}}</div>
     <div class="row-container">
       <input v-model="intentName" readonly class="predicted-intent"></input>
       <button class="btn-basic btn-white btn-hidden" @click=""></button>
     </div>
-    <button class="btn-basic btn-white btn-upload" @click="">{{$t("intent_tester_pop.button_upload_batch_phrases")}}</button>
+    <button class="btn-basic btn-white btn-upload" @click="">{{$t("task_engine_v3.intent_tester_pop.button_upload_batch_phrases")}}</button>
   </div>
 </div>
 </template>

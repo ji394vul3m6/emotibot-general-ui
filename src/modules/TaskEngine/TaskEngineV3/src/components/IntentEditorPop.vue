@@ -5,13 +5,13 @@
   </div>
   <div class="intent-editor-box">
     <div class="intent-name-container">
-      <div>{{$t("intent_editor_pop.label_intent_name")}}</div>
-      <input v-model="intentName" v-bind:readonly="editorType==='edit_intent'" :placeholder="$t('intent_editor_pop.placeholder_intent_name')"></input>
+      <div>{{$t("task_engine_v3.intent_editor_pop.label_intent_name")}}</div>
+      <input v-model="intentName" v-bind:readonly="editorType==='edit_intent'" :placeholder="$t('task_engine_v3.intent_editor_pop.placeholder_intent_name')"></input>
     </div>
-    <div class="label-training-phrase">{{$t("intent_editor_pop.label_training_phrase")}}</div>
+    <div class="label-training-phrase">{{$t("task_engine_v3.intent_editor_pop.label_training_phrase")}}</div>
     <div class="training-phrase-editor">
       <div class="training-phrase-container">
-        <input v-model="newPhrase" :placeholder="$t('intent_editor_pop.placeholder_user_says')"></input>
+        <input v-model="newPhrase" :placeholder="$t('task_engine_v3.intent_editor_pop.placeholder_user_says')"></input>
         <div class="button-edit-phrase button-add-new-phrase" @click="addNewPhrase">
           <a>+</a>
         </div>
@@ -52,10 +52,11 @@ export default {
   computed: {
     titleString() {
       if (this.editorType === 'edit_intent') {
-        return this.$t('intent_editor_pop.label_edit_intent');
+        return this.$t('task_engine_v3.intent_editor_pop.label_edit_intent');
       } else if (this.editorType === 'add_new_intent') {
-        return this.$t('intent_editor_pop.label_add_new_intent');
+        return this.$t('task_engine_v3.intent_editor_pop.label_add_new_intent');
       }
+      return this.$t('task_engine_v3.intent_editor_pop.label_edit_intent');
     },
   },
   watch: {

@@ -739,6 +739,7 @@ export default {
     folder: '目录',
     search_placeholder: '请输入搜索内容',
     close: '关闭',
+    test: '测试',
   },
   dimension: {
     categories: {

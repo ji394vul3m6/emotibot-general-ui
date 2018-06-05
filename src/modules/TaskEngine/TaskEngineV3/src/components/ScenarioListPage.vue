@@ -55,9 +55,12 @@ export default {
   watch: {},
   methods: {
     listAllScenarios() {
+      console.log('listAllScenarios');
       taskEngineApi.listScenarios(this.appId).then((data) => {
         if (typeof (data) === 'object' && 'msg' in data) {
+          console.log(data.msg);
           this.scenarioList = data.msg.filter(scenario => scenario.version === '2.0');
+          console.log(this.scenarioList);
         } else {
           general.popErrorWindow(this, 'listAllScenarios error',
             `unexpected return value from listScenarios API: ${data}`);
@@ -87,7 +90,7 @@ export default {
                   this.$router.replace(path);
                 });
               } else {
-                general.popErrorWindow(this, this.i18n.error_msg.create_new_scenario_failed, '');
+                general.popErrorWindow(this, this.i18n.task_engine_v3.error_msg.create_new_scenario_failed, '');
               }
             }, (err) => {
               general.popErrorWindow(this, 'createScenario error', err.message);
@@ -128,7 +131,7 @@ export default {
         buttons: ['ok', 'cancel'],
         validate: false,
         data: {
-          msg: this.i18n.scenario_list_page.ask_delete_confirm,
+          msg: this.i18n.task_engine_v3.scenario_list_page.ask_delete_confirm,
           info: scenario.scenarioName,
         },
         ok_msg: this.$t('general.delete'),
