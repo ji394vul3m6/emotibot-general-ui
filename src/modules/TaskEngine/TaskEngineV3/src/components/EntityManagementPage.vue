@@ -67,34 +67,35 @@
 
 <script>
 import CustomEntityTypeEditorPop from './CustomEntityTypeEditorPop.vue';
+
 export default {
   name: 'entity-management',
   components: {
   },
-  data () {
+  data() {
     return {
       entityList: [],
-      entityCategoryList:[
+      entityCategoryList: [
         '通用实体类别',
         '金融实体类别',
       ],
-    }
+    };
   },
   computed: {},
   watch: {},
   methods: {
-    removeCustomEntityType(index){
+    removeCustomEntityType(index) {
       this.entityList.splice(index, 1);
     },
-    editCustomEntityType(index){
+    editCustomEntityType(index) {
       const options = {
         component: CustomEntityTypeEditorPop,
         buttons: ['ok', 'cancel'],
         validate: true,
         data: this.entityList[index],
         customPopContentStyle: {
-          width: "70%",
-          height: "70%",
+          width: '70%',
+          height: '70%',
         },
         callback: {
           ok: (response) => {
@@ -104,7 +105,7 @@ export default {
               entityCategory: response.entityCategory,
               entityCategoryList: response.entityCategoryList,
               entityTypeDescription: response.entityTypeDescription,
-              entitySynonymsList: response.entitySynonymsList
+              entitySynonymsList: response.entitySynonymsList,
             };
             this.$nextTick(() => {
               this.$forceUpdate();
@@ -114,41 +115,41 @@ export default {
       };
       this.$root.$emit('showWindow', options);
     },
-    addCustomEntityType(){
+    addCustomEntityType() {
       const options = {
         component: CustomEntityTypeEditorPop,
         buttons: ['ok', 'cancel'],
         validate: true,
         customPopContentStyle: {
-          width: "70%",
-          height: "70%",
+          width: '70%',
+          height: '70%',
         },
         data: {
           entityType: null,
           entityTypeDescription: null,
           entityCategory: '通用实体类别',
           entityCategoryList: this.entityCategoryList,
-          entitySynonymsList: []
+          entitySynonymsList: [],
         },
         callback: {
           ok: (response) => {
             this.entityList.push({
               entityType: response.entityType,
-              createDate: new Date().toJSON().slice(0,10).replace(/-/g,'-'),
+              createDate: new Date().toJSON().slice(0, 10).replace(/-/g, '-'),
               entityCategory: response.entityCategory,
               entityCategoryList: response.entityCategoryList,
               entityTypeDescription: response.entityTypeDescription,
-              entitySynonymsList: response.entitySynonymsList
-            })
+              entitySynonymsList: response.entitySynonymsList,
+            });
           },
         },
       };
       this.$root.$emit('showWindow', options);
-    }
+    },
   },
   beforeMount() {},
   mounted() {},
-}
+};
 </script>
 
 <style lang="scss">

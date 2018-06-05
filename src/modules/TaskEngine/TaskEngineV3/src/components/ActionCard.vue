@@ -76,46 +76,46 @@ export default {
       required: true,
     },
   },
-  data () {
+  data() {
     return {
       i18n: {},
       action: JSON.parse(JSON.stringify(this.initialAction)),
       methods: ['GET', 'POST', 'PUT', 'DELETE'],
       contentTypes: ['application/json', 'application/x-www-form-urlencoded'],
       skills: [],
-    } 
+    };
   },
   computed: {
     skillNameList() {
       const skillNameList = JSON.parse(JSON.stringify(this.initialSkillNameList));
       // add the finish_scenario_option
       skillNameList.push({
-        'skillId': 'exit',
-        'skillName': this.i18n.action_card.goto.option_finish_scenario,
+        skillId: 'exit',
+        skillName: this.i18n.action_card.goto.option_finish_scenario,
       });
       return skillNameList;
     },
     selectedSkillName: {
-      get: function () {
+      get () {
         return this.skillNameList.find((skill) => {
           return skill.skillId === this.action.targetSkillId;
         });
       },
-      set: function (newValue) {
+      set (newValue) {
         this.action.targetSkillId = newValue.skillId;
       },
     },
   },
   watch: {
     action: {
-      handler: function() {
+      handler() {
         this.$emit('update', this.action);
       },
-      deep: true
+      deep: true,
     },
   },
   methods: {
-    addNewSkill(){
+    addNewSkill() {
       const options = {
         component: CreateSkillPop,
         buttons: ['ok', 'cancel'],
@@ -131,8 +131,8 @@ export default {
           },
         },
         customPopContentStyle: {
-          width: "40%",
-          height: "30%",
+          width: '40%',
+          height: '30%',
           'min-width': '500px',
           'min-height': '275px',
         },
@@ -144,5 +144,5 @@ export default {
     this.i18n = i18nUtils.getLocaleMsgs(this.$i18n);
   },
   mounted() {},
-}
+};
 </script>

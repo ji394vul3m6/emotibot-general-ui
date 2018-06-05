@@ -26,24 +26,24 @@ export default {
       required: true,
     },
   },
-  data () {
+  data() {
     return {
       i18n: {},
       skillName: this.value.skillName,
-    }
+    };
   },
   computed: {},
   watch: {},
   methods: {
-    validate(){
-      if (this.skillName == ''){
+    validate() {
+      if (this.skillName == '') {
         general.popErrorWindow(this,
           this.i18n.error_msg.please_enter_the_skill_name,
           '',
           '30%',
           '10%',
         );
-      }else{
+      } else {
         this.$emit('validateSuccess', this.skillName);
       }
     },
@@ -53,5 +53,5 @@ export default {
     this.i18n = i18nUtils.getLocaleMsgs(this.$i18n);
     this.$on('validate', this.validate);
   },
-}
+};
 </script>

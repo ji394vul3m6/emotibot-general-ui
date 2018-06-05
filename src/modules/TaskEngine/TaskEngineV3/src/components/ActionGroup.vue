@@ -64,29 +64,29 @@ export default {
       required: true,
     },
   },
-  data () {
+  data() {
     return {
       i18n: {},
       actionGroup: JSON.parse(JSON.stringify(this.initialActionGroup)),
-    } 
+    };
   },
   computed: {},
   watch: {},
   methods: {
-    updateCondition(index, newCondition){
+    updateCondition(index, newCondition) {
       this.actionGroup.conditionList[index] = newCondition;
       this.$emit('update', this.actionGroup);
     },
-    updateAction(index, newAction){
+    updateAction(index, newAction) {
       this.actionGroup.actionList[index] = newAction;
       this.$emit('update', this.actionGroup);
     },
-    deleteThisActionGroup(){
+    deleteThisActionGroup() {
       this.$emit('deleteActionGroupButtonClick');
     },
     addNewCondition() {
       this.actionGroup.conditionList.push({
-        target:{
+        target: {
           name: '',
           displayText: '',
           type: '',
@@ -103,12 +103,12 @@ export default {
     deleteCondition(index) {
       this.actionGroup.conditionList.splice(index, 1);
       this.$emit('update', this.actionGroup);
-    }
+    },
   },
   beforeMount() {
   },
   mounted() {
     this.i18n = i18nUtils.getLocaleMsgs(this.$i18n);
   },
-}
+};
 </script>

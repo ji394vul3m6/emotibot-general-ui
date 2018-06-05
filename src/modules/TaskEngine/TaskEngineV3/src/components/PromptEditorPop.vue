@@ -24,15 +24,15 @@ export default {
       required: true,
     },
   },
-  data () {
+  data() {
     return {
       promptObj: {},
-    }
+    };
   },
   computed: {},
   watch: {},
   methods: {
-    validateDate(){
+    validateDate() {
       this.$emit('validateSuccess', JSON.parse(JSON.stringify(this.promptObj)));
     },
   },
@@ -41,5 +41,5 @@ export default {
     this.promptObj = JSON.parse(JSON.stringify(this.value));
     this.$on('validate', this.validateDate);
   },
-}
+};
 </script>

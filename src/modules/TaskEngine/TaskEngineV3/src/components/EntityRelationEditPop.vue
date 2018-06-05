@@ -56,20 +56,20 @@ export default {
       required: true,
     },
   },
-  data () {
+  data() {
     return {
       customEntityCollectorList: [],
       defaultEntityCollector: {},
       relatedEntityCollectorList: [],
-      relatedEntityMatrix: []
+      relatedEntityMatrix: [],
     };
   },
   computed: {},
   watch: {},
   methods: {
-    addRelatedEntity(){
-      let tmpArray = []
-      for(let i=0; i<this.relatedEntityCollectorList.length; i++){
+    addRelatedEntity() {
+      const tmpArray = [];
+      for (let i = 0; i < this.relatedEntityCollectorList.length; i++) {
         tmpArray.push(this.relatedEntityCollectorList[i].ner.entitySynonymsList[0]);
       }
       this.relatedEntityMatrix.push(tmpArray);
@@ -78,28 +78,28 @@ export default {
       this.relatedEntityMatrix.splice(index, 1);
       this.$forceUpdate();
     },
-    addEntityType(){
+    addEntityType() {
       this.relatedEntityCollectorList.push(this.defaultEntityCollector);
     },
     deleteEntityType(index) {
       this.relatedEntityCollectorList.splice(index, 1);
-      for(let i=0; i<this.relatedEntityMatrix.length; i++){
+      for (let i = 0; i < this.relatedEntityMatrix.length; i++) {
         this.relatedEntityMatrix[i].splice(index, 1);
       }
       this.$forceUpdate();
     },
-    hasEntity(entityList, entity){
-      if ( entity === undefined ) { return false; }
-      for ( let i=0; i<entityList.length; i++ ) {
-        if(entityList[i].entity === entity.entity &&
+    hasEntity(entityList, entity) {
+      if (entity === undefined) { return false; }
+      for (let i = 0; i < entityList.length; i++) {
+        if (entityList[i].entity === entity.entity &&
            entityList[i].synonyms === entity.synonyms
           ) { return true; }
       }
       return false;
     },
-    changeEntityType(index, entityCollector){
-      if( entityCollector === null ){
-        const oldVal = this.relatedEntityCollectorList[index]
+    changeEntityType(index, entityCollector) {
+      if (entityCollector === null) {
+        const oldVal = this.relatedEntityCollectorList[index];
         this.relatedEntityCollectorList[index] = null;
         this.$forceUpdate();
         this.$nextTick(function () {
@@ -108,17 +108,17 @@ export default {
         });
       } else {
         this.relatedEntityCollectorList[index] = entityCollector;
-        for(let i=0; i<this.relatedEntityMatrix.length; i++){
-          if(!this.hasEntity(this.relatedEntityCollectorList[index].ner.entitySynonymsList, this.relatedEntityMatrix[i][index])){
-            this.relatedEntityMatrix[i][index] = this.relatedEntityCollectorList[index].ner.entitySynonymsList[0]
+        for (let i = 0; i < this.relatedEntityMatrix.length; i++) {
+          if (!this.hasEntity(this.relatedEntityCollectorList[index].ner.entitySynonymsList, this.relatedEntityMatrix[i][index])) {
+            this.relatedEntityMatrix[i][index] = this.relatedEntityCollectorList[index].ner.entitySynonymsList[0];
           }
         }
         this.$forceUpdate();
       }
     },
-    changeEntityRelation(entityArrayIndex, entityIndex, entity){
-      if( entity === null ){
-        const oldVal = this.relatedEntityMatrix[entityArrayIndex][entityIndex]
+    changeEntityRelation(entityArrayIndex, entityIndex, entity) {
+      if (entity === null) {
+        const oldVal = this.relatedEntityMatrix[entityArrayIndex][entityIndex];
         this.relatedEntityMatrix[entityArrayIndex][entityIndex] = null;
         this.$forceUpdate();
         this.$nextTick(function () {
@@ -129,8 +129,8 @@ export default {
         this.relatedEntityMatrix[entityArrayIndex][entityIndex] = entity;
       }
     },
-    validateDate(){
-      const rtnObj = { relatedEntityCollectorList: this.relatedEntityCollectorList, relatedEntityMatrix: this.relatedEntityMatrix }
+    validateDate() {
+      const rtnObj = { relatedEntityCollectorList: this.relatedEntityCollectorList, relatedEntityMatrix: this.relatedEntityMatrix };
       this.$emit('validateSuccess', JSON.parse(JSON.stringify(rtnObj)));
     },
   },
@@ -139,7 +139,7 @@ export default {
     const obj = JSON.parse(JSON.stringify(this.value));
     this.customEntityCollectorList = obj.customEntityCollectorList;
     this.defaultEntityCollector = this.customEntityCollectorList[0];
-    if(obj.relatedEntityCollectorList.length > 0){
+    if (obj.relatedEntityCollectorList.length > 0) {
       this.relatedEntityCollectorList = obj.relatedEntityCollectorList;
     } else {
       this.relatedEntityCollectorList.push(this.defaultEntityCollector);
@@ -148,7 +148,7 @@ export default {
     this.relatedEntityMatrix = obj.relatedEntityMatrix;
     this.$on('validate', this.validateDate);
   },
-}
+};
 </script>
 
 <style lang="scss">

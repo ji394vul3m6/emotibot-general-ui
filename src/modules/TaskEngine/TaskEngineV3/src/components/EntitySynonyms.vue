@@ -29,18 +29,18 @@ export default {
       required: true,
     },
   },
-  data () {
+  data() {
     return {
       entitySynonyms: {},
-    }
+    };
   },
   computed: {},
   watch: {},
   methods: {
-    updateData(){
+    updateData() {
       this.$emit('updateData', this.entitySynonyms);
     },
-    deleteThisEntitySynonyms(){
+    deleteThisEntitySynonyms() {
       this.$emit('deleteEntitySynonymsButtonClick');
     },
   },
@@ -48,5 +48,5 @@ export default {
   mounted() {
     this.entitySynonyms = JSON.parse(JSON.stringify(this.initialEntitySynonyms));
   },
-}
+};
 </script>

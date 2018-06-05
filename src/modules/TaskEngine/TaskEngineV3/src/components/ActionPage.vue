@@ -46,43 +46,43 @@ export default {
       required: true,
     },
   },
-  data () {
+  data() {
     return {
       actionGroupList: JSON.parse(JSON.stringify(this.initialActionGroupList)),
-    }
+    };
   },
   computed: {},
   watch: {},
   methods: {
-    updateActionGroup(index, newActionGroup){
+    updateActionGroup(index, newActionGroup) {
       this.actionGroupList[index] = newActionGroup;
       this.$emit('update', this.actionGroupList);
     },
     addNewActionGroup(type) {
-      let actionGroup = {
-        'actionGroupId': this.$uuid.v1(),
-        'actionList':[],
-        'conditionList':[]
+      const actionGroup = {
+        actionGroupId: this.$uuid.v1(),
+        actionList: [],
+        conditionList: [],
       };
-      if (type==='msg'){
+      if (type === 'msg') {
         actionGroup.actionList.push({
-          'type':'msg',
-          'msg': ''
-        })
-      }else if(type==='webhook'){
+          type: 'msg',
+          msg: '',
+        });
+      } else if (type === 'webhook') {
         actionGroup.actionList.push({
-          'type':'webhook',
-          'variable_name': '',
-          'method': 'GET',
-          'url': '',
-          'contentTypes': 'application/json',
-          'body': ''
-        })
-      }else if(type==='goto'){
+          type: 'webhook',
+          variable_name: '',
+          method: 'GET',
+          url: '',
+          contentTypes: 'application/json',
+          body: '',
+        });
+      } else if (type === 'goto') {
         actionGroup.actionList.push({
-          'type':'goto',
-          'targetSkillId': 'exit',
-        })
+          type: 'goto',
+          targetSkillId: 'exit',
+        });
       }
       this.actionGroupList.push(actionGroup);
       this.$emit('update', this.actionGroupList);
@@ -91,7 +91,7 @@ export default {
       this.actionGroupList.splice(index, 1);
       this.$emit('update', this.actionGroupList);
     },
-    rerender(){
+    rerender() {
       this.actionGroupList = JSON.parse(JSON.stringify(this.initialActionGroupList));
     },
   },
@@ -102,5 +102,5 @@ export default {
   activated() {
     this.rerender();
   },
-}
+};
 </script>

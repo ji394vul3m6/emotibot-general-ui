@@ -57,7 +57,7 @@ export default {
       required: true,
     },
   },
-  data () {
+  data() {
     return {
       i18n: {},
       skill: {
@@ -66,10 +66,10 @@ export default {
         actionGroupList: [],
         relatedEntities: {
           relatedEntityCollectorList: [],
-          relatedEntityMatrix: []
+          relatedEntityMatrix: [],
         },
       },
-    }
+    };
   },
   computed: {},
   watch: {},
@@ -80,23 +80,23 @@ export default {
         this.$refs[this.currentPage].$emit('rerender', {});
       });
     },
-    updateTriggerList(newTriggerList){
+    updateTriggerList(newTriggerList) {
       this.skill.triggerList = newTriggerList;
       this.$emit('update', this.skill);
     },
-    updateEntityCollectorList(newEntityCollectorList){
+    updateEntityCollectorList(newEntityCollectorList) {
       this.skill.entityCollectorList = newEntityCollectorList;
       this.$emit('update', this.skill);
     },
-    updateActionGroupList(newActionGroupList){
+    updateActionGroupList(newActionGroupList) {
       this.skill.actionGroupList = newActionGroupList;
       this.$emit('update', this.skill);
     },
-    updateRelatedEntities(relatedEntities){
+    updateRelatedEntities(relatedEntities) {
       this.skill.relatedEntities = relatedEntities;
       this.$emit('update', this.skill);
     },
-    updateIdToNerMap(idToNerMap){
+    updateIdToNerMap(idToNerMap) {
       this.$emit('updateIdToNerMap', idToNerMap);
     },
   },
@@ -105,5 +105,5 @@ export default {
     this.$on('propSkill', this.propSkill);
   },
   mounted() {},
-}
+};
 </script>

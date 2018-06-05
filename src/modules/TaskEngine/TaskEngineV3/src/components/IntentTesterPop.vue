@@ -32,12 +32,12 @@ export default {
       required: true,
     },
   },
-  data () {
+  data() {
     return {
       i18n: {},
       testPhrase: '我想要请假',
       intentName: '申请休假',
-    }
+    };
   },
   computed: {
   },
@@ -49,5 +49,5 @@ export default {
   mounted() {
     this.i18n = i18nUtils.getLocaleMsgs(this.$i18n);
   },
-}
+};
 </script>

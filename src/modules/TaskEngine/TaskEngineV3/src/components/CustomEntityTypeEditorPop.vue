@@ -40,10 +40,11 @@
 
 <script>
 import EntitySynonyms from './EntitySynonyms.vue';
+
 export default {
   name: 'custom-entity-type-editor-pop',
   components: {
-    'entity-synonyms': EntitySynonyms
+    'entity-synonyms': EntitySynonyms,
   },
   props: {
     value: {
@@ -51,28 +52,28 @@ export default {
       required: true,
     },
   },
-  data () {
+  data() {
     return {
-      entityObj:{},
-      nerCategoryList:[],
+      entityObj: {},
+      nerCategoryList: [],
     };
   },
   computed: {},
   watch: {},
   methods: {
-    updateData(index, newEntitySynonyms){
+    updateData(index, newEntitySynonyms) {
       this.entityObj.entitySynonymsList[index] = JSON.parse(JSON.stringify(newEntitySynonyms));
     },
-    addNewEntitySynonyms(){
+    addNewEntitySynonyms() {
       this.entityObj.entitySynonymsList.push({
         entity: null,
         synonyms: null,
-      })
+      });
     },
     deleteEntitySynonyms(index) {
       this.entityObj.entitySynonymsList.splice(index, 1);
     },
-    validateDate(){
+    validateDate() {
       this.$emit('validateSuccess', JSON.parse(JSON.stringify(this.entityObj)));
     },
   },
@@ -83,7 +84,7 @@ export default {
     this.nerCategoryList = obj.nerCategoryList;
     this.$on('validate', this.validateDate);
   },
-}
+};
 </script>
 
 <style lang="scss">

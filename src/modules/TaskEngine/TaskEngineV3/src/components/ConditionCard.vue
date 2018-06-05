@@ -70,18 +70,18 @@ export default {
     },
     index: {
       type: Number,
-    }
+    },
   },
-  data () {
+  data() {
     return {
       i18n: {},
       condition: JSON.parse(JSON.stringify(this.initialCondition)),
       isInputMenuVisible: false,
       isSelectMenuVisible: false,
-      columns: ["entity", "context"],
-      contexts: ["on_complete", "on_cancel", "on_transfer_to_manual", "on_parse_fail"],
+      columns: ['entity', 'context'],
+      contexts: ['on_complete', 'on_cancel', 'on_transfer_to_manual', 'on_parse_fail'],
       comparisonOperators: [],
-    }
+    };
   },
   computed: {
     entityOptions() {
@@ -104,18 +104,18 @@ export default {
     },
     targetItems() {
       return {
-        "entity": this.entityOptions,
-        "context": this.contextOptions,
-      }
+        entity: this.entityOptions,
+        context: this.contextOptions,
+      };
     },
     comparisonItems() {
       return {
-        "entity": this.comparisonOperators,
-      }
+        entity: this.comparisonOperators,
+      };
     },
     isContentInputVisible() {
-      if(!this.condition.comparisonOperator.needContent) this.condition.content = '';
-      return this.condition.comparisonOperator.needContent
+      if (!this.condition.comparisonOperator.needContent) this.condition.content = '';
+      return this.condition.comparisonOperator.needContent;
     },
     entities() {
       return JSON.parse(JSON.stringify(this.initialEntityCollectorList));
@@ -123,35 +123,35 @@ export default {
   },
   watch: {
     condition: {
-      handler: function() {
+      handler() {
         this.$emit('update', this.condition);
       },
-      deep: true
+      deep: true,
     },
   },
   methods: {
-    deleteThisCondition(){
+    deleteThisCondition() {
       this.$emit('deleteConditionButtonClick');
     },
-    showTargetItemMenu(visible){
+    showTargetItemMenu(visible) {
       this.isInputMenuVisible = visible;
     },
     showComparisonItemMenu(visible) {
       this.isSelectMenuVisible = visible;
     },
     isTargetItemActive(column, index) {
-      const displayText = this.targetItems[column][index]['displayText'];
+      const displayText = this.targetItems[column][index].displayText;
       return this.condition.target.type === column && this.condition.target.displayText === displayText;
     },
     isComparisonItemActive(column, index) {
-      const displayText = this.comparisonItems[column][index]['displayText'];
+      const displayText = this.comparisonItems[column][index].displayText;
       return this.condition.comparisonOperator.displayText === displayText;
     },
     targetItemClick(column, index) {
-      this.condition.target.name = this.targetItems[column][index]['name'];
-      this.condition.target.displayText = this.targetItems[column][index]['displayText'];
+      this.condition.target.name = this.targetItems[column][index].name;
+      this.condition.target.displayText = this.targetItems[column][index].displayText;
       this.condition.target.type = column;
-      if (this.comparisonItems[column] !== undefined && this.comparisonItems[column].length > 0){
+      if (this.comparisonItems[column] !== undefined && this.comparisonItems[column].length > 0) {
         this.condition.comparisonOperator = JSON.parse(JSON.stringify(this.comparisonItems[column][0]));
       }
       this.showTargetItemMenu(false);
@@ -243,5 +243,5 @@ export default {
       },
     ];
   },
-}
+};
 </script>

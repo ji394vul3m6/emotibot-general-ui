@@ -40,44 +40,42 @@ export default {
       required: true,
     },
   },
-  data () {
+  data() {
     return {
       i18n: {},
-      newPhrase: "",
+      newPhrase: '',
       editorType: this.value.editor_type,
       intentName: this.value.intent_name,
-      phraseList: this.value.sentences.map(item => {return item.sentence;}),
-    }
+      phraseList: this.value.sentences.map(item => item.sentence),
+    };
   },
   computed: {
     titleString() {
-      if(this.editorType === 'edit_intent'){
+      if (this.editorType === 'edit_intent') {
         return this.$t('intent_editor_pop.label_edit_intent');
-      }else if(this.editorType === 'add_new_intent'){
+      } else if (this.editorType === 'add_new_intent') {
         return this.$t('intent_editor_pop.label_add_new_intent');
       }
     },
   },
   watch: {
-    phraseList(){
+    phraseList() {
       // console.log(this.phraseList);
-    }
+    },
   },
   methods: {
-    addNewPhrase(){
+    addNewPhrase() {
       this.phraseList.push(this.newPhrase);
-      this.newPhrase = "";
+      this.newPhrase = '';
     },
-    deletePhrase(index){
+    deletePhrase(index) {
       this.phraseList.splice(index, 1);
     },
-    validateIntent(){
-      const newSentences = this.phraseList.map((phrase) => {
-        return {
-          keywords: [],
-          sentence: phrase
-        }
-      });
+    validateIntent() {
+      const newSentences = this.phraseList.map(phrase => ({
+        keywords: [],
+        sentence: phrase,
+      }));
       const intent = {
         app_id: this.value.app_id,
         intent_id: this.value.intent_id,
@@ -92,5 +90,5 @@ export default {
     this.i18n = i18nUtils.getLocaleMsgs(this.$i18n);
     this.$on('validate', this.validateIntent);
   },
-}
+};
 </script>

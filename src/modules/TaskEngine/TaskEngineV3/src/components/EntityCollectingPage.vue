@@ -43,7 +43,7 @@ import general from '../utils/general';
 export default {
   name: 'entity-collecting-page',
   components: {
-    'entity-collector': EntityCollector
+    'entity-collector': EntityCollector,
   },
   props: {
     initialEntityCollectorList: {
@@ -57,9 +57,9 @@ export default {
     initialRelatedEntities: {
       type: Object,
       required: true,
-    }
+    },
   },
-  data () {
+  data() {
     return {
       i18n: {},
       entityCollectorList: [],
@@ -67,160 +67,159 @@ export default {
       categoryToNerTypeMap: {},
       relatedEntities: {
         relatedEntityCollectorList: [],
-        relatedEntityMatrix: []
-      }
-    }
+        relatedEntityMatrix: [],
+      },
+    };
   },
   computed: {},
   watch: {
     entityCollectorList() {
       this.$emit('update', this.entityCollectorList);
-    }
+    },
   },
   methods: {
     propEntityCollectorList(newList) {
       this.entityCollectorList = JSON.parse(JSON.stringify(this.newList));
     },
-    addCustomNer(customNer){
+    addCustomNer(customNer) {
       this.idToNerMap[customNer.id] = customNer;
       this.$emit('updateIdToNerMap', this.idToNerMap);
       this.updateCategoryToNerTypeMap(this.idToNerMap);
     },
-    deleteCustomNer(customNer){
+    deleteCustomNer(customNer) {
       delete this.idToNerMap[customNer.id];
       this.$emit('updateIdToNerMap', this.idToNerMap);
       this.updateCategoryToNerTypeMap(this.idToNerMap);
     },
-    updateCategoryToNerTypeMap(idToNerMap){
+    updateCategoryToNerTypeMap(idToNerMap) {
       this.categoryToNerTypeMap = {
-        '通用实体类别':[
+        通用实体类别: [
           {
-            "entityCategory": "通用实体类别",
-            "entityType": "时间日期",
-            "sourceType": "system",
-            "slotType": "time"
+            entityCategory: '通用实体类别',
+            entityType: '时间日期',
+            sourceType: 'system',
+            slotType: 'time',
           },
           {
-            "entityCategory": "通用实体类别",
-            "entityType": "整数",
-            "sourceType": "system",
-            "slotType": "integer"
+            entityCategory: '通用实体类别',
+            entityType: '整数',
+            sourceType: 'system',
+            slotType: 'integer',
           },
           {
-            "entityCategory": "通用实体类别",
-            "entityType": "人数",
-            "sourceType": "system",
-            "slotType": "person-number"
+            entityCategory: '通用实体类别',
+            entityType: '人数',
+            sourceType: 'system',
+            slotType: 'person-number',
           },
           {
-            "entityCategory": "通用实体类别",
-            "entityType": "姓氏",
-            "sourceType": "system",
-            "slotType": "last-name"
+            entityCategory: '通用实体类别',
+            entityType: '姓氏',
+            sourceType: 'system',
+            slotType: 'last-name',
           },
           {
-            "entityCategory": "通用实体类别",
-            "entityType": "电子邮件",
-            "sourceType": "system",
-            "slotType": "email"
+            entityCategory: '通用实体类别',
+            entityType: '电子邮件',
+            sourceType: 'system',
+            slotType: 'email',
           },
           {
-            "entityCategory": "通用实体类别",
-            "entityType": "电话号码",
-            "sourceType": "system",
-            "slotType": "telephone-number"
+            entityCategory: '通用实体类别',
+            entityType: '电话号码',
+            sourceType: 'system',
+            slotType: 'telephone-number',
           },
           {
-            "entityCategory": "通用实体类别",
-            "entityType": "是否",
-            "sourceType": "system",
-            "slotType": "binary"
+            entityCategory: '通用实体类别',
+            entityType: '是否',
+            sourceType: 'system',
+            slotType: 'binary',
           },
           {
-            "entityCategory": "通用实体类别",
-            "entityType": "车牌号码",
-            "sourceType": "system",
-            "slotType": "car-plate"
+            entityCategory: '通用实体类别',
+            entityType: '车牌号码',
+            sourceType: 'system',
+            slotType: 'car-plate',
           },
         ],
-        '金融实体类别':[
+        金融实体类别: [
           {
-            "entityCategory": "金融实体类别",
-            "entityType": "信用卡号",
-            "sourceType": "system",
-            "slotType": "bank-card"
+            entityCategory: '金融实体类别',
+            entityType: '信用卡号',
+            sourceType: 'system',
+            slotType: 'bank-card',
           },
           {
-            "entityCategory": "金融实体类别",
-            "entityType": "金钱",
-            "sourceType": "system",
-            "slotType": "money"
+            entityCategory: '金融实体类别',
+            entityType: '金钱',
+            sourceType: 'system',
+            slotType: 'money',
           },
-        ]
+        ],
       };
       Object.keys(this.idToNerMap).map((id) => {
         const ner = this.idToNerMap[id];
         const category = ner.entityCategory;
-        if (this.categoryToNerTypeMap[category] === undefined){
+        if (this.categoryToNerTypeMap[category] === undefined) {
           this.categoryToNerTypeMap[category] = [ner];
-        }else{
+        } else {
           this.categoryToNerTypeMap[category].push(ner);
         }
       });
     },
-    updateData(index, newEntityCollector){
+    updateData(index, newEntityCollector) {
       this.entityCollectorList[index] = JSON.parse(JSON.stringify(newEntityCollector));
       this.$emit('update', this.entityCollectorList);
     },
-    moveUp(index){
-      let tmp = this.entityCollectorList[index-1];
-      this.entityCollectorList[index-1] = this.entityCollectorList[index];
+    moveUp(index) {
+      const tmp = this.entityCollectorList[index - 1];
+      this.entityCollectorList[index - 1] = this.entityCollectorList[index];
       this.entityCollectorList[index] = tmp;
       this.$nextTick(() => {
         this.$forceUpdate();
       });
     },
-    moveDown(index){
-      let tmp = this.entityCollectorList[index+1];
-      this.entityCollectorList[index+1] = this.entityCollectorList[index];
+    moveDown(index) {
+      const tmp = this.entityCollectorList[index + 1];
+      this.entityCollectorList[index + 1] = this.entityCollectorList[index];
       this.entityCollectorList[index] = tmp;
       this.$nextTick(() => {
         this.$forceUpdate();
       });
     },
-    getOrder(index, length){
-      if(index === 0 && index === length-1){
-        return "single";
-      } else if (index === 0){
-        return "start";
-      } else if (index === length-1){
-        return "end";
-      } else {
-        return "mid";
+    getOrder(index, length) {
+      if (index === 0 && index === length - 1) {
+        return 'single';
+      } else if (index === 0) {
+        return 'start';
+      } else if (index === length - 1) {
+        return 'end';
       }
+      return 'mid';
     },
-    editEntityRelation(){
-      const customEntityCollectorList = this.entityCollectorList.filter( collector => collector.ner.sourceType === "custom");
-      if(customEntityCollectorList.length < 2){
+    editEntityRelation() {
+      const customEntityCollectorList = this.entityCollectorList.filter(collector => collector.ner.sourceType === 'custom');
+      if (customEntityCollectorList.length < 2) {
         general.popErrorWindow(this,
           this.i18n.error_msg.custom_entity_list_length_must_greater_than_two,
           '',
           '30%',
           '10%',
         );
-      }else{
+      } else {
         const options = {
           component: EntityRelationEditPop,
           buttons: ['ok', 'cancel'],
           validate: true,
           customPopContentStyle: {
-            width: "70%",
-            height: "70%",
+            width: '70%',
+            height: '70%',
           },
           data: {
-            customEntityCollectorList: customEntityCollectorList,
+            customEntityCollectorList,
             relatedEntityCollectorList: this.relatedEntities.relatedEntityCollectorList,
-            relatedEntityMatrix: this.relatedEntities.relatedEntityMatrix
+            relatedEntityMatrix: this.relatedEntities.relatedEntityMatrix,
           },
           callback: {
             ok: (rtnObj) => {
@@ -233,27 +232,27 @@ export default {
         this.$root.$emit('showWindow', options);
       }
     },
-    addNewEntityCollector(){
+    addNewEntityCollector() {
       this.entityCollectorList.push({
         id: this.$uuid.v1(),
         entityName: null,
         entityCategory: '通用实体类别',
         ner: {
-                "entityCategory": "通用实体类别",
-                "entityType": "时间日期",
-                "sourceType": "system",
-                "slotType": "time"
-             },
+          entityCategory: '通用实体类别',
+          entityType: '时间日期',
+          sourceType: 'system',
+          slotType: 'time',
+        },
         prompt: null,
         must_retry: true,
         retry_num: 3,
-        required: true
-      })
+        required: true,
+      });
     },
     deleteEntityCollector(index) {
       this.entityCollectorList.splice(index, 1);
     },
-    rerender(){
+    rerender() {
       this.entityCollectorList = JSON.parse(JSON.stringify(this.initialEntityCollectorList));
       this.idToNerMap = JSON.parse(JSON.stringify(this.initialIdToNerMap));
       this.relatedEntities = JSON.parse(JSON.stringify(this.initialRelatedEntities));
@@ -268,7 +267,7 @@ export default {
   activated() {
     this.rerender();
   },
-}
+};
 </script>
 
 <style lang="scss">

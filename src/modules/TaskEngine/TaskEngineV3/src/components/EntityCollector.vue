@@ -49,6 +49,7 @@
 import i18nUtils from '../utils/i18nUtil';
 import CustomEntityTypeEditorPop from './CustomEntityTypeEditorPop.vue';
 import PromptEditorPop from './PromptEditorPop.vue';
+
 export default {
   name: 'entity-collector',
   components: {},
@@ -66,19 +67,19 @@ export default {
       required: true,
     },
   },
-  data () {
+  data() {
     return {
       entityCollector: {},
-      categoryToNerTypeMap: {}
-    }
+      categoryToNerTypeMap: {},
+    };
   },
   computed: {},
   watch: {},
   methods: {
-    hasNER(nerList, ner){
-      if ( ner === undefined ) { return false; }
-      for ( let i=0; i<nerList.length; i++) {
-        if(nerList[i].entityCategory === ner.entityCategory &&
+    hasNER(nerList, ner) {
+      if (ner === undefined) { return false; }
+      for (let i = 0; i < nerList.length; i++) {
+        if (nerList[i].entityCategory === ner.entityCategory &&
            nerList[i].entityType === ner.entityType &&
            nerList[i].sourceType === ner.sourceType &&
            nerList[i].slotType === ner.slotType
@@ -86,9 +87,9 @@ export default {
       }
       return false;
     },
-    changeNER(val){
-      // workaround for selecting the same option bug of v-select 
-      if(val === null) {
+    changeNER(val) {
+      // workaround for selecting the same option bug of v-select
+      if (val === null) {
         const oldVal = this.entityCollector.ner;
         this.entityCollector.ner = undefined;
         this.$nextTick(function () {
@@ -100,9 +101,9 @@ export default {
       this.entityCollector.ner = val;
       this.updateData();
     },
-    changeEntityCategory(val){
-      // workaround for selecting the same option bug of v-select 
-      if(val === null) {
+    changeEntityCategory(val) {
+      // workaround for selecting the same option bug of v-select
+      if (val === null) {
         const oldVal = this.entityCollector.entityCategory;
         this.entityCollector.entityCategory = null;
         this.$nextTick(function () {
@@ -112,27 +113,27 @@ export default {
       }
       // update entityCategory and NER
       this.entityCollector.entityCategory = val;
-      if (this.categoryToNerTypeMap[val]){
-        if (!this.hasNER(this.categoryToNerTypeMap[val],this.entityCollector.ner)){
+      if (this.categoryToNerTypeMap[val]) {
+        if (!this.hasNER(this.categoryToNerTypeMap[val], this.entityCollector.ner)) {
           this.entityCollector.ner = this.categoryToNerTypeMap[val][0];
         } // else: NER remain the same.
-      }else{
+      }else {
         this.entityCollector.ner = undefined;
       }
       this.updateData();
     },
-    deleteCustomEntityType(){
+    deleteCustomEntityType() {
       this.$emit('deleteCustomNer', this.entityCollector.ner);
       this.entityCollector.ner = this.categoryToNerTypeMap[this.entityCollector.entityCategory][0];
     },
-    editCustomEntityType(){
+    editCustomEntityType() {
       const options = {
         component: CustomEntityTypeEditorPop,
         buttons: ['ok', 'cancel'],
         validate: true,
         customPopContentStyle: {
-          width: "70%",
-          height: "70%",
+          width: '70%',
+          height: '70%',
         },
         data: {
           customEntity: this.entityCollector.ner,
@@ -147,14 +148,14 @@ export default {
       };
       this.$root.$emit('showWindow', options);
     },
-    addCustomEntityType(){
+    addCustomEntityType() {
       const options = {
         component: CustomEntityTypeEditorPop,
         buttons: ['ok', 'cancel'],
         validate: true,
         customPopContentStyle: {
-          width: "70%",
-          height: "70%",
+          width: '70%',
+          height: '70%',
         },
         data: {
           customEntity: {
@@ -163,8 +164,8 @@ export default {
             entityTypeDescription: null,
             entityCategory: this.entityCollector.entityCategory,
             entitySynonymsList: [],
-            sourceType: "custom",
-            slotType: "pText"
+            sourceType: 'custom',
+            slotType: 'pText',
           },
           nerCategoryList: Object.keys(this.categoryToNerTypeMap),
         },
@@ -177,42 +178,42 @@ export default {
       };
       this.$root.$emit('showWindow', options);
     },
-    editPrompt(){
+    editPrompt() {
       const options = {
         component: PromptEditorPop,
         buttons: ['ok', 'cancel'],
         validate: true,
         customPopContentStyle: {
-          width: "70%",
-          height: "250px",
+          width: '70%',
+          height: '250px',
           'min-width': '400px',
         },
         data: {
           must_retry: this.entityCollector.must_retry,
           retry_num: this.entityCollector.retry_num,
-          required: this.entityCollector.required
+          required: this.entityCollector.required,
         },
         callback: {
           ok: (response) => {
             this.entityCollector.must_retry = response.must_retry,
             this.entityCollector.retry_num = response.retry_num,
-            this.entityCollector.required = response.required
+            this.entityCollector.required = response.required;
             this.updateData();
           },
         },
       };
       this.$root.$emit('showWindow', options);
     },
-    moveUp(){
+    moveUp() {
       this.$emit('moveUp');
     },
-    moveDown(){
+    moveDown() {
       this.$emit('moveDown');
     },
-    updateData(){
+    updateData() {
       this.$emit('updateData', this.entityCollector);
-    },    
-    deleteThisEntityCollector(){
+    },
+    deleteThisEntityCollector() {
       this.$emit('deleteEntityCollectorButtonClick');
     },
   },
@@ -221,5 +222,5 @@ export default {
     this.entityCollector = JSON.parse(JSON.stringify(this.initialEntityCollector));
     this.categoryToNerTypeMap = JSON.parse(JSON.stringify(this.initialCategoryToNerTypeMap));
   },
-}
+};
 </script>

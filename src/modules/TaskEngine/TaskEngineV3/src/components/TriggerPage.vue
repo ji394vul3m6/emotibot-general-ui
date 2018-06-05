@@ -34,7 +34,6 @@
 </template>
 
 <script>
-import axios from 'axios';
 import intentEngineApi from './_api/intentEngine';
 import i18nUtils from '../utils/i18nUtil';
 import general from '../utils/general';
@@ -149,7 +148,7 @@ export default {
       this.$root.$emit('showWindow', options);
     },
     editIntent(trigger) {
-      const intent = this.intentList.find(intent => intent.intent_name === trigger.intent_name);
+      const intent = this.intentList.find(i => i.intent_name === trigger.intent_name);
       const options = {
         component: IntentEditorPop,
         buttons: ['ok', 'cancel'],
