@@ -14,9 +14,6 @@
       </div>
       <transition name="slide-in">
       <div id="chat-test-pop" v-if="isChatOpen">
-        <div class='closs-button'>
-        <text-button @click="closeChatTest">close</text-button>
-        </div>
         <component :is="testComponent"></component>
       </div>
       </transition>
@@ -32,7 +29,9 @@ import { mapMutations, mapGetters } from 'vuex';
 import modules from '@/modules';
 import PageHeader from '@/components/layout/Header';
 import PageMenu from '@/components/layout/Menu';
-import QATest from '@/modules/SSM/QATest';
+import QATest from '@/modules/SSM/QATestFloat';
+
+const defaultPath = '/statistic-dash';
 
 export default {
   name: 'app',
@@ -103,7 +102,11 @@ export default {
     checkPrivilege() {
       const that = this;
       if (that.$route.matched.length <= 0) {
-        that.$router.push('error');
+        if (that.$route.fullPath === '/') {
+          that.$router.push(defaultPath);
+        } else {
+          that.$router.push('error');
+        }
         return;
       }
       if (that.userInfo.type < 2) {
@@ -117,11 +120,7 @@ export default {
         window.location = '/login.html?invalid=1';
       }
 
-      // const viewCode = codes.find(code => privileges[code].indexOf('view') >= 0);
-      // const routes = this.$router.options.routes;
-      // const target = routes.find(route => route.component.privCode === viewCode);
-
-      const route = this.$route.matched[0];
+      const route = that.$route.matched[0];
       if (!route.components.default) {
         return;
       }
@@ -147,8 +146,6 @@ export default {
       const that = this;
       const pages = [];
       const privileges = that.userRole.privileges || {};
-      console.log(that.userRole);
-      console.log(privileges);
       const privKeys = Object.keys(privileges);
       Object.keys(modules).forEach((moduleName) => {
         let moduleExpand = false;
@@ -237,7 +234,8 @@ export default {
       that.ready = true;
     }).catch((err) => {
       console.log(err);
-      window.location = '/login.html?invalid=1';
+      const fullPath = that.$route.fullPath;
+      window.location = `/login.html?invalid=1&redirect=${encodeURIComponent(fullPath)}`;
     });
 
     that.$root.$on('pop-window', () => {
@@ -248,11 +246,9 @@ export default {
     });
     that.$root.$on('open-chat-test', () => {
       that.openChatTest();
-      console.log('open-chat-test');
     });
     that.$root.$on('close-chat-test', () => {
       that.closeChatTest();
-      console.log('close-chat-test');
     });
   },
 };
@@ -310,11 +306,6 @@ export default {
   box-shadow: 0 0 5px #CCCCCC;
   .page {
     height: 100%;
-  }
-  .closs-button {
-    position: absolute;
-    right: 20px;
-    top: 20px;
   }
 
   &.slide-in-enter-active, &.slide-in-leave-active {

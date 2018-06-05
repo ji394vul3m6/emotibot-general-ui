@@ -122,10 +122,10 @@ $light-main: $page-header-color;
   display: inline-block;
   position: relative;
   @mixin pickerinput {
-    border: 1px solid $light-main;
-    border-radius: 5px;
-    height: $row-height;
-    padding: 0.3em 0.5em;
+    border: 1px solid #e9e9e9;
+    border-radius: 2px;
+    height: 28px;
+    padding: 8px 8px;
     text-align: center;
     font-size: 1em;
   }

@@ -6,11 +6,14 @@ const LOGIN_PATH = '/auth/v2/login';
 const ENTERPRISE_PATH = '/auth/v2/enterprise';
 const TOKEN_PATH = '/auth/v2/token';
 
+const ENV_PATH = '/api/v1/ui/envs';
+
 const BF_LOGIN = '/BF_login';
 
-function LoginException(message) {
-  this.message = message;
-  this.name = 'LoginException';
+function failPromise(msg) {
+  return new Promise((resolve, reject) => {
+    reject(msg);
+  });
 }
 
 function parseJwt(token) {
@@ -77,28 +80,53 @@ function login(input) {
   };
 
   let token;
-
-  return that.$reqPost(LOGIN_PATH, qs.stringify(params), {
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-  })
-  .then((rsp) => {
-    const data = rsp.data;
-    token = data.result.token;
-    localStorage.setItem('token', token);
-  })
-  .then(() => that.$reqPost(BF_LOGIN, {
-    email: input.account,
-    password: md5(input.password),
-  }))
-  .then((rsp) => {
-    const data = rsp.data;
-    if (data.error_code !== 0) {
-      throw new LoginException('bf logging fail');
+  return that.$reqGet(ENV_PATH).then((envRsp) => {
+    let authTypes = ['all'];
+    const res = envRsp.data;
+    if (res.result.AUTH_TYPE) {
+      authTypes = res.result.AUTH_TYPE.split(',');
     }
-    const accessToken = data.data.access_token;
-    that.$cookie.set('access_token', accessToken);
+
+    const promiseMap = {};
+    if (authTypes.indexOf('all') >= 0 || authTypes.indexOf('authV2') >= 0) {
+      promiseMap.authV2 = that.$reqPost(LOGIN_PATH, qs.stringify(params), {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      })
+      .then((rsp) => {
+        const data = rsp.data;
+        token = data.result.token;
+        localStorage.setItem('token', token);
+        return token;
+      });
+    }
+    if (authTypes.indexOf('all') >= 0 || authTypes.indexOf('authBF') >= 0) {
+      promiseMap.authBF = that.$reqPost(BF_LOGIN, {
+        email: input.account,
+        password: md5(input.password),
+      })
+      .then((rsp) => {
+        const data = rsp.data;
+        if (data.error_code !== 0) {
+          return failPromise('bf logging fail');
+        }
+        const accessToken = data.data.access_token;
+        that.$cookie.set('access_token', accessToken);
+        return accessToken;
+      });
+    }
+    const keys = Object.keys(promiseMap);
+    if (keys.length <= 0) {
+      return failPromise('no valid auth set');
+    }
+    return Promise.all(keys.map(key => promiseMap[key])).then((args) => {
+      const ret = {};
+      args.forEach((val, idx) => {
+        ret[keys[idx]] = val;
+      });
+      return ret;
+    });
   });
 }
 

@@ -41,7 +41,7 @@ mkdir /build/dist/tmp && chmod 777 /build/dist/tmp
 
 echo "Fix chroot issue"
 mkdir /build/dist/etc
-for n in `ls -L /etc` ; do if [ ! -d /etc/$n ]; then cp /etc/$n /build/dist/etc/ ; fi ;  done
+for n in `ls -L /etc` ; do if [ ! -d /etc/$n ]; then cp /etc/$n /php/etc/ ; fi ;  done
 
 cd /etc/nginx
 rm nginx.conf

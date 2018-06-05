@@ -1,4 +1,5 @@
 import { text, select } from '@storybook/addon-knobs';
+import { action } from '@storybook/addon-actions';
 import TextButton from '../../components/basic/TextButton';
 
 export default [
@@ -13,10 +14,11 @@ export default [
         fill: '一般按鈕',
         primary: '主要按鈕',
         disable: '失效按鈕',
+        error: '錯誤按鈕',
       };
       const buttonType = select('按鈕類型', buttonTypes, 'default');
       const template = `
-        <text-button width='${width}' height='${height}' button-type='${buttonType}'>
+        <text-button width='${width}' height='${height}' button-type='${buttonType}' @click="test">
           ${buttonTxt}
         </text-button>`;
       const escape = () => {
@@ -27,6 +29,9 @@ export default [
       const templateStr = escape(template);
       return {
         components: { TextButton },
+        methods: {
+          test: action('click'),
+        },
         template: `<div>
         ${template}
         <br>

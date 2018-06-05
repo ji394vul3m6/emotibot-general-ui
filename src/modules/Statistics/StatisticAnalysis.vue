@@ -1,6 +1,6 @@
 <template>
   <div id="statistic-analysis" class="page">
-    <div class="content">
+    <div class="content card h-fill w-fill">
       <div class="radio-container page-radio-container">
         <div v-for="chartInfo in chartInfos" :key="chartInfo.name">
           <input :id="chartInfo.code" type="radio" v-model="picked" :value="chartInfo.code" name="picked">

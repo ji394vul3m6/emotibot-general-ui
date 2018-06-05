@@ -25,7 +25,7 @@
           ref="cancelBtn"
           v-if="buttons.indexOf('cancel') != -1">{{ cancel_msg }}</text-button>
         <text-button :disabled=disable_ok
-          color="purple"
+          button-type="fill"
           v-on:click="click(true)"
           ref="okBtn"
           v-if="buttons.indexOf('ok') != -1">{{ ok_msg }}</text-button>
@@ -206,6 +206,7 @@ $pop-title-font-color: #333333;
     }
   }
 
+  $pop-max-height: 60vh;
   .pop-content {
     // animation-name: showup;
     // animation-duration: 0.5s;
@@ -213,7 +214,7 @@ $pop-title-font-color: #333333;
     background: white;
     // min-width: 300px;
     max-width: 90%;
-    max-height: 90vh;
+    max-height: $pop-max-height;
 
     display: flex;
     flex-direction: column;
@@ -239,12 +240,12 @@ $pop-title-font-color: #333333;
     }
 
     & > .content {
+      position: relative;
       min-height: 30px;
-      max-height: calc(90vh - #{2 * 30px});
+      max-height: calc(#{$pop-max-height} - #{2 * 30px});
       // padding: 20px;
       box-sizing: border-box;
-      width: 100%;
-      overflow: auto;
+      @include auto-overflow();
     }
 
     & > .visible-overflow {

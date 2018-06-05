@@ -116,6 +116,8 @@ export default {
     action: '动作',
 
     filter: '筛选条件',
+    export_mode: '高级筛选',
+    total_audit_records: '共有 {num} 条日志',
 
     categories: {
       title: '维度',
@@ -179,7 +181,10 @@ export default {
   robot_setting: {
     model_rebuild: '重新建模',
     rebuild_msg: '点击“重新建模”，您的所有配置将于10分钟左右生效，在此期间将不能再次点击按钮，建议将所有修改都完成后再点“重新建模”，避免您的等待时间。如果忘记点击也没关系，自动重新建模是一小时一次。',
+    chat_info_desc: '我的名字叫 {name}，你可以在下面设置我的形象喔',
     modify_qas: '修改语料',
+    input_qa_placeholder: '请输入答案',
+    input_qa_ext_placeholder: '请输入答案扩展',
 
     weather: '天气模块',
     computation: '数学计算模块',
@@ -189,6 +194,7 @@ export default {
     chengyu: '成语模块',
     all_active: '全部开启',
     all_deactive: '全部关闭',
+    general_function: '通用技能',
   },
   wordbank: {
     add_folder: '新增目录',
@@ -244,9 +250,19 @@ export default {
     qatest: '对话测试',
     analysis: '句子分析',
     match_result: '匹配结果',
-    token: '分词',
     similar_question: '相似问题',
     similar_score: '相似分数',
+
+    sentence_analysis: '句子分析',
+    intent: '意图',
+    emotion: '情绪',
+    module: '来源',
+    token: '分词',
+
+    cmd: '指令',
+    cmdlist: {
+      human: '转人工',
+    },
   },
   qalist: {
     import_desc: '导入时将会覆盖所有问答库资料',
@@ -455,10 +471,14 @@ export default {
     load_fail: '载入失败',
   },
   chat_skill: {
+    chat_skill: '话术',
     group_basic: '基本话术',
     group_timeout: '答案失效话术',
     group_emotion: '情绪相关话术',
     save_success_msg: '保存{item}成功',
+    add_new_msg: '新增个{item}吧',
+    errorDuplicate: '内容已存在',
+    delete_check_msg: '是否要删除话术：{item}',
   },
   task_engine: {
     download_template: '下载模板',

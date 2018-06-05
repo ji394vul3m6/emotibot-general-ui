@@ -1,6 +1,6 @@
 #!/bin/bash
 REPO=docker-reg.emotibot.com.cn:55688
-CONTAINER=vipshop-admin
+CONTAINER=admin-ui
 TAG="`git rev-parse --short HEAD`"_simple
 DOCKER_IMAGE=$REPO/$CONTAINER:$TAG
 

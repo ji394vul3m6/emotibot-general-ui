@@ -1,60 +1,66 @@
 <template>
   <div class="statistic-audit">
-    <div class="content">
-      <div class="row">
-        <div class="row-title">{{ $t('statistics.time_range') }}</div>
-        <datetime-picker
-          :value="start"
-          :disableDate="startDisableDate"
-          @dateChanged="handleStartDateChanged"
-          @validityChange="value => {startValidity = value}"
-        ></datetime-picker>
-        ～
-        <datetime-picker
-          :value="end"
-          :disableDate="endDisableDate"
-          @dateChanged="handleEndDateChanged"
-          @validityChange="value => {endValidity = value}"
-        ></datetime-picker>
+    <div class="card w-fill h-fill">
+      <div class="header">
+        <div class="filter">
+          <div class="row">
+            <div class="row-title">{{ $t('statistics.time_range') }}</div>
+            <datetime-picker
+              :value="start"
+              :disableDate="startDisableDate"
+              @dateChanged="handleStartDateChanged"
+              @validityChange="value => {startValidity = value}"
+            ></datetime-picker>
+            ～
+            <datetime-picker
+              :value="end"
+              :disableDate="endDisableDate"
+              @dateChanged="handleEndDateChanged"
+              @validityChange="value => {endValidity = value}"
+            ></datetime-picker>
+            <div class="row-title inline">{{ $t('statistics.user_id') }}</div>
+            <input v-model="userNick">
+          </div>
+          <template v-if="expertMode">
+          <div class="row">
+            <div class="row-title">{{ $t('statistics.audit.op_module') }}</div>
+            <label-switch :options="listToOptions(moduleList)" v-model="selectModule"/>
+          </div>
+          <div class="row">
+            <div class="row-title">{{ $t('statistics.audit.op_type') }}</div>
+            <label-switch :options="listToOptions(actionList)" v-model="selectAction"/>
+          </div>
+          </template>
+        </div>
+        <div class="operation">
+          <text-button button-type="primary" v-on:click="doSearch(1)" :disabled="!validFormInput">
+            {{ $t('general.search') }}
+          </text-button>
+          <div @click="expertMode = !expertMode" class="show-more" :class="{more: expertMode}">
+            <div class="text">
+              {{ $t('statistics.export_mode') }}
+            </div>
+            <icon class="expand-icon" icon-type="expand" :size=12 />
+          </div>
+        </div>
       </div>
-      <div class="row">
-        <div class="row-title">{{ $t('statistics.user_id') }}</div>
-        <input v-model="userNick">
-      </div>
-      <div class="row">
-        <div class="row-title">{{ $t('statistics.audit.op_module') }}</div>
-        <label-switch :options="listToOptions(moduleList)" v-model="selectModule"/>
-        <!-- <select v-model="selectModule">
-          <option v-for="(mod, key) in moduleList" :value="key" :key="key">{{mod}}</option>
-        </select> -->
-      </div>
-      <div class="row">
-        <div class="row-title">{{ $t('statistics.audit.op_type') }}</div>
-        <label-switch :options="listToOptions(actionList)" v-model="selectAction"/>
-        <!-- <select v-model="selectAction">
-          <option v-for="(action, key) in actionList" :value="key" :key="key">{{action}}</option>
-        </select> -->
-      </div>
-      <div class="row" v-if="!validTimeRange">
+      <!-- <div class="row" v-if="!validTimeRange">
         <label class="error_msg">{{ $t('error_msg.time_range_error') }}</label>
-      </div>
+      </div> -->
       <div class="button-container row">
-        <text-button v-on:click="doSearch(1)" :disabled="!validFormInput" main>{{ $t('general.search') }}</text-button>
-        <!-- <div v-on:click="doSearch(1)" class="text-button primary" :class="{disabled: !validFormInput}">
-          {{ $t('general.search') }}
-        </div> -->
         <text-button v-if="canExport"
           v-on:click="doExport()"
-          :disabled="!validFormInput">{{ $t('general.export') }}</text-button>
-        <!-- <div v-on:click="doExport()" class="text-button" v-if="canExport" :class="{disabled: !validFormInput}">
-          {{ $t('general.export') }}
-        </div> -->
+          :disabled="!validFormInput"
+          :button-type="totalCount > 0 ? 'normal' : 'disable'">{{ $t('general.export') }}</text-button>
+        <div v-if="totalCount > 0" class="total-show">
+          {{ $t('statistics.total_audit_records', {num: totalCount}) }}
+        </div>
       </div>
       <div class="table-container">
-        <general-table v-if="showTable" :contents="tableData" :headerInfo="headerInfo"></general-table>
+        <general-table auto-height v-if="showTable" :tableData="tableData" :tableHeader="headerInfo" font-class="font-12"></general-table>
       </div>
-      <div class="row">
-        <v-pagination v-if="showPagination" :pageIndex="pageIndex" v-on:page-change="doSearch" :total="totalCount" :page-size="20" :layout="['total', 'prev', 'pager', 'next', 'jumper']"></v-pagination>
+      <div class="row paginator">
+        <v-pagination v-if="showPagination" :pageIndex="pageIndex" v-on:page-change="doSearch" :total="totalCount" :page-size="20" :layout="['prev', 'pager', 'next', 'jumper']"></v-pagination>
       </div>
     </div>
   </div>
@@ -155,11 +161,18 @@ export default {
         start_time: that.start.getTimestamp(),
         end_time: that.end.getTimestamp(),
         filters: {
-          module: that.selectModule,
-          operation: that.selectAction,
+          module: '-1',
+          operation: '-1',
         },
         page,
       };
+      // only in export mode, filter with module and action
+      if (that.expertMode) {
+        params.filters = {
+          module: that.selectModule,
+          operation: that.selectAction,
+        };
+      }
       if (that.userNick) {
         params.filters.uid = that.userNick;
       }
@@ -180,74 +193,23 @@ export default {
       });
     },
     convertAPIDataToTable(datas) {
+      const that = this;
       datas.forEach((data) => {
         data.create_time = moment(data.create_time).format(timeFormatFull);
-      });
-      return datas;
-    },
-    mapCodeToString(datas) {
-      const resultMap = this.headerInfo.find(obj => obj.key === 'result').map;
-      datas.forEach((data) => {
-        data.result = resultMap[data.result];
-        data.module = this.moduleList[data.module];
+        data.result = data.result === 0 ? that.$t('general.fail') : that.$t('general.success');
+        data.module = that.moduleList[data.module];
         data.operation = this.actionList[data.operation];
       });
       return datas;
     },
-    setUpMsg() {
+    mapCodeToString(datas) {
       const that = this;
-      that.headerInfo = [
-        {
-          text: that.$t('statistics.audit.user_id'),
-          key: 'user_id',
-          type: 'text',
-          wrap: true,
-          width: '10%',
-        },
-        {
-          text: that.$t('statistics.audit.op_module'),
-          key: 'module',
-          type: 'map-text',
-          map: this.moduleList,
-          width: '10%',
-        },
-        {
-          text: that.$t('statistics.audit.op_type'),
-          key: 'operation',
-          type: 'map-text',
-          map: this.actionList,
-          width: '10%',
-        },
-        {
-          text: that.$t('statistics.audit.content'),
-          key: 'content',
-          type: 'raw-text',
-          wrap: true,
-          width: '40%',
-        },
-        {
-          text: that.$t('statistics.audit.result'),
-          key: 'result',
-          type: 'map-text',
-          map: {
-            0: that.$t('general.fail'),
-            1: that.$t('general.success'),
-          },
-          width: '10%',
-        },
-        {
-          text: that.$t('statistics.audit.create_time'),
-          key: 'create_time',
-          type: 'text',
-          width: '10%',
-        },
-        {
-          text: that.$t('statistics.audit.ip_source'),
-          key: 'user_ip',
-          type: 'text',
-          width: '10%',
-        },
-      ];
+      datas.forEach((data) => {
+        data.result = data.result === 0 ? that.$t('general.fail') : that.$t('general.success');
+        data.module = this.moduleList[data.module];
+        data.operation = this.actionList[data.operation];
+      });
+      return datas;
     },
   },
   data() {
@@ -255,6 +217,7 @@ export default {
       start: pickerUtil.createDateObj(),
       end: pickerUtil.createDateObj(),
       userNick: '',
+      expertMode: false,
       actionList: {
         '-1': '全部',
         0: '新增',
@@ -278,9 +241,59 @@ export default {
       },
       selectModule: '-1',
       tableData: [],
-      headerInfo: [],
+      headerInfo: [
+        {
+          text: this.$t('statistics.audit.user_id'),
+          key: 'user_id',
+          type: 'text',
+          wrap: true,
+          width: '10%',
+        },
+        {
+          text: this.$t('statistics.audit.op_module'),
+          key: 'module',
+          type: 'map-text',
+          map: this.moduleList,
+          width: '10%',
+        },
+        {
+          text: this.$t('statistics.audit.op_type'),
+          key: 'operation',
+          type: 'map-text',
+          map: this.actionList,
+          width: '10%',
+        },
+        {
+          text: this.$t('statistics.audit.content'),
+          key: 'content',
+          type: 'raw-text',
+          wrap: true,
+          width: '40%',
+        },
+        {
+          text: this.$t('statistics.audit.result'),
+          key: 'result',
+          type: 'map-text',
+          map: {
+            0: this.$t('general.fail'),
+            1: this.$t('general.success'),
+          },
+          width: '10%',
+        },
+        {
+          text: this.$t('statistics.audit.create_time'),
+          key: 'create_time',
+          type: 'text',
+          width: '10%',
+        },
+        {
+          text: this.$t('statistics.audit.ip_source'),
+          key: 'user_ip',
+          type: 'text',
+          width: '10%',
+        },
+      ],
       showTable: false,
-      i18n: undefined,
       totalCount: 0,
       startValidity: true,
       endValidity: true,
@@ -317,9 +330,6 @@ export default {
       to: this.start.dateObj,
     };
   },
-  mounted() {
-    this.setUpMsg();
-  },
   activated() {
     pickerUtil.initTime(this);
     this.userNick = '';
@@ -338,40 +348,77 @@ export default {
 
 $main-color: black;
 $row-height: $default-line-height;
+$title-color: #666666;
 
-.statistic-audit {
-  select {
-    height: $row-height;
-    font-size: 1em;
-    min-width: 6em;
+.card {
+  padding: 10px 0 0 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  padding: 0 20px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: flex-end;
+  .filter {
+    flex: 1;
   }
-
-  input {
-    height: $row-height;
-    font-size: 1em;
-  }
-
-  .filter-btn-container {
-    .text-button {
-      width: auto;
-      margin-right: 20px;
+  .operation {
+    flex: 0 0 auto;
+    display: flex;
+    .show-more {
+      @include click-button();
+      display: flex;
+      align-items: center;
+      margin-left: 12px;
+      .text {
+        margin-right: 5px;
+      }
+      &:not(.more) {
+        .expand-icon {
+          transform: rotate(180deg);
+        }
+      }
     }
   }
+}
 
+.statistic-audit {
   .row {
-    margin: 5px 0;
+    flex: 0 0 auto;
+    margin-top: 10px;
     line-height: $row-height;
     display: flex;
     align-items: center;
 
     .row-title {
-      display: inline-block;
+      width: 48px;
       margin-right: 20px;
+      color: $title-color;
+      &.inline {
+        margin-left: 20px;
+      }
+    }
+    &.button-container {
+      margin-top: 0;
+      padding: 10px 20px;
+      .total-show {
+        margin-left: 10px;
+      }
+      box-shadow: inset 0 1px 0 0 #e9e9e9, inset 0 0 0 1px #e9e9e9;;
+    }
+    &.paginator {
+      box-shadow: inset 0 1px 0 0 #e9e9e9;
+      margin-top: 0;
+      padding: 20px;
     }
   }
-}
 
-.table-container {
-  width: 100%;
+  .table-container {
+    width: 100%;
+    flex: 1;
+    @include auto-overflow();
+  }
 }
 </style>

@@ -1,47 +1,35 @@
 <template>
-  <table class="general-table" :class="{'fix-table': fixed}">
+  <table class="general-table" :class="[autoHeight ? 'auto-height': '', fontClass]">
     <thead>
-      <tr class="table-header">
-        <td v-if="checkBox" class="check-container"></td>
-        <td v-for="header in headerInfo" :key="header.text">
-            {{ header.text }}
+      <tr>
+        <td v-if="checkbox" class="table-col-checkbox">
+          <input type="checkbox">
         </td>
+        <td v-for="header in tableHeader" :key="header.key" 
+          :style="{width: header.width}"
+          :class="{'fixed': header.width}">
+          {{ header.text }}
+        </td>
+        <td v-if="hasAction" class="table-col-action" :class="{'multi-action': action.length > 1}"> 操作 </td>
       </tr>
     </thead>
     <tbody>
-      <tr class="table-content" v-for="(content, idx) in contents" :key="idx">
-        <td v-if="checkBox" class="check-container">
-          <input v-if="checkMethod(content)" type="checkbox"/>
+      <tr v-for="(data, idx) in tableData" :key="idx">
+        <td v-if="checkbox" class="table-col-checkbox">
+          <input type="checkbox">
         </td>
-        <td v-for="header in headerInfo" :class="getClassObj(header)" :style="{width: header.width}" :key="header.text">
-          <template v-if="header.type === 'clickable-text'">
-            <a v-on:click="header.callback(content)">{{ content[header.key] }}</a>
+        <td v-for="header in tableHeader" :key="header.key"
+          :style="{width: header.width}"
+          :class="{'fixed': header.width}">
+          <template v-if="header.type === 'tag'">
+            <tag class="tags" v-for="tag in data[header.key]" :key="tag" :fontClass="fontClass">{{ tag }}</tag>
           </template>
-          <template v-if="header.type === 'text'">
-            {{ content[header.key] }}
-          </template>
-          <template v-if="header.type === 'raw-text'">
-            <pre>{{ content[header.key] }}</pre>
-          </template>
-          <template v-else-if="header.type === 'buttons'">
-            <div v-for="button in content[header.key].button" :key="button.text" class="text-button auto-size" :class="{primary: button.primary}" v-on:click="button.callback(idx)">
-              {{ button.text }}
-            </div>
-            <div v-if="!content[header.key].button">
-              {{ content[header.key].info }}
-            </div>
-          </template> 
-          <template v-else-if="header.type === 'map-text'">
-          {{ header.map[content[header.key]] }}
-          </template>
+          <template v-else>{{ data[header.key] }}</template>
         </td>
-      </tr>
-      <tr v-if="contents.length <= 0">
-        <td v-if="checkBox" :colspan="headerInfo.length + 1" class="table-content-empty-row test">
-          {{ $t('error_msg.empty_data') }}
-        </td>
-        <td v-else :colspan="headerInfo.length" class="table-content-empty-row">
-          {{ $t('error_msg.empty_data') }}
+        <td v-if="hasAction" class="table-col-action" :class="{'multi-action': action.length > 1}">
+          <span class="actions" v-for="act in action" 
+            :key="act.text" :class="act.type"
+            @click="act.onclick(data, idx)"> {{ act.text }}</span>
         </td>
       </tr>
     </tbody>
@@ -49,47 +37,53 @@
 </template>
 
 <script>
+import Tag from '@/components/basic/Tag';
+
 export default {
+  components: {
+    Tag,
+  },
   props: {
-    headerInfo: {
+    tableHeader: {
       type: Array,
       required: true,
       default() {
         return [];
       },
     },
-    contents: {
+    tableData: {
       type: Array,
       required: true,
       default() {
         return [];
       },
     },
-    checkBox: {
+    checkbox: {
       type: Boolean,
       required: false,
       default: false,
     },
-    checkMethod: {
-      type: Function,
+    action: {
+      type: Array,
       required: false,
       default() {
-        return () => true;
+        return [];
       },
     },
-    fixed: {
+    autoHeight: {
       type: Boolean,
       required: false,
-      default: () => false,
+      default: false,
+    },
+    fontClass: {
+      type: String,
+      required: false,
+      default: 'font-14',
     },
   },
-  methods: {
-    getClassObj(header) {
-      const ret = {
-        wrap: header.wrap,
-      };
-      ret[header.type] = true;
-      return ret;
+  computed: {
+    hasAction() {
+      return this.action.length > 0;
     },
   },
 };
@@ -97,36 +91,129 @@ export default {
 
 <style lang="scss" scoped>
 @import "styles/variable";
-table {
-  width: 100%;
 
-  &.fix-table {
-    table-layout: fixed;
+$table-header-background: $color-disabled;
+$table-data-background: $color-white;
+$table-color-borderline: $color-borderline;
+$table-row-height: 50px;
+table {
+  &.font-16 {
+    @include font-16px();
   }
+  &.font-14 {
+    @include font-14px();
+  }
+  &.font-12 {
+    @include font-12px();
+  }
+  width: 100%;
+  table-layout: fixed;
+  border-spacing: 0px;
 
   thead {
     background: $table-header-background;
-  }
-  tbody {
-    background: $table-body-background;
     tr {
-      border-bottom: 1px solid $table-border-color;
-      &:hover {
-        background: $table-body-hover-background;
+      height: $table-row-height;
+      display: flex;
+      td {
+        flex: 1 0 100px;
+        box-sizing: border-box;
+        padding: 15px 10px;
+        &.fixed {
+          flex: 0 0 auto;
+        }
+      }
+      td:first-child {
+        padding-left: 20px;
+      }
+
+      .table-col-checkbox {
+        flex: 0 0 50px;
+      }
+      .table-col-action {
+        flex: 0 0 60px;
+        &.multi-action {
+          flex: 0 0 140px;
+        }
       }
     }
   }
-  td {
-    padding: 5px;
-    &.table-content-empty-row {
-      text-align: center;
-    }
-    &.wrap {
-      word-break: break-all;
-      pre {
-        white-space: pre-wrap;
+
+  tbody {
+    background: $table-data-background;
+    tr {
+      height: $table-row-height;
+      display: flex;
+      border-top: 1px solid $table-color-borderline;
+      border-bottom: 1px solid $table-color-borderline;
+      td {
+        flex: 1 0 100px;
+        box-sizing: border-box;
+        padding: 15px 10px;
+        &.fixed {
+          flex: 0 0 auto;
+        }
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+      td:first-child {
+        padding-left: 20px;
+      }
+      .table-col-checkbox {
+        flex: 0 0 50px;
+      }
+      .table-col-action {
+        flex: 0 0 60px;
+        &.multi-action {
+          flex: 0 0 140px;
+        }
+        .actions {
+          margin: 0 10px;
+          &.primary {
+            color: $color-primary;
+          }
+          &.error {
+            color: $color-error;
+          }
+          &:first-child {
+            margin-left: 0px;
+          }
+          &:hover {
+            cursor:pointer;
+          }
+        }
       }
     }
   }
+
+  &.auto-height {
+    thead {
+      tr {
+        height: auto;
+      }
+    }
+    tbody {
+      tr {
+        height: auto;
+        td {
+          text-overflow: unset;
+          overflow: unset;
+          white-space: unset;
+          word-break: break-all;
+        }
+      }
+    }
+  }
+}
+
+.tags {
+  margin: 0 5px;
+  &:first-child {
+    margin-left: 0px;
+  }
+}
+input[type=checkbox]{
+  @include general-checkbox();
 }
 </style>

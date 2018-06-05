@@ -5,6 +5,62 @@ html, body {
   // line-height: 1.2em;
 }
 
+input {
+  @include font-12px();
+  box-sizing: border-box;
+  display: inline-block;
+  width: 160px;
+  padding: 5px 8px;
+  border: solid 1px $color-borderline;
+  border-radius: 2px;
+  &::placeholder {
+    color: $color-font-disabled;
+  }
+
+  &:hover {
+    border-color: $color-borderline-hover;
+  }
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(75, 75, 100, 0.2);
+    border-color: $color-borderline-hover;
+  }
+}
+
+.icon-input {
+  box-sizing: border-box;
+  width: 160px;
+  border: solid 1px $color-borderline;
+  border-radius: 2px;
+  background: white;
+  display: flex;
+  align-items: center;
+  &:hover {
+    border-color: $color-borderline-hover;
+  }
+  &:focus-within {  /** do not support IE **/
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(75, 75, 100, 0.2);
+    border-color: $color-borderline-hover;
+  }
+
+  input {
+    flex: 1 1 auto;
+    min-width: 0px;
+    padding: 5px 8px;
+    border: 0px;
+    background: white;
+    &:focus {
+      outline: none;
+      box-shadow: none;
+    }
+  }
+  .input-icon {
+    flex: 0 0 auto;
+    padding: 8px 8px;
+  }
+}
+
 #app {
   font-family: $app-dft-font-family, 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -48,14 +104,39 @@ html, body {
     padding: 0px;
   }
   & > .app-body {
-    background: white;
-    border-radius: 5px;
-    // padding: 10px;
-    height: 100%;
-    box-shadow: 0px 0px 5px rgba(102,102,102, 0.08);
     &:not(.iframe) {
-      @include auto-overflow();
+      .card {
+        @include auto-overflow();
+      }
     }
+    .card {
+      background: white;
+      border-radius: 5px;
+      box-shadow: 0px 0px 5px rgba(102,102,102, 0.08);
+
+      &.h-fill {
+        height: 100%;
+      }
+      &.h-half {
+        height: 50%;
+      }
+      &.h-auto {
+        height: auto;
+      }
+      &.w-fill {
+        width: 100%;
+      }
+      &.w-half {
+        width: 50%;
+      }
+      &.w-auto {
+        width: auto;
+      }
+    }
+    // background: white;
+    // border-radius: 5px;
+    // box-shadow: 0px 0px 5px rgba(102,102,102, 0.08);
+    height: 100%;
     &.iframe {
       padding: 0px;
       height: 100%;
