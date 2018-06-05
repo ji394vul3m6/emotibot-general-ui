@@ -156,7 +156,10 @@ http {
         location /robot/template {
             proxy_pass http://${BF_IP};
         }
-        location /sentenceAccociation/sentenceAccociation {
+        location /sentenceAccociation {
+            proxy_pass http://${BF_IP};
+        }
+        location /task_engine {
             proxy_pass http://${BF_IP};
         }
 
