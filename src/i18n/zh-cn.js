@@ -252,6 +252,7 @@ export default {
     match_result: '匹配结果',
     similar_question: '相似问题',
     similar_score: '相似分数',
+    filter_dimension: '筛选维度',
 
     sentence_analysis: '句子分析',
     intent: '意图',
@@ -585,6 +586,7 @@ export default {
     error: '',
   },
   general: {
+    reset: '重置',
     chat_test: '对话测试',
     custom: '自订',
     yes: '是',

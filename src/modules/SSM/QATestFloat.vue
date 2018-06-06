@@ -111,12 +111,18 @@ export default {
       this.$root.$emit('close-chat-test');
     },
     selectDimension() {
-      this.$pop({
+      const that = this;
+      that.$pop({
+        title: that.$t('qatest.filter_dimension'),
         component: DimensionSelector,
         data: this.tagTypes,
         extData: {
           type: 'radio',
         },
+        custom_button: [{
+          msg: that.$t('general.reset'),
+          event: 'reset',
+        }],
       });
     },
     checkKey(e) {

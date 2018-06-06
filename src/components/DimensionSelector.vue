@@ -1,10 +1,12 @@
 <template>
   <div class="dimension-selector">
-    <div class="category-row" v-for="category in this.value" :key="category.type">
+    <div class="category-row"
+      v-for="category in this.value" :key="category.type"
+      v-if="category.values.length > 0">
       <div class="category-title">{{ category.text }}：</div>
       <div class="category-all-check" v-if="showType==='check'">
         <input type="checkbox" v-on:change="setAllChecked(category)" v-model="category.allChecked" :id="`${category.type}_all`">
-        <label :for="`${category.type}_all`">{{ $t('general.all') }}{{ category.text }}</label>
+        <label :for="`${category.type}_all`">{{ $t('general.all') }}</label>
       </div>
       <div class="category-value-container">
         <div class="category-value" v-for="value in category.values" :key="value.id">
@@ -33,7 +35,20 @@ export default {
       allCheck: [],
     };
   },
+  mounted() {
+    const that = this;
+    this.$on('reset', that.reset);
+  },
   methods: {
+    reset() {
+      const that = this;
+      that.value.forEach((category) => {
+        category.allChecked = true;
+        category.values.forEach((value) => {
+          value.checked = false;
+        });
+      });
+    },
     setAllChecked(category) {
       category.values.forEach((value) => {
         value.checked = false;
@@ -74,9 +89,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$row-height: 30px;
+@import 'styles/variable.scss';
+
+$selected-color: #1875F0;
+$row-height: 50px;
+
 .dimension-selector {
   min-width: 500px;
+  padding: 0 20px;
   .category-row {
     display: flex;
     line-height: $row-height;
@@ -84,7 +104,7 @@ $row-height: 30px;
       min-width: 80px;
     }
     .category-all-check {
-      min-width: 120px;
+      margin-right: 10px;
     }
     .category-value-container {
       display: inline-block;
@@ -98,14 +118,14 @@ $row-height: 30px;
       display: none;
 
       &:checked + label {
-        border-radius: 5px;
+        border-radius: 2px;
         background: white;
-        color: #0099FF;
-        border: 1px solid #0099FF;
+        color: $selected-color;
+        border: 1px solid $selected-color;
       }
 
       & + label {
-        padding: 2px 5px;
+        padding: 5px 13px;
         cursor: pointer;
         user-select: none;
       }
