@@ -53,7 +53,7 @@
           :disabled="!validFormInput"
           :button-type="totalCount > 0 ? 'normal' : 'disable'">{{ $t('general.export') }}</text-button>
         <div v-if="totalCount > 0" class="total-show">
-          {{ $t('statistics.total_audit_records', {num: totalCount}) }}
+          {{ $t('statistics.total_records', {num: totalCount}) }}
         </div>
       </div>
       <div class="table-container">
@@ -126,11 +126,18 @@ export default {
         start_time: that.start.getTimestamp(),
         end_time: that.end.getTimestamp(),
         filters: {
-          module: that.selectModule,
-          operation: that.selectAction,
+          module: '-1',
+          operation: '-1',
         },
         export: true,
       };
+      // only in export mode, filter with module and action
+      if (that.expertMode) {
+        params.filters = {
+          module: that.selectModule,
+          operation: that.selectAction,
+        };
+      }
       if (that.userNick) {
         params.filters.uid = that.userNick;
       }

@@ -111,7 +111,9 @@ export default {
   },
   methods: {
     selectDimension() {
-      this.$pop({
+      const that = this;
+      that.$pop({
+        title: that.$t('qatest.filter_dimension'),
         component: DimensionSelector,
         data: this.tagTypes,
         extData: {
