@@ -1,64 +1,104 @@
 <template>
   <div class="statistic-daily">
-    <div class="content">
-      <div class="row">
-        <div class="row-title">{{ $t('statistics.keyword_search') }}</div>
-        <label-switch v-model="keywordType" :options="keywordOption"/>
-        <input v-model="keyword">
-      </div>
-      <div class="row">
-        <div class="row-title">{{ $t('statistics.time_range') }}</div>
-        <datetime-picker
-          :value="start"
-          :disableDate="startDisableDate"
-          @dateChanged="handleStartDateChanged"
-          @validityChange="value => {startValidity = value}"
-        ></datetime-picker>
-        ～
-        <datetime-picker
-          :value="end"
-          :disableDate="endDisableDate"
-          @dateChanged="handleEndDateChanged"
-          @validityChange="value => {endValidity = value}"
-        ></datetime-picker>
-      </div>
-      <div class="row">
-        <div class="row-title">{{ $t('statistics.user_id') }}</div>
-        <input v-model="userID">
-      </div>
-      <div class="filter-btn-container row">
-        {{ $t('statistics.filter') }}：
-        <text-button v-on:click="popCategorySelect(category)" v-for="category in categoryList" :key="category.text">{{category.text}}</text-button>
-      </div>
-      <div class="filter-list row">
-        <template v-for="category in categoryList">
-        <template v-for="categoryType in category.categories" v-if="!categoryType.allChecked">
-          <div class="filter-item" v-for="value in categoryType.values" v-if="value.checked" :key="value.text">
-            <span class="filter-item-text">
-              {{value.text}}
-              <span v-on:click="cancelFilter(categoryType, value)" class="filter-item-cancel">
-                x
-              </span>
-            </span>
+    <div class="content card h-fill w-fill">
+      <div class="header">
+        <div class="filter-rows">
+          <div class="row">
+            <div class="row-title">{{ $t('statistics.keyword_search') }}</div>
+            <div class="row-value">
+              <label-switch v-model="keywordType" :options="keywordOption"/>
+              <div class="input">
+                <search-input v-model="keyword" fill/>
+              </div>
+            </div>
+            <div class="row-title">{{ $t('statistics.time_range') }}</div>
+            <div class="row-value">
+              <datetime-picker
+                :value="start"
+                :disableDate="startDisableDate"
+                @dateChanged="handleStartDateChanged"
+                @validityChange="value => {startValidity = value}"
+              ></datetime-picker>
+              ～
+              <datetime-picker
+                :value="end"
+                :disableDate="endDisableDate"
+                @dateChanged="handleEndDateChanged"
+                @validityChange="value => {endValidity = value}"
+              ></datetime-picker>
+            </div>
           </div>
-        </template>
-        </template>
-        <span v-on:click="cancelAllFilter()" class="clear-all" v-if="!noDimensionSelected">{{ $t('qatest.clear_all') }}</span>
+          <div class="row">
+            <div class="row-title">{{ $t('statistics.user_id') }}</div>
+            <div class="row-value">
+              <input class="single-input" v-model="userID">
+            </div>
+          </div>
+          <template v-if="expertMode">
+          <div class="row" v-if="false">
+            <div class="row-title">{{ $t('statistics.emotions.title') }}</div>
+            <div class="row-value">
+              <input class="single-input">
+            </div>
+            <div class="row-title">{{ $t('statistics.qtypes.title') }}</div>
+            <div class="row-value">
+              <input class="single-input">
+            </div>
+          </div>
+          <div class="row dimension">
+            <text-button @click="selectDimension">{{ $t('statistics.filter') }}</text-button>
+            <div class="tag-types">
+              <div class="tag-type" v-for="tagType in tagTypes" :key="tagType.type"
+                v-if="!tagType.allChecked && tagType.values.length > 0">
+                <div class="tag-name">{{ tagType.text }}</div>
+                <div class="tag" v-for="value in tagType.values" :key="value.id"
+                  v-if="value.checked">
+                  {{ value.text }} 
+                </div>
+                <div @click="cancelFilter(tagType)" class='cancel-icon'>
+                  <icon icon-type="close" :size=10 />
+                </div>
+              </div>
+            </div>
+          </div>
+          </template>
+        </div>
+        <div class="operation">
+          <text-button button-type="primary" v-on:click="doSearch(1)" :disabled="!validFormInput">
+            {{ $t('general.search') }}
+          </text-button>
+          <div @click="expertMode = !expertMode" class="show-more" :class="{more: expertMode}">
+            <div class="text">
+              {{ $t('statistics.export_mode') }}
+            </div>
+            <icon class="expand-icon" icon-type="expand" :size=12 />
+          </div>
+        </div>
       </div>
-      <div class="row" v-if="!validTimeRange">
-        <label class="error_msg">{{ $t('error_msg.time_range_error') }}</label>
-      </div>
-      <div class="button-container row">
-        <text-button v-on:click="doSearch(1)" :disabled="!validFormInput" main>{{ $t('general.search') }}</text-button>
+      <div class="button-container">
         <text-button v-if="canExport"
           v-on:click="doExport()"
           :disabled="!validFormInput">{{ $t('general.export') }}</text-button>
+        <div v-if="totalCount > 0" class="total-show">
+          {{ $t('statistics.total_records', {num: totalCount}) }}
+        </div>
       </div>
-      <div>
-        <general-table v-if="showTable" :contents="tableData" :headerInfo="headerInfo"></general-table>
-        <v-pagination v-if="showPagination" :pageIndex="pageIndex" v-on:page-change="doSearch" :total="totalCount" :page-size="20" :layout="['total', 'prev', 'pager', 'next', 'jumper']">
+      <template v-if="showTable">
+      <div class="table-container">
+        <general-table auto-height
+          :tableData="tableData" :tableHeader="headerInfo"
+          font-class="font-12"></general-table>
+      </div>
+      <div class="paginator">
+        <v-pagination v-if="showPagination"
+          :pageIndex="pageIndex"
+          v-on:page-change="doSearch"
+          :total="totalCount"
+          :page-size="20"
+          :layout="['total', 'prev', 'pager', 'next', 'jumper']">
         </v-pagination>
       </div>
+      </template>
     </div>
   </div>
 </template>
@@ -95,6 +135,8 @@ export default {
   api: [tagAPI, api, auditAPI],
   data() {
     return {
+      expertMode: false,
+      tagTypes: [],
       start: pickerUtil.createDateObj(),
       end: pickerUtil.createDateObj(),
       categoryList: [],
@@ -118,11 +160,30 @@ export default {
     };
   },
   methods: {
-    cancelFilter(categoryType, value) {
-      value.checked = false;
-      const allChecked = categoryType.values.reduce((ret, val) => val.checked && ret, true);
-      const allNotChecked = categoryType.values.reduce((ret, val) => !val.checked && ret, true);
-      categoryType.allChecked = allChecked || allNotChecked;
+    selectDimension() {
+      const that = this;
+      const tagTypes = JSON.parse(JSON.stringify(this.tagTypes));
+      that.$pop({
+        title: that.$t('qatest.filter_dimension'),
+        component: DimensionSelector,
+        data: tagTypes,
+        callback: {
+          ok() {
+            tagTypes.forEach((tagType, idx) => {
+              that.tagTypes[idx].allChecked = tagType.allChecked;
+              tagType.values.forEach((value, valueIdx) => {
+                that.tagTypes[idx].values[valueIdx].checked = value.checked;
+              });
+            });
+          },
+        },
+      });
+    },
+    cancelFilter(categoryType) {
+      categoryType.allChecked = true;
+      categoryType.values.forEach((value) => {
+        value.checked = false;
+      });
     },
     getSearchParam() {
       const params = {
@@ -143,10 +204,11 @@ export default {
         params.filter.uid = that.trimmedUserID;
       }
 
-      this.categoryList.forEach((dimension) => {
-        dimension.categories.forEach((category) => {
-          if (!category.allChecked) {
-            const filter = category.values.reduce((ret, value) => {
+      if (that.expertMode) {
+        // only in export mode, filter with dimension, emotion and qtype
+        this.tagTypes.forEach((tagType) => {
+          if (!tagType.allChecked) {
+            const filter = tagType.values.reduce((ret, value) => {
               if (value.checked) {
                 ret.push({
                   id: value.id,
@@ -155,19 +217,18 @@ export default {
               }
               return ret;
             }, []);
-            if (!params.filter[dimension.key]) {
-              params.filter[dimension.key] = [];
+            if (!params.filter.categories) {
+              params.filter.categories = [];
             }
 
             const filterObj = {
               group: filter,
-              type: category.type,
+              type: tagType.type,
             };
-
-            params.filter[dimension.key].push(filterObj);
+            params.filter.categories.push(filterObj);
           }
         });
-      });
+      }
       return params;
     },
     doExport() {
@@ -209,8 +270,10 @@ export default {
       });
     },
     popCategorySelect(category) {
+      const that = this;
       const origCategory = JSON.parse(JSON.stringify(category.categories));
-      this.$pop({
+      that.$pop({
+        title: that.$t('qatest.filter_dimension'),
         component: DimensionSelector,
         data: category.categories,
         callback: {
@@ -218,6 +281,10 @@ export default {
             category.categories = origCategory;
           },
         },
+        custom_button: [{
+          msg: that.$t('general.reset'),
+          event: 'reset',
+        }],
       });
     },
     receiveAPIData(datas) {
@@ -350,6 +417,7 @@ export default {
     that.categoryList = CategoryList.getLocaleData(msg);
     that.$api.getTagTypes().then((data) => {
       that.categoryList[0].categories = data;
+      that.tagTypes = data;
     }, (err) => {
       console.log(err);
     }).finally(() => {
@@ -373,59 +441,140 @@ export default {
 @import 'styles/variable.scss';
 
 $main-color: black;
-$row-height: $default-line-height;
+$row-height: 28px;
+
+@mixin daily-dimension() {
+  padding: 0 20px;
+  padding-top: 10px;
+  .tag-types {
+    padding-left: 10px;
+    display: flex;
+  }
+  .tag-type {
+    border: solid 1px #e9e9e9;
+    color: #666666;
+    display: flex;
+    padding: 8px;
+    margin-left: 10px;
+    .tag-name {
+      &:after {
+        content: ":";
+        padding-right: 5px;
+      }
+    }
+    .tag {
+      &:not(:last-child) {
+        padding-right: 5px;
+      }
+    }
+    .cancel-icon {
+      @include click-button();
+    }
+  }
+}
 
 .statistic-daily {
-  .clear-all {
-    display: inline-block;
-    color: blue;
-    text-decoration: underline;
-    font-size: 0.8em;
-    user-select: none;
-    cursor: pointer;
+  .content {
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
   }
-  .filter-list {
-    // overwrite the height property of row
-    &.row {
-      height: auto;
-    }
-    div {
-      display: inline-block;
-    }
 
-    .filter-item {
-      .filter-item-text {
-        padding: 2px 5px;
-        margin: 0px 5px;
-        border: 1px solid $main-color;
-        border-radius: 0.5em;
-        background: $main-color;
-        color: white;
-        cursor: default;
-      }
-      .filter-item-cancel {
-        color: white;
-        margin: 0px 5px;
-        user-select: none;
-        cursor: pointer;
+  .header {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: flex-end;
+    padding-right: 20px;
+    padding-bottom: 10px;
+    box-shadow: inset 0 -1px 0 0 #e9e9e9;
+    .filter-rows {
+      flex: 1;
+
+      display: flex;
+      flex-direction: column;
+    }
+    .operation {
+      flex: 0 0 auto;
+      display: flex;
+      margin-bottom: 10px;
+      .show-more {
+        @include click-button();
+        display: flex;
+        align-items: center;
+        margin-left: 12px;
+        .text {
+          margin-right: 5px;
+        }
+        &:not(.more) {
+          .expand-icon {
+            transform: rotate(180deg);
+          }
+        }
       }
     }
   }
 
   .row {
-    margin: 5px 0;
-    line-height: $row-height;
+    margin-bottom: 10px;
     display: flex;
     align-items: center;
 
     .row-title {
-      display: inline-block;
-      margin-right: 20px;
+      flex: 0 0 60px;
+      margin-right: 10px;
+      margin-left: 20px;
+    }
+    .row-value {
+      flex: 0 0 350px;
+      display: flex;
+      align-items: center;
+      .label-switch {
+        flex: 0 0 auto;
+      }
+      .input {
+        padding-left: 10px;
+        flex: 1;
+        display: flex;
+      }
+      .single-input {
+        display: block;
+        flex: 1;
+      }
+    }
+
+    &.dimension {
+      @include daily-dimension();
     }
 
     input {
       padding: 5px;
     }
+  }
+
+  .button-container {
+    flex: 0 0 auto;
+
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    box-shadow: inset 0 -1px 0 0 #e9e9e9;
+    .total-show {
+      margin-left: 10px;
+    }
+  }
+
+  .table-container {
+    width: 100%;
+    flex: 1;
+    @include auto-overflow();
+  }
+  .paginator {
+    box-shadow: inset 0 1px 0 0 #e9e9e9;
+    padding:20px 15px;
+
+    display: flex;
+    justify-content: flex-end;
+    flex: 0 0 auto;
   }
 }
 </style>
