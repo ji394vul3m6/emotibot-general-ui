@@ -1,5 +1,5 @@
 <template>
-  <div class="search-input icon-input" :class="{'ie-focus-within': isFocus}">
+  <div class="search-input icon-input" :class="{'ie-focus-within': isFocus, fill: fill, flex: flex}">
     <input v-model="keyword"
       ref="input"
       :placeholder="$t('general.search_placeholder')"
@@ -19,6 +19,16 @@ export default {
     value: {
       type: String,
       required: true,
+    },
+    fill: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    flex: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
   data() {
@@ -42,6 +52,19 @@ $input-height: 28px;
 
 .search-input {
   height: $input-height;
+  &.fill {
+    width: 100%;
+    display: flex;
+
+    input {
+      display: block;
+      flex: 1;
+      width: auto;
+    }
+    .input-icon {
+      flex: 0 0 auto;
+    }
+  }
 }
 input {
   outline: none;
