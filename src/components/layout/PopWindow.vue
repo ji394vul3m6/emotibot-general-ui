@@ -17,7 +17,7 @@
       </div>
       <div class="pop-button">
         <template v-for="button in custom_button">
-          <text-button :main=button.primary
+          <text-button :button-tpye="button.primary ? 'primary' : 'normal'"
             v-on:click="customClick(button)" :key="button.msg">{{ button.msg }}</text-button>
         </template>
         <text-button
@@ -58,6 +58,10 @@ export default {
       if (button.closeAfterClick) {
         this.show = false;
         this.currentView = undefined;
+      }
+
+      if (button.event) {
+        this.$refs.content.$emit(button.event, button.payload);
       }
     },
     click(ok = true) {
