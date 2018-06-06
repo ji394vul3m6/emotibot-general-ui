@@ -1,8 +1,8 @@
 <template>
 <div id="wizard_mode">
   <div class="side-menu">
-    <div @click="routeTo('/task-engine-scenario-v3')" class="clickable side-menu-item">{{$t("task_engine_v3.wizard_mode.side_menu_tab.scenario_list")}}</div>
-    <div @click="routeTo('/task-engine-scenario-v3/entity')" class="clickable side-menu-item">{{$t("task_engine_v3.wizard_mode.side_menu_tab.entity_list")}}</div>
+    <div @click="routeTo('/task-engine-scenario-v3')" :class="{ 'selected': '/task-engine-scenario-v3' === selectedMenu }" class="clickable side-menu-item">{{$t("task_engine_v3.wizard_mode.side_menu_tab.scenario_list")}}</div>
+    <div @click="routeTo('/task-engine-scenario-v3/entity')" :class="{ 'selected': '/task-engine-scenario-v3/entity' === selectedMenu }" class="clickable side-menu-item">{{$t("task_engine_v3.wizard_mode.side_menu_tab.entity_list")}}</div>
   </div>
   <div class="main-content">
     <router-view></router-view>
@@ -27,6 +27,7 @@ export default {
     return {
       i18n: {},
       popWindows: [],
+      selectedMenu: '/task-engine-scenario-v3',
     };
   },
   computed: {},
@@ -34,6 +35,7 @@ export default {
   methods: {
     routeTo(toPath) {
       this.$router.replace(toPath);
+      this.selectedMenu = toPath;
     },
     showPopWindow(option) {
       if (this.popWindows.length > 0) {
