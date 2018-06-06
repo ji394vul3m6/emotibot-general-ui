@@ -32,7 +32,7 @@ export default {
 #task-engine {
   iframe {
     width: 100%;
-    height: calc(100% + 44px);
+    height: calc(100%);
   }
 }
 </style>

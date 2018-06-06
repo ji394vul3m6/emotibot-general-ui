@@ -7,7 +7,7 @@ const STATS_RECORD_LIST = '/stats/record';
 const STATS_DETAIL_RECORD_LIST = '/stats/detail_record';
 
 const STATS_UNRESOLVE_PATH = '/api/v1/statistic/question';
-const TAGS_PATH = '/api/v1/faq/tag-types';
+const TAGS_PATH = '/api/v2/faq/tag-types';
 
 const requestID = 'statistics';
 

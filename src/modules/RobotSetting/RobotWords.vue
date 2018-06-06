@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import NavBar from './_components/NavigationBar';
+import NavBar from '@/components/NavigationBar';
 import EditPop from './_components/RobotWordsEdit';
 import api from './_api/chatskill';
 
