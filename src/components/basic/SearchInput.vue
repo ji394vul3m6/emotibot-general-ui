@@ -38,6 +38,16 @@ export default {
 <style lang="scss" scoped>
 @import "styles/variable";
 
+$input-height: 28px;
+
+.search-input {
+  height: $input-height;
+}
+input {
+  outline: none;
+  background: transparent;
+}
+
 /* workaround of focus-within of IE*/
 .ie-focus-within {
   outline: none;
