@@ -4,8 +4,8 @@
   <button class="btn-basic" @click="addRelatedEntity">{{$t("task_engine_v3.entity-relation-editor-pop.add_row")}}</button>
   <button class="btn-basic"@click="addEntityType">{{$t("task_engine_v3.entity-relation-editor-pop.add_column")}}</button>
   <div class="entity-relation-contaientityCollector">
-    <div class="edit_column"></div>
-    <div class="edit_column"
+    <div class="edit_column headline"></div>
+    <div class="edit_column headline"
       v-for="(entityCollector, entityCollectorIndex) in relatedEntityCollectorList">
       <div v-if="entityCollectorIndex===0">{{$t("task_engine_v3.entity-relation-editor-pop.main_entity")}}</div>
       <div v-else>{{$t("task_engine_v3.entity-relation-editor-pop.related_entity")}}</div>
@@ -13,8 +13,8 @@
     </div>
   </div>
   <div class="entity-relation-contaientityCollector">
-    <div class="edit_column">{{$t("task_engine_v3.entity-relation-editor-pop.entity_type")}}</div>
-    <div class="edit_column" 
+    <div class="edit_column headline">{{$t("task_engine_v3.entity-relation-editor-pop.entity_type")}}</div>
+    <div class="edit_column headline"
         v-for="(entityCollector, entityCollectorIndex) in relatedEntityCollectorList">
         <v-select
           class="select"
@@ -28,7 +28,7 @@
   </div>
   <div class="entity-relation-contaientityCollector"
     v-for="(entityArray, entityArrayIndex) in relatedEntityMatrix">
-    <div class="edit_column">{{$t("task_engine_v3.entity-relation-editor-pop.entity")}}</div>
+    <div class="edit_column headline">{{$t("task_engine_v3.entity-relation-editor-pop.entity")}}</div>
     <div class="edit_column"
         v-for="(entity, entityIndex) in entityArray">
         <v-select
@@ -160,6 +160,9 @@ export default {
 .entity-relation-editor-pop{
   height: 100%;
   overflow: auto;
+  .headline{
+    background-color:antiquewhite;
+  }
   .entity-relation-contaientityCollector{
     border: 1px solid #e4eaec;
     width: 100%;

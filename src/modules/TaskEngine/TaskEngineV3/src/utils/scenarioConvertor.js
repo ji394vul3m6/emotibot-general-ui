@@ -21,6 +21,8 @@ export default {
               relatedEntityCollectorList: [],
               relatedEntityMatrix: [],
             },
+            re_parsers: [],
+            tde_setting: {},
           },
         },
       },
@@ -44,7 +46,7 @@ export default {
     if (skillId === 'mainSkill') {
       nodes.push(this.newEntryNode(skill.triggerList, skillId));
     }
-    nodes.push(this.newNluPcNode(skill.entityCollectorList, skillId));
+    nodes.push(this.newNluPcNode(skill.entityCollectorList, skill.re_parsers, skillId));
     nodes.push(this.newActionNode(skill.actionGroupList, skillId));
     return nodes;
   },
@@ -116,7 +118,7 @@ export default {
     ];
     return rule;
   },
-  newNluPcNode(entityCollectorList, skillId) {
+  newNluPcNode(entityCollectorList, reParsers, skillId) {
     const node = {
       node_id: `wizard_mode_nlu_pc_node_${skillId}`,
       description: 'wizard_mode_nlu_pc_node',
@@ -125,6 +127,7 @@ export default {
       edges: [{ to_node_id: `wizard_mode_action_node_${skillId}`, edge_type: 'else_into', condition_rules: [], actions: [{ operation: 'set_to_global_info', key: 'parsing_failed', val: false }, { operation: 'set_to_global_info', key: 'sys_node_dialogue_cnt', val: 0 }] }],
       content: {
         entities: entityCollectorList,
+        reParsers,
       },
     };
     return node;
@@ -144,7 +147,7 @@ export default {
     return node;
   },
   convertConditionList(conditionList) {
-    const newConditionList = conditionList.map((condition) => {
+    let newConditionList = conditionList.map((condition) => {
       let object = null;
       if (condition.target.type === 'entity') {
         object = {
@@ -175,6 +178,7 @@ export default {
       }
       return object;
     });
+    newConditionList = newConditionList.filter(object => object !== null);
     return [newConditionList];
   },
   composeConditionContent(condition) {
@@ -273,6 +277,10 @@ export default {
     }
     const data = {
       taskId: `wizard_mode_nlu_pc_node_${skillId}`,
+      nlgTemplate: skill.tde_setting.nlgTemplate,
+      service: skill.tde_setting.service,
+      jumpOutTimes: isNaN(parseInt(skill.tde_setting.jumpOutTimes, 10)) ?
+        undefined : parseInt(skill.tde_setting.jumpOutTimes, 10),
       slotDefs: entityList,
       intent: {
         operate: '订',

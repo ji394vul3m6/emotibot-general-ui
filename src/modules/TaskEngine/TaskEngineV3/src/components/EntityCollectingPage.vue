@@ -28,15 +28,25 @@
   <button class="btn-basic add-new-entity-button"
       @click="addNewEntityCollector"
     >{{$t("task_engine_v3.entity_collecting_page.add_new_entity_collector")}}</button>
-  <button class="btn-basic edit-entity-relation-button"
-      @click="editEntityRelation"
-    >{{$t("task_engine_v3.entity_collecting_page.edit_entity_relation")}}</button>
+  <div class="bottom-container">
+    <button class="btn-basic edit-entity-relation-button"
+        @click="editEntityRelation"
+      >{{$t("task_engine_v3.entity_collecting_page.edit_entity_relation")}}</button>
+    <button class="btn-basic edit-sentence-replacement-button"
+        @click="editSentenceReplacement"
+      >{{$t("task_engine_v3.entity_collecting_page.edit_sentence_replacement")}}</button>
+    <button class="btn-basic edit-tde-setting-button"
+        @click="editTDESetting"
+      >{{$t("task_engine_v3.entity_collecting_page.edit_tde_setting")}}</button>
+  </div>
 </div>
 </template>
 
 <script>
 import EntityCollector from './EntityCollector';
 import EntityRelationEditPop from './EntityRelationEditPop';
+import SentenceReplacementEditorPop from './SentenceReplacementEditorPop';
+import TDESettingEditorPop from './TDESettingEditorPop';
 import i18nUtils from '../utils/i18nUtil';
 import general from '../utils/general';
 
@@ -58,6 +68,14 @@ export default {
       type: Object,
       required: true,
     },
+    initialREParsers: {
+      type: Array,
+      required: true,
+    },
+    initialTDESetting: {
+      type: Object,
+      required: true,
+    },
   },
   data() {
     return {
@@ -69,6 +87,8 @@ export default {
         relatedEntityCollectorList: [],
         relatedEntityMatrix: [],
       },
+      re_parsers: [],
+      tde_setting: {},
     };
   },
   computed: {},
@@ -102,6 +122,18 @@ export default {
           },
           {
             entityCategory: '通用实体类别',
+            entityType: '时间日期(粒度-分)(未来时间)',
+            sourceType: 'system',
+            slotType: 'time-minute-future',
+          },
+          {
+            entityCategory: '通用实体类别',
+            entityType: '时间日期(粒度-时)(未来时间)',
+            sourceType: 'system',
+            slotType: 'time-hour-future',
+          },
+          {
+            entityCategory: '通用实体类别',
             entityType: '整数',
             sourceType: 'system',
             slotType: 'integer',
@@ -126,9 +158,27 @@ export default {
           },
           {
             entityCategory: '通用实体类别',
-            entityType: '电话号码',
+            entityType: '大陆固定电话号码',
             sourceType: 'system',
             slotType: 'telephone-number',
+          },
+          {
+            entityCategory: '通用实体类别',
+            entityType: '大陆手机号码',
+            sourceType: 'system',
+            slotType: 'mobile-mainland',
+          },
+          {
+            entityCategory: '通用实体类别',
+            entityType: '大陆固定电话号码+手机号码',
+            sourceType: 'system',
+            slotType: 'phone-mainland',
+          },
+          {
+            entityCategory: '通用实体类别',
+            entityType: '台湾固定电话号码+手机号码',
+            sourceType: 'system',
+            slotType: 'phone-taiwan',
           },
           {
             entityCategory: '通用实体类别',
@@ -141,6 +191,26 @@ export default {
             entityType: '车牌号码',
             sourceType: 'system',
             slotType: 'car-plate',
+          },
+        ],
+        餐饮实体类别: [
+          {
+            entityCategory: '餐饮实体类别',
+            entityType: '包厢还是大堂',
+            sourceType: 'system',
+            slotType: 'room-type',
+          },
+          {
+            entityCategory: '餐饮实体类别',
+            entityType: '宝宝椅',
+            sourceType: 'system',
+            slotType: 'baby-chair',
+          },
+          {
+            entityCategory: '餐饮实体类别',
+            entityType: '是否排号',
+            sourceType: 'system',
+            slotType: 'take-ticket',
           },
         ],
         金融实体类别: [
@@ -233,6 +303,48 @@ export default {
         this.$root.$emit('showWindow', options);
       }
     },
+    editSentenceReplacement() {
+      const options = {
+        component: SentenceReplacementEditorPop,
+        buttons: ['ok', 'cancel'],
+        validate: true,
+        customPopContentStyle: {
+          width: '70%',
+          height: '70%',
+        },
+        data: {
+          re_parsers: this.re_parsers,
+        },
+        callback: {
+          ok: (reParsers) => {
+            this.$emit('updateREParsers', reParsers);
+            this.re_parsers = reParsers;
+          },
+        },
+      };
+      this.$root.$emit('showWindow', options);
+    },
+    editTDESetting() {
+      const options = {
+        component: TDESettingEditorPop,
+        buttons: ['ok', 'cancel'],
+        validate: true,
+        customPopContentStyle: {
+          width: '70%',
+          height: '70%',
+        },
+        data: {
+          tde_setting: this.tde_setting,
+        },
+        callback: {
+          ok: (tdeSetting) => {
+            this.$emit('updateTDESetting', tdeSetting);
+            this.tde_setting = tdeSetting;
+          },
+        },
+      };
+      this.$root.$emit('showWindow', options);
+    },
     addNewEntityCollector() {
       this.entityCollectorList.push({
         id: this.$uuid.v1(),
@@ -257,6 +369,8 @@ export default {
       this.entityCollectorList = JSON.parse(JSON.stringify(this.initialEntityCollectorList));
       this.idToNerMap = JSON.parse(JSON.stringify(this.initialIdToNerMap));
       this.relatedEntities = JSON.parse(JSON.stringify(this.initialRelatedEntities));
+      this.re_parsers = JSON.parse(JSON.stringify(this.initialREParsers));
+      this.tde_setting = JSON.parse(JSON.stringify(this.initialTDESetting));
       this.updateCategoryToNerTypeMap(this.idToNerMap);
     },
   },
@@ -378,10 +492,20 @@ $text-hightlight-color: #004D7F;
   .add-new-entity-button{
     flex: 0 0 auto;
   }
-  .edit-entity-relation-button{
+  .bottom-container{
     flex: 0 0 auto;
     margin-top: auto;
-    width: 300px;
+    display:flex;
+    flex-direction: row;
+    .edit-entity-relation-button{
+      width: 300px;
+    }
+    .edit-sentence-replacement-button{
+      width: 300px;
+    }
+    .edit-tde-setting-button{
+      width: 300px;
+    }
   }
 }
 </style>

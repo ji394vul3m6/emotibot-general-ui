@@ -11,9 +11,13 @@
       :initialEntityCollectorList="skill.entityCollectorList"
       :initialIdToNerMap="initialIdToNerMap"
       :initialRelatedEntities="skill.relatedEntities"
+      :initialREParsers="skill.re_parsers || []"
+      :initialTDESetting="(skill.tde_setting === undefined || Array.isArray(skill.tde_setting)) ? {} : skill.tde_setting"
       @update="updateEntityCollectorList"
       @updateIdToNerMap="updateIdToNerMap"
       @updateRelatedEntities="updateRelatedEntities"
+      @updateREParsers="updateREParsers"
+      @updateTDESetting="updateTDESetting"
     ></entity-collecting-page>
     <action-page ref="actionPage"
       v-if="currentPage === 'actionPage'"
@@ -64,6 +68,8 @@ export default {
           relatedEntityCollectorList: [],
           relatedEntityMatrix: [],
         },
+        re_parsers: [],
+        tde_setting: {},
       },
     };
   },
@@ -82,6 +88,14 @@ export default {
     },
     updateEntityCollectorList(newEntityCollectorList) {
       this.skill.entityCollectorList = newEntityCollectorList;
+      this.$emit('update', this.skill);
+    },
+    updateREParsers(reParsers) {
+      this.skill.re_parsers = reParsers;
+      this.$emit('update', this.skill);
+    },
+    updateTDESetting(tdeSetting) {
+      this.skill.tde_setting = tdeSetting;
       this.$emit('update', this.skill);
     },
     updateActionGroupList(newActionGroupList) {

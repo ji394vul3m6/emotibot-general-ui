@@ -155,6 +155,8 @@ export default {
           relatedEntityCollectorList: [],
           relatedEntityMatrix: [],
         },
+        re_parsers: [],
+        tde_setting: {},
       };
       this.updateSkillNameList();
       // route to new skill
@@ -187,7 +189,7 @@ export default {
       const currentSkill = this.skills[this.currentSkillId];
       this.$refs.skillEditPage.$emit('propSkill', currentSkill);
       // propagate ner map (entity map)
-      this.idToNerMap = moduleData.idToNerMap;
+      this.idToNerMap = Array.isArray(moduleData.idToNerMap) ? {} : moduleData.idToNerMap;
     },
     saveScenario(content) {
       return api.saveScenario(

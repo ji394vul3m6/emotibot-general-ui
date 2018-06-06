@@ -114,8 +114,13 @@ export default {
       };
     },
     isContentInputVisible() {
-      if (!this.condition.comparisonOperator.needContent) this.condition.content = '';
-      return this.condition.comparisonOperator.needContent;
+      if (this.condition.target.displayText !== '' && this.condition.target.type === 'entity') {
+        if (this.condition.comparisonOperator.needContent === true) {
+          return true;
+        }
+      }
+      this.condition.content = '';
+      return false;
     },
     entities() {
       return JSON.parse(JSON.stringify(this.initialEntityCollectorList));
