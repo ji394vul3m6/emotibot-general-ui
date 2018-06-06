@@ -51,13 +51,9 @@
 </template>
 
 <script>
-import Vue from 'vue';
-import { VPagination } from 'vue-easytable';
 // import i18nUtil from '@/utils/i18nUtil';
 // import CheckPop from '@/components/popForm/CheckPop';
 import BatchAdd from './QABatchSimilarQuestionPop';
-
-Vue.component(VPagination.name, VPagination);
 
 export default {
   props: {

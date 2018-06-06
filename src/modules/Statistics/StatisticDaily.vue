@@ -64,8 +64,6 @@
 </template>
 
 <script>
-import 'vue-easytable/libs/themes-base/index.css';
-import { VTable, VPagination } from 'vue-easytable';
 import GeneralTable from '@/components/GeneralTable';
 import DatetimePicker from '@/components/DateTimePicker';
 import LabelSwitch from '@/components/basic/LabelSwitch';
@@ -93,8 +91,6 @@ export default {
     LabelSwitch,
     DatetimePicker,
     GeneralTable,
-    'v-table': VTable,
-    'v-pagination': VPagination,
   },
   api: [tagAPI, api, auditAPI],
   data() {

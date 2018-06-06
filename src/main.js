@@ -12,6 +12,9 @@ import Toggle from '@/components/basic/Toggle';
 import Icon from '@/components/basic/Icon';
 import GeneralTable from '@/components/GeneralTable';
 
+import '@/components/EasyTable/themes-base/index.css';
+import VPagination from '@/components/EasyTable/v-pagination';
+
 import App from './App';
 import router from './router';
 import store from './store';
@@ -42,6 +45,7 @@ Vue.component('loading', Loading);
 Vue.component('toggle', Toggle);
 Vue.component('icon', Icon);
 Vue.component('general-table', GeneralTable);
+Vue.component('v-pagination', VPagination);
 
 const i18n = new VueI18n({
   locale: 'zh-cn',

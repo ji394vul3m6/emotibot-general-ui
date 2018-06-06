@@ -68,7 +68,6 @@
 
 <script>
 import moment from 'moment';
-import { VTable, VPagination } from 'vue-easytable';
 import DatetimePicker from '@/components/DateTimePicker';
 import GeneralTable from '@/components/GeneralTable';
 import LabelSwitch from '@/components/basic/LabelSwitch';
@@ -94,8 +93,6 @@ export default {
     DatetimePicker,
     GeneralTable,
     LabelSwitch,
-    'v-table': VTable,
-    'v-pagination': VPagination,
   },
   methods: {
     listToOptions(actions) {
