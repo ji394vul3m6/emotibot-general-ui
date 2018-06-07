@@ -1,60 +1,61 @@
 <template>
-  <div id="dictionary">
-    <fieldset class="tab-page">
-      <legend>{{ $t("wordbank.import_history") }}</legend>
-      <div class="last-result">
-        {{ $t('wordbank.last_import_result') }}：
-        <span class="last-result-text" :class="{success: isLastResultSuccess}">{{ lastResult }}</span>
-        <div v-if="!isEmptyUploadRecord && !isLastResultSuccess" class="last-result-info">
-          <span>{{ lastResultErr }}</span>
+  <div>
+    <div id="wordbank-upload-block" class="card">
+      <div class="upload-item-block">
+        <div class="upload-item-title">{{ $t('wordbank.upload_title.batch_import') }}</div>
+        <div id="import_content" class="upload-item-content">
+          <div id="import_tool">
+            <input type="file" ref="fileChooser" id="fileChooser" accept=".xlsx" @change="validateFile"/>
+            <text-button
+              width="96px"
+              @click="openFileChooser">
+              {{ $t('wordbank.batch_import') }}
+            </text-button>
+            <span id="filename">{{ newFileName }}</span>
+          </div>
+          <div id="import_button_hint"> {{ $t('wordbank.import_button_hint') }}</div>
         </div>
       </div>
-      <div class="latest-upload" v-if="!isEmptyUploadRecord">
-        <span>{{ $t("wordbank.download_import_result")}}：</span>
-        <ol v-if="lastFile || currentFile">
-          <li v-if="currentFile != undefined">
-            <a :href="currentFile.path" @click.prevent.stop="logExport(currentFile.path)">{{ $t("wordbank.current_version") }}</a> ({{currentFile.timeStr}})
-          </li>
-          <li v-if="lastFile != undefined">
-            <a :href="lastFile.path" @click.prevent.stop="logExport(lastFile.path)">{{ $t("wordbank.last_version") }}</a> ({{lastFile.timeStr}})
-          </li>
-        </ol>
-        <span v-else> {{ $t("wordbank.result.empty") }}</span>
+
+      <div class="upload-item-block">
+        <div class="upload-item-title">{{ $t('wordbank.upload_title.last_import_result') }}</div>
+        <div id="last_import_content" class="upload-item-content"
+          :class="{'error': !isLastResultSuccess}">
+          {{ lastImportResult }}
+        </div>
       </div>
-    </fieldset>
-    <fieldset class="tab-page">
-      <legend>{{ $t("wordbank.batch_import") }}</legend>
-      <div class="button-container" v-on:click="downloadTemplate()">
-        <text-button>{{ $t("wordbank.download_batch_import_template") }}</text-button>
+
+      <div class="upload-item-block">
+        <div class="upload-item-title">{{ $t('wordbank.upload_title.download_imported_wordbank') }}</div>
+        <div id="imported_content" class="upload-item-content">
+          <div v-if="currentFile !== undefined">
+            <span class="clickable-link" @click="logExport(currentFile.path)"> {{ currentFile.timeStr }}</span>
+          </div>
+          <div v-if="lastFile !== undefined">
+            <span class="clickable-link" @click="logExport(lastFile.path)"> {{ lastFile.timeStr }}</span>
+          </div>
+        </div>
       </div>
-      <div class="button-container" v-if="canImport">
-        <text-button v-on:click="triggerUpload" id="file-selector">{{ $t("general.browse") }}</text-button>
-        <span>{{ fileName }}</span>
-        <input type="file" ref="uploadInput" v-on:change="changeFile()" accept=".xlsx">
-        <text-button @click="upload()" v-if="fileName !== ''">{{ $t("general.upload") }}</text-button>
+
+      <div class="upload-item-block">
+        <div class="upload-item-title">{{ $t('wordbank.upload_title.batch_import_hint') }}</div>
+        <div id="batch_import_hint_content" class="upload-item-content">
+          <ol>
+            <li v-for="(part, idx) in desc" :key="part.info">
+              {{ part.info }}
+              <span v-if="idx === 0" class="clickable-link" @click="downloadTemplate"> {{ $t('wordbank.download_template') }} </span>
+              <p v-for="line in part.content" :key="line">
+                {{ line }}
+              </p>
+            </li>
+          </ol>
+        </div>
       </div>
-      <div class="button-container">
-        
-      </div>
-      {{ $t("wordbank.description") }}
-      <div>
-        <ol>
-          <li v-for="part in desc" :key="part.info">
-            {{ part.info }}
-            <p v-for="line in part.content" :key="line">
-              {{ line }}
-            </p>
-          </li>
-        </ol>
-      </div>
-    </fieldset>
+    </div>
   </div>
 </template>
-
 <script>
 import auditAPI from '@/api/audit';
-import TextButton from '@/components/basic/TextButton';
-// import auth from '@/auth';
 import format from '@/utils/js/format';
 import desc from './_data/wordbankImportDesc';
 import api from './_api/wordbank';
@@ -68,72 +69,131 @@ export default {
   privCode: 'wordbank',
   displayNameKey: 'wordbank_upload',
   icon: 'white_wordbank_upload',
-  components: {
-    TextButton,
-  },
   api: [api, auditAPI],
+  data() {
+    return {
+      newFileName: '',
+      fileValid: false,
+      file: undefined,
+
+      lastImportResult: '',
+      isLastResultSuccess: true,
+      lastResultErr: '',
+      desc: '',
+
+      lastFile: undefined,
+      currentFile: undefined,
+    };
+  },
+  computed: {
+    canImport() {
+      return this.$checkPrivilege(this.code, 'import');
+    },
+    canExport() {
+      return this.$checkPrivilege(this.code, 'export');
+    },
+  },
   methods: {
     logExport(path) {
       window.open(path, '_blank');
-
-      // download audit will be add in v2 API
-      // const paths = path.split('/');
-      // const filename = paths[paths.length - 1];
-      // const that = this;
-      // const module = 'dictionary';
-
-      // that.$api.auditExportLog({
-      //   module,
-      //   filename,
-      // }).then(() => {
-      //   window.open(path, '_blank');
-      // }, (err) => {
-      //   that.$popError(that.$t('error_msg.export_fail'), err.errMsg);
-      // });
     },
     downloadTemplate() {
       window.open('/Files/wordbank_template.xlsx', '_blank');
     },
-    clearSelectedFile() {
-      this.fileName = '';
+    openFileChooser() {
+      this.$refs.fileChooser.click();
     },
-    triggerUpload() {
-      this.$refs.uploadInput.click();
+    validateFile() {
+      const fileSizeLimit = 2 * 1024 * 1024;
+      const theFile = this.$refs.fileChooser.files[0];
+      if (!theFile) {
+        this.fileValid = false;
+        this.updateFilename(this.$t('wordbank.upload_file_undefined'));
+      } else if (theFile.size <= 0 || theFile.size > fileSizeLimit) {
+        this.fileValid = false;
+        this.updateFilename(this.$t('wordbank.upload_file_size_error'));
+      } else if (this.fileTypeInvalid(theFile)) {
+        this.fileValid = false;
+        this.updateFilename(this.$t('wordbank.upload_file_type_invalid'));
+      } else {
+        this.fileValid = true;
+        this.file = theFile;
+        this.updateFilename();
+      }
+
+      if (this.fileValid) {
+        this.uploadFile();
+      }
+    },
+    fileTypeInvalid(file) {
+      const validType = ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
+      return validType.indexOf(file.type) === -1;
+    },
+    uploadFile() {
+      const that = this;
+      that.$emit('startLoading');
+      that.$api.uploadFile(this.file)
+        .then((data) => {
+          const res = data.data;
+          if (res.status === 0) {
+            that.$notify({ text: that.$t('wordbank.result.success') });
+          } else {
+            that.$notifyFail(that.$t('wordbank.result.fail'));
+          }
+        })
+        .catch((err) => {
+          console.log(err.response);
+          that.$notifyFail(that.$t('wordbank.result.fail'));
+          if (err.response.status === 400) {
+            that.$notifyFail(that.$t('wordbank.error.import_format_invalid'));
+          }
+        })
+        .finally(() => {
+          that.$emit('endLoading');
+        });
+    },
+    updateFilename(msg) {
+      this.filename = msg || this.file.name;
     },
     setUpDescription(locale) {
       this.desc = desc[locale];
     },
-    changeFile() {
-      const files = this.$refs.uploadInput.files;
-      const file = files[0] || undefined;
-      if (file) {
-        this.fileName = file.name;
-      } else {
-        this.fileName = '';
-      }
-    },
-    upload() {
-      const files = this.$refs.uploadInput.files;
-      const file = files[0] || undefined;
+    loadAllAjaxStatus(background) {
       const that = this;
-      if (!file) {
-        that.popErrorWindow(that.$t('error_msg.upload_file_undefined'));
-      } else if (file.size <= 0 || file.size > 2 * 1024 * 1024) {
-        that.popErrorWindow(that.$t('error_msg.upload_file_size_error'));
-      } else {
-        that.$api.uploadFileV2(file).then((data) => {
-          const res = data.data;
-          if (res.status === 0) {
-            that.popErrorWindow(that.$t('wordbank.wait_for_result'));
-            that.$refs.uploadInput.value = '';
-            that.changeFile();
-          } else {
-            that.popErrorWindow(that.$t('error_msg.save_fail'), res.result);
-          }
-        }, (err) => {
-          that.$popError(that.i18n.error_msg.save_fail, err.errMsg);
-        });
+      if (!background) {
+        that.$emit('startLoading');
       }
+      that.$api.getLastResult().then((data) => {
+        const res = data.data;
+        if (res.status === 0) {
+          const handleResult = res.result;
+          if (handleResult && handleResult.length !== 0) {
+            const resultStatus = that.$t(`wordbank.result.${handleResult.status}`);
+            that.lastImportResult = `${resultStatus} ( ${format.datetimeToString(res.result.start_time)} )`;
+            that.lastResultErr = res.result.message;
+            that.isLastResultSuccess = handleResult.status === 'success';
+            setTimeout(() => {
+              that.loadAllAjaxStatus(true);
+            }, 10000);
+          } else {
+            that.lastImportResult = that.$t('wordbank.result.empty');
+          }
+        }
+      })
+      .then(() => that.$api.getDownloadMeta())
+      .then((data) => {
+        const res = data.data;
+        if (res.status === 0) {
+          that.updateFileInfo(res.result);
+        }
+        that.$emit('endLoading');
+      })
+      .catch((err) => {
+        that.lastImportResult = that.$t('error_msg.request_fail');
+        that.lastResultErr = err.message;
+        that.isLastResultSuccess = false;
+        that.$emit('endLoading');
+      });
     },
     updateFileInfo(fileInfos) {
       const current = fileInfos.currentFile;
@@ -165,76 +225,8 @@ export default {
         path: `${api.DOWNLOAD_PATH}/${fileInfo.filename}`,
       };
     },
-    popErrorWindow(msg, err) {
-      this.$popError(msg, err);
-    },
-    loadAllAjaxStatus(background) {
-      const that = this;
-      if (!background) {
-        that.$emit('startLoading');
-      }
-      that.$api.getLastResult().then((data) => {
-        const res = data.data;
-        if (res.status === 0) {
-          const handleResult = res.result;
-          if (handleResult && handleResult.length !== 0) {
-            const resultStatus = that.$t(`wordbank.result.${handleResult.status}`);
-            that.lastResult = `${resultStatus} ( ${format.datetimeToString(res.result.start_time)} )`;
-            that.lastResultErr = res.result.message;
-            that.isLastResultSuccess = handleResult.status === 'success';
-            setTimeout(() => {
-              that.loadAllAjaxStatus(true);
-            }, 10000);
-          } else {
-            that.lastResult = that.$t('wordbank.result.empty');
-          }
-        }
-      })
-      .then(() => that.$api.getDownloadMeta())
-      .then((data) => {
-        const res = data.data;
-        if (res.status === 0) {
-          that.updateFileInfo(res.result);
-        }
-        that.$emit('endLoading');
-      })
-      .catch((err) => {
-        that.lastResult = that.$t('error_msg.request_fail');
-        that.lastResultErr = err.message;
-        that.isLastResultSuccess = false;
-        that.$emit('endLoading');
-      });
-    },
     initPage() {
       this.loadAllAjaxStatus();
-    },
-  },
-  data() {
-    return {
-      showPage: 'all',
-      desc: '',
-      fileName: '',
-      i18n: {},
-      lastFile: undefined,
-      currentFile: undefined,
-      lastResult: '',
-      lastResultErr: '',
-      code: 'dictionary',
-      isLastResultSuccess: true,
-    };
-  },
-  activated() {
-    this.initPage();
-  },
-  computed: {
-    canImport() {
-      return this.$checkPrivilege(this.code, 'import');
-    },
-    canExport() {
-      return this.$checkPrivilege(this.code, 'export');
-    },
-    isEmptyUploadRecord() {
-      return this.currentFile === undefined && this.lastFile === undefined;
     },
   },
   mounted() {
@@ -243,64 +235,75 @@ export default {
   },
 };
 </script>
-
 <style lang="scss" scoped>
 @import 'styles/variable.scss';
 
-$row-height: 30px;
+#wordbank-upload-block {
+  @include font-14px();
+  width: 100%;
+  height: 100%;
+  padding: 20px;
 
-#dictionary {
-  .button-container {
-    margin-bottom: 10px;
-
-    .text-button {
-      margin-right: 10px;
-      
-      &.auto-size {
-        width: auto;
-      }
-    }
-
-    #file-selector {
-      & ~ input {
-        display: none;
-      }
-    }
-  }
-  .tab-page {
-    border: 1px solid black;
-    padding: 5px 20px;
-    margin-bottom: 20px;
-    ol {
-      list-style: decimal inside none;
-      line-height: $row-height;
-      p {
-        margin-left: 20px;
-      }
-    }
-    span {
-      line-height: $row-height;
-    }
-    .last-result {
+  .upload-item-block {
+    &:not(:last-child) {
       margin-bottom: 20px;
     }
-    .last-result-text {
-      color: $error-color;
-      font-weight: bold;
-      &.success {
-        color: $success-color;
-        font-weight: bold;
-      }
+    .upload-item-title {
+      @include font-16px();
+      font-weight: 500;
+      color: $color-font-active;
+      margin-bottom: 10px;
     }
-    .last-result-info {
-      color: gray;
-      margin-left: 20px;
+  }
+}
+
+#import_content {
+  #import_tool {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    #fileChooser {
+      display: none;
     }
-    .latest-upload {
-      ol {
-        margin-left: 20px;
+    #filename {
+      color: $color-success;
+    }
+  }
+  #import_button_hint {
+    @include font-12px();
+    color: $color-font-mark;
+  }
+}
+
+#last_import_content {
+  color: $color-success;
+  &.error {
+    color: $color-error;
+  }
+}
+
+#imported_content {
+  :not(:last-child) {
+    margin-bottom: 10px;
+  }
+};
+
+#batch_import_hint_content {
+  color: $color-font-normal;
+  ol {
+    margin-left: 20px; 
+    list-style-type:decimal;
+    li {
+      &:not(:last-child) {
+        margin-bottom: 15px;
       }
     }
   }
+  
+}
+.clickable-link {
+  color: $color-primary;
+  text-decoration: underline;
+  cursor: pointer;
 }
 </style>

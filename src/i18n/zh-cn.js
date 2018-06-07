@@ -232,6 +232,25 @@ export default {
       edit_wordbank_fail: '编辑词库失败',
       add_wordbank_fail: '新增词库失败',
       delete_wordbank_fail: '删除词库失败',
+      import_format_invalid: '词库格式错误',
+    },
+
+    upload_file_undefined: '档案无法辨识',
+    upload_file_size_error: '档案大小需介于 0 ~ 2M',
+    upload_file_type_invalid: '档案格式限 .xlsx 档',
+    download_template: '下载批量导入模板',
+    upload_title: {
+      batch_import: '批量导入词库',
+      last_import_result: '上次上传结果',
+      download_imported_wordbank: '下载已导入词库',
+      batch_import_hint: '批量导入词库提示',
+    },
+    import_button_hint: '支持扩展名：.xlsx',
+    result: {
+      success: '导入成功',
+      fail: '导入失败',
+      loading: '导入中',
+      empty: '尚未导入',
     },
   },
   qatest: {

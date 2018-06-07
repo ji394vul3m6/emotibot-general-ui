@@ -1,5 +1,8 @@
 import qs from 'qs';
 
+const CHECK_PATH = '/api/v1/dictionary/full-check';
+const META_PATH = '/api/v1/dictionary/download-meta';
+
 const WORDBANK_PATH = '/api/v3/dictionary/wordbank';
 const WORDBANKS_PATH = '/api/v3/dictionary/wordbanks';
 const WORDBANK_CATEGORY_PATH = '/api/v3/dictionary/class';
@@ -198,6 +201,15 @@ function uploadFile(file) {
   return this.$reqPost(UPLOAD_PATH, data);
 }
 
+// word_bank_check.php
+function getLastResult() {
+  return this.$reqGet(CHECK_PATH);
+}
+// word_bank_down.php
+function getDownloadMeta() {
+  return this.$reqGet(META_PATH);
+}
+
 export default {
   addWordbank,
   addCategory,
@@ -208,4 +220,7 @@ export default {
   updateCategory,
   deleteWordbank,
   deleteWordbankCategory,
+
+  getLastResult,
+  getDownloadMeta,
 };
