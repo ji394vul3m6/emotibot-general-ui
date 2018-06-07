@@ -93,7 +93,6 @@ input {
   height: calc(100vh - #{$page-header-height});
   background: $page-base;
   box-sizing: border-box;
-  padding: 20px;
   overflow: hidden;
   // & > .app-header {
   //   height: $default-line-height;
@@ -104,21 +103,29 @@ input {
     padding: 0px;
   }
   & > .app-body {
+    padding: 0 20px;
     &:not(.iframe) {
       .card {
         @include auto-overflow();
       }
     }
+    &.multi-card {
+      @include auto-overflow();
+    }
     .card {
+      margin-top: 20px;
       background: white;
       border-radius: 5px;
       box-shadow: 0px 0px 5px rgba(102,102,102, 0.08);
 
       &.h-fill {
-        height: 100%;
+        height: calc(100% - 40px);
       }
       &.h-half {
-        height: 50%;
+        height: calc(50% - 10px);
+        &.last {
+          margin-bottom: 20px;
+        }
       }
       &.h-auto {
         height: auto;
@@ -127,7 +134,11 @@ input {
         width: 100%;
       }
       &.w-half {
-        width: 50%;
+        width: calc(50% - 10px);
+        margin-left: 20px;
+        &.first {
+          margin-left: 0;
+        }
       }
       &.w-auto {
         width: auto;
