@@ -256,6 +256,9 @@ $stat-card-height: 300px;
       height: $stat-card-height;
       float: left;
       overflow: hidden;
+      &:last-child {
+        margin-bottom: 20px;
+      }
       &.chart {
         .statistic-content {
           overflow:hidden;
