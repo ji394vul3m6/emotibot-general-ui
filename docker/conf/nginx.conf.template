@@ -240,7 +240,7 @@ http {
             proxy_pass http://${ADMIN_BF_SERVER_URL};
         }
         location /task_engine {
-            proxy_pass http://${BF_IP};
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
         }
 
         # /Files will go here
