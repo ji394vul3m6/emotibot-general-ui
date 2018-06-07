@@ -22,7 +22,7 @@
             @compositionend="toggleComposition"
             @blur="confirmEditItemName"
             @keyup.enter="checkComposition"/>
-          <span v-else>{{ treeItem.name }}</span>
+          <span v-else class="tree-item-name">{{ treeItem.name }}</span>
         </div>
         <icon class="item-icon" icon-type="edit" :size=12 
           v-if="treeItem.editable"
@@ -203,6 +203,18 @@ export default {
       .item-name {
         flex: 1 1 auto;
         padding: 0 5px;
+        position: relative;
+        display:flex;
+        align-items: center;
+        
+        .tree-item-name {
+          display: inline-block;
+          position: absolute;
+          width: 100%;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
       }
       .item-icon {
         flex: 0 0 12px;

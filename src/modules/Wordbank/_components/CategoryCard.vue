@@ -5,7 +5,7 @@
       <div id="card-category-header-block">
         <div id="card-category-row">
           <div class="card-category-title">{{ $t('wordbank.categories') }}</div>
-          <div class="card-category-setting" @click="toggleEditMode">
+          <div class="card-category-setting" @click="triggerEditMode">
             <span v-if="isEditMode"> {{ $t('wordbank.leave_setting') }}</span>
             <span v-else> {{ $t('wordbank.setting') }} </span>
           </div>
@@ -204,6 +204,28 @@ export default {
       .catch(() => {
         this.$notifyFail(this.$t('delete_category_fail'));
       });
+    },
+    triggerEditMode() {
+      this.toggleEditMode();
+      if (!this.isEditMode) {
+        this.loadWordbanks();
+      }
+    },
+    loadWordbanks() {
+      const that = this;
+      that.$emit('startLoading');
+      that.$api.getWordbanks()
+        .then((data) => {
+          that.setWordbank(data);
+          that.setCurrentCategory(data.children[0]);
+          data.children[0].isActive = true;
+        })
+        .catch(() => {
+          that.$notifyFail();
+        })
+        .finally(() => {
+          that.$emit('endLoading');
+        });
     },
   },
 };
