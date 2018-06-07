@@ -9,14 +9,15 @@ input {
   @include font-12px();
   box-sizing: border-box;
   display: inline-block;
-  width: 160px;
   padding: 5px 8px;
   border: solid 1px $color-borderline;
   border-radius: 2px;
   &::placeholder {
     color: $color-font-disabled;
   }
-
+  &[type=text] {
+    width: 160px;
+  } 
   &:hover {
     border-color: $color-borderline-hover;
   }
