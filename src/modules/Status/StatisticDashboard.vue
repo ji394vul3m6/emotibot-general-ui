@@ -39,7 +39,6 @@
 import Vue from 'vue';
 import VueC3 from 'vue-c3';
 import format from '@/utils/js/format';
-import LabelSwitch from '@/components/basic/LabelSwitch';
 import tagAPI from '@/api/tagType';
 
 import StatsChart from '../Statistics/_components/StatsChart';
@@ -65,7 +64,6 @@ export default {
     VueC3,
     StatsChart,
     StatsTable,
-    LabelSwitch,
   },
   methods: {
     typesToOption(types) {

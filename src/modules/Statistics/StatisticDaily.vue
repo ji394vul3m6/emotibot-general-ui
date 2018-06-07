@@ -106,7 +106,6 @@
 <script>
 import GeneralTable from '@/components/GeneralTable';
 import DatetimePicker from '@/components/DateTimePicker';
-import LabelSwitch from '@/components/basic/LabelSwitch';
 import pickerUtil from '@/utils/vue/DatePickerUtil';
 
 import DimensionSelector from '@/components/DimensionSelector';
@@ -128,7 +127,6 @@ export default {
   icon: 'white_daily',
   name: 'statistic-daily',
   components: {
-    LabelSwitch,
     DatetimePicker,
     GeneralTable,
   },

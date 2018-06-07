@@ -11,6 +11,7 @@ import Loading from '@/components/basic/Loading';
 import Toggle from '@/components/basic/Toggle';
 import Icon from '@/components/basic/Icon';
 import GeneralTable from '@/components/GeneralTable';
+import LabelSwitch from '@/components/basic/LabelSwitch';
 
 import '@/components/EasyTable/themes-base/index.css';
 import VPagination from '@/components/EasyTable/v-pagination';
@@ -46,6 +47,7 @@ Vue.component('toggle', Toggle);
 Vue.component('icon', Icon);
 Vue.component('general-table', GeneralTable);
 Vue.component('v-pagination', VPagination);
+Vue.component('label-switch', LabelSwitch);
 
 const i18n = new VueI18n({
   locale: 'zh-cn',

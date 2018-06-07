@@ -70,7 +70,6 @@
 import moment from 'moment';
 import DatetimePicker from '@/components/DateTimePicker';
 import GeneralTable from '@/components/GeneralTable';
-import LabelSwitch from '@/components/basic/LabelSwitch';
 import pickerUtil from '@/utils/vue/DatePickerUtil';
 import csvUtil from '@/utils/js/csv';
 import miscUtil from '@/utils/js/misc';
@@ -92,7 +91,6 @@ export default {
   components: {
     DatetimePicker,
     GeneralTable,
-    LabelSwitch,
   },
   methods: {
     listToOptions(actions) {
