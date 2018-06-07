@@ -183,7 +183,7 @@ $row-height: $default-line-height;
 $stat-card-height: 300px;
 
 .stats-chart {
-  overflow-x: hidden;
+  overflow: hidden;
   height: 100%;
   position: relative;
   .loading {
