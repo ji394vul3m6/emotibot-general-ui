@@ -1,32 +1,16 @@
 
 <template>
   <div id="wordbank-page">
+    
     <category-card id="card-category" class="card"></category-card>
-
-    <div id="card-content" class="card">
-      <div id="card-content-header">
-        <search-input v-model="wordbankKeyword"></search-input>
-        <div id="io-buttons">
-          <text-button>{{ $t('wordbank.batch_import') }}</text-button>
-          <text-button>{{ $t('wordbank.export_all') }}</text-button>
-        </div>
-      </div>
-      <div id="card-content-content">
-        <div id="toolbar">
-          <text-button button-type="primary">{{ $t('wordbank.add_wordbank') }}</text-button>
-          <text-button button-type="error">{{ $t('wordbank.delete') }}</text-button>
-          <text-button>{{ $t('wordbank.moveto') }}</text-button>
-        </div>
-      </div>
-      <div id="card-content-footer">
-
-      </div>
-    </div>
+    <wordbank-list-card id="card-content" class="card"></wordbank-list-card>
+    
   </div>
 </template>
 <script>
 import { mapGetters, mapMutations } from 'vuex';
 import CategoryCard from './_components/CategoryCard';
+import WordbankListCard from './_components/WordbankListCard';
 import api from './_api/wordbank';
 
 export default {
@@ -37,10 +21,10 @@ export default {
   api,
   components: {
     CategoryCard,
+    WordbankListCard,
   },
   data() {
     return {
-      wordbankKeyword: '',
     };
   },
   computed: {
@@ -88,48 +72,6 @@ export default {
   #card-content {
     flex: 1 0 auto;
     margin-left: 20px;
-  }
-}
-
-#card-content {
-  display: flex;
-  flex-direction: column;
-  #card-content-header {
-    flex: 0 0 72px;
-    padding: 20px;
-    padding-bottom: 24px;
-    border-bottom: 1px solid $color-borderline;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    #io-buttons {
-      display: flex;
-      justify-content: space-between;
-      .text-button {
-        margin: 0 5px;
-      }
-      :last-child {
-        margin-right: 0px;
-      }
-    }
-  }
-  #card-content-content {
-    flex: 1 1 auto;
-    #toolbar {
-      margin: 10px 20px;
-      display: flex;
-      .text-button {
-        margin: 0 5px;
-      }
-      :first-child {
-        margin-left: 0px;
-      }
-    }
-  }
-  #card-content-footer {
-    border: 1px solid green;
-    flex: 0 0 50px;
   }
 }
 </style>

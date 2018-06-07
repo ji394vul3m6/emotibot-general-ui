@@ -25,7 +25,8 @@ function updateWordbank(wordbank) {
     name: wordbank.name,
     similar_words: wordbank.similar_words.join(','), // POST and PUT similar_words is defined as a string of similiar words separate by comma
   };
-  return this.$reqPut(`${WORDBANK_PATH}/${wordbank.wid}`, qs.stringify(param));
+  return this.$reqPut(`${WORDBANK_PATH}/${wordbank.wid}`, qs.stringify(param))
+  .then(rsp => rsp.data.result);
 }
 
 function addCategory(pid, name, layer) {
@@ -165,6 +166,8 @@ function getWordbanks() {
     layer = 0;  // for convertData
     convertData(wordbanks);
     parseEditable(wordbanks);
+
+    allWordbanks = [];
     parseWordbank(wordbanks);
     return wordbanks;
   });

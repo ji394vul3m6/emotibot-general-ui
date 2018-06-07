@@ -8,7 +8,7 @@ function resetActive(wordbank) {
     });
   }
 }
-function findParent(wordbank, cid) {
+function findCategoryParent(wordbank, cid) {
   if (wordbank.children && wordbank.children.length > 0) {
     const targetIndex = wordbank.children.findIndex(child => child.cid === cid);
     if (targetIndex !== -1) {
@@ -16,7 +16,27 @@ function findParent(wordbank, cid) {
     }
     let parent;
     wordbank.children.forEach((child) => {
-      const newparent = findParent(child, cid);
+      const newparent = findCategoryParent(child, cid);
+      parent = (newparent === undefined) ? parent : newparent;
+    });
+    return parent;
+  }
+  return undefined;
+}
+function findWordbankParent(wordbank, wid) {
+  if (wordbank.cid === -3) {  // Find parent other than 'ALL'
+    return undefined;
+  }
+  if (wordbank.wordbanks && wordbank.wordbanks.length > 0) {
+    const targetIndex = wordbank.wordbanks.findIndex(bank => bank.wid === wid);
+    if (targetIndex !== -1) {
+      return wordbank;
+    }
+  }
+  if (wordbank.children && wordbank.children.length > 0) {
+    let parent;
+    wordbank.children.forEach((child) => {
+      const newparent = findWordbankParent(child, wid);
       parent = (newparent === undefined) ? parent : newparent;
     });
     return parent;
@@ -139,9 +159,42 @@ export const mutations = {
     state.currentCategory.isActive = true;
   },
   [types.REMOVE_CURRENT_CATEGORY]: (_, cid) => {
-    const parent = findParent(state.wordbank, cid);
+    const parent = findCategoryParent(state.wordbank, cid);
     const categoryIndex = parent.children.findIndex(child => child.cid === cid);
     parent.children.splice(categoryIndex, 1);
   },
+  [types.UPDATE_WORDBANK_IN_CATEGORY]: (_, newbank) => {
+    // Update 'ALL' Category
+    const categoryAll = state.wordbank.children.find(child => child.cid === -3);
+    const idxInAll = categoryAll.wordbanks.findIndex(bank => bank.wid === newbank.wid);
+    categoryAll.wordbanks.splice(idxInAll, 1, newbank);
 
+    // Update Category it belongs
+    const categoryBelong = findWordbankParent(state.wordbank, newbank.wid);
+    const idxInBelong = categoryBelong.wordbanks.findIndex(bank => bank.wid === newbank.wid);
+    categoryBelong.wordbanks.splice(idxInBelong, 1, newbank);
+  },
+  [types.ADD_WORDBANK_TO_CATEGORY]: (_, { cid, newbank }) => {
+    // Add To 'ALL' Category no matter what
+    const categoryAll = state.wordbank.children.find(child => child.cid === -3);
+    categoryAll.wordbanks.splice(0, 0, newbank);
+
+    if (cid === -3) { // If Current is 'ALL', add to 'NO Categroy'
+      const categoryNO = state.wordbank.children.find(child => child.cid === -2);
+      categoryNO.wordbanks.splice(0, 0, newbank);
+    } else {  // Add To Current category
+      state.currentCategory.wordbanks.splice(0, 0, newbank);
+    }
+  },
+  [types.DELETE_WORDBANK_FROM_CATEGORY]: (_, wid) => {
+    // Delete from 'ALL' Category
+    const categoryAll = state.wordbank.children.find(child => child.cid === -3);
+    const idxInAll = categoryAll.wordbanks.findIndex(bank => bank.wid === wid);
+    categoryAll.wordbanks.splice(idxInAll, 1);
+
+    // Delete from Category it belongs
+    const categoryBelong = findWordbankParent(state.wordbank, wid);
+    const idxInBelong = categoryBelong.wordbanks.findIndex(bank => bank.wid === wid);
+    categoryBelong.wordbanks.splice(idxInBelong, 1);
+  },
 };

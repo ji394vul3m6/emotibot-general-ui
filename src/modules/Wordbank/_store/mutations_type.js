@@ -9,3 +9,6 @@ export const APPEND_SUB_CATEGORY = 'appendSubCategory';
 export const ADD_TO_CURRENT_CATEGORY = 'addToCurrentCategory';
 export const CANCEL_ADD_FROM_CURRENT_CATEGORY = 'cancelAddFromCurrentCategory';
 export const REMOVE_CURRENT_CATEGORY = 'removeCurrentCategory';
+export const UPDATE_WORDBANK_IN_CATEGORY = 'updateWordbankInCategory';
+export const ADD_WORDBANK_TO_CATEGORY = 'addWordbankToCategory';
+export const DELETE_WORDBANK_FROM_CATEGORY = 'deleteWordbankFromCategory';
