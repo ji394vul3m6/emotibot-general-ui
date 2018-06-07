@@ -16,10 +16,11 @@
         <input id="add-root" type="text"
           v-if="isAddingRoot" v-model="rootName" ref="rootName" 
           :placeholder="$t('wordbank.placeholder_category_name')"
-          @compositionstart="toggleComposition"
-          @compositionend="toggleComposition"
+          @compositionstart="setCompositionState(true)"
+          @compositionend="setCompositionState(false)"
           @blur="confirmRootName"
-          @keyup.enter="checkComposition">
+          @keydown.enter="detectCompositionState"
+          @keyup.enter="confirmRootName">
         <span v-else>{{ $t('wordbank.add_rootcategory') }}</span>
       </div>
     </div>
@@ -142,20 +143,16 @@ export default {
       }
       return undefined;
     },
-    toggleComposition() {
-      this.compositionState = !this.compositionState;
-      if (this.compositionState) {
-        this.wasCompositioning = true;
-      }
+    setCompositionState(bool) {
+      this.compositionState = bool;
     },
-    checkComposition() {
-      if (this.wasCompositioning) {
-        this.wasCompositioning = false;
-        return;
-      }
-      this.confirmRootName();
+    detectCompositionState() {
+      this.wasCompositioning = this.compositionState;
     },
     confirmRootName() {
+      if (this.wasCompositioning) {
+        return;
+      }
       this.rootName = this.rootName.trim();
       // cancel add root
       if (this.rootName === '') {

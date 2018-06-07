@@ -38,7 +38,7 @@
     <div id="edit-content">
       <general-table id="synonym-table" 
         :tableHeader="tableHeader" :tableData="curPage" :action="tableAction"
-        @checkedChange="handleCheckedChange" checkbox></general-table>
+        @checkedChange="handleCheckedChange" checkbox showEmpty></general-table>
     </div>
     <div id="edit-footer">
       <v-pagination size="small" :total="curTotal" :pageIndex="curPageIdx" :pageSize="pageLimit" :layout="['prev', 'pager', 'next', 'jumper']" @page-change="handlePageChange"></v-pagination>
@@ -132,7 +132,7 @@ export default {
   },
   watch: {
     isDefaultSensitive() {
-      if (this.isDefaultSensitive) {
+      if (this.wordbank.isSensitive && this.isDefaultSensitive) {
         this.$nextTick(() => {
           this.sensitiveAnswer = '';
           this.$refs.sensitiveInputBox.disabled = true;
@@ -245,7 +245,7 @@ export default {
 #pop-wordbank-edit {
   @include font-14px();
   width: 960px;
-  height: 500px; 
+  height: 450px;
   overflow: hidden;
   display: flex;
   flex-direction: column;

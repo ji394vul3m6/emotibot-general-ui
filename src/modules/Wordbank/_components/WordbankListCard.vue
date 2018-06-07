@@ -16,7 +16,8 @@
       </div>
       <general-table id="content-table" 
         :tableHeader="tableHeader" :tableData="tableData" :action="tableAction"
-        @checkedChange="handleCheckedChange" checkbox></general-table>
+        @checkedChange="handleCheckedChange" checkbox
+        showEmpty></general-table>
     </div>
     <div id="card-content-footer">
       <v-pagination size="small" :total="curTotal" :pageIndex="curPageIdx" :pageSize="pageLimit" :layout="['prev', 'pager', 'next', 'jumper']" @page-change="handlePageChange"></v-pagination>
@@ -100,6 +101,11 @@ export default {
     },
   },
   watch: {
+    wordbanks() {
+      this.wordbankKeyword = '';
+      this.currentWordbanks = this.wordbanks;
+      this.filteredWordbanks = [];
+    },
     currentCategory() {
       this.loadCurrentWordbanks();
       this.currentWordbanks = this.wordbanks;
@@ -300,8 +306,17 @@ export default {
     },
     loadCurrentWordbanks() {
       if (!this.isEditMode) {
-        this.wordbanks = this.currentCategory.wordbanks;
+        this.wordbanks = this.getWordbanksFromSubCategories(this.currentCategory);
       }
+    },
+    getWordbanksFromSubCategories(wordbank) {
+      let subWordbanks = [];
+      if (wordbank.children && wordbank.children.length > 0) {
+        wordbank.children.forEach((child) => {
+          subWordbanks = subWordbanks.concat(this.getWordbanksFromSubCategories(child));
+        });
+      }
+      return wordbank.wordbanks.concat(subWordbanks);
     },
   },
 };

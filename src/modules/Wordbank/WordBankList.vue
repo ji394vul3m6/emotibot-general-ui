@@ -2,8 +2,8 @@
 <template>
   <div id="wordbank-page">
     
-    <category-card id="card-category" class="card"></category-card>
-    <wordbank-list-card id="card-content" class="card"></wordbank-list-card>
+    <category-card id="card-category" class="card h-fill"></category-card>
+    <wordbank-list-card id="card-content" class="card h-fill"></wordbank-list-card>
     
   </div>
 </template>
