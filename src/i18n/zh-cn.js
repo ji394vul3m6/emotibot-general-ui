@@ -76,8 +76,9 @@ export default {
   login: {
     title: '用户登陆',
     login: '登入',
-    account_place: '请输入帐号',
-    password_place: '请输入密码',
+    account_place: '输入帐号',
+    password_place: '输入密码',
+    contact_sm: '无法登陆？请联络管理人员',
   },
   statistics: {
     answer: '回答',
