@@ -57,7 +57,7 @@
         </div>
       </div>
       <div class="table-container">
-        <general-table auto-height v-if="showTable" :tableData="tableData" :tableHeader="headerInfo" font-class="font-12"></general-table>
+        <general-table auto-height show-empty v-if="showTable" :tableData="tableData" :tableHeader="headerInfo" font-class="font-12"></general-table>
       </div>
       <div class="row paginator">
         <v-pagination v-if="showPagination" :pageIndex="pageIndex" v-on:page-change="doSearch" :total="totalCount" :page-size="20" :layout="['prev', 'pager', 'next', 'jumper']"></v-pagination>
@@ -420,6 +420,9 @@ $title-color: #666666;
   .table-container {
     width: 100%;
     flex: 1;
+
+    display: flex;
+    flex-direction: column;
     @include auto-overflow();
   }
 }

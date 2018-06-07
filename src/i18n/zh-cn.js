@@ -587,6 +587,7 @@ export default {
     error: '',
   },
   general: {
+    no_data: '暂无数据',
     reset: '重置',
     chat_test: '对话测试',
     custom: '自订',

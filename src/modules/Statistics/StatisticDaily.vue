@@ -85,7 +85,7 @@
       </div>
       <template v-if="showTable">
       <div class="table-container">
-        <general-table auto-height
+        <general-table auto-height show-empty
           :tableData="tableData" :tableHeader="headerInfo"
           font-class="font-12"></general-table>
       </div>
@@ -564,6 +564,8 @@ $row-height: 28px;
   .table-container {
     width: 100%;
     flex: 1;
+    display: flex;
+    flex-direction: column;
     @include auto-overflow();
   }
   .paginator {
