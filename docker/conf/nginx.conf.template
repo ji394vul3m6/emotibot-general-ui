@@ -239,6 +239,9 @@ http {
         location /dimension {
             proxy_pass http://${ADMIN_BF_SERVER_URL};
         }
+        location /task_engine {
+            proxy_pass http://${BF_IP};
+        }
 
         # /Files will go here
         location / {
