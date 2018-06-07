@@ -18,7 +18,7 @@ function getTagTypes() {
     }));
     // sort by type id
     ret.sort((a, b) => (a.id - b.id));
-    return ret;
+    return ret.filter(r => r.values.length > 0);
   });
 }
 
