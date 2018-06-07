@@ -1,5 +1,5 @@
 <template>
-  <div class="general-table-container">
+  <div class="general-table-container" :class="[showEmpty ? 'show-empty': '']">
     <div class="general-table-header">
     <table class="general-table" :class="[autoHeight ? 'auto-height': '', fontClass]">
       <thead>
@@ -18,7 +18,7 @@
     </table>
     </div>
     <div class="general-table-body">
-    <table class="general-table" :class="[autoHeight ? 'auto-height': '', fontClass]">
+    <table class="general-table" :class="[autoHeight ? 'auto-height': '', fontClass]" v-if="tableData && tableData.length > 0">
       <tbody>
         <tr v-for="(data, idx) in tableData" :key="idx">
           <td v-if="checkbox" class="table-col-checkbox">
@@ -40,6 +40,9 @@
         </tr>
       </tbody>
     </table>
+    </div>
+    <div class="empty-display" v-if="showEmpty && tableData.length <= 0">
+      {{ $t('general.no_data') }}
     </div>
   </div>
 </template>
@@ -87,6 +90,11 @@ export default {
       type: String,
       required: false,
       default: 'font-14',
+    },
+    showEmpty: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
   data() {
@@ -150,13 +158,22 @@ $table-color-borderline: $color-borderline;
 $table-row-height: 50px;
 
 .general-table-container {
+  &.show-empty {
+    flex: 1;
+  }
   display: flex;
   flex-direction: column;
   .general-table-header {
     flex: 0 0 auto;
   }
   .general-table-body {
-    overflow: scroll;
+    @include auto-overflow();
+  }
+  .empty-display {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 table {
