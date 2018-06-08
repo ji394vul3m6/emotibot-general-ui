@@ -8,6 +8,7 @@ const WORDBANKS_PATH = '/api/v3/dictionary/wordbanks';
 const WORDBANK_CATEGORY_PATH = '/api/v3/dictionary/class';
 const UPLOAD_PATH = '/api/v3/dictionary/upload';
 
+
 function deleteWordbank(id) {
   return this.$reqDelete(`${WORDBANK_PATH}/${id}`);
 }
@@ -26,10 +27,18 @@ function updateCategory(cid, name) {
 function updateWordbank(wordbank) {
   const param = {
     name: wordbank.name,
+    answer: wordbank.answer,
     similar_words: wordbank.similar_words.join(','), // POST and PUT similar_words is defined as a string of similiar words separate by comma
   };
   return this.$reqPut(`${WORDBANK_PATH}/${wordbank.wid}`, qs.stringify(param))
   .then(rsp => rsp.data.result);
+}
+
+function moveToCategory(wid, cid) {
+  const param = {
+    cid,
+  };
+  return this.$reqPut(`${WORDBANK_PATH}/${wid}/move`, qs.stringify(param));
 }
 
 function addCategory(pid, name, layer) {
@@ -162,6 +171,11 @@ function getWordbank(id) {
     .then(rsp => rsp.data.result);
 }
 
+function getCategory(id) {
+  return this.$reqGet(`${WORDBANK_CATEGORY_PATH}/${id}`)
+    .then(rsp => rsp.data.result);
+}
+
 function getWordbanks() {
   return this.$reqGet(`${WORDBANKS_PATH}`)
   .then((rsp) => {
@@ -215,11 +229,13 @@ export default {
   addCategory,
   getWordbank,
   getWordbanks,
+  getCategory,
   uploadFile,
   updateWordbank,
   updateCategory,
   deleteWordbank,
   deleteWordbankCategory,
+  moveToCategory,
 
   getLastResult,
   getDownloadMeta,
