@@ -121,6 +121,11 @@ export default {
       }
       this.toFirstPage();
     },
+    lastPageIdx() {
+      if (this.curPageIdx > this.lastPageIdx) {
+        this.toCurPage(this.lastPageIdx);
+      }
+    },
   },
   methods: {
     ...mapMutations([
