@@ -11,8 +11,12 @@
     <div id="card-content-content">
       <div id="toolbar">
         <text-button button-type="primary" @click="popAddWordbank">{{ $t('wordbank.add_wordbank') }}</text-button>
-        <text-button button-type="error" @click="deleteMultiWordbank">{{ $t('wordbank.delete') }}</text-button>
         <!-- <text-button @click="popMoveToCategory">{{ $t('wordbank.moveto') }}</text-button> -->
+        <text-button 
+          @click="deleteMultiWordbank"
+          :button-type="this.checkedWordbank.length === 0 ? 'disable' : 'error'">
+          {{ $t('wordbank.delete') }}
+        </text-button>
       </div>
       <general-table id="content-table" 
         :tableHeader="tableHeader" :tableData="tableData" :action="tableAction"
@@ -82,6 +86,12 @@ export default {
       'isEditMode',
     ]),
     tableData() { // This is curPage
+
+      // Handle empty data cause curPageIdx to zero;
+      if (this.curPageIdx <= 0) {
+        this.toFirstPage();
+      }
+
       const startIdx = (this.curPageIdx - 1) * this.pageLimit;
       const endIdx = startIdx + this.pageLimit;
       return this.currentWordbanks.slice(startIdx, endIdx)
@@ -148,7 +158,11 @@ export default {
       // elem.scrollTop = 0;
     },
     handlePageChange(page) {
-      this.toCurPage(page);
+      if (page <= 0) {
+        this.toFirstPage();
+      } else {
+        this.toCurPage(page);
+      }
     },
     exportWordbank() {
       window.open('/api/v3/dictionary/export?zh_tw=true', '_blank');
