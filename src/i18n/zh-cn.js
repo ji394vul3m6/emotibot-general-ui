@@ -208,6 +208,7 @@ export default {
     moveto: '移至',
     add_wordbank: '新增词库',
     edit_wordbank: '编辑词库',
+    moveto_wordbank: '移动项目至...',
     add_rootcategory: '新增第一层分类',
     add_subcategory: '新增子分类',
     delete_category: '删除分类',
@@ -225,6 +226,9 @@ export default {
     sensitive_word: '敏感词回应',
     batch_import: '批量导入',
     export_all: '全部导出',
+    success: {
+      moved: '词库已移动',
+    },
     error: {
       edit_category_name_fail: '编辑分类名失败',
       add_category_fail: '新增分类失败',
@@ -233,6 +237,7 @@ export default {
       add_wordbank_fail: '新增词库失败',
       delete_wordbank_fail: '删除词库失败',
       import_format_invalid: '词库格式错误',
+      move_wordbank_fail: '移动词库失败',
     },
 
     upload_file_undefined: '档案无法辨识',

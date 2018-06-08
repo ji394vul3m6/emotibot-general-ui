@@ -12,3 +12,9 @@ export const REMOVE_CURRENT_CATEGORY = 'removeCurrentCategory';
 export const UPDATE_WORDBANK_IN_CATEGORY = 'updateWordbankInCategory';
 export const ADD_WORDBANK_TO_CATEGORY = 'addWordbankToCategory';
 export const DELETE_WORDBANK_FROM_CATEGORY = 'deleteWordbankFromCategory';
+
+export const CLOSE_ALL_CHILD = 'closeAllChild';
+export const STORE_LAST_CATEGORY_STATUS = 'storeLastCategoryStatus';
+export const RECOVER_LAST_ACTIVE_CATEGORY = 'recoverLastActiveCategory';
+export const TOGGLE_MOVETO_MODE = 'toggleMoveToMode';
+export const RESET_ACTIVE_ID = 'resetActiveId';

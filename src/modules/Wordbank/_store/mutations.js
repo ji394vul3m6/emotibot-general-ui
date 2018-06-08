@@ -10,6 +10,31 @@ function resetActive(wordbank) {
     });
   }
 }
+function setActive(wordbank, id) {
+  if (wordbank.cid === id) {
+    wordbank.isActive = true;
+    return;
+  }
+  if (wordbank.children && wordbank.children.length > 0) {
+    wordbank.children.forEach((child) => {
+      setActive(child, id);
+    });
+  }
+}
+function getCategoryByCid(wordbank, cid) {
+  if (wordbank.cid === cid) {
+    return wordbank;
+  }
+  let category;
+  if (wordbank.children && wordbank.children.length > 0) {
+    wordbank.children.forEach((child) => {
+      const newcategory = getCategoryByCid(child, cid);
+      category = newcategory !== undefined ? newcategory : category;
+    });
+  }
+  return category;
+}
+
 function findCategoryParent(wordbank, cid) {
   if (wordbank.children && wordbank.children.length > 0) {
     const targetIndex = wordbank.children.findIndex(child => child.cid === cid);
@@ -86,7 +111,12 @@ export const state = {
   currentCategory: undefined,
   isEditMode: false,
   isFilterMode: false,
+  isMoveToMode: false,
   allWordbanks: [],
+
+  isActiveId: undefined,
+  lastActiveState: undefined,
+  lastActiveId: undefined,
 };
 
 export const mutations = {
@@ -97,11 +127,30 @@ export const mutations = {
     state.allWordbanks = categoryAll.wordbanks;
   },
   [types.SET_CURRENT_CATEGORY]: (_, category) => {
-    state.currentCategory = category;
-    state.currentCategory.isActive = true;
+    state.isActiveId = category.cid;
+    if (!state.isMoveToMode) {
+      state.currentCategory = category;
+      state.currentCategory.isActive = true;
+    }
+  },
+  [types.RESET_ACTIVE_ID]: () => {
+    state.isActiveId = undefined;
   },
   [types.RESET_ACTIVE_CATEGORY]: () => {
     resetActive(state.wordbank);
+  },
+  [types.CLOSE_ALL_CHILD]: () => {
+    state.wordbank.children.forEach((child) => {
+      closeAllChild(child);
+    });
+  },
+  [types.STORE_LAST_CATEGORY_STATUS]: () => {
+    state.lastActiveState = state.wordbank;
+    state.lastActiveId = state.currentCategory.cid;
+  },
+  [types.RECOVER_LAST_ACTIVE_CATEGORY]: () => {
+    state.wordbank = state.lastActiveState;
+    setActive(state.wordbank, state.lastActiveId);
   },
   [types.TOGGLE_EDIT_MODE]: () => {
     state.isEditMode = !state.isEditMode;
@@ -110,6 +159,9 @@ export const mutations = {
       state.currentCategory = state.wordbank.children[0];
       state.currentCategory.isActive = true;
     }
+  },
+  [types.TOGGLE_MOVETO_MODE]: () => {
+    state.isMoveToMode = !state.isMoveToMode;
   },
   [types.SET_FILTER_MODE]: (_, bool) => {
     state.isFilterMode = bool;
@@ -120,7 +172,7 @@ export const mutations = {
         child.visible = true;
       });
       state.wordbank.children.forEach((child) => {
-        closeAllChild(child, keyword);
+        closeAllChild(child);
       });
     } else {
       state.wordbank.children.forEach((child) => {
@@ -188,8 +240,13 @@ export const mutations = {
     if (cid === CID_ALL) { // If Current is 'ALL', add to 'NO Categroy'
       const categoryNO = state.wordbank.children.find(child => child.cid === -2);
       categoryNO.wordbanks.splice(0, 0, newbank);
-    } else {  // Add To Current category
-      state.currentCategory.wordbanks.splice(0, 0, newbank);
+    } else if (cid !== CID_ALL) {  // Add To target category
+      if (state.currentCategory.cid === cid) {
+        state.currentCategory.wordbanks.splice(0, 0, newbank);
+      } else {
+        const categoryBelong = getCategoryByCid(state.wordbank, cid);
+        categoryBelong.wordbanks.splice(0, 0, newbank);
+      }
     }
   },
   [types.DELETE_WORDBANK_FROM_CATEGORY]: (_, wid) => {

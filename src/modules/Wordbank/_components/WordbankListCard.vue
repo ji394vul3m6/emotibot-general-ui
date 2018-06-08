@@ -11,11 +11,15 @@
     <div id="card-content-content">
       <div id="toolbar">
         <text-button button-type="primary" @click="popAddWordbank">{{ $t('wordbank.add_wordbank') }}</text-button>
-        <!-- <text-button @click="popMoveToCategory">{{ $t('wordbank.moveto') }}</text-button> -->
         <text-button 
           @click="deleteMultiWordbank"
           :button-type="this.checkedWordbank.length === 0 ? 'disable' : 'error'">
           {{ $t('wordbank.delete') }}
+        </text-button>
+        <text-button 
+          @click="popMoveToCategory"
+          :button-type="this.checkedWordbank.length === 0 ? 'disable' : 'default'">
+          {{ $t('wordbank.moveto') }}
         </text-button>
       </div>
       <general-table id="content-table" 
@@ -33,7 +37,7 @@
 <script>
 import { mapGetters, mapMutations } from 'vuex';
 import WordbankEditPop from './WordbankEditPop';
-// import MoveToPop from './MoveToPop';
+import MoveToPop from './MoveToPop';
 import api from '../_api/wordbank';
 
 export default {
@@ -281,19 +285,54 @@ export default {
       };
       this.$pop(options);
     },
-    // popMoveToCategory() {
-    //   const options = {
-    //     component: MoveToPop,
-    //     title: this.$t('wordbank.moveto_wordbank'),
-    //     validate: true,
-    //     callback: {
-    //       ok: () => {
-    //         // this.checkedWordbank
-    //       },
-    //     },
-    //   };
-    //   this.$pop(options);
-    // },
+    popMoveToCategory() {
+      if (this.checkedWordbank.length === 0) {
+        return;
+      }
+      const wordbanksToMove = this.checkedWordbank;
+      const options = {
+        component: MoveToPop,
+        title: this.$t('wordbank.moveto_wordbank'),
+        validate: true,
+        callback: {
+          ok: (toCid) => {
+            const movePromises = [];
+            wordbanksToMove.forEach((bank) => {
+              movePromises.push(this.$api.moveToCategory(bank.wid, toCid));
+            });
+
+            Promise.all(movePromises)
+            .then(() => {
+              wordbanksToMove.forEach((bank) => {
+                const theBank = this.currentCategory.wordbanks
+                  .find(wordbank => wordbank.wid === bank.wid);
+
+                const targetWordbank = {
+                  answer: theBank.answer,
+                  editable: theBank.editable,
+                  name: theBank.name,
+                  similar_words: theBank.similar_words,
+                  wid: theBank.wid,
+                };
+                this.deleteWordbankFromCategory(targetWordbank.wid);
+                const payload = {
+                  cid: toCid,
+                  newbank: targetWordbank,
+                };
+                this.addWordbankToCategory(payload);
+                this.loadCurrentWordbanks();
+              });
+              this.$notify({ text: this.$t('wordbank.success.moved') });
+            })
+            .catch((err) => {
+              console.log(err);
+              this.$notifyFail(this.$t('wordbank.error.move_wordbank_fail'));
+            });
+          },
+        },
+      };
+      this.$pop(options);
+    },
     deleteWordbank(data) {
       const option = {
         data: {
