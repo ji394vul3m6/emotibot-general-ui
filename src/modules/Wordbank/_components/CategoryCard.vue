@@ -12,7 +12,7 @@
         </div>
         <search-input ref="categorySearchBox" v-model="categoryNameKeyword"></search-input>
       </div>
-      <div id="card-category-add-root" v-if="isEditMode" @click="addRootCategory"> 
+      <!-- <div id="card-category-add-root" v-if="isEditMode" @click="addRootCategory"> 
         <input id="add-root" type="text"
           v-if="isAddingRoot" v-model="rootName" ref="rootName" 
           :placeholder="$t('wordbank.placeholder_category_name')"
@@ -22,7 +22,7 @@
           @keydown.enter="detectCompositionState"
           @keyup.enter="confirmRootName">
         <span v-else>{{ $t('wordbank.add_rootcategory') }}</span>
-      </div>
+      </div> -->
     </div>
     <div id="card-category-content" ref="cardCategoryContent">
       <div v-if="!hasSearchResult" id="no-category-search-result">
@@ -36,7 +36,7 @@
     </div>
     <div id="card-category-footer" v-if="isEditMode">
       <div class="card-category-setting-option"
-        :class="{'option-disabled': this.currentCategory.layer === 5 || this.currentCategory.cid < 0}"
+        :class="{'option-disabled': this.currentCategory.layer === MAX_LAYER || this.currentCategory.cid < 0}"
         @click="addSubCategory">
         {{ $t('wordbank.add_subcategory') }}
       </div>
@@ -56,8 +56,6 @@ import api from '../_api/wordbank';
 
 Vue.component('category-tree', CategoryTree);
 
-const MAX_LAYER = 4;
-
 export default {
   api,
   data() {
@@ -68,6 +66,7 @@ export default {
       compositionState: false,
       wasCompositioning: false,
       hasSearchResult: true,
+      MAX_LAYER: 4,
     };
   },
   computed: {
@@ -112,7 +111,7 @@ export default {
       }
     },
     addSubCategory() {
-      if (this.currentCategory.cid < 0 || this.currentCategory.layer === MAX_LAYER) return;
+      if (this.currentCategory.cid < 0 || this.currentCategory.layer === this.MAX_LAYER) return;
       const refName = `${this.currentCategory.cid}-${this.currentCategory.name}`;
       this.resetActiveCategory();
       this.appendSubCategory();

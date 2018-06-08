@@ -118,18 +118,18 @@ function parseEditable(wordbank) {
 let allWordbanks = [];
 function parseWordbank(wordbank) {
   if (wordbank.layer === 0) {
-    // uncategoried
-    wordbank.children.splice(0, 0, {
-      name: '未分类',
-      deletable: false,
-      editable: false,
-      isActive: false,
-      layer: 1,
-      children: [],
-      wordbanks: wordbank.wordbanks,
-      cid: -2,
-      visible: true,
-    });
+    // // uncategoried
+    // wordbank.children.splice(0, 0, {
+    //   name: '未分类',
+    //   deletable: false,
+    //   editable: false,
+    //   isActive: false,
+    //   layer: 1,
+    //   children: [],
+    //   wordbanks: wordbank.wordbanks,
+    //   cid: -2,
+    //   visible: true,
+    // });
 
     // all
     wordbank.children.splice(0, 0, {
