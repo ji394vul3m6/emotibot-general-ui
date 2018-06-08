@@ -40,7 +40,6 @@
 
 <script>
 import Vue from 'vue';
-import VueC3 from 'vue-c3';
 import format from '@/utils/js/format';
 import tagAPI from '@/api/tagType';
 
@@ -64,7 +63,6 @@ export default {
   icon: 'white_dashboard',
   api: [tagAPI, API],
   components: {
-    VueC3,
     StatsChart,
     StatsTable,
   },

@@ -28,12 +28,18 @@
 </template>
 
 <script>
-import VueC3 from 'vue-c3';
+import Vue from 'vue';
+// import VueC3 from 'vue-c3';
+
+Vue.component('vue-c3', (resolve) => {
+  // eslint-disable-next-line
+  require(['vue-c3'], resolve);
+});
 
 export default {
-  components: {
-    VueC3,
-  },
+  // components: {
+  //   VueC3,
+  // },
   props: {
     value: {
       type: Object,

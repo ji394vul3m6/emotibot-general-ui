@@ -118,7 +118,6 @@
 
 <script>
 import Vue from 'vue';
-import VueC3 from 'vue-c3';
 import DatePicker from '@/components/DateTimePicker/DatePicker';
 import general from '@/utils/js/misc';
 import formatUtil from '@/utils/js/format';
@@ -134,7 +133,6 @@ export default {
   icon: 'white_daily',
   name: 'statistic-analysis',
   components: {
-    VueC3,
     StatsChart,
     StatsTable,
     DatePicker,
