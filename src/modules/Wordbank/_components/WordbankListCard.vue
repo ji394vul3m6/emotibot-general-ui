@@ -12,7 +12,7 @@
       <div id="toolbar">
         <text-button button-type="primary" @click="popAddWordbank">{{ $t('wordbank.add_wordbank') }}</text-button>
         <text-button button-type="error" @click="deleteMultiWordbank">{{ $t('wordbank.delete') }}</text-button>
-        <text-button>{{ $t('wordbank.moveto') }}</text-button>
+        <!-- <text-button @click="popMoveToCategory">{{ $t('wordbank.moveto') }}</text-button> -->
       </div>
       <general-table id="content-table" 
         :tableHeader="tableHeader" :tableData="tableData" :action="tableAction"
@@ -29,6 +29,7 @@
 <script>
 import { mapGetters, mapMutations } from 'vuex';
 import WordbankEditPop from './WordbankEditPop';
+// import MoveToPop from './MoveToPop';
 import api from '../_api/wordbank';
 
 export default {
@@ -267,6 +268,19 @@ export default {
       };
       this.$pop(options);
     },
+    // popMoveToCategory() {
+    //   const options = {
+    //     component: MoveToPop,
+    //     title: this.$t('wordbank.moveto_wordbank'),
+    //     validate: true,
+    //     callback: {
+    //       ok: () => {
+    //         // this.checkedWordbank
+    //       },
+    //     },
+    //   };
+    //   this.$pop(options);
+    // },
     deleteWordbank(data) {
       const option = {
         data: {
