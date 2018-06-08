@@ -26,6 +26,7 @@
             @compositionend="setCompositionState(false)"
             @keydown.enter="detectCompositionState"
             @keyup.enter="addSynonym"
+            @keydown.space.prevent
             >
           <text-button button-type="error" @click="deleteMultiSynonym">{{ $t('wordbank.delete') }}</text-button>
         </div>

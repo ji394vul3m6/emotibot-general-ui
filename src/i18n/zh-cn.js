@@ -230,6 +230,7 @@ export default {
       moved: '词库已移动',
     },
     error: {
+      load_wordbanks_fail: '载入词库失败',
       edit_category_name_fail: '编辑分类名失败',
       add_category_fail: '新增分类失败',
       delete_category_fail: '删除分类失败',

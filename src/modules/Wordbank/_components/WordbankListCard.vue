@@ -358,6 +358,9 @@ export default {
       });
     },
     deleteMultiWordbank() {
+      if (this.checkedWordbank.length === 0) {
+        return;
+      }
       const option = {
         data: {
           msg: this.$t('wordbank.delete_multi_wordbank_msg'),

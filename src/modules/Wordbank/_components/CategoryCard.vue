@@ -93,6 +93,7 @@ export default {
   },
   methods: {
     ...mapMutations([
+      'setWordbank',
       'setCurrentCategory',
       'toggleEditMode',
       'resetActiveCategory',
@@ -230,8 +231,9 @@ export default {
           that.setCurrentCategory(data.children[0]);
           data.children[0].isActive = true;
         })
-        .catch(() => {
-          that.$notifyFail();
+        .catch((err) => {
+          console.log(err);
+          that.$notifyFail(this.$t('wordbank.error.load_wordbanks_fail'));
         })
         .finally(() => {
           that.$emit('endLoading');
