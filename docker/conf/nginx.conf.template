@@ -218,7 +218,7 @@ http {
             proxy_pass http://${ADMIN_BF_SERVER_URL};
         }
         location /Files/ssm {
-            proxy_pass http://${ADMIN_BF_SERVER_URL};ㄋㄠ
+            proxy_pass http://${ADMIN_BF_SERVER_URL};
         }
 
         # golang /api/v1
