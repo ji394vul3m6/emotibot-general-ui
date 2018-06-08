@@ -157,7 +157,7 @@ export default {
       let isIn = false;
       this.wordbank.children.forEach((child) => {
         if (child.name === this.$t('wordbank.sensitive_wordbank')) {
-          isIn = this.isCategoryInSensitiveCategory(child, wid) || isIn;
+          isIn = this.isWordbankInSensitiveCategory(child, wid) || isIn;
         }
       });
       return isIn;

@@ -4,7 +4,7 @@
       <div id="toolbar-first" class="toolbar-row">
         <div id="wordbank-name" class="input-item">
           <span>{{ $t('wordbank.wordbank') }}：</span>
-          <input type="text" v-model="wordbankName" :maxlength="lengthLimit">
+          <input type="text" ref="wordbankName" v-model="wordbankName" :maxlength="lengthLimit">
         </div>
         <div id="sentitive-answer" v-if="wordbank.isSensitive">
           <span>{{ $t('wordbank.sensitive_word') }}：</span>
@@ -46,6 +46,8 @@
   </div>
 </template>
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
   props: {
     value: {
@@ -88,9 +90,9 @@ export default {
     };
   },
   computed: {
-    // tableData() {
-    //   return this.currentSynonyms
-    // },
+    ...mapGetters([
+      'allWordbanks',
+    ]),
     curPage() {
       const startIdx = (this.curPageIdx - 1) * this.pageLimit;
       const endIdx = startIdx + this.pageLimit;
@@ -116,7 +118,7 @@ export default {
     },
     isWordbankNameTooLong() {
       this.wordbankName = this.wordbankName.trim();
-      return this.wordbankName > this.lengthLimit;
+      return this.wordbankName.length > this.lengthLimit;
     },
     isNewSynonymValid() {
       return !this.isNewSynonymEmpty && !this.isNewSynonymTooLong;
@@ -127,16 +129,22 @@ export default {
     },
     isNewSynonymTooLong() {
       this.newSynonym = this.newSynonym.trim();
-      return this.newSynonym > this.lengthLimit;
+      return this.newSynonym.length > this.lengthLimit;
     },
   },
   watch: {
     isDefaultSensitive() {
-      if (this.wordbank.isSensitive && this.isDefaultSensitive) {
-        this.$nextTick(() => {
-          this.sensitiveAnswer = '';
-          this.$refs.sensitiveInputBox.disabled = true;
-        });
+      if (this.wordbank.isSensitive) {
+        if (this.isDefaultSensitive) {
+          this.$nextTick(() => {
+            this.sensitiveAnswer = '';
+            this.$refs.sensitiveInputBox.disabled = true;
+          });
+        } else {
+          this.$nextTick(() => {
+            this.$refs.sensitiveInputBox.disabled = false;
+          });
+        }
       }
     },
     synonymKeyword() {
@@ -220,8 +228,20 @@ export default {
       this.sensitiveAnswer = this.wordbank.answer;
       this.isDefaultSensitive = this.sensitiveAnswer.length === 0;
     },
+    isWordbankNameDuplicate() {
+      if (this.wordbankName === this.wordbank.name) { // same, don't check
+        return false;
+      }
+      return this.allWordbanks.findIndex(bank => bank.name === this.wordbankName) !== -1;
+    },
     validate() {
+      const wordbankNameElem = this.$refs.wordbankName;
       if (!this.isWordbankNameValid) {
+        wordbankNameElem.focus();
+        return;
+      }
+      if (this.isWordbankNameDuplicate()) {
+        wordbankNameElem.focus();
         return;
       }
       const editedWordbank = {

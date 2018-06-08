@@ -56,6 +56,8 @@ import api from '../_api/wordbank';
 
 Vue.component('category-tree', CategoryTree);
 
+const MAX_LAYER = 4;
+
 export default {
   api,
   data() {
@@ -110,7 +112,7 @@ export default {
       }
     },
     addSubCategory() {
-      if (this.currentCategory.cid < 0 || this.currentCategory.layer === 5) return;
+      if (this.currentCategory.cid < 0 || this.currentCategory.layer === MAX_LAYER) return;
       const refName = `${this.currentCategory.cid}-${this.currentCategory.name}`;
       this.resetActiveCategory();
       this.appendSubCategory();
@@ -159,6 +161,12 @@ export default {
         this.isAddingRoot = false;
         return;
       }
+      if (this.isRootNameDuplicate()) {
+        const rootNameElem = this.$refs.rootName;
+        rootNameElem.focus();
+        this.rootName = '';
+        return;
+      }
       this.$api.addCategory(-1, this.rootName, 1)
       .then((category) => {
         this.resetActiveCategory();
@@ -176,6 +184,9 @@ export default {
         this.isAddingRoot = false;
         this.categoryNameKeyword = '';
       });
+    },
+    isRootNameDuplicate() {
+      return this.wordbank.children.forEach(child => child.name === this.rootName) !== -1;
     },
     popDeleteCategory() {
       if (!this.currentCategory.deletable) {

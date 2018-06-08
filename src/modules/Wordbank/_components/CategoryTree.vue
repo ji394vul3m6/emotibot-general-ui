@@ -18,10 +18,11 @@
           <input v-if="isNameEditing" type="text" ref="itemName" 
             v-model="itemName"
             :placeholder="$t('wordbank.placeholder_category_name')"
-            @compositionstart="toggleComposition"
-            @compositionend="toggleComposition"
+            @compositionstart="setCompositionState(true)"
+            @compositionend="setCompositionState(false)"
             @blur="confirmEditItemName"
-            @keyup.enter="checkComposition"/>
+            @keydown.enter="detectCompositionState"
+            @keyup.enter="confirmEditItemName"/>
           <span v-else class="tree-item-name">{{ treeItem.name }}</span>
         </div>
         <icon class="item-icon" icon-type="edit" :size=12 
@@ -89,20 +90,13 @@ export default {
     toggleShowChild() {
       this.treeItem.showChild = !this.treeItem.showChild;
     },
-    toggleComposition() {
-      this.compositionState = !this.compositionState;
-      if (this.compositionState) {
-        this.wasCompositioning = true;
-      }
+    setCompositionState(bool) {
+      this.compositionState = bool;
     },
-    checkComposition() {
-      if (this.wasCompositioning) {
-        this.wasCompositioning = false;
-        return;
-      }
-      this.confirmEditItemName();
+    detectCompositionState() {
+      this.wasCompositioning = this.compositionState;
     },
-    editNewItemName() {
+    editNewItemName() { // This is called by Category Card Component, don't delete it.
       this.isNewCategory = true;
       this.editItemName();
     },
@@ -113,6 +107,9 @@ export default {
       });
     },
     confirmEditItemName() {
+      if (this.wasCompositioning) {
+        return;
+      }
       this.itemName = this.itemName.trim();
       if (this.isNewCategory) {
         this.confirmAddSubCategory();
@@ -126,6 +123,12 @@ export default {
         this.isNameEditing = false;
         return;
       }
+      if (this.isItemNameDuplicate()) {
+        const itemNameElem = this.$refs.itemName;
+        this.itemName = '';
+        itemNameElem.focus();
+        return;
+      }
       this.$api.updateCategory(this.treeItem.cid, this.itemName)
       .then(() => {
         this.treeItem.name = this.itemName;
@@ -136,7 +139,6 @@ export default {
       })
       .finally(() => {
         this.isNameEditing = false;
-        this.toggleCategoryNameEditing();
       });
     },
     confirmAddSubCategory() {
@@ -146,6 +148,13 @@ export default {
         return;
       }
       if (this.itemName === this.treeItem.name) return;  // avoid trigger by both enter and focus;
+
+      if (this.isItemNameDuplicate()) {
+        const itemNameElem = this.$refs.itemName;
+        this.itemName = '';
+        itemNameElem.focus();
+        return;
+      }
       this.$emit('confirmAddSubCategory', this.itemName);
       this.treeItem.name = this.itemName;
       this.isNameEditing = false;
@@ -160,6 +169,29 @@ export default {
     cancelSubCategory() {
       this.resetActiveCategory();
       this.cancelAddFromCurrentCategory();
+    },
+    isItemNameDuplicate() {
+      if (this.isNewCategory) { // current is still parent
+        return this.currentCategory.children
+          .findIndex(child => child.name === this.itemName) !== -1;
+      }
+      const parentCategory = this.findCategoryParent(this.wordbank, this.currentCategory.cid);
+      return parentCategory.children.findIndex(child => child.name === this.itemName) !== -1;
+    },
+    findCategoryParent(wordbank, cid) {
+      if (wordbank.children && wordbank.children.length > 0) {
+        const targetIndex = wordbank.children.findIndex(child => child.cid === cid);
+        if (targetIndex !== -1) {
+          return wordbank;
+        }
+        let parent;
+        wordbank.children.forEach((child) => {
+          const newparent = this.findCategoryParent(child, cid);
+          parent = (newparent === undefined) ? parent : newparent;
+        });
+        return parent;
+      }
+      return undefined;
     },
   },
   mounted() {
@@ -206,7 +238,7 @@ export default {
         position: relative;
         display:flex;
         align-items: center;
-        
+
         .tree-item-name {
           display: inline-block;
           position: absolute;

@@ -1,5 +1,7 @@
 import * as types from './mutations_type';
 
+const CID_ALL = -3;
+
 function resetActive(wordbank) {
   wordbank.isActive = false;
   if (wordbank.children && wordbank.children.length > 0) {
@@ -24,7 +26,7 @@ function findCategoryParent(wordbank, cid) {
   return undefined;
 }
 function findWordbankParent(wordbank, wid) {
-  if (wordbank.cid === -3) {  // Find parent other than 'ALL'
+  if (wordbank.cid === CID_ALL) {  // Find parent other than 'ALL'
     return undefined;
   }
   if (wordbank.wordbanks && wordbank.wordbanks.length > 0) {
@@ -84,11 +86,15 @@ export const state = {
   currentCategory: undefined,
   isEditMode: false,
   isFilterMode: false,
+  allWordbanks: [],
 };
 
 export const mutations = {
   [types.SET_WORDBANK]: (_, wordbank) => {
     state.wordbank = wordbank;
+
+    const categoryAll = state.wordbank.children.find(child => child.cid === CID_ALL);
+    state.allWordbanks = categoryAll.wordbanks;
   },
   [types.SET_CURRENT_CATEGORY]: (_, category) => {
     state.currentCategory = category;
@@ -165,7 +171,7 @@ export const mutations = {
   },
   [types.UPDATE_WORDBANK_IN_CATEGORY]: (_, newbank) => {
     // Update 'ALL' Category
-    const categoryAll = state.wordbank.children.find(child => child.cid === -3);
+    const categoryAll = state.wordbank.children.find(child => child.cid === CID_ALL);
     const idxInAll = categoryAll.wordbanks.findIndex(bank => bank.wid === newbank.wid);
     categoryAll.wordbanks.splice(idxInAll, 1, newbank);
 
@@ -176,10 +182,10 @@ export const mutations = {
   },
   [types.ADD_WORDBANK_TO_CATEGORY]: (_, { cid, newbank }) => {
     // Add To 'ALL' Category no matter what
-    const categoryAll = state.wordbank.children.find(child => child.cid === -3);
+    const categoryAll = state.wordbank.children.find(child => child.cid === CID_ALL);
     categoryAll.wordbanks.splice(0, 0, newbank);
 
-    if (cid === -3) { // If Current is 'ALL', add to 'NO Categroy'
+    if (cid === CID_ALL) { // If Current is 'ALL', add to 'NO Categroy'
       const categoryNO = state.wordbank.children.find(child => child.cid === -2);
       categoryNO.wordbanks.splice(0, 0, newbank);
     } else {  // Add To Current category
@@ -188,7 +194,7 @@ export const mutations = {
   },
   [types.DELETE_WORDBANK_FROM_CATEGORY]: (_, wid) => {
     // Delete from 'ALL' Category
-    const categoryAll = state.wordbank.children.find(child => child.cid === -3);
+    const categoryAll = state.wordbank.children.find(child => child.cid === CID_ALL);
     const idxInAll = categoryAll.wordbanks.findIndex(bank => bank.wid === wid);
     categoryAll.wordbanks.splice(idxInAll, 1);
 
