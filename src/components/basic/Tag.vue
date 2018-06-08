@@ -35,6 +35,6 @@ $tag-dft-color: $color-font-normal;
   margin: 0px;
   padding: 3px 5px;
   border-radius: 2px;
-  height: 20px;
+  // height: 20px;
 }
 </style>
