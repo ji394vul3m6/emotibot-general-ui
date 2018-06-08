@@ -63,7 +63,8 @@ import DatePicker from '@/components/DateTimePicker/DatePicker';
 import NavBar from '@/components/NavigationBar';
 import tagAPI from '@/api/tagType';
 import api from './_api/statistic';
-// import Chart from './_components/Charts';
+
+let chartLoaded = false;
 
 export default {
   path: 'statistic-analysis',
@@ -73,7 +74,10 @@ export default {
   name: 'statistic-analysis',
   components: {
     NavBar,
-    chart: () => import('./_components/Charts'),
+    chart: () => import('./_components/Charts').then((data) => {
+      chartLoaded = true;
+      return data;
+    }),
     DatePicker,
   },
   api: [api, tagAPI],
@@ -351,9 +355,20 @@ export default {
         console.log(err);
       })
       .finally(() => {
-        that.chartHandler.$emit('redraw');
+        that.emitRedraw();
         that.$emit('endLoading');
       });
+    },
+    emitRedraw() {
+      const that = this;
+      if (chartLoaded) {
+        that.chartHandler.$emit('redraw');
+      } else {
+        setTimeout(() => {
+          console.log('retry');
+          that.emitRedraw();
+        }, 200);
+      }
     },
   },
   watch: {

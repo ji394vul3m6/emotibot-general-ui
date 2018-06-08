@@ -36,9 +36,14 @@
 <script>
 import Vue from 'vue';
 
+let loaded = false;
+
 export default {
   components: {
-    chart: () => import('./Charts'),
+    chart: () => import('./Charts').then((data) => {
+      loaded = true;
+      return data;
+    }),
   },
   props: {
     value: {
@@ -61,7 +66,13 @@ export default {
       const that = this;
       // use next tick to ensure the chart component can get latest data as prop
       that.$nextTick(() => {
-        that.handler.$emit('redraw');
+        if (loaded) {
+          that.handler.$emit('redraw');
+        } else {
+          setTimeout(() => {
+            that.updateChart();
+          }, 200);
+        }
       });
     },
     getAjaxData() {
