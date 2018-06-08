@@ -64,6 +64,9 @@ http {
 
         listen 80;
         #listen [::]:80;
+        proxy_set_header X-AppID $appid;
+        proxy_set_header X-UserID $user_id;
+        proxy_set_header X-Real-IP $remote_addr;
         location /admin {
             # auth_request /auth/v1/appid/validate;
             proxy_pass http://127.0.0.1:8088;
@@ -80,21 +83,12 @@ http {
 
         # ========== legacy houta ==========
         location = /php/api/ApiKey/task_engine_app.php { 
-            proxy_set_header X-AppID $appid;
-            proxy_set_header X-UserID $user_id; 
-            proxy_set_header X-Real-IP $remote_addr; 
             proxy_pass http://127.0.0.1:8181/api/v1/task/apps; 
         }
         location = /php/api/ApiKey/task_engine_scenario.php { 
-            proxy_set_header X-AppID $appid;
-            proxy_set_header X-UserID $user_id; 
-            proxy_set_header X-Real-IP $remote_addr; 
             proxy_pass http://127.0.0.1:8181/api/v1/task/scenarios; 
         }
         location = /php/api/ApiKey/scenario_json_upload.php { 
-            proxy_set_header X-AppID $appid;
-            proxy_set_header X-UserID $user_id; 
-            proxy_set_header X-Real-IP $remote_addr; 
             proxy_pass http://127.0.0.1:8181/api/v1/task/scenarios-upload; 
         }
 
@@ -148,25 +142,6 @@ http {
             fastcgi_param SCRIPT_FILENAME $fastcgi_script_name;
             fastcgi_param QUERY_STRING $query_string;
             fastcgi_param SERVER_NAME 172.17.0.1;
-        }
-
-        # golang /api/v1
-        location /api {
-            add_header Cache-Control no-store;  
-            add_header Cache-Control private;
-            proxy_set_header X-AppID $appid;
-            proxy_set_header X-UserID $user_id;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_pass http://127.0.0.1:8181;
-        }
-
-        location /Files {
-            add_header Cache-Control no-store;  
-            add_header Cache-Control private;
-            proxy_set_header X-AppID $appid;
-            proxy_set_header X-UserID $user_id;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_pass http://127.0.0.1:8181;
         }
 
         location /BF/login.html {
@@ -241,6 +216,22 @@ http {
         }
         location /task_engine {
             proxy_pass http://${ADMIN_BF_SERVER_URL};
+        }
+        location /Files/ssm {
+            proxy_pass http://${ADMIN_BF_SERVER_URL};ㄋㄠ
+        }
+
+        # golang /api/v1
+        location /api {
+            add_header Cache-Control no-store;  
+            add_header Cache-Control private;
+            proxy_pass http://127.0.0.1:8181;
+        }
+
+        location /Files {
+            add_header Cache-Control no-store;  
+            add_header Cache-Control private;
+            proxy_pass http://127.0.0.1:8181;
         }
 
         # /Files will go here
