@@ -26,6 +26,8 @@ function addCustomHeader(config) {
 
 function handleUnAuthenticated() {
   this.$logout();
+  const fullPath = this.$route.fullPath;
+  window.location = `/login.html?invalid=1&redirect=${encodeURIComponent(fullPath)}`;
 }
 
 function checkAjaxError(context, error) {
@@ -35,7 +37,7 @@ function checkAjaxError(context, error) {
   }
 
   if (status === 401) {
-    handleUnAuthenticated.bind(this)();
+    handleUnAuthenticated.bind(context)();
   }
 
   // handle only 500 series status code in plugin
