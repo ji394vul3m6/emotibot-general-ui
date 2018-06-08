@@ -107,7 +107,7 @@ export default {
     standard_question_path: '所属目录',
     question_first_time: '首次提问时间',
     question_last_time: '末次提问时间',
-    audit_record_filename: 'VCA操作日志',
+    audit_record_filename: '操作日志',
 
     keyword_search: '关键词查询',
     time_range: '时间段',
