@@ -114,6 +114,7 @@ export default {
         this.tableData.forEach((data) => {
           data.isChecked = false;
         });
+        this.isAllChecked = false;
       }
     },
   },

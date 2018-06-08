@@ -263,7 +263,7 @@ $pop-title-font-color: #333333;
       box-sizing: border-box;
 
       .text-button {
-        width: auto;
+        width: 80px;
       }
     }
   }
