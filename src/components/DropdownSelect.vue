@@ -4,7 +4,7 @@
       <div class="input-block">
         <tag class="input-tag" v-for="value in checkedValues" :key="value.value" font-class="font-12">
           {{ value.text }}
-          <icon icon-type="close" :size="8" class="close-icon" @click="removeOption(value)"/>
+          <icon icon-type="close" :size="8" class="close-icon" @click.stop="removeOption(value)"/>
         </tag>
       </div>
       <div class="icon-block">
