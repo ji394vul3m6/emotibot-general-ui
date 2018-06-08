@@ -4,10 +4,13 @@ import Vue from 'vue';
 import Vuex from 'vuex'; // Vue plugins
 
 // Import your custom components.
-// import Mybutton from '../src/components/basic/TextButton';
+import Icon from '../src/components/basic/Icon';
+import Tag from '../src/components/basic/Tag';
 
 // Install Vue plugins.
 Vue.use(Vuex);
+Vue.component('icon', Icon);
+Vue.component('tag', Tag);
 
 // Register custom components.
 // Vue.component('my-button', Mybutton);

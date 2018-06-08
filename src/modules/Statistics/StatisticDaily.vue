@@ -35,14 +35,16 @@
             </div>
           </div>
           <template v-if="expertMode">
-          <div class="row" v-if="false">
+          <div class="row">
             <div class="row-title">{{ $t('statistics.emotions.title') }}</div>
             <div class="row-value">
-              <input class="single-input">
+              <dropdown-select class="single-input"
+                :options="emotionOptions" multi v-model="emotionFilters"/>
             </div>
             <div class="row-title">{{ $t('statistics.qtypes.title') }}</div>
             <div class="row-value">
-              <input class="single-input">
+              <dropdown-select class="single-input"
+                :options="qtypesOptions" multi v-model="qtypeFilters"/>
             </div>
           </div>
           <div class="row dimension">
@@ -106,6 +108,7 @@
 <script>
 import GeneralTable from '@/components/GeneralTable';
 import DatetimePicker from '@/components/DateTimePicker';
+import DropdownSelect from '@/components/DropdownSelect';
 import pickerUtil from '@/utils/vue/DatePickerUtil';
 
 import DimensionSelector from '@/components/DimensionSelector';
@@ -129,6 +132,7 @@ export default {
   components: {
     DatetimePicker,
     GeneralTable,
+    DropdownSelect,
   },
   api: [tagAPI, api, auditAPI],
   data() {
@@ -154,7 +158,19 @@ export default {
         { val: 'question', text: this.$t('general.question') },
         { val: 'answer', text: this.$t('general.answer') },
       ],
-
+      emotionOptions: [
+        { value: 'angry', text: this.$t('statistics.emotions.angry') },
+        { value: 'not_satisfied', text: this.$t('statistics.emotions.not_satisfied') },
+        { value: 'satisfied', text: this.$t('statistics.emotions.satisfied') },
+        { value: 'neutral', text: this.$t('statistics.emotions.neutral') },
+      ],
+      qtypesOptions: [
+        { value: 'business', text: this.$t('statistics.qtypes.business') },
+        { value: 'chat', text: this.$t('statistics.qtypes.chat') },
+        { value: 'other', text: this.$t('statistics.qtypes.other') },
+      ],
+      emotionFilters: [],
+      qtypeFilters: [],
     };
   },
   methods: {
@@ -226,6 +242,40 @@ export default {
             params.filter.categories.push(filterObj);
           }
         });
+
+        // is emotion filter is set
+        if (that.emotionFilters.length > 0) {
+          const group = [];
+          that.emotionOptions.forEach((opt) => {
+            if (that.emotionFilters.indexOf(opt.value) >= 0) {
+              group.push({
+                id: opt.value,
+                text: opt.text,
+              });
+            }
+          });
+          params.filter.emotions = [{
+            type: 'emotion',
+            group,
+          }];
+        }
+
+        // is qtype filter is set
+        if (that.qtypeFilters.length > 0) {
+          const group = [];
+          that.qtypesOptions.forEach((opt) => {
+            if (that.qtypeFilters.indexOf(opt.value) >= 0) {
+              group.push({
+                id: opt.value,
+                text: opt.text,
+              });
+            }
+          });
+          params.filter.qtypes = [{
+            type: 'qtype',
+            group,
+          }];
+        }
       }
       return params;
     },
@@ -439,7 +489,6 @@ export default {
 @import 'styles/variable.scss';
 
 $main-color: black;
-$row-height: 28px;
 
 @mixin daily-dimension() {
   padding: 0 20px;

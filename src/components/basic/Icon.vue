@@ -161,6 +161,9 @@ export default {
   @include iconType("close");
   @include iconType("help");
   @include iconType("expand");
+  @include iconType("drop_down");
+  @include iconType("check");
+  @include iconType("checked");
 
   // robot icon should a little bit larger than other icons
   .white_robot_icon {

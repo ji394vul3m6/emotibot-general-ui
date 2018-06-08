@@ -7,6 +7,7 @@ import TextButtonStory from './TextButton';
 import LabelSwitchStory from './LabelSwitch';
 import GeneralTableStory from './GeneralTable';
 import NavBarStory from './NavigationBar';
+import DropdownSelectStory from './DropdownSelect';
 
 let textButtonStory = storiesOf('Textbutton', module).addDecorator(withKnobs);
 TextButtonStory.forEach((story) => {
@@ -26,4 +27,9 @@ GeneralTableStory.forEach((story) => {
 const NavigationBarStory = storiesOf('NavigationBar', module).addDecorator(withKnobs);
 NavBarStory.forEach((story) => {
   NavigationBarStory.add(story.name, story.func);
+});
+
+const dropdownSelectStory = storiesOf('DropdownSelect', module).addDecorator(withKnobs);
+DropdownSelectStory.forEach((story) => {
+  dropdownSelectStory.add(story.name, story.func);
 });
