@@ -6,10 +6,14 @@
 
 <script>
 import Vue from 'vue';
+import VueC3 from 'vue-c3';
 
-Vue.component('vue-c3', () => import('vue-c3'));
+// Vue.component('vue-c3', () => import('vue-c3'));
 
 export default {
+  components: {
+    VueC3,
+  },
   props: {
     handler: {
       type: Object,

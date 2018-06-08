@@ -63,7 +63,7 @@ import DatePicker from '@/components/DateTimePicker/DatePicker';
 import NavBar from '@/components/NavigationBar';
 import tagAPI from '@/api/tagType';
 import api from './_api/statistic';
-import Chart from './_components/Charts';
+// import Chart from './_components/Charts';
 
 export default {
   path: 'statistic-analysis',
@@ -73,7 +73,7 @@ export default {
   name: 'statistic-analysis',
   components: {
     NavBar,
-    Chart,
+    chart: () => import('./_components/Charts'),
     DatePicker,
   },
   api: [api, tagAPI],
