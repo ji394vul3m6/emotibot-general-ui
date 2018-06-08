@@ -128,26 +128,50 @@ export default {
           showType: 'chart',
         },
         {
-          tableHandler: new Vue(),
+          handler: new Vue(),
           finish: false,
-          name: `${that.$t('statistics.hot_question')} Top 20`,
+          name: `${that.$t('statistics.qa_record')}`,
+          type: 'bar',
           param: {
             days: 1,
-            type: 'top',
+            type: 'barchart',
+            filter: 'qtype',
           },
-          getData: that.$api.getTopQuestions2,
-          tableColumns: {
-            question: {
-              text: that.$t('statistics.user_question'),
-            },
-            q: {
-              text: that.$t('statistics.count'),
-              width: '80px',
-            },
+          getData: that.$api.getVisitStats2,
+          keyMaps: {
+            total_asks: that.$t('statistics.total_asks_num'),
+          },
+          customData(datas) {
+            datas.forEach((data) => {
+              data.total_asks = data.q.total_asks;
+            });
+            return datas;
           },
           rowFirst: true,
-          showType: 'table',
+          nameKey: 'name',
+          showType: 'chart',
         },
+        // {
+        //   tableHandler: new Vue(),
+        //   finish: false,
+        //   name: `${that.$t('statistics.hot_question')} Top 20`,
+        //   param: {
+        //     days: 1,
+        //     type: 'top',
+        //   },
+        //   getData: that.$api.getTopQuestions2,
+        //   tableColumns: {
+        //     question: {
+        //       text: that.$t('statistics.user_question'),
+        //     },
+        //     q: {
+        //       text: that.$t('statistics.count'),
+        //       width: '80px',
+        //     },
+        //   },
+        //   rowFirst: true,
+        //   showType: 'table',
+        // },
         {
           tableHandler: new Vue(),
           finish: false,
