@@ -86,7 +86,6 @@ export default {
       'isEditMode',
     ]),
     tableData() { // This is curPage
-
       // Handle empty data cause curPageIdx to zero;
       if (this.curPageIdx <= 0) {
         this.toFirstPage();

@@ -30,11 +30,7 @@
 <script>
 import Vue from 'vue';
 // import VueC3 from 'vue-c3';
-
-Vue.component('vue-c3', (resolve) => {
-  // eslint-disable-next-line
-  require(['vue-c3'], resolve);
-});
+Vue.component('vue-c3', () => import('vue-c3'));
 
 export default {
   // components: {
