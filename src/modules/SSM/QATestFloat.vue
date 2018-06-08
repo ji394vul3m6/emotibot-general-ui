@@ -30,7 +30,7 @@
           </template>
           <template v-if="data.content.type === 'text' && (data.content.subType === 'guslist' || data.content.subType === 'relatelist')">
             <div class="chat-content">{{ data.content.value }}
-              <div v-for="(sentence, idx) in data.content.data" :key="sentence" @click="sendUserText(sentence)" class='click-text'>
+              <div v-for="(sentence, idx) in data.content.data" :key="sentence" @click="sendUserText(sentence, true)" class='click-text'>
                 {{ idx + 1 }}. {{ sentence }}
               </div>
             </div>
@@ -104,6 +104,8 @@ export default {
     const that = this;
     this.$api.getTagTypes().then((data) => {
       that.tagTypes = data;
+    }).then(() => {
+      that.sendUserText('welcome_tag');
     });
   },
   methods: {
@@ -147,12 +149,15 @@ export default {
         that.$popError(that.$t('error_msg.input_empty'));
         return;
       }
-      that.sendUserText(that.userInput);
+      that.sendUserText(that.userInput, true);
       that.userInput = '';
     },
-    sendUserText(text) {
+    sendUserText(text, append) {
       const that = this;
-      const chatNode = that.appendChat(text);
+      let chatNode;
+      if (append) {
+        chatNode = that.appendChat(text);
+      }
 
       const filter = {};
       that.tagTypes.forEach((tagType) => {
@@ -184,7 +189,7 @@ export default {
           return;
         }
 
-        if (that.showAnalysis) {
+        if (that.showAnalysis && chatNode) {
           if (sentenceInfo === undefined) {
             // old format analysis infomation in 'result' part in return obj, too
             console.log(res.result.tokens);
