@@ -78,8 +78,8 @@ import auditAPI from '@/api/audit';
 import api from './_api/statistic';
 // import auth from '@/auth';
 
-const timeFormatWithoutSecond = 'YYYY-MM-DD hh:mm';
-const timeFormatFull = 'YYYY-MM-DD hh:mm:ss';
+const timeFormatWithoutSecond = 'YYYY-MM-DD HH:mm';
+const timeFormatFull = 'YYYY-MM-DD HH:mm:ss';
 
 export default {
   path: 'statistic-audit',

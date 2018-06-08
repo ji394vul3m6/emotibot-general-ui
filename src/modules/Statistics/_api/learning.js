@@ -5,31 +5,13 @@ export default {
     // query list of collections
     const url = `/api/v1/selfLearn/reports?type=${type}`;
     return this.$reqGet(url).then((response) => {
-      /* response format will like
-      [
-        {
-          "id": 0,
-          "start_time": "2018-01-10T08:44:21.686Z",
-          "end_time": "2018-01-10T08:44:21.686Z",
-          "clusterSize": 0,
-          "userQuestionSize": 0
-        }
-      ]
-      we will transform format like this
-      [{
-        id: 0,
-        title: ${start_time} ~ ${end_time}
-        totalClusterSize: 0,
-        totalRecordSize: 0,
-      }]
-      */
       const data = response.data;
       const transfromedData = [];
       data.forEach((collection) => {
         const startTime = new Date(collection.start_time);
         const endTme = new Date(collection.end_time);
-        const startTimeStr = moment(startTime).format('YYYY-MM-DD hh:mm');
-        const endTimeStr = moment(endTme).format('YYYY-MM-DD hh:mm');
+        const startTimeStr = moment(startTime).format('YYYY-MM-DD HH:mm');
+        const endTimeStr = moment(endTme).format('YYYY-MM-DD HH:mm');
         const title = `${startTimeStr} ~ ${endTimeStr}`;
         const transfromedCollection = {
           id: collection.id,

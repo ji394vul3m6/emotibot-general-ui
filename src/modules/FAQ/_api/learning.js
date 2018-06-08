@@ -28,8 +28,8 @@ export default {
       data.forEach((collection) => {
         const startTime = new Date(collection.start_time);
         const endTme = new Date(collection.end_time);
-        const startTimeStr = moment(startTime).format('YYYY-MM-DD hh:mm');
-        const endTimeStr = moment(endTme).format('YYYY-MM-DD hh:mm');
+        const startTimeStr = moment(startTime).format('YYYY-MM-DD HH:mm');
+        const endTimeStr = moment(endTme).format('YYYY-MM-DD HH:mm');
         const title = `${startTimeStr} ~ ${endTimeStr}`;
         const transfromedCollection = {
           id: collection.id,

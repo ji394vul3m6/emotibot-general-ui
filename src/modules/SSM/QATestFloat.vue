@@ -240,7 +240,7 @@ export default {
       const chatNode = {
         role: role || 'user',
         content: answerObj,
-        time: moment(new Date()).format('YYYY-MM-DD hh:mm:ss'),
+        time: moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
       };
       that.chatData.push(chatNode);
       that.$nextTick(that.scrollToBottom);
