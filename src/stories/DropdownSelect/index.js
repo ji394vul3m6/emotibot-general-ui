@@ -1,5 +1,5 @@
 import { object, boolean, array, text } from '@storybook/addon-knobs';
-// import { action } from '@storybook/addon-actions';
+import { action } from '@storybook/addon-actions';
 import DropdownSelect from '../../components/DropdownSelect';
 
 export default [{
@@ -13,17 +13,20 @@ export default [{
       text: '選項2',
     }];
     const multiChoiceDft = false;
-    const option = object('options', options);
-    const multiChoice = boolean('multiChoice', multiChoiceDft);
     const checkValues = array('value', []);
+    const multiChoice = boolean('multiChoice', multiChoiceDft);
+    const showCheck = boolean('showCheck', true);
     const width = text('width', '150px');
+    const option = object('options', options);
 
     const template = `
       <dropdown-select
         :options=option
         :multi=multiChoice
+        :showCheck=showCheck
         :width=width
         v-model="checkValues"
+        @input="input"
       />`;
 
     return {
@@ -33,12 +36,16 @@ export default [{
       data() {
         return {
           option,
+          showCheck,
           multiChoice,
           checkValues,
           width,
         };
       },
       methods: {
+        input(val) {
+          action('input')(val);
+        },
       },
       template,
     };

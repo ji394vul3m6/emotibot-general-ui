@@ -2,25 +2,35 @@
   <div class="dropdown-select" :style="styleObj">
     <div class="input-bar" ref="input" @click="showSelection">
       <div class="input-block">
+        <template v-if="multi">
         <tag class="input-tag" v-for="value in checkedValues" :key="value.value" font-class="font-12">
           {{ value.text }}
           <icon icon-type="close" :size="8" class="close-icon" @click.stop="removeOption(value)"/>
         </tag>
+        </template>
+        <template v-else-if="checkedValues.length > 0">
+          <div class="input-text">{{checkedValues[0].text}}</div>
+        </template>
       </div>
       <div class="icon-block">
         <icon icon-type="drop_down" :size=10></icon>
       </div>
     </div>
     <div ref="list" v-if="show" class="select-list" :style="listStyle">
-      <div class="select-item"
-        v-for="(option, idx) in localOptions" :key="idx"
-        :class="{checked: option.checked}"
+      <template v-for="(option, idx) in localOptions">
+      <div class="select-item item" :key="idx" v-if="!option.isGroup"
+        :class="{checked: option.checked, 'in-group': option.inGroup}"
         @click="selectOption(idx)">
         <div class="select-text"> {{option.text}} </div>
-        <div class="select-icon">
+        <div class="select-icon" v-if="showCheck">
           <icon :icon-type="option.checked ? 'checked' : 'check' " :size=12></icon>
         </div>
       </div>
+      <div class="select-item" v-if="option.isGroup" :key="idx"
+        :class="{checked: option.checked}">
+        <div class="select-text"> {{option.text}} </div>
+      </div>
+      </template>
     </div>
   </div>
 </template>
@@ -38,7 +48,11 @@ export default {
     options: {
       type: Array,
       validator: input => input.reduce((ret, value) =>
-        ret && (value.text !== undefined) && (value.value !== undefined), true),
+        ret && (value.text !== undefined) && (value.value !== undefined || value.isGroup), true),
+    },
+    showCheck: {
+      type: Boolean,
+      default: true,
     },
     multi: {
       type: Boolean,
@@ -71,6 +85,7 @@ export default {
       localOptions: [],
       listStyle: {},
       checkedValues: [],
+      detectClickListener: undefined,
     };
   },
   methods: {
@@ -87,6 +102,8 @@ export default {
           option.checked = false;
         });
         that.localOptions[idx].checked = true;
+        that.show = false;
+        window.removeEventListener('click', that.detectClickListener);
       }
       that.updateValue();
     },
@@ -103,22 +120,23 @@ export default {
       that.show = true;
 
       const inputBox = that.$refs.input.getBoundingClientRect();
-      console.log(inputBox);
       that.listStyle = {
         position: 'fixed',
         top: `${inputBox.top + inputBox.height + 3}px`,
         left: `${inputBox.left}px`,
       };
 
-      const listener = (e) => {
+      that.detectClickListener = (e) => {
         const clickDom = e.target;
         const listDom = that.$refs.list;
         if (listDom && !listDom.contains(clickDom)) {
           that.show = false;
-          window.removeEventListener('click', listener);
+          if (that.detectClickListener) {
+            window.removeEventListener('click', that.detectClickListener);
+          }
         }
       };
-      window.addEventListener('click', listener);
+      window.addEventListener('click', that.detectClickListener);
     },
   },
   mounted() {
@@ -158,6 +176,10 @@ $border-color: #e9e9e9;
         @include click-button();
       }
     }
+    .input-text {
+      margin-left: 5px;
+      color: #666666;
+    }
   }
   .icon-block {
     flex: 0 0 28px;
@@ -171,20 +193,29 @@ $border-color: #e9e9e9;
   width: 150px;
   box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2);
   background: white;
+  max-height: calc(6 * 32px);
+  @include auto-overflow();
+  @include customScrollbar();
 
   display: flex;
   flex-direction: column;
   .select-item {
     flex: 0 0 32px;
-    @include click-button();
 
-    &.checked {
-      background: #9393a2;
+    &.item {
+      @include click-button();
+      &.checked {
+        background: #9393a2;
+      }
+      &:not(.checked):hover {
+        background: #f0f0f3;
+      }
+      &.in-group {
+        .select-text {
+          padding-left: 24px;
+        }
+      }
     }
-    &:not(.checked):hover {
-      background: #f0f0f3;
-    }
-
     display: flex;
     align-items: center;
     .select-text {

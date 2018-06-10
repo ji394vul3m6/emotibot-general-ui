@@ -365,7 +365,6 @@ export default {
         that.chartHandler.$emit('redraw');
       } else {
         setTimeout(() => {
-          console.log('retry');
           that.emitRedraw();
         }, 200);
       }
