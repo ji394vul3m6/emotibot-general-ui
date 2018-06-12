@@ -80,6 +80,10 @@ export default {
     password_place: '输入密码',
     contact_sm: '无法登陆？请联络管理人员',
   },
+  category: {
+    all: '全部',
+    delete_category_msg: '确定要删除分类 {name} 及其子分类吗？',
+  },
   statistics: {
     answer: '回答',
     score: '匹配分数',
