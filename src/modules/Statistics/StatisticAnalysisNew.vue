@@ -370,6 +370,7 @@ export default {
     emitRedraw() {
       const that = this;
       if (chartLoaded) {
+        console.log(that.tableData);
         that.chartHandler.$emit('redraw');
       } else {
         setTimeout(() => {

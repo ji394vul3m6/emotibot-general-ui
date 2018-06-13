@@ -54,6 +54,8 @@ export default {
   methods: {
     updateChart() {
       const datas = this.chartData;
+      console.log('data in charts');
+      console.table(datas);
       const keyMaps = this.keyMap;
       const showKeys = [];
       if (keyMaps) {
