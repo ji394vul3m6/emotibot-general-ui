@@ -35,7 +35,6 @@
 </template>
 
 <script>
-import qs from 'qs';
 import { mapGetters, mapMutations } from 'vuex';
 import NavBar from '@/components/NavigationBar';
 import RobotForm from './_components/RobotAddForm';
