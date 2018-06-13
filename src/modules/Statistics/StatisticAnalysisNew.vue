@@ -191,6 +191,12 @@ export default {
           that.$refs.start.$emit('setDate', that.endDate);
         }
       }
+      const diffDay = ((that.endDate - that.startDate) / 86400000) + 1;
+      if ([1, 7, 30].indexOf(diffDay) < 0) {
+        that.dayRange = -1;
+      } else {
+        that.dayRange = diffDay;
+      }
     },
     setUpPage() {
       const that = this;
@@ -235,7 +241,7 @@ export default {
         //   },
         // },
         topUnused: {
-          hasChart: true,
+          hasChart: false,
           api: this.$api.getTopQuestions2,
           param: {
             days: 1,
@@ -265,7 +271,7 @@ export default {
           ],
         },
         topUnresolved: {
-          hasChart: true,
+          hasChart: false,
           api: this.$api.getTopQuestions2,
           param: {
             days: 1,
@@ -351,11 +357,13 @@ export default {
           that.tableData = rsp.data;
         }
       })
+      .then(() => {
+        that.emitRedraw();
+      })
       .catch((err) => {
         console.log(err);
       })
       .finally(() => {
-        that.emitRedraw();
         that.$emit('endLoading');
       });
     },
