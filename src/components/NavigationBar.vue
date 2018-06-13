@@ -3,7 +3,7 @@
     <div class="tag"
       v-for="(text, val) in options" :key=val
       :class="{active: selectedPage === val}"
-      @click="selectedPage = val">
+      @click="clickPage(val)">
       {{text}}
     </div>
   </div>  
@@ -31,6 +31,14 @@ export default {
     return {
       selectedPage: '',
     };
+  },
+  methods: {
+    clickPage(val) {
+      if (Object.keys(this.options).length <= 1) {
+        return;
+      }
+      this.selectedPage = val;
+    },
   },
   mounted() {
     this.selectedPage = this.value;

@@ -22,12 +22,11 @@
         :class="{checked: option.checked, 'in-group': option.inGroup}"
         @click="selectOption(idx)">
         <div class="select-text"> {{option.text}} </div>
-        <div class="select-icon" v-if="showCheck">
-          <icon :icon-type="option.checked ? 'checked' : 'check' " :size=12></icon>
+        <div class="select-icon" v-if="showCheck && option.checked">
+          <icon icon-type="checked" :size=12></icon>
         </div>
       </div>
-      <div class="select-item" v-if="option.isGroup" :key="idx"
-        :class="{checked: option.checked}">
+      <div class="select-item group" v-if="option.isGroup" :key="idx">
         <div class="select-text"> {{option.text}} </div>
       </div>
       </template>
@@ -138,15 +137,38 @@ export default {
       };
       window.addEventListener('click', that.detectClickListener);
     },
+    selectValue(value) {
+      if (value === undefined) {
+        return;
+      }
+      const that = this;
+      if (!that.multi) {
+        that.localOptions.forEach((option) => {
+          option.checked = false;
+        });
+      }
+      that.localOptions.forEach((opt) => {
+        if (opt.value === value) {
+          opt.checked = true;
+        }
+      });
+    },
   },
   mounted() {
     const that = this;
     that.options.forEach((opt) => {
+      let initCheck = false;
+      if (that.value.length > 0) {
+        initCheck = that.value.indexOf(opt.value) >= 0;
+      }
       that.localOptions.push({
         ...opt,
-        checked: false,
+        checked: initCheck,
       });
     });
+
+    that.checkedValues = this.localOptions.filter(opt => opt.checked);
+    that.$on('select', that.selectValue);
   },
 };
 </script>
@@ -206,6 +228,7 @@ $border-color: #e9e9e9;
       @include click-button();
       &.checked {
         background: #9393a2;
+        color: white;
       }
       &:not(.checked):hover {
         background: #f0f0f3;
@@ -215,6 +238,9 @@ $border-color: #e9e9e9;
           padding-left: 24px;
         }
       }
+    }
+    &.group {
+      font-weight: bold;
     }
     display: flex;
     align-items: center;

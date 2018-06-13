@@ -1,8 +1,8 @@
 @import './variable';
+
 html, body {
   overflow: hidden;
   font-size: $app-dft-font-size;
-  // line-height: 1.2em;
 }
 
 input {
@@ -100,11 +100,12 @@ input {
   background: $page-base;
   box-sizing: border-box;
   overflow: hidden;
-  // & > .app-header {
-  //   height: $default-line-height;
-  //   line-height: $default-line-height;
-  //   padding-left: 10px;
-  // }
+
+  &.manage {
+    width: 100vw;
+    left: 0;
+  }
+
   &.iframe {
     padding: 0px;
   }
@@ -161,31 +162,6 @@ input {
     }
   }
 }
-
-#page-header {
-  position: absolute;
-  left: $page-menu-width;
-  top: 0;
-  width: calc(100vw - #{$page-menu-width});
-  height: 50px;
-  background: $page-header-color;
-  box-shadow: inset -1px 0 0 0 #222222;
-  color: white;
-  text-align: right;
-  font-weight: bold;
-
-  & > div {
-    display: inline-block;
-    vertical-align: middle;
-  }
-
-  & > .spliter {
-    display: inline-block;
-    height: $page-header-height;
-    border-left: 1px solid black;
-  }
-}
-
 
 .float-menu {
   z-index: 10;

@@ -1,9 +1,18 @@
 export const robotID = s => s.appid;
+export const robotList = (s) => {
+  const ret = [];
+  Object.keys(s.robotList).forEach((key) => {
+    ret.push({
+      id: key,
+      name: s.robotList[key].name || '',
+      discription: s.robotList[key].discription || '',
+    });
+  });
+  return ret;
+};
 export const robotName = (s) => {
-  const currentEnterprise = s.enterpriseID;
-  const currentRobotList = s.enterpriseList[currentEnterprise].robots;
   const appid = s.appid;
-  return appid in currentRobotList ? currentRobotList[appid] : '';
+  return appid in s.robotList ? s.robotList[appid].name : '';
 };
 
 export const enterpriseID = s => s.enterpriseID;
@@ -11,26 +20,13 @@ export const enterpriseName = (s) => {
   const eID = s.enterpriseID;
   return eID in s.enterpriseList ? s.enterpriseList[eID].name : '';
 };
-
-export const robotList = (s) => {
-  const ret = [];
-  const currentEnterprise = s.enterpriseID;
-  const currentRobotList = s.enterpriseList[currentEnterprise].robots;
-  Object.keys(currentRobotList).forEach((key) => {
-    ret.push({
-      appid: key,
-      name: currentRobotList[key],
-    });
-  });
-  return ret;
-};
-
 export const enterpriseList = (s) => {
   const ret = [];
   Object.keys(s.enterpriseList).forEach((key) => {
     ret.push({
       enterpriseID: key,
       name: s.enterpriseList[key].name,
+      discription: s.enterpriseList[key].discription || '',
     });
   });
   return ret;
@@ -48,6 +44,7 @@ export const privilegeMap = (s) => {
 
 export const userID = s => s.userID;
 export const userRole = s => s.userRole;
+export const userRoleMap = s => s.userRoleMap;
 export const currentPage = s => s.curPage;
 export const isChatOpen = s => s.chatTest;
 export const userInfo = s => s.userInfo;

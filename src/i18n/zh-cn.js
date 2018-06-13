@@ -219,8 +219,8 @@ export default {
     empty_category_search_result: '无符合分类',
     all: '全部',
     no_category: '未分类',
-    default: '預設',
-    define: '自訂',
+    default: '预设',
+    define: '自订',
     sensitive_wordbank: '敏感词库',
     sensitive_word: '敏感词回应',
     batch_import: '批量导入',
@@ -599,6 +599,7 @@ export default {
     error: '',
   },
   general: {
+    robot_list: '机器人列表',
     no_data: '暂无数据',
     reset: '重置',
     chat_test: '对话测试',
@@ -702,5 +703,119 @@ export default {
     401: '授权已失效，请重新登录',
     404: '伺服器错误，API未实作',
     413: '上传文档大小超过要求',
+  },
+
+  management: {
+    robot_group: '机器人群组',
+    robots: '机器人',
+    robot_list: '机器人列表',
+
+    create_robot: '创建机器人',
+    edit_robot: '编辑机器人',
+    group_manage: '机器人群组管理',
+
+    robot_name: '机器人名字',
+    description: '描述',
+
+    input_placeholder: '输入文字',
+    length_50_placeholder: '字数限制50内',
+
+    create_group: '创建群组',
+    add_robot: '加入机器人',
+
+    enterprise_privilege_manage: '企业权限管理',
+    add_account: '新增帐号',
+    edit_account: '编辑人员',
+    add_role: '新增权限',
+    privilege_setting: '权限设定',
+
+    normal_user: '一般用户',
+    enterprise_admin: '企业管理员',
+    system_admin: '系统管理员',
+    unknown: '未知',
+
+    user_name: 'ID',
+    user_type: '帐号类型',
+    user_display_name: '姓名',
+    phone: '联络电话',
+    email: 'Email',
+    next_step: '下一步',
+    last_step: '上一步',
+    set_password: '设置密码',
+    check_password: '确认密码',
+    modify_password: '修改密码',
+    set_passowrd_placeholder: '请输入密码',
+    check_password_placeholder: '再输入一次密码',
+    assign_robot: '指定机器人',
+    privilege_is: '权限为',
+
+    manager_password: '管理员密码',
+    new_password: '新密码',
+    check_new_password: '确认新密码',
+
+    err_empty_username: 'ID 不可为空',
+    err_empty_email: 'Email 不可为空',
+    err_empty_password: '密码不可为空',
+    err_manager_empty_password: '管理员密码不可为空',
+    err_invalid_check_password: '两次密码输入不同',
+    update_password_success: '更新密码成功',
+
+    go_back: '返回',
+
+    privilege: {
+      statistic_dash: {
+        view: '统计概览',
+      },
+      ssm: {
+        view: '常用标准问答查看',
+        edit: '常用标准问答编辑',
+        export: '常用标准问答导出',
+        import: '常用标准问答导入',
+      },
+      qa_label: {
+        view: '标签管理查看',
+        edit: '标签管理编辑',
+      },
+      task_engine: {
+        edit: '任务引擎编辑',
+      },
+      wordbank: {
+        view: '查看',
+        edit: '编辑',
+        create: '新增',
+        delete: '删除',
+        import: '导入',
+        export: '导出',
+      },
+      statistic_analysis: {
+        view: '统计分析查看',
+        export: '统计分析导出',
+      },
+      statistic_daily: {
+        view: '日志管理查看',
+        export: '日志管理导出',
+      },
+      statistic_audit: {
+        view: '操作记录查看',
+        export: '操作记录导出',
+      },
+      robot_profile: {
+        view: '机器人形象查看',
+        edit: '机器人形象编辑',
+      },
+      robot_chat_skill: {
+        view: '话术设置查看',
+        edit: '话术设置编辑',
+      },
+      robot_function: {
+        view: '技能设置查看',
+        edit: '技能设置编辑',
+      },
+    },
+  },
+  header: {
+    user_info: '个人资料',
+    enterprise_privilege_list: '企业权限管理',
+    logout: '登出',
   },
 };

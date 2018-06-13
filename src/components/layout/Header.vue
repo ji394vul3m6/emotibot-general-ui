@@ -1,44 +1,53 @@
 <template>
 <div id="page-header">
-  <div class="spliter"></div>
-  <!-- <div v-if="enterpriseList && enterpriseList.length > 0">
-    <label-select
-      :options="enterpriseList"
-      :value="enterpriseID" valueKey="enterpriseID" color="white"
-      @change="setEnterprise">
-      <div class="enterprise_icon header"></div>  
-    </label-select>
-  </div> -->
-  <!-- <div class="spliter"></div> -->
-  <div v-if="robotList && robotList.length > 0">
-    <label-select
-      :options="robotList"
-      :value="robotID" valueKey="appid" color="white"
-      @change="setRobot">
-      <div class="white_robot_icon header"></div>
-    </label-select>
+  <div class="robot-list column" @click="showRobotList">
+    {{ $t('general.robot_list') }}
   </div>
-  <div class="spliter"></div>
-  <div class="chat-test" @click="showChatTest">
+  <div class="empty column"></div>
+  <div class="enterprise column">
+    <div class="icon-container">
+      <icon :size=26 icon-type="enterprise"/>
+    </div>
+    <div>{{ enterpriseName }}</div>
+  </div>
+  <template v-if="robotID !== ''">
+  <div class="robot column">
+    <div class="icon-container">
+      <icon :size=26 icon-type="robot"/>
+    </div>
+    <div>{{ robotName }}</div>
+  </div>
+  <div class="chat-test column" @click="showChatTest">
     {{$t('general.chat_test')}}
   </div>
-  <div class="spliter"></div>
-  <div class="user-name">{{ userInfo.display_name }}</div>
-  <div class="spliter"></div>
-  <div class="logout" @click="logout">
-    <icon icon-type="white_logout" :size=16 />
+  </template>
+  <div class="user">
+    <div class="user-column" @click.stop="showMenu">
+      <div class="icon-container">
+        <icon :size=18 icon-type="white_user"/>
+      </div>
+      <div>{{ userInfo.display_name }}</div>
+    </div>
+
+    <div class="user-menu-container" :class="[ showUserMenu ? 'show': '']" ref="list">
+      <div class="user-menu">
+        <div class="menu-item">{{ $t('header.user_info') }}</div>
+        <div class="menu-item" v-if="userInfo.type === 1" @click="goEnterprisePrivilege">{{ $t('header.enterprise_privilege_list') }}</div>
+        <div class="menu-item" @click="logout">{{ $t('header.logout') }}</div>
+      </div>
+    </div>
   </div>
 </div>
 </template>
 
 <script>
 import { mapGetters, mapMutations } from 'vuex';
-import LabelSelect from '@/components/basic/LabelSelect';
-import Icon from '@/components/basic/Icon';
 
 export default {
   data: () => ({
     selectedIdx: 0,
+    showUserMenu: false,
+    clickHandler: undefined,
   }),
   computed: mapGetters([
     'robotName',
@@ -54,16 +63,40 @@ export default {
       'setRobot',
       'setEnterprise',
     ]),
+    goEnterprisePrivilege() {
+      const that = this;
+      that.setRobot('');
+      that.$router.push('/manage/enterprise-user-list');
+
+      that.showUserMenu = false;
+      window.removeEventListener('click', that.clickHandler);
+      that.clickHandler = undefined;
+    },
+    showRobotList() {
+      this.setRobot('');
+      this.$router.push('/manage/robot-manage');
+    },
+    showMenu() {
+      const that = this;
+      that.showUserMenu = true;
+
+      that.clickHandler = (e) => {
+        const clickDom = e.target;
+        const listDom = that.$refs.list;
+        if (listDom && !listDom.contains(clickDom)) {
+          that.showUserMenu = false;
+          window.removeEventListener('click', that.clickHandler);
+          that.clickHandler = undefined;
+        }
+      };
+      window.addEventListener('click', that.clickHandler);
+    },
     logout() {
       this.$logout();
     },
     showChatTest() {
       this.$root.$emit('open-chat-test');
     },
-  },
-  components: {
-    LabelSelect,
-    icon: Icon,
   },
 };
 </script>
@@ -81,29 +114,85 @@ export default {
   box-shadow: inset -1px 0 0 0 #222222;
   color: white;
   font-weight: bold;
+
   display: flex;
   justify-content: flex-end;
+  align-items: stretch;
 
-  & > div:not(.spliter) {
+  .column {
+    flex: 0 0 auto;
     display: flex;
     align-items: center;
-    vertical-align: middle;
+    .icon-container {
+      margin-right: 10px;
+    }
+    box-shadow: inset -1px 0 0 0 #333333;
     padding: 0 20px;
+    &.empty {
+      flex: 1;
+      padding: 0;
+    }
   }
 
-  & > .spliter {
-    height: $page-header-height;
-    border-left: 1px solid black;
-  }
-
-  & > .chat-test {
+  .chat-test {
     @include click-button();
   }
 
-  .logout {
-    width: $page-header-height;
-    justify-content: center;
-    cursor: pointer;
+  .robot-list {
+    @include click-button();
+  }
+
+  .user {
+    flex: 0 0 auto;
+
+    display: flex;
+    flex-direction: column;
+    .user-column {
+      flex: 0 0 $page-header-height;
+      @include click-button();
+
+      display: flex;
+      align-items: center;
+      .icon-container {
+        margin-right: 10px;
+      }
+      box-shadow: inset -1px 0 0 0 #333333;
+      padding: 0 20px;
+    }
+    .user-menu-container {
+      z-index: 1;
+      flex: 0 0 auto;
+      color: #666666;
+      padding: 10px;
+      visibility: hidden;
+      &.show {
+        visibility: visible;
+      }
+
+      display: flex;
+      flex-direction: column;
+      .user-menu {
+        flex: 0 0 auto;
+        background: white;
+        box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2);
+
+        display: flex;
+        flex-direction: column;
+        .menu-item {
+          flex: 0 0 32px;
+          padding: 6px 20px;
+
+          display: flex;
+          align-items: center;
+          @include click-button();
+
+          &:hover {
+            background-color: #9393a2;
+            color: white;
+          }
+        }
+      }
+    }
   }
 }
 </style>

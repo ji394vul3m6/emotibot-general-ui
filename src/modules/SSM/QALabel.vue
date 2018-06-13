@@ -1,33 +1,35 @@
 <template>
   <div class='qa-label'>
-    <div class="actions row">
-      <h3>{{$t('qa_label.label')}}</h3>
-      <span class="grey9 label-count">{{$t('qalist.total')}} {{labelsCount}} {{$t('qa_label.label_row')}}{{$t('qa_label.label')}}</span>
-      <search-input v-model="keyword"></search-input>
-    </div>
-    <div class="table-container table-box f12 grey6">
-      <div class="row row-title">
-        <div class="col tagname">{{$t('qa_label.label_name')}}</div>
-        <div class="col opts"></div>
+    <div class="card w-fill h-fill">
+      <div class="actions row">
+        <h3>{{$t('qa_label.label')}}</h3>
+        <span class="grey9 label-count">{{$t('qalist.total')}} {{labelsCount}} {{$t('qa_label.label_row')}}{{$t('qa_label.label')}}</span>
+        <search-input v-model="keyword"></search-input>
       </div>
-      <div class="row row-tbody" v-for="(item, index) in tableData">
-        <div class="col tagname">
-            <input class="tag-input" v-show="item.ifedit" v-model.trim="item.name" v-focus="true" maxlength="10" :placeholder="$t('qa_label.length')" key="tag-input" />
-            <span v-show="!item.ifedit" class="tagname grey3" key="tagname">{{item.name}}</span>
+      <div class="table-container table-box f12 grey6">
+        <div class="row row-title">
+          <div class="col tagname">{{$t('qa_label.label_name')}}</div>
+          <div class="col opts"></div>
         </div>
-        <div class="col opts">
-          <div class="tag-opts bluecolor" v-if='item.ifedit'>
-            <a class="save-sqtag" @click="saveLabel(item)" href="javascript:void(0);" key="save-sqtag">{{$t('general.save')}}</a>
-            <a class="cancel-sqtag" @click="cancelLabel(false,item)" href="javascript:void(0);" key="cancel-sqtag">{{$t('general.cancel')}}</a>
+        <div class="row row-tbody" v-for="(item, index) in tableData">
+          <div class="col tagname">
+              <input class="tag-input" v-show="item.ifedit" v-model.trim="item.name" v-focus="true" maxlength="10" :placeholder="$t('qa_label.length')" key="tag-input" />
+              <span v-show="!item.ifedit" class="tagname grey3" key="tagname">{{item.name}}</span>
           </div>
-          <div class="tag-opts bluecolor" v-if='!item.ifedit'>
-            <a class="edit-sqtag" @click="editLabel(item)" href="javascript:void(0);" key="edit-sqtag">{{$t('general.edit')}}</a>
-            <a class="remove-sqtag" @click="removeLabel(item,index)" href="javascript:void(0);" key="remove-sqtag">{{$t('general.delete')}}</a>
+          <div class="col opts">
+            <div class="tag-opts bluecolor" v-if='item.ifedit'>
+              <a class="save-sqtag" @click="saveLabel(item)" href="javascript:void(0);" key="save-sqtag">{{$t('general.save')}}</a>
+              <a class="cancel-sqtag" @click="cancelLabel(false,item)" href="javascript:void(0);" key="cancel-sqtag">{{$t('general.cancel')}}</a>
+            </div>
+            <div class="tag-opts bluecolor" v-if='!item.ifedit'>
+              <a class="edit-sqtag" @click="editLabel(item)" href="javascript:void(0);" key="edit-sqtag">{{$t('general.edit')}}</a>
+              <a class="remove-sqtag" @click="removeLabel(item,index)" href="javascript:void(0);" key="remove-sqtag">{{$t('general.delete')}}</a>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="row row-tbody add-newtag">
-        <span @click="addLabel">+{{$t('general.add')}}{{$t('qa_label.label')}}</span>
+        <div class="row row-tbody add-newtag">
+          <span @click="addLabel">+{{$t('general.add')}}{{$t('qa_label.label')}}</span>
+        </div>
       </div>
     </div>
   </div>
@@ -245,7 +247,6 @@ a {
 }
 .qa-label {
   display: flex;
-  background-color: #fff;
   overflow: auto;
   flex-direction: column;
   .row {

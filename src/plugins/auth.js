@@ -2,8 +2,8 @@ import md5 from 'js-md5';
 import qs from 'qs';
 import 'babel-polyfill';
 
-const LOGIN_PATH = '/auth/v2/login';
-const ENTERPRISE_PATH = '/auth/v2/enterprise';
+const LOGIN_PATH = '/auth/v3/login';
+const ENTERPRISE_PATH = '/auth/v3/enterprise';
 const TOKEN_PATH = '/auth/v2/token';
 
 const ENV_PATH = '/api/v1/ui/envs';
@@ -22,6 +22,41 @@ function parseJwt(token) {
   return JSON.parse(window.atob(base64));
 }
 
+function getRobots(userInfo) {
+  const that = this;
+  if (userInfo.type < 2) {
+    return that.$reqGet(`${ENTERPRISE_PATH}/${userInfo.enterprise}/apps`)
+      .then(rsp => rsp.data.result);
+  }
+  const groups = userInfo.roles.groups;
+  const apps = userInfo.roles.apps;
+  let promise;
+
+  debugger;
+  const robots = [];
+  robots.push(...apps);
+  groups.forEach((group) => {
+    if (promise) {
+      promise = promise.then(() => that.$reqGet(`${ENTERPRISE_PATH}/${userInfo.enterprise}/group/${group.id}`));
+    } else {
+      promise = that.$reqGet(`${ENTERPRISE_PATH}/${userInfo.enterprise}/group/${group.id}`);
+    }
+    promise = promise.then((rsp) => {
+      const data = rsp.data;
+      if (data.result) {
+        data.result.apps.forEach((app) => {
+          app.role = group.role;
+        });
+        robots.push(...data.result.apps);
+      }
+    });
+  });
+  if (promise) {
+    return promise.then(() => robots);
+  }
+  return new Promise(r => r(robots));
+}
+
 function setInfoWithToken(token) {
   const that = this;
   if (token === undefined || token === '' || token === null) {
@@ -30,31 +65,33 @@ function setInfoWithToken(token) {
   const jwt = parseJwt(token);
   const userInfo = jwt.custom;
   const enterprise = userInfo.enterprise;
-  let enterpriseInfo = {};
+  let enterpriseInfos = [];
   let modules = [];
-  let role = {};
+  const userRoleMap = {};
+  let robots = [];
 
   that.$setReqToken(token);
-  return that.$reqGet(`${TOKEN_PATH}`).then(() => {
-    if (userInfo.type >= 2) {
-      if (userInfo.role === '') {
-        throw new Error('Invalid role');
-      }
-      return that.$reqGet(`${ENTERPRISE_PATH}/${enterprise}/role/${userInfo.role}`);
+  return that.$reqGet(`${TOKEN_PATH}`)
+  .then(() => {
+    if (userInfo.type === 0) {
+      return that.$reqGet(`${ENTERPRISE_PATH}s`);
     }
-    return new Promise((r) => {
-      r();
-    });
+    return that.$reqGet(`${ENTERPRISE_PATH}/${enterprise}`);
   })
-  .then((rsp) => {
-    if (userInfo.type >= 2) {
-      role = rsp.data.result;
-    }
-  })
-  .then(() => that.$reqGet(`${ENTERPRISE_PATH}/${enterprise}`))
   .then((rsp) => {
     const data = rsp.data;
-    enterpriseInfo = data.result;
+    if (userInfo.type === 0) {
+      enterpriseInfos = data.result;
+    } else {
+      enterpriseInfos = [data.result];
+    }
+  })
+  .then(() => getRobots.bind(that)(userInfo))
+  .then((result) => {
+    robots = result;
+    robots.forEach((robot) => {
+      userRoleMap[robot.id] = robot.role;
+    });
   })
   .then(() => that.$reqGet(`${ENTERPRISE_PATH}/${enterprise}/modules`))
   .then((rsp) => {
@@ -63,11 +100,12 @@ function setInfoWithToken(token) {
   })
   .then(() => new Promise((r) => {
     localStorage.setItem('userInfo', JSON.stringify(userInfo));
-    localStorage.setItem('token', token);
-    localStorage.setItem('enterpriseInfo', JSON.stringify(enterpriseInfo));
     localStorage.setItem('enterprise', JSON.stringify(enterprise));
+    localStorage.setItem('token', token);
+    localStorage.setItem('enterpriseInfo', JSON.stringify(enterpriseInfos));
     localStorage.setItem('modules', JSON.stringify(modules));
-    localStorage.setItem('role', JSON.stringify(role));
+    localStorage.setItem('robots', JSON.stringify(robots));
+    localStorage.setItem('roleMap', JSON.stringify(userRoleMap));
     r(userInfo);
   }));
 }
@@ -184,6 +222,10 @@ function getPrivModules() {
   return JSON.parse(localStorage.getItem('modules'));
 }
 
+function getRobotsFromStorage() {
+  return JSON.parse(localStorage.getItem('robots'));
+}
+
 const MyPlugin = {
   install(Vue) {
     Vue.prototype.$checkPrivilege = checkPrivilege;
@@ -195,6 +237,8 @@ const MyPlugin = {
     Vue.prototype.$setIntoWithToken = setInfoWithToken;
     Vue.prototype.$getUserEnterprises = getUserEnterprises;
     Vue.prototype.$getPrivModules = getPrivModules;
+    Vue.prototype.$loadRobotOfUser = getRobots;
+    Vue.prototype.$getRobots = getRobotsFromStorage;
   },
 };
 

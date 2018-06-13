@@ -1,0 +1,254 @@
+<template>
+  <div>
+    <div class="card h-fill w-fill">
+      <nav-bar class='nav-bar' :options=pageOption></nav-bar>
+      <div class="page">
+        <command-row class="commands">
+            <template v-if="isAdmin">
+            <text-button button-type="primary" @click="createRobot">{{ $t('management.create_robot') }}</text-button>
+            <text-button @click="goGroupList">{{ $t('management.group_manage') }}</text-button>
+            </template>
+        </command-row>
+        <div class="robot-list">
+          <div class="robot-card" 
+            v-for="robot in robotList" :key="robot.id" 
+            @click="goRobot(robot)">
+            <div class="card-title">
+              <div class="card-title-image">
+                <icon :size=18 icon-type="robot"></icon>
+              </div>
+              <div class="card-title-text">
+                {{ robot.name }}
+              </div>
+              <div class="card-title-edit" @click.stop="editName(robot)">
+                <icon :size=12 icon-type="edit_blue"></icon>
+              </div>
+            </div>
+            <div class="card-description">
+              {{ robot.description }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import qs from 'qs';
+import { mapGetters, mapMutations } from 'vuex';
+import NavBar from '@/components/NavigationBar';
+import RobotForm from './_components/RobotAddForm';
+import CommandRow from '../_components/CommandRow';
+import robotAPI from '../_api/robot';
+import roleAPI from '../_api/role';
+
+const defaultPath = '/statistic-dash';
+export default {
+  path: 'robot-manage',
+  name: 'robot-manage',
+  components: {
+    NavBar,
+    CommandRow,
+  },
+  api: [robotAPI, roleAPI],
+  computed: {
+    ...mapGetters([
+      'userInfo',
+      'enterpriseID',
+      'robotList',
+      'userRoleMap',
+    ]),
+    isAdmin() {
+      return this.userInfo.type < 2;
+    },
+  },
+  data() {
+    return {
+      pageOption: {
+        robotList: this.$t('management.robot_list'),
+      },
+      keyword: '',
+      robots: [],
+    };
+  },
+  methods: {
+    ...mapMutations([
+      'setRobot',
+      'setRobotList',
+      'setUserRole',
+    ]),
+    editName(robot) {
+      const that = this;
+      that.$pop({
+        title: that.$t('management.create_robot'),
+        component: RobotForm,
+        validate: true,
+        extData: {
+          name: robot.name,
+          description: robot.description,
+        },
+        callback: {
+          ok(retData) {
+            that.$api.updateRobot(that.enterpriseID, robot.id, retData)
+            .then(() => that.updateRobots())
+            .finally(() => {
+              that.$emit('endLoading');
+            });
+          },
+        },
+      });
+    },
+    goRobot(robot) {
+      const that = this;
+      const roleID = that.userRoleMap[robot.id];
+      let promise;
+
+      if (that.userInfo.type === 2) {
+        promise = that.$api.getEnterpriseRole(that.enterpriseID, roleID)
+        .then((role) => {
+          that.setUserRole(role);
+        });
+      } else {
+        promise = new Promise(r => r());
+      }
+      promise.then(() => that.$reqGet(`/robot/stare/${robot.id}?appid=${robot.id}&user_id=${that.userInfo.id}`))
+      // .then(() =>
+      //   that.$reqPut(`/api/v1/bf/user/${that.userInfo.id}/role`, qs.stringify({
+      //     role: 'roleID',
+      //   }), {
+      //     headers: {
+      //       'Content-Type': 'application/x-www-form-urlencoded',
+      //     },
+      //   }))
+      .then(() => {
+        that.setRobot(robot.id);
+        that.$router.push(defaultPath);
+      });
+    },
+    goGroupList() {
+      this.$router.push('/manage/robot-group');
+    },
+    createRobot() {
+      const that = this;
+      that.$pop({
+        title: that.$t('management.create_robot'),
+        component: RobotForm,
+        validate: true,
+        callback: {
+          ok(retData) {
+            that.$emit('startLoading');
+            that.$api.addRobot(that.enterpriseID, retData, that.userInfo.id)
+            .then(() => that.updateRobots())
+            .finally(() => {
+              that.$emit('endLoading');
+            });
+          },
+        },
+      });
+    },
+    updateRobots() {
+      const that = this;
+      return that.$loadRobotOfUser(that.userInfo).then((robots) => {
+        console.log(robots);
+        that.setRobotList(robots);
+      });
+    },
+  },
+  mounted() {
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+@import 'styles/variable.scss';
+
+.card {
+  display: flex;
+  flex-direction: column;
+
+  .nav-bar {
+    flex: 0 0 60px;
+  }
+  .page {
+    flex: 1;
+  }
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+
+  .robot-list {
+    flex: 1;
+    padding: 20px;
+    padding-bottom: 0px;
+    @include auto-overflow();
+    @include customScrollbar();
+    
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    .robot-card {
+      flex: 0 0 380px;
+      height: 180px;
+      border-radius: 4px;
+      box-shadow: 0 0 3px 0 rgba(102, 102, 102, 0.5);
+      margin-right: 30px;
+      margin-bottom: 20px;
+      padding: 20px;
+
+      &:hover {
+        box-shadow: 0 0 14px 0 rgba(0, 0, 0, 0.2);
+        .card-title {
+          .card-title-edit {
+            visibility: visible;
+          }
+        }
+      }
+
+      display: flex;
+      flex-direction: column;
+      .card-title {
+        flex: 0 0 auto;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+        box-shadow: inset 0 -1px 0 0 #e9e9e9;
+
+        display: flex;
+        align-items: center;
+        .card-title-image {
+          flex: 0 0 40px;
+          height: 40px;
+          border-radius: 100px;
+          background-color: #ffca43;
+
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .card-title-text {
+          flex: 1;
+          font-size: 20px;
+          line-height: 24px;
+          color: #333333;
+          margin: 0 20px;
+        }
+        .card-title-edit {
+          flex: 0 0 18px;
+          visibility: hidden;
+          @include click-button();
+
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+      }
+      .card-description {
+        @include font-14px();
+        color: #666666;
+      }
+    }
+  }
+}
+</style>

@@ -164,6 +164,10 @@ export default {
   @include iconType("check");
   @include iconType("checked");
   @include iconType("edit");
+  @include iconType("robot");
+  @include iconType("edit_blue");
+  @include iconType("normal_acc");
+  @include iconType("enterprise_admin");
 
   // robot icon should a little bit larger than other icons
   .white_robot_icon {

@@ -6,16 +6,24 @@
         <label>{{ title }}</label>
       </div>
       <div v-bind:class="[customContentClasses]" class="content">
-        <component v-if="bindValue === true" v-on:validateSuccess="validatePass"  
-          v-on:disableOK="disableOK"
-          v-on:enableOK="enableOK"
+        <component v-if="bindValue === true" @validateSuccess="validatePass"  
+          @disableOK="disableOK"
+          @enableOK="enableOK"
+          @cancel="close"
           :is="currentView" v-model="data" :extData="extData" ref="content"></component>
-        <component v-else v-on:validateSuccess="validatePass"  
-          v-on:disableOK="disableOK"
-          v-on:enableOK="enableOK"
+        <component v-else @validateSuccess="validatePass"  
+          @disableOK="disableOK"
+          @enableOK="enableOK"
+          @cancel="close"
           :is="currentView" :origData="data" :extData="extData" ref="content"></component>
       </div>
       <div class="pop-button">
+        <div class="left-part">
+          <text-button v-if="left_button !== undefined"
+            :button-tpye="left_button.primary ? 'primary' : 'normal'"
+            v-on:click="customClick(left_button)" :key="left_button.msg">{{ left_button.msg }}</text-button>
+        </div>
+        <div class="right-part">
         <template v-for="button in custom_button">
           <text-button :button-tpye="button.primary ? 'primary' : 'normal'"
             v-on:click="customClick(button)" :key="button.msg">{{ button.msg }}</text-button>
@@ -29,6 +37,7 @@
           v-on:click="click(true)"
           ref="okBtn"
           v-if="buttons.indexOf('ok') != -1">{{ ok_msg }}</text-button>
+        </div>
       </div>
     </div>
   </div>
@@ -44,6 +53,9 @@ export default {
     TextButton,
   },
   methods: {
+    close() {
+      this.$root.$emit('close-window', this);
+    },
     exitPop(e) {
       const target = e.target;
       if (target.className === 'pop-window' && this.clickOutsideClose) {
@@ -51,13 +63,14 @@ export default {
       }
     },
     customClick(button) {
-      if (button.callback) {
-        button.callback();
-      }
-
       if (button.closeAfterClick) {
         this.show = false;
         this.currentView = undefined;
+        this.$root.$emit('close-window', this);
+      }
+
+      if (button.callback) {
+        button.callback();
       }
 
       if (button.event) {
@@ -107,6 +120,7 @@ export default {
       that.validate = option.validate;
       that.disable_ok = option.disable_ok || false;
       that.custom_button = option.custom_button || [];
+      that.left_button = option.left_button || undefined;
       that.clickOutsideClose = option.clickOutsideClose !== false;
       that.bindValue = option.bindValue !== false;
       if (option.callback) {
@@ -151,6 +165,7 @@ export default {
       customContentClasses: [],
       clickOutsideClose: true,
       bindValue: true,
+      left_button: undefined,
     };
   },
 };
@@ -210,7 +225,7 @@ $pop-title-font-color: #333333;
     }
   }
 
-  $pop-max-height: 60vh;
+  $pop-max-height: 70vh;
   .pop-content {
     // animation-name: showup;
     // animation-duration: 0.5s;
@@ -227,12 +242,13 @@ $pop-title-font-color: #333333;
     justify-content: left;
     box-shadow: 0 0 18px 0 rgba(0,0,0,0.24);
     border-radius: 4px;
-    padding: 5px;
+    // padding: 5px;
 
     & > .title {
       line-height: $pop-title-font-size;
       font-size: $pop-title-font-size;
       padding: 25px;
+      padding-bottom: 10px;
 
       width: 100%;
       & > label {
@@ -246,10 +262,11 @@ $pop-title-font-color: #333333;
     & > .content {
       position: relative;
       min-height: 30px;
-      max-height: calc(#{$pop-max-height} - #{2 * 30px});
+      max-height: calc(#{$pop-max-height} - 140px);
       // padding: 20px;
       box-sizing: border-box;
       @include auto-overflow();
+      @include customScrollbar();
     }
 
     & > .visible-overflow {
@@ -261,6 +278,10 @@ $pop-title-font-color: #333333;
       width: 100%;
       padding: 25px;
       box-sizing: border-box;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
 
       .text-button {
         width: 80px;

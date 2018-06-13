@@ -61,11 +61,11 @@ export default {
       }
       that.$refs.btn.$emit('loading');
       that.$login(that.input).then(() => {
-        if (that.redirect && that.redirect !== '') {
-          window.location = `/#${that.redirect}`;
-        } else {
-          window.location = '/#/statistic-dash';
-        }
+        // if (that.redirect && that.redirect !== '') {
+        //   window.location = `/#${that.redirect}`;
+        // } else {
+        window.location = '/#/manage/robot-manage';
+        // }
       }, (err) => {
         that.$notify({ text: '登录失败', type: 'fail' });
         that.$refs.user.focus();

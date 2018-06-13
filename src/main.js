@@ -27,9 +27,11 @@ import CustomNotification from './plugins/CustomNotification';
 import request from './plugins/request';
 import auth from './plugins/auth';
 import api from './plugins/api';
+import Tooltip from './plugins/tooltip';
 import './plugins/Polyfill';
 
 Vue.config.productionTip = false;
+Vue.use(Tooltip);
 Vue.use(VueCookie);
 Vue.use(VueI18n);
 Vue.use(PopWindow);

@@ -122,7 +122,7 @@ $btn-error-color: $color-white;
 
 .text-button {
   @include font-12px();
-  width: $btn-dft-width;
+  min-width: $btn-dft-width;
   height: $btn-dft-height;
   box-sizing: border-box;
   padding: 5px 10px;
