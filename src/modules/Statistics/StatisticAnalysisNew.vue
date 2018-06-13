@@ -42,7 +42,6 @@
           :height=200
           :handler="chartHandler"
           :keyMap="currentKeyMap"
-          :chart-data="tableData"
           :name-key="currentNameKey"></chart>
       </div>
       <div class="table-container">
@@ -370,8 +369,7 @@ export default {
     emitRedraw() {
       const that = this;
       if (chartLoaded) {
-        console.log(that.tableData);
-        that.chartHandler.$emit('redraw');
+        that.chartHandler.$emit('redraw', that.tableData);
       } else {
         setTimeout(() => {
           that.emitRedraw();

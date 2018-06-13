@@ -52,10 +52,8 @@ export default {
     };
   },
   methods: {
-    updateChart() {
-      const datas = this.chartData;
-      console.log('data in charts');
-      console.table(datas);
+    updateChart(inputData) {
+      const datas = inputData || this.chartData;
       const keyMaps = this.keyMap;
       const showKeys = [];
       if (keyMaps) {
@@ -116,8 +114,8 @@ export default {
   },
   mounted() {
     const that = this;
-    that.handler.$on('redraw', () => {
-      that.updateChart();
+    that.handler.$on('redraw', (data) => {
+      that.updateChart(data);
     });
   },
 };
