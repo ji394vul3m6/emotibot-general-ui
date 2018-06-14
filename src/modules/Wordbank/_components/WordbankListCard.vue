@@ -16,11 +16,11 @@
           :button-type="this.checkedWordbank.length === 0 ? 'disable' : 'error'">
           {{ $t('wordbank.delete') }}
         </text-button>
-        <text-button 
+        <!-- <text-button 
           @click="popMoveToCategory"
           :button-type="this.checkedWordbank.length === 0 ? 'disable' : 'default'">
           {{ $t('wordbank.moveto') }}
-        </text-button>
+        </text-button> -->
       </div>
       <general-table id="content-table" 
         :tableHeader="tableHeader" :tableData="tableData" :action="tableAction"
