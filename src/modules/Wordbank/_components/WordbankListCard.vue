@@ -370,6 +370,7 @@ export default {
             this.checkedWordbank.forEach((bank) => {
               this.confirmDeleteWordbank(bank.wid);
             });
+            this.checkedWordbank = [];
           },
         },
       };

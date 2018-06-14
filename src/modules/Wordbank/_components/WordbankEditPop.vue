@@ -28,7 +28,7 @@
             @keyup.enter="addSynonym"
             @keydown.space.prevent
             >
-          <text-button button-type="error" @click="deleteMultiSynonym">{{ $t('wordbank.delete') }}</text-button>
+          <text-button :button-type="this.checkedSynonyms.length === 0 ? 'disable' : 'error'" @click="deleteMultiSynonym">{{ $t('wordbank.delete') }}</text-button>
         </div>
         <div id="toolkit">
           <search-input v-model="synonymKeyword"></search-input>
@@ -185,13 +185,15 @@ export default {
     },
     deleteSynonym(toDelete) {
       const idx = this.synonyms.findIndex(synonym => synonym === toDelete.synonym);
-      this.synonyms.splice(idx, 1);
-      if (this.currentSynonyms === this.filteredSynonyms) {
-        const filteredIdx = this.filteredSynonyms.findIndex(word => word === toDelete.synonym);
-        this.filteredSynonyms.splice(filteredIdx, 1);
-      }
-      if (this.curPageIdx > this.lastPageIdx) {
-        this.toCurPage(this.lastPageIdx);
+      if (idx !== -1) {
+        this.synonyms.splice(idx, 1);
+        if (this.currentSynonyms === this.filteredSynonyms) {
+          const filteredIdx = this.filteredSynonyms.findIndex(word => word === toDelete.synonym);
+          this.filteredSynonyms.splice(filteredIdx, 1);
+        }
+        if (this.curPageIdx > this.lastPageIdx) {
+          this.toCurPage(this.lastPageIdx);
+        }
       }
     },
     deleteMultiSynonym() {
@@ -199,6 +201,7 @@ export default {
       toDeletes.forEach((toDelete) => {
         this.deleteSynonym(toDelete);
       });
+      this.checkedSynonyms = [];
     },
     addSynonym() {
       if (this.wasCompositioning) {
