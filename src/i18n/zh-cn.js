@@ -687,6 +687,7 @@ export default {
 
     success: '设定成功',
     save_success: '保存成功',
+    save_fail: '保存失败',
     time_format_error: '输入不符合规范，请重新输入',
     empty_data: '无资料',
     data_format_err: '资料格式错误',
