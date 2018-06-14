@@ -12,7 +12,7 @@
             :class="{'fixed': header.width}">
             {{ header.text }}
           </td>
-          <td v-if="hasAction" class="table-col-action" :class="{'multi-action': action.length > 1}"> 操作 </td>
+          <td v-if="hasAction" class="table-col-action" :class="{'multi-action': action.length > 1}"> {{ $t('general.actions') }} </td>
         </tr>
       </thead>
     </table>
@@ -29,6 +29,11 @@
             :class="{'fixed': header.width}">
             <template v-if="header.type === 'tag'">
               <tag class="tags" v-for="tag in data[header.key]" :key="tag" :fontClass="fontClass">{{ tag }}</tag>
+            </template>
+            <template v-else-if="header.type === 'toggle'">
+              <toggle class="toggles"
+                v-model="data[header.key].val"
+                @change="data[header.key].onclick(data, idx)"></toggle>
             </template>
             <template v-else>{{ data[header.key] }}</template>
           </td>
@@ -49,10 +54,12 @@
 
 <script>
 import Tag from '@/components/basic/Tag';
+import Toggle from '@/components/basic/Toggle';
 
 export default {
   components: {
     Tag,
+    Toggle,
   },
   props: {
     tableHeader: {
@@ -115,6 +122,8 @@ export default {
           data.isChecked = false;
         });
         this.isAllChecked = false;
+        // this.setCheckedData();
+        // this.$emit('checkedChange', this.checkedData);
       }
     },
   },
@@ -164,11 +173,13 @@ $table-row-height: 50px;
   }
   display: flex;
   flex-direction: column;
+  width: inherit;
   .general-table-header {
     flex: 0 0 auto;
   }
   .general-table-body {
-    @include auto-overflow();
+    @include auto-overflow-Y();
+    overflow-x: hidden;
   }
   .empty-display {
     flex: 1;
@@ -188,9 +199,9 @@ table {
     @include font-12px();
   }
   width: 100%;
-  // table-layout: fixed;
+  table-layout: fixed;
   border-spacing: 0px;
-
+  overflow-x: hidden;
   thead {
     background: $table-header-background;
     tr {
@@ -198,7 +209,7 @@ table {
       display: flex;
       border-bottom: 1px solid $table-color-borderline;
       td {
-        flex: 1 0 100px;
+        flex: 1 0 0;
         box-sizing: border-box;
         padding: 15px 10px;
         &.fixed {
@@ -226,9 +237,12 @@ table {
     tr {
       height: $table-row-height;
       display: flex;
+      width: inherit;
+      overflow: hidden;
       border-bottom: 1px solid $table-color-borderline;
       td {
-        flex: 1 0 100px;
+        flex: 1 0 0;
+        // min-width: 100px;
         box-sizing: border-box;
         padding: 15px 10px;
         &.fixed {

@@ -102,7 +102,7 @@ export default {
           const tablerow = {
             wid: bank.wid,
             wordbank: bank.name,
-            synonym: bank.similar_words.slice(0, 4),
+            synonym: bank.similar_words.slice(0, 40),
           };
           return tablerow;
         });

@@ -105,6 +105,14 @@ $success-color: #5cd29d;
   -ms-overflow-style: -ms-autohiding-scrollbar;
 }
 
+@mixin auto-overflow-Y() {
+  // overflow is for IE
+  overflow-y: auto;
+  // other browser support overlay will use overlay
+  overflow-y: overlay;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
 @mixin click-button() {
   cursor: pointer;
   user-select: none;

@@ -48,8 +48,9 @@ export default {
           that.setCurrentCategory(data.children[0]);
           data.children[0].isActive = true;
         })
-        .catch(() => {
-          that.$notifyFail();
+        .catch((err) => {
+          console.log(err);
+          that.$notifyFail(that.$t('wordbank.error.load_wordbanks_fail'));
         })
         .finally(() => {
           that.$emit('endLoading');
@@ -70,7 +71,7 @@ export default {
     flex: 0 0 200px;
   }
   #card-content {
-    flex: 1 0 auto;
+    flex: 1 0 0;
     margin-left: 20px;
   }
 }

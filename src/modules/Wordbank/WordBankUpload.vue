@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div id="wordbank-upload-block" class="card">
+    <div id="wordbank-upload-block" class="card h-fill">
       <div class="upload-item-block">
         <div class="upload-item-title">{{ $t('wordbank.upload_title.batch_import') }}</div>
         <div id="import_content" class="upload-item-content">
