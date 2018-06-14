@@ -65,6 +65,31 @@ input {
     padding: 8px 8px;
   }
 }
+textarea {
+  @include font-12px();
+  resize: none;
+  box-sizing: border-box;
+  display: inline-block;
+  padding: 5px 8px;
+  border: solid 1px $color-borderline;
+  border-radius: 2px;
+  &::placeholder {
+    color: $color-font-disabled;
+  }
+  &:hover {
+    border-color: $color-borderline-hover;
+  }
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(75, 75, 100, 0.2);
+    border-color: $color-borderline-hover;
+  }
+  &:disabled {
+    &:hover{
+      border-color: $color-borderline;
+    }
+  }
+}
 
 #app {
   font-family: $app-dft-font-family, 'Avenir', Helvetica, Arial, sans-serif;
