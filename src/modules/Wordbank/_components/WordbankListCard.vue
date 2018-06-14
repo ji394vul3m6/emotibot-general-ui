@@ -123,6 +123,7 @@ export default {
     currentCategory() {
       this.loadCurrentWordbanks();
       this.currentWordbanks = this.wordbanks;
+      this.checkedWordbank = [];
     },
     wordbankKeyword() {
       if (this.wordbankKeyword !== '') {
@@ -166,6 +167,7 @@ export default {
       } else {
         this.toCurPage(page);
       }
+      this.checkedWordbank = [];
     },
     exportWordbank() {
       window.open('/api/v3/dictionary/export?zh_tw=true', '_blank');

@@ -173,6 +173,7 @@ export default {
     },
     handlePageChange(page) {
       this.toCurPage(page);
+      this.checkedSynonyms = [];
     },
     handleCheckedChange(checkedData) {
       this.checkedSynonyms = checkedData;
