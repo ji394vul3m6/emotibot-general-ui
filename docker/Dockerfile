@@ -40,6 +40,9 @@ COPY --from=build-env /build/dist/static /build/dist/static
 COPY --from=authentication /usr/local/bin /auth
 WORKDIR /build/dist
 
+ARG GITTAG
+RUN echo $GITTAG > /build/dist/version
+
 COPY docker/file_init.sh file_init.sh
 COPY docker/entrypoint.sh entrypoint.sh
 RUN rm -rf /build/dist/Files
