@@ -12,7 +12,7 @@
         </div>
         <search-input ref="categorySearchBox" v-model="categoryNameKeyword"></search-input>
       </div>
-      <!-- <div id="card-category-add-root" v-if="isEditMode" @click="addRootCategory"> 
+      <div id="card-category-add-root" v-if="isEditMode" @click="addRootCategory"> 
         <input id="add-root" type="text"
           v-if="isAddingRoot" v-model="rootName" ref="rootName" 
           :placeholder="$t('wordbank.placeholder_category_name')"
@@ -22,7 +22,7 @@
           @keydown.enter="detectCompositionState"
           @keyup.enter="confirmRootName">
         <span v-else>{{ $t('wordbank.add_rootcategory') }}</span>
-      </div> -->
+      </div>
     </div>
     <div id="card-category-content" ref="cardCategoryContent">
       <div v-if="!hasSearchResult" id="no-category-search-result">
@@ -36,12 +36,12 @@
     </div>
     <div id="card-category-footer" v-if="isEditMode">
       <div class="card-category-setting-option"
-        :class="{'option-disabled': this.currentCategory.layer === MAX_LAYER || this.currentCategory.cid < 0}"
+        :class="{'option-disabled': disallowAddSubCategory}"
         @click="addSubCategory">
         {{ $t('wordbank.add_subcategory') }}
       </div>
       <div class="card-category-setting-option"
-        :class="{'option-disabled': !this.currentCategory.deletable}"
+        :class="{'option-disabled': disallowDeleteCategory}"
         @click="popDeleteCategory">
         {{ $t('wordbank.delete_category') }}
       </div>
@@ -75,7 +75,15 @@ export default {
       'currentCategory',
       'isEditMode',
       'isFilterMode',
+      'hasNewCategory',
     ]),
+    disallowAddSubCategory() {
+      return this.currentCategory.layer === this.MAX_LAYER || this.currentCategory.cid < 0
+        || this.isAddingRoot || this.hasNewCategory;
+    },
+    disallowDeleteCategory() {
+      return !this.currentCategory.deletable || this.isAddingRoot || this.hasNewCategory;
+    },
   },
   watch: {
     categoryNameKeyword() {
@@ -112,7 +120,7 @@ export default {
       }
     },
     addSubCategory() {
-      if (this.currentCategory.cid < 0 || this.currentCategory.layer === this.MAX_LAYER) return;
+      if (this.disallowAddSubCategory) return;
       const refName = `${this.currentCategory.cid}-${this.currentCategory.name}`;
       this.resetActiveCategory();
       this.appendSubCategory();
@@ -189,7 +197,7 @@ export default {
       return this.wordbank.children.forEach(child => child.name === this.rootName) !== -1;
     },
     popDeleteCategory() {
-      if (!this.currentCategory.deletable) {
+      if (this.disallowDeleteCategory) {
         return;
       }
       const option = {
@@ -301,7 +309,7 @@ export default {
   }
   #card-category-content {
     flex: 1 1 auto;
-    overflow-y: scroll;
+    overflow-y: auto;
     #no-category-search-result {
       height: 36px;
       line-height: 36px;

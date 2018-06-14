@@ -117,9 +117,14 @@ export const state = {
   isActiveId: undefined,
   lastActiveState: undefined,
   lastActiveId: undefined,
+
+  hasNewCategory: false,
 };
 
 export const mutations = {
+  [types.SET_HAS_NEW_CATEGORY]: (_, bool) => {
+    state.hasNewCategory = bool;
+  },
   [types.SET_WORDBANK]: (_, wordbank) => {
     state.wordbank = wordbank;
 

@@ -18,3 +18,5 @@ export const STORE_LAST_CATEGORY_STATUS = 'storeLastCategoryStatus';
 export const RECOVER_LAST_ACTIVE_CATEGORY = 'recoverLastActiveCategory';
 export const TOGGLE_MOVETO_MODE = 'toggleMoveToMode';
 export const RESET_ACTIVE_ID = 'resetActiveId';
+
+export const SET_HAS_NEW_CATEGORY = 'setHasNewCategory';

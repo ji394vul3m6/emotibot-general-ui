@@ -80,6 +80,7 @@ export default {
       'resetActiveCategory',
       'addToCurrentCategory',
       'cancelAddFromCurrentCategory',
+      'setHasNewCategory',
     ]),
     setActive() {
       this.setCurrentCategory(this.treeItem);
@@ -98,6 +99,7 @@ export default {
     },
     editNewItemName() { // This is called by Category Card Component, don't delete it.
       this.isNewCategory = true;
+      this.setHasNewCategory(true);
       this.editItemName();
     },
     editItemName() {
@@ -164,11 +166,13 @@ export default {
       .then((category) => {
         this.resetActiveCategory();
         this.addToCurrentCategory(category);
+        this.setHasNewCategory(false);
       });
     },
     cancelSubCategory() {
       this.resetActiveCategory();
       this.cancelAddFromCurrentCategory();
+      this.setHasNewCategory(false);
     },
     isItemNameDuplicate() {
       if (this.isNewCategory) { // current is still parent
