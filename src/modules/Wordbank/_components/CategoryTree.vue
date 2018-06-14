@@ -17,6 +17,7 @@
         <div class="item-name">
           <input v-if="isNameEditing" type="text" ref="itemName" 
             v-model="itemName"
+            maxlength="20"
             :placeholder="$t('wordbank.placeholder_category_name')"
             @compositionstart="setCompositionState(true)"
             @compositionend="setCompositionState(false)"

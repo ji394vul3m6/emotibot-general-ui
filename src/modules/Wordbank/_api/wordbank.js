@@ -3,11 +3,12 @@ import qs from 'qs';
 const CHECK_PATH = '/api/v1/dictionary/full-check';
 const META_PATH = '/api/v1/dictionary/download-meta';
 
+const DOWNLOAD_PATH = '/api/v2/dictionary/download';
+
 const WORDBANK_PATH = '/api/v3/dictionary/wordbank';
 const WORDBANKS_PATH = '/api/v3/dictionary/wordbanks';
 const WORDBANK_CATEGORY_PATH = '/api/v3/dictionary/class';
 const UPLOAD_PATH = '/api/v3/dictionary/upload';
-
 
 function deleteWordbank(id) {
   return this.$reqDelete(`${WORDBANK_PATH}/${id}`);
@@ -239,4 +240,6 @@ export default {
 
   getLastResult,
   getDownloadMeta,
+
+  DOWNLOAD_PATH,
 };

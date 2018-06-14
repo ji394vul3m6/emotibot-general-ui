@@ -87,7 +87,7 @@ export default {
 
       curPageIdx: 1,
       pageLimit: 100,
-      lengthLimit: 64,
+      lengthLimit: 35,
     };
   },
   computed: {

@@ -16,6 +16,7 @@
         <input id="add-root" type="text"
           v-if="isAddingRoot" v-model="rootName" ref="rootName" 
           :placeholder="$t('wordbank.placeholder_category_name')"
+          maxlength="20"
           @compositionstart="setCompositionState(true)"
           @compositionend="setCompositionState(false)"
           @blur="confirmRootName"
@@ -221,7 +222,7 @@ export default {
         this.setCurrentCategory(this.wordbank.children[0]);
       })
       .catch(() => {
-        this.$notifyFail(this.$t('delete_category_fail'));
+        this.$notifyFail(this.$t('wordbank.delete_category_fail'));
       });
     },
     triggerEditMode() {
