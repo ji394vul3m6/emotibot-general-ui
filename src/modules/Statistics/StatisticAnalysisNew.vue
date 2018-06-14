@@ -34,7 +34,7 @@
             :disabled="{to: earliestDate, from: latestDate}"
           ></date-picker>
         </template>
-        <text-button class="export-button" button-type="primary">{{ $t('general.export') }}</text-button>
+        <text-button class="export-button" button-type="primary" @click="doExport">{{ $t('general.export') }}</text-button>
       </div>
       <div class="chart-container" v-if="hasChart">
         <chart
@@ -61,6 +61,8 @@ import moment from 'moment';
 import DatePicker from '@/components/DateTimePicker/DatePicker';
 import NavBar from '@/components/NavigationBar';
 import tagAPI from '@/api/tagType';
+import auditAPI from '@/api/audit';
+import misc from '@/utils/js/misc';
 import api from './_api/statistic';
 
 let chartLoaded = false;
@@ -79,7 +81,7 @@ export default {
     }),
     DatePicker,
   },
-  api: [api, tagAPI],
+  api: [api, tagAPI, auditAPI],
   data() {
     const latestDate = new Date();
     const earliestDate = new Date();
@@ -149,6 +151,43 @@ export default {
     },
   },
   methods: {
+    doExport() {
+      const that = this;
+
+      const tableData = that.tableData;
+      const tableHeader = that.tableHeader;
+
+      let csvData = '';
+      csvData += `${tableHeader.map(header => header.text.replace('"', '"""')).join(',')}\n`;
+      csvData += tableData.map(data => tableHeader.map((header) => {
+        if (data[header.key] !== undefined) {
+          return data[header.key].toString().replace('"', '"""');
+        }
+        return '';
+      }).join(',')).join('\n');
+
+      const param = that.pageSetting[that.currentPage].param;
+      const name = that.pageMap[that.currentPage];
+      const blobData = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvData], { type: 'text/csv' });
+      const module = 'statistic-analysis';
+      let filename = `${name}-${param.t1}-${param.t2}.csv`;
+
+      if (that.showDimension) {
+        const idx = that.tagTypes.findIndex(t => t.val === that.selectTag);
+        if (idx >= 0) {
+          filename = `${name}-${param.t1}-${param.t2}-${that.tagTypes[idx].text}.csv`;
+        }
+      }
+
+      this.$api.auditExportLog({
+        module,
+        filename,
+      }).then(() => {
+        misc.downloadRawFile(blobData, filename);
+      }, (err) => {
+        that.$popErrorWindow(that.$t('error_msg.export_fail'), err);
+      });
+    },
     setUpDimensionAndReload(tagType) {
       const that = this;
       const currentPageConfig = that.pageSetting[that.currentPage];
