@@ -234,6 +234,10 @@ http {
             proxy_pass http://127.0.0.1:8181;
         }
 
+        location = uiversion {
+            proxy_pass http://127.0.0.1:80/uiversion.html;
+        }
+
         # /Files will go here
         location / {
             root   /build/dist;
