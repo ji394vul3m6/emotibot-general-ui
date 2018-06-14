@@ -112,6 +112,9 @@ export default {
     handleEndDateChanged(d) {
       this.end.dateObj = d;
       pickerUtil.initTimeObj(this.end);
+      this.startDisableDate = {
+        from: this.end.dateObj,
+      };
     },
     doExport() {
       const that = this;

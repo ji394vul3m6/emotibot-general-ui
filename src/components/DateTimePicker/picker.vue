@@ -64,17 +64,6 @@ export default {
     },
   },
   methods: {
-    // updateDate() {
-    //   // this.value = this.dateObj;
-    // },
-    // updateTime() {
-    //   const hour = this.value.getHours();
-    //   this.timeObj.HH = hour > 10 ? hour.toString() : `0${hour}`;
-
-    //   const min = this.value.getMinutes();
-    //   this.timeObj.mm = min > 10 ? min.toString() : `0${min}`;
-    //   this.dateObj = this.value;
-    // },
     onDateSelected(d) {
       this.datetime.dateObj = d;
       const syncedDate = new Date(this.datetime.getTimestamp() * 1000);
@@ -98,18 +87,11 @@ export default {
   },
   data() {
     return {
-      // dateObj: new Date(),
-      // timeObj: {
-      //   HH: 0,
-      //   mm: 0,
-      //   ss: 0,
-      // },
       dateValidity: true,
       timeValidity: true,
     };
   },
   mounted() {
-    // this.updateTime();
   },
 };
 </script>

@@ -84,6 +84,14 @@ export default {
     validity() {
       this.$emit('validityChange', this.validity);
     },
+    currentDate(val) {
+      const hour = val.getHours();
+      const min = val.getMinutes();
+      this.hour = hour < 10 ? `0${hour}` : `${hour}`;
+      this.minute = min < 10 ? `0${min}` : `${min}`;
+      this.displayTime = `${this.hour}:${this.minute}`;
+      this.parseDisplayTime();
+    },
   },
 
   methods: {
@@ -105,12 +113,23 @@ export default {
       if (pattern.test(this.displayTime)) {
         this.validity = true;
         const result = this.displayTime.match(pattern);
-        if (/^[0-9]$/.test(result[1])) {
-          this.hour = `0${result[1]}`;
-        } else {
-          this.hour = result[1];
+
+        const currentDate = this.currentDate;
+        let hour = parseInt(result[1], 10);
+        let min = parseInt(result[2], 10);
+        currentDate.setHours(hour);
+        currentDate.setMinutes(min);
+        if (this.disabled && this.disabled.to && currentDate < this.disabled.to) {
+          hour = this.disabled.to.getHours();
+          min = this.disabled.to.getMinutes();
         }
-        this.minute = result[2];
+        if (this.disabled && this.disabled.from && currentDate > this.disabled.from) {
+          hour = this.disabled.from.getHours();
+          min = this.disabled.from.getMinutes();
+        }
+        this.hour = hour < 10 ? `0${hour}` : `${hour}`;
+        this.minute = min < 10 ? `0${min}` : `${min}`;
+        this.displayTime = `${this.hour}:${this.minute}`;
         if (this.manualInput) {
           this.closeDropdown();
         }
