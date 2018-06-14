@@ -24,7 +24,7 @@
       <template v-else-if="robotID === '' && ready">
         <div id="app-page" class="manage">
           <router-view class="app-body" @startLoading="startLoading" @endLoading="endLoading"/>
-          <div v-if="showLoading" class="loading">
+          <div v-if="showLoading" class="loading manage">
             <div class='loader'></div>
             {{ loadingMsg || $t('general.loading') }}
           </div>
@@ -292,11 +292,15 @@ export default {
     top: $page-header-height;
     width: 100vw
   }
+  &.manage {
+    width: 100vw;
+    left: 0;
+  }
   position: fixed;
   top: $page-header-height;
   left: $page-menu-width;
   height: 100%;
-  width: calc(100% - #{$page-menu-width});
+  width: calc(100vw - #{$page-menu-width});
   background: rgba(0%, 0%, 0%, 0.6);
   color: white;
   font-size: 1.5em;
