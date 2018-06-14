@@ -196,6 +196,7 @@ export default {
       margin-right: 30px;
       margin-bottom: 20px;
       padding: 20px;
+      @include click-button();
 
       &:hover {
         box-shadow: 0 0 14px 0 rgba(0, 0, 0, 0.2);
