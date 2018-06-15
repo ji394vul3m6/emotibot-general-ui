@@ -11,12 +11,12 @@
           <div class="col tagname">{{$t('qa_label.label_name')}}</div>
           <div class="col opts"></div>
         </div>
-        <div class="row row-tbody" v-for="(item, index) in tableData">
+        <div class="row row-tbody" v-for="(item, index) in tableData" :key="index">
           <div class="col tagname">
               <input class="tag-input" v-show="item.ifedit" v-model.trim="item.name" v-focus="true" maxlength="10" :placeholder="$t('qa_label.length')" key="tag-input" />
               <span v-show="!item.ifedit" class="tagname grey3" key="tagname">{{item.name}}</span>
           </div>
-          <div class="col opts">
+          <div class="col opts" v-if="canEdit">
             <div class="tag-opts bluecolor" v-if='item.ifedit'>
               <a class="save-sqtag" @click="saveLabel(item)" href="javascript:void(0);" key="save-sqtag">{{$t('general.save')}}</a>
               <a class="cancel-sqtag" @click="cancelLabel(false,item)" href="javascript:void(0);" key="cancel-sqtag">{{$t('general.cancel')}}</a>
@@ -27,7 +27,7 @@
             </div>
           </div>
         </div>
-        <div class="row row-tbody add-newtag">
+        <div class="row row-tbody add-newtag" v-if="canEdit">
           <span @click="addLabel">+{{$t('general.add')}}{{$t('qa_label.label')}}</span>
         </div>
       </div>
@@ -65,6 +65,9 @@ export default {
     };
   },
   computed: {
+    canEdit() {
+      return this.$hasRight('edit');
+    },
     tableData() {
       const that = this;
       return that.labels.filter(tag => that.keyword === '' || tag.name.indexOf(that.keyword) >= 0);
