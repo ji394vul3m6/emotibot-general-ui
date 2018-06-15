@@ -230,11 +230,12 @@ export default {
 
         that.$emit('startLoading');
         let promise;
+        const options = {
+          name: that.editName,
+          privileges: privilegeData,
+        };
         if (role.uuid && role.uuid !== '') {
-          promise = that.$api.updateEnterpriseRole(that.enterpriseID, role.uuid, {
-            name: role.name,
-            privileges: privilegeData,
-          });
+          promise = that.$api.updateEnterpriseRole(that.enterpriseID, role.uuid, options);
         } else {
           if (that.roles.map(r => r.name).indexOf(that.editName) >= 0) {
             const event = new Event('tooltip-show');
@@ -242,10 +243,7 @@ export default {
             that.$emit('endLoading');
             return;
           }
-          promise = that.$api.addEnterpriseRole(that.enterpriseID, {
-            name: that.editName,
-            privileges: privilegeData,
-          });
+          promise = that.$api.addEnterpriseRole(that.enterpriseID, options);
         }
 
         promise.then(() => that.loadRoles())
