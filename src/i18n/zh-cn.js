@@ -772,6 +772,8 @@ export default {
     err_invalid_check_password: '两次密码输入不同',
     update_password_success: '更新密码成功',
 
+    err_role_duplicate: '角色名称已存在',
+
     go_back: '返回',
 
     privilege: {

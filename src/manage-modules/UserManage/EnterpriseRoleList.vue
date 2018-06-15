@@ -14,12 +14,12 @@
             <div class="card-title">
             <template v-if="role.editMode">
               <div class="title-text">
-                <input v-model="editName">
+                <input v-model="editName" v-tooltip="nameTooltip" ref='nameInput'>
               </div>
               <div class="title-action">
                 <div class="action" @click="closeEditRole(role, false)">{{ $t('general.cancel') }}</div>
                 <div class="action" @click="closeEditRole(role, true)"
-                  v-if="editName !== ''" >{{ $t('general.save') }}</div>
+                  v-if="showSave" >{{ $t('general.save') }}</div>
               </div>
             </template>
             <template v-else>
@@ -87,6 +87,31 @@ export default {
       'enterpriseID',
       'privilegeList',
     ]),
+    duplicateIdx() {
+      const that = this;
+      const ret = that.editName === '' ? -1 : that.roles.map(r => r.name).indexOf(that.editName);
+      return ret;
+    },
+    showSave() {
+      const idx = this.roles.findIndex(role => role.editMode);
+      const role = this.roles[idx];
+      const existedRole = role.uuid !== undefined && role.uuid !== '';
+      console.log(existedRole);
+      return this.editName !== '' &&
+        ((existedRole && this.duplicateIdx !== idx) ||
+          (!existedRole && this.duplicateIdx < 0));
+    },
+  },
+  watch: {
+    duplicateIdx(val) {
+      if (val !== -1) {
+        const event = new Event('tooltip-show');
+        this.$refs.nameInput[0].dispatchEvent(event);
+      } else {
+        const event = new Event('tooltip-hide');
+        this.$refs.nameInput[0].dispatchEvent(event);
+      }
+    },
   },
   data() {
     return {
@@ -99,6 +124,10 @@ export default {
       privilegeMap: {},
       oneInEdit: false,
       editName: '',
+      nameTooltip: {
+        msg: this.$t('management.err_role_duplicate'),
+        eventOnly: true,
+      },
     };
   },
   methods: {
@@ -206,6 +235,12 @@ export default {
             privileges: privilegeData,
           });
         } else {
+          if (that.roles.map(r => r.name).indexOf(that.editName) >= 0) {
+            const event = new Event('tooltip-show');
+            that.$refs.nameInput[0].dispatchEvent(event);
+            that.$emit('endLoading');
+            return;
+          }
           promise = that.$api.addEnterpriseRole(that.enterpriseID, {
             name: that.editName,
             privileges: privilegeData,

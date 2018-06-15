@@ -23,6 +23,14 @@ const MyPlugin = {
           parent.appendChild(vm.$el);
           window.test = vm;
           vm.$forceUpdate();
+
+          el.addEventListener('tooltip-show', () => {
+            vm.$emit('show');
+          });
+          el.addEventListener('tooltip-hide', () => {
+            vm.$emit('hide');
+          });
+
           if (binding.value.clickShow) {
             const tooltip = vm.$el;
             el.addEventListener('click', (clickEvent) => {
@@ -37,7 +45,13 @@ const MyPlugin = {
               window.addEventListener('click', detectClickListener);
               clickEvent.stopPropagation();
             });
-          } else {
+          } else if (binding.value.animateShow) {
+            el.addEventListener('tooltip-show', () => {
+              setTimeout(() => {
+                vm.$emit('hide');
+              }, binding.value.animateTime || 3000);
+            });
+          } else if (!binding.value.eventOnly) {
             el.addEventListener('mouseover', () => {
               vm.$emit('show');
             });

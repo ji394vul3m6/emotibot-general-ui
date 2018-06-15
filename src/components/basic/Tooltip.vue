@@ -3,7 +3,7 @@
     <div class="tooltip-text" v-if="buttons === undefined || buttons.length <= 0">
       {{ msg }}
     </div>
-    <div class="tooltip-form">
+    <div class="tooltip-form" v-else>
       <div class="tooltip-info">
         <div class="tooltip-icon" v-if="iconType && iconType !== ''">
           <icon :icon-type="iconType" :size=12 />
