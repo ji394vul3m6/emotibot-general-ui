@@ -1,6 +1,5 @@
 import md5 from 'js-md5';
 import qs from 'qs';
-import { mapGetters } from 'vuex';
 import 'babel-polyfill';
 
 const LOGIN_PATH = '/auth/v3/login';

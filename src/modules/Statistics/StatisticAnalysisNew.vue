@@ -57,7 +57,6 @@
 
 <script>
 import Vue from 'vue';
-import { mapGetters } from 'vuex';
 import moment from 'moment';
 import DatePicker from '@/components/DateTimePicker/DatePicker';
 import NavBar from '@/components/NavigationBar';
