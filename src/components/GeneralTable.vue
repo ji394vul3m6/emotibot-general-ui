@@ -28,7 +28,7 @@
             :style="{width: header.width}"
             :class="{'fixed': header.width}">
             <template v-if="header.type === 'tag'">
-              <tag class="tags" v-for="tag in data[header.key]" :key="tag" :fontClass="fontClass">{{ tag }}</tag>
+              <tag class="tags" v-for="(tag, tagIdx) in data[header.key]" :key="`${tagIdx}-${tag}`" :fontClass="fontClass">{{ tag }}</tag>
             </template>
             <template v-else-if="header.type === 'toggle'">
               <toggle class="toggles"
