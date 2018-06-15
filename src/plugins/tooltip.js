@@ -1,5 +1,13 @@
 import Tooltip from '../components/basic/Tooltip';
 
+function getPosition(el) {
+  const boundedBox = el.getBoundingClientRect();
+  return {
+    x: boundedBox.left,
+    y: boundedBox.top,
+  };
+}
+
 const MyPlugin = {
   install(Vue) {
     Vue.directive('tooltip', {
@@ -25,7 +33,7 @@ const MyPlugin = {
           vm.$forceUpdate();
 
           el.addEventListener('tooltip-show', () => {
-            vm.$emit('show');
+            vm.$emit('show', getPosition(el));
           });
           el.addEventListener('tooltip-hide', () => {
             vm.$emit('hide');
@@ -34,7 +42,7 @@ const MyPlugin = {
           if (binding.value.clickShow) {
             const tooltip = vm.$el;
             el.addEventListener('click', (clickEvent) => {
-              vm.$emit('show');
+              vm.$emit('show', getPosition(el));
               const detectClickListener = (e) => {
                 const clickDom = e.target;
                 if (clickDom && !tooltip.contains(clickDom)) {
@@ -53,7 +61,7 @@ const MyPlugin = {
             });
           } else if (!binding.value.eventOnly) {
             el.addEventListener('mouseover', () => {
-              vm.$emit('show');
+              vm.$emit('show', getPosition(el));
             });
             el.addEventListener('mouseout', () => {
               vm.$emit('hide');

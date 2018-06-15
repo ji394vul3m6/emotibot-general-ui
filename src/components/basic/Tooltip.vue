@@ -96,7 +96,12 @@ export default {
   mounted() {
     const that = this;
 
-    that.$on('show', () => {
+    that.$on('show', (pos) => {
+      console.log(pos);
+      if (pos) {
+        that.x = pos.x;
+        that.y = pos.y;
+      }
       that.showX = that.x + that.leftOffset;
       that.showY = (that.y - that.$el.clientHeight - 8) + that.topOffset;
       that.show = true;
