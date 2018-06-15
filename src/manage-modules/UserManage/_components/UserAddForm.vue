@@ -51,10 +51,10 @@
       <div class="row-title"></div>
       <text-button button-type="primary" @click="addPrivilege">{{ $t('general.add') }}</text-button>
     </div>
+    </template>
     <div class='err-tooltip' ref="tooltip">
       {{ errMsg }}
     </div>
-    </template>
   </div>
 </template>
 
@@ -105,6 +105,7 @@ export default {
       machineOptions: [],
       privilegeOptions: [],
       editPasswordCallback: undefined,
+      existedUsers: [],
     };
   },
   methods: {
@@ -185,6 +186,14 @@ export default {
         that.errColumn = '';
         that.errMsg = '';
       }
+
+      if (!that.editMode) {
+        if (that.existedUsers.indexOf(that.userName) >= 0) {
+          that.errColumn = 'userName';
+          that.errMsg = that.$t('management.err_existed_username');
+        }
+      }
+
       if (that.errColumn) {
         that.showError();
         return;
@@ -217,7 +226,6 @@ export default {
         }
       });
       ret.apps = JSON.stringify(retApps);
-
       that.$emit('validateSuccess', ret);
     },
   },
@@ -289,6 +297,11 @@ export default {
           });
         });
       }
+    }
+    if (that.extData.users) {
+      that.extData.users.forEach((user) => {
+        that.existedUsers.push(user.user_name);
+      });
     }
 
     that.$on('validate', that.validate);

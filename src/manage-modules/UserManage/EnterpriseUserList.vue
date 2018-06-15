@@ -180,6 +180,7 @@ export default {
         that.$api.getEnterpriseRoles(that.enterpriseID),
         that.$api.getRobotGroups(that.enterpriseID),
         that.$api.getRobots(that.enterpriseID),
+        that.$api.getEnterpriseUsers(that.enterpriseID),
       ];
 
       const popOption = {
@@ -203,13 +204,11 @@ export default {
       };
 
       Promise.all(promises)
-      .then(([roles, groups, robots]) => {
-        console.log(roles);
-        console.log(groups);
-        console.log(robots);
+      .then(([roles, groups, robots, users]) => {
         popOption.extData.roles = roles;
         popOption.extData.groups = groups;
         popOption.extData.robots = robots;
+        popOption.extData.users = users;
         that.$pop(popOption);
       });
     },
@@ -237,6 +236,7 @@ export default {
         that.$api.getEnterpriseRoles(that.enterpriseID),
         that.$api.getRobotGroups(that.enterpriseID),
         that.$api.getRobots(that.enterpriseID),
+        that.$api.getEnterpriseUsers(that.enterpriseID),
       ];
       const popOption = {
         title: that.$t('management.add_account'),
@@ -264,13 +264,11 @@ export default {
       };
 
       Promise.all(promises)
-      .then(([roles, groups, robots]) => {
-        console.log(roles);
-        console.log(groups);
-        console.log(robots);
+      .then(([roles, groups, robots, users]) => {
         popOption.extData.roles = roles;
         popOption.extData.groups = groups;
         popOption.extData.robots = robots;
+        popOption.extData.users = users;
         that.$pop(popOption);
       });
     },

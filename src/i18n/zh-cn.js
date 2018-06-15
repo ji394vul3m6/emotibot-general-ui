@@ -765,6 +765,7 @@ export default {
     check_new_password: '确认新密码',
 
     err_empty_username: 'ID 不可为空',
+    err_existed_username: 'ID 已存在',
     err_empty_email: 'Email 不可为空',
     err_empty_password: '密码不可为空',
     err_manager_empty_password: '管理员密码不可为空',
