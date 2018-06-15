@@ -804,6 +804,8 @@ export default {
 
     create_group: '创建群组',
     add_robot: '加入机器人',
+    input_personal_pass: '輸入個人密碼',
+    reason_description: '原因描述',
 
     enterprise_privilege_manage: '企业权限管理',
     add_account: '新增帐号',

@@ -99,6 +99,10 @@ export default {
           name: robot.name,
           description: robot.description,
         },
+        left_button: {
+          msg: that.$t('general.delete'),
+          type: 'error',
+        },
         callback: {
           ok(retData) {
             that.$api.updateRobot(that.enterpriseID, robot.id, retData)
