@@ -97,18 +97,20 @@ export default {
       const role = this.roles[idx];
       const existedRole = role.uuid !== undefined && role.uuid !== '';
       return this.editName !== '' &&
-        ((existedRole && this.duplicateIdx !== idx) ||
-          (!existedRole && this.duplicateIdx < 0));
+        ((existedRole && this.duplicateIdx === idx) || this.duplicateIdx < 0);
     },
   },
   watch: {
     duplicateIdx(val) {
-      if (val !== -1) {
-        const event = new Event('tooltip-show');
-        this.$refs.nameInput[0].dispatchEvent(event);
-      } else {
-        const event = new Event('tooltip-hide');
-        this.$refs.nameInput[0].dispatchEvent(event);
+      if (this.$refs.nameInput) {
+        const idx = this.roles.findIndex(role => role.editMode);
+        if (val !== -1 && val !== idx) {
+          const event = new Event('tooltip-show');
+          this.$refs.nameInput[0].dispatchEvent(event);
+        } else {
+          const event = new Event('tooltip-hide');
+          this.$refs.nameInput[0].dispatchEvent(event);
+        }
       }
     },
   },
