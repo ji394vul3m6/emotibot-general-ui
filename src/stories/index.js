@@ -3,11 +3,22 @@
 import { storiesOf } from '@storybook/vue';
 import { withKnobs } from '@storybook/addon-knobs';
 
+import Vue from 'vue';
+import VueI18n from 'vue-i18n';
+import messages from '@/i18n';
+
 import TextButtonStory from './TextButton';
 import LabelSwitchStory from './LabelSwitch';
 import GeneralTableStory from './GeneralTable';
 import NavBarStory from './NavigationBar';
 import DropdownSelectStory from './DropdownSelect';
+
+Vue.use(VueI18n);
+
+const i18n = new VueI18n({
+  locale: 'zh-cn',
+  messages,
+});
 
 let textButtonStory = storiesOf('Textbutton', module).addDecorator(withKnobs);
 TextButtonStory.forEach((story) => {
@@ -21,7 +32,7 @@ LabelSwitchStory.forEach((story) => {
 
 const generalTableStory = storiesOf('GeneralTable', module).addDecorator(withKnobs);
 GeneralTableStory.forEach((story) => {
-  generalTableStory.add(story.name, story.func);
+  generalTableStory.add(story.name, story.func.bind(null, i18n));
 });
 
 const NavigationBarStory = storiesOf('NavigationBar', module).addDecorator(withKnobs);

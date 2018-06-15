@@ -4,7 +4,11 @@ import GeneralTable from '../../components/GeneralTable';
 
 export default [{
   name: 'generalTable',
-  func: () => {
+  func: (i18n) => {
+    function clickToggle(rowdata, idx) {
+      action('click toggle')(rowdata, idx);
+    }
+
     const header = [{
       key: 'wordbank',
       text: '詞庫',
@@ -13,10 +17,19 @@ export default [{
       key: 'synonym',
       text: '同義詞',
       type: 'tag',
+    }, {
+      key: 'status',
+      text: '狀態',
+      type: 'toggle',
+      width: '60px',
     }];
     const data = [{
       wordbank: '詞庫名稱',
       synonym: ['一個同義詞', '兩個同義詞'],
+      status: {
+        val: true,
+        onclick: clickToggle,
+      },
     }];
 
     function clickEdit(rowdata, idx) {
@@ -43,18 +56,22 @@ export default [{
     const fontType = select('字體大小', fontTypes, 'font-14');
     const checkbox = boolean('checkbox', false);
     const autoHeight = boolean('autoHeight', false);
+    const showEmpty = boolean('showEmpty', false);
     const tableHeader = object('table header', header);
     const tableData = object('table data', data);
     const click = object('action', actionType);
 
     const template = `
-    <general-table
-      :fontClass="fontType"
-      :autoHeight="autoHeight"
-      :tableHeader="tableHeader" 
-      :tableData="tableData"
-      :checkbox="checkbox"
-      :action="click" />`;
+    <div width="100%">
+      <general-table
+        :fontClass="fontType"
+        :autoHeight="autoHeight"
+        :tableHeader="tableHeader" 
+        :tableData="tableData"
+        :checkbox="checkbox"
+        :action="click"
+        :showEmpty="showEmpty" />
+    </div>`;
 
     return {
       components: {
@@ -68,11 +85,13 @@ export default [{
           click,
           autoHeight,
           fontType,
+          showEmpty,
         };
       },
       methods: {
       },
       template,
+      i18n,
     };
   },
 }];
