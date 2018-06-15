@@ -246,7 +246,7 @@ export default {
             this.$api.addWordbank(targetCid, addedWordbank)
             .then((bank) => {
               const payload = {
-                cid: this.currentCategory.cid,
+                cid: this.currentCategory.cid < 0 ? -1 : this.currentCategory.cid,
                 newbank: bank,
               };
               this.addWordbankToCategory(payload);
