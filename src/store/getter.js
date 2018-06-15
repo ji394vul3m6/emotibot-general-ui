@@ -48,3 +48,14 @@ export const userRoleMap = s => s.userRoleMap;
 export const currentPage = s => s.curPage;
 export const isChatOpen = s => s.chatTest;
 export const userInfo = s => s.userInfo;
+
+export const hasPrivilege = s => (mod, cmd) => {
+  if (s.userInfo.type < 2) {
+    return true;
+  }
+  const nowPriv = s.userRole.privileges[mod];
+  if (!nowPriv) {
+    return false;
+  }
+  return nowPriv.indexOf(cmd) >= 0;
+};

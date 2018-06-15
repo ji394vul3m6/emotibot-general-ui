@@ -1,5 +1,6 @@
 import md5 from 'js-md5';
 import qs from 'qs';
+import { mapGetters } from 'vuex';
 import 'babel-polyfill';
 
 const LOGIN_PATH = '/auth/v3/login';
@@ -32,7 +33,6 @@ function getRobots(userInfo) {
   const apps = userInfo.roles.apps;
   let promise;
 
-  debugger;
   const robots = [];
   robots.push(...apps);
   groups.forEach((group) => {
@@ -226,6 +226,13 @@ function getRobotsFromStorage() {
   return JSON.parse(localStorage.getItem('robots'));
 }
 
+function hasRight(cmd) {
+  if (this.$options.privCode) {
+    return this.$store.getters.hasPrivilege(this.$options.privCode, cmd);
+  }
+  return false;
+}
+
 const MyPlugin = {
   install(Vue) {
     Vue.prototype.$checkPrivilege = checkPrivilege;
@@ -239,6 +246,7 @@ const MyPlugin = {
     Vue.prototype.$getPrivModules = getPrivModules;
     Vue.prototype.$loadRobotOfUser = getRobots;
     Vue.prototype.$getRobots = getRobotsFromStorage;
+    Vue.prototype.$hasRight = hasRight;
   },
 };
 
