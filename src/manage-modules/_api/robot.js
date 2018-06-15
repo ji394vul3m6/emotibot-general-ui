@@ -3,6 +3,7 @@ import qs from 'qs';
 const baseURL = '/auth/v3/enterprise';
 const BF2_ROBOT_URL = '/api/v1/bf/app';
 const BF2_SSM_URL = '/api/v1/bf/ssm-data';
+const ROBOT_URL = '/api/v2/robot/data';
 
 function getRobots(enterpriseID) {
   return this.$reqGet(`${baseURL}/${enterpriseID}/apps`).then(rsp => rsp.data.result);
@@ -35,6 +36,14 @@ function addRobot(enterpriseID, app, user) {
       appid,
     };
     return this.$reqPost(BF2_SSM_URL, qs.stringify(option), {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    });
+  })
+  .then(() => {
+    const option = {
+      appid,
+    };
+    return this.$reqPost(ROBOT_URL, qs.stringify(option), {
       'Content-Type': 'application/x-www-form-urlencoded',
     });
   });
