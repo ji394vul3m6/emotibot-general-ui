@@ -55,14 +55,13 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: 'index.html',
-      favicon: path.resolve(__dirname, '../static/favicon.ico'),
-      chunks: ["common", "app"],
+      chunks: ["vendor", "app"],
       inject: true
     }),
     new HtmlWebpackPlugin({
       filename: 'login.html',
       template: 'login.html',
-      chunks: ["common", "login"],
+      chunks: ["vendor", "login"],
       inject: true
     }),
     // copy custom static assets
@@ -72,7 +71,20 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         to: config.dev.assetsSubDirectory,
         ignore: ['.*']
       }
-    ])
+    ]),
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'vendor',
+      minChunks (module) {
+        // any required modules inside node_modules are extracted to vendor
+        return (
+          module.resource &&
+          /\.js$/.test(module.resource) &&
+          module.resource.indexOf(
+            path.join(__dirname, '../node_modules')
+          ) === 0
+        )
+      }
+    }),
   ]
 })
 
