@@ -195,7 +195,7 @@ export default {
       });
     },
     isRootNameDuplicate() {
-      return this.wordbank.children.forEach(child => child.name === this.rootName) !== -1;
+      return this.wordbank.children.findIndex(child => child.name === this.rootName) !== -1;
     },
     popDeleteCategory() {
       if (this.disallowDeleteCategory) {
