@@ -270,7 +270,6 @@ export default {
 #pop-wordbank-edit {
   @include font-14px();
   width: 960px;
-  height: 450px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -278,11 +277,15 @@ export default {
     flex: 0 0 90px;
   }
   #edit-content {
-    flex: 1 1 auto;
+    flex: 0 0 200px;
     display: flex;
     flex-direction: column;
+    @media (min-height: 768px) {
+      flex: 0 0 300px;
+    }
+
     #synonym-table {
-      flex: 1 1 auto;
+      flex: 1;
       overflow: hidden;
     }
   }
