@@ -14,13 +14,15 @@
             </div>
           </div>
           <div class="button-container">
-            <text-button button-type="primary" @click="popAddWordsContent(words)">{{ $t('general.add') }}</text-button>
+            <text-button v-if="canEdit" button-type="primary" @click="popAddWordsContent(words)">{{ $t('general.add') }}</text-button>
           </div>
           <div class="words-contents">
             <div class="row header">
               <div class="content">{{ $t('chat_skill.chat_skill') }}</div>
+              <template v-if="canEdit">
               <div class="command">{{ $t('general.operation') }}</div>
               <div class="command"></div>
+              </template>
             </div>
             <template v-if="words.contents.length === 0">
               <div class="row">
@@ -29,12 +31,14 @@
             </template>
             <div v-for="content in words.contents" :key="content.id" class="row">
               <div class="content">{{content.content}}</div>
+              <template v-if="canEdit">
               <div class="command edit" @click="popEditWordsContent(words, content)">
                 {{ $t('general.edit') }}
               </div>
               <div class="command delete" @click="popDeleteWordsContent(words, content)">
                 {{ $t('general.delete') }}
               </div>
+              </template>
             </div>
           </div>
         </div>
@@ -44,6 +48,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import NavBar from '@/components/NavigationBar';
 import EditPop from './_components/RobotWordsEdit';
 import api from './_api/chatskill';
@@ -74,6 +79,14 @@ export default {
       },
       wordsList: [],
     };
+  },
+  computed: {
+    ...mapGetters([
+      'userRole',
+    ]),
+    canEdit() {
+      return this.$hasRight('edit');
+    },
   },
   methods: {
     popAddWordsContent(words) {
