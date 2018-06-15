@@ -77,7 +77,7 @@
           </div>
         </div>
       </div>
-      <div class="button-container">
+      <div class="button-container" v-if="canExport || totalCount > 0">
         <text-button v-if="canExport"
           v-on:click="doExport()"
           :disabled="!validFormInput">{{ $t('general.export') }}</text-button>
@@ -204,6 +204,7 @@ export default {
         start_time: this.start.getTimestamp(),
         end_time: this.end.getTimestamp(),
         filter: {},
+        type: 1,
       };
       const that = this;
 
@@ -442,8 +443,7 @@ export default {
       return true;
     },
     canExport() {
-      // return auth.checkPrivilege('statistic-daily', 'export');
-      return true;
+      return this.$hasRight('export');
     },
     trimmedUserID() {
       return this.userID.trim();
@@ -604,11 +604,12 @@ $main-color: black;
   .button-container {
     flex: 0 0 auto;
 
+    line-height: $default-line-height;
     display: flex;
     align-items: center;
     padding: 10px 20px;
     box-shadow: inset 0 -1px 0 0 #e9e9e9;
-    .total-show {
+    .total-show:not(:first-child) {
       margin-left: 10px;
     }
   }

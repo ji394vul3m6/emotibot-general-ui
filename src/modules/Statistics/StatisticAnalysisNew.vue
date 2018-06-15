@@ -34,7 +34,7 @@
             :disabled="{to: earliestDate, from: latestDate}"
           ></date-picker>
         </template>
-        <text-button class="export-button" button-type="primary" @click="doExport">{{ $t('general.export') }}</text-button>
+        <text-button v-if="canExport" class="export-button" button-type="primary" @click="doExport">{{ $t('general.export') }}</text-button>
       </div>
       <div class="chart-container" v-if="hasChart">
         <chart
@@ -57,6 +57,7 @@
 
 <script>
 import Vue from 'vue';
+import { mapGetters } from 'vuex';
 import moment from 'moment';
 import DatePicker from '@/components/DateTimePicker/DatePicker';
 import NavBar from '@/components/NavigationBar';
@@ -133,6 +134,9 @@ export default {
     };
   },
   computed: {
+    canExport() {
+      return this.$hasRight('export');
+    },
     hasChart() {
       return this.pageSetting[this.currentPage] ?
         this.pageSetting[this.currentPage].hasChart : false;

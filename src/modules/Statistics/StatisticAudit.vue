@@ -47,7 +47,7 @@
       <!-- <div class="row" v-if="!validTimeRange">
         <label class="error_msg">{{ $t('error_msg.time_range_error') }}</label>
       </div> -->
-      <div class="button-container row">
+      <div class="button-container row" v-if="canExport || totalCount > 0">
         <text-button v-if="canExport"
           v-on:click="doExport()"
           :disabled="!validFormInput"
@@ -56,11 +56,11 @@
           {{ $t('statistics.total_records', {num: totalCount}) }}
         </div>
       </div>
-      <div class="table-container">
-        <general-table auto-height show-empty v-if="showTable" :tableData="tableData" :tableHeader="headerInfo" font-class="font-12"></general-table>
+      <div class="table-container" v-if="showTable">
+        <general-table auto-height show-empty :tableData="tableData" :tableHeader="headerInfo" font-class="font-12"></general-table>
       </div>
       <div class="row paginator">
-        <v-pagination v-if="showPagination" :pageIndex="pageIndex" v-on:page-change="doSearch" :total="totalCount" :page-size="20" :layout="['prev', 'pager', 'next', 'jumper']"></v-pagination>
+        <v-pagination size="small" v-if="showPagination" :pageIndex="pageIndex" v-on:page-change="doSearch" :total="totalCount" :page-size="20" :layout="['prev', 'pager', 'next', 'jumper']"></v-pagination>
       </div>
     </div>
   </div>
@@ -312,8 +312,7 @@ export default {
   },
   computed: {
     canExport() {
-      // return auth.checkPrivilege('statistic-audit', 'export');
-      return true;
+      return this.$hasRight('export');
     },
     validTimeRange() {
       return this.end.dateObj > this.start.dateObj;
@@ -410,7 +409,7 @@ $title-color: #666666;
     &.button-container {
       margin-top: 0;
       padding: 10px 20px;
-      .total-show {
+      .total-show:not(:first-child) {
         margin-left: 10px;
       }
       box-shadow: inset 0 1px 0 0 #e9e9e9, inset 0 0 0 1px #e9e9e9;;
