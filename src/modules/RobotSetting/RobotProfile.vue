@@ -8,7 +8,7 @@
       <div class="row header">
         <div class="question">{{$t('general.question')}}</div>
         <div class="answer">{{$t('general.answer')}}</div>
-        <div class="command"></div>
+        <div class="command" v-if="canEdit"></div>
       </div>
     </div>
     <div class="table-container">
@@ -17,7 +17,7 @@
         v-for="(data, idx) in tableData" :key="idx">
         <div class="question">{{data.main_question}}</div>
         <div class="answer">{{data.show_answer}}</div>
-        <div class="command edit" @click="editQA(idx)">
+        <div class="command edit" @click="editQA(idx)" v-if="canEdit">
           {{$t('general.edit')}}
         </div>
       </div>
@@ -56,8 +56,7 @@ export default {
       'robotName',
     ]),
     canEdit() {
-      return true;
-      // return auth.checkPrivilege('robot-profile', 'edit');
+      return this.$hasRight('edit');
     },
   },
   api,

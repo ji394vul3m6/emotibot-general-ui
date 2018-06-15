@@ -119,8 +119,7 @@ export default {
   },
   computed: {
     canEdit() {
-      // return auth.checkPrivilege('robot-skill', 'edit');
-      return true;
+      return this.$hasRight('edit');
     },
     allActive() {
       return this.moduleList.reduce((ret, mod) => ret && mod.active, true);
