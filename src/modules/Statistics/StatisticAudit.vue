@@ -78,7 +78,7 @@ import auditAPI from '@/api/audit';
 import api from './_api/statistic';
 // import auth from '@/auth';
 
-const timeFormatWithoutSecond = 'YYYY-MM-DD HH:mm';
+const timeFormatWithoutSecond = 'YYYYMMDDHHmm';
 const timeFormatFull = 'YYYY-MM-DD HH:mm:ss';
 
 export default {
@@ -119,8 +119,10 @@ export default {
     doExport() {
       const that = this;
       const module = 'statistic-audit';
-      const startTimeString = moment(that.start.getTimestamp() * 1000).format(timeFormatWithoutSecond);
-      const endTimeString = moment(that.end.getTimestamp() * 1000).format(timeFormatWithoutSecond);
+      const startTimeString = moment(that.start.getTimestamp() * 1000)
+        .format(timeFormatWithoutSecond);
+      const endTimeString = moment(that.end.getTimestamp() * 1000)
+        .format(timeFormatWithoutSecond);
       const filename = `${that.$t('statistics.audit_record_filename')}_${startTimeString}_${endTimeString}.csv`;
 
       const params = {
