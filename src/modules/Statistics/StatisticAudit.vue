@@ -118,6 +118,10 @@ export default {
     },
     doExport() {
       const that = this;
+      if (that.totalCount <= 0) {
+        return;
+      }
+
       const module = 'statistic-audit';
       const startTimeString = moment(that.start.getTimestamp() * 1000)
         .format(timeFormatWithoutSecond);

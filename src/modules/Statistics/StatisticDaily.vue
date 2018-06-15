@@ -80,7 +80,9 @@
       <div class="button-container" v-if="canExport || totalCount > 0">
         <text-button v-if="canExport"
           v-on:click="doExport()"
-          :disabled="!validFormInput">{{ $t('general.export') }}</text-button>
+          :disabled="!validFormInput"
+          :button-type="totalCount > 0 ? 'normal' : 'disable'">
+          {{ $t('general.export') }}</text-button>
         <div v-if="totalCount > 0" class="total-show">
           {{ $t('statistics.total_records', {num: totalCount}) }}
         </div>
@@ -285,6 +287,10 @@ export default {
       const that = this;
       const filename = 'record.csv';
       const module = 'statistic-daily';
+
+      if (that.totalCount <= 0) {
+        return;
+      }
 
       params.export = true;
       that.$emit('startLoading');
