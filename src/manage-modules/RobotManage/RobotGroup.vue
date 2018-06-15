@@ -6,11 +6,11 @@
         <text-button @click="goRobotList">{{ $t('management.go_back') }}</text-button>
       </div>
       <div class="page">
-        <command-row class="commands">
+        <command-row class="commands" @search="keywordChange">
           <text-button button-type="primary" @click="popGroupEditor()">{{ $t('management.create_group') }}</text-button>
         </command-row>
         <div class="group-list">
-          <div v-for="group in robotGroups" :key="group.id" class="group-card">
+          <div v-for="group in filteredGroup" :key="group.id" class="group-card">
             <div class="card-title">
               <div class="card-title-text">
                 {{ group.name }}
@@ -49,6 +49,7 @@ export default {
         robotGroup: this.$t('management.group_manage'),
       },
       robotGroups: [],
+      keyword: '',
     };
   },
   components: {
@@ -59,8 +60,17 @@ export default {
     ...mapGetters([
       'enterpriseID',
     ]),
+    filteredGroup() {
+      if (this.keyword === '') {
+        return this.robotGroups;
+      }
+      return this.robotGroups.filter(group => group.name.indexOf(this.keyword) >= 0);
+    },
   },
   methods: {
+    keywordChange(word) {
+      this.keyword = word;
+    },
     goRobotList() {
       this.$router.push('/manage/robot-manage');
     },

@@ -3,7 +3,7 @@
     <div class="card h-fill w-fill">
       <nav-bar class='nav-bar' :options=pageOption></nav-bar>
       <div class="page">
-        <command-row class="commands">
+        <command-row class="commands" @search="doSearch">
             <template v-if="isAdmin">
             <text-button button-type="primary" @click="createRobot">{{ $t('management.create_robot') }}</text-button>
             <text-button @click="goGroupList">{{ $t('management.group_manage') }}</text-button>
@@ -11,7 +11,7 @@
         </command-row>
         <div class="robot-list">
           <div class="robot-card" 
-            v-for="robot in robotList" :key="robot.id" 
+            v-for="robot in filteredRobots" :key="robot.id" 
             @click="goRobot(robot)">
             <div class="card-title">
               <div class="card-title-image">
@@ -61,6 +61,14 @@ export default {
     isAdmin() {
       return this.userInfo.type < 2;
     },
+    filteredRobots() {
+      if (this.keyword === '') {
+        return this.robotList;
+      }
+      return this.robotList.filter(robot =>
+        robot.name.indexOf(this.keyword) >= 0 ||
+        (robot.description && robot.description.indexOf(this.keyword) >= 0));
+    },
   },
   data() {
     return {
@@ -77,6 +85,9 @@ export default {
       'setRobotList',
       'setUserRole',
     ]),
+    doSearch(word) {
+      this.keyword = word;
+    },
     editName(robot) {
       const that = this;
       that.$pop({
