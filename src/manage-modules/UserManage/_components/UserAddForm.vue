@@ -326,11 +326,13 @@ export default {
   flex-direction: column;
   .row {
     flex: 0 0 40px;
+    max-height: 40px;
 
     display: flex;
     align-items: center;
     .row-title {
       flex: 0 0 90px;
+      max-width: 90px;
     }
     .row-input {
       flex: 0 1 340px;
@@ -351,6 +353,7 @@ export default {
     }
     .selector {
       flex: 0 0 140px;
+      max-width: 140px;
     }
   }
 }
