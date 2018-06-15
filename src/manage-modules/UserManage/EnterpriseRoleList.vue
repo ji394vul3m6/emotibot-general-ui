@@ -96,7 +96,6 @@ export default {
       const idx = this.roles.findIndex(role => role.editMode);
       const role = this.roles[idx];
       const existedRole = role.uuid !== undefined && role.uuid !== '';
-      console.log(existedRole);
       return this.editName !== '' &&
         ((existedRole && this.duplicateIdx !== idx) ||
           (!existedRole && this.duplicateIdx < 0));

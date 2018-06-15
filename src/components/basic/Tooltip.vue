@@ -100,7 +100,6 @@ export default {
       that.showX = that.x + that.leftOffset;
       that.showY = (that.y - that.$el.clientHeight - 8) + that.topOffset;
       that.show = true;
-      console.log(that);
     });
     that.$on('hide', () => {
       that.show = false;
