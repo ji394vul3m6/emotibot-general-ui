@@ -3,7 +3,7 @@
     <div class="card h-fill w-fill">
       <nav-bar class='nav-bar' :options=pageOption></nav-bar>
       <div class="page">
-        <command-row class="commands">
+        <command-row class="commands" @search="changeKeyword">
           <text-button button-type="primary" @click="popAddUser">{{ $t('management.add_account') }}</text-button>
           <text-button @click="goRoleList">{{ $t('management.privilege_setting') }}</text-button>
         </command-row>
@@ -55,10 +55,16 @@ export default {
       'enterpriseID',
       'userRoleMap',
     ]),
+    filteredUsers() {
+      if (this.keyword === '') {
+        return this.users;
+      }
+      return this.users.filter(user => user.user_name.indexOf(this.keyword) >= 0);
+    },
     showUsers() {
       const start = this.pageLimit * (this.curPageIdx - 1);
       const end = start + this.pageLimit;
-      return this.users.slice(start, end);
+      return this.filteredUsers.slice(start, end);
     },
   },
   data() {
@@ -111,6 +117,9 @@ export default {
     };
   },
   methods: {
+    changeKeyword(word) {
+      this.keyword = word;
+    },
     goRoleList() {
       this.$router.push('/manage/enterprise-role-list');
     },
