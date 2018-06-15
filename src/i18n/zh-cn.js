@@ -243,6 +243,11 @@ export default {
       delete_wordbank_fail: '删除词库失败',
       import_format_invalid: '词库格式错误',
       move_wordbank_fail: '移动词库失败',
+      synonym_duplicate: '已有重复同义词',
+      wordbank_name_duplicate: '已有重复词库名',
+      wordbank_name_empty: '词库名不得为空',
+      root_name_duplicate: '已有重复分类',
+      item_name_duplicate: '已有重复子分类',
     },
 
     upload_file_undefined: '档案无法辨识',

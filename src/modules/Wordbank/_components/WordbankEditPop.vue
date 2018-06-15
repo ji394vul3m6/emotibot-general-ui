@@ -4,7 +4,8 @@
       <div id="toolbar-first" class="toolbar-row">
         <div id="wordbank-name" class="input-item">
           <span>{{ $t('wordbank.wordbank') }}：</span>
-          <input type="text" ref="wordbankName" v-model="wordbankName" :maxlength="lengthLimit">
+          <input type="text" ref="wordbankName" v-model="wordbankName"
+            v-tooltip="wordbankDuplicateTooltip" :maxlength="lengthLimit">
         </div>
         <div id="sentitive-answer" v-if="wordbank.isSensitive">
           <span>{{ $t('wordbank.sensitive_word') }}：</span>
@@ -19,7 +20,9 @@
         <div id="wordbank-synonym" class="input-item">
           <span>{{ $t('wordbank.synonym') }}：</span>
           <input type="text"
+            ref="synonymInput"
             v-model="newSynonym"
+            v-tooltip="synonymTooltip"
             :maxlength="lengthLimit"
             :placeholder="$t('wordbank.placeholder_synonym')"
             @compositionstart="setCompositionState(true)"
@@ -88,6 +91,15 @@ export default {
       curPageIdx: 1,
       pageLimit: 100,
       lengthLimit: 35,
+
+      synonymTooltip: {
+        msg: this.$t('wordbank.error.synonym_duplicate'),
+        eventOnly: true,
+      },
+      wordbankDuplicateTooltip: {
+        msg: this.$t('wordbank.error.wordbank_name_duplicate'),
+        eventOnly: true,
+      },
     };
   },
   computed: {
@@ -121,6 +133,12 @@ export default {
       this.wordbankName = this.wordbankName.trim();
       return this.wordbankName.length > this.lengthLimit;
     },
+    isWordbankNameDuplicate() {
+      if (this.wordbankName === this.wordbank.name) { // same, don't check
+        return false;
+      }
+      return this.allWordbanks.findIndex(bank => bank.name === this.wordbankName) !== -1;
+    },
     isNewSynonymValid() {
       return !this.isNewSynonymEmpty && !this.isNewSynonymTooLong;
     },
@@ -131,6 +149,9 @@ export default {
     isNewSynonymTooLong() {
       this.newSynonym = this.newSynonym.trim();
       return this.newSynonym.length > this.lengthLimit;
+    },
+    isDuplicate() {
+      return this.synonyms.filter(synonym => synonym === this.newSynonym).length > 0;
     },
   },
   watch: {
@@ -158,6 +179,18 @@ export default {
         this.filteredSynonyms = [];
       }
       this.toFirstPage();
+    },
+    isDuplicate() {
+      if (!this.isDuplicate) {
+        const event = new Event('tooltip-hide');
+        this.$refs.synonymInput.dispatchEvent(event);
+      }
+    },
+    isWordbankNameDuplicate() {
+      if (!this.isWordbankNameDuplicate) {
+        const event = new Event('tooltip-hide');
+        this.$refs.wordbankName.dispatchEvent(event);
+      }
     },
   },
   methods: {
@@ -208,7 +241,9 @@ export default {
       if (this.wasCompositioning) {
         return;
       }
-      if (this.isDuplicate()) {
+      if (this.isDuplicate) {
+        const event = new Event('tooltip-show');
+        this.$refs.synonymInput.dispatchEvent(event);
         return;
       }
       if (this.isNewSynonymValid) {
@@ -221,9 +256,6 @@ export default {
         this.synonymKeyword = '';
       });
     },
-    isDuplicate() {
-      return this.synonyms.filter(synonym => synonym === this.newSynonym).length > 0;
-    },
     setWordbankEdit() {
       this.wordbank = this.value.wordbank;
       this.wid = this.wordbank.wid;
@@ -233,20 +265,16 @@ export default {
       this.sensitiveAnswer = this.wordbank.answer;
       this.isDefaultSensitive = this.sensitiveAnswer.length === 0;
     },
-    isWordbankNameDuplicate() {
-      if (this.wordbankName === this.wordbank.name) { // same, don't check
-        return false;
-      }
-      return this.allWordbanks.findIndex(bank => bank.name === this.wordbankName) !== -1;
-    },
     validate() {
       const wordbankNameElem = this.$refs.wordbankName;
       if (!this.isWordbankNameValid) {
         wordbankNameElem.focus();
         return;
       }
-      if (this.isWordbankNameDuplicate()) {
+      if (this.isWordbankNameDuplicate) {
         wordbankNameElem.focus();
+        const event = new Event('tooltip-show');
+        this.$refs.wordbankName.dispatchEvent(event);
         return;
       }
       const editedWordbank = {

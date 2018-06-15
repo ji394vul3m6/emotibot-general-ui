@@ -119,9 +119,11 @@ export default {
   }
 
   border-radius: 4px;
+  color: #666666;
   background-color: #ffffff;
   box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.2);
   padding: 8px 16px;
+  cursor: default;
   .tooltip-triangle {
     position: absolute;
     left: 25px;
