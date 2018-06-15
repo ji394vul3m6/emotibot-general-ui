@@ -24,7 +24,7 @@
           <td v-if="checkbox" class="table-col-checkbox">
             <input type="checkbox" @click="checkSelf(data, idx)" :checked="data.isChecked">
           </td>
-          <td v-for="header in tableHeader" :key="header.key"
+          <td v-for="header in tableHeader" :key="uniqueId(header.key)"
             :style="{width: header.width}"
             :class="{'fixed': header.width}">
             <template v-if="header.type === 'tag'">
@@ -128,6 +128,10 @@ export default {
     },
   },
   methods: {
+    uniqueId(key) {
+      const randInt = parseInt(Math.random() * 1000, 10);
+      return `${randInt}-${key}`;
+    },
     checkSelf(data) {
       data.isChecked = !data.isChecked;
       this.isAllChecked = this.isAllRowChecked();

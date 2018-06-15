@@ -82,6 +82,7 @@ export default {
   },
   category: {
     all: '全部',
+    no_category: '未分类',
     delete_category_msg: '确定要删除分类 {name} 及其子分类吗？',
   },
   statistics: {
@@ -626,6 +627,7 @@ export default {
     all: '全部',
     add: '新增',
     actions: '操作',
+    status: '状态',
     edit: '编辑',
     delete: '删除',
     question: '问题',

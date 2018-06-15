@@ -5,7 +5,7 @@
     </div>
     <div class="tags-container"
       :class="{'tags-area': area}">
-      <div class="tags-input-container" @click.stop="this.$refs.taginput.focus()">
+      <div class="tags-input-container" @click.stop="$refs.taginput.focus()">
         <span class="tags" v-for="(tag, idx) in selectedTags" :key="tag" :data-index="idx">
           <!-- <span class="tag-remove-btn" @click="removeTag(idx)">x</span> -->
           <span>{{ tag }}</span>

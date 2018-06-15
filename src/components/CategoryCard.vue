@@ -56,9 +56,7 @@
 </template>
 <script>
 import Vue from 'vue';
-// import { mapGetters, mapMutations } from 'vuex';
 import CategoryTreeItem from './CategoryTreeItem';
-// import api from '../_api/wordbank';
 
 Vue.component('category-tree-item', CategoryTreeItem);
 
@@ -197,9 +195,15 @@ export default {
       }
     },
     handleSetActiveToAll() {
-      const allRefName = `-3-${this.$t('category.all')}`;
-      const allRef = this.$refs[allRefName][0];
-      allRef.$refs.treeItem.click();
+      try {
+        const allRefName = `-3-${this.$t('category.all')}`;
+        const allRef = this.$refs[allRefName][0];
+        allRef.$refs.treeItem.click();
+      } catch (err) { // some pages do not have category ALL
+        const allRefName = `-3-${this.$t('category.no_category')}`;
+        const allRef = this.$refs[allRefName][0];
+        allRef.$refs.treeItem.click();
+      }
     },
 
     /** Recursive Find Item */
@@ -413,7 +417,7 @@ export default {
   }
   #card-category-content {
     flex: 1 1 auto;
-    overflow-y: scroll;
+    overflow-y: auto;
     #no-category-search-result {
       height: 36px;
       line-height: 36px;

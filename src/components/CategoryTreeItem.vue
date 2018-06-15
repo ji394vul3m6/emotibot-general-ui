@@ -25,7 +25,7 @@
             @keyup.enter="confirmEditItemName"/>
           <span v-else class="tree-item-name">{{ treeItem.name }}</span>
         </div>
-        <icon class="item-icon" icon-type="edit" :size=12 
+        <icon class="item-icon" icon-type="edit_blue" :size=10 
           v-if="treeItem.editable"
           ref="editBtn"
           :class="{'invisible': !editMode}"
