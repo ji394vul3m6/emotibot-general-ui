@@ -38,6 +38,7 @@ export default {
     ...mapMutations([
       'setWordbank',
       'setCurrentCategory',
+      'toggleEditMode',
     ]),
     loadWordbanks() {
       const that = this;
@@ -60,6 +61,11 @@ export default {
   mounted() {
     const that = this;
     that.loadWordbanks();
+  },
+  beforeDestroy() {
+    if (this.isEditMode) {
+      this.toggleEditMode();
+    }
   },
 };
 </script>
