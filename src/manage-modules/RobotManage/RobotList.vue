@@ -190,6 +190,7 @@ export default {
     align-content: flex-start;
     .robot-card {
       flex: 0 0 380px;
+      max-width: 380px;
       height: 180px;
       border-radius: 4px;
       box-shadow: 0 0 3px 0 rgba(102, 102, 102, 0.5);
@@ -233,6 +234,9 @@ export default {
           line-height: 24px;
           color: #333333;
           margin: 0 20px;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowarp;
         }
         .card-title-edit {
           flex: 0 0 18px;
