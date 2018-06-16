@@ -20,7 +20,7 @@
               <div class="card-title-text">
                 {{ robot.name }}
               </div>
-              <div class="card-title-edit" @click.stop="editName(robot)">
+              <div class="card-title-edit" @click.stop="editName(robot)" v-if="isAdmin">
                 <icon :size=12 icon-type="edit_blue"></icon>
               </div>
             </div>
@@ -166,6 +166,7 @@ export default {
     },
   },
   mounted() {
+    this.updateRobots();
   },
 };
 </script>
