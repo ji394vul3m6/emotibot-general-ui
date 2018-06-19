@@ -1,6 +1,7 @@
 <template>
   <div>
     <div id="wordbank-upload-block" class="card h-fill">
+      <template v-if="canImport">
       <div class="upload-item-block">
         <div class="upload-item-title">{{ $t('wordbank.upload_title.batch_import') }}</div>
         <div id="import_content" class="upload-item-content">
@@ -16,6 +17,7 @@
           <div id="import_button_hint"> {{ $t('wordbank.import_button_hint') }}</div>
         </div>
       </div>
+      </template>
 
       <div class="upload-item-block">
         <div class="upload-item-title">{{ $t('wordbank.upload_title.last_import_result') }}</div>
@@ -25,6 +27,7 @@
         </div>
       </div>
 
+      <template v-if="canExport">
       <div class="upload-item-block">
         <div class="upload-item-title">{{ $t('wordbank.upload_title.download_imported_wordbank') }}</div>
         <div id="imported_content" class="upload-item-content">
@@ -36,6 +39,7 @@
           </div>
         </div>
       </div>
+      </template>
 
       <div class="upload-item-block">
         <div class="upload-item-title">{{ $t('wordbank.upload_title.batch_import_hint') }}</div>
@@ -87,10 +91,10 @@ export default {
   },
   computed: {
     canImport() {
-      return this.$checkPrivilege(this.code, 'import');
+      return this.$hasRight('import');
     },
     canExport() {
-      return this.$checkPrivilege(this.code, 'export');
+      return this.$hasRight('export');
     },
   },
   methods: {
