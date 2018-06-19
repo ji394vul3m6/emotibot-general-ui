@@ -69,7 +69,6 @@ const webpackConfig = merge(baseWebpackConfig, {
       template: 'index.html',
       chunks: ["vendor", "manifest", "app"],
       inject: true,
-      favicon: path.resolve(__dirname, '../static/favicon.ico'),
       minify: {
         removeComments: true,
         collapseWhitespace: true,

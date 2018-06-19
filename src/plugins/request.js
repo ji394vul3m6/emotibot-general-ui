@@ -20,11 +20,14 @@ function addCustomHeader(config) {
   }
   option.headers['X-Appid'] = appid;
   option.headers.Authorization = `Bearer ${token}`;
+  option.headers.Access_token = this.$cookie.get('access_token');
   return option;
 }
 
 function handleUnAuthenticated() {
   this.$logout();
+  const fullPath = this.$route.fullPath;
+  window.location = `/login.html?invalid=1&redirect=${encodeURIComponent(fullPath)}`;
 }
 
 function checkAjaxError(context, error) {
@@ -34,7 +37,7 @@ function checkAjaxError(context, error) {
   }
 
   if (status === 401) {
-    handleUnAuthenticated.bind(this)();
+    handleUnAuthenticated.bind(context)();
   }
 
   // handle only 500 series status code in plugin

@@ -1,6 +1,6 @@
 <template>
   <div id="statistic-analysis" class="page">
-    <div class="content">
+    <div class="content card h-fill w-fill">
       <div class="radio-container page-radio-container">
         <div v-for="chartInfo in chartInfos" :key="chartInfo.name">
           <input :id="chartInfo.code" type="radio" v-model="picked" :value="chartInfo.code" name="picked">
@@ -118,7 +118,6 @@
 
 <script>
 import Vue from 'vue';
-import VueC3 from 'vue-c3';
 import DatePicker from '@/components/DateTimePicker/DatePicker';
 import general from '@/utils/js/misc';
 import formatUtil from '@/utils/js/format';
@@ -134,7 +133,6 @@ export default {
   icon: 'white_daily',
   name: 'statistic-analysis',
   components: {
-    VueC3,
     StatsChart,
     StatsTable,
     DatePicker,

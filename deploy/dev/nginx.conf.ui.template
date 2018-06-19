@@ -51,6 +51,9 @@ http {
             set $user_id $http_x_userid;
         }
 
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Appid $appid;
+        proxy_set_header X-UserID $user_id;
         location /stats {
             proxy_pass http://${REMOTE_IP};
         }
@@ -156,15 +159,15 @@ http {
         location /robot/template {
             proxy_pass http://${BF_IP};
         }
-        location /sentenceAccociation/sentenceAccociation {
+        location /sentenceAccociation {
+            proxy_pass http://${BF_IP};
+        }
+        location /task_engine {
             proxy_pass http://${BF_IP};
         }
 
         location /api {
-            proxy_set_header X-AppID $appid;
-            proxy_set_header X-UserID $user_id;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_pass http://${SELF_IP}:8182;
+            proxy_pass http://${REMOTE_IP};
         }
         location / {
             proxy_pass http://${SELF_IP}:8080;

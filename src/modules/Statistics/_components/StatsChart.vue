@@ -19,7 +19,13 @@
       </table>
     </div>
     <div class="chart-container">
-      <vue-c3 :handler="value.handler"></vue-c3>
+      <chart
+        :handler="handler"
+        :chartData="data"
+        :keyMap="value.keyMaps"
+        :type="value.type"
+        :nameKey="value.nameKey"
+        :height="value.height"></chart>
     </div>
     <div v-if="showLoading" class="loading">
       {{ $t('general.loading') }}
@@ -28,11 +34,16 @@
 </template>
 
 <script>
-import VueC3 from 'vue-c3';
+import Vue from 'vue';
+
+let loaded = false;
 
 export default {
   components: {
-    VueC3,
+    chart: () => import('./Charts').then((data) => {
+      loaded = true;
+      return data;
+    }),
   },
   props: {
     value: {
@@ -47,74 +58,22 @@ export default {
       data: undefined,
       errMsg: '',
       headerInfo: [],
+      handler: new Vue(),
     };
   },
   methods: {
     updateChart() {
-      const datas = this.data;
-      const keyMaps = this.value.keyMaps;
-      const showKeys = [];
-      if (keyMaps) {
-        Object.keys(keyMaps).forEach((key) => {
-          datas.forEach((data) => {
-            data[keyMaps[key]] = data[key];
-          });
-          showKeys.push(keyMaps[key]);
-        });
-      }
-      let options = {};
-      if (this.value.type === 'line') {
-        options = {
-          data: {
-            json: datas,
-            keys: {
-              x: this.value.nameKey,
-              value: showKeys,
-            },
-          },
-          axis: {
-            x: {
-              type: 'category',
-              tick: {
-                count: 6,
-              },
-            },
-          },
-        };
-      } else if (this.value.type === 'bar') {
-        options = {
-          data: {
-            json: this.data,
-            keys: {
-              x: this.value.nameKey,
-              value: showKeys,
-            },
-            type: 'bar',
-          },
-          axis: {
-            x: {
-              type: 'category',
-            },
-          },
-        };
-      }
-      if (this.value.wrapWidth) {
-        if (!options.axis.x.tick) {
-          options.axis.x.tick = {};
+      const that = this;
+      // use next tick to ensure the chart component can get latest data as prop
+      that.$nextTick(() => {
+        if (loaded) {
+          that.handler.$emit('redraw');
+        } else {
+          setTimeout(() => {
+            that.updateChart();
+          }, 200);
         }
-        options.axis.x.tick.width = this.value.wrapWidth;
-      }
-      if (this.value.height) {
-        options.size = {};
-        options.size = {
-          height: this.value.height,
-        };
-        options.padding = {
-          right: 20,
-          left: 20,
-        };
-      }
-      this.value.handler.$emit('init', options);
+      });
     },
     getAjaxData() {
       this.value.getData(this.value.param).then((res) => {
@@ -166,9 +125,6 @@ export default {
   mounted() {
     this.getAjaxData();
     this.value.handler.$on('redraw', () => {
-      // this.value.handler.$emit('init', {});
-      // this.errMsg = '';
-      // this.data = undefined;
       this.getAjaxData();
     });
   },
@@ -183,7 +139,7 @@ $row-height: $default-line-height;
 $stat-card-height: 300px;
 
 .stats-chart {
-  overflow-x: hidden;
+  overflow: hidden;
   height: 100%;
   position: relative;
   .loading {

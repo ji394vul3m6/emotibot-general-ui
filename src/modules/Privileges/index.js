@@ -1,6 +1,5 @@
 import RoleManage from './RoleManage';
 import UserManage from './UserManage';
-import OtherTools from './OtherTools';
 
 export default {
   displayNameKey: 'privileges',
@@ -8,6 +7,5 @@ export default {
   pages: {
     RoleManage,
     UserManage,
-    OtherTools,
   },
 };

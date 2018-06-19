@@ -1,17 +1,22 @@
 <template>
 <div id="robot-skill">
-  <text-button main v-if="canEdit" v-on:click="setAll(true)" :disabled=allActive>{{ $t("robot_setting.all_active") }}</text-button>
-  <text-button main v-if="canEdit" v-on:click="setAll(false)" :disabled=allDeactive>{{ $t("robot_setting.all_deactive") }}</text-button>
-  <div class="skill-card-container">
-    <div v-for="skill in moduleList" :key="skill.id" class="skill-card" :class="{checked: skill.active}">
-      <div class="skill-icon-container">
-        <img :src="skill.image" class="skill-icon">
+  <div class="card h-fill w-fill">
+    <div class="header">
+      <div class="header-text">{{ $t('robot_setting.general_function') }}</div>
+      <text-button v-if="canEdit" v-on:click="setAll(true)" :button-type="allActive ? 'disable': 'default'">{{ $t("robot_setting.all_active") }}</text-button>
+      <text-button v-if="canEdit" v-on:click="setAll(false)" :button-type="allDeactive ? 'disable': 'default'">{{ $t("robot_setting.all_deactive") }}</text-button>
+    </div>
+    <div class="skill-card-container">
+      <div v-for="skill in moduleList" :key="skill.id" class="skill-card" :class="{checked: skill.active}">
+        <div class="skill-text">
+          <div class="skill-name">{{ skill.name }}</div>
+          <div class="skill-remark">{{ skill.remark }}</div>
+        </div>
+        <div class="skill-switch" v-if="canEdit">
+          <toggle v-model="skill.active" @change="updateSkill(skill)"/>
+        </div>
+        <div class="skill-switch" v-else style="cursor: default;"></div>
       </div>
-      <div class="skill-text">{{ skill.name }}</div>
-      <div class="skill-switch" v-if="canEdit">
-        <toggle v-model="skill.active" @change="updateSkill(skill)"/>
-      </div>
-      <div class="skill-switch" v-else style="cursor: default;"></div>
     </div>
   </div>
 </div>
@@ -29,7 +34,7 @@ export default {
   methods: {
     reloadSkill() {
       const that = this;
-      return that.$api.getFunctionsStatus()
+      return that.$api.getFunctionsStatusV2()
       .then((data) => {
         that.moduleList = data;
         that.moduleList.forEach((mod) => {
@@ -46,7 +51,7 @@ export default {
       const that = this;
 
       that.$emit('startLoading');
-      this.$api.setFunctionStatus(skill.code, active).then((data) => {
+      this.$api.setFunctionStatusV2(skill.code, active).then((data) => {
         const res = data.data;
         if (res.status === 0) {
           this.$notify({ text: that.$t('error_msg.success') });
@@ -70,10 +75,12 @@ export default {
       });
 
       that.$emit('startLoading');
-      this.$api.setFunctionInfos(that.moduleList, val)
+      this.$api.setFunctionInfosV2(that.moduleList, val)
       .then((rsp) => {
         if (rsp.data.status !== 0) {
           that.$notifyFail('error_msg.request_fail');
+        } else {
+          this.$notify({ text: that.$t('error_msg.success') });
         }
       }, () => {
         that.$notifyFail('error_msg.request_fail');
@@ -112,8 +119,7 @@ export default {
   },
   computed: {
     canEdit() {
-      // return auth.checkPrivilege('robot-skill', 'edit');
-      return true;
+      return this.$hasRight('edit');
     },
     allActive() {
       return this.moduleList.reduce((ret, mod) => ret && mod.active, true);
@@ -127,56 +133,74 @@ export default {
 
 <style lang="scss" scoped>
 @import "styles/variable";
+
+$function-header-height: 50px;
+$function-header-font-size: 16px;
+$function-header-bg: #fcfcfc;
+
+$card-name-font-size: 14px;
+$card-name-color: #666666;
+$card-remark-font-size: 12px;
+$card-remark-color: #999999;
+
 #robot-skill {
-  @include auto-overflow();
+  .card {
+    display: flex;
+    flex-direction: column;
+  }
+  .header {
+    flex: 0 0 $function-header-height;
+    display: flex;
+    align-items: center;
+    font-size: $function-header-font-size;
+    padding: 0 20px;
+    background-color: $function-header-bg;
+    box-shadow: inset 0 -1px 0 0 #e9e9e9;
+    .header-text {
+      flex: 0 0 80px;
+    }
+    .text-button {
+      margin-right: 10px;
+    }
+  }
   .skill-card-container {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: calc(100% - $function-header-height);
+
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-content: flex-start;
-    margin-top: 20px;
+    padding: 20px;
 
     .skill-card {
-      flex: 300px;
-
-      background: white;
-      border: 1px solid $page-header-color;
+      flex: 0 0 330px;
+      border-radius: 2px;
+      border: solid 1px #e9e9e9;
+      padding: 14px 20px;
+      margin-bottom: 10px;
       margin-right: 20px;
-      margin-bottom: 20px;
-      padding: 5px 0;
-      border-radius: $input-border-radius;
 
       display: flex;
+      justify-content: space-between;
       align-items: center;
-
-      $icon-height: 80px;
-      .skill-icon-container {
-        flex: 0 0 $icon-height/2;
-        margin: 0 10px;
-        box-sizing: border-box;
-        height: $icon-height;
+      .skill-text {
         display: flex;
-        align-items: center;
-        justify-content: center;
-
-        img {
-          display: inline-block;
-          width: $icon-height / 4 * 3;
-          height: $icon-height / 4 * 3;
+        flex-direction: column;
+        .skill-name {
+          font-size: $card-name-font-size;
+          color: $card-name-color;
+        }
+        .skill-remark {
+          margin-top: 6px;
+          font-size: $card-remark-font-size;
+          color: $card-remark-color;
         }
       }
-      .skill-text {
-        flex: auto;
-        word-break: break-all;
-      }
       .skill-switch {
-        flex: 0 0 70px;
-        padding: 0 5px;
-      }
 
-      &:not(.checked) {
-        opacity: 0.2;
-        border: 1px solid $page-header-color;
       }
     }
   }

@@ -18,11 +18,11 @@ export default {
     },
   },
   watch: {
-    value(val) {
-      this.checked = val;
+    value() {
+      this.checked = this.value;
     },
-    checked() {
-      if (this.checked !== this.value) {
+    checked(val) {
+      if (val !== this.value) {
         this.$emit('input', this.checked);
         this.$emit('change', this.checked);
       }

@@ -19,13 +19,10 @@
 
 <script>
 import Vue from 'vue';
-import 'vue-easytable/libs/themes-base/index.css';
 import general from '@/utils/js/misc';
-import { VPagination } from 'vue-easytable';
 import qaTableHeader from './QATableHeader';
 import qaTableBody from './QATableBody';
 
-Vue.component(VPagination.name, VPagination);
 Vue.component('qa-table-header', qaTableHeader);
 Vue.component('qa-table-body', qaTableBody);
 

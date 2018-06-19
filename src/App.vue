@@ -2,7 +2,9 @@
   <div id="app">
     <div :class="{blur: isPopOpen}">
       <div id="app-logo"></div>
-      <page-header></page-header>
+      <page-header v-if="ready"></page-header>
+      <!-- if robotID is not empty, show robot page -->
+      <template v-if="robotID !== '' && ready">
       <page-menu></page-menu>
       <div id="app-page" v-if="ready" :class="{iframe: isIFrame}">
         <!-- <div class="app-header" v-if="!isIFrame">{{ pageName }}</div> -->
@@ -14,12 +16,20 @@
       </div>
       <transition name="slide-in">
       <div id="chat-test-pop" v-if="isChatOpen">
-        <div class='closs-button'>
-        <text-button @click="closeChatTest">close</text-button>
-        </div>
         <component :is="testComponent"></component>
       </div>
       </transition>
+      </template>
+      <!-- if robotID is empty, but enterpriseID not, show enterprise admin page -->
+      <template v-else-if="robotID === '' && ready">
+        <div id="app-page" class="manage">
+          <router-view class="app-body" @startLoading="startLoading" @endLoading="endLoading"/>
+          <div v-if="showLoading" class="loading manage">
+            <div class='loader'></div>
+            {{ loadingMsg || $t('general.loading') }}
+          </div>
+        </div>
+      </template>
     </div>
     <pop-windows></pop-windows>
     <notification></notification>
@@ -32,7 +42,9 @@ import { mapMutations, mapGetters } from 'vuex';
 import modules from '@/modules';
 import PageHeader from '@/components/layout/Header';
 import PageMenu from '@/components/layout/Menu';
-import QATest from '@/modules/SSM/QATest';
+import QATest from '@/modules/SSM/QATestFloat';
+
+const defaultPath = '/statistic-dash';
 
 export default {
   name: 'app',
@@ -53,6 +65,7 @@ export default {
       'userRole',
       'currentPage',
       'isChatOpen',
+      'enterpriseID',
     ]),
   },
   data() {
@@ -67,6 +80,9 @@ export default {
   },
   watch: {
     robotID(val) {
+      if (val === '') {
+        return;
+      }
       this.$cookie.set('appid', val);
       this.$setReqAppid(val);
 
@@ -78,6 +94,7 @@ export default {
       expires.setTime(expires.getTime() + (24 * 60 * 60 * 1000));
       // no using context.$cookie because of it will encoded cookie value
       document.cookie = `robotDataJson=${str}; expires=${expires.toGMTString()};path=/`;
+      this.setupPages();
     },
     userID() {
       this.$cookie.set('userid', this.userID);
@@ -93,8 +110,9 @@ export default {
       'setPageInfos',
       'setPrivilegedEnterprise',
       'setRobot',
+      'setRobotList',
       'setUser',
-      'setUserRole',
+      'setUserRoleMap',
       'setCurrentPage',
       'openChatTest',
       'closeChatTest',
@@ -102,26 +120,39 @@ export default {
     ]),
     checkPrivilege() {
       const that = this;
+
       if (that.$route.matched.length <= 0) {
-        that.$router.push('error');
+        if (that.$route.fullPath === '/') {
+          that.$router.push(defaultPath);
+        } else {
+          that.$router.push('error');
+        }
         return;
       }
+      if (that.robotID === '') {
+        // when robotID is empty, path should in manage page only
+        if (that.$route.matched[0].path !== '/manage') {
+          that.$router.push('/manage/robot-manage');
+          return;
+        }
+        return;
+      }
+
       if (that.userInfo.type < 2) {
         // system admin and enterprise admin can use all module
         return;
       }
+      // TODO: get user privilege of specific robot
       const privileges = that.userRole.privileges;
+
       const codes = Object.keys(privileges);
       // If user has no privileges, invalid user
+      // TODO: if user has no privileges of this robot, return to list
       if (codes.length === 0) {
         window.location = '/login.html?invalid=1';
       }
 
-      // const viewCode = codes.find(code => privileges[code].indexOf('view') >= 0);
-      // const routes = this.$router.options.routes;
-      // const target = routes.find(route => route.component.privCode === viewCode);
-
-      const route = this.$route.matched[0];
+      const route = that.$route.matched[0];
       if (!route.components.default) {
         return;
       }
@@ -147,8 +178,6 @@ export default {
       const that = this;
       const pages = [];
       const privileges = that.userRole.privileges || {};
-      console.log(that.userRole);
-      console.log(privileges);
       const privKeys = Object.keys(privileges);
       Object.keys(modules).forEach((moduleName) => {
         let moduleExpand = false;
@@ -211,33 +240,26 @@ export default {
     const token = that.$getToken();
     that.$setReqToken(token);
     that.$setIntoWithToken(token).then(() => {
-      const enterprise = that.$getUserEnterprises();
-      const robots = {};
-      enterprise.apps.forEach((app) => {
-        robots[app.id] = app.name;
-      });
-      const enterpriseList = {};
-      enterpriseList[enterprise.id] = {
-        name: enterprise.name,
-        robots,
-      };
+      const robots = that.$getRobots();
+      const enterpriseList = that.$getUserEnterprises();
       const userInfo = JSON.parse(localStorage.getItem('userInfo'));
       that.userInfo = userInfo;
 
-      const userPrivilege = JSON.parse(localStorage.getItem('role'));
+      const userRoleMap = JSON.parse(localStorage.getItem('roleMap'));
       that.setPrivilegedEnterprise(enterpriseList);
-      that.setRobot(enterprise.apps[0].id);
+      that.setRobotList(robots);
       that.setUser(userInfo.id);
       that.setUserInfo(userInfo);
-      that.setUserRole(userPrivilege);
+      that.setUserRoleMap(userRoleMap);
       that.setPrivilegeList(that.$getPrivModules());
-
-      that.setupPages();
+      // that.setupPages();
       that.checkPrivilege();
+
       that.ready = true;
     }).catch((err) => {
       console.log(err);
-      window.location = '/login.html?invalid=1';
+      const fullPath = that.$route.fullPath;
+      window.location = `/login.html?invalid=1&redirect=${encodeURIComponent(fullPath)}`;
     });
 
     that.$root.$on('pop-window', () => {
@@ -248,11 +270,9 @@ export default {
     });
     that.$root.$on('open-chat-test', () => {
       that.openChatTest();
-      console.log('open-chat-test');
     });
     that.$root.$on('close-chat-test', () => {
       that.closeChatTest();
-      console.log('close-chat-test');
     });
   },
 };
@@ -272,11 +292,15 @@ export default {
     top: $page-header-height;
     width: 100vw
   }
+  &.manage {
+    width: 100vw;
+    left: 0;
+  }
   position: fixed;
   top: $page-header-height;
   left: $page-menu-width;
   height: 100%;
-  width: calc(100% - #{$page-menu-width});
+  width: calc(100vw - #{$page-menu-width});
   background: rgba(0%, 0%, 0%, 0.6);
   color: white;
   font-size: 1.5em;
@@ -310,11 +334,6 @@ export default {
   box-shadow: 0 0 5px #CCCCCC;
   .page {
     height: 100%;
-  }
-  .closs-button {
-    position: absolute;
-    right: 20px;
-    top: 20px;
   }
 
   &.slide-in-enter-active, &.slide-in-leave-active {

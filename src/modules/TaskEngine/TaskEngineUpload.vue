@@ -17,7 +17,7 @@
         </ol>
       </div>
       <div style="width:40%;">
-        <general-table :contents="tableData" :headerInfo="tableHeader"></general-table>
+        <general-table :tableData="tableData" :tableHeader="tableHeader" :action="action"></general-table>
       </div>
     </div>
   </div>
@@ -46,6 +46,7 @@ export default {
       i18n: {},
       tableHeader: [],
       tableData: [],
+      action: [],
     };
   },
   methods: {
@@ -76,46 +77,46 @@ export default {
       const appid = that.$cookie.get('appid');
 
       if (!file) {
-        that.$popError(that.$t('error_msg.upload_file_undefined'));
+        that.$notify({ text: that.$t('error_msg.upload_file_undefined') });
       } else if (file.size <= 0 || file.size > 2 * 1024 * 1024) {
-        that.$popError(that.$t('error_msg.upload_file_size_error'));
+        that.$notify({ text: that.$t('error_msg.upload_file_size_error') });
       } else {
         that.$emit('startLoading');
         that.$api.uploadMapping(appid, file).then((data) => {
           const res = data.data;
           if (res.return === 0) {
-            that.$popError(that.$t('error_msg.success'));
+            that.$notify({ text: that.$t('error_msg.success') });
             that.$refs.uploadInput.value = '';
             that.changeFile();
             that.loadList();
           } else {
-            that.$popError(that.$t('error_msg.save_fail'), res.error);
+            that.$notifyFail(`${that.$t('error_msg.save_fail')}:${res.error}`);
           }
           that.$emit('endLoading');
         }, (err) => {
-          that.$popError(that.$t('error_msg.save_fail'), err.message);
+          that.$notifyFail(`${that.$t('error_msg.save_fail')}:${err.message}`);
           that.$emit('endLoading');
         });
       }
     },
-    deleteMapping(idx) {
+    deleteMapping(itemData) {
       const that = this;
-      const fileName = that.tableData[idx].file_name;
+      const fileName = itemData.file_name;
 
       that.$emit('startLoading');
       that.$api.deleteMappingList(fileName).then(() => {
         that.$emit('endLoading');
-        that.$popError(that.$t('error_msg.delete_success'));
+        that.$notify({ text: that.$t('error_msg.delete_success') });
         that.loadList();
       }, (err) => {
-        that.$popError(that.$t('error_msg.delete_fail'), err.message);
+        that.$notifyFail(`${that.$t('error_msg.delete_fail')}:${err.message}`);
         that.$emit('endLoading');
       });
     },
-    downloadMapping(idx) {
+    downloadMapping(itemData) {
       const that = this;
-      const fileName = that.tableData[idx].file_name;
-      const user = that.tableData[idx].user;
+      const fileName = itemData.file_name;
+      const user = itemData.user;
 
       that.$emit('startLoading');
       that.$api.downloadMappingList(fileName, user).then((data) => {
@@ -130,7 +131,7 @@ export default {
         const blobData = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvData], { type: 'text/csv' });
         misc.downloadRawFile(blobData, `${tableName}.csv`);
       }, (err) => {
-        that.$popError(that.$t('error_msg.save_fail'), err.message);
+        that.$notifyFail(`${that.$t('error_msg.save_fail')}:${err.message}`);
         that.$emit('endLoading');
       });
     },
@@ -140,37 +141,17 @@ export default {
         {
           key: 'file_name',
           text: that.$t('general.file'),
-          type: 'text',
-        },
-        {
-          key: 'delete_buttons',
-          text: that.$t('general.delete'),
-          type: 'buttons',
-        },
-        {
-          key: 'download_buttons',
-          text: that.$t('general.export'),
-          type: 'buttons',
         },
       ];
-      that.deleteButtonList = {
-        button: [
-          {
-            text: that.$t('general.delete'),
-            primary: true,
-            callback: that.deleteMapping,
-          },
-        ],
-      };
-      that.downloadButtonList = {
-        button: [
-          {
-            text: that.$t('general.export'),
-            primary: true,
-            callback: that.downloadMapping,
-          },
-        ],
-      };
+      that.action.push({
+        text: that.$t('general.export'),
+        type: 'primary',
+        onclick: that.downloadMapping,
+      }, {
+        text: that.$t('general.delete'),
+        type: 'error',
+        onclick: that.deleteMapping,
+      });
     },
     loadList() {
       const that = this;
@@ -184,14 +165,12 @@ export default {
           files.forEach((file) => {
             that.tableData.push({
               file_name: file,
-              delete_buttons: [], // can't delete template user's data
-              download_buttons: that.downloadButtonList,
               user: 'templateadmin',
             });
           });
           that.$emit('endLoading');
         }, (err) => {
-          that.$popError(that.$t('error_msg.data_format_err'), err.message);
+          that.$notifyFail(`${that.$t('error_msg.data_format_err')}:${err.message}`);
           that.$emit('endLoading');
         });
       }
@@ -201,17 +180,15 @@ export default {
           files.forEach((file) => {
             that.tableData.push({
               file_name: file,
-              delete_buttons: that.deleteButtonList,
-              download_buttons: that.downloadButtonList,
               user: userid,
             });
           });
         } else {
-          that.$popError(that.$t('error_msg.data_format_err'));
+          that.$notify({ text: that.$t('error_msg.data_format_err') });
         }
         that.$emit('endLoading');
       }, (err) => {
-        that.$popError(that.$t('error_msg.data_format_err'), err.message);
+        that.$notifyFail(`${that.$t('error_msg.data_format_err')}:${err.message}`);
         that.$emit('endLoading');
       });
     },

@@ -1,29 +1,23 @@
 <template>
   <div class='login-page'>
-    <div class='header'>
-      <div id="app-logo"></div>
-    </div>
     <div class='container'>
-      <div class='form'>
-        <div class="title">
-          <span>{{ $t('login.title') }}</span>
-        </div>
-        <div class="input-row">
-          <icon icon-type="user"/>
-          <div class="spliter"/>
-          <input ref="user" type="text" v-model="input.account" :placeholder="$t('login.account_place')" @keydown="passwordKey">
-        </div>
-        <div class="input-row">
-          <icon icon-type="privilege"/>
-          <div class="spliter"/>
-          <input ref="password" type="password" v-model="input.password" :placeholder="$t('login.password_place')" @keydown="passwordKey">
-        </div>
-        <div class="input-button-row">
-          <loading-button main fill @click="submit" height="50px" ref="btn">
-            <template slot="init">{{ $t('login.login') }}</template>
-            <template slot="loading">{{ $t('login.login') }}ing</template>
-          </loading-button>
-        </div>
+      <div class='logo'>
+        <div id="app-logo"></div>
+      </div>
+      <div class="input-row">
+        <input ref="user" type="text" v-model="input.account" :placeholder="$t('login.account_place')" @keydown="passwordKey">
+      </div>
+      <div class="input-row">
+        <input ref="password" type="password" v-model="input.password" :placeholder="$t('login.password_place')" @keydown="passwordKey">
+      </div>
+      <div class="input-button-row">
+        <loading-button main fill @click="submit" ref="btn">
+          <template slot="init">{{ $t('login.login') }}</template>
+          <template slot="loading">{{ $t('login.login') }}ing</template>
+        </loading-button>
+      </div>
+      <div class="message">
+        {{ $t('login.contact_sm') }}
       </div>
     </div>
     <notification></notification>
@@ -67,7 +61,11 @@ export default {
       }
       that.$refs.btn.$emit('loading');
       that.$login(that.input).then(() => {
-        window.location = '/#/statistic-dash';
+        // if (that.redirect && that.redirect !== '') {
+        //   window.location = `/#${that.redirect}`;
+        // } else {
+        window.location = '/#/manage/robot-manage';
+        // }
       }, (err) => {
         that.$notify({ text: '登录失败', type: 'fail' });
         that.$refs.user.focus();
@@ -88,10 +86,13 @@ export default {
     const queryMap = {};
     querys.forEach((query) => {
       const idx = query.indexOf('=');
-      queryMap[query.substr(0, idx)] = query.substr(idx);
+      queryMap[query.substr(0, idx)] = query.substr(idx + 1);
     });
     if (Object.keys(queryMap).indexOf('invalid') >= 0) {
       that.$notifyFail(that.$t('error_msg.auth_expire'));
+    }
+    if (Object.keys(queryMap).indexOf('redirect') >= 0) {
+      that.redirect = decodeURIComponent(queryMap.redirect);
     }
   },
 };
@@ -100,75 +101,81 @@ export default {
 <style lang="scss">
 @import "styles/reset.scss";
 @import "styles/variable.scss";
+::-webkit-input-placeholder {
+   text-align: center;
+}
 
+:-moz-placeholder { /* Firefox 18- */
+   text-align: center;  
+}
+
+::-moz-placeholder {  /* Firefox 19+ */
+   text-align: center;  
+}
+
+:-ms-input-placeholder {  
+   text-align: center; 
+}
 div {
   box-sizing: border-box;
 }
 .login-page {
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  .header {
-    flex: 0 0 $page-header-height;
-    background: $page-header-color;
-    #app-logo {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: $page-menu-width;
-      height: $page-header-height;
-      background: $page-header-color url("./assets/images/logo.png") no-repeat center center;
-      background-size: 60px 32px;
-    }
-  }
-  .container {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  align-items: center;
+  justify-content: center;
+  background: #EEE;
 
-    background: #EEE;
-    .form {
-      .title {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5em;
-      }
-      .input-button-row {
-        flex: 0 0 50px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .input-row {
-        flex: 0 0 50px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        input {
-          padding: 10px;
-          width: 100%;
-          outline: none;
-          border: none;
-        }
-        border: 1px solid gray;
-        padding-left: 10px;
-        .spliter {
-          margin-left: 10px;
-          border-left: 1px solid gray;
-          height: 100%;
-        }
-      }
-      padding: 30px 40px;
-      height: 300px;
-      width: 350px;
-      background: white;
-      text-align: center;
-      box-shadow: 2px 2px 5px rgba(0.2, 0.2, 0.2, 0.5);
+  height: 100vh;
+  width: 100vw;
+  .container {
+    flex:  0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 240px;
+
+    .logo {
+      flex: 0 0 auto;
+      margin-bottom: 60px;
+
       display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+      justify-content: center;
+      #app-logo {
+        width: 120px;
+        height: 63px;
+        background: transparent url("./assets/images/emotibot_logo.svg") no-repeat center center;
+        background-size: 120px 63px;
+      }
+    }
+    .input-row {
+      flex: 0 0 28px;
+      border: solid 1px #666666;
+
+      display: flex;
+      align-items: stretch;
+      justify-content: stretch;
+      margin-bottom: 26px;
+      input {
+        padding: 10px;
+        width: 100%;
+        outline: none;
+        border: none;
+        background: none;
+      }
+    }
+    .input-button-row {
+      flex: 0 0 auto;
+      margin-bottom: 10px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .message {
+      font-size: 12px;
+      text-align: center;
+      color: #666666;
     }
   }
   div.loading {

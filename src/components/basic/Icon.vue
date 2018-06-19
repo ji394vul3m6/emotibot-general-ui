@@ -118,7 +118,6 @@ export default {
   @include iconType("add");
   @include iconType("search");
   @include iconType("delete");
-  @include iconType("edit");
   @include iconType("privilege");
   @include iconType("role");
   @include iconType("user");
@@ -158,6 +157,17 @@ export default {
   @include iconType("menu_te");
   @include iconType("menu_privilege");
   @include iconType("menu_dashboard");
+  @include iconType("close");
+  @include iconType("help");
+  @include iconType("expand");
+  @include iconType("drop_down");
+  @include iconType("check");
+  @include iconType("checked");
+  @include iconType("edit");
+  @include iconType("robot");
+  @include iconType("edit_blue");
+  @include iconType("normal_acc");
+  @include iconType("enterprise_admin");
 
   // robot icon should a little bit larger than other icons
   .white_robot_icon {

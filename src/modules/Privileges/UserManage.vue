@@ -1,40 +1,42 @@
 <template>
   <div id='user-manage'>
-    <div class="actions row">
-      <text-button main @click="popAddUser">{{$t('general.add')}}{{$t('privileges.user')}}</text-button>
-      <search-input v-model="keyword"></search-input>
-    </div>
-    <div class="header row">
-      <!-- <div class="check"></div> -->
-      <div class="name">{{$t('privileges.user_name')}}</div>
-      <div class="role">{{$t('privileges.role')}}</div>
-      <div class="actions">{{$t('general.actions')}}</div>
-    </div>
-    <div class="lists">
-      <template v-if="users.length > 0">
-      <div v-for="user in users" v-if="user.user_name.toLowerCase().indexOf(keyword.toLowerCase()) !== -1" :key="user.user_id" class='user-row row'>
-        <!-- <div class="check">
-        </div> -->
-        <div class="name">{{user.user_name}}</div>
-        <div class="role">{{getRoleShowName(user)}}</div>
-        <div class="actions">
-          <template v-if="user.type !== enterpriseAdminType">
-          <div class="button" @click="popEditUser(user)">
-            <div>{{$t('general.edit')}}</div>
-          </div>
-          /
-          <div class="button" @click="deleteUser(user)">
-            <div>{{$t('general.delete')}}</div>
-          </div>
-          </template>
-        </div>
+    <div class="card h-fill">
+      <div class="actions row">
+        <text-button button-type="primary" @click="popAddUser">{{$t('general.add')}}{{$t('privileges.user')}}</text-button>
+        <search-input v-model="keyword"></search-input>
       </div>
-      </template>
-      <template v-else>
-        <div class='user-row row empty'>
-          {{ $t('privileges.no_users') }}
+      <div class="header row">
+        <!-- <div class="check"></div> -->
+        <div class="name">{{$t('privileges.user_name')}}</div>
+        <div class="role">{{$t('privileges.role')}}</div>
+        <div class="actions">{{$t('general.actions')}}</div>
+      </div>
+      <div class="lists">
+        <template v-if="users.length > 0">
+        <div v-for="user in users" v-if="user.user_name.toLowerCase().indexOf(keyword.toLowerCase()) !== -1" :key="user.user_id" class='user-row row'>
+          <!-- <div class="check">
+          </div> -->
+          <div class="name">{{user.user_name}}</div>
+          <div class="role">{{getRoleShowName(user)}}</div>
+          <div class="actions">
+            <template v-if="user.type !== enterpriseAdminType">
+            <div class="button" @click="popEditUser(user)">
+              <div>{{$t('general.edit')}}</div>
+            </div>
+            /
+            <div class="button" @click="deleteUser(user)">
+              <div>{{$t('general.delete')}}</div>
+            </div>
+            </template>
+          </div>
         </div>
-      </template>
+        </template>
+        <template v-else>
+          <div class='user-row row empty'>
+            {{ $t('privileges.no_users') }}
+          </div>
+        </template>
+      </div>
     </div>
   </div>
 </template>

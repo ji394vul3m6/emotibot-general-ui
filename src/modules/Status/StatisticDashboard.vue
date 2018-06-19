@@ -1,35 +1,38 @@
 <template>
-  <div id="statistic-dash" class="page">
+  <div id="statistic-dash" class="multi-card">
     <div class="content">
-      <div class="statistic-chart" v-for="(chartInfo, index) in chartInfos" :key="chartInfo.name" :class="{'col-2': chartInfo.cols === 2}">
-        <div class="statistic-title">{{ chartInfo.name }}</div>
-        <div class="statistic-select">
-          <div>
-            <!-- Used for dimension select -->
-            <label-switch
-              v-if="chartInfo.types !== undefined"
-              :options="typesToOption(chartInfo.types)"
-              @change="typeSelectChange(chartInfo, $event)"/>
-            <!-- Used for time select -->
+      <div class="card statistic" v-for="(chartInfo, index) in chartInfos" :key="chartInfo.name"
+        :class="[chartInfo.cols === 2 ? 'w-fill': 'w-half', chartInfo.rowFirst ? 'first' : '', chartInfo.showType]">
+        <template v-if="chartInfo.showType === 'chart'">
+          <div class="statistic-title">{{ chartInfo.name }}</div>
+          <div class="statistic-select">
+            <div>
+              <!-- Used for time select -->
+              <label-switch
+                :options="daysToOptions([1, 7, 30])"
+                @change="selectChange(chartInfo, $event)"/>
+              <!-- Used for dimension select -->
+              <label-switch class='dimension-selector'
+                v-if="chartInfo.types !== undefined"
+                :options="typesToOption(chartInfo.types)"
+                @change="typeSelectChange(chartInfo, $event)"/>
+            </div>
+          </div>
+          <div class="statistic-content">
+            <stats-chart v-on:finish="chartInfo.finish=true" v-model="chartInfos[index]"></stats-chart>
+          </div>
+        </template>
+        <template v-else-if="chartInfo.showType === 'table'">
+          <div class="statistic-title">{{ chartInfo.name }}</div>
+          <div class="statistic-select">
             <label-switch
               :options="daysToOptions([1, 7, 30])"
               @change="selectChange(chartInfo, $event)"/>
           </div>
-        </div>
-        <div class="statistic-content">
-          <stats-chart v-on:finish="chartInfo.finish=true" v-model="chartInfos[index]"></stats-chart>
-        </div>
-      </div>
-      <div class="statistic-chart" v-for="(tableInfo, index) in tableInfos" :key="tableInfo.name">
-        <div class="statistic-title">{{ tableInfo.name }}</div>
-        <div class="statistic-select">
-          <label-switch
-            :options="daysToOptions([1, 7, 30])"
-            @change="selectChange(tableInfo, $event)"/>
-        </div>
-        <div class="statistic-content">
-          <stats-table v-on:finish="tableInfo.finish=true" v-model="tableInfos[index]"></stats-table>
-        </div>
+          <div class="statistic-content">
+            <stats-table v-on:finish="chartInfo.finish=true" v-model="chartInfos[index]"></stats-table>
+          </div>
+        </template>
       </div>
     </div>
   </div>
@@ -37,9 +40,7 @@
 
 <script>
 import Vue from 'vue';
-import VueC3 from 'vue-c3';
 import format from '@/utils/js/format';
-import LabelSwitch from '@/components/basic/LabelSwitch';
 import tagAPI from '@/api/tagType';
 
 import StatsChart from '../Statistics/_components/StatsChart';
@@ -62,10 +63,8 @@ export default {
   icon: 'white_dashboard',
   api: [tagAPI, API],
   components: {
-    VueC3,
     StatsChart,
     StatsTable,
-    LabelSwitch,
   },
   methods: {
     typesToOption(types) {
@@ -124,31 +123,7 @@ export default {
           customData(datas) {
             return datas.quantities;
           },
-        },
-        {
-          handler: new Vue(),
-          finish: false,
-          name: `${that.$t('statistics.visit_record')}(${that.$t('statistics.dimension')})`,
-          type: 'bar',
-          param: {
-            days: 1,
-            type: 'barchart',
-            filter: 'category',
-            category: 'platform',
-          },
-          getData: that.$api.getVisitStats2,
-          keyMaps: {
-            total_asks: that.$t('statistics.total_asks_num'),
-          },
-          nameKey: 'name',
-          wrapWidth: 20,
-          customData(datas) {
-            datas.forEach((data) => {
-              data.total_asks = data.q.total_asks;
-            });
-            return datas;
-          },
-          types: that.tagTypes,
+          showType: 'chart',
         },
         {
           handler: new Vue(),
@@ -170,30 +145,31 @@ export default {
             });
             return datas;
           },
+          rowFirst: true,
           nameKey: 'name',
+          showType: 'chart',
         },
-      ];
-      this.tableInfos = [
-        {
-          tableHandler: new Vue(),
-          finish: false,
-          name: `${that.$t('statistics.hot_question')} Top 20`,
-          param: {
-            days: 1,
-            type: 'top',
-          },
-          getData: that.$api.getTopQuestions2,
-          tableColumns: {
-            question: {
-              text: that.$t('statistics.user_question'),
-              width: '240px',
-            },
-            q: {
-              text: that.$t('statistics.count'),
-              width: '60px',
-            },
-          },
-        },
+        // {
+        //   tableHandler: new Vue(),
+        //   finish: false,
+        //   name: `${that.$t('statistics.hot_question')} Top 20`,
+        //   param: {
+        //     days: 1,
+        //     type: 'top',
+        //   },
+        //   getData: that.$api.getTopQuestions2,
+        //   tableColumns: {
+        //     question: {
+        //       text: that.$t('statistics.user_question'),
+        //     },
+        //     q: {
+        //       text: that.$t('statistics.count'),
+        //       width: '80px',
+        //     },
+        //   },
+        //   rowFirst: true,
+        //   showType: 'table',
+        // },
         {
           tableHandler: new Vue(),
           finish: false,
@@ -206,20 +182,48 @@ export default {
           tableColumns: {
             question: {
               text: that.$t('statistics.user_question'),
-              width: '240px',
             },
             q: {
               text: that.$t('statistics.count'),
-              width: '60px',
+              width: '80px',
             },
           },
+          showType: 'table',
+        },
+        {
+          handler: new Vue(),
+          finish: false,
+          name: `${that.$t('statistics.visit_record')}(${that.$t('statistics.dimension')})`,
+          type: 'bar',
+          param: {
+            days: 1,
+            type: 'barchart',
+            filter: 'category',
+            category: 'platform',
+          },
+          cols: 2,
+          getData: that.$api.getVisitStats2,
+          keyMaps: {
+            total_asks: that.$t('statistics.total_asks_num'),
+          },
+          nameKey: 'name',
+          wrapWidth: 20,
+          customData(datas) {
+            datas.forEach((data) => {
+              data.total_asks = data.q.total_asks;
+            });
+            return datas;
+          },
+          types: that.tagTypes,
+          rowFirst: true,
+          showType: 'chart',
         },
       ];
       this.chartInfos.forEach((info) => {
         const range = getTimeRange(1);
         info.param.t1 = format.dateToString(range[0]);
         info.param.t2 = format.dateToString(range[1]);
-        info.height = 240;
+        info.height = 210;
       });
       this.tableInfos.forEach((info) => {
         const range = getTimeRange(1);
@@ -269,39 +273,44 @@ $row-height: $default-line-height;
 $stat-card-height: 300px;
 
 #statistic-dash {
-  .content {
-    .statistic-chart {
-      width: calc(50% - 20px);
+  & > .content {
+    .statistic {
       height: $stat-card-height;
-      border: 1px solid $page-header-color;
       float: left;
-      margin-right: 20px;
-      margin-bottom: 20px;
-      overflow:hidden;
-      background: $chart-bg;
-      &.col-2 {
-        width: calc(100% - 20px);
+      overflow: hidden;
+      &:last-child {
+        margin-bottom: 20px;
+      }
+      &.chart {
+        .statistic-content {
+          overflow:hidden;
+          padding: 0 20px;
+        }
+      }
+      &.table {
+        .statistic-content {
+          @include auto-overflow();
+        }
       }
 
       .statistic-title {
         width: 100%;
-        line-height: $row-height;
         text-align: left;
-        padding: 0 10px;
-        background: $table-header-background;
-        border-bottom: 1px solid black;
+        padding-top: 20px;
+        padding-left: 20px;
+        font-size: 16px;
+        line-height: 16px;
+        color: #666666;
+        font-weight: 600;
       }
       .statistic-select {
-        line-height: $row-height;
-        text-align: left;
-        padding-left: 20px;
-        select {
-          width: 200px;
+        padding: 10px 20px;
+        .dimension-selector {
+          margin-left: 20px;
         }
       }
       .statistic-content {
-        height: calc(#{$stat-card-height} - 2 * #{$row-height});
-        overflow: auto;
+        height: calc(#{$stat-card-height} - 100px);
       }
     }
   }

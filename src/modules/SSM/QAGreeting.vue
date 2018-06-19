@@ -29,7 +29,6 @@
   </div>
 </template>
 <script>
-import { VPagination } from 'vue-easytable';
 import BasicPage from '@/components/layout/BasicPage';
 import SearchInput from '@/components/basic/SearchInput';
 import api from './_api/qagreeting';
@@ -44,8 +43,6 @@ export default {
   components: {
     BasicPage,
     SearchInput,
-    VPagination,
-
   },
   data() {
     return {

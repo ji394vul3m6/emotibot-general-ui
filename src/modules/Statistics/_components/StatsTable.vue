@@ -5,7 +5,8 @@
       <div class="err-detail">{{ errMsg }} </div>
     </div>
     <div v-if="!showLoading && errMsg === ''" class="table">
-      <table style="table-layout: fixed">
+      <general-table auto-height show-empty :tableHeader="tableHeader" :tableData="data" font-class='font-12'></general-table>
+      <!-- <table style="table-layout: fixed">
         <tr>
           <td v-for="key in Object.keys(value.tableColumns)" :key="key" :style="{maxWidth: value.tableColumns[key].width, minWidth: value.tableColumns[key].width}">
             {{ value.tableColumns[key].text || value.tableColumns[key] }}
@@ -21,7 +22,7 @@
             {{ $t('error_msg.empty_data') }}
           </td>
         </tr>
-      </table>
+      </table> -->
     </div>
     <div v-if="showLoading" class="loading">
       {{ $t('general.loading') }}
@@ -43,6 +44,7 @@ export default {
     return {
       data: [],
       errMsg: '',
+      tableHeader: [],
     };
   },
   methods: {
@@ -86,10 +88,18 @@ export default {
     },
   },
   mounted() {
-    this.getAjaxData();
-    this.value.tableHandler.$on('redraw', () => {
-      this.data = undefined;
-      this.getAjaxData();
+    const that = this;
+    that.getAjaxData();
+    Object.keys(that.value.tableColumns).forEach((key) => {
+      that.tableHeader.push({
+        key,
+        text: that.value.tableColumns[key].text,
+        width: that.value.tableColumns[key].width,
+      });
+    });
+    that.value.tableHandler.$on('redraw', () => {
+      that.data = undefined;
+      that.getAjaxData();
     });
   },
 };
@@ -104,6 +114,14 @@ $stat-card-height: 300px;
   overflow-x: hidden;
   height: 100%;
   position: relative;
+
+  display: flex;
+  flex-direction: column;
+  .table {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
   .loading {
     position: absolute;
     top: 0;
@@ -116,7 +134,7 @@ $stat-card-height: 300px;
     justify-content: center;
   }
   .err-msg {
-    height: 100%;
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -127,28 +145,6 @@ $stat-card-height: 300px;
   }
   .hide {
     display: none;
-  }
-  .table {
-    text-align: center;
-    min-width: 95%;
-    max-width: 95%;
-    margin: 0 auto;
-    table {
-      border-collapse: collapse;
-      margin: 0 auto;
-      tr {
-        td {
-          word-break: break-all;
-          border: 1px solid $page-header-color;
-          padding: 5px 10px;
-        }
-
-        &:first-child {
-          background: $page-header-color;
-          color: white;
-        }
-      }
-    }
   }
 }
 </style>

@@ -1,0 +1,450 @@
+
+<template>
+  <div id="card-category">
+    <div id="card-category-header">
+      <div id="card-category-header-block">
+        <div id="card-category-row">
+          <div class="card-category-title">{{ $t('wordbank.categories') }}</div>
+          <div class="card-category-setting" @click="toggleEditMode">
+            <span v-if="isEditMode"> {{ $t('wordbank.leave_setting') }}</span>
+            <span v-else> {{ $t('wordbank.setting') }} </span>
+          </div>
+        </div>
+        <search-input ref="categorySearchBox" v-model="categoryNameKeyword"></search-input>
+      </div>
+      <div id="card-category-add-root" v-if="isEditMode" @click="addRootCategory"> 
+        <input id="add-root" type="text"
+          v-if="isAddingRoot" v-model="rootName" ref="rootName" 
+          :placeholder="$t('wordbank.placeholder_category_name')"
+          @compositionstart="setCompositionState(true)"
+          @compositionend="setCompositionState(false)"
+          @blur="confirmRootName"
+          @keydown.enter="detectCompositionState"
+          @keyup.enter="confirmRootName">
+        <span v-else>{{ $t('wordbank.add_rootcategory') }}</span>
+      </div>
+    </div>
+    <div id="card-category-content" ref="cardCategoryContent">
+      <div v-if="!hasSearchResult" id="no-category-search-result">
+        {{ $t('wordbank.empty_category_search_result') }}
+      </div>
+      <category-tree-item v-for="(child, idx) in categoryTree.children" 
+        v-if="child.visible"
+        :treeItem="child"
+        :editMode="isEditMode"
+        :curLayer="1"
+        :ref="`${child.cid}-${child.name}`"
+        :key="`${child.name}-${idx}`"
+        @activeItemChange="handleActiveItemChange"
+        @itemNameChange="handleItemNameChange"
+        @setActiveToAll="handleSetActiveToAll"></category-tree-item>
+    </div>
+    <div id="card-category-footer" v-if="isEditMode">
+      <div v-if="allowSubCategory" 
+        class="card-category-setting-option option-addsub"
+        :class="{'option-disabled': this.currentActiveItem.layer === maxLayer || this.currentActiveItem.cid < 0}"
+        @click="addSubCategory">
+        {{ $t('wordbank.add_subcategory') }}
+      </div>
+      <div class="card-category-setting-option option-delete"
+        :class="{'option-disabled': !this.currentActiveItem.deletable}"
+        @click="popDeleteCategory">
+        {{ $t('wordbank.delete_category') }}
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import Vue from 'vue';
+import CategoryTreeItem from './CategoryTreeItem';
+
+Vue.component('category-tree-item', CategoryTreeItem);
+
+export default {
+  // api,
+  props: {
+    categoryTree: {
+      type: Object,
+      default: {},
+    },
+    maxLayer: {
+      type: Number,
+      default: 1,
+    },
+    activeItemId: {
+      type: Number,
+      default: 0,
+    },
+    allowSubCategory: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  data() {
+    return {
+      categoryNameKeyword: '',
+      isAddingRoot: false,
+      rootName: '',
+      compositionState: false,
+      wasCompositioning: false,
+      hasSearchResult: true,
+
+      isEditMode: false,
+      currentActiveItem: {},
+    };
+  },
+  watch: {
+    categoryNameKeyword() {
+      // if (this.categoryNameKeyword !== '') {
+      //   this.setFilterMode(true);
+      // } else {
+      //   this.setFilterMode(false);
+      // }
+      this.filterCategory(this.categoryNameKeyword);
+      this.hasSearchResult = false;
+      this.categoryTree.children.forEach((child) => {
+        this.hasSearchResult = child.visible || this.hasSearchResult;
+      });
+    },
+  },
+  methods: {
+    /** Handle SEARCH KEYWORD */
+    filterCategory() {
+      if (this.categoryNameKeyword === '') {
+        this.categoryTree.children.forEach(child => this.closeAllChild(child));
+        this.categoryTree.children.forEach((child) => {
+          child.visible = true;
+        });
+        this.$nextTick(() => {
+          this.handleSetActiveToAll();
+        });
+      } else {
+        this.categoryTree.children.forEach((child) => {
+          const foundKeyword = this.hasKeyword(child, this.categoryNameKeyword);
+          if (!foundKeyword) {
+            child.visible = false;
+          }
+        });
+        this.categoryTree.children.forEach((child) => {
+          this.setShowChild(child, this.categoryNameKeyword);
+        });
+      }
+    },
+    closeAllChild(treeItem) {
+      treeItem.showChild = false;
+      if (treeItem.children && treeItem.children.length > 0) {
+        treeItem.children.forEach((child) => {
+          this.closeAllChild(child);
+        });
+      }
+    },
+    setShowChild(treeItem, keyword) {
+      let shouldOpen = false;
+      if (treeItem.children && treeItem.children.length > 0) {
+        treeItem.children.forEach((child) => {
+          const shouldOpenForChild = this.setShowChild(child, keyword);
+          shouldOpen = shouldOpen || shouldOpenForChild;
+        });
+      }
+      treeItem.showChild = shouldOpen;
+      return shouldOpen || treeItem.name.includes(keyword);
+    },
+    hasKeyword(treeItem, keyword) {
+      if (treeItem.name.includes(keyword)) {
+        return true;
+      }
+      let found = false;
+      if (treeItem.children && treeItem.children.length > 0) {
+        treeItem.children.forEach((child) => {
+          const newfound = this.hasKeyword(child, keyword);
+          found = (newfound === true) ? newfound : found;
+        });
+      }
+      return found;
+    },
+
+    /**  Handle SET ACTIVE ITEM */
+    handleActiveItemChange(item, layer, route) {
+      this.resetActiveItem(this.categoryTree);
+      this.setActiveItem(this.categoryTree, item.cid);
+      this.setCurrentActiveItem(item, layer, route);
+      this.$emit('activeItemChange', item);
+    },
+    setCurrentActiveItem(item, layer, route) {
+      this.currentActiveItem = item;
+      this.currentActiveItem.layer = layer;
+      this.currentActiveItem.route = route;
+    },
+    resetActiveItem(treeItem) {
+      treeItem.isActive = false;
+      if (treeItem.children && treeItem.children.length > 0) {
+        treeItem.children.forEach((child) => {
+          this.resetActiveItem(child);
+        });
+      }
+    },
+    setActiveItem(treeItem, id) {
+      if (treeItem.cid === id) {
+        treeItem.isActive = true;
+        return;
+      }
+      if (treeItem.children && treeItem.children.length > 0) {
+        treeItem.children.forEach((child) => {
+          this.setActiveItem(child, id);
+        });
+      }
+    },
+    handleSetActiveToAll() {
+      try {
+        const allRefName = `-3-${this.$t('category.all')}`;
+        const allRef = this.$refs[allRefName][0];
+        allRef.$refs.treeItem.click();
+      } catch (err) { // some pages do not have category ALL
+        const allRefName = `-3-${this.$t('category.no_category')}`;
+        const allRef = this.$refs[allRefName][0];
+        allRef.$refs.treeItem.click();
+      }
+    },
+
+    /** Recursive Find Item */
+    findItemParent(treeItem, id) {
+      if (treeItem.children && treeItem.children.length > 0) {
+        if (treeItem.children.findIndex(child => child.cid === id) !== -1) {
+          return treeItem;
+        }
+        let parent;
+        treeItem.children.forEach((child) => {
+          const parentFound = this.findItemParent(child, id);
+          parent = parentFound === undefined ? parent : parentFound;
+        });
+        return parent;
+      }
+      return undefined;
+    },
+    findItemRef(treeItem, refName) {
+      if (treeItem.$refs) {
+        const keys = Object.keys(treeItem.$refs);
+        if (keys.length > 0) {
+          const itemIdx = keys.findIndex(key => key === refName);
+          if (itemIdx !== -1) {
+            return treeItem.$refs[refName][0];
+          }
+        }
+        let ref;
+        keys.forEach((key) => {
+          if (treeItem.$refs[key] !== undefined) {
+            const nextItem = treeItem.$refs[key][0];
+            if (nextItem !== undefined) {
+              const refFound = this.findItemRef(nextItem, refName);
+              ref = refFound === undefined ? ref : refFound;
+            }
+          }
+        });
+        return ref;
+      }
+      return undefined;
+    },
+    findItemParentRef(item) {
+      const parent = this.findItemParent(this.categoryTree, item.cid);
+      const parentRefName = `${parent.cid}-${parent.name}`;
+      return this.findItemRef(this, parentRefName);
+    },
+
+    /** Handle EDIT ITEM NAME */
+    handleItemNameChange(item, itemName) {  // v
+      this.$emit('itemNameChange', item, itemName);
+    },
+    editItemNameSuccess(success) { // method call by parent to inform item name change state
+      const refName = `${this.currentActiveItem.cid}-${this.currentActiveItem.name}`;
+      const activeItemRef = this.findItemRef(this, refName);
+      activeItemRef.editItemNameSuccess(success);
+    },
+
+    /** Handle ADD ROOT CATEGORY */
+    addRootCategory() {
+      if (!this.isAddingRoot) {
+        this.isAddingRoot = true;
+        this.$nextTick(() => {
+          this.$refs.rootName.focus();
+        });
+      }
+    },
+    setCompositionState(bool) {
+      this.compositionState = bool;
+    },
+    detectCompositionState() {
+      this.wasCompositioning = this.compositionState;
+    },
+    confirmRootName() {
+      if (this.wasCompositioning) {
+        return;
+      }
+      this.rootName = this.rootName.trim();
+      // cancel add root
+      if (this.rootName === '') {
+        this.isAddingRoot = false;
+        return;
+      }
+      if (this.isRootNameDuplicate()) {
+        const rootNameElem = this.$refs.rootName;
+        rootNameElem.focus();
+        this.rootName = '';
+        return;
+      }
+      this.$emit('addCategory', -1, this.rootName, 1);
+    },
+    isRootNameDuplicate() {
+      return this.categoryTree.children.findIndex(child => child.name === this.rootName) !== -1;
+    },
+    addCategorySuccess(success, category) {  // method call by parent
+      if (this.isAddingRoot) {
+        if (success) {
+          this.resetActiveItem(this.categoryTree);
+          this.categoryTree.children.push(-1, 0, category);
+        }
+        this.rootName = '';
+        this.isAddingRoot = false;
+        this.categoryNameKeyword = '';
+      }
+      // TODO: else is for add subcategory
+    },
+
+    /** Handle DELETE */
+    popDeleteCategory() { // v
+      if (!this.currentActiveItem.deletable) {
+        return;
+      }
+      const option = {
+        data: {
+          msg: this.$t('category.delete_category_msg', { name: this.currentActiveItem.name }),
+        },
+        callback: {
+          ok: () => {
+            this.confirmDeleteCategory();
+          },
+        },
+      };
+      this.$popCheck(option);
+    },
+    confirmDeleteCategory() { // v
+      this.$emit('deleteCategory', this.currentActiveItem);
+    },
+    deleteCategorySuccess(success) {  // v
+      const parentRef = this.findItemParentRef(this.currentActiveItem);
+      parentRef.deleteCategorySuccess(success, this.currentActiveItem.cid);
+    },
+
+    toggleEditMode() {  // v
+      this.isEditMode = !this.isEditMode;
+      if (!this.isEditMode) {
+        this.categoryNameKeyword = '';
+        this.handleSetActiveToAll();
+      }
+      this.$emit('editModeChange', this.isEditMode);
+    },
+
+    // TODO: Add Sub Category
+    addSubCategory() {
+    //   if (this.currentCategory.cid < 0 || this.currentCategory.layer === this.maxLayer) return;
+    //   const refName = `${this.currentCategory.cid}-${this.currentCategory.name}`;
+    //   this.resetActiveCategory();
+    //   this.appendSubCategory();
+    //   const parentRef = this.findParentRef(this, refName);
+    //   this.$nextTick(() => {
+    //     const childRef = parentRef.$refs['0-'][0];
+    //     childRef.editNewItemName();
+    //   });
+    },
+  },
+};
+</script>
+<style lang="scss" scoped>
+@import 'styles/variable';
+
+#card-category {
+  display: flex;
+  flex-direction: column;
+  #card-category-header {
+    background: #fcfcfc;
+    flex: 0 0 auto;
+    #card-category-header-block {
+      padding: 10px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid $color-borderline;
+      #card-category-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        .card-category-title {
+          @include font-16px();
+          font-weight: 500;
+        }
+        .card-category-setting {
+          @include font-12px();
+          color: $color-primary;
+          cursor: pointer;
+        }
+      }  
+      .search-input {
+        width: 180px;
+      }
+    }
+
+    #card-category-add-root {
+      background: #fcfcfc;
+      height: 36px;
+      line-height: 20px;
+      padding: 8px;
+      padding-left: 23px;
+      color: $color-primary;
+      cursor: pointer;
+      border-bottom: 1px solid $color-borderline;
+      input[type=text] {
+        &#add-root {
+          background: #fcfcfc;
+          border: 0px;
+          padding: 0px;
+          width: calc(100% - 10px);
+          &:focus {
+            outline: none;
+            border: 0px;
+            box-shadow: 0 0 0 $color-white;
+          }   
+        }
+      }
+    }
+  }
+  #card-category-content {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    #no-category-search-result {
+      height: 36px;
+      line-height: 36px;
+      text-align: center;
+    }
+  }
+  #card-category-footer {
+    flex: 0 0 auto;
+    display: flex;
+    background: #f8f8f8;
+    border-top: 1px solid $color-borderline;
+    .card-category-setting-option {
+      flex: 1 1 50%;
+      height: 28px;
+      line-height: 28px;
+      text-align: center;
+      color: $color-primary;
+      cursor: pointer;
+
+      &.option-addsub {
+        border-right: 1px solid $color-borderline;
+      }
+      &.option-disabled {
+        color: $color-font-disabled;
+        cursor: no-drop;
+      }
+    }
+  }
+}
+</style>

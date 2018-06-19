@@ -1,25 +1,21 @@
-FROM docker-reg.emotibot.com.cn:55688/node-base:latest AS build-env
+FROM docker-reg.emotibot.com.cn:55688/general-node-base:20180530-d11d8a1 AS build-env
 
 # ADD . build
-ADD src build/src
 ADD build build/build
 ADD config build/config
 ADD static build/static
-ADD .babelrc .postcssrc.js .eslintrc.js .eslintignore index.html package.json package-lock.json build/
-RUN cd build && npm install && npm run build
-RUN ls /build/dist
+ADD src build/src
+ADD .babelrc .postcssrc.js .eslintrc.js .eslintignore login.html index.html package.json build/
+RUN cd build && npm install --production && npm run build
 
 
 FROM nginx:1.13-alpine
 
 COPY --from=build-env /build/dist/index.html /build/dist/
+COPY --from=build-env /build/dist/login.html /build/dist/
 COPY --from=build-env /build/dist/static /build/dist/static
 
 COPY docker/conf/simple-nginx.conf /etc/nginx/nginx.conf
-COPY docker/conf/www.conf /etc/php5/fpm.d/www.conf
-COPY docker/conf/php.ini /etc/php5/php.ini
 WORKDIR /build/dist
-COPY docker/file_init.sh file_init.sh
-COPY docker/entrypoint.sh entrypoint.sh
 
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["nginx", "-g", "daemon off;"] 

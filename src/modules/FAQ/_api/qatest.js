@@ -6,6 +6,7 @@ export default {
       qtype: 'debug',
       top: 2,
       text,
+      info: filter,
     };
 
     Object.keys(filter).forEach((key) => {

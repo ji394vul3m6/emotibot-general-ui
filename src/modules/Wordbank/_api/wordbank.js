@@ -1,107 +1,201 @@
 import qs from 'qs';
 
-const META_PATH = '/api/v1/dictionary/download-meta';
-const DOWNLOAD_PATH = '/api/v2/dictionary/download';
 const CHECK_PATH = '/api/v1/dictionary/full-check';
-const UPLOAD_PATH = '/api/v1/dictionary/upload';
-const UPLOAD_V2_PATH = '/api/v2/dictionary/upload';
-const WORDBANKS_PATH = '/api/v1/dictionary/wordbanks';
-const WORDBANK_PATH = '/api/v1/dictionary/wordbank';
-const CHATS_INFO_PATH = '/api/v1/robot/chat';
-const WORDBANK_DIR_PATH = '/api/v1/dictionary/wordbank-dir';
+const META_PATH = '/api/v1/dictionary/download-meta';
+
+const DOWNLOAD_PATH = '/api/v2/dictionary/download';
+
+const WORDBANK_PATH = '/api/v3/dictionary/wordbank';
+const WORDBANKS_PATH = '/api/v3/dictionary/wordbanks';
+const WORDBANK_CATEGORY_PATH = '/api/v3/dictionary/class';
+const UPLOAD_PATH = '/api/v3/dictionary/upload';
 
 function deleteWordbank(id) {
   return this.$reqDelete(`${WORDBANK_PATH}/${id}`);
 }
-function deleteWordbankDir(paths, dirName) {
-  const strs = paths.map(p => p.name);
-  strs.push(dirName);
-  const pathStr = encodeURIComponent(strs.join('/'));
-  return this.$reqDelete(`${WORDBANK_DIR_PATH}/dir?path=${pathStr}`);
+
+function deleteWordbankCategory(id) {
+  return this.$reqDelete(`${WORDBANK_CATEGORY_PATH}/${id}`);
 }
 
-function addFolder(paths, name) {
-  let i = 0;
-  const data = {};
-  for (i = 0; i < paths.length; i += 1) {
-    data[`level${i + 1}`] = paths[i].name;
-  }
-  data[`level${i + 1}`] = name;
-  return this.$reqPut(WORDBANK_PATH, qs.stringify(data)).then(res => res.data);
+function updateCategory(cid, name) {
+  const param = {
+    name,
+  };
+  return this.$reqPut(`${WORDBANK_CATEGORY_PATH}/${cid}`, qs.stringify(param));
 }
 
-function addWordbank(paths, wordbank) {
-  const data = {
+function updateWordbank(wordbank) {
+  const param = {
     name: wordbank.name,
     answer: wordbank.answer,
-    similar_words: wordbank.similar_words,
-    type: 1,
+    similar_words: wordbank.similar_words.join(','), // POST and PUT similar_words is defined as a string of similiar words separate by comma
   };
-  for (let i = 0; i < paths.length; i += 1) {
-    data[`level${i + 1}`] = paths[i].name;
-  }
-  return this.$reqPut(WORDBANK_PATH, qs.stringify(data)).then(res => res.data.result);
+  return this.$reqPut(`${WORDBANK_PATH}/${wordbank.wid}`, qs.stringify(param))
+  .then(rsp => rsp.data.result);
 }
 
+function moveToCategory(wid, cid) {
+  const param = {
+    cid,
+  };
+  return this.$reqPut(`${WORDBANK_PATH}/${wid}/move`, qs.stringify(param));
+}
+
+function addCategory(pid, name, layer) {
+  const param = {
+    pid,
+    name,
+  };
+  return this.$reqPost(`${WORDBANK_CATEGORY_PATH}`, qs.stringify(param))
+    .then((rsp) => {
+      const category = rsp.data.result;
+      category.children = []; // avoid api give null value
+      category.wordbanks = []; // avoid api give null value
+      category.deletable = true;
+      category.layer = layer;
+      category.showChild = false;
+      category.isActive = true;
+      if (layer === 1) {
+        category.visible = true;
+      }
+      return category;
+    });
+}
+
+function addWordbank(cid, wordbank) {
+  const param = {
+    cid,
+    name: wordbank.name,
+    answer: wordbank.answer,
+    similar_words: wordbank.similar_words.join(','), // POST and PUT similar_words is defined as a string of similiar words separate by comma
+  };
+  return this.$reqPost(`${WORDBANK_PATH}`, qs.stringify(param))
+    .then(rsp => rsp.data.result);
+}
+
+// 1. by GET method, children and wordbanks attribute should always be array
+// However, API may sometimes return null
+// Therefore we use this function to convert wrong data types
+// 2. add attributes 'layer', 'showChild', 'isActive' for displaying category-tree
+// 3. add attribute 'visible' to layer 1 for displaying category-tree search result
+let layer = 0;
 function convertData(wordbank) {
-  if (wordbank.similar_words) {
-    wordbank.text = wordbank.similar_words.split(',');
+  wordbank.layer = layer;
+  wordbank.showChild = false;
+  wordbank.isActive = false;
+  if (wordbank.layer === 1) {
+    wordbank.visible = true;
+  }
+  if (wordbank.similar_words === null) {
+    wordbank.similar_words = [];
+  }
+  if (wordbank.children === null) {
+    wordbank.children = [];
   }
   if (wordbank.children && wordbank.children.length > 0) {
+    layer += 1;
     wordbank.children.forEach((child) => {
       convertData(child);
     });
+    layer -= 1;
+  }
+}
+
+// If a wordbank or a category is not editable, it's parent categories should not allow deleting
+// Therefore we use this function to traverse the wordbank tree
+// And add childEditable key
+function parseEditable(wordbank) {
+  let deletable = true;
+  if (wordbank.children && wordbank.children.length > 0) {
+    wordbank.children.forEach((child) => {
+      deletable = parseEditable(child) === false ? false : deletable;
+    });
+  }
+  if (wordbank.wordbanks && wordbank.wordbanks) {
+    wordbank.wordbanks.forEach((word) => {
+      deletable = (word.editable === false) ? false : deletable;
+    });
+  }
+  deletable = (wordbank.editable === false) ? false : deletable;
+  wordbank.deletable = deletable;
+  return deletable;
+}
+
+// Wordbank should always have 'all' and 'uncategorized' categories
+// Therefore we use this function to add all wordbanks to 'all'
+// and add all wordbanks in root to 'uncategorized'
+let allWordbanks = [];
+function parseWordbank(wordbank) {
+  if (wordbank.layer === 0) {
+    // uncategoried
+    wordbank.children.splice(0, 0, {
+      name: '未分类',
+      deletable: false,
+      editable: false,
+      isActive: false,
+      layer: 1,
+      children: [],
+      wordbanks: wordbank.wordbanks,
+      cid: -2,
+      visible: true,
+    });
+
+    // all
+    wordbank.children.splice(0, 0, {
+      name: '全部',
+      deletable: false,
+      editable: false,
+      isActive: false,
+      layer: 1,
+      children: [],
+      cid: -3,
+      visible: true,
+    });
+  }
+  if (wordbank.layer > 0) {
+    if (wordbank.wordbanks && wordbank.wordbanks.length > 0) {
+      allWordbanks = allWordbanks.concat(wordbank.wordbanks);
+    }
+  }
+  if (wordbank.children && wordbank.children.length > 0) {
+    wordbank.children.forEach((child) => {
+      parseWordbank(child);
+    });
+  }
+
+  if (wordbank.layer === 0) {
+    wordbank.children[0].wordbanks = allWordbanks;
   }
 }
 
 function getWordbank(id) {
-  return this.$reqGet(`${WORDBANK_PATH}/${id}`).then((rsp) => {
-    if (rsp.data.result) {
-      convertData(rsp.data.result);
-    }
-    return rsp.data.result;
-  });
+  return this.$reqGet(`${WORDBANK_PATH}/${id}`)
+    .then(rsp => rsp.data.result);
+}
+
+function getCategory(id) {
+  return this.$reqGet(`${WORDBANK_CATEGORY_PATH}/${id}`)
+    .then(rsp => rsp.data.result);
 }
 
 function getWordbanks() {
-  return this.$reqGet(WORDBANKS_PATH).then((rsp) => {
-    if (rsp.data && rsp.data.result && rsp.data.result.length > 0) {
-      rsp.data.result.forEach((wordbank) => {
-        convertData(wordbank);
-      });
-    }
-    return rsp.data.result;
+  return this.$reqGet(`${WORDBANKS_PATH}`)
+  .then((rsp) => {
+    const wordbanks = rsp.data.result;
+    layer = 0;  // for convertData
+    convertData(wordbanks);
+    parseEditable(wordbanks);
+
+    allWordbanks = [];
+    parseWordbank(wordbanks);
+    return wordbanks;
   });
 }
 
-function getDefaultSensitiveAnswer() {
-  return this.$reqGet(`${CHATS_INFO_PATH}/12`).then(res => res.data.result.contents);
-}
-
-function updateWordbank(data) {
-  return this.$reqPost(WORDBANK_PATH, data);
-}
-
-function uploadFileV2(file) {
-  if (!file) {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        reject('Empty file');
-      }, 0);
-    });
-  } else if (file.size <= 0 || file.size > 2 * 1024 * 1024) {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        reject('File size need more than 0, less than 2MB');
-      }, 0);
-    });
-  }
-
-  const data = new FormData();
-  data.append('file', file);
-
-  return this.$reqPost(UPLOAD_V2_PATH, data);
-}
+// function getDefaultSensitiveAnswer() {
+//   return this.$reqGet(`${CHATS_INFO_PATH}/12`).then(res => res.data.result.contents);
+// }
 
 function uploadFile(file) {
   if (!file) {
@@ -123,27 +217,31 @@ function uploadFile(file) {
 
   return this.$reqPost(UPLOAD_PATH, data);
 }
-  // word_bank_down.php
-function getDownloadMeta() {
-  return this.$reqGet(META_PATH);
-}
-  // word_bank_check.php
+
+// word_bank_check.php
 function getLastResult() {
   return this.$reqGet(CHECK_PATH);
+}
+// word_bank_down.php
+function getDownloadMeta() {
+  return this.$reqGet(META_PATH);
 }
 
 export default {
   addWordbank,
-  addFolder,
+  addCategory,
   getWordbank,
   getWordbanks,
+  getCategory,
   uploadFile,
-  uploadFileV2,
-  getDownloadMeta,
-  getLastResult,
-  getDefaultSensitiveAnswer,
   updateWordbank,
+  updateCategory,
   deleteWordbank,
-  deleteWordbankDir,
+  deleteWordbankCategory,
+  moveToCategory,
+
+  getLastResult,
+  getDownloadMeta,
+
   DOWNLOAD_PATH,
 };

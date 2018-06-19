@@ -17,7 +17,7 @@
     <div class="input-row" :style="{width:width}">
       <div class="row-name">{{ $t('privileges.function_priv') }}：</div>
       <div>
-        <text-button main @click="setAll(true)">{{ $t('privileges.all_active') }}</text-button>
+        <text-button button-type="primary" @click="setAll(true)">{{ $t('privileges.all_active') }}</text-button>
         <text-button @click="setAll(false)">{{ $t('privileges.all_deactive') }}</text-button>
       </div>
     </div>
@@ -192,7 +192,7 @@ export default {
     } else {
       that.privileges = that.convertPrivilege(that.origData.privileges);
     }
-    that.width = `${100 + (that.cmds.length * 64)}px`;
+    that.width = `${110 + (that.cmds.length * 64)}px`;
 
     that.$on('validate', that.validate);
   },
@@ -208,10 +208,14 @@ $role-edit-err-color: $error-color;
 $role-edit-block-border-radius: 4px;
 
 .popForm {
+  max-height: 100%;
   padding: 0 25px;
   font-size: $role-edit-font-size;
+  display: flex;
+  flex-direction: column;
 
   .input-row {
+    flex: 0 0 auto;
     display: flex;
     flex-direction: column;
     font-size: $role-edit-font-size;
@@ -233,7 +237,10 @@ $role-edit-block-border-radius: 4px;
   }
 
   .block {
-    width: 100%;
+    flex: 1 1 auto;
+    @include auto-overflow();
+
+    // width: 100%;
     border: 1px solid #D9D9D9;
     border-radius: $role-edit-block-border-radius;
     display: flex;
@@ -254,7 +261,7 @@ $role-edit-block-border-radius: 4px;
         text-align: center;
       }
       .name {
-        flex: 0 0 70px;
+        flex: 0 0 90px;
         text-align: left;
         margin-left: 10px;
       }

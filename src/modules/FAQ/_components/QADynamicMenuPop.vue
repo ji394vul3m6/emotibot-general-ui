@@ -39,11 +39,7 @@
 </template>
 
 <script>
-import Vue from 'vue';
-import { VPagination } from 'vue-easytable';
 import DynamicList from './DynamicList';
-
-Vue.component(VPagination.name, VPagination);
 
 export default {
   components: {

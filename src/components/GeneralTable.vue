@@ -1,95 +1,163 @@
 <template>
-  <table class="general-table" :class="{'fix-table': fixed}">
-    <thead>
-      <tr class="table-header">
-        <td v-if="checkBox" class="check-container"></td>
-        <td v-for="header in headerInfo" :key="header.text">
+  <div class="general-table-container" :class="[showEmpty ? 'show-empty': '']">
+    <div class="general-table-header">
+    <table class="general-table" :class="[autoHeight ? 'auto-height': '', fontClass]">
+      <thead>
+        <tr>
+          <td v-if="checkbox" class="table-col-checkbox">
+            <input type="checkbox" @click="checkAll" :checked="isAllChecked">
+          </td>
+          <td v-for="header in tableHeader" :key="header.key" 
+            :style="{width: header.width}"
+            :class="{'fixed': header.width}">
             {{ header.text }}
-        </td>
-      </tr>
-    </thead>
-    <tbody>
-      <tr class="table-content" v-for="(content, idx) in contents" :key="idx">
-        <td v-if="checkBox" class="check-container">
-          <input v-if="checkMethod(content)" type="checkbox"/>
-        </td>
-        <td v-for="header in headerInfo" :class="getClassObj(header)" :style="{width: header.width}" :key="header.text">
-          <template v-if="header.type === 'clickable-text'">
-            <a v-on:click="header.callback(content)">{{ content[header.key] }}</a>
-          </template>
-          <template v-if="header.type === 'text'">
-            {{ content[header.key] }}
-          </template>
-          <template v-if="header.type === 'raw-text'">
-            <pre>{{ content[header.key] }}</pre>
-          </template>
-          <template v-else-if="header.type === 'buttons'">
-            <div v-for="button in content[header.key].button" :key="button.text" class="text-button auto-size" :class="{primary: button.primary}" v-on:click="button.callback(idx)">
-              {{ button.text }}
-            </div>
-            <div v-if="!content[header.key].button">
-              {{ content[header.key].info }}
-            </div>
-          </template> 
-          <template v-else-if="header.type === 'map-text'">
-          {{ header.map[content[header.key]] }}
-          </template>
-        </td>
-      </tr>
-      <tr v-if="contents.length <= 0">
-        <td v-if="checkBox" :colspan="headerInfo.length + 1" class="table-content-empty-row test">
-          {{ $t('error_msg.empty_data') }}
-        </td>
-        <td v-else :colspan="headerInfo.length" class="table-content-empty-row">
-          {{ $t('error_msg.empty_data') }}
-        </td>
-      </tr>
-    </tbody>
-  </table>
+          </td>
+          <td v-if="hasAction" class="table-col-action" :class="{'multi-action': action.length > 1}"> {{ $t('general.actions') }} </td>
+        </tr>
+      </thead>
+    </table>
+    </div>
+    <div class="general-table-body">
+    <table class="general-table" :class="[autoHeight ? 'auto-height': '', fontClass]" v-if="tableData && tableData.length > 0">
+      <tbody>
+        <tr v-for="(data, idx) in tableData" :key="idx">
+          <td v-if="checkbox" class="table-col-checkbox">
+            <input type="checkbox" @click="checkSelf(data, idx)" :checked="data.isChecked">
+          </td>
+          <td v-for="header in tableHeader" :key="uniqueId(header.key)"
+            :style="{width: header.width}"
+            :class="{'fixed': header.width}">
+            <template v-if="header.type === 'tag'">
+              <tag class="tags" v-for="(tag, tagIdx) in data[header.key]" :key="`${tagIdx}-${tag}`" :fontClass="fontClass">{{ tag }}</tag>
+            </template>
+            <template v-else-if="header.type === 'toggle'">
+              <toggle class="toggles"
+                v-model="data[header.key].val"
+                @change="data[header.key].onclick(data, idx)"></toggle>
+            </template>
+            <template v-else>{{ data[header.key] }}</template>
+          </td>
+          <td v-if="hasAction" class="table-col-action" :class="{'multi-action': action.length > 1}">
+            <span class="actions" v-for="act in action" 
+              :key="act.text" :class="act.type"
+              @click="act.onclick(data, idx)"> {{ act.text }}</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="empty-display" v-if="showEmpty && tableData.length <= 0">
+      {{ $t('general.no_data') }}
+    </div>
+  </div>
 </template>
 
 <script>
+import Tag from '@/components/basic/Tag';
+import Toggle from '@/components/basic/Toggle';
+
 export default {
+  components: {
+    Tag,
+    Toggle,
+  },
   props: {
-    headerInfo: {
+    tableHeader: {
       type: Array,
       required: true,
       default() {
         return [];
       },
     },
-    contents: {
+    tableData: {
       type: Array,
       required: true,
       default() {
         return [];
       },
     },
-    checkBox: {
+    checkbox: {
       type: Boolean,
       required: false,
       default: false,
     },
-    checkMethod: {
-      type: Function,
+    action: {
+      type: Array,
       required: false,
       default() {
-        return () => true;
+        return [];
       },
     },
-    fixed: {
+    autoHeight: {
       type: Boolean,
       required: false,
-      default: () => false,
+      default: false,
+    },
+    fontClass: {
+      type: String,
+      required: false,
+      default: 'font-14',
+    },
+    showEmpty: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+  },
+  data() {
+    return {
+      isAllChecked: false,
+      checkedData: [],
+    };
+  },
+  computed: {
+    hasAction() {
+      return this.action.length > 0;
+    },
+  },
+  watch: {
+    tableData() {
+      if (this.checkbox) {
+        this.tableData.forEach((data) => {
+          data.isChecked = false;
+        });
+        this.isAllChecked = false;
+        // this.setCheckedData();
+        // this.$emit('checkedChange', this.checkedData);
+      }
     },
   },
   methods: {
-    getClassObj(header) {
-      const ret = {
-        wrap: header.wrap,
-      };
-      ret[header.type] = true;
-      return ret;
+    uniqueId(key) {
+      const randInt = parseInt(Math.random() * 1000, 10);
+      return `${randInt}-${key}`;
+    },
+    checkSelf(data) {
+      data.isChecked = !data.isChecked;
+      this.isAllChecked = this.isAllRowChecked();
+      this.setCheckedData();
+      this.$emit('checkedChange', this.checkedData);
+    },
+    checkAll() {
+      if (this.isAllRowChecked()) {
+        this.tableData.forEach((data) => {
+          data.isChecked = false;
+        });
+      } else {
+        this.tableData.forEach((data) => {
+          data.isChecked = true;
+        });
+      }
+      this.isAllChecked = this.isAllRowChecked();
+      this.setCheckedData();
+      this.$emit('checkedChange', this.checkedData);
+    },
+    isAllRowChecked() {
+      const uncheckedNum = this.tableData.filter(data => data.isChecked === false).length;
+      return uncheckedNum === 0;
+    },
+    setCheckedData() {
+      this.checkedData = this.tableData.filter(data => data.isChecked === true);
     },
   },
 };
@@ -97,36 +165,156 @@ export default {
 
 <style lang="scss" scoped>
 @import "styles/variable";
-table {
-  width: 100%;
 
-  &.fix-table {
-    table-layout: fixed;
+$table-header-background: $color-disabled;
+$table-data-background: $color-white;
+$table-color-borderline: $color-borderline;
+$table-row-height: 50px;
+
+.general-table-container {
+  &.show-empty {
+    flex: 1;
   }
-
+  display: flex;
+  flex-direction: column;
+  width: inherit;
+  .general-table-header {
+    flex: 0 0 auto;
+  }
+  .general-table-body {
+    @include auto-overflow-Y();
+    overflow-x: hidden;
+  }
+  .empty-display {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+table {
+  &.font-16 {
+    @include font-16px();
+  }
+  &.font-14 {
+    @include font-14px();
+  }
+  &.font-12 {
+    @include font-12px();
+  }
+  width: 100%;
+  table-layout: fixed;
+  border-spacing: 0px;
+  overflow-x: hidden;
   thead {
     background: $table-header-background;
-  }
-  tbody {
-    background: $table-body-background;
     tr {
-      border-bottom: 1px solid $table-border-color;
-      &:hover {
-        background: $table-body-hover-background;
+      height: $table-row-height;
+      display: flex;
+      border-bottom: 1px solid $table-color-borderline;
+      td {
+        flex: 1 0 0;
+        box-sizing: border-box;
+        padding: 15px 10px;
+        &.fixed {
+          flex: 0 0 auto;
+        }
+      }
+      td:first-child {
+        padding-left: 20px;
+      }
+
+      .table-col-checkbox {
+        flex: 0 0 50px;
+      }
+      .table-col-action {
+        flex: 0 0 60px;
+        &.multi-action {
+          flex: 0 0 140px;
+        }
       }
     }
   }
-  td {
-    padding: 5px;
-    &.table-content-empty-row {
-      text-align: center;
-    }
-    &.wrap {
-      word-break: break-all;
-      pre {
-        white-space: pre-wrap;
+
+  tbody {
+    background: $table-data-background;
+    tr {
+      height: $table-row-height;
+      display: flex;
+      width: inherit;
+      overflow: hidden;
+      border-bottom: 1px solid $table-color-borderline;
+      td {
+        flex: 1 0 0;
+        // min-width: 100px;
+        box-sizing: border-box;
+        padding: 15px 10px;
+        &.fixed {
+          flex: 0 0 auto;
+        }
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+      td:first-child {
+        padding-left: 20px;
+      }
+      .table-col-checkbox {
+        flex: 0 0 50px;
+      }
+      .table-col-action {
+        flex: 0 0 60px;
+        &.multi-action {
+          flex: 0 0 140px;
+        }
+        .actions {
+          margin: 0 10px;
+          &.primary {
+            color: $color-primary;
+          }
+          &.error {
+            color: $color-error;
+          }
+          &:first-child {
+            margin-left: 0px;
+          }
+          &:hover {
+            cursor:pointer;
+          }
+        }
       }
     }
   }
+
+  &.auto-height {
+    thead {
+      tr {
+        height: auto;
+      }
+    }
+    tbody {
+      tr {
+        height: auto;
+        td {
+          text-overflow: unset;
+          overflow: unset;
+          white-space: unset;
+          word-break: break-all;
+        }
+      }
+    }
+  }
+}
+
+.tags {
+  &.tag {
+    margin: 0 5px;
+    &:first-child {
+      margin-left: 0px;
+    }
+  }
+}
+input[type=checkbox]{
+  @include general-checkbox();
 }
 </style>

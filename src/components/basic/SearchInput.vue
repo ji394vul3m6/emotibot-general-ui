@@ -1,11 +1,15 @@
 <template>
-  <div class="search-input">
+  <div class="search-input icon-input" :class="{'ie-focus-within': isFocus, fill: fill, flex: flex}">
     <input v-model="keyword"
       ref="input"
       :placeholder="$t('general.search_placeholder')"
       @keypress.enter="$emit('search', keyword)"
-      @keyup="$emit('input', keyword)">
-    <icon icon-type="search" :size=12 />
+      @keyup="$emit('input', keyword)"
+      @focus="toggleFocus"
+      @blur="toggleFocus">
+    <div class="input-icon"> 
+      <icon icon-type="search" :size=12 />
+    </div> 
   </div>
 </template>
 
@@ -16,11 +20,32 @@ export default {
       type: String,
       required: true,
     },
+    fill: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    flex: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
       keyword: '',
+      isFocus: false,
     };
+  },
+  watch: {
+    value() {
+      this.keyword = this.value;
+    },
+  },
+  methods: {
+    toggleFocus() {
+      this.isFocus = !this.isFocus;
+    },
   },
 };
 </script>
@@ -28,34 +53,33 @@ export default {
 <style lang="scss" scoped>
 @import "styles/variable";
 
-$input-dft-height: 28px;
-$input-dft-width: 160px;
-$input-radius: 4px;
-$input-dft-border: #D9D9D9;
+$input-height: 28px;
 
 .search-input {
-  height: $input-dft-height;
-  width: $input-dft-width;
-  border-radius: $input-radius;
-  padding: 0 8px;
+  height: $input-height;
+  &.fill {
+    width: 100%;
+    display: flex;
 
-  border: 1px solid $input-dft-border;
-  background: white;
-
-  display: flex;
-  align-items: center;
-
-  input {
-    box-sizing: border-box;
-    display: inline-block;
-    width: 160px;
-    border: none;
-    &:focus {
-      outline: none;
+    input {
+      display: block;
+      flex: 1;
+      width: auto;
+    }
+    .input-icon {
+      flex: 0 0 auto;
     }
   }
-  ::placeholder {
-    color: #CCCCCC;
-  }
+}
+input {
+  outline: none;
+  background: transparent;
+}
+
+/* workaround of focus-within of IE*/
+.ie-focus-within {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(75, 75, 100, 0.2);
+  border-color: $color-borderline-hover;
 }
 </style>

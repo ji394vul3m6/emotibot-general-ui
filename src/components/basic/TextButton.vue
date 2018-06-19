@@ -15,7 +15,7 @@
 <script>
 import Icon from './Icon';
 
-const buttonTypes = ['default', 'fill', 'primary', 'disable'];
+const buttonTypes = ['default', 'fill', 'primary', 'disable', 'error'];
 
 export default {
   name: 'text-button',
@@ -62,13 +62,18 @@ export default {
     disabled() {
       return this.buttonType === 'disable';
     },
+    error() {
+      return this.buttonType === 'error';
+    },
     classObj() {
       const ret = {
         primary: this.primary,
         'icon-button': this.showIcon,
         fill: this.fill,
         disabled: this.disabled,
+        error: this.error,
         'custom-width': this.width !== '',
+        'font-lg': parseInt(this.height.replace('px', ''), 10) >= 40,
       };
       if (this.color !== '') {
         ret[this.color] = true;
@@ -96,48 +101,54 @@ export default {
 @import "styles/variable";
 
 $btn-dft-height: 28px;
-$btn-dft-width: 90px;
-$btn-radius: 4px;
+$btn-dft-width: 68px;
+$btn-radius: 2px;
 
-$btn-dft-bg-color: white;
-$btn-dft-color: #666666;
-$btn-dft-border-color: #e9e9e9;
+$btn-dft-bg-color: $color-white;
+$btn-dft-color: $color-font-normal;
+$btn-dft-border-color: $color-borderline;
 
-$btn-fill-bg-color: #4b4b64;
-$btn-fill-color: #ffffff;
+$btn-fill-bg-color: $color-button;
+$btn-fill-color: $color-white;
 
-$btn-disable-bg-color: #f7f7f7;
-$btn-disable-color: #cccccc;
+$btn-disable-bg-color: $color-disabled;
+$btn-disable-color: $color-font-disabled;
 
-$btn-primary-bg-color: #1875f0;
-$btn-primary-color: #ffffff;
+$btn-primary-bg-color: $color-primary;
+$btn-primary-color: $color-white;
+
+$btn-error-bg-color: $color-error;
+$btn-error-color: $color-white;
 
 .text-button {
-  width: $btn-dft-width;
+  @include font-12px();
+  min-width: $btn-dft-width;
   height: $btn-dft-height;
+  box-sizing: border-box;
+  padding: 5px 10px;
+
   display: inline-flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  border-radius: $btn-radius;
-  padding: 5px 10px;
-  color: $btn-dft-bg-color;
-
-  @include click-button();
-
+  
   background: $btn-dft-bg-color;
   color: $btn-dft-color;
   border: 1px solid $btn-dft-border-color;
-  box-sizing: border-box;
+  border-radius: $btn-radius;
   white-space: nowrap;
 
-  margin-right: $line-element-between-width;
-
+  @include click-button();
+  @include button-active-background($color-white);
   &:focus {
     outline: none;
   }
-  &:active {
-    background: darken(white, 15%); 
+  &:hover {
+    background: $btn-disable-bg-color;
+  }
+  
+  &.font-lg {
+    @include font-14px();
   }
 
   &.icon-button {
@@ -152,21 +163,30 @@ $btn-primary-color: #ffffff;
     color: $btn-disable-color;
     user-select: none;
     cursor: not-allowed;
+    &:hover {
+      opacity: 1;
+    }
   }
   &.primary {
+    @include button-hover-opacity();
+    @include button-active-background($btn-primary-bg-color);
     background: $btn-primary-bg-color;
     color: $btn-primary-color;
     border: none;
-    &:hover {
-      background: $button-blue-hover;
-    }
-    &:active {
-      color: $button-blue-active-text;
-    }
   }
   &.fill {
+    @include button-hover-opacity();
+    @include button-active-background($btn-fill-bg-color);
     background: $btn-fill-bg-color;
     color: $btn-fill-color;
+    border: none;
+  }
+  &.error {
+    @include button-hover-opacity();
+    @include button-active-background($btn-error-bg-color);
+    background: $btn-error-bg-color;
+    color: $btn-error-color;
+    border: none;
   }
   &.custom-width {
     margin: 0;
@@ -174,11 +194,6 @@ $btn-primary-color: #ffffff;
       width: 100%;
       text-align: center;
     }
-  }
-
-  &.purple {
-    background: #4B4B64;
-    color: white;
   }
 }
 </style>

@@ -1,7 +1,7 @@
 import RobotProfile from './RobotProfile';
 import FunctionSetting from './FunctionSetting';
-import ChatSkill from './RobotChatSkill';
-import Command from './RobotCommand';
+import ChatSkill from './RobotWords';
+// import Command from './RobotCommand';
 
 export default {
   displayNameKey: 'robot_setting',
@@ -10,6 +10,6 @@ export default {
     RobotProfile,
     ChatSkill,
     FunctionSetting,
-    Command,
+    // Command,
   },
 };

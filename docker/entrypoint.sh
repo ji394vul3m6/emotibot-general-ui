@@ -37,11 +37,11 @@ fi
 cd /api && ./files_init.sh && ./entrypoint.sh env.template &
 
 # Add tmp dir for fastcgi php usage, used for uploaded file
-mkdir /build/dist/tmp && chmod 777 /build/dist/tmp
+mkdir /php/tmp && chmod 777 /php/tmp
 
 echo "Fix chroot issue"
-mkdir /build/dist/etc
-for n in `ls -L /etc` ; do if [ ! -d /etc/$n ]; then cp /etc/$n /build/dist/etc/ ; fi ;  done
+mkdir /php/etc
+for n in `ls -L /etc` ; do if [ ! -d /etc/$n ]; then cp /etc/$n /php/etc/ ; fi ;  done
 
 cd /etc/nginx
 rm nginx.conf
