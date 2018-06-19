@@ -194,6 +194,12 @@ export default {
           type: 'primary',
           onclick: this.editCommand,
         });
+      } else {
+        this.tableAction.push({
+          text: this.$t('robot_command.view'),
+          type: 'primary',
+          onclick: this.viewCommand,
+        });
       }
       if (this.canDelete) {
         this.tableAction.push({
@@ -234,6 +240,10 @@ export default {
             .findIndex(cmd => cmd.id === command.id);
           this.currentCommands.splice(theCommandIdx, 1, command);
         });
+    },
+    viewCommand(data) {
+      const command = this.currentCommands.find(cmd => cmd.id === data.id);
+      this.popViewCommand(command);
     },
     editCommand(data) {
       const command = this.currentCommands.find(cmd => cmd.id === data.id);
@@ -300,6 +310,19 @@ export default {
             });
           },
         },
+      };
+      this.$pop(options);
+    },
+    popViewCommand(command) {
+      const options = {
+        component: CommandEditPop,
+        title: this.$t('robot_command.view_command'),
+        data: {
+          command,
+          readonly: true,
+        },
+        buttons: ['ok'],
+        validate: false,
       };
       this.$pop(options);
     },

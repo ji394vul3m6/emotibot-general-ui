@@ -20,7 +20,7 @@
         :open-date="openDate"
         :placeholder="placeholder"
         :clear-button="clearButton"
-        :disabled="disabledPicker"
+        :disabled="disabledPicker || readonly"
         :required="required"
         :readonly="readonly">
       <input v-else
@@ -34,7 +34,7 @@
         :open-date="openDate"
         :placeholder="placeholder"
         :clear-button="clearButton"
-        :disabled="disabledPicker"
+        :disabled="disabledPicker || readonly"
         :required="required"
         :readonly="readonly">
       <div class="tooltip nowrap rightside"

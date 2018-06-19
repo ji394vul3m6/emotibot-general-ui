@@ -4,18 +4,19 @@
       <div class="tooltip"> {{ errorWording }} </div>
     </div>
     <div class="tags-container"
-      :class="{'tags-area': area}">
+      :class="{'tags-area': area, 'disabled': readonly}">
       <div class="tags-input-container" @click.stop="$refs.taginput.focus()">
         <span class="tags" v-for="(tag, idx) in selectedTags" :key="tag" :data-index="idx">
           <!-- <span class="tag-remove-btn" @click="removeTag(idx)">x</span> -->
           <span>{{ tag }}</span>
-          <span class="tag-remove-btn">
+          <span v-if="!readonly" class="tag-remove-btn">
             <icon icon-type="close" :size="8" @click.stop="removeTag(idx)"/>
           </span>
         
         </span>
         <input ref="taginput" class="tags-input" type="text" :maxlength="maxlength" :size="inputSize"
           v-model="inputTag"
+          :disabled="readonly"
           @keydown="handleKeyDown()"
           @compositionstart="setCompositionState(true)"
           @compositionend="setCompositionState(false)"
@@ -33,7 +34,7 @@
             @keydown.enter="addTagBySelector(curSelectItemIdx)" 
           -->
       </div>
-      <div class="dropdown-icon" @click.stop="toggleSelector">
+      <div v-if="!readonly" class="dropdown-icon" @click.stop="toggleSelector">
         <icon icon-type="drop_down" :size="12"/>
       </div>
     </div>
@@ -104,6 +105,10 @@ export default {
     width: {
       type: String,
       default: '160px',
+    },
+    readonly: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -443,6 +448,11 @@ $color-tag-hover: $color-disabled;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    &.disabled {
+      &:hover {
+        border-color: $color-borderline;
+      }
+    }
     &:hover {
       border-color: $color-borderline-hover;
     }

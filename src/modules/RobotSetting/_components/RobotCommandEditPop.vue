@@ -3,15 +3,15 @@
     <div id="edit-command" class="edit-row">
       <div class="edit-title">{{ $t('robot_command.editpop.command.title') }}</div>
       <div id="edit-command-content" class="edit-content">
-        <input ref="commandName" id="edit-command-input" type="text" v-model="commandName" v-tooltip="commandNameTooltip">
+        <input ref="commandName" id="edit-command-input" type="text" v-model="commandName" v-tooltip="commandNameTooltip" :disabled="readonly">
       </div>
     </div>
 
     <div id="edit-ruleto" class="edit-row">
       <div class="edit-title">{{ $t('robot_command.editpop.rule.title') }}</div>
       <div id="edit-ruleto-content" class="edit-content">
-        <input v-model="ruleTo" id="ruletoQ" type="radio" name="ruleTo" :value="RULETO_QUESTION"><label for="ruletoQ">{{ $t('robot_command.editpop.rule.to_question') }}</label>
-        <input v-model="ruleTo" id="ruletoA" type="radio" name="ruleTo" :value="RULETO_ANSWER"><label for="ruletoA">{{ $t('robot_command.editpop.rule.to_answer') }}</label>
+        <input v-model="ruleTo" id="ruletoQ" type="radio" name="ruleTo" :value="RULETO_QUESTION" :disabled="readonly"><label for="ruletoQ">{{ $t('robot_command.editpop.rule.to_question') }}</label>
+        <input v-model="ruleTo" id="ruletoA" type="radio" name="ruleTo" :value="RULETO_ANSWER" :disabled="readonly"><label for="ruletoA">{{ $t('robot_command.editpop.rule.to_answer') }}</label>
       </div>
     </div>
 
@@ -22,6 +22,7 @@
           :allowTagErrorTooltip="false"
           :origTags="origTags"
           :tagsList="tagsList"
+          :readonly="readonly"
           width="100%"
           @selectedTagsChanged="updateTags"
           @addNewTag="addNewLabel"
@@ -33,9 +34,9 @@
     <div id="edit-keyword" class="edit-row">
       <div class="edit-title">{{ $t('robot_command.editpop.keyword.title') }}</div>
       <div id="edit-keyword-content" class="edit-content">
-        <input type="text" v-model="keywords" :placeholder="$t('robot_command.editpop.keyword.keyword_placeholder')">
+        <input type="text" v-model="keywords" :placeholder="$t('robot_command.editpop.keyword.keyword_placeholder')" :disabled="readonly">
         <div id="advanced-block">
-          <input id="advanced" type="checkbox" v-model="hasAdvanced">
+          <input id="advanced" type="checkbox" v-model="hasAdvanced" :disabled="readonly">
           <label for="advanced">{{ $t('robot_command.editpop.keyword.advanced') }}</label>
         </div>
       </div>
@@ -45,10 +46,10 @@
       <div id="edit-keyword-advance-content" class="edit-content">
         <div v-for="(reg, idx) in regex" :key="idx" class="regex-row">
           <span>{{ $t('robot_command.editpop.keyword.regex' )}}</span>
-          <input type="text" v-model="reg.value[0]">
-          <text-button button-type="error" @click="deleteRegex(idx)">{{ $t('general.delete') }}</text-button>
+          <input type="text" v-model="reg.value[0]" :disabled="readonly">
+          <text-button button-type="error" @click="deleteRegex(idx)" v-if="!readonly">{{ $t('general.delete') }}</text-button>
         </div>
-        <div class="regex-row">
+        <div v-if="!readonly" class="regex-row">
           <text-button button-type="primary" @click="addRegex">{{ $t('general.add') }}</text-button>
         </div>
       </div>
@@ -57,12 +58,12 @@
     <div id="edit-datetime" class="edit-row">
       <div class="edit-title">{{ $t('robot_command.editpop.datetime.title') }}</div>
       <div id="edit-datetime-content" class="edit-content">
-        <input v-model="dateFormat" id="forever" type="radio" name="datetime" value="forever"><label for="forever">{{ $t('robot_command.editpop.datetime.forever') }}</label>
-        <input v-model="dateFormat" id="custom" type="radio" name="datetime" value="custom"><label for="custom">{{ $t('robot_command.editpop.datetime.custom') }}</label>
+        <input v-model="dateFormat" id="forever" type="radio" name="datetime" value="forever" :disabled="readonly"><label for="forever">{{ $t('robot_command.editpop.datetime.forever') }}</label>
+        <input v-model="dateFormat" id="custom" type="radio" name="datetime" value="custom" :disabled="readonly"><label for="custom">{{ $t('robot_command.editpop.datetime.custom') }}</label>
         <div v-if="dateFormat === 'custom'" ref="datePicker" id="pickers" v-tooltip="datePickerTooltip">
           <date-picker
             v-model="startDate"
-            :readonly="false"
+            :readonly="readonly"
             format="yyyy/MM/dd"
             language="zh"
             ref="start"
@@ -70,7 +71,7 @@
           <span style="margin: 0 5px;">～</span>
           <date-picker
             v-model="endDate"
-            :readonly="false"
+            :readonly="readonly"
             format="yyyy/MM/dd"
             language="zh"
             ref="end"
@@ -82,24 +83,24 @@
     <div id="edit-reply" class="edit-row">
       <div class="edit-title">{{ $t('robot_command.editpop.reply.title') }}</div>
       <div id="edit-reply-content" class="edit-content">
-        <input v-model="replyFormat" id="intext" type="radio" name="format" value="intext"><label for="intext">{{ $t('robot_command.editpop.reply.intext') }}</label>
-        <input v-model="replyFormat" id="injson" type="radio" name="format" value="injson" ><label for="injson">{{ $t('robot_command.editpop.reply.injson') }}</label>
+        <input v-model="replyFormat" id="intext" type="radio" name="format" value="intext" :disabled="readonly"><label for="intext">{{ $t('robot_command.editpop.reply.intext') }}</label>
+        <input v-model="replyFormat" id="injson" type="radio" name="format" value="injson" :disabled="readonly"><label for="injson">{{ $t('robot_command.editpop.reply.injson') }}</label>
       </div>
     </div>
     <div class="edit-row">
       <div class="edit-title"></div>
       <div id="edit-reply-textarea" class="edit-content" ref="replyFormatJSON" v-tooltip="replyJSONTooltip">
-        <textarea v-if="replyFormat === 'intext'" name="" id="" rows="5" v-model="replyContentText" :placeholder="$t('robot_command.editpop.reply.intext_placeholder')"></textarea>
-        <textarea v-if="replyFormat === 'injson'" name="" id="" rows="5" v-model="replyContentJson" @keydown="closeJSONTooltip" :placeholder="$t('robot_command.editpop.reply.injson_placeholder')"></textarea>
+        <textarea v-if="replyFormat === 'intext'" name="" id="" rows="5" v-model="replyContentText" :placeholder="$t('robot_command.editpop.reply.intext_placeholder')" :disabled="readonly"></textarea>
+        <textarea v-if="replyFormat === 'injson'" name="" id="" rows="5" v-model="replyContentJson" @keydown="closeJSONTooltip" :placeholder="$t('robot_command.editpop.reply.injson_placeholder')" :disabled="readonly"></textarea>
       </div>
     </div>
 
     <div id="edit-replyplace" class="edit-row">
       <div class="edit-title">{{ $t('robot_command.editpop.reply_place.title') }}</div>
       <div id="edit-replyplace-content" class="edit-content">
-        <input v-model="replyPlace" id="replace" type="radio" name="replyPlace" :value="PLACE_REPLACE"><label for="replace">{{ $t('robot_command.editpop.reply_place.replace') }}</label>
-        <input v-model="replyPlace" id="before" type="radio" name="replyPlace" :value="PLACE_BEFORE"><label for="before">{{ $t('robot_command.editpop.reply_place.before') }}</label>
-        <input v-model="replyPlace" id="after" type="radio" name="replyPlace" :value="PLACE_AFTER"><label for="after">{{ $t('robot_command.editpop.reply_place.after') }}</label>
+        <input v-model="replyPlace" id="replace" type="radio" name="replyPlace" :value="PLACE_REPLACE" :disabled="readonly"><label for="replace">{{ $t('robot_command.editpop.reply_place.replace') }}</label>
+        <input v-model="replyPlace" id="before" type="radio" name="replyPlace" :value="PLACE_BEFORE" :disabled="readonly"><label for="before">{{ $t('robot_command.editpop.reply_place.before') }}</label>
+        <input v-model="replyPlace" id="after" type="radio" name="replyPlace" :value="PLACE_AFTER" :disabled="readonly"><label for="after">{{ $t('robot_command.editpop.reply_place.after') }}</label>
       </div>
     </div>
 
@@ -129,6 +130,7 @@ export default {
       appid: this.getAppID('appid'),
       labels: [],
 
+      readonly: false,
       commandName: '',
       keywords: '',
       hasAdvanced: false,
@@ -388,6 +390,11 @@ export default {
           that.origTags = that.selectedTags;
         });
     },
+    setReadonly() {
+      if (this.value.readonly) {
+        this.readonly = this.value.readonly ? this.value.readonly : false;
+      }
+    },
     loadLabels() {
       const that = this;
       that.$emit('startLoading');
@@ -429,6 +436,7 @@ export default {
     this.loadLabels()
     .then(() => {
       this.parseCommandDetail();
+      this.setReadonly();
       this.$on('validate', this.validate);
     });
   },
@@ -459,6 +467,13 @@ $row-height: 30px;
 }
 
 input[type=radio], input[type=checkbox] {
+  &:disabled {
+    &+label {
+      &:hover {
+        cursor: default;
+      }
+    }
+  }
   &+label {
     &:hover {
       cursor: pointer;
