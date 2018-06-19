@@ -91,9 +91,9 @@ export default {
       pageMap: {
         visitTime: `${this.$t('statistics.visit_record')}(${this.$t('statistics.time')})`,
         visitDimension: `${this.$t('statistics.visit_record')}(${this.$t('statistics.dimension')})`,
-        // topHot: `${this.$t('statistics.hot_question')} Top 20`,
+        topHot: `${this.$t('statistics.hot_question')} Top 20`,
         topUnused: `${this.$t('statistics.failed_question')} Top 20`,
-        topUnresolved: `${this.$t('statistics.unresolve_question')} Top 20`,
+        // topUnresolved: `${this.$t('statistics.unresolve_question')} Top 20`,
       },
       pageSetting: {
       },
@@ -273,14 +273,25 @@ export default {
             category: 'platform',
           },
         },
-        // topHot: {
-        //   hasChart: true,
-        //   api: this.$api.getTopQuestions2,
-        //   param: {
-        //     days: 1,
-        //     type: 'top',
-        //   },
-        // },
+        topHot: {
+          api: this.$api.getTopQuestions2,
+          param: {
+            days: 1,
+            type: 'top',
+          },
+          tableHeader: [
+            {
+              key: 'question',
+              text: that.$t('statistics.standard_question'),
+              width: '80%',
+            },
+            {
+              key: 'q',
+              text: that.$t('statistics.count'),
+              width: '20%',
+            },
+          ],
+        },
         topUnused: {
           hasChart: false,
           api: this.$api.getTopQuestions2,
@@ -311,41 +322,41 @@ export default {
             },
           ],
         },
-        topUnresolved: {
-          hasChart: false,
-          api: this.$api.getTopQuestions2,
-          param: {
-            days: 1,
-            type: 'unsolved',
-          },
-          tableHeader: [
-            {
-              key: 'question',
-              text: that.$t('statistics.user_question'),
-              width: '25%',
-            },
-            {
-              key: 'count',
-              text: that.$t('statistics.count'),
-              width: '10%',
-            },
-            {
-              key: 'std_q',
-              text: that.$t('statistics.standard_question'),
-              width: '25%',
-            },
-            {
-              key: 'score',
-              text: that.$t('statistics.score'),
-              width: '10%',
-            },
-            {
-              key: 'answer',
-              text: that.$t('statistics.answer'),
-              width: '25%',
-            },
-          ],
-        },
+        // topUnresolved: {
+        //   hasChart: false,
+        //   api: this.$api.getTopQuestions2,
+        //   param: {
+        //     days: 1,
+        //     type: 'unsolved',
+        //   },
+        //   tableHeader: [
+        //     {
+        //       key: 'question',
+        //       text: that.$t('statistics.user_question'),
+        //       width: '25%',
+        //     },
+        //     {
+        //       key: 'count',
+        //       text: that.$t('statistics.count'),
+        //       width: '10%',
+        //     },
+        //     {
+        //       key: 'std_q',
+        //       text: that.$t('statistics.standard_question'),
+        //       width: '25%',
+        //     },
+        //     {
+        //       key: 'score',
+        //       text: that.$t('statistics.score'),
+        //       width: '10%',
+        //     },
+        //     {
+        //       key: 'answer',
+        //       text: that.$t('statistics.answer'),
+        //       width: '25%',
+        //     },
+        //   ],
+        // },
       };
       that.chartHandler = new Vue();
       this.switchToPage(this.currentPage);
