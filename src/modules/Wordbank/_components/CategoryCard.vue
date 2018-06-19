@@ -5,14 +5,14 @@
       <div id="card-category-header-block">
         <div id="card-category-row">
           <div class="card-category-title">{{ $t('wordbank.categories') }}</div>
-          <div class="card-category-setting" @click="triggerEditMode">
+          <div v-if="canSetting" class="card-category-setting" @click="triggerEditMode">
             <span v-if="isEditMode"> {{ $t('wordbank.leave_setting') }}</span>
             <span v-else> {{ $t('wordbank.setting') }} </span>
           </div>
         </div>
         <search-input ref="categorySearchBox" v-model="categoryNameKeyword"></search-input>
       </div>
-      <div id="card-category-add-root" v-if="isEditMode" @click="addRootCategory"> 
+      <div id="card-category-add-root" v-if="isEditMode && canCreate" @click="addRootCategory"> 
         <input id="add-root" type="text"
           v-if="isAddingRoot" v-model="rootName" ref="rootName" 
           :placeholder="$t('wordbank.placeholder_category_name')"
@@ -36,12 +36,12 @@
         :key="`${child.name}-${idx}`"></category-tree>
     </div>
     <div id="card-category-footer" v-if="isEditMode">
-      <div class="card-category-setting-option"
+      <div v-if="canCreate" class="card-category-setting-option"
         :class="{'option-disabled': disallowAddSubCategory}"
         @click="addSubCategory">
         {{ $t('wordbank.add_subcategory') }}
       </div>
-      <div class="card-category-setting-option"
+      <div v-if="canDelete" class="card-category-setting-option"
         :class="{'option-disabled': disallowDeleteCategory}"
         @click="popDeleteCategory">
         {{ $t('wordbank.delete_category') }}
@@ -58,6 +58,7 @@ import api from '../_api/wordbank';
 Vue.component('category-tree', CategoryTree);
 
 export default {
+  privCode: 'wordbank',
   api,
   data() {
     return {
@@ -84,6 +85,18 @@ export default {
     },
     disallowDeleteCategory() {
       return !this.currentCategory.deletable || this.isAddingRoot || this.hasNewCategory;
+    },
+    canEdit() {
+      return this.$hasRight('edit');
+    },
+    canDelete() {
+      return this.$hasRight('delete');
+    },
+    canCreate() {
+      return this.$hasRight('create');
+    },
+    canSetting() {
+      return this.canEdit || this.canDelete || this.canCreate;
     },
   },
   watch: {

@@ -5,18 +5,20 @@
       <search-input v-model="wordbankKeyword"></search-input>
       <div id="io-buttons">
         <!-- <text-button>{{ $t('wordbank.batch_import') }}</text-button> -->
-        <text-button @click="exportWordbank">{{ $t('wordbank.export_all') }}</text-button>
+        <!-- <text-button @click="exportWordbank">{{ $t('wordbank.export_all') }}</text-button> -->
       </div>
     </div>
     <div id="card-content-content">
       <div id="toolbar">
-        <text-button button-type="primary" @click="popAddWordbank">{{ $t('wordbank.add_wordbank') }}</text-button>
-        <text-button 
+        <text-button v-if="canCreate" button-type="primary" @click="popAddWordbank">{{ $t('wordbank.add_wordbank') }}</text-button>
+        <text-button
+          v-if="canDelete" 
           @click="deleteMultiWordbank"
           :button-type="this.checkedWordbank.length === 0 ? 'disable' : 'error'">
           {{ $t('wordbank.delete') }}
         </text-button>
-        <!-- <text-button 
+        <!-- <text-button
+          v-if="canEdit" 
           @click="popMoveToCategory"
           :button-type="this.checkedWordbank.length === 0 ? 'disable' : 'default'">
           {{ $t('wordbank.moveto') }}
@@ -65,18 +67,7 @@ export default {
           type: 'tag',
         },
       ],
-      tableAction: [
-        {
-          text: this.$t('wordbank.edit'),
-          type: 'primary',
-          onclick: this.editWordbank,
-        },
-        {
-          text: this.$t('wordbank.delete'),
-          type: 'error',
-          onclick: this.deleteWordbank,
-        },
-      ],
+      tableAction: [],
       checkedWordbank: [],
 
       curPageIdx: 1,
@@ -112,6 +103,15 @@ export default {
     },
     lastPageIdx() {
       return Math.floor((this.curTotal - 1) / this.pageLimit) + 1;
+    },
+    canCreate() {
+      return this.$hasRight('create');
+    },
+    canDelete() {
+      return this.$hasRight('delete');
+    },
+    canEdit() {
+      return this.$hasRight('edit');
     },
   },
   watch: {
@@ -151,6 +151,22 @@ export default {
       'addWordbankToCategory',
       'deleteWordbankFromCategory',
     ]),
+    loadTableActionByPrivilege() {
+      if (this.canEdit) {
+        this.tableAction.push({
+          text: this.$t('wordbank.edit'),
+          type: 'primary',
+          onclick: this.editWordbank,
+        });
+      }
+      if (this.canDelete) {
+        this.tableAction.push({
+          text: this.$t('wordbank.delete'),
+          type: 'error',
+          onclick: this.deleteWordbank,
+        });
+      }
+    },
     toFirstPage() {
       this.curPageIdx = 1;
       // const elem = this.$refs.synonymList;
@@ -395,6 +411,9 @@ export default {
       }
       return wordbank.wordbanks.concat(subWordbanks);
     },
+  },
+  mounted() {
+    this.loadTableActionByPrivilege();
   },
 };
 </script>
