@@ -30,6 +30,7 @@
             <template v-if="header.type === 'tag'">
               <tag class="tags" v-for="(tag, tagIdx) in data[header.key]" :key="`${tagIdx}-${tag}`" :fontClass="fontClass">{{ tag }}</tag>
             </template>
+            <!-- type toggle need to have a readonly mode -->
             <template v-else-if="header.type === 'toggle'">
               <toggle class="toggles"
                 v-model="data[header.key].val"

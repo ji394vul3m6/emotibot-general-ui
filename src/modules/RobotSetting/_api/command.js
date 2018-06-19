@@ -67,16 +67,6 @@ function getSingleRobotCommand(id) {
 }
 
 function parseCommands(commands) {
-  // put rules in no category
-  const noCategory = {
-    cid: -3,
-    name: '未分类',
-    cmds: commands.cmds,
-  };
-
-  commands.children.splice(0, 0, noCategory);
-
-
   commands.children.forEach((child) => {
     /** add attributes to display category */
     child.deletable = true;
@@ -93,6 +83,23 @@ function parseCommands(commands) {
       child.labels = [];
     }
   });
+
+  // put rules in no category
+  const noCategory = {
+    cid: -3,
+    name: '未分类',
+    cmds: commands.cmds,
+    children: [],
+    labels: [],
+
+    deletable: false,
+    editable: false,
+    isActive: false,
+    layer: 1,
+    visible: true,
+  };
+
+  commands.children.splice(0, 0, noCategory);
 }
 
 function getRobotCommands() {

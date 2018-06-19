@@ -6,13 +6,20 @@
     </div>
     <div id="card-content-content">
       <div id="toolbar">
-        <text-button button-type="primary" @click="popAddCommand">{{ $t('robot_command.add_command') }}</text-button>
+        <text-button
+          v-if="canCreate"
+          button-type="primary"
+          @click="popAddCommand">
+          {{ $t('robot_command.add_command') }}
+        </text-button>
         <text-button 
+          v-if="canDelete"
           @click="deleteMultiCommand"
           :button-type="this.checkedCommand.length === 0 ? 'disable' : 'error'">
           {{ $t('robot_command.delete') }}
         </text-button>
         <!-- <text-button 
+          v-if="canEdit"
           @click="popMoveToCategory"
           :button-type="this.checkedCommand.length === 0 ? 'disable' : 'default'">
           {{ $t('robot_command.moveto') }}
@@ -52,6 +59,18 @@ export default {
       type: Number,
       default: -1,
     },
+    canEdit: {
+      type: Boolean,
+      default: false,
+    },
+    canDelete: {
+      type: Boolean,
+      default: false,
+    },
+    canCreate: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -86,18 +105,7 @@ export default {
           width: '60px',
         },
       ],
-      tableAction: [
-        {
-          text: this.$t('robot_command.edit'),
-          type: 'primary',
-          onclick: this.editCommand,
-        },
-        {
-          text: this.$t('robot_command.delete'),
-          type: 'error',
-          onclick: this.deleteCommand,
-        },
-      ],
+      tableAction: [],
 
       checkedCommand: [],
 
@@ -179,6 +187,22 @@ export default {
     },
   },
   methods: {
+    loadTableActionByPrivilege() {
+      if (this.canEdit) {
+        this.tableAction.push({
+          text: this.$t('robot_command.edit'),
+          type: 'primary',
+          onclick: this.editCommand,
+        });
+      }
+      if (this.canDelete) {
+        this.tableAction.push({
+          text: this.$t('robot_command.delete'),
+          type: 'error',
+          onclick: this.deleteCommand,
+        });
+      }
+    },
     toFirstPage() {
       this.curPageIdx = 1;
     },
@@ -400,6 +424,7 @@ export default {
   },
   mounted() {
     this.loadLabels();
+    this.loadTableActionByPrivilege();
   },
 };
 </script>

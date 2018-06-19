@@ -26,7 +26,7 @@
           <span v-else class="tree-item-name">{{ treeItem.name }}</span>
         </div>
         <icon class="item-icon" icon-type="edit_blue" :size=10 
-          v-if="treeItem.editable"
+          v-if="treeItem.editable && canEdit"
           ref="editBtn"
           :class="{'invisible': !editMode}"
           @click="editItemName"/>
@@ -39,6 +39,7 @@
         :treeItem="child"
         :editMode="editMode"
         :curLayer="curLayer + 1"
+        :canEdit="canEdit"
         @activeItemChange="handleActiveItemChange"
         @itemNameChange="handleItemNameChange"
         @confirmAddSubCategory="addSubCategory"
@@ -49,8 +50,6 @@
   </ul>
 </template>
 <script>
-// import { mapGetters, mapMutations } from 'vuex';
-// import api from '../_api/wordbank';
 
 export default {
   name: 'category-tree-item',
@@ -66,8 +65,11 @@ export default {
       type: Number,
       default: 0,
     },
+    canEdit: {
+      type: Boolean,
+      default: false,
+    },
   },
-  // api,
   data() {
     return {
       itemName: '',
@@ -78,47 +80,43 @@ export default {
     };
   },
   computed: {
-    // ...mapGetters([
-    //   'wordbank',
-    //   'currentCategory',
-    // ]),
     hasChildren() {
       return this.treeItem.children.length > 0;
     },
   },
   methods: {
-    setActiveItem() { // v
+    setActiveItem() {
       const route = [this.treeItem.cid];
       this.$emit('activeItemChange', this.treeItem, this.curLayer, route);
       this.toggleShowChild();
     },
-    handleActiveItemChange(activeItem, layer, route) {  // v
+    handleActiveItemChange(activeItem, layer, route) {
       console.log('route:', route);
       route.splice(0, 0, this.treeItem.cid);
       this.$emit('activeItemChange', activeItem, layer, route);
     },
-    toggleShowChild() { // v
+    toggleShowChild() {
       this.treeItem.showChild = !this.treeItem.showChild;
     },
 
     // Handle Inputing
-    setCompositionState(bool) { // v
+    setCompositionState(bool) {
       this.compositionState = bool;
     },
-    detectCompositionState() {  // v
+    detectCompositionState() {
       this.wasCompositioning = this.compositionState;
     },
-    editNewItemName() { // This is called by Category Card Component, don't delete it.
-      this.isNewCategory = true;
-      this.editItemName();
-    },
-    editItemName() {  // v
+    // editNewItemName() {
+    //   this.isNewCategory = true;
+    //   this.editItemName();
+    // },
+    editItemName() {
       this.isNameEditing = true;
       this.$nextTick(() => {
         this.$refs.itemName.focus();
       });
     },
-    confirmEditItemName() { // v
+    confirmEditItemName() {
       if (this.wasCompositioning) {
         return;
       }

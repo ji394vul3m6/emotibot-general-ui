@@ -892,6 +892,10 @@ export default {
         view: '技能设置查看',
         edit: '技能设置编辑',
       },
+      robot_command: {
+        view: '指令设置查看',
+        edit: '指令设置编辑',
+      },
     },
   },
   header: {
