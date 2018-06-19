@@ -39,7 +39,7 @@
                   <template v-if="role.editMode">
                     <template v-for="(cmds, mod) in val">
                       <div v-for="(check, cmd) in cmds" :key="`${mod}-${cmd}`" class="priv-item">
-                        <input type="checkbox" :id="`${mod}.${cmd}`" v-model="cmds[cmd]">
+                        <input type="checkbox" :id="`${mod}.${cmd}`" v-model="cmds[cmd]" @change="checkCmdDependency(cmds, cmd === 'view')">
                         <label class="item-text" :for="`${mod}.${cmd}`">
                           {{ $t(`management.privilege.${mod}.${cmd}`) }}
                         </label>
@@ -132,6 +132,20 @@ export default {
     };
   },
   methods: {
+    checkCmdDependency(cmdStatus, isViewChange) {
+      const cmds = Object.keys(cmdStatus);
+      if (isViewChange) {
+        if (!cmdStatus.view) {
+          cmds.forEach((cmd) => { cmdStatus[cmd] = false; });
+        }
+        return;
+      }
+
+      if (cmdStatus.view !== undefined) {
+        const shouldView = cmds.reduce((ret, cmd) => ret || cmdStatus[cmd], false);
+        cmdStatus.view = shouldView;
+      }
+    },
     genRoleDeleteTooltip(role) {
       const that = this;
       return {
