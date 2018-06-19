@@ -27,7 +27,7 @@
           <span v-else class="tree-item-name">{{ treeItem.name }}</span>
         </div>
         <icon class="item-icon" icon-type="edit_blue" :size=10 
-          v-if="treeItem.editable"
+          v-if="treeItem.editable && canEdit"
           ref="editBtn"
           :class="{'invisible': !isEditMode}"
           @click="editItemName"/>
@@ -38,6 +38,7 @@
         :ref="`${child.cid}-${child.name}`"
         :key="`${idx}-${child.name}`"
         :treeItem="child"
+        :canEdit="canEdit"
         @confirmAddSubCategory="addSubCategory"
         @cancelAddSubCategory="cancelSubCategory">
       </category-tree>
@@ -53,6 +54,10 @@ export default {
   props: {
     treeItem: {
       type: Object,
+    },
+    canEdit: {
+      type: Boolean,
+      default: true,
     },
   },
   api,

@@ -31,6 +31,7 @@
       </div>
       <category-tree v-for="(child, idx) in wordbank.children" 
         v-if="child.visible"
+        :canEdit="canEdit"
         :treeItem="child"
         :ref="`${child.cid}-${child.name}`"
         :key="`${child.name}-${idx}`"></category-tree>
@@ -336,7 +337,7 @@ export default {
     background: #f8f8f8;
     border-top: 1px solid $color-borderline;
     .card-category-setting-option {
-      flex: 0 0 50%;
+      flex: 1 1 50%;
       height: 28px;
       line-height: 28px;
       text-align: center;
