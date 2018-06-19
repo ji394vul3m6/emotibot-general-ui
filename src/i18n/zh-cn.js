@@ -230,6 +230,7 @@ export default {
         title: '触发关键字',
         advanced: '进阶设定',
         regex: '正则式',
+        keyword_placeholder: '关键字以 "/" 隔开',
       },
       datetime: {
         title: '生效时间',

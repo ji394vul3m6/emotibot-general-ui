@@ -33,7 +33,7 @@
     <div id="edit-keyword" class="edit-row">
       <div class="edit-title">{{ $t('robot_command.editpop.keyword.title') }}</div>
       <div id="edit-keyword-content" class="edit-content">
-        <input type="text" v-model="keywords">
+        <input type="text" v-model="keywords" :placeholder="$t('robot_command.editpop.keyword.keyword_placeholder')">
         <div id="advanced-block">
           <input id="advanced" type="checkbox" v-model="hasAdvanced">
           <label for="advanced">{{ $t('robot_command.editpop.keyword.advanced') }}</label>
@@ -122,7 +122,9 @@ export default {
     },
   },
   data() {
-    // const latestDate = new Date();
+    const today = new Date();
+    const tomorrow = new Date();
+    tomorrow.setDate(today.getDate() + 1);
     return {
       appid: this.getAppID('appid'),
       labels: [],
@@ -132,8 +134,8 @@ export default {
       hasAdvanced: false,
       regex: [],
       dateFormat: 'forever', // 'forever', 'custom'
-      startDate: new Date(),
-      endDate: new Date(),
+      startDate: today,
+      endDate: tomorrow,
       replyFormat: 'intext', // 'intext', 'injson'
       replyContentText: '',
       replyContentJson: '',
@@ -187,9 +189,12 @@ export default {
       }
     },
     dateFormat() {
-      if (this.dateFormat === 'custom') {
-        this.startDate = new Date();
-        this.endDate = new Date();
+      if (this.dateFormat === 'forever') {  // reset 'custom' if chooose 'forever'
+        const today = new Date();
+        const tomorrow = new Date();
+        tomorrow.setDate(today.getDate() + 1);
+        this.startDate = today;
+        this.endDate = tomorrow;
       }
     },
     replyFormat() {
@@ -212,6 +217,7 @@ export default {
       if (this.dateFormat === 'custom') {
         if (!this.isTimeValid) {
           const event = new Event('tooltip-show');
+          console.log(this.$refs.datePicker);
           this.$refs.datePicker.dispatchEvent(event);
         } else {
           const event = new Event('tooltip-hide');
@@ -236,6 +242,16 @@ export default {
     validate() {
       // build return obj and return
       if (!this.isReturnDataValid()) {
+        if (!this.isNameValid) {
+          const event = new Event('tooltip-show');
+          this.$refs.commandName.dispatchEvent(event);
+        }
+        if (!this.isTimeValid) {
+          if (this.dateFormat === 'custom') {
+            const event = new Event('tooltip-show');
+            this.$refs.datePicker.dispatchEvent(event);
+          }
+        }
         return;
       }
       const returnObj = this.parseReturnObj();
@@ -260,7 +276,6 @@ export default {
           return theLabel.id;
         });
       }
-      console.log('before returnObj', that.value.command);
       const returnObj = {
         id: that.value.command.id,
         status: that.value.command.status,
@@ -271,7 +286,7 @@ export default {
         end_time: that.dateFormat === 'forever' ? null : that.endDate,
         answer: that.replyFormat === 'intext' ? that.replyContentText : that.replyContentJson,
         rule: parseRule(that.keywords, that.regex),
-        tags: parseTags(that.selectedTags),
+        labels: parseTags(that.selectedTags),
       };
       return returnObj;
     },
@@ -284,6 +299,7 @@ export default {
           JSON.parse(this.replyContentJson);
           return true;
         } catch (err) {
+          console.log(err);
           const event = new Event('tooltip-show');
           this.$refs.replyFormatJSON.dispatchEvent(event);
           return false;
@@ -337,8 +353,7 @@ export default {
         that.replyFormat = 'intext';
         that.replyContentText = cmd.answer;
       }
-
-      that.origTags = getLabelName(cmd.tags);
+      that.origTags = getLabelName(cmd.labels);
       that.selectedTags = that.origTags;
       that.tagsList = that.labels.map(label => label.name);
     },
