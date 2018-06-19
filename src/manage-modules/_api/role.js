@@ -1,6 +1,7 @@
 import qs from 'qs';
 
 const V3_PREFIX = '/auth/v3';
+const BF_PREFIX = '/api/v1/bf/role';
 
 function getRolesURL(enterpriseID) {
   return `${V3_PREFIX}/enterprise/${enterpriseID}/roles`;
@@ -28,6 +29,19 @@ function updateEnterpriseRole(enterprise, id, role) {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
+  }).then((rsp) => {
+    let commands = [];
+    if (role.privileges.ssm !== undefined && role.privileges.ssm.length > 0) {
+      commands = role.privileges.ssm;
+    }
+    const bfOptions = {
+      commands: commands.join(','),
+    };
+    return this.$reqPut(`${BF_PREFIX}/${id}`, qs.stringify(bfOptions), {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    }).then(() => rsp.data);
   });
 }
 function addEnterpriseRole(enterprise, role) {
@@ -36,11 +50,28 @@ function addEnterpriseRole(enterprise, role) {
     name: role.name,
     privilege: JSON.stringify(role.privileges),
   };
+  let uuid = '';
 
   return this.$reqPost(`${roleURL}`, qs.stringify(options), {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
+  }).then((rsp) => {
+    uuid = rsp.data.result.uuid;
+    return rsp.data;
+  }).then((data) => {
+    if (role.privileges.ssm !== undefined && role.privileges.ssm.length > 0) {
+      const bfOptions = {
+        id: uuid,
+        commands: role.privileges.ssm.join(','),
+      };
+      return this.$reqPost(`${BF_PREFIX}`, qs.stringify(bfOptions), {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      }).then(() => data);
+    }
+    return data;
   });
 }
 function deleteEnterpriseRole(enterprise, id) {
@@ -49,7 +80,7 @@ function deleteEnterpriseRole(enterprise, id) {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
-  });
+  }).then(rsp => this.$reqDelete(`${BF_PREFIX}/${id}`).then(() => rsp.data));
 }
 
 export default {

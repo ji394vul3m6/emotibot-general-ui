@@ -41,6 +41,7 @@ import RobotForm from './_components/RobotAddForm';
 import CommandRow from '../_components/CommandRow';
 import robotAPI from '../_api/robot';
 import roleAPI from '../_api/role';
+import userAPI from '../_api/user';
 
 const defaultPath = '/statistic-dash';
 export default {
@@ -50,7 +51,7 @@ export default {
     NavBar,
     CommandRow,
   },
-  api: [robotAPI, roleAPI],
+  api: [robotAPI, roleAPI, userAPI],
   computed: {
     ...mapGetters([
       'userInfo',
@@ -122,15 +123,8 @@ export default {
       } else {
         promise = new Promise(r => r());
       }
-      promise.then(() => that.$reqGet(`/robot/stare/${robot.id}?appid=${robot.id}&user_id=${that.userInfo.id}`))
-      // .then(() =>
-      //   that.$reqPut(`/api/v1/bf/user/${that.userInfo.id}/role`, qs.stringify({
-      //     role: 'roleID',
-      //   }), {
-      //     headers: {
-      //       'Content-Type': 'application/x-www-form-urlencoded',
-      //     },
-      //   }))
+      // promise.then(() => that.$reqGet(`/robot/stare/${robot.id}?appid=${robot.id}&user_id=${that.userInfo.id}`))
+      promise.then(() => that.$api.updateBFUserRole(that.enterpriseID, that.userInfo.id, roleID))
       .then(() => {
         that.setRobot(robot.id);
         that.$router.push(defaultPath);
