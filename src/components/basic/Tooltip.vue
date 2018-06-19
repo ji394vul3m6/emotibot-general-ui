@@ -78,7 +78,7 @@ export default {
     },
     triangleStyle() {
       return {
-        left: `${0 - this.leftOffset}px`,
+        left: this.leftOffset > 0 ? 0 : `${0 - this.leftOffset}px`,
       };
     },
   },
@@ -97,7 +97,6 @@ export default {
     const that = this;
 
     that.$on('show', (pos) => {
-      console.log(pos);
       if (pos) {
         that.x = pos.x;
         that.y = pos.y;

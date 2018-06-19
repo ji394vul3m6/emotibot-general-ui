@@ -16,7 +16,7 @@ const MyPlugin = {
         const boundedBox = el.getBoundingClientRect();
         vnode.context.$nextTick(() => {
           const TooltipGenerator = Vue.extend(Tooltip);
-          const vm = new TooltipGenerator({
+          let vm = new TooltipGenerator({
             propsData: {
               x: boundedBox.left,
               y: boundedBox.top,
@@ -29,9 +29,25 @@ const MyPlugin = {
           });
           vm.$mount();
           parent.appendChild(vm.$el);
-          window.test = vm;
           vm.$forceUpdate();
 
+          el.addEventListener('tooltip-reload', () => {
+            vm.$destroy();
+            vm = new TooltipGenerator({
+              propsData: {
+                x: boundedBox.left,
+                y: boundedBox.top,
+                msg: binding.value.msg,
+                leftOffset: binding.value.left || 0,
+                topOffset: binding.value.top || 0,
+                buttons: binding.value.buttons || [],
+                data: binding.value.data,
+              },
+            });
+            vm.$mount();
+            parent.appendChild(vm.$el);
+            vm.$forceUpdate();
+          });
           el.addEventListener('tooltip-show', () => {
             vm.$emit('show', getPosition(el));
           });

@@ -12,6 +12,7 @@ import LabelSwitchStory from './LabelSwitch';
 import GeneralTableStory from './GeneralTable';
 import NavBarStory from './NavigationBar';
 import DropdownSelectStory from './DropdownSelect';
+import TooltipStory from './Tooltip';
 
 Vue.use(VueI18n);
 
@@ -43,4 +44,9 @@ NavBarStory.forEach((story) => {
 const dropdownSelectStory = storiesOf('DropdownSelect', module).addDecorator(withKnobs);
 DropdownSelectStory.forEach((story) => {
   dropdownSelectStory.add(story.name, story.func);
+});
+
+const tooltipStory = storiesOf('Tooltip', module).addDecorator(withKnobs);
+TooltipStory.forEach((story) => {
+  tooltipStory.add(story.name, story.func);
 });
