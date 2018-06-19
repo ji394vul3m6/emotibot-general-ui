@@ -158,6 +158,12 @@ export default {
           type: 'primary',
           onclick: this.editWordbank,
         });
+      } else {
+        this.tableAction.push({
+          text: this.$t('wordbank.view'),
+          type: 'primary',
+          onclick: this.viewWordbank,
+        });
       }
       if (this.canDelete) {
         this.tableAction.push({
@@ -187,6 +193,12 @@ export default {
     },
     exportWordbank() {
       window.open('/api/v3/dictionary/export?zh_tw=true', '_blank');
+    },
+    viewWordbank(data) {
+      this.$api.getWordbank(data.wid)
+      .then((wordbank) => {
+        this.popViewWordbank(wordbank);
+      });
     },
     editWordbank(data) {
       this.$api.getWordbank(data.wid)
@@ -300,6 +312,21 @@ export default {
             });
           },
         },
+      };
+      this.$pop(options);
+    },
+    popViewWordbank(wordbank) {
+      // check sensitive by wordbank cause wordbank might be opened through 'all' category
+      wordbank.isSensitive = this.isWordbankSensitive(wordbank.wid);
+      const options = {
+        component: WordbankEditPop,
+        title: this.$t('wordbank.view_wordbank'),
+        data: {
+          wordbank,
+          readonly: true,
+        },
+        buttons: ['ok'],
+        validate: false,
       };
       this.$pop(options);
     },
