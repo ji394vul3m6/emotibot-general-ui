@@ -16,7 +16,7 @@
           <li v-for="(line, idx) in desc" :key="idx">{{ line }}</li>
         </ol>
       </div>
-      <div style="width:40%;">
+      <div>
         <general-table :tableData="tableData" :tableHeader="tableHeader" :action="action"></general-table>
       </div>
     </div>
