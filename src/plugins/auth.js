@@ -19,7 +19,14 @@ function failPromise(msg) {
 function parseJwt(token) {
   const base64Url = token.split('.')[1];
   const base64 = base64Url.replace('-', '+').replace('_', '/');
-  return JSON.parse(window.atob(base64));
+  const jsonStr = window.atob(base64).replace(/(.)/g, (m, p) => {
+    let code = p.charCodeAt(0).toString(16).toUpperCase();
+    if (code.length < 2) {
+      code = `0${code}`;
+    }
+    return `%${code}`;
+  });
+  return JSON.parse(decodeURIComponent(jsonStr));
 }
 
 function getRobots(userInfo) {
