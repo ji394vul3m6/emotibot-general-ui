@@ -116,7 +116,7 @@ export default {
           getData: that.$api.getVisitStats2,
           keyMaps: {
             total_asks: that.$t('statistics.total_asks_num'),
-            conversations: that.$t('statistics.session_num'),
+            // conversations: that.$t('statistics.session_num'),
             unique_users: that.$t('statistics.unique_user'),
           },
           nameKey: 'time_txt',

@@ -246,7 +246,7 @@ export default {
           hasChart: true,
           chartKeyMap: {
             total_asks: that.$t('statistics.total_asks_num'),
-            conversations: that.$t('statistics.session_num'),
+            // conversations: that.$t('statistics.session_num'),
             unique_users: that.$t('statistics.unique_user'),
           },
           chartNameKey: 'time_txt',
