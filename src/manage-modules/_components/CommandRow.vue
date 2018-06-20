@@ -29,7 +29,7 @@ export default {
       }
       that.emitTimer = setTimeout(() => {
         that.$emit('search', that.keyword);
-      }, 1000);
+      }, 200);
     },
   },
 };
