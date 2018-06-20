@@ -18,7 +18,7 @@ function failPromise(msg) {
 
 function parseJwt(token) {
   const base64Url = token.split('.')[1];
-  const base64 = base64Url.replace('-', '+').replace('_', '/');
+  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
   const jsonStr = window.atob(base64).replace(/(.)/g, (m, p) => {
     let code = p.charCodeAt(0).toString(16).toUpperCase();
     if (code.length < 2) {
