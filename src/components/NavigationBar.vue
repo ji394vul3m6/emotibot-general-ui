@@ -56,18 +56,22 @@ $navbar-active-color: #1875f0;
 .nav-bar {
   height: 60px;
   display: flex;
-  align-items: flex-end;
   box-shadow: inset 0 -1px 0 0 #e9e9e9;
   .tag {
     @include click-button();
+    color: $color-font-active;
+    box-sizing: border-box;
+    height: 60px;
     font-size: $navbar-font-size;
     line-height: $navbar-line-height;
-    padding-bottom: 14px;
     margin-left: 18px;
+    display: flex;
+    align-items: center;
+    padding-bottom: 3px;
     &.active {
       color: $navbar-active-color;
       border-bottom: 3px solid $navbar-active-color;
-      padding-bottom: 11px;
+      padding-bottom: 0px;
     }
   }
 }

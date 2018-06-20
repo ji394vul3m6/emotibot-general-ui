@@ -296,15 +296,18 @@ $stat-card-height: 300px;
       .statistic-title {
         width: 100%;
         text-align: left;
-        padding-top: 20px;
-        padding-left: 20px;
+        height: 60px;
+        padding: 0 20px;
+        display: flex;
+        align-items: center;
         font-size: 16px;
         line-height: 16px;
-        color: #666666;
+        color: #333333;
         font-weight: 600;
       }
       .statistic-select {
         padding: 10px 20px;
+        padding-top: 0px;
         .dimension-selector {
           margin-left: 20px;
         }
