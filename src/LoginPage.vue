@@ -124,7 +124,7 @@ div {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: #EEE;
+  background: white;
 
   height: 100vh;
   width: 100vw;
@@ -137,15 +137,15 @@ div {
 
     .logo {
       flex: 0 0 auto;
-      margin-bottom: 60px;
+      margin-bottom: 40px;
 
       display: flex;
       justify-content: center;
       #app-logo {
-        width: 120px;
-        height: 63px;
-        background: transparent url("./assets/images/emotibot_logo.svg") no-repeat center center;
-        background-size: 120px 63px;
+        width: 185px;
+        height: 103px;
+        background: transparent url("./assets/images/emotibot_logo_chs.svg") no-repeat center center;
+        background-size: 185px 103px;
       }
     }
     .input-row {
@@ -162,11 +162,15 @@ div {
         outline: none;
         border: none;
         background: none;
+        border: solid 1px #e9e9e9;
+        &::placeholder {
+          color: #999999;
+        }
       }
     }
     .input-button-row {
       flex: 0 0 auto;
-      margin-bottom: 10px;
+      margin-bottom: 15px;
 
       display: flex;
       align-items: center;
