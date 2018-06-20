@@ -219,9 +219,15 @@ export default {
         const role = privilege.role.length > 0 ? privilege.role[0] : '';
         if (machine !== '' && role !== '') {
           if (that.extData.groups.findIndex(o => o.id === machine) >= 0) {
-            retApps.groups[machine] = role;
+            if (retApps.groups[machine] === undefined) {
+              retApps.groups[machine] = [];
+            }
+            retApps.groups[machine].push(role);
           } else {
-            retApps.apps[machine] = role;
+            if (retApps.apps[machine] === undefined) {
+              retApps.apps[machine] = [];
+            }
+            retApps.apps[machine].push(role);
           }
         }
       });

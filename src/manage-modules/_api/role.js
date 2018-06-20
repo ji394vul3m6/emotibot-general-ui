@@ -80,7 +80,13 @@ function deleteEnterpriseRole(enterprise, id) {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
-  }).then(rsp => this.$reqDelete(`${BF_PREFIX}/${id}`).then(() => rsp.data));
+  }).then((rsp) => {
+    this.$reqDelete(`${BF_PREFIX}/${id}`)
+    .catch((err) => {
+      console.log(err);
+    })
+    .then(() => rsp.data);
+  });
 }
 
 export default {
