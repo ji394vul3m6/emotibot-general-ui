@@ -197,7 +197,6 @@ export default {
             }
           });
         }).then(() => {
-          console.log(robots);
           that.setRobotList(robots);
         });
       });
