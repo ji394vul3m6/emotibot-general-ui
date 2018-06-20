@@ -1,7 +1,7 @@
 <template>
   <div class="form">
     <div class="row">
-      <div class="row-title">{{ $t('management.robot_name') }}</div>
+      <div class="row-title">{{ $t('management.group_name') }}</div>
       <input class="row-input" v-model="name"
         :placeholder="$t('management.input_placeholder')">
     </div>
