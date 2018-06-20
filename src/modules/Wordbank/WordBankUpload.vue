@@ -1,58 +1,63 @@
 <template>
   <div>
     <div id="wordbank-upload-block" class="card h-fill">
-      <template v-if="canImport">
-      <div class="upload-item-block">
-        <div class="upload-item-title">{{ $t('wordbank.upload_title.batch_import') }}</div>
-        <div id="import_content" class="upload-item-content">
-          <div id="import_tool">
-            <input type="file" ref="fileChooser" id="fileChooser" accept=".xlsx" @change="validateFile"/>
-            <text-button
-              width="96px"
-              @click="openFileChooser">
-              {{ $t('wordbank.batch_import') }}
-            </text-button>
-            <span id="filename">{{ newFileName }}</span>
-          </div>
-          <div id="import_button_hint"> {{ $t('wordbank.import_button_hint') }}</div>
-        </div>
+      <div id="wordbank-upload-header">
+        {{ $t('wordbank.upload_title.wordbank_upload') }}
       </div>
-      </template>
-
-      <div class="upload-item-block">
-        <div class="upload-item-title">{{ $t('wordbank.upload_title.last_import_result') }}</div>
-        <div id="last_import_content" class="upload-item-content"
-          :class="{'error': !isLastResultSuccess}">
-          {{ lastImportResult }}
-        </div>
-      </div>
-
-      <template v-if="canExport">
-      <div class="upload-item-block">
-        <div class="upload-item-title">{{ $t('wordbank.upload_title.download_imported_wordbank') }}</div>
-        <div id="imported_content" class="upload-item-content">
-          <div v-if="currentFile !== undefined">
-            <span class="clickable-link" @click="logExport(currentFile.path)"> {{ currentFile.timeStr }}</span>
-          </div>
-          <div v-if="lastFile !== undefined">
-            <span class="clickable-link" @click="logExport(lastFile.path)"> {{ lastFile.timeStr }}</span>
+      <div id="wordbank-upload-content">
+        <template v-if="canImport">
+        <div class="upload-item-block">
+          <!-- <div class="upload-item-title">{{ $t('wordbank.upload_title.batch_import') }}</div> -->
+          <div id="import_content" class="upload-item-content">
+            <div id="import_tool">
+              <input type="file" ref="fileChooser" id="fileChooser" accept=".xlsx" @change="validateFile"/>
+              <text-button
+                width="96px"
+                @click="openFileChooser">
+                {{ $t('wordbank.batch_import') }}
+              </text-button>
+              <span id="filename">{{ newFileName }}</span>
+            </div>
+            <div id="import_button_hint"> {{ $t('wordbank.import_button_hint') }}</div>
           </div>
         </div>
-      </div>
-      </template>
+        </template>
 
-      <div class="upload-item-block">
-        <div class="upload-item-title">{{ $t('wordbank.upload_title.batch_import_hint') }}</div>
-        <div id="batch_import_hint_content" class="upload-item-content">
-          <ol>
-            <li v-for="(part, idx) in desc" :key="part.info">
-              {{ part.info }}
-              <span v-if="idx === 0" class="clickable-link" @click="downloadTemplate"> {{ $t('wordbank.download_template') }} </span>
-              <p v-for="line in part.content" :key="line">
-                {{ line }}
-              </p>
-            </li>
-          </ol>
+        <div class="upload-item-block">
+          <div class="upload-item-title">{{ $t('wordbank.upload_title.last_import_result') }}</div>
+          <div id="last_import_content" class="upload-item-content"
+            :class="{'error': !isLastResultSuccess}">
+            {{ lastImportResult }}
+          </div>
+        </div>
+
+        <template v-if="canExport">
+        <div class="upload-item-block">
+          <div class="upload-item-title">{{ $t('wordbank.upload_title.download_imported_wordbank') }}</div>
+          <div id="imported_content" class="upload-item-content">
+            <div v-if="currentFile !== undefined">
+              <span class="clickable-link" @click="logExport(currentFile.path)"> {{ currentFile.timeStr }}</span>
+            </div>
+            <div v-if="lastFile !== undefined">
+              <span class="clickable-link" @click="logExport(lastFile.path)"> {{ lastFile.timeStr }}</span>
+            </div>
+          </div>
+        </div>
+        </template>
+
+        <div class="upload-item-block">
+          <div class="upload-item-title">{{ $t('wordbank.upload_title.batch_import_hint') }}</div>
+          <div id="batch_import_hint_content" class="upload-item-content">
+            <ol>
+              <li v-for="(part, idx) in desc" :key="part.info">
+                {{ part.info }}
+                <span v-if="idx === 0" class="clickable-link" @click="downloadTemplate"> {{ $t('wordbank.download_template') }} </span>
+                <p v-for="line in part.content" :key="line">
+                  {{ line }}
+                </p>
+              </li>
+            </ol>
+          </div>
         </div>
       </div>
     </div>
@@ -246,7 +251,18 @@ export default {
   @include font-14px();
   width: 100%;
   height: 100%;
-  padding: 20px;
+
+  #wordbank-upload-header {
+    @include font-16px();
+    height: 60px;
+    border-bottom: 1px solid $color-borderline;
+    display: flex;
+    align-items: center;
+    padding: 20px;
+  }
+  #wordbank-upload-content {
+    padding: 20px;
+  }
 
   .upload-item-block {
     &:not(:last-child) {

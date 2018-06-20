@@ -458,9 +458,8 @@ export default {
   display: flex;
   flex-direction: column;
   #card-content-header {
-    flex: 0 0 72px;
-    padding: 20px;
-    padding-bottom: 24px;
+    flex: 0 0 60px;
+    padding: 0 20px;
     border-bottom: 1px solid $color-borderline;
     display: flex;
     align-items: center;
