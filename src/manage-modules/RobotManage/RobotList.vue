@@ -42,6 +42,7 @@ import CommandRow from '../_components/CommandRow';
 import robotAPI from '../_api/robot';
 import roleAPI from '../_api/role';
 import userAPI from '../_api/user';
+import RobotDeleteForm from './_components/RobotDeleteForm';
 
 const defaultPath = '/statistic-dash';
 export default {
@@ -92,12 +93,20 @@ export default {
     editName(robot) {
       const that = this;
       that.$pop({
-        title: that.$t('management.create_robot'),
+        title: that.$t('management.edit_robot'),
         component: RobotForm,
         validate: true,
         extData: {
           name: robot.name,
           description: robot.description,
+        },
+        left_button: {
+          msg: that.$t('general.delete'),
+          type: 'error',
+          closeAfterClick: true,
+          callback: () => {
+            that.popDelete(robot);
+          },
         },
         callback: {
           ok(retData) {
@@ -106,6 +115,24 @@ export default {
             .finally(() => {
               that.$emit('endLoading');
             });
+          },
+        },
+      });
+    },
+    popDelete(robot) {
+      const that = this;
+      that.$pop({
+        title: that.$t('management.delete_robot'),
+        component: RobotDeleteForm,
+        validate: true,
+        extData: {
+          name: robot.name,
+          description: robot.description,
+        },
+        callback: {
+          ok() {
+            that.$api.deleteRobot(that.enterpriseID, robot.id)
+              .then(() => that.updateRobots());
           },
         },
       });

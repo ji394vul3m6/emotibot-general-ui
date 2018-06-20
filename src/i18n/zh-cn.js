@@ -793,6 +793,7 @@ export default {
     robot_list: '机器人列表',
 
     create_robot: '创建机器人',
+    delete_robot: '删除机器人',
     edit_robot: '编辑机器人',
     group_manage: '机器人群组管理',
 
@@ -804,6 +805,8 @@ export default {
 
     create_group: '创建群组',
     add_robot: '加入机器人',
+    input_personal_pass: '输入个人密码',
+    reason_description: '原因描述',
 
     enterprise_privilege_manage: '企业权限管理',
     add_account: '新增帐号',
@@ -839,6 +842,7 @@ export default {
     err_existed_username: 'ID 已存在',
     err_empty_email: 'Email 不可为空',
     err_empty_password: '密码不可为空',
+    err_password: '密码错误',
     err_manager_empty_password: '管理员密码不可为空',
     err_invalid_check_password: '两次密码输入不同',
     update_password_success: '更新密码成功',
