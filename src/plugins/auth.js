@@ -115,6 +115,7 @@ function login(input) {
     account: input.account,
     passwd: md5(input.password),
   };
+  that.$cookie.set('verify', md5(input.password));
 
   let token;
   return that.$reqGet(ENV_PATH).then((envRsp) => {

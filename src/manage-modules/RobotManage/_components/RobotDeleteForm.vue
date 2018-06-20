@@ -2,18 +2,23 @@
   <div class="form">
     <div class="row">
       <div class="row-title">{{ $t('management.input_personal_pass') }}</div>
-      <input class="row-input" v-model="name"
-        :placeholder="$t('management.input_placeholder')">
+      <input class="row-input" v-model="password" type="password"
+        :placeholder="$t('management.manager_password')"
+        v-tooltip="passwordTooltip"
+        ref="password">
     </div>
     <div class="row">
       <div class="row-title">{{ $t('management.reason_description') }}</div>
-      <input class="row-input" v-model="description"
-        :placeholder="$t('management.length_50_placeholder')">
+      <input class="row-input" v-model="reason"
+        :placeholder="$t('management.length_50_placeholder')"
+        maxlength="50">
     </div>
   </div>  
 </template>
 
 <script>
+import md5 from 'md5';
+
 export default {
   name: 'robot-add-form',
   props: {
@@ -24,29 +29,27 @@ export default {
   },
   data() {
     return {
-      name: '',
-      description: '',
+      password: '',
+      reason: '',
+      passwordTooltip: {
+        msg: this.$t('management.err_password'),
+        eventOnly: true,
+        left: 100,
+      },
     };
   },
   methods: {
     validate() {
       const that = this;
-
-      if (that.name === '') {
-        console.log('err');
+      if (that.$cookie.get('verify') === md5(that.password)) {
+        that.$emit('validateSuccess', that.reason);
       } else {
-        that.$emit('validateSuccess', {
-          name: that.name,
-          description: that.description,
-        });
+        that.$refs.password.dispatchEvent(new Event('tooltip-show'));
       }
     },
   },
   mounted() {
     const that = this;
-
-    that.name = that.extData.name || '';
-    that.description = that.extData.description || '';
     that.$on('validate', that.validate);
   },
 };
@@ -65,7 +68,7 @@ export default {
     display: flex;
     align-items: center;
     .row-title {
-      flex: 0 0 80px;
+      flex: 0 0 100px;
       &:after {
         content: '：'
       }
