@@ -119,12 +119,12 @@ export default {
         promise = that.$api.getEnterpriseRole(that.enterpriseID, roleID)
         .then((role) => {
           that.setUserRole(role);
-        });
+        })
+        .then(() => that.$api.updateBFUserRole(that.enterpriseID, that.userInfo.id, roleID));
       } else {
         promise = new Promise(r => r());
       }
-      // promise.then(() => that.$reqGet(`/robot/stare/${robot.id}?appid=${robot.id}&user_id=${that.userInfo.id}`))
-      promise.then(() => that.$api.updateBFUserRole(that.enterpriseID, that.userInfo.id, roleID))
+      promise
       .then(() => {
         that.setRobot(robot.id);
         that.$router.push(defaultPath);
@@ -154,8 +154,25 @@ export default {
     updateRobots() {
       const that = this;
       return that.$loadRobotOfUser(that.userInfo).then((robots) => {
-        console.log(robots);
-        that.setRobotList(robots);
+        const promises = [];
+        const robotMap = {};
+        robots.forEach((robot) => {
+          robotMap[robot.id] = robot;
+          promises.push(
+            this.$api
+            .getRobot(that.enterpriseID, robot.id)
+            .then(rsp => rsp.result));
+        });
+        return Promise.all(promises).then((results) => {
+          results.forEach((result) => {
+            if (robotMap[result.id] !== undefined) {
+              robotMap[result.id].description = result.description;
+            }
+          });
+        }).then(() => {
+          console.log(robots);
+          that.setRobotList(robots);
+        });
       });
     },
   },

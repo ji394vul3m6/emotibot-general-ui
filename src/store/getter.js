@@ -5,7 +5,7 @@ export const robotList = (s) => {
     ret.push({
       id: key,
       name: s.robotList[key].name || '',
-      discription: s.robotList[key].discription || '',
+      description: s.robotList[key].description || '',
     });
   });
   return ret;
