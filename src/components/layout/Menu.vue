@@ -87,6 +87,7 @@ $menu-active-color: #3D80FF;
   color: white;
   font-size: $menu-font-size;
   @include auto-overflow();
+  @include customScrollbar();
 
   .category {
     overflow: hidden;
