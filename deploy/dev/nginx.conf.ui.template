@@ -156,7 +156,7 @@ http {
         location /solution_stage_status/set {
             proxy_pass http://${BF_IP};
         }
-        location /robot/template {
+        location /robot {
             proxy_pass http://${BF_IP};
         }
         location /sentenceAccociation {
