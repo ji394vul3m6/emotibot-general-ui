@@ -204,6 +204,7 @@ export default {
   },
   mounted() {
     this.updateRobots();
+    this.setRobot('');
   },
 };
 </script>
