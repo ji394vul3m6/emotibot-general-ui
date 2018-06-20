@@ -320,6 +320,7 @@ export default {
     upload_file_type_invalid: '档案格式限 .xlsx 档',
     download_template: '下载批量导入模板',
     upload_title: {
+      wordbank_upload: '批量导入',
       batch_import: '批量导入词库',
       last_import_result: '上次上传结果',
       download_imported_wordbank: '下载已导入词库',
