@@ -680,6 +680,7 @@ export default {
     error: '',
   },
   general: {
+    delete_success: '删除成功',
     robot_list: '机器人列表',
     no_data: '暂无数据',
     reset: '重置',
