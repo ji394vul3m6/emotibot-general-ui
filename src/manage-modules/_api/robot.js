@@ -56,7 +56,10 @@ function updateRobot(enterpriseID, appID, app) {
   }).then(rsp => rsp.data);
 }
 function deleteRobot(enterpriseID, appID) {
-  return this.$reqDelete(`${baseURL}/${enterpriseID}/app/${appID}`).then(rsp => rsp.data);
+  return this.$reqDelete(`${baseURL}/${enterpriseID}/app/${appID}`).then(rsp => this.$reqDelete(`${BF2_ROBOT_URL}/${appID}`)
+    .catch((err) => {
+      console.log(err);
+    }).then(() => rsp.data));
 }
 
 export default {

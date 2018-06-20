@@ -188,7 +188,7 @@ export default {
 <style lang="scss" scoped>
 @import 'styles/variable.scss';
 
-$header-height: 70px;
+$header-height: 60px;
 $header-font-size: 16px;
 $header-color: #333333;
 

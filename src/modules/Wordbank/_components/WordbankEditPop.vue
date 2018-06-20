@@ -5,19 +5,19 @@
         <div id="wordbank-name" class="input-item">
           <span>{{ $t('wordbank.wordbank') }}：</span>
           <input type="text" ref="wordbankName" v-model="wordbankName"
-            v-tooltip="wordbankDuplicateTooltip" :maxlength="lengthLimit">
+            v-tooltip="wordbankDuplicateTooltip" :maxlength="lengthLimit" :disabled="readonly">
         </div>
         <div id="sentitive-answer" v-if="wordbank.isSensitive">
           <span>{{ $t('wordbank.sensitive_word') }}：</span>
-          <input type="radio" name="sensitive" id="sensitive-default" :value="true" v-model="isDefaultSensitive">
+          <input type="radio" name="sensitive" id="sensitive-default" :value="true" v-model="isDefaultSensitive" :disabled="readonly">
           <label for="sensitive-default"> {{ $t('wordbank.default') }}</label>
-          <input type="radio" name="sensitive" id="sensitive-define" :value="false" v-model="isDefaultSensitive">
+          <input type="radio" name="sensitive" id="sensitive-define" :value="false" v-model="isDefaultSensitive" :disabled="readonly">
           <label for="sensitive-define"> {{ $t('wordbank.define') }}</label>
-          <input type="text" v-model="sensitiveAnswer" ref="sensitiveInputBox">
+          <input type="text" v-model="sensitiveAnswer" ref="sensitiveInputBox" :disabled="readonly">
         </div>
       </div>
       <div id="toolbar-second" class="toolbar-row">
-        <div id="wordbank-synonym" class="input-item">
+        <div v-if="!readonly" id="wordbank-synonym" class="input-item">
           <span>{{ $t('wordbank.synonym') }}：</span>
           <input type="text"
             ref="synonymInput"
@@ -61,6 +61,8 @@ export default {
   },
   data() {
     return {
+      readonly: false,
+
       wordbank: {},
       isDefaultSensitive: undefined,
 
@@ -79,11 +81,7 @@ export default {
         text: this.$t('wordbank.synonym'),
       }],
       // tableData: [],
-      tableAction: [{
-        text: this.$t('wordbank.delete'),
-        type: 'error',
-        onclick: this.deleteSynonym,
-      }],
+      tableAction: [],
 
       checkedSynonyms: [],
       synonymKeyword: '',
@@ -256,6 +254,16 @@ export default {
         this.synonymKeyword = '';
       });
     },
+    setReadonly() {
+      this.readonly = this.value.readonly ? this.value.readonly : false;
+      if (!this.readonly) {
+        this.tableAction.push({
+          text: this.$t('wordbank.delete'),
+          type: 'error',
+          onclick: this.deleteSynonym,
+        });
+      }
+    },
     setWordbankEdit() {
       this.wordbank = this.value.wordbank;
       this.wid = this.wordbank.wid;
@@ -288,6 +296,7 @@ export default {
   },
   mounted() {
     this.setWordbankEdit();
+    this.setReadonly();
     this.$on('validate', this.validate);
   },
 };
@@ -375,8 +384,10 @@ export default {
       }
     }
     #toolkit {
+      flex: 1;
       display: flex;
       align-items: center;
+      justify-content: flex-end;
       .search-input {
         height: 28px;
       }

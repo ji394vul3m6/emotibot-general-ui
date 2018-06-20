@@ -169,7 +169,8 @@ export default {
               name: origUser.display_name,
               email: origUser.email,
               phone: origUser.phone,
-              password: retData,
+              password: retData.password,
+              verify_password: retData.verify,
             };
             that.$api.updateEnterpriseUser(that.enterpriseID, origUser.id, updatedUser)
             .then(() => {

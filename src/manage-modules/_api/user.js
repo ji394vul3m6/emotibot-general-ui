@@ -63,6 +63,17 @@ function deleteEnterpriseUser(enterprise, id) {
     .then(() => this.$reqDelete(`${userURL}/${id}`))
     .then(rsp => rsp.data.result);
 }
+function updateBFUserRole(enterprise, id, roleID) {
+  const options = {
+    enterprise,
+    role: roleID,
+  };
+  return this.$reqPut(`${BF2_USER_URL}/${id}/role`, qs.stringify(options), {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+  });
+}
 
 export default {
   getEnterpriseUsers,
@@ -70,4 +81,5 @@ export default {
   updateEnterpriseUser,
   addEnterpriseUser,
   deleteEnterpriseUser,
+  updateBFUserRole,
 };

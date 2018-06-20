@@ -41,6 +41,8 @@ import RobotForm from './_components/RobotAddForm';
 import CommandRow from '../_components/CommandRow';
 import robotAPI from '../_api/robot';
 import roleAPI from '../_api/role';
+import userAPI from '../_api/user';
+import RobotDeleteForm from './_components/RobotDeleteForm';
 
 const defaultPath = '/statistic-dash';
 export default {
@@ -50,7 +52,7 @@ export default {
     NavBar,
     CommandRow,
   },
-  api: [robotAPI, roleAPI],
+  api: [robotAPI, roleAPI, userAPI],
   computed: {
     ...mapGetters([
       'userInfo',
@@ -91,12 +93,20 @@ export default {
     editName(robot) {
       const that = this;
       that.$pop({
-        title: that.$t('management.create_robot'),
+        title: that.$t('management.edit_robot'),
         component: RobotForm,
         validate: true,
         extData: {
           name: robot.name,
           description: robot.description,
+        },
+        left_button: {
+          msg: that.$t('general.delete'),
+          type: 'error',
+          closeAfterClick: true,
+          callback: () => {
+            that.popDelete(robot);
+          },
         },
         callback: {
           ok(retData) {
@@ -105,6 +115,24 @@ export default {
             .finally(() => {
               that.$emit('endLoading');
             });
+          },
+        },
+      });
+    },
+    popDelete(robot) {
+      const that = this;
+      that.$pop({
+        title: that.$t('management.delete_robot'),
+        component: RobotDeleteForm,
+        validate: true,
+        extData: {
+          name: robot.name,
+          description: robot.description,
+        },
+        callback: {
+          ok() {
+            that.$api.deleteRobot(that.enterpriseID, robot.id)
+              .then(() => that.updateRobots());
           },
         },
       });
@@ -118,19 +146,13 @@ export default {
         promise = that.$api.getEnterpriseRole(that.enterpriseID, roleID)
         .then((role) => {
           that.setUserRole(role);
-        });
+        })
+        .then(() => that.$reqGet(`/robot/stare/${robot.id}?appid=${robot.id}&user_id=${that.userInfo.id}`))
+        .then(() => that.$api.updateBFUserRole(that.enterpriseID, that.userInfo.id, roleID));
       } else {
         promise = new Promise(r => r());
       }
-      promise.then(() => that.$reqGet(`/robot/stare/${robot.id}?appid=${robot.id}&user_id=${that.userInfo.id}`))
-      // .then(() =>
-      //   that.$reqPut(`/api/v1/bf/user/${that.userInfo.id}/role`, qs.stringify({
-      //     role: 'roleID',
-      //   }), {
-      //     headers: {
-      //       'Content-Type': 'application/x-www-form-urlencoded',
-      //     },
-      //   }))
+      promise
       .then(() => {
         that.setRobot(robot.id);
         that.$router.push(defaultPath);
@@ -141,32 +163,54 @@ export default {
     },
     createRobot() {
       const that = this;
-      that.$pop({
-        title: that.$t('management.create_robot'),
-        component: RobotForm,
-        validate: true,
-        callback: {
-          ok(retData) {
-            that.$emit('startLoading');
-            that.$api.addRobot(that.enterpriseID, retData, that.userInfo.id)
+      that.$api.getRobots(that.enterpriseID).then((data) => {
+        that.$pop({
+          title: that.$t('management.create_robot'),
+          component: RobotForm,
+          extData: {
+            existRobots: data.map(robot => robot.name),
+          },
+          validate: true,
+          callback: {
+            ok(retData) {
+              that.$emit('startLoading');
+              that.$api.addRobot(that.enterpriseID, retData, that.userInfo.id)
             .then(() => that.updateRobots())
             .finally(() => {
               that.$emit('endLoading');
             });
+            },
           },
-        },
+        });
       });
     },
     updateRobots() {
       const that = this;
       return that.$loadRobotOfUser(that.userInfo).then((robots) => {
-        console.log(robots);
-        that.setRobotList(robots);
+        const promises = [];
+        const robotMap = {};
+        robots.forEach((robot) => {
+          robotMap[robot.id] = robot;
+          promises.push(
+            this.$api
+            .getRobot(that.enterpriseID, robot.id)
+            .then(rsp => rsp.result));
+        });
+        return Promise.all(promises).then((results) => {
+          results.forEach((result) => {
+            if (robotMap[result.id] !== undefined) {
+              robotMap[result.id].description = result.description;
+            }
+          });
+        }).then(() => {
+          that.setRobotList(robots);
+        });
       });
     },
   },
   mounted() {
     this.updateRobots();
+    this.setRobot('');
   },
 };
 </script>

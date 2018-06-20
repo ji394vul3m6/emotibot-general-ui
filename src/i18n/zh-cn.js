@@ -78,7 +78,7 @@ export default {
     login: '登入',
     account_place: '输入帐号',
     password_place: '输入密码',
-    contact_sm: '无法登陆？请联络管理人员',
+    contact_sm: '无法登入？请联络管理人员',
   },
   category: {
     all: '全部',
@@ -203,11 +203,13 @@ export default {
     general_function: '通用技能',
   },
   robot_command: {
-    add_command: '创建指令',
+    view: '查看',
     delete: '删除',
     moveto: '移至',
     edit: '编辑',
+    add_command: '创建指令',
     edit_command: '编辑指令',
+    view_command: '查看指令',
     command_name: '指令名称',
     command_keyword: '关键字',
     command_tag: '关联标签',
@@ -230,6 +232,7 @@ export default {
         title: '触发关键字',
         advanced: '进阶设定',
         regex: '正则式',
+        keyword_placeholder: '关键字以 "/" 隔开',
       },
       datetime: {
         title: '生效时间',
@@ -267,9 +270,11 @@ export default {
     categories: '分类',
     setting: '设置',
     leave_setting: '离开设置',
+    view: '查看',
     edit: '编辑',
     delete: '删除',
     moveto: '移至',
+    view_wordbank: '查看词库',
     add_wordbank: '新增词库',
     edit_wordbank: '编辑词库',
     moveto_wordbank: '移动项目至...',
@@ -315,6 +320,7 @@ export default {
     upload_file_type_invalid: '档案格式限 .xlsx 档',
     download_template: '下载批量导入模板',
     upload_title: {
+      wordbank_upload: '批量导入',
       batch_import: '批量导入词库',
       last_import_result: '上次上传结果',
       download_imported_wordbank: '下载已导入词库',
@@ -674,6 +680,7 @@ export default {
     error: '',
   },
   general: {
+    delete_success: '删除成功',
     robot_list: '机器人列表',
     no_data: '暂无数据',
     reset: '重置',
@@ -788,9 +795,11 @@ export default {
     robot_list: '机器人列表',
 
     create_robot: '创建机器人',
+    delete_robot: '删除机器人',
     edit_robot: '编辑机器人',
     group_manage: '机器人群组管理',
 
+    group_name: '群组名称',
     robot_name: '机器人名字',
     description: '描述',
 
@@ -799,6 +808,8 @@ export default {
 
     create_group: '创建群组',
     add_robot: '加入机器人',
+    input_personal_pass: '输入个人密码',
+    reason_description: '原因描述',
 
     enterprise_privilege_manage: '企业权限管理',
     add_account: '新增帐号',
@@ -834,11 +845,13 @@ export default {
     err_existed_username: 'ID 已存在',
     err_empty_email: 'Email 不可为空',
     err_empty_password: '密码不可为空',
+    err_password: '密码错误',
     err_manager_empty_password: '管理员密码不可为空',
     err_invalid_check_password: '两次密码输入不同',
     update_password_success: '更新密码成功',
 
     err_role_duplicate: '角色名称已存在',
+    err_robot_duplicate: '机器人名称已存在',
 
     go_back: '返回',
 
@@ -890,6 +903,10 @@ export default {
       robot_function: {
         view: '技能设置查看',
         edit: '技能设置编辑',
+      },
+      robot_command: {
+        view: '指令设置查看',
+        edit: '指令设置编辑',
       },
     },
   },

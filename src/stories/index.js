@@ -13,6 +13,7 @@ import GeneralTableStory from './GeneralTable';
 import NavBarStory from './NavigationBar';
 import DropdownSelectStory from './DropdownSelect';
 import TooltipStory from './Tooltip';
+import TagInputStory from './TagInput';
 
 Vue.use(VueI18n);
 
@@ -49,4 +50,9 @@ DropdownSelectStory.forEach((story) => {
 const tooltipStory = storiesOf('Tooltip', module).addDecorator(withKnobs);
 TooltipStory.forEach((story) => {
   tooltipStory.add(story.name, story.func);
+});
+
+const tagInputStory = storiesOf('TagInput', module).addDecorator(withKnobs);
+TagInputStory.forEach((story) => {
+  tagInputStory.add(story.name, story.func);
 });

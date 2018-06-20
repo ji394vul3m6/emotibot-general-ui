@@ -3,7 +3,9 @@
     <div class="row">
       <div class="row-title">{{ $t('management.robot_name') }}</div>
       <input class="row-input" v-model="name"
-        :placeholder="$t('management.input_placeholder')">
+        :placeholder="$t('management.input_placeholder')"
+        v-tooltip="nameTooltip"
+        ref="name">
     </div>
     <div class="row">
       <div class="row-title">{{ $t('management.description') }}</div>
@@ -26,6 +28,12 @@ export default {
     return {
       name: '',
       description: '',
+      existedRobots: [],
+      nameTooltip: {
+        msg: this.$t('management.err_robot_duplicate'),
+        eventOnly: true,
+        animateShow: true,
+      },
     };
   },
   methods: {
@@ -33,13 +41,16 @@ export default {
       const that = this;
 
       if (that.name === '') {
-        console.log('err');
-      } else {
-        that.$emit('validateSuccess', {
-          name: that.name,
-          description: that.description,
-        });
+        return;
+      } else if (that.existedRobots.indexOf(that.name) >= 0) {
+        that.$refs.name.dispatchEvent(new Event('tooltip-show'));
+        that.$refs.name.focus();
+        return;
       }
+      that.$emit('validateSuccess', {
+        name: that.name,
+        description: that.description,
+      });
     },
   },
   mounted() {

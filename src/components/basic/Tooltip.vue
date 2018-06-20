@@ -77,8 +77,9 @@ export default {
       };
     },
     triangleStyle() {
+      const left = this.leftOffset > 0 ? 0 : 0 - this.leftOffset;
       return {
-        left: this.leftOffset > 0 ? 0 : `${0 - this.leftOffset}px`,
+        left: `${left}px`,
       };
     },
   },

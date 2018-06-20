@@ -81,7 +81,6 @@ textarea {
   }
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 2px rgba(75, 75, 100, 0.2);
     border-color: $color-borderline-hover;
   }
   &:disabled {
@@ -95,7 +94,7 @@ textarea {
   font-family: $app-dft-font-family, 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
+  color: $color-font-normal;
   margin-top: 60px;
   overflow: hidden;
   height: 100vh;

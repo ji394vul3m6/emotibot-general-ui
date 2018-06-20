@@ -5,14 +5,14 @@
       <div id="card-category-header-block">
         <div id="card-category-row">
           <div class="card-category-title">{{ $t('wordbank.categories') }}</div>
-          <div class="card-category-setting" @click="toggleEditMode">
+          <div v-if="canSetting" class="card-category-setting" @click="toggleEditMode">
             <span v-if="isEditMode"> {{ $t('wordbank.leave_setting') }}</span>
             <span v-else> {{ $t('wordbank.setting') }} </span>
           </div>
         </div>
         <search-input ref="categorySearchBox" v-model="categoryNameKeyword"></search-input>
       </div>
-      <div id="card-category-add-root" v-if="isEditMode" @click="addRootCategory"> 
+      <div id="card-category-add-root" v-if="isEditMode && canCreate" @click="addRootCategory"> 
         <input id="add-root" type="text"
           v-if="isAddingRoot" v-model="rootName" ref="rootName" 
           :placeholder="$t('wordbank.placeholder_category_name')"
@@ -35,18 +35,19 @@
         :curLayer="1"
         :ref="`${child.cid}-${child.name}`"
         :key="`${child.name}-${idx}`"
+        :canEdit="canEdit"
         @activeItemChange="handleActiveItemChange"
         @itemNameChange="handleItemNameChange"
         @setActiveToAll="handleSetActiveToAll"></category-tree-item>
     </div>
     <div id="card-category-footer" v-if="isEditMode">
-      <div v-if="allowSubCategory" 
+      <div v-if="allowSubCategory && canCreate" 
         class="card-category-setting-option option-addsub"
         :class="{'option-disabled': this.currentActiveItem.layer === maxLayer || this.currentActiveItem.cid < 0}"
         @click="addSubCategory">
         {{ $t('wordbank.add_subcategory') }}
       </div>
-      <div class="card-category-setting-option option-delete"
+      <div v-if="canDelete" class="card-category-setting-option option-delete"
         :class="{'option-disabled': !this.currentActiveItem.deletable}"
         @click="popDeleteCategory">
         {{ $t('wordbank.delete_category') }}
@@ -79,6 +80,18 @@ export default {
       type: Boolean,
       default: false,
     },
+    canEdit: {
+      type: Boolean,
+      default: false,
+    },
+    canDelete: {
+      type: Boolean,
+      default: false,
+    },
+    canCreate: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -92,6 +105,11 @@ export default {
       isEditMode: false,
       currentActiveItem: {},
     };
+  },
+  computed: {
+    canSetting() {
+      return this.canEdit || this.canCreate || this.canDelete;
+    },
   },
   watch: {
     categoryNameKeyword() {

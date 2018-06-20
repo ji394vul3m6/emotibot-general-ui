@@ -6,13 +6,20 @@
     </div>
     <div id="card-content-content">
       <div id="toolbar">
-        <text-button button-type="primary" @click="popAddCommand">{{ $t('robot_command.add_command') }}</text-button>
+        <text-button
+          v-if="canCreate"
+          button-type="primary"
+          @click="popAddCommand">
+          {{ $t('robot_command.add_command') }}
+        </text-button>
         <text-button 
+          v-if="canDelete"
           @click="deleteMultiCommand"
           :button-type="this.checkedCommand.length === 0 ? 'disable' : 'error'">
           {{ $t('robot_command.delete') }}
         </text-button>
         <!-- <text-button 
+          v-if="canEdit"
           @click="popMoveToCategory"
           :button-type="this.checkedCommand.length === 0 ? 'disable' : 'default'">
           {{ $t('robot_command.moveto') }}
@@ -52,6 +59,18 @@ export default {
       type: Number,
       default: -1,
     },
+    canEdit: {
+      type: Boolean,
+      default: false,
+    },
+    canDelete: {
+      type: Boolean,
+      default: false,
+    },
+    canCreate: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -86,18 +105,7 @@ export default {
           width: '60px',
         },
       ],
-      tableAction: [
-        {
-          text: this.$t('robot_command.edit'),
-          type: 'primary',
-          onclick: this.editCommand,
-        },
-        {
-          text: this.$t('robot_command.delete'),
-          type: 'error',
-          onclick: this.deleteCommand,
-        },
-      ],
+      tableAction: [],
 
       checkedCommand: [],
 
@@ -131,7 +139,7 @@ export default {
             id: cmd.id,
             command: cmd.name,
             keyword: getKeyword(cmd.rule),
-            tag: getLabelName(cmd.tags),
+            tag: getLabelName(cmd.labels),
             status: {
               val: cmd.status,
               onclick: that.toggleCommandStatus,
@@ -179,15 +187,33 @@ export default {
     },
   },
   methods: {
+    loadTableActionByPrivilege() {
+      if (this.canEdit) {
+        this.tableAction.push({
+          text: this.$t('robot_command.edit'),
+          type: 'primary',
+          onclick: this.editCommand,
+        });
+      } else {
+        this.tableAction.push({
+          text: this.$t('robot_command.view'),
+          type: 'primary',
+          onclick: this.viewCommand,
+        });
+      }
+      if (this.canDelete) {
+        this.tableAction.push({
+          text: this.$t('robot_command.delete'),
+          type: 'error',
+          onclick: this.deleteCommand,
+        });
+      }
+    },
     toFirstPage() {
       this.curPageIdx = 1;
-      // const elem = this.$refs.synonymList;
-      // elem.scrollTop = 0;
     },
     toCurPage(page) {
       this.curPageIdx = page;
-      // const elem = this.$refs.synonymList;
-      // elem.scrollTop = 0;
     },
     handlePageChange(page) {
       if (page <= 0) {
@@ -197,9 +223,8 @@ export default {
       }
     },
     toggleCommandStatus(data) {
-      console.log(data);
       const command = this.currentCommands.find(cmd => cmd.id === data.id);
-
+      command.status = !command.status;
       this.$api.editRobotCommand(command)
         .then((rsp) => {
           const rspCommand = this.parseCommand(rsp);
@@ -214,8 +239,11 @@ export default {
           const theCommandIdx = this.currentCommands
             .findIndex(cmd => cmd.id === command.id);
           this.currentCommands.splice(theCommandIdx, 1, command);
-          // TODO: why UI don't update QQ
         });
+    },
+    viewCommand(data) {
+      const command = this.currentCommands.find(cmd => cmd.id === data.id);
+      this.popViewCommand(command);
     },
     editCommand(data) {
       const command = this.currentCommands.find(cmd => cmd.id === data.id);
@@ -233,7 +261,7 @@ export default {
         end_time: null,
         answer: '',
         rule: [],
-        tags: [],
+        labels: [],
       };
       const options = {
         component: CommandEditPop,
@@ -244,11 +272,10 @@ export default {
         validate: true,
         callback: {
           ok: (addedCommand) => {
-            console.log('addedCommand:', addedCommand);
             const cid = this.currentCategoryId;
             this.$api.addRobotCommand(cid, addedCommand)
-            .then(() => {
-              this.currentCommand.splice(0, 0, addedCommand);
+            .then((cmd) => {
+              this.commands.splice(0, 0, cmd);
               this.loadLabels();
             })
             .catch((err) => {
@@ -261,7 +288,6 @@ export default {
       this.$pop(options);
     },
     popEditCommand(command) {
-      console.log(command);
       const options = {
         component: CommandEditPop,
         title: this.$t('robot_command.edit_command'),
@@ -271,13 +297,11 @@ export default {
         validate: true,
         callback: {
           ok: (editedCommand) => {
-            console.log(editedCommand);
             this.$api.editRobotCommand(editedCommand)
-            .then(() => {
-              // call api and then load label again
-              const theCommandIdx = this.currentCommands
-                .findIndex(cmd => cmd.id === editedCommand.id);
-              this.currentCommands.splice(theCommandIdx, 1, editedCommand);
+            .then((rspCommand) => {
+              const theCommandIdx = this.commands
+                .findIndex(cmd => cmd.id === rspCommand.id);
+              this.commands.splice(theCommandIdx, 1, rspCommand);
               this.loadLabels();
             })
             .catch((err) => {
@@ -289,25 +313,37 @@ export default {
       };
       this.$pop(options);
     },
-    popMoveToCategory() {
-      if (this.checkedCommand.length === 0) {
-        return;
-      }
-      // const commandsToMove = this.checkedCommand;
+    popViewCommand(command) {
       const options = {
-        // component: MoveToPop,
-        title: this.$t('wordbank.moveto_wordbank'),
-        validate: true,
-        callback: {
-          ok: (toCid) => {
-            console.log(toCid);
-          },
+        component: CommandEditPop,
+        title: this.$t('robot_command.view_command'),
+        data: {
+          command,
+          readonly: true,
         },
+        buttons: ['ok'],
+        validate: false,
       };
       this.$pop(options);
     },
+    // popMoveToCategory() {
+    //   if (this.checkedCommand.length === 0) {
+    //     return;
+    //   }
+    //   // const commandsToMove = this.checkedCommand;
+    //   const options = {
+    //     // component: MoveToPop,
+    //     title: this.$t('wordbank.moveto_wordbank'),
+    //     validate: true,
+    //     callback: {
+    //       ok: (toCid) => {
+    //         console.log(toCid);
+    //       },
+    //     },
+    //   };
+    //   this.$pop(options);
+    // },
     deleteCommand(data) {
-      console.log('delete', data);
       const option = {
         data: {
           msg: this.$t('robot_command.delete_command_msg', { name: data.command }),
@@ -324,9 +360,9 @@ export default {
       // api call
       this.$api.deleteRobotCommand(id)
         .then(() => {
-          const theCommandIdx = this.currentCommands
+          const theCommandIdx = this.commands
             .findIndex(cmd => cmd.id === id);
-          this.currentCommands.splice(theCommandIdx, 1);
+          this.commands.splice(theCommandIdx, 1);
         })
         .catch((err) => {
           console.log(err);
@@ -343,9 +379,11 @@ export default {
         },
         callback: {
           ok: () => {
-            this.checkedCommand.forEach((cmd) => {
+            let cmd = this.checkedCommand.shift();
+            while (cmd !== undefined) {
               this.confirmDeleteCommand(cmd.id);
-            });
+              cmd = this.checkedCommand.shift();
+            }
           },
         },
       };
@@ -363,7 +401,7 @@ export default {
       return {
         id: cmd.id,
         name: cmd.name,
-        tags: cmd.labels,
+        labels: cmd.labels,
         begin_time: cmd.begin_time,
         end_time: cmd.end_time,
         rule: cmd.rule,
@@ -409,6 +447,7 @@ export default {
   },
   mounted() {
     this.loadLabels();
+    this.loadTableActionByPrivilege();
   },
 };
 </script>
@@ -419,9 +458,8 @@ export default {
   display: flex;
   flex-direction: column;
   #card-content-header {
-    flex: 0 0 72px;
-    padding: 20px;
-    padding-bottom: 24px;
+    flex: 0 0 60px;
+    padding: 0 20px;
     border-bottom: 1px solid $color-borderline;
     display: flex;
     align-items: center;

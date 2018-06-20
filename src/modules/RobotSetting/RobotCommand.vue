@@ -5,12 +5,24 @@
       :categoryTree="categoryTree"
       :activeItemId="activeItemId"
       :allowSubCategory="false"
+      :canEdit="canEdit"
+      :canDelete="canDelete"
+      :canCreate="canCreate"
       @editModeChange="handleEditModeChange"
       @activeItemChange="handleActiveItemChange"
       @itemNameChange="handleItemNameChange"
       @deleteCategory="handleDeleteCategory"
-      @addCategory="handleAddCategory"></category-card>
-    <robot-command-content id="card-content" class="card h-fill" :isEditMode="isEditMode" :value="currentCategory.cmds" :currentCategoryId="currentCategory.cid"></robot-command-content>
+      @addCategory="handleAddCategory">
+    </category-card>
+    <robot-command-content 
+      id="card-content" class="card h-fill"
+      :isEditMode="isEditMode"
+      :value="currentCategory.cmds"
+      :currentCategoryId="currentCategory.cid"
+      :canEdit="canEdit"
+      :canDelete="canDelete"
+      :canCreate="canCreate">
+    </robot-command-content>
   </div>
 </template>
 
@@ -37,6 +49,17 @@ export default {
       isEditMode: false,
       activeItemId: 1,
     };
+  },
+  computed: {
+    canEdit() {
+      return this.$hasRight('edit');
+    },
+    canDelete() {
+      return this.$hasRight('delete');
+    },
+    canCreate() {
+      return this.$hasRight('create');
+    },
   },
   methods: {
     handleEditModeChange(editMode) {

@@ -134,7 +134,7 @@ export default {
 <style lang="scss" scoped>
 @import "styles/variable";
 
-$function-header-height: 50px;
+$function-header-height: 60px;
 $function-header-font-size: 16px;
 $function-header-bg: #fcfcfc;
 
@@ -154,9 +154,9 @@ $card-remark-color: #999999;
     align-items: center;
     font-size: $function-header-font-size;
     padding: 0 20px;
-    background-color: $function-header-bg;
     box-shadow: inset 0 -1px 0 0 #e9e9e9;
     .header-text {
+      color: $color-font-active;
       flex: 0 0 80px;
     }
     .text-button {

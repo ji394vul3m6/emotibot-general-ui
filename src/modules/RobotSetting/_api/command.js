@@ -15,7 +15,7 @@ function addRobotCommand(cid, command) {
     answer: command.answer,
     response_type: command.response_type,
     status: command.status,
-    labels: JSON.stringify(command.tags),
+    labels: JSON.stringify(command.labels),
     begin_time: command.start_time,
     end_time: command.end_time,
   };
@@ -24,6 +24,12 @@ function addRobotCommand(cid, command) {
 
   return this.$reqPost(`${COMMAND_PATH}`, qs.stringify(param), {
     'Content-Type': 'application/x-www-form-urlencoded',
+  }).then((response) => {
+    const rspCommand = response.data.result;
+    if (rspCommand.labels === null) {
+      rspCommand.labels = [];
+    }
+    return rspCommand;
   });
 }
 
@@ -37,13 +43,19 @@ function editRobotCommand(command) {
     answer: command.answer,
     response_type: command.response_type,
     status: command.status,
-    labels: JSON.stringify(command.tags),
-    begin_time: command.start_time,
+    labels: JSON.stringify(command.labels),
+    begin_time: command.begin_time,
     end_time: command.end_time,
   };
   return this.$reqPut(`${COMMAND_PATH}/${id}`, qs.stringify(param), {
     'Content-Type': 'application/x-www-form-urlencoded',
-  }).then(response => response.data.result);
+  }).then((response) => {
+    const rspCommand = response.data.result;
+    if (rspCommand.labels === null) {
+      rspCommand.labels = [];
+    }
+    return rspCommand;
+  });
 }
 
 function getSingleRobotCommand(id) {
@@ -55,17 +67,8 @@ function getSingleRobotCommand(id) {
 }
 
 function parseCommands(commands) {
-  // put rules in no category
-  const noCategory = {
-    cid: -3,
-    name: '未分类',
-    cmds: commands.cmds,
-  };
-
-  commands.children.splice(0, 0, noCategory);
-
-  // add attributes to display category
   commands.children.forEach((child) => {
+    /** add attributes to display category */
     child.deletable = true;
     child.editable = true;
     child.isActive = false;
@@ -74,7 +77,29 @@ function parseCommands(commands) {
     if (!child.children) {
       child.children = [];
     }
+
+    /** Api will return null if have no label, however, labels should always be an array */
+    if (child.labels === null) {
+      child.labels = [];
+    }
   });
+
+  // put rules in no category
+  const noCategory = {
+    cid: -3,
+    name: '未分类',
+    cmds: commands.cmds,
+    children: [],
+    labels: [],
+
+    deletable: false,
+    editable: false,
+    isActive: false,
+    layer: 1,
+    visible: true,
+  };
+
+  commands.children.splice(0, 0, noCategory);
 }
 
 function getRobotCommands() {
@@ -86,36 +111,6 @@ function getRobotCommands() {
       // parse commands add no category
       return commands;
     });
-
-  // const mockData = {
-  //   cid: -1,
-  //   name: '',
-  //   cmds: [{
-  //     id: 0,
-  //     name: '某個指令名稱',
-  //     target: 1,
-  //     response_type: 2,
-  //     rule: [{
-  //       type: 'keyword', // 'regex'
-  //       value: ['信用卡'],
-  //     }, {
-  //       type: 'keyword',
-  //       value: ['關鍵字'],
-  //     }, {
-  //       type: 'regex',
-  //       value: ['somereg'],
-  //     }],
-  //     answer: '[{\"type\":\"cmd\",\"subType\":\"credit\",\"value\":\"信用卡相关业务请进入\u003ca href=\\\"http://credit.cmbc.com.cn\\\"\u003e信用卡页面\u003c/a\u003e\",\"data\":[]}]',
-  //     status: false,
-  //     begin_time: null,
-  //     end_time: null,
-  //     labels: ['7', '1'],
-  //   }],
-  //   children: [],
-  // };
-
-  // parseCommands(mockData);
-  // return Promise.resolve(mockData);
 }
 
 export default {

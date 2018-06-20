@@ -10,13 +10,15 @@
     </div>
     <div id="card-content-content">
       <div id="toolbar">
-        <text-button button-type="primary" @click="popAddWordbank">{{ $t('wordbank.add_wordbank') }}</text-button>
-        <text-button 
+        <text-button v-if="canCreate" button-type="primary" @click="popAddWordbank">{{ $t('wordbank.add_wordbank') }}</text-button>
+        <text-button
+          v-if="canDelete" 
           @click="deleteMultiWordbank"
           :button-type="this.checkedWordbank.length === 0 ? 'disable' : 'error'">
           {{ $t('wordbank.delete') }}
         </text-button>
-        <!-- <text-button 
+        <!-- <text-button
+          v-if="canEdit" 
           @click="popMoveToCategory"
           :button-type="this.checkedWordbank.length === 0 ? 'disable' : 'default'">
           {{ $t('wordbank.moveto') }}
@@ -65,18 +67,7 @@ export default {
           type: 'tag',
         },
       ],
-      tableAction: [
-        {
-          text: this.$t('wordbank.edit'),
-          type: 'primary',
-          onclick: this.editWordbank,
-        },
-        {
-          text: this.$t('wordbank.delete'),
-          type: 'error',
-          onclick: this.deleteWordbank,
-        },
-      ],
+      tableAction: [],
       checkedWordbank: [],
 
       curPageIdx: 1,
@@ -112,6 +103,15 @@ export default {
     },
     lastPageIdx() {
       return Math.floor((this.curTotal - 1) / this.pageLimit) + 1;
+    },
+    canCreate() {
+      return this.$hasRight('create');
+    },
+    canDelete() {
+      return this.$hasRight('delete');
+    },
+    canEdit() {
+      return this.$hasRight('edit');
     },
   },
   watch: {
@@ -151,6 +151,28 @@ export default {
       'addWordbankToCategory',
       'deleteWordbankFromCategory',
     ]),
+    loadTableActionByPrivilege() {
+      if (this.canEdit) {
+        this.tableAction.push({
+          text: this.$t('wordbank.edit'),
+          type: 'primary',
+          onclick: this.editWordbank,
+        });
+      } else {
+        this.tableAction.push({
+          text: this.$t('wordbank.view'),
+          type: 'primary',
+          onclick: this.viewWordbank,
+        });
+      }
+      if (this.canDelete) {
+        this.tableAction.push({
+          text: this.$t('wordbank.delete'),
+          type: 'error',
+          onclick: this.deleteWordbank,
+        });
+      }
+    },
     toFirstPage() {
       this.curPageIdx = 1;
       // const elem = this.$refs.synonymList;
@@ -171,6 +193,12 @@ export default {
     },
     exportWordbank() {
       window.open('/api/v3/dictionary/export?zh_tw=true', '_blank');
+    },
+    viewWordbank(data) {
+      this.$api.getWordbank(data.wid)
+      .then((wordbank) => {
+        this.popViewWordbank(wordbank);
+      });
     },
     editWordbank(data) {
       this.$api.getWordbank(data.wid)
@@ -287,6 +315,21 @@ export default {
       };
       this.$pop(options);
     },
+    popViewWordbank(wordbank) {
+      // check sensitive by wordbank cause wordbank might be opened through 'all' category
+      wordbank.isSensitive = this.isWordbankSensitive(wordbank.wid);
+      const options = {
+        component: WordbankEditPop,
+        title: this.$t('wordbank.view_wordbank'),
+        data: {
+          wordbank,
+          readonly: true,
+        },
+        buttons: ['ok'],
+        validate: false,
+      };
+      this.$pop(options);
+    },
     popMoveToCategory() {
       if (this.checkedWordbank.length === 0) {
         return;
@@ -396,6 +439,9 @@ export default {
       return wordbank.wordbanks.concat(subWordbanks);
     },
   },
+  mounted() {
+    this.loadTableActionByPrivilege();
+  },
 };
 </script>
 <style lang="scss" scoped>
@@ -405,9 +451,8 @@ export default {
   display: flex;
   flex-direction: column;
   #card-content-header {
-    flex: 0 0 72px;
-    padding: 20px;
-    padding-bottom: 24px;
+    flex: 0 0 60px;
+    padding: 0 20px;
     border-bottom: 1px solid $color-borderline;
     display: flex;
     align-items: center;

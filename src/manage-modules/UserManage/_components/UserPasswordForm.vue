@@ -56,7 +56,10 @@ export default {
         that.errMsg = that.$t('management.err_invalid_check_password');
         that.$refs.newPassword.focus();
       } else {
-        that.$emit('validateSuccess', md5(that.password));
+        that.$emit('validateSuccess', {
+          password: md5(that.password),
+          verify: md5(that.managerPassword),
+        });
       }
     },
   },

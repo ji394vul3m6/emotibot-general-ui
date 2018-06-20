@@ -123,6 +123,7 @@ export default {
         position: 'fixed',
         top: `${inputBox.top + inputBox.height + 3}px`,
         left: `${inputBox.left}px`,
+        width: that.width !== 'auto' ? that.width : '',
       };
 
       that.detectClickListener = (e) => {
@@ -212,8 +213,11 @@ $border-color: #e9e9e9;
   }
 }
 .select-list {
+  box-sizing: border-box;
   width: 150px;
   box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+  border: 1px solid $color-borderline;
   background: white;
   max-height: calc(6 * 32px);
   @include auto-overflow();
