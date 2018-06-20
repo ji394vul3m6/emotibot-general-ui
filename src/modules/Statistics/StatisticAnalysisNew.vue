@@ -164,7 +164,7 @@ export default {
       csvData += `${tableHeader.map(header => header.text.replace('"', '"""')).join(',')}\n`;
       csvData += tableData.map(data => tableHeader.map((header) => {
         if (data[header.key] !== undefined) {
-          return data[header.key].toString().replace('"', '"""');
+          return `"${data[header.key].toString().replace('"', '"""')}"`;
         }
         return '';
       }).join(',')).join('\n');
