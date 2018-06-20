@@ -797,6 +797,7 @@ export default {
     edit_robot: '编辑机器人',
     group_manage: '机器人群组管理',
 
+    group_name: '群组名称',
     robot_name: '机器人名字',
     description: '描述',
 
@@ -848,6 +849,7 @@ export default {
     update_password_success: '更新密码成功',
 
     err_role_duplicate: '角色名称已存在',
+    err_robot_duplicate: '机器人名称已存在',
 
     go_back: '返回',
 

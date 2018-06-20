@@ -163,20 +163,25 @@ export default {
     },
     createRobot() {
       const that = this;
-      that.$pop({
-        title: that.$t('management.create_robot'),
-        component: RobotForm,
-        validate: true,
-        callback: {
-          ok(retData) {
-            that.$emit('startLoading');
-            that.$api.addRobot(that.enterpriseID, retData, that.userInfo.id)
+      that.$api.getRobots(that.enterpriseID).then((data) => {
+        that.$pop({
+          title: that.$t('management.create_robot'),
+          component: RobotForm,
+          extData: {
+            existRobots: data.map(robot => robot.name),
+          },
+          validate: true,
+          callback: {
+            ok(retData) {
+              that.$emit('startLoading');
+              that.$api.addRobot(that.enterpriseID, retData, that.userInfo.id)
             .then(() => that.updateRobots())
             .finally(() => {
               that.$emit('endLoading');
             });
+            },
           },
-        },
+        });
       });
     },
     updateRobots() {
