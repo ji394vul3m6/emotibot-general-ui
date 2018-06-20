@@ -60,18 +60,19 @@ function addEnterpriseRole(enterprise, role) {
     uuid = rsp.data.result.uuid;
     return rsp.data;
   }).then((data) => {
+    let commands = '';
     if (role.privileges.ssm !== undefined && role.privileges.ssm.length > 0) {
-      const bfOptions = {
-        id: uuid,
-        commands: role.privileges.ssm.join(','),
-      };
-      return this.$reqPost(`${BF_PREFIX}`, qs.stringify(bfOptions), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      }).then(() => data);
+      commands = role.privileges.ssm.join(',');
     }
-    return data;
+    const bfOptions = {
+      id: uuid,
+      commands,
+    };
+    return this.$reqPost(`${BF_PREFIX}`, qs.stringify(bfOptions), {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    }).then(() => data);
   });
 }
 function deleteEnterpriseRole(enterprise, id) {
