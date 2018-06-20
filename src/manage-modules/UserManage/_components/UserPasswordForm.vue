@@ -2,15 +2,18 @@
   <div class="password-form" :class="[isAdmin ? 'admin' : 'normal']">
     <div class="row">
       <div class="row-title">{{ $t('management.manager_password') }}</div>
-      <input type="password" class="row-input" ref="managerPassword" v-model="managerPassword" :placeholder="$t('management.input_placeholder')">
+      <input type="password" class="row-input" ref="managerPassword" v-model="managerPassword"
+      :placeholder="$t('management.input_placeholder')" autocomplete="new-password">
     </div>
     <div class="row">
       <div class="row-title">{{ $t('management.new_password') }}</div>
-      <input type="password" class="row-input" ref="password" v-model="password" :placeholder="$t('management.input_placeholder')">
+      <input type="password" class="row-input" ref="password" v-model="password"
+      :placeholder="$t('management.input_placeholder')" autocomplete="new-password">
     </div>
     <div class="row">
       <div class="row-title">{{ $t('management.check_new_password') }}</div>
-      <input type="password" class="row-input" ref="newPassword" v-model="newPassword" :placeholder="$t('management.input_placeholder')">
+      <input type="password" class="row-input" ref="newPassword" v-model="newPassword"
+      :placeholder="$t('management.input_placeholder')" autocomplete="new-password">
     </div>
     <div class="row">
       <div class="err-msg" v-if="errMsg !== ''">{{ errMsg }}</div>

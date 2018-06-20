@@ -2,7 +2,7 @@
   <div class="form">
     <div class="row">
       <div class="row-title">{{ $t('management.input_personal_pass') }}</div>
-      <input class="row-input" v-model="password" type="password"
+      <input class="row-input" v-model="password" type="password" autocomplete="new-password"
         :placeholder="$t('management.manager_password')"
         v-tooltip="passwordTooltip"
         ref="password">
