@@ -78,7 +78,7 @@ export default {
     login: '登入',
     account_place: '输入帐号',
     password_place: '输入密码',
-    contact_sm: '无法登陆？请联络管理人员',
+    contact_sm: '无法登入？请联络管理人员',
   },
   category: {
     all: '全部',
