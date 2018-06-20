@@ -156,7 +156,6 @@ export default {
       }).then(() => that.$api.getAuditLog(params)).then((data) => {
         let recordArray = data.data.result.data;
         recordArray = that.convertAPIDataToTable(recordArray);
-        recordArray = that.mapCodeToString(recordArray);
         const csvData = csvUtil.convertToCSV(recordArray, this.headerInfo);
         const blobData = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvData], { type: 'text/csv' });
         miscUtil.downloadRawFile(blobData, filename);
