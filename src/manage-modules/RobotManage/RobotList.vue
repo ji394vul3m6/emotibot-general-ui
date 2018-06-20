@@ -147,6 +147,7 @@ export default {
         .then((role) => {
           that.setUserRole(role);
         })
+        .then(() => that.$reqGet(`/robot/stare/${robot.id}?appid=${robot.id}&user_id=${that.userInfo.id}`))
         .then(() => that.$api.updateBFUserRole(that.enterpriseID, that.userInfo.id, roleID));
       } else {
         promise = new Promise(r => r());
