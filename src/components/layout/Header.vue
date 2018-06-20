@@ -6,27 +6,33 @@
   <div class="empty column"></div>
   <div class="enterprise column">
     <div class="icon-container">
-      <icon :size=26 icon-type="enterprise"/>
+      <icon :size=22 icon-type="header_enterprise"/>
     </div>
     <div>{{ enterpriseName }}</div>
   </div>
   <template v-if="robotID !== ''">
   <div class="robot column">
     <div class="icon-container">
-      <icon :size=26 icon-type="robot"/>
+      <icon :size=22 icon-type="robot"/>
     </div>
     <div>{{ robotName }}</div>
   </div>
   <div class="chat-test column" @click="showChatTest">
+    <div class="icon-container">
+      <icon :size=22 icon-type="header_dialog"/>
+    </div>
     {{$t('general.chat_test')}}
   </div>
   </template>
   <div class="user">
     <div class="user-column" @click.stop="showMenu">
       <div class="icon-container">
-        <icon :size=18 icon-type="white_user"/>
+        <icon :size=22 icon-type="header_user"/>
       </div>
       <div>{{ userInfo.display_name }}</div>
+      <div class="icon-container icon-right">
+        <icon :size=7 icon-type="header_dropdown"/>
+      </div>
     </div>
 
     <div class="user-menu-container" :class="[ showUserMenu ? 'show': '']" ref="list">
@@ -132,6 +138,9 @@ export default {
       flex: 1;
       padding: 0;
     }
+    &:hover:not(.empty) {
+      background-color: #505050;
+    }
   }
 
   .chat-test {
@@ -155,9 +164,16 @@ export default {
       align-items: center;
       .icon-container {
         margin-right: 10px;
+        &.icon-right {
+          margin-left: 10px;
+          margin-right: 0px;
+        }
       }
       box-shadow: inset -1px 0 0 0 #333333;
       padding: 0 20px;
+      &:hover {
+        background-color: #505050;
+      }
     }
     .user-menu-container {
       z-index: 1;
@@ -175,7 +191,7 @@ export default {
         flex: 0 0 auto;
         background: white;
         box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2);
-
+        border-radius: 2px;
         display: flex;
         flex-direction: column;
         .menu-item {

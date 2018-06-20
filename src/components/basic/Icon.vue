@@ -169,6 +169,11 @@ export default {
   @include iconType("normal_acc");
   @include iconType("enterprise_admin");
 
+  @include iconType("header_enterprise");
+  @include iconType("header_user");
+  @include iconType("header_dialog");
+  @include iconType("header_dropdown");
+
   // robot icon should a little bit larger than other icons
   .white_robot_icon {
     background-size: 25px 25px;
