@@ -146,18 +146,18 @@ export default {
           const res = data.data;
           if (res.status === 0) {
             that.$notify({ text: that.$t('wordbank.result.success') });
-          } else {
-            that.$notifyFail(that.$t('wordbank.result.fail'));
           }
         })
         .catch((err) => {
           console.log(err.response);
-          that.$notifyFail(that.$t('wordbank.result.fail'));
           if (err.response.status === 400) {
             that.$notifyFail(that.$t('wordbank.error.import_format_invalid'));
+          } else {
+            that.$notifyFail(that.$t('wordbank.result.fail'));
           }
         })
         .finally(() => {
+          that.$refs.fileChooser.value = '';
           that.$emit('endLoading');
         });
     },
