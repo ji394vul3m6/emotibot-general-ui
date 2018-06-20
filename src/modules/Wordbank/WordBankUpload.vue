@@ -157,6 +157,7 @@ export default {
           }
         })
         .finally(() => {
+          that.loadAllAjaxStatus(true);
           that.$refs.fileChooser.value = '';
           that.$emit('endLoading');
         });
