@@ -123,7 +123,7 @@ export default {
         position: 'fixed',
         top: `${inputBox.top + inputBox.height + 3}px`,
         left: `${inputBox.left}px`,
-        width: that.width,
+        width: that.width !== 'auto' ? that.width : '',
       };
 
       that.detectClickListener = (e) => {
