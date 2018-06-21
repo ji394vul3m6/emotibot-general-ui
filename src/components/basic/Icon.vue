@@ -174,6 +174,11 @@ export default {
   @include iconType("header_dialog");
   @include iconType("header_dropdown");
 
+  @include iconType("category_add");
+  @include iconType("category_close");
+  @include iconType("category_dropdown");
+  @include iconType("category_open");
+
   // robot icon should a little bit larger than other icons
   .white_robot_icon {
     background-size: 25px 25px;

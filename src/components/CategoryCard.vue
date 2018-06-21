@@ -4,10 +4,10 @@
     <div id="card-category-header">
       <div id="card-category-header-block">
         <div id="card-category-row">
-          <div class="card-category-title">{{ $t('wordbank.categories') }}</div>
+          <div class="card-category-title">{{ $t('category.title') }}</div>
           <div v-if="canSetting" class="card-category-setting" @click="toggleEditMode">
-            <span v-if="isEditMode"> {{ $t('wordbank.leave_setting') }}</span>
-            <span v-else> {{ $t('wordbank.setting') }} </span>
+            <span v-if="isEditMode"> {{ $t('category.leave_setting') }}</span>
+            <span v-else> {{ $t('category.setting') }} </span>
           </div>
         </div>
         <search-input ref="categorySearchBox" v-model="categoryNameKeyword"></search-input>
@@ -15,18 +15,21 @@
       <div id="card-category-add-root" v-if="isEditMode && canCreate" @click="addRootCategory"> 
         <input id="add-root" type="text"
           v-if="isAddingRoot" v-model="rootName" ref="rootName" 
-          :placeholder="$t('wordbank.placeholder_category_name')"
+          :placeholder="$t('category.placeholder_category_name')"
           @compositionstart="setCompositionState(true)"
           @compositionend="setCompositionState(false)"
           @blur="confirmRootName"
           @keydown.enter="detectCompositionState"
           @keyup.enter="confirmRootName">
-        <span v-else>{{ $t('wordbank.add_rootcategory') }}</span>
+        <div v-else id="add-root-btn">
+          <icon icon-type="category_add" :size=16></icon>
+          <span> {{ $t('category.add_root') }} </span>
+        </div>
       </div>
     </div>
     <div id="card-category-content" ref="cardCategoryContent">
       <div v-if="!hasSearchResult" id="no-category-search-result">
-        {{ $t('wordbank.empty_category_search_result') }}
+        {{ $t('category.empty_search_result') }}
       </div>
       <category-tree-item v-for="(child, idx) in categoryTree.children" 
         v-if="child.visible"
@@ -45,12 +48,12 @@
         class="card-category-setting-option option-addsub"
         :class="{'option-disabled': this.currentActiveItem.layer === maxLayer || this.currentActiveItem.cid < 0}"
         @click="addSubCategory">
-        {{ $t('wordbank.add_subcategory') }}
+        {{ $t('category.add_subcategory') }}
       </div>
       <div v-if="canDelete" class="card-category-setting-option option-delete"
         :class="{'option-disabled': !this.currentActiveItem.deletable}"
         @click="popDeleteCategory">
-        {{ $t('wordbank.delete_category') }}
+        {{ $t('category.delete_category') }}
       </div>
     </div>
   </div>
@@ -398,6 +401,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 @import 'styles/variable';
+$category-item-height: 32px;
 
 #card-category {
   display: flex;
@@ -431,13 +435,14 @@ export default {
 
     #card-category-add-root {
       background: #fcfcfc;
-      height: 36px;
-      line-height: 20px;
-      padding: 8px;
-      padding-left: 23px;
+      height: $category-item-height;
+      line-height: 18px;
+      padding: 10px;
       color: $color-primary;
       cursor: pointer;
       border-bottom: 1px solid $color-borderline;
+      display: flex;
+      align-items: center;
       input[type=text] {
         &#add-root {
           background: #fcfcfc;
@@ -451,14 +456,21 @@ export default {
           }   
         }
       }
+      #add-root-btn {
+        display: flex;
+        align-items: center;
+        span {
+          padding: 0 8px;
+        }
+      }
     }
   }
   #card-category-content {
     flex: 1 1 auto;
     overflow-y: auto;
     #no-category-search-result {
-      height: 36px;
-      line-height: 36px;
+      height: $category-item-height;
+      line-height: $category-item-height;
       text-align: center;
     }
   }

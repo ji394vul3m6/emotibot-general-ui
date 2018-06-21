@@ -22,7 +22,10 @@
           @blur="confirmRootName"
           @keydown.enter="detectCompositionState"
           @keyup.enter="confirmRootName">
-        <span v-else>{{ $t('wordbank.add_rootcategory') }}</span>
+        <div v-else id="add-root-btn">
+          <icon icon-type="category_add" :size=16></icon>
+          <span> {{ $t('wordbank.add_rootcategory') }} </span>
+        </div>
       </div>
     </div>
     <div id="card-category-content" ref="cardCategoryContent">
@@ -267,6 +270,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 @import 'styles/variable';
+$category-item-height: 32px;
 
 #card-category {
   display: flex;
@@ -300,13 +304,14 @@ export default {
 
     #card-category-add-root {
       background: #fcfcfc;
-      height: 36px;
-      line-height: 20px;
-      padding: 8px;
-      padding-left: 23px;
+      height: $category-item-height;
+      line-height: 18px;
+      padding: 10px;
       color: $color-primary;
       cursor: pointer;
       border-bottom: 1px solid $color-borderline;
+      display: flex;
+      align-items: center;
       input[type=text] {
         &#add-root {
           background: #fcfcfc;
@@ -320,14 +325,22 @@ export default {
           }   
         }
       }
+
+      #add-root-btn {
+        display: flex;
+        align-items: center;
+        span {
+          padding: 0 8px;
+        }
+      }
     }
   }
   #card-category-content {
     flex: 1 1 auto;
     overflow-y: auto;
     #no-category-search-result {
-      height: 36px;
-      line-height: 36px;
+      height: $category-item-height;
+      line-height: $category-item-height;
       text-align: center;
     }
   }

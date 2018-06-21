@@ -2,18 +2,14 @@
   <ul>
     <li>
       <div class="tree-item" ref="treeItem"
-        :style="{height: curLayer <= 1 ? '36px' : '30px'}"
         :class="{'active-item': treeItem.isActive}"
         @click="setActiveItem">
         <span class="indentation" 
           :style="{ width: curLayer <= 1 ? '0' : `${15*(curLayer-1)}px`}">
         </span>
-        <span class="triangle"
-          :class="{'triangle-down': !treeItem.showChild,
-            'triangle-up': treeItem.showChild,
-            'invisible': !hasChildren,
-            'active': treeItem.isActive}">
-        </span>
+       <icon v-if="!hasChildren" icon-type="category_close" :size=16></icon>
+        <icon v-else-if="!treeItem.showChild" icon-type="category_dropdown" :size=16></icon>
+        <icon v-else-if="treeItem.showChild" icon-type="category_open" :size=16></icon>
         <div class="item-name">
           <input v-if="isNameEditing" type="text" ref="itemName" 
             v-model="itemName"
@@ -25,7 +21,7 @@
             @keyup.enter="confirmEditItemName"/>
           <span v-else class="tree-item-name">{{ treeItem.name }}</span>
         </div>
-        <icon class="item-icon" icon-type="edit_blue" :size=10 
+        <icon class="item-icon" icon-type="edit_blue" :size=8 
           v-if="treeItem.editable && canEdit"
           ref="editBtn"
           :class="{'invisible': !editMode}"
@@ -226,8 +222,9 @@ export default {
 
     .tree-item {
       box-sizing: border-box;
+      height: 32px;
       flex: 0 0 auto;
-      padding: 10px 8px;
+      padding: 10px;
       display: flex;
       align-items: center;
       border-bottom: 1px solid $color-borderline;
@@ -245,8 +242,8 @@ export default {
         flex: 0 0 auto;
       }
       .item-name {
-        flex: 1 1 auto;
-        padding: 0 5px;
+        flex: 1;
+        padding: 0 8px;
         position: relative;
         display:flex;
         align-items: center;
@@ -262,6 +259,7 @@ export default {
       }
       .item-icon {
         flex: 0 0 12px;
+        margin: 0 2px 0 12px;
       }
     }
   }
