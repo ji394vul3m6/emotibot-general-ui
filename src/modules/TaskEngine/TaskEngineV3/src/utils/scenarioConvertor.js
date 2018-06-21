@@ -226,7 +226,7 @@ export default {
     }
     return -1;
   },
-  convertToRegistryData(skill, skillId) {
+  convertToRegistryData(scenarioId, skill, skillId) {
     const entityList = skill.entityCollectorList.map((item) => {
       if (item.ner.sourceType === 'custom') {
         return {
@@ -271,12 +271,10 @@ export default {
             skill.relatedEntities.relatedEntityCollectorList[i].entityName);
           entityList[tmpIndex].slotBizType = 'ProductPropertySearchable';
         }
-      } else {
-        entityList[0].slotBizType = 'Product';
       }
     }
     const data = {
-      taskId: `wizard_mode_nlu_pc_node_${skillId}`,
+      taskId: `wizard_mode_nlu_pc_node_${skillId}_${scenarioId}`,
       nlgTemplate: skill.tde_setting.nlgTemplate,
       service: skill.tde_setting.service,
       jumpOutTimes: isNaN(parseInt(skill.tde_setting.jumpOutTimes, 10)) ?

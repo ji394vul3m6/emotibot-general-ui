@@ -212,6 +212,12 @@ export default {
             sourceType: 'system',
             slotType: 'take-ticket',
           },
+          {
+            entityCategory: '餐饮实体类别',
+            entityType: '特殊需求',
+            sourceType: 'system',
+            slotType: 'other-require',
+          },
         ],
         金融实体类别: [
           {

@@ -229,15 +229,15 @@ export default {
       content.metadata.update_time = general.getLocalDateTimeIsoString();
       this.saveScenario(content).then(() => {
         this.$vueOnToast.pop('success', this.i18n.task_engine_v3.scenario_edit_page.toast_save_success, '');
-        this.registerNluTdeScenario(content);
+        this.registerNluTdeScenario(this.scenarioId, content);
         this.publishScenario(content);
       });
     },
-    registerNluTdeScenario(content) {
+    registerNluTdeScenario(scenarioId, content) {
       Object.keys(content.skills).map((skillId) => {
         const skill = content.skills[skillId];
         if (skill.entityCollectorList.length > 0) {
-          const data = scenarioConvertor.convertToRegistryData(skill, skillId);
+          const data = scenarioConvertor.convertToRegistryData(scenarioId, skill, skillId);
           api.registerNluTdeScenario(data);
         }
         return skillId;
