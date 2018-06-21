@@ -141,7 +141,7 @@ export default {
         return;
       }
 
-      if (cmdStatus.view !== undefined) {
+      if (Object.keys(cmdStatus).indexOf('view') >= 0) {
         const shouldView = cmds.reduce((ret, cmd) => ret || cmdStatus[cmd], false);
         cmdStatus.view = shouldView;
       }
