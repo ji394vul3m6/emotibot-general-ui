@@ -91,7 +91,6 @@ export default {
       this.toggleShowChild();
     },
     handleActiveItemChange(activeItem, layer, route) {
-      console.log('route:', route);
       route.splice(0, 0, this.treeItem.cid);
       this.$emit('activeItemChange', activeItem, layer, route);
     },

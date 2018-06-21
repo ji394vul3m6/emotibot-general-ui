@@ -63,67 +63,66 @@ export default {
   },
   methods: {
     handleEditModeChange(editMode) {
-      console.log('editMode:', editMode);
+      if (!editMode) {
+        this.loadCommands().finally(() => {
+          this.isEditMode = editMode;
+        });
+        return;
+      }
       this.isEditMode = editMode;
       // block some actions outside
     },
     handleActiveItemChange(activeItem) {
-      console.log('activeItem', activeItem);
-      // change other display
+      if (!this.isEditMode) {
+        this.currentCategory = activeItem;
+      }
     },
     handleItemNameChange(item, itemName) {
-      console.log('item name change:', item.cid, itemName);
-      // call come api then
-      // this.$api.updateCategory(item.cid, itemName)
-      // .then(() => {
-      //   this.$refs.categoryCard.editItemNameSuccess(true);
-      // })
-      // .catch(() => {
-      //   this.$notifyFail(this.$t('wordbank.error.edit_category_name_fail'));
-      //   this.$refs.categoryCard.editItemNameSuccess(false);
-      // })
-      this.$refs.categoryCard.editItemNameSuccess(true);
+      this.$api.editCommandClass(item.cid, itemName)
+      .then(() => {
+        this.$refs.categoryCard.editItemNameSuccess(true);
+      })
+      .catch((err) => {
+        if (err.response.status >= 400 && err.response.status < 500) {
+          this.$notifyFail(err.response.data.result);
+          this.$notifyFail(this.$t('robot_command.error.edit_category_name_fail'));
+        } else {
+          this.$notifyFail(this.$t('robot_command.error.edit_category_name_fail'));
+        }
+        this.$refs.categoryCard.editItemNameSuccess(false);
+      });
     },
     handleDeleteCategory(category) {
       const cid = category.cid;
-      console.log('delete:', cid);
-      // this.$api.deleteWordbankCategory(cid)
-      // .then(() => {
-      //   this.$refs.categoryCard.deleteCategorySuccess(true);
-      // })
-      // .catch(() => {
-      //   this.$notifyFail(this.$t('delete_category_fail'));
-      //   this.$refs.categoryCard.deleteCategorySuccess(false);
-      // });
-      this.$refs.categoryCard.deleteCategorySuccess(true);
+      this.$api.deleteCommandClass(cid)
+      .then(() => {
+        this.$refs.categoryCard.deleteCategorySuccess(true);
+      })
+      .catch((err) => {
+        if (err.response.status >= 400 && err.response.status < 500) {
+          this.$notifyFail(err.response.data.result);
+          this.$notifyFail(this.$t('robot_command.error.delete_category_fail'));
+        } else {
+          this.$notifyFail(this.$t('robot_command.error.delete_category_fail'));
+        }
+        this.$refs.categoryCard.deleteCategorySuccess(false);
+      });
+      // this.$refs.categoryCard.deleteCategorySuccess(true);
     },
     handleAddCategory(pid, newName, layer) {
-      // this.$api.addCategory(pid, newName, layer)
-      // .then((category) => {
-      //   this.$refs.categoryCard.addCategorySuccess(true, category);
-      //   this.$nextTick(() => {
-      //     const categoryContentBlock = this.$refs.cardCategoryContent;
-      //     categoryContentBlock.scrollTop = categoryContentBlock.scrollHeight;
-      //   });
-      // })
-      // .catch(() => {
-      //   this.$notifyFail(this.$t('wordbank.error.add_category_fail'));
-      //   this.$refs.categoryCard.addCategorySuccess(false);
-      // });
-      console.log(pid, newName, layer);
-      const fakeCategory = {
-        children: [],
-        deletable: true,
-        layer,
-        showChild: false,
-        isActive: true,
-        name: newName,
-        id: Math.floor(Math.random() * Math.floor(1000)),
-      };
-      if (layer === 1) {
-        fakeCategory.visible = true;
-      }
-      this.$refs.categoryCard.addCategorySuccess(true, fakeCategory);
+      this.$api.addCommandClass(newName, layer)
+      .then((category) => {
+        this.$refs.categoryCard.addCategorySuccess(true, category);
+      })
+      .catch((err) => {
+        if (err.response.status >= 400 && err.response.status < 500) {
+          this.$notifyFail(err.response.data.result);
+          this.$notifyFail(this.$t('robot_command.error.add_category_fail'));
+        } else {
+          this.$notifyFail(this.$t('robot_command.error.add_category_fail'));
+        }
+        this.$refs.categoryCard.addCategorySuccess(false);
+      });
     },
     setCategoryTree(tree) {
       this.categoryTree = tree;
@@ -135,16 +134,18 @@ export default {
     loadCommands() {
       const that = this;
       that.$emit('startLoading');
-      that.$api.getRobotCommands()
+      return that.$api.getRobotCommands()
         .then((data) => {
-          console.log(data);
           that.setCategoryTree(data);
           that.setCurrentCategory(data.children[0]);
           data.children[0].isActive = true;
         })
         .catch((err) => {
-          console.log(err);
-          that.$notifyFail(this.$t('robot_command.error.load_commands_fail'));
+          if (err.response.status >= 400 && err.response.status < 500) {
+            that.$notifyFail(err.response.data.result);
+          } else {
+            that.$notifyFail(this.$t('robot_command.error.load_commands_fail'));
+          }
         })
         .finally(() => {
           that.$emit('endLoading');

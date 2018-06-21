@@ -236,6 +236,7 @@ export default {
           console.log(err);
           this.$notifyFail(this.$t('robot_command.error.edit_command_fail'));
           // should reset status in tableData
+          command.status = !command.status;
           const theCommandIdx = this.currentCommands
             .findIndex(cmd => cmd.id === command.id);
           this.currentCommands.splice(theCommandIdx, 1, command);
@@ -393,9 +394,7 @@ export default {
       this.checkedCommand = checked;
     },
     loadCurrentCommands() {
-      if (!this.isEditMode) {
-        this.commands = this.value.map(rule => this.parseCommand(rule));
-      }
+      this.commands = this.value.map(rule => this.parseCommand(rule));
     },
     parseCommand(cmd) {
       return {

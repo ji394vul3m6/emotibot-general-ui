@@ -194,7 +194,9 @@ export default {
       this.currentActiveItem.route = route;
     },
     resetActiveItem(treeItem) {
-      treeItem.isActive = false;
+      if (treeItem.cid !== -1) {
+        treeItem.isActive = false;
+      }
       if (treeItem.children && treeItem.children.length > 0) {
         treeItem.children.forEach((child) => {
           this.resetActiveItem(child);
@@ -264,6 +266,9 @@ export default {
     },
     findItemParentRef(item) {
       const parent = this.findItemParent(this.categoryTree, item.cid);
+      if (parent.cid === -1) {
+        return undefined;
+      }
       const parentRefName = `${parent.cid}-${parent.name}`;
       return this.findItemRef(this, parentRefName);
     },
@@ -318,7 +323,12 @@ export default {
       if (this.isAddingRoot) {
         if (success) {
           this.resetActiveItem(this.categoryTree);
-          this.categoryTree.children.push(-1, 0, category);
+          this.categoryTree.children.push(category);
+          this.setActiveItem(this.categoryTree, category.cid);
+          this.$nextTick(() => {
+            const categoryContentBlock = this.$refs.cardCategoryContent;
+            categoryContentBlock.scrollTop = categoryContentBlock.scrollHeight;
+          });
         }
         this.rootName = '';
         this.isAddingRoot = false;
@@ -344,15 +354,25 @@ export default {
       };
       this.$popCheck(option);
     },
-    confirmDeleteCategory() { // v
+    confirmDeleteCategory() {
       this.$emit('deleteCategory', this.currentActiveItem);
     },
-    deleteCategorySuccess(success) {  // v
-      const parentRef = this.findItemParentRef(this.currentActiveItem);
-      parentRef.deleteCategorySuccess(success, this.currentActiveItem.cid);
+    deleteCategorySuccess(success) {
+      if (success) {
+        const parentRef = this.findItemParentRef(this.currentActiveItem);
+        if (parentRef === undefined) {  // parent is root
+          const idxToDel = this.categoryTree.children
+            .findIndex(child => child.id === this.currentActiveItem.cid);
+          this.categoryTree.children.splice(idxToDel);
+          // back to all
+          this.handleSetActiveToAll();
+        } else {
+          parentRef.deleteCategorySuccess(success, this.currentActiveItem.cid);
+        }
+      }
     },
 
-    toggleEditMode() {  // v
+    toggleEditMode() {
       this.isEditMode = !this.isEditMode;
       if (!this.isEditMode) {
         this.categoryNameKeyword = '';

@@ -254,6 +254,9 @@ export default {
       },
     },
     error: {
+      add_category_fail: '新增分类失败',
+      edit_category_name_fail: '编辑分类失败',
+      delete_category_fail: '删除分类失败',
       load_commands_fail: '载入指令失败',
       add_new_tag_fail: '新增标签失败',
       add_command_fail: '创建指令失败',
