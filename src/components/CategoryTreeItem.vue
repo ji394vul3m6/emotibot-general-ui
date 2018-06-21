@@ -215,7 +215,6 @@ export default {
 </script>
 <style lang="scss" scoped>
   @import './styles/variable';
-  $color-category:  #6b9de3;
   ul {
     padding: 0px;
   }
@@ -237,7 +236,7 @@ export default {
       cursor: pointer;
 
       &.active-item {
-        background: $color-category;
+        background: $color-primary;
         color: $color-white;
       }
       &:hover:not(.active-item) {
@@ -306,7 +305,7 @@ export default {
   }
 
   input[type=text] {
-    background: $color-category;
+    background: $color-primary;
     border: 0px;
     color: $color-white;
     padding: 0px;
