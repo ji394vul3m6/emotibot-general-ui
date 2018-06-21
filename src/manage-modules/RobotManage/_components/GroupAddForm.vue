@@ -11,9 +11,9 @@
     <div class="block">
       <div v-for="robot in robots" :key="robot.id" class="check-item">
         <input type="checkbox" v-model="robot.check" :id="robot.id">
-        <label :for="robot.id" class="check-text" @mouseover.stop="showTooltip($event, robot)" @mouseout.stop="hideTooltip">
+        <div :for="robot.id" class="check-text" @mouseover.stop="showTooltip($event, robot)" @mouseout.stop="hideTooltip">
           {{ robot.name }}
-        </label>
+        </div>
       </div>
     </div>
     <div ref="tooltip" class="tooltip">
@@ -116,6 +116,7 @@ export default {
 .tooltip {
   visibility: hidden;
   word-break: break-all;
+  position: fixed;
 
   max-width: 172px;
   border-radius: 4px;
@@ -173,10 +174,16 @@ export default {
       display: flex;
       align-items: center;
       flex: 0 0 140px;
+      max-width: 140px;
       padding: 5px 10px;
+
       .check-text {
+        flex: 1;
         padding: 5px 3px;
         @include font-14px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
       }
     }
   }

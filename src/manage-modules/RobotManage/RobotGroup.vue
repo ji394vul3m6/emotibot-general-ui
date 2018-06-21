@@ -20,7 +20,7 @@
               </div>
             </div>
             <div class="card-content">
-              <div v-for="app in group.apps" :key="app.id">
+              <div v-for="app in group.apps" :key="app.id" class="robot-name">
                 {{ app.name }}
               </div>
             </div>
@@ -184,6 +184,7 @@ export default {
       flex: 0 0 274px;
       height: 180px;
       margin-right: 30px;
+      margin-bottom: 30px;
       border-radius: 4px;
       border: solid 1px #e9e9e9;
 
@@ -202,7 +203,7 @@ export default {
         flex: 0 0 auto;
         border-top-left-radius: 4px;
         border-top-right-radius: 4px;
-        background-color: #f8f8f8;
+        background-color: #ffffff;
         border-bottom: solid 1px #e9e9e9;
         font-size: 16px;
         line-height: 24px;
@@ -214,9 +215,18 @@ export default {
           flex: 1;
         }
         .card-title-edit {
-          flex: 0 0 18px;
+          flex: 0 0 24px;
+          height: 24px;
           visibility: hidden;
           @include click-button();
+
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          &:hover {
+            background-color: #f7f7f7;
+            border-radius: 12px;
+          }
         }
       }
       .card-content {
@@ -227,9 +237,14 @@ export default {
 
         display: flex;
         flex-wrap: wrap;
+        align-content: flex-start;
         & > div {
           flex: 0 0 auto;
           margin-right: 20px;
+          max-width: 150px;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
         }
       }
     }
