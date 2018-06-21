@@ -22,7 +22,12 @@
           <span v-else class="tree-item-name">{{ treeItem.name }}</span>
         </div>
         <icon class="item-icon" icon-type="edit_blue" :size=8 
-          v-if="treeItem.editable && canEdit"
+          v-if="treeItem.editable && canEdit && !treeItem.isActive"
+          ref="editBtn"
+          :class="{'invisible': !editMode}"
+          @click="editItemName"/>
+        <icon class="item-icon" icon-type="edit_white" :size=8 
+          v-else-if="treeItem.editable && canEdit && treeItem.isActive"
           ref="editBtn"
           :class="{'invisible': !editMode}"
           @click="editItemName"/>
@@ -233,6 +238,9 @@ export default {
       &.active-item {
         background: $color-category;
         color: $color-white;
+      }
+      &:hover:not(.active-item) {
+        background: #f8f8f8;
       }
 
       .indentation {

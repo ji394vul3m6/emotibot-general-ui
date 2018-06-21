@@ -166,6 +166,7 @@ export default {
   @include iconType("edit");
   @include iconType("robot");
   @include iconType("edit_blue");
+  @include iconType("edit_white");
   @include iconType("normal_acc");
   @include iconType("enterprise_admin");
 
