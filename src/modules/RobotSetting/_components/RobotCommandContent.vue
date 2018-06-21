@@ -394,21 +394,7 @@ export default {
       this.checkedCommand = checked;
     },
     loadCurrentCommands() {
-      this.commands = this.value.map(rule => this.parseCommand(rule));
-    },
-    parseCommand(cmd) {
-      return {
-        id: cmd.id,
-        name: cmd.name,
-        labels: cmd.labels,
-        begin_time: cmd.begin_time,
-        end_time: cmd.end_time,
-        rule: cmd.rule,
-        status: cmd.status,
-        target: cmd.target,
-        answer: cmd.answer,
-        response_type: cmd.response_type,
-      };
+      this.commands = this.value;
     },
     loadLabels() {
       const that = this;

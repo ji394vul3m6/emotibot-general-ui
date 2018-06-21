@@ -306,7 +306,7 @@ export default {
 
 #pop-wordbank-edit {
   @include font-14px();
-  width: 960px;
+  max-width: 960px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
