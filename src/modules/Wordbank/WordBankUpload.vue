@@ -255,6 +255,7 @@ export default {
 
   #wordbank-upload-header {
     @include font-16px();
+    color: $color-font-active;
     height: 60px;
     border-bottom: 1px solid $color-borderline;
     display: flex;

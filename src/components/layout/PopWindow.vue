@@ -245,6 +245,7 @@ $pop-title-font-color: #333333;
     // padding: 5px;
 
     & > .title {
+      color: $color-font-active;
       line-height: $pop-title-font-size;
       font-size: $pop-title-font-size;
       padding: 25px;
