@@ -9,8 +9,8 @@
     </div>
     <div class="row">
       <div class="row-title">{{ $t('management.description') }}</div>
-      <input class="row-input" v-model="description"
-        :placeholder="$t('management.length_50_placeholder')">
+      <input class="row-input" v-model="description" maxlength=45
+        :placeholder="$t('management.length_45_placeholder')">
     </div>
   </div>  
 </template>

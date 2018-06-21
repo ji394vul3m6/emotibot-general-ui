@@ -820,7 +820,7 @@ export default {
     description: '描述',
 
     input_placeholder: '输入文字',
-    length_50_placeholder: '字数限制50内',
+    length_45_placeholder: '字数限制45内',
 
     create_group: '创建群组',
     add_robot: '加入机器人',
