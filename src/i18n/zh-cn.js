@@ -224,6 +224,11 @@ export default {
     command_status: '状态',
     delete_command_msg: '确定要删除指令 {name} 吗？',
     delete_multi_command_msg: '确定要删除所选指令吗？',
+    movetopop: {
+      tooltip: '请选择分类',
+      title: '移动项目至...',
+      move_command_success: '指令已移动',
+    },
     editpop: {
       command: {
         title: '指令名称',
@@ -270,6 +275,8 @@ export default {
       add_command_fail: '创建指令失败',
       edit_command_fail: '编辑指令失败',
       delete_command_fail: '删除指令失败',
+      move_fail: '移动指令失败',
+      move_command_fail: '移动指令:{name} 失败',
       name_input_empty: '指令名称不得为空',
       date_format_error: '开始时间不得晚于结束时间',
       reply_format_json_error: 'JSON格式错误',

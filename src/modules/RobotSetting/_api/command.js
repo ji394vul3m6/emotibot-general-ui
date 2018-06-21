@@ -4,9 +4,33 @@ const COMMANDS_PATH = '/api/v1/bf/cmds';
 const COMMAND_PATH = '/api/v1/bf/cmd';
 const COMMAND_CLASS_PATH = '/api/v1/bf/cmd-class';
 
-// function getSingleCommandClass(id) {
-//   return this.$reqGet(`${COMMAND_CLASS_PATH}/${id}`);
-// }
+function getSingleCommandClass(id, layer) {
+  return this.$reqGet(`${COMMAND_CLASS_PATH}/${id}`)
+    .then((response) => {
+      const rspCommand = response.data.result;
+
+      if (rspCommand.children === null) {
+        rspCommand.children = [];
+      }
+      if (rspCommand.cmds === null) {
+        rspCommand.cmds = [];
+      } else {
+        rspCommand.cmds.forEach((cmd) => {
+          if (cmd.labels === null) {
+            cmd.labels = [];
+          }
+        });
+      }
+
+      rspCommand.deletable = true;
+      rspCommand.editable = true;
+      rspCommand.isActive = false;
+      rspCommand.layer = layer;
+      rspCommand.visible = true;
+
+      return rspCommand;
+    });
+}
 
 function editCommandClass(id, name) {
   const param = {
@@ -45,6 +69,13 @@ function addCommandClass(name, layer) {
 
       return rspCommand;
     });
+}
+
+function moveToCategory(id, cid) {
+  const param = {
+    cid,
+  };
+  return this.$reqPut(`${COMMAND_PATH}/${id}/move`, qs.stringify(param));
 }
 
 function deleteRobotCommand(id) {
@@ -157,6 +188,8 @@ export default {
   addRobotCommand,
   editRobotCommand,
   deleteRobotCommand,
+  moveToCategory,
+  getSingleCommandClass,
   editCommandClass,
   deleteCommandClass,
   addCommandClass,

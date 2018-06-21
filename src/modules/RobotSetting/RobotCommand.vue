@@ -1,7 +1,7 @@
 <template>
   <div id="robot-command">
     <category-card ref="categoryCard" id="card-category" class="card h-fill"
-      :maxLayer="4"
+      :maxLayer="1"
       :categoryTree="categoryTree"
       :activeItemId="activeItemId"
       :allowSubCategory="false"
@@ -17,6 +17,7 @@
     <robot-command-content 
       id="card-content" class="card h-fill"
       :isEditMode="isEditMode"
+      :categoryTree="categoryTree"
       :value="currentCategory.cmds"
       :currentCategoryId="currentCategory.cid"
       :canEdit="canEdit"
@@ -74,7 +75,17 @@ export default {
     },
     handleActiveItemChange(activeItem) {
       if (!this.isEditMode) {
-        this.currentCategory = activeItem;
+        if (activeItem.cid > 0) {
+          this.$api.getSingleCommandClass(activeItem.cid, activeItem.layer)
+          .then((category) => {
+            const classIdx = this.categoryTree.children
+              .findIndex(child => child.cid === category.cid);
+            this.categoryTree.children.splice(classIdx, 1, category);
+            this.setCurrentCategory(category);
+          });
+        } else {
+          this.loadCommands();
+        }
       }
     },
     handleItemNameChange(item, itemName) {

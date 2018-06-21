@@ -1,7 +1,7 @@
 
 <template>
   <div id="card-category">
-    <div id="card-category-header">
+    <div id="card-category-header" v-if="!selectOnly">
       <div id="card-category-header-block">
         <div id="card-category-row">
           <div class="card-category-title">{{ $t('category.title') }}</div>
@@ -43,7 +43,7 @@
         @itemNameChange="handleItemNameChange"
         @setActiveToAll="handleSetActiveToAll"></category-tree-item>
     </div>
-    <div id="card-category-footer" v-if="isEditMode">
+    <div id="card-category-footer" v-if="isEditMode && !selectOnly">
       <div v-if="allowSubCategory && canCreate" 
         class="card-category-setting-option option-addsub"
         :class="{'option-disabled': this.currentActiveItem.layer === maxLayer || this.currentActiveItem.cid < 0}"
@@ -92,6 +92,10 @@ export default {
       default: false,
     },
     canCreate: {
+      type: Boolean,
+      default: false,
+    },
+    selectOnly: {
       type: Boolean,
       default: false,
     },
