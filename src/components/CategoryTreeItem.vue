@@ -7,9 +7,11 @@
         <span class="indentation" 
           :style="{ width: curLayer <= 1 ? '0' : `${15*(curLayer-1)}px`}">
         </span>
-       <icon v-if="!hasChildren" icon-type="category_close" :size=16></icon>
-        <icon v-else-if="!treeItem.showChild" icon-type="category_dropdown" :size=16></icon>
-        <icon v-else-if="treeItem.showChild" icon-type="category_open" :size=16></icon>
+        <div class="icon-block" @click="toggleShowChild">
+          <icon v-if="!hasChildren" icon-type="category_close" :size=16></icon>
+          <icon v-else-if="!treeItem.showChild" icon-type="category_dropdown" :size=16></icon>
+          <icon v-else-if="treeItem.showChild" icon-type="category_open" :size=16></icon>
+        </div>
         <div class="item-name">
           <input v-if="isNameEditing" type="text" ref="itemName" 
             v-model="itemName"
@@ -89,7 +91,6 @@ export default {
     setActiveItem() {
       const route = [this.treeItem.cid];
       this.$emit('activeItemChange', this.treeItem, this.curLayer, route);
-      this.toggleShowChild();
     },
     handleActiveItemChange(activeItem, layer, route) {
       route.splice(0, 0, this.treeItem.cid);
@@ -229,7 +230,7 @@ export default {
       box-sizing: border-box;
       height: 32px;
       flex: 0 0 auto;
-      padding: 10px;
+      padding: 0 10px;
       display: flex;
       align-items: center;
       border-bottom: 1px solid $color-borderline;
@@ -242,8 +243,16 @@ export default {
       &:hover:not(.active-item) {
         background: #f8f8f8;
       }
-
+      .icon-block {
+        flex: 0 0 auto;
+        height: 30px;
+        width: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
       .indentation {
+        display: inline-block;
         flex: 0 0 auto;
       }
       .triangle {

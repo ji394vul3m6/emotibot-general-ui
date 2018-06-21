@@ -7,9 +7,11 @@
         <span class="indentation" 
           :style="{ width: treeItem.layer <= 1 ? '0' : `${15*(treeItem.layer-1)}px`}">
         </span>
-        <icon v-if="!hasChildren" icon-type="category_close" :size=16></icon>
-        <icon v-else-if="!treeItem.showChild" icon-type="category_dropdown" :size=16></icon>
-        <icon v-else-if="treeItem.showChild" icon-type="category_open" :size=16></icon>
+        <div class="icon-block" @click="toggleShowChild">
+          <icon v-if="!hasChildren" icon-type="category_close" :size=16></icon>
+          <icon v-else-if="!treeItem.showChild" icon-type="category_dropdown" :size=16></icon>
+          <icon v-else-if="treeItem.showChild" icon-type="category_open" :size=16></icon>
+        </div>
         <div class="item-name">
           <input v-if="isNameEditing" type="text" ref="itemName" 
             v-model="itemName"
@@ -93,7 +95,6 @@ export default {
       this.setCurrentCategory(this.treeItem);
       this.resetActiveCategory();
       this.treeItem.isActive = true;
-      this.toggleShowChild();
     },
     toggleShowChild() {
       this.treeItem.showChild = !this.treeItem.showChild;
@@ -227,7 +228,7 @@ export default {
       box-sizing: border-box;
       height: 32px;
       flex: 0 0 auto;
-      padding: 10px;
+      padding: 0 10px;
       display: flex;
       align-items: center;
       border-bottom: 1px solid $color-borderline;
@@ -240,16 +241,20 @@ export default {
       &:hover:not(.active-item) {
         background: #f8f8f8;
       }
-
-      .indentation {
+      .icon-block {
         flex: 0 0 auto;
+        height: 30px;
+        width: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
-      .triangle {
+      .indentation {
+        display: inline-block;
         flex: 0 0 auto;
       }
       .item-name {
         flex: 1;
-        padding: 0 8px;
         position: relative;
         display:flex;
         align-items: center;
@@ -270,26 +275,6 @@ export default {
     }
   }
 
-  .triangle-up {
-    width: 0; 
-    height: 0; 
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-bottom: 5px solid $color-icon;
-    &.active {
-      border-bottom: 5px solid $color-white;
-    }
-  }
-  .triangle-down {
-    width: 0; 
-    height: 0; 
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-top: 5px solid $color-icon;
-    &.active {
-      border-top: 5px solid $color-white;
-    }
-  }
   .invisible {
     visibility: hidden;
   }
