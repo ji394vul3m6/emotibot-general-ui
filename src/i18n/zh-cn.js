@@ -764,6 +764,7 @@ export default {
     },
   },
   error_msg: {
+    delete_success: '删除成功',
     client_error: '呼叫端口错误',
     server_error: '伺服器错误',
     request_fail: '请求失败',
