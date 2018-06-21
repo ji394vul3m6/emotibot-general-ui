@@ -764,7 +764,11 @@ export default {
     },
   },
   error_msg: {
+    upload_file_undefined: '档案无法辨识',
+    upload_file_size_error: '档案大小需介于 0 ~ 2M',
+
     delete_success: '删除成功',
+    delete_fail: '删除失败',
     client_error: '呼叫端口错误',
     server_error: '伺服器错误',
     request_fail: '请求失败',
