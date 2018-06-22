@@ -2,6 +2,7 @@
 <template>
   <div id="card-content" class="card">
     <div id="card-content-header">
+      <div id="card-content-title">{{ categoryName }}</div>
       <search-input v-model="commandKeyword"></search-input>
     </div>
     <div id="card-content-content">
@@ -82,6 +83,7 @@ export default {
       appid: this.getAppID('appid'),
       labels: [],
 
+      categoryName: '',
       commands: [],
       filteredCommands: [],
       currentCommands: [],
@@ -430,6 +432,8 @@ export default {
     },
     loadCurrentCommands() {
       this.commands = this.value;
+      this.categoryName = this.categoryTree.children
+        .find(child => child.cid === this.currentCategoryId).name;
     },
     loadLabels() {
       const that = this;
@@ -484,7 +488,10 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
-
+    #card-content-title {
+      @include font-16px();
+      color: $color-font-active;
+    }
     #io-buttons {
       display: flex;
       justify-content: space-between;
