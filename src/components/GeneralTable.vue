@@ -41,7 +41,9 @@
           <td v-if="hasAction" class="table-col-action" :class="{'multi-action': action.length > 1}">
             <span class="actions" v-for="act in action" 
               :key="act.text" :class="act.type"
-              @click="act.onclick(data, idx)"> {{ act.text }}</span>
+              @click="act.onclick(data, idx)"
+              v-if="data.action_enable === undefined || (data.action_enable && data.action_enable[act.key])"
+            > {{ act.text }}</span>
           </td>
         </tr>
       </tbody>

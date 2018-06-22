@@ -16,7 +16,7 @@
           <li v-for="(line, idx) in desc" :key="idx">{{ line }}</li>
         </ol>
       </div>
-      <div style="width:40%;">
+      <div>
         <general-table :tableData="tableData" :tableHeader="tableHeader" :action="action"></general-table>
       </div>
     </div>
@@ -144,10 +144,12 @@ export default {
         },
       ];
       that.action.push({
+        key: 'export',
         text: that.$t('general.export'),
         type: 'primary',
         onclick: that.downloadMapping,
       }, {
+        key: 'delete',
         text: that.$t('general.delete'),
         type: 'error',
         onclick: that.deleteMapping,
@@ -165,6 +167,10 @@ export default {
           files.forEach((file) => {
             that.tableData.push({
               file_name: file,
+              action_enable: {
+                export: true,
+                delete: false,
+              },
               user: 'templateadmin',
             });
           });
@@ -180,6 +186,10 @@ export default {
           files.forEach((file) => {
             that.tableData.push({
               file_name: file,
+              action_enable: {
+                export: true,
+                delete: true,
+              },
               user: userid,
             });
           });

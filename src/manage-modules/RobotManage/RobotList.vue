@@ -271,6 +271,9 @@ export default {
         padding-bottom: 10px;
         margin-bottom: 20px;
         box-shadow: inset 0 -1px 0 0 #e9e9e9;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
 
         display: flex;
         align-items: center;
@@ -295,13 +298,19 @@ export default {
           white-space: nowarp;
         }
         .card-title-edit {
-          flex: 0 0 18px;
+          flex: 0 0 24px;
+          height: 24px;
           visibility: hidden;
           @include click-button();
 
           display: flex;
           align-items: center;
           justify-content: center;
+
+          &:hover {
+            background-color: #f7f7f7;
+            border-radius: 12px;
+          }
         }
       }
       .card-description {

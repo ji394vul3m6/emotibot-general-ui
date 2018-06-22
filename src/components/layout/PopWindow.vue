@@ -245,10 +245,11 @@ $pop-title-font-color: #333333;
     // padding: 5px;
 
     & > .title {
+      color: $color-font-active;
       line-height: $pop-title-font-size;
       font-size: $pop-title-font-size;
       padding: 25px;
-      padding-bottom: 10px;
+      padding-bottom: 5px;
 
       width: 100%;
       & > label {
@@ -260,6 +261,7 @@ $pop-title-font-color: #333333;
     }
 
     & > .content {
+      padding-top: 5px;
       position: relative;
       min-height: 30px;
       max-height: calc(#{$pop-max-height} - 140px);

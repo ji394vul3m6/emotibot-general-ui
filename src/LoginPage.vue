@@ -8,7 +8,9 @@
         <input ref="user" type="text" v-model="input.account" :placeholder="$t('login.account_place')" @keydown="passwordKey">
       </div>
       <div class="input-row">
-        <input ref="password" type="password" v-model="input.password" :placeholder="$t('login.password_place')" @keydown="passwordKey">
+        <input ref="password" type="password" v-model="input.password"
+        :placeholder="$t('login.password_place')" @keydown="passwordKey"
+        autocomplete="off">
       </div>
       <div class="input-button-row">
         <loading-button main fill @click="submit" ref="btn">
@@ -101,20 +103,24 @@ export default {
 <style lang="scss">
 @import "styles/reset.scss";
 @import "styles/variable.scss";
+input:-webkit-autofill {
+  -webkit-box-shadow:0 0 0 50px white inset;
+  -webkit-text-fill-color: #333;
+}
 ::-webkit-input-placeholder {
-   text-align: center;
+  text-align: center;
 }
 
 :-moz-placeholder { /* Firefox 18- */
-   text-align: center;  
+  text-align: center;  
 }
 
 ::-moz-placeholder {  /* Firefox 19+ */
-   text-align: center;  
+  text-align: center;  
 }
 
 :-ms-input-placeholder {  
-   text-align: center; 
+  text-align: center; 
 }
 div {
   box-sizing: border-box;

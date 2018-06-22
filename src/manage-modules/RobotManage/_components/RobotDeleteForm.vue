@@ -2,7 +2,7 @@
   <div class="form">
     <div class="row">
       <div class="row-title">{{ $t('management.input_personal_pass') }}</div>
-      <input class="row-input" v-model="password" type="password"
+      <input class="row-input" v-model="password" type="password" autocomplete="new-password"
         :placeholder="$t('management.manager_password')"
         v-tooltip="passwordTooltip"
         ref="password">
@@ -10,8 +10,8 @@
     <div class="row">
       <div class="row-title">{{ $t('management.reason_description') }}</div>
       <input class="row-input" v-model="reason"
-        :placeholder="$t('management.length_50_placeholder')"
-        maxlength="50">
+        :placeholder="$t('management.length_45_placeholder')"
+        maxlength="45">
     </div>
   </div>  
 </template>

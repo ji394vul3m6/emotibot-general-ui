@@ -81,6 +81,14 @@ export default {
     contact_sm: '无法登入？请联络管理人员',
   },
   category: {
+    title: '分类',
+    setting: '设置',
+    leave_setting: '离开设置',
+    placeholder_category_name: '输入分类名称',
+    add_root: '新增第一层分类',
+    add_subcategory: '新增子分类',
+    delete_category: '删除分类',
+    empty_search_result: '无符合分类',
     all: '全部',
     no_category: '未分类',
     delete_category_msg: '确定要删除分类 {name} 及其子分类吗？',
@@ -216,6 +224,11 @@ export default {
     command_status: '状态',
     delete_command_msg: '确定要删除指令 {name} 吗？',
     delete_multi_command_msg: '确定要删除所选指令吗？',
+    movetopop: {
+      tooltip: '请选择分类',
+      title: '移动项目至...',
+      move_command_success: '指令已移动',
+    },
     editpop: {
       command: {
         title: '指令名称',
@@ -254,11 +267,16 @@ export default {
       },
     },
     error: {
+      add_category_fail: '新增分类失败',
+      edit_category_name_fail: '编辑分类失败',
+      delete_category_fail: '删除分类失败',
       load_commands_fail: '载入指令失败',
       add_new_tag_fail: '新增标签失败',
       add_command_fail: '创建指令失败',
       edit_command_fail: '编辑指令失败',
       delete_command_fail: '删除指令失败',
+      move_fail: '移动指令失败',
+      move_command_fail: '移动指令:{name} 失败',
       name_input_empty: '指令名称不得为空',
       date_format_error: '开始时间不得晚于结束时间',
       reply_format_json_error: 'JSON格式错误',
@@ -764,6 +782,11 @@ export default {
     },
   },
   error_msg: {
+    upload_file_undefined: '档案无法辨识',
+    upload_file_size_error: '档案大小需介于 0 ~ 2M',
+
+    delete_success: '删除成功',
+    delete_fail: '删除失败',
     client_error: '呼叫端口错误',
     server_error: '伺服器错误',
     request_fail: '请求失败',
@@ -804,7 +827,7 @@ export default {
     description: '描述',
 
     input_placeholder: '输入文字',
-    length_50_placeholder: '字数限制50内',
+    length_45_placeholder: '字数限制45内',
 
     create_group: '创建群组',
     add_robot: '加入机器人',

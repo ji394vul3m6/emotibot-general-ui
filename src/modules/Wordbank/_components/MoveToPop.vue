@@ -1,5 +1,5 @@
 <template>
-  <div id="moveto-container">
+  <div id="moveto-container" ref="moveToContainer" v-tooltip="warnTooltip">
     <category-tree v-for="(child, idx) in wordbank.children" 
       v-if="child.visible && child.name !== $t('wordbank.all')"
       :treeItem="child"
@@ -16,11 +16,27 @@ export default {
   components: {
     CategoryTree,
   },
+  data() {
+    return {
+      warnTooltip: {
+        msg: this.$t('robot_command.movetopop.tooltip'),
+        eventOnly: true,
+      },
+    };
+  },
   computed: {
     ...mapGetters([
       'wordbank',
       'isActiveId',
     ]),
+  },
+  watch: {
+    isActiveId() {
+      if (this.isActiveId !== undefined) {
+        const event = new Event('tooltip-hide');
+        this.$refs.moveToContainer.dispatchEvent(event);
+      }
+    },
   },
   methods: {
     ...mapMutations([
@@ -34,6 +50,8 @@ export default {
     validate() {
       if (this.isActiveId === undefined) {
         // should show error message somewhere
+        const event = new Event('tooltip-show');
+        this.$refs.moveToContainer.dispatchEvent(event);
         return;
       }
       this.$emit('validateSuccess', this.isActiveId);

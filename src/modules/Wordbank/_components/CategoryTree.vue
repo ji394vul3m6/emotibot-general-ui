@@ -2,18 +2,16 @@
   <ul>
     <li>
       <div class="tree-item" 
-        :style="{height: treeItem.layer <= 1 ? '36px' : '30px'}"
         :class="{'active-item': treeItem.isActive}"
         @click="setActive">
         <span class="indentation" 
           :style="{ width: treeItem.layer <= 1 ? '0' : `${15*(treeItem.layer-1)}px`}">
         </span>
-        <span class="triangle"
-          :class="{'triangle-down': !treeItem.showChild,
-            'triangle-up': treeItem.showChild,
-            'invisible': !hasChildren,
-            'active': treeItem.isActive}">
-        </span>
+        <div class="icon-block" @click="toggleShowChild">
+          <icon v-if="!hasChildren" icon-type="category_close" :size=16></icon>
+          <icon v-else-if="!treeItem.showChild" icon-type="category_dropdown" :size=16></icon>
+          <icon v-else-if="treeItem.showChild" icon-type="category_open" :size=16></icon>
+        </div>
         <div class="item-name">
           <input v-if="isNameEditing" type="text" ref="itemName" 
             v-model="itemName"
@@ -26,8 +24,13 @@
             @keyup.enter="confirmEditItemName"/>
           <span v-else class="tree-item-name">{{ treeItem.name }}</span>
         </div>
-        <icon class="item-icon" icon-type="edit_blue" :size=10 
-          v-if="treeItem.editable && canEdit"
+        <icon class="item-icon" icon-type="edit_blue" :size=8 
+          v-if="treeItem.editable && canEdit && !treeItem.isActive"
+          ref="editBtn"
+          :class="{'invisible': !isEditMode}"
+          @click="editItemName"/>
+        <icon class="item-icon" icon-type="edit_white" :size=8 
+          v-else-if="treeItem.editable && canEdit && treeItem.isActive"
           ref="editBtn"
           :class="{'invisible': !isEditMode}"
           @click="editItemName"/>
@@ -92,7 +95,6 @@ export default {
       this.setCurrentCategory(this.treeItem);
       this.resetActiveCategory();
       this.treeItem.isActive = true;
-      this.toggleShowChild();
     },
     toggleShowChild() {
       this.treeItem.showChild = !this.treeItem.showChild;
@@ -211,7 +213,6 @@ export default {
 </script>
 <style lang="scss" scoped>
   @import './styles/variable';
-  $color-category:  #6b9de3;
   ul {
     padding: 0px;
   }
@@ -224,27 +225,35 @@ export default {
 
     .tree-item {
       box-sizing: border-box;
+      height: 32px;
       flex: 0 0 auto;
-      padding: 10px 8px;
+      padding: 0 10px;
       display: flex;
       align-items: center;
       border-bottom: 1px solid $color-borderline;
       cursor: pointer;
 
       &.active-item {
-        background: $color-category;
+        background: $color-primary;
         color: $color-white;
       }
-
-      .indentation {
-        flex: 0 0 auto;
+      &:hover:not(.active-item) {
+        background: #f8f8f8;
       }
-      .triangle {
+      .icon-block {
+        flex: 0 0 auto;
+        height: 30px;
+        width: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .indentation {
+        display: inline-block;
         flex: 0 0 auto;
       }
       .item-name {
-        flex: 1 1 auto;
-        padding: 0 5px;
+        flex: 1;
         position: relative;
         display:flex;
         align-items: center;
@@ -260,36 +269,17 @@ export default {
       }
       .item-icon {
         flex: 0 0 12px;
+        margin: 0 2px 0 12px;
       }
     }
   }
 
-  .triangle-up {
-    width: 0; 
-    height: 0; 
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-bottom: 5px solid $color-icon;
-    &.active {
-      border-bottom: 5px solid $color-white;
-    }
-  }
-  .triangle-down {
-    width: 0; 
-    height: 0; 
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-top: 5px solid $color-icon;
-    &.active {
-      border-top: 5px solid $color-white;
-    }
-  }
   .invisible {
     visibility: hidden;
   }
 
   input[type=text] {
-    background: $color-category;
+    background: $color-primary;
     border: 0px;
     color: $color-white;
     padding: 0px;

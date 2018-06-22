@@ -9,7 +9,7 @@ input {
   @include font-12px();
   box-sizing: border-box;
   display: inline-block;
-  padding: 5px 8px;
+  padding: 4px 8px;
   border: solid 1px $color-borderline;
   border-radius: 2px;
   &::placeholder {
@@ -30,6 +30,10 @@ input {
     &:hover{
       border-color: $color-borderline;
     }
+  }
+  &:-webkit-autofill {
+    -webkit-box-shadow:0 0 0 50px white inset;
+    -webkit-text-fill-color: #333;
   }
 }
 
@@ -53,7 +57,7 @@ input {
   input {
     flex: 1 1 auto;
     min-width: 0px;
-    padding: 5px 8px;
+    padding: 4px 8px;
     border: 0px;
     &:focus {
       outline: none;

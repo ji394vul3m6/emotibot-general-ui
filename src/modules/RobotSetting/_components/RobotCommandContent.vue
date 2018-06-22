@@ -18,12 +18,12 @@
           :button-type="this.checkedCommand.length === 0 ? 'disable' : 'error'">
           {{ $t('robot_command.delete') }}
         </text-button>
-        <!-- <text-button 
+        <text-button 
           v-if="canEdit"
           @click="popMoveToCategory"
           :button-type="this.checkedCommand.length === 0 ? 'disable' : 'default'">
           {{ $t('robot_command.moveto') }}
-        </text-button> -->
+        </text-button>
       </div>
       <general-table id="content-table" 
         :tableHeader="tableHeader" :tableData="tableData" :action="tableAction"
@@ -40,6 +40,7 @@
 <script>
 import labelAPI from '@/modules/SSM/_api/qalabel';
 import CommandEditPop from './RobotCommandEditPop';
+import MoveToPop from './RobotCommandMoveToPop';
 import api from '../_api/command';
 
 export default {
@@ -50,6 +51,10 @@ export default {
       default() {
         return [];
       },
+    },
+    categoryTree: {
+      type: Object,
+      default: {},
     },
     isEditMode: {
       type: Boolean,
@@ -236,6 +241,7 @@ export default {
           console.log(err);
           this.$notifyFail(this.$t('robot_command.error.edit_command_fail'));
           // should reset status in tableData
+          command.status = !command.status;
           const theCommandIdx = this.currentCommands
             .findIndex(cmd => cmd.id === command.id);
           this.currentCommands.splice(theCommandIdx, 1, command);
@@ -326,23 +332,53 @@ export default {
       };
       this.$pop(options);
     },
-    // popMoveToCategory() {
-    //   if (this.checkedCommand.length === 0) {
-    //     return;
-    //   }
-    //   // const commandsToMove = this.checkedCommand;
-    //   const options = {
-    //     // component: MoveToPop,
-    //     title: this.$t('wordbank.moveto_wordbank'),
-    //     validate: true,
-    //     callback: {
-    //       ok: (toCid) => {
-    //         console.log(toCid);
-    //       },
-    //     },
-    //   };
-    //   this.$pop(options);
-    // },
+    popMoveToCategory() {
+      if (this.checkedCommand.length === 0) {
+        return;
+      }
+      const options = {
+        component: MoveToPop,
+        title: this.$t('robot_command.movetopop.title'),
+        data: {
+          categoryTree: this.categoryTree,
+        },
+        validate: true,
+        callback: {
+          ok: (toCid) => {
+            let cmd = this.checkedCommand.shift();
+            const movePromises = [];
+            while (cmd !== undefined) {
+              movePromises.push(this.confirmMoveCommand(cmd.id, toCid));
+              cmd = this.checkedCommand.shift();
+            }
+            Promise.all(movePromises)
+            .then(() => {
+              this.$notify({ text: this.$t('robot_command.movetopop.move_command_success') });
+            })
+            .catch((err) => {
+              console.log(err);
+              this.$notifyFail(this.$t('robot_command.error.move_fail'));
+            });
+          },
+        },
+      };
+      this.$pop(options);
+    },
+    confirmMoveCommand(id, cid) {
+      const that = this;
+      const theCommandIdx = that.commands
+            .findIndex(cmd => cmd.id === id);
+      return that.$api.moveToCategory(id, cid)
+      .then(() => {
+        that.commands.splice(theCommandIdx, 1);
+      })
+      .catch((err) => {
+        const cmdname = that.commands[theCommandIdx].name;
+        return { name: cmdname, msg: err.response.data.result };
+        // that.$notifyFail(err.response.data.result);
+        // that.$notifyFail(that.$t('robot_command.error.move_command_fail', { name: cmdname }));
+      });
+    },
     deleteCommand(data) {
       const option = {
         data: {
@@ -393,23 +429,7 @@ export default {
       this.checkedCommand = checked;
     },
     loadCurrentCommands() {
-      if (!this.isEditMode) {
-        this.commands = this.value.map(rule => this.parseCommand(rule));
-      }
-    },
-    parseCommand(cmd) {
-      return {
-        id: cmd.id,
-        name: cmd.name,
-        labels: cmd.labels,
-        begin_time: cmd.begin_time,
-        end_time: cmd.end_time,
-        rule: cmd.rule,
-        status: cmd.status,
-        target: cmd.target,
-        answer: cmd.answer,
-        response_type: cmd.response_type,
-      };
+      this.commands = this.value;
     },
     loadLabels() {
       const that = this;

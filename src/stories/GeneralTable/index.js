@@ -30,6 +30,10 @@ export default [{
         val: true,
         onclick: clickToggle,
       },
+      action_enable: {
+        edit: true,
+        delete: true,
+      },
     }];
 
     function clickEdit(rowdata, idx) {
@@ -39,10 +43,12 @@ export default [{
       action('click delete')(rowdata, idx);
     }
     const actionType = [{
+      key: 'edit',
       text: '編輯',
       type: 'primary',
       onclick: clickEdit,
     }, {
+      key: 'delete',
       text: '刪除',
       type: 'error',
       onclick: clickDelete,

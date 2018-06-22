@@ -60,6 +60,7 @@ export default {
       },
     }).then((data) => {
       const res = data.data;
+      res.data = res.data.filter(d => d.question !== '');
       return res;
     });
   },

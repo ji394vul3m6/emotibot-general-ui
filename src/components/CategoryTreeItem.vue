@@ -2,18 +2,16 @@
   <ul>
     <li>
       <div class="tree-item" ref="treeItem"
-        :style="{height: curLayer <= 1 ? '36px' : '30px'}"
         :class="{'active-item': treeItem.isActive}"
         @click="setActiveItem">
         <span class="indentation" 
           :style="{ width: curLayer <= 1 ? '0' : `${15*(curLayer-1)}px`}">
         </span>
-        <span class="triangle"
-          :class="{'triangle-down': !treeItem.showChild,
-            'triangle-up': treeItem.showChild,
-            'invisible': !hasChildren,
-            'active': treeItem.isActive}">
-        </span>
+        <div class="icon-block" @click="toggleShowChild">
+          <icon v-if="!hasChildren" icon-type="category_close" :size=16></icon>
+          <icon v-else-if="!treeItem.showChild" icon-type="category_dropdown" :size=16></icon>
+          <icon v-else-if="treeItem.showChild" icon-type="category_open" :size=16></icon>
+        </div>
         <div class="item-name">
           <input v-if="isNameEditing" type="text" ref="itemName" 
             v-model="itemName"
@@ -25,8 +23,13 @@
             @keyup.enter="confirmEditItemName"/>
           <span v-else class="tree-item-name">{{ treeItem.name }}</span>
         </div>
-        <icon class="item-icon" icon-type="edit_blue" :size=10 
-          v-if="treeItem.editable && canEdit"
+        <icon class="item-icon" icon-type="edit_blue" :size=8 
+          v-if="treeItem.editable && canEdit && !treeItem.isActive"
+          ref="editBtn"
+          :class="{'invisible': !editMode}"
+          @click="editItemName"/>
+        <icon class="item-icon" icon-type="edit_white" :size=8 
+          v-else-if="treeItem.editable && canEdit && treeItem.isActive"
           ref="editBtn"
           :class="{'invisible': !editMode}"
           @click="editItemName"/>
@@ -88,10 +91,8 @@ export default {
     setActiveItem() {
       const route = [this.treeItem.cid];
       this.$emit('activeItemChange', this.treeItem, this.curLayer, route);
-      this.toggleShowChild();
     },
     handleActiveItemChange(activeItem, layer, route) {
-      console.log('route:', route);
       route.splice(0, 0, this.treeItem.cid);
       this.$emit('activeItemChange', activeItem, layer, route);
     },
@@ -214,7 +215,6 @@ export default {
 </script>
 <style lang="scss" scoped>
   @import './styles/variable';
-  $color-category:  #6b9de3;
   ul {
     padding: 0px;
   }
@@ -227,27 +227,39 @@ export default {
 
     .tree-item {
       box-sizing: border-box;
+      height: 32px;
       flex: 0 0 auto;
-      padding: 10px 8px;
+      padding: 0 10px;
       display: flex;
       align-items: center;
       border-bottom: 1px solid $color-borderline;
       cursor: pointer;
 
       &.active-item {
-        background: $color-category;
+        background: $color-primary;
         color: $color-white;
       }
-
+      &:hover:not(.active-item) {
+        background: #f8f8f8;
+      }
+      .icon-block {
+        flex: 0 0 auto;
+        height: 30px;
+        width: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
       .indentation {
+        display: inline-block;
         flex: 0 0 auto;
       }
       .triangle {
         flex: 0 0 auto;
       }
       .item-name {
-        flex: 1 1 auto;
-        padding: 0 5px;
+        flex: 1;
+        padding: 0 8px;
         position: relative;
         display:flex;
         align-items: center;
@@ -263,6 +275,7 @@ export default {
       }
       .item-icon {
         flex: 0 0 12px;
+        margin: 0 2px 0 12px;
       }
     }
   }
@@ -292,7 +305,7 @@ export default {
   }
 
   input[type=text] {
-    background: $color-category;
+    background: $color-primary;
     border: 0px;
     color: $color-white;
     padding: 0px;

@@ -166,8 +166,19 @@ export default {
   @include iconType("edit");
   @include iconType("robot");
   @include iconType("edit_blue");
+  @include iconType("edit_white");
   @include iconType("normal_acc");
   @include iconType("enterprise_admin");
+
+  @include iconType("header_enterprise");
+  @include iconType("header_user");
+  @include iconType("header_dialog");
+  @include iconType("header_dropdown");
+
+  @include iconType("category_add");
+  @include iconType("category_close");
+  @include iconType("category_dropdown");
+  @include iconType("category_open");
 
   // robot icon should a little bit larger than other icons
   .white_robot_icon {

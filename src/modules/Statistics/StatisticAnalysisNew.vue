@@ -164,7 +164,7 @@ export default {
       csvData += `${tableHeader.map(header => header.text.replace('"', '"""')).join(',')}\n`;
       csvData += tableData.map(data => tableHeader.map((header) => {
         if (data[header.key] !== undefined) {
-          return data[header.key].toString().replace('"', '"""');
+          return `"${data[header.key].toString().replace('"', '"""')}"`;
         }
         return '';
       }).join(',')).join('\n');
@@ -246,7 +246,7 @@ export default {
           hasChart: true,
           chartKeyMap: {
             total_asks: that.$t('statistics.total_asks_num'),
-            // conversations: that.$t('statistics.session_num'),
+            conversations: that.$t('statistics.session_num'),
             unique_users: that.$t('statistics.unique_user'),
           },
           chartNameKey: 'time_txt',

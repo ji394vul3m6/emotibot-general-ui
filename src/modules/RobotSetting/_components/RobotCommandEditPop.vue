@@ -377,6 +377,9 @@ export default {
             const idxInSelectedTags = that.selectedTags.indexOf(params.name);
             that.selectedTags.splice(idxInSelectedTags, 1);
             that.origTags = that.selectedTags;
+          } else {
+            const newtag = res.data.tag;
+            this.labels.splice(0, 0, newtag);
           }
         })
         .catch((err) => {
