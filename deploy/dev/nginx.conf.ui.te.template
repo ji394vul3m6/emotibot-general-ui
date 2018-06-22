@@ -1,0 +1,163 @@
+user  nginx;
+worker_processes  5;
+
+error_log  /var/log/nginx/error.log warn;
+pid        /var/run/nginx.pid;
+
+
+events {
+    worker_connections  1024;
+}
+
+
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+
+    log_format auth_header 'NGINX: [$time_local] "$request" from:"$remote_addr $http_x_forwarded_for" '
+                      'ret:"code:$status size:$body_bytes_sent" info:[$http_referer][$http_user_agent]';
+    underscores_in_headers on;
+
+    access_log /dev/null;
+
+    sendfile        on;
+
+    keepalive_timeout  1000;
+
+    client_max_body_size 100M;
+
+    limit_req_zone  $binary_remote_addr  zone=req_one:10m rate=150r/s;
+
+    server {
+        access_log /var/log/nginx/access.log auth_header;
+        proxy_max_temp_file_size 0;
+        listen 80;
+        listen [::]:80;
+        set $appid "";
+        set $user_id "";
+        if ($http_cookie ~* "appid=([a-z0-9]+)(?:;|$)") {
+            set $appid $1;
+        }
+
+        if ($appid = "") {
+            set $appid $http_x_appid;
+        }
+
+        if ($http_cookie ~* "userid=([.%\-a-zA-Z0-9_]+)(?:;|$)") {
+            set $user_id $1;
+        }
+
+        if ($http_x_userid != "") {
+            set $user_id $http_x_userid;
+        }
+
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Appid $appid;
+        proxy_set_header X-UserID $user_id;
+
+        location = /php/api/ApiKey/task_engine_app.php { 
+            proxy_pass http://${SELF_IP}:8182/api/v1/task/apps; 
+        }
+        location = /php/api/ApiKey/task_engine_scenario.php { 
+            proxy_pass http://${SELF_IP}:8182/api/v1/task/scenarios; 
+        }
+        location = /php/api/ApiKey/scenario_json_upload.php { 
+            proxy_pass http://${SELF_IP}:8182/api/v1/task/scenarios-upload; 
+        }
+
+        location /stats {
+            proxy_pass http://${REMOTE_IP};
+        }
+        location /admin {
+            proxy_pass http://${REMOTE_IP};
+        }
+        location /php {
+            proxy_pass http://${SELF_IP}:8099;
+        }
+        location /Files {
+            proxy_pass http://${REMOTE_IP};
+        }
+        location /auth {
+            proxy_pass http://${REMOTE_IP};
+        }
+        location /login.html {
+            proxy_pass http://${SELF_IP}:8081;
+        }
+        location /BF/scenario {
+            proxy_pass http://${SELF_IP}:8099;
+        }
+        location /BF/login.html {
+            return 301 http://${SELF_IP}/login.html;
+        }
+        location = /BF_login {
+            proxy_pass http://${BF_IP}/login;
+        }
+        location /BF {
+            proxy_pass http://${BF_IP};
+        }
+        location /ai {
+            proxy_pass http://${BF_IP};
+        }
+        location /dal {
+            proxy_pass http://${BF_IP};
+        }
+        location /eqlq {
+            proxy_pass http://${BF_IP};
+        }
+        location /export {
+            proxy_pass http://${BF_IP};
+        }
+        location /ml_test {
+            proxy_pass http://${BF_IP};
+        }
+        location /sherlock {
+            proxy_pass http://${BF_IP};
+        }
+        location /sq {
+            proxy_pass http://${BF_IP};
+        }
+        location /tag {
+            proxy_pass http://${BF_IP};
+        }
+        location /upload {
+            proxy_pass http://${BF_IP};
+        }
+        location /ent_config_version {
+            proxy_pass http://${BF_IP};
+        }
+        location /frontend_visible {
+            proxy_pass http://${BF_IP};
+        }
+        location /config {
+            proxy_pass http://${BF_IP};
+        }
+        location /robots {
+            proxy_pass http://${BF_IP};
+        }
+        location /version {
+            proxy_pass http://${BF_IP};
+        }
+        location /chatlog {
+            proxy_pass http://${BF_IP};
+        }
+        location /solution_stage_status/set {
+            proxy_pass http://${BF_IP};
+        }
+        location /robot/template {
+            proxy_pass http://${BF_IP};
+        }
+        location /sentenceAccociation {
+            proxy_pass http://${BF_IP};
+        }
+        location /task_engine {
+            proxy_pass http://${BF_IP};
+        }
+
+        location /api {
+            proxy_pass http://${SELF_IP}:8182;
+        }
+        location / {
+            proxy_pass http://${SELF_IP}:8081;
+        }
+    }
+}
