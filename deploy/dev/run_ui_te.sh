@@ -35,7 +35,7 @@ DOCKER_IMAGE=nginx
 # Start docker
 docker rm -f -v $CONTAINER
 cmd="docker run -d --name $CONTAINER \
-  -p 8088:80 \
+  -p 80:80 \
   -m 2048m \
   -v $(pwd)/nginx.conf:/etc/nginx/nginx.conf \
   --restart="always" \
