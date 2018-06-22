@@ -206,7 +206,6 @@ export default {
         start_time: this.start.getTimestamp(),
         end_time: this.end.getTimestamp(),
         filter: {},
-        type: 1,
       };
       const that = this;
 
