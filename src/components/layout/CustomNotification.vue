@@ -1,6 +1,6 @@
 <template>
   <transition-group tag="div" name="fade" class="notifications">
-    <div v-for="notification in notifications" class="notification" :key="notification.id" :class="notification.type">
+    <div v-for="(notification, idx) in notifications" class="notification" :key="`${notification.id}-${idx}`" :class="notification.type">
       <!-- <div class="icon"><div :class="`white_${notification.type}_icon`"></div></div> -->
       <icon :icon-type="`white_${notification.type}`"></icon>
       <label>{{ notification.msg }}</label>
