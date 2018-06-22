@@ -5,7 +5,7 @@
       <search-input v-model="wordbankKeyword"></search-input>
       <div id="io-buttons">
         <!-- <text-button>{{ $t('wordbank.batch_import') }}</text-button> -->
-        <text-button @click="exportWordbank">{{ $t('wordbank.export_all') }}</text-button>
+        <text-button v-if="canExport" @click="exportWordbank">{{ $t('wordbank.export_all') }}</text-button>
       </div>
     </div>
     <div id="card-content-content">
@@ -112,6 +112,9 @@ export default {
     },
     canEdit() {
       return this.$hasRight('edit');
+    },
+    canExport() {
+      return this.$hasRight('export');
     },
   },
   watch: {
