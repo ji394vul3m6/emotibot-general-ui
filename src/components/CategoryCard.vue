@@ -75,10 +75,6 @@ export default {
       type: Number,
       default: 1,
     },
-    activeItemId: {
-      type: Number,
-      default: 0,
-    },
     allowSubCategory: {
       type: Boolean,
       default: false,

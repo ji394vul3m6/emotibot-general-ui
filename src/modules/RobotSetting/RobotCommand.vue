@@ -3,7 +3,6 @@
     <category-card ref="categoryCard" id="card-category" class="card h-fill"
       :maxLayer="1"
       :categoryTree="categoryTree"
-      :activeItemId="activeItemId"
       :allowSubCategory="false"
       :canEdit="canEdit"
       :canDelete="canDelete"
@@ -22,7 +21,8 @@
       :currentCategoryId="currentCategory.cid"
       :canEdit="canEdit"
       :canDelete="canDelete"
-      :canCreate="canCreate">
+      :canCreate="canCreate"
+      @reloadCommand="handleReloadCommand">
     </robot-command-content>
   </div>
 </template>
@@ -48,7 +48,6 @@ export default {
       categoryTree: {},
       currentCategory: {},
       isEditMode: false,
-      activeItemId: 1,
     };
   },
   computed: {
@@ -63,6 +62,24 @@ export default {
     },
   },
   methods: {
+    handleReloadCommand(activeItemId) {
+      this.reloadCommand(activeItemId, 1);
+    },
+    reloadCommand(cid, layer) {
+      if (!this.isEditMode) {
+        if (cid > 0) {
+          this.$api.getSingleCommandClass(cid, layer)
+          .then((category) => {
+            const classIdx = this.categoryTree.children
+              .findIndex(child => child.cid === category.cid);
+            this.categoryTree.children.splice(classIdx, 1, category);
+            this.setCurrentCategory(category);
+          });
+        } else {
+          this.loadCommands();
+        }
+      }
+    },
     handleEditModeChange(editMode) {
       if (!editMode) {
         this.loadCommands().finally(() => {
@@ -74,19 +91,7 @@ export default {
       // block some actions outside
     },
     handleActiveItemChange(activeItem) {
-      if (!this.isEditMode) {
-        if (activeItem.cid > 0) {
-          this.$api.getSingleCommandClass(activeItem.cid, activeItem.layer)
-          .then((category) => {
-            const classIdx = this.categoryTree.children
-              .findIndex(child => child.cid === category.cid);
-            this.categoryTree.children.splice(classIdx, 1, category);
-            this.setCurrentCategory(category);
-          });
-        } else {
-          this.loadCommands();
-        }
-      }
+      this.reloadCommand(activeItem.cid, activeItem.layer);
     },
     handleItemNameChange(item, itemName) {
       this.$api.editCommandClass(item.cid, itemName)

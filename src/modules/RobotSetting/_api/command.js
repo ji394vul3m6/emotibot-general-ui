@@ -71,7 +71,8 @@ function addCommandClass(name, layer) {
     });
 }
 
-function moveToCategory(id, cid) {
+function moveToCategory(id, toCid) {
+  const cid = toCid < 0 ? -1 : toCid;
   const param = {
     cid,
   };

@@ -354,8 +354,19 @@ export default {
               cmd = this.checkedCommand.shift();
             }
             Promise.all(movePromises)
-            .then(() => {
-              this.$notify({ text: this.$t('robot_command.movetopop.move_command_success') });
+            .then((response) => {
+              const hasError = response.filter(rsp => rsp.status === 'success').length !== response.length;
+              if (hasError) {
+                this.$notifyFail(this.$t('robot_command.error.move_fail'));
+                response.forEach((rsp) => {
+                  if (rsp.status === 'fail') {
+                    this.$notifyFail(`${rsp.name}: ${rsp.msg}`);
+                  }
+                });
+              } else {
+                this.$notify({ text: this.$t('robot_command.movetopop.move_command_success') });
+              }
+              this.$emit('reloadCommand', this.currentCategoryId);
             })
             .catch((err) => {
               console.log(err);
@@ -370,16 +381,10 @@ export default {
       const that = this;
       const theCommandIdx = that.commands
             .findIndex(cmd => cmd.id === id);
+      const cmdname = that.commands[theCommandIdx].name;
       return that.$api.moveToCategory(id, cid)
-      .then(() => {
-        that.commands.splice(theCommandIdx, 1);
-      })
-      .catch((err) => {
-        const cmdname = that.commands[theCommandIdx].name;
-        return { name: cmdname, msg: err.response.data.result };
-        // that.$notifyFail(err.response.data.result);
-        // that.$notifyFail(that.$t('robot_command.error.move_command_fail', { name: cmdname }));
-      });
+      .then(() => ({ status: 'success', idx: theCommandIdx, name: cmdname }))
+      .catch(err => ({ status: 'fail', idx: theCommandIdx, name: cmdname, msg: err.response.data.result }));
     },
     deleteCommand(data) {
       const option = {
