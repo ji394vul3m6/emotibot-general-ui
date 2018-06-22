@@ -54,22 +54,35 @@ http {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Appid $appid;
         proxy_set_header X-UserID $user_id;
-
-        location = /php/api/ApiKey/task_engine_app.php { 
-            proxy_pass http://${SELF_IP}:8182/api/v1/task/apps; 
-        }
-        location = /php/api/ApiKey/task_engine_scenario.php { 
-            proxy_pass http://${SELF_IP}:8182/api/v1/task/scenarios; 
-        }
-        location = /php/api/ApiKey/scenario_json_upload.php { 
-            proxy_pass http://${SELF_IP}:8182/api/v1/task/scenarios-upload; 
-        }
-
         location /stats {
             proxy_pass http://${REMOTE_IP};
         }
         location /admin {
             proxy_pass http://${REMOTE_IP};
+        }
+        location = /php/api/ApiKey/task_engine_app.php {
+            proxy_set_header Authorization $appid;
+            proxy_set_header X-Appid $appid;
+            proxy_set_header X-UserID $user_id;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_pass http://${SELF_IP}:8182/api/v1/task/apps;
+            # proxy_pass http://${SELF_IP}:8099/api/ApiKey/task_engine_app.php;
+        }
+        location = /php/api/ApiKey/task_engine_scenario.php {
+            proxy_set_header Authorization $appid;
+            proxy_set_header X-Appid $appid;
+            proxy_set_header X-UserID $user_id;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_pass http://${SELF_IP}:8182/api/v1/task/scenarios;
+            # proxy_pass http://${SELF_IP}:8099/api/ApiKey/task_engine_scenario.php;
+        }
+        location = /php/api/ApiKey/scenario_json_upload.php { 
+            proxy_set_header Authorization $appid; 
+            proxy_set_header X-Appid $appid; 
+            proxy_set_header X-UserID $user_id; 
+            proxy_set_header X-Real-IP $remote_addr; 
+            proxy_pass http://${SELF_IP}:8182/api/v1/task/scenarios-upload; 
+            # proxy_pass http://${SELF_IP}:8099/api/ApiKey/scenario_json_upload.php;
         }
         location /php {
             proxy_pass http://${SELF_IP}:8099;
@@ -143,7 +156,7 @@ http {
         location /solution_stage_status/set {
             proxy_pass http://${BF_IP};
         }
-        location /robot/template {
+        location /robot {
             proxy_pass http://${BF_IP};
         }
         location /sentenceAccociation {

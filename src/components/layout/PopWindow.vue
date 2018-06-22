@@ -121,7 +121,7 @@ export default {
       that.disable_ok = option.disable_ok || false;
       that.custom_button = option.custom_button || [];
       that.left_button = option.left_button || undefined;
-      that.clickOutsideClose = option.clickOutsideClose !== false;
+      that.clickOutsideClose = option.clickOutsideClose === true;
       that.bindValue = option.bindValue !== false;
       if (option.callback) {
         that.callOk = option.callback.ok;

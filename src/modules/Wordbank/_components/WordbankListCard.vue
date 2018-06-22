@@ -2,8 +2,9 @@
 <template>
   <div id="card-content" class="card">
     <div id="card-content-header">
-      <search-input v-model="wordbankKeyword"></search-input>
+      <div id="card-content-title">{{ this.categoryName }}</div>
       <div id="io-buttons">
+        <search-input v-model="wordbankKeyword"></search-input>
         <!-- <text-button>{{ $t('wordbank.batch_import') }}</text-button> -->
         <text-button v-if="canExport" @click="exportWordbank">{{ $t('wordbank.export_all') }}</text-button>
       </div>
@@ -50,6 +51,7 @@ export default {
   api,
   data() {
     return {
+      categoryName: '',
       wordbanks: [],
       filteredWordbanks: [],
       currentWordbanks: [],
@@ -430,6 +432,7 @@ export default {
     loadCurrentWordbanks() {
       if (!this.isEditMode) {
         this.wordbanks = this.getWordbanksFromSubCategories(this.currentCategory);
+        this.categoryName = this.currentCategory.name;
       }
     },
     getWordbanksFromSubCategories(wordbank) {
@@ -460,7 +463,10 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
-
+    #card-content-title {
+      @include font-16px();
+      color: $color-font-active;
+    }
     #io-buttons {
       display: flex;
       justify-content: space-between;
