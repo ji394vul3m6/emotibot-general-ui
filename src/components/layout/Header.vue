@@ -138,7 +138,7 @@ export default {
       flex: 1;
       padding: 0;
     }
-    &:hover:not(.empty) {
+    &:hover:not(.empty):not(.enterprise):not(.robot) {
       background-color: #505050;
     }
   }
