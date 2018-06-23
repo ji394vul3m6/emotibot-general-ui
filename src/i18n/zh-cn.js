@@ -594,7 +594,9 @@ export default {
     delete_check_msg: '是否要删除话术：{item}',
   },
   task_engine: {
-    download_template: '下载模板',
+    download_template: '下载转换数据模版',
+    task_engine_upload: '上传转换数据',
+    import_button_hint: '支持扩展名：.xlsx',
   },
 
   learning: {
