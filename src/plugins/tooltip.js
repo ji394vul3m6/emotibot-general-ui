@@ -32,6 +32,7 @@ const MyPlugin = {
           vm.$forceUpdate();
 
           el.addEventListener('tooltip-reload', () => {
+            parent.removeChild(vm.$el);
             vm.$destroy();
             vm = new TooltipGenerator({
               propsData: {
