@@ -22,7 +22,9 @@
           @keydown.enter="detectCompositionState"
           @keyup.enter="confirmRootName">
         <div v-else id="add-root-btn">
-          <icon icon-type="category_add" :size=16></icon>
+          <div class="icon-block">
+            <icon icon-type="category_add" :size=16></icon>
+          </div>
           <span> {{ $t('category.add_root') }} </span>
         </div>
       </div>
@@ -457,10 +459,15 @@ $category-item-height: 32px;
         }
       }
       #add-root-btn {
+        @include font-14px();
         display: flex;
         align-items: center;
-        span {
-          padding: 0 8px;
+        .icon-block {
+          width: 30px;
+          height: 30px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
       }
     }
