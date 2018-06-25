@@ -248,9 +248,7 @@ $pop-title-font-color: #333333;
       color: $color-font-active;
       line-height: $pop-title-font-size;
       font-size: $pop-title-font-size;
-      padding: 25px;
-      padding-bottom: 5px;
-
+      padding: 24px;
       width: 100%;
       & > label {
         display: inline-block;
@@ -261,7 +259,6 @@ $pop-title-font-color: #333333;
     }
 
     & > .content {
-      padding-top: 5px;
       position: relative;
       min-height: 30px;
       max-height: calc(#{$pop-max-height} - 140px);
@@ -278,7 +275,7 @@ $pop-title-font-color: #333333;
     .pop-button {
       text-align: right;
       width: 100%;
-      padding: 25px;
+      padding: 24px;
       box-sizing: border-box;
 
       display: flex;
