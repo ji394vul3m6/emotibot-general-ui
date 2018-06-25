@@ -5,7 +5,7 @@
         <div id="wordbank-name" class="input-item">
           <span>{{ $t('wordbank.wordbank') }}：</span>
           <input type="text" ref="wordbankName" v-model="wordbankName"
-            v-tooltip="wordbankDuplicateTooltip" :maxlength="lengthLimit" :disabled="readonly">
+            v-tooltip="wordbankNameTooltip" :maxlength="lengthLimit" :disabled="readonly">
         </div>
         <div id="sentitive-answer" v-if="wordbank.isSensitive">
           <span>{{ $t('wordbank.sensitive_word') }}：</span>
@@ -94,8 +94,8 @@ export default {
         msg: this.$t('wordbank.error.synonym_duplicate'),
         eventOnly: true,
       },
-      wordbankDuplicateTooltip: {
-        msg: this.$t('wordbank.error.wordbank_name_duplicate'),
+      wordbankNameTooltip: {
+        msg: '',
         eventOnly: true,
       },
     };
@@ -121,7 +121,8 @@ export default {
       return Math.floor((this.curTotal - 1) / this.pageLimit) + 1;
     },
     isWordbankNameValid() {
-      return !this.isWordbankNameEmpty && !this.isWordbankNameTooLong;
+      return !this.isWordbankNameEmpty && !this.isWordbankNameTooLong
+        && !this.isWordbankNameDuplicate;
     },
     isWordbankNameEmpty() {
       this.wordbankName = this.wordbankName.trim();
@@ -184,11 +185,11 @@ export default {
         this.$refs.synonymInput.dispatchEvent(event);
       }
     },
+    isWordbankNameEmpty() {
+      this.updateNameTooltip();
+    },
     isWordbankNameDuplicate() {
-      if (!this.isWordbankNameDuplicate) {
-        const event = new Event('tooltip-hide');
-        this.$refs.wordbankName.dispatchEvent(event);
-      }
+      this.updateNameTooltip();
     },
   },
   methods: {
@@ -253,6 +254,24 @@ export default {
       this.$nextTick(() => {
         this.synonymKeyword = '';
       });
+    },
+    updateNameTooltip() {
+      if (!this.isWordbankNameValid) {
+        this.$emit('disableOK');
+        if (this.isWordbankNameEmpty) {
+          this.wordbankNameTooltip.msg = this.$t('wordbank.error.wordbank_name_empty');
+        } else if (this.isWordbankNameDuplicate) {
+          this.wordbankNameTooltip.msg = this.$t('wordbank.error.wordbank_name_duplicate');
+        } // TODO: else if wordbank name too long
+        const reload = new Event('tooltip-reload');
+        this.$refs.wordbankName.dispatchEvent(reload);
+        const event = new Event('tooltip-show');
+        this.$refs.wordbankName.dispatchEvent(event);
+      } else {
+        this.$emit('enableOK');
+        const event = new Event('tooltip-hide');
+        this.$refs.wordbankName.dispatchEvent(event);
+      }
     },
     setReadonly() {
       this.readonly = this.value.readonly ? this.value.readonly : false;
