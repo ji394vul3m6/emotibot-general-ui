@@ -247,10 +247,8 @@ export default {
     validate() {
       // build return obj and return
       if (!this.isReturnDataValid()) {
-        if (!this.isNameValid) {
-          const event = new Event('tooltip-show');
-          this.$refs.commandName.dispatchEvent(event);
-        }
+        this.updateNameTooltip();
+
         if (!this.isTimeValid) {
           if (this.dateFormat === 'custom') {
             const event = new Event('tooltip-show');
@@ -544,7 +542,7 @@ input[type=radio], input[type=checkbox] {
   align-items: center;
   #pickers {
     margin-left: 10px;
-    display: flex;
+    display: inline-flex;
     align-items: center;
   }
 }

@@ -354,6 +354,7 @@ export default {
           categoryTree: this.categoryTree,
         },
         validate: true,
+        disable_ok: true,
         callback: {
           ok: (toCid) => {
             let cmd = this.checkedCommand.shift();

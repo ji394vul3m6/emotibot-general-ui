@@ -33,8 +33,11 @@ export default {
   watch: {
     isActiveId() {
       if (this.isActiveId !== undefined) {
+        this.$emit('enableOK');
         const event = new Event('tooltip-hide');
         this.$refs.moveToContainer.dispatchEvent(event);
+      } else {
+        this.$emit('disableOK');
       }
     },
   },
