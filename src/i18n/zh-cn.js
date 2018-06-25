@@ -877,6 +877,7 @@ export default {
     update_password_success: '更新密码成功',
 
     err_role_duplicate: '角色名称已存在',
+    err_robot_name_empty: '机器人名称不可为空',
     err_robot_duplicate: '机器人名称已存在',
 
     go_back: '返回',
