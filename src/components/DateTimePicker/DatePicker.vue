@@ -1010,7 +1010,7 @@ $width = 300px
         box-sizing border-box
 
 .vdp-datepicker__calendar
-    position absolute
+    position fixed
     z-index 100
     background white
     width $width
@@ -1134,6 +1134,7 @@ $width = 300px
     z-index: 1;
     $tool-tip-color: #d7dde4;
     visibility: hidden;
+    display: none;
     padding: 5px;
     line-height: 1em;
     background-color: $tool-tip-color; // #d7dde4;
@@ -1148,6 +1149,7 @@ $width = 300px
   
     &.visible {
       visibility: visible;
+      display: block;
     }
     &.nowrap {
       white-space: nowrap;
