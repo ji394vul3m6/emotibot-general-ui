@@ -82,6 +82,10 @@ export default {
               },
             },
           },
+          padding: {
+            left: 50,
+            right: 30,
+          },
         };
       } else if (this.type === 'bar') {
         options = {

@@ -842,7 +842,7 @@ export default {
     edit_account: '编辑人员',
     add_role: '新增权限',
     privilege_setting: '权限设定',
-
+    role_name_placeholder: '输入角色名称',
     normal_user: '一般用户',
     enterprise_admin: '企业管理员',
     system_admin: '系统管理员',
