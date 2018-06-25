@@ -278,6 +278,7 @@ export default {
       move_fail: '移动指令失败',
       move_command_fail: '移动指令:{name} 失败',
       name_input_empty: '指令名称不得为空',
+      name_input_duplicate: '已存在指令名称',
       date_format_error: '开始时间不得晚于结束时间',
       reply_format_json_error: 'JSON格式错误',
     },
