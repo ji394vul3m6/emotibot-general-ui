@@ -176,6 +176,7 @@ export default {
 
 $pop-title-font-size: 20px;
 $pop-title-font-color: #333333;
+$pop-spacing: 24px;
 
 @keyframes showup {
   from {
@@ -244,11 +245,14 @@ $pop-title-font-color: #333333;
     border-radius: 4px;
     // padding: 5px;
 
+    $content-padding-top: 5px;  /* leave some space to show box-shadow of the first-child */
+
     & > .title {
       color: $color-font-active;
       line-height: $pop-title-font-size;
       font-size: $pop-title-font-size;
-      padding: 24px;
+      padding: $pop-spacing;
+      padding-bottom: calc(#{$pop-spacing} - #{$content-padding-top});
       width: 100%;
       & > label {
         display: inline-block;
@@ -262,6 +266,7 @@ $pop-title-font-color: #333333;
       position: relative;
       min-height: 30px;
       max-height: calc(#{$pop-max-height} - 140px);
+      padding-top: $content-padding-top;
       // padding: 20px;
       box-sizing: border-box;
       @include auto-overflow();
@@ -275,7 +280,7 @@ $pop-title-font-color: #333333;
     .pop-button {
       text-align: right;
       width: 100%;
-      padding: 24px;
+      padding: $pop-spacing;
       box-sizing: border-box;
 
       display: flex;
