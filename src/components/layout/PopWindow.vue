@@ -32,8 +32,8 @@
           v-on:click="click(false)"
           ref="cancelBtn"
           v-if="buttons.indexOf('cancel') != -1">{{ cancel_msg }}</text-button>
-        <text-button :disabled=disable_ok
-          button-type="fill"
+        <text-button
+          :button-type="disable_ok ? 'disable' : 'fill'"
           v-on:click="click(true)"
           ref="okBtn"
           v-if="buttons.indexOf('ok') != -1">{{ ok_msg }}</text-button>
