@@ -41,12 +41,13 @@
     <div class="tags-selector" v-if="showSelector">
       <div class="tags-selector-items" v-for="(item, idx) in selectItems"
         :key="item" 
-        :class="{'tags-selector-items-focus': isSelectItemFocus(item, idx), 'tags-selector-items-selected': isItemSelected(item)}"
+        :class="{'tags-selector-items-selected': isItemSelected(item)}"
         @click="addTagBySelector(idx)"
-        @mousemove="changeSelectItemFocus(idx)">
+        @mousemove="changeSelectItemFocus(idx)"
+        @mouseout="changeSelectItemFocus(-1)">
         <span>{{ item }}</span>
-        <icon icon-type="check" v-if="isItemSelected(item)" :size=14></icon>
-        <icon icon-type="checked" v-else-if="isSelectItemFocus(item, idx)" :size=14></icon>
+        <icon icon-type="checked" v-if="isSelectItemFocus(item, idx)" :size=14></icon>
+        <icon icon-type="check" v-else-if="isItemSelected(item)" :size=14></icon>
       </div>
     </div>
   </div>
@@ -120,7 +121,7 @@ export default {
       inputingLength: 0,
       selectedTags: [],
       errorWording: '',
-      curSelectItemIdx: 0,
+      curSelectItemIdx: -1,
       showTooltip: false,
       selectorControl: false,
     };
@@ -412,10 +413,7 @@ export default {
       return this.selectedTags.indexOf(item) !== -1;
     },
     isSelectItemFocus(item, idx) {
-      if (!this.isItemSelected(item)) {
-        return this.curSelectItemIdx === idx;
-      }
-      return false;
+      return this.curSelectItemIdx === idx;
     },
     changeSelectItemFocus(idx) {
       this.curSelectItemIdx = idx;
@@ -543,7 +541,7 @@ $color-tag-hover: $color-disabled;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      &.tags-selector-items-focus {
+      &:hover {
         color: $color-white;
         background-color: $color-button;
         opacity: 0.4;
