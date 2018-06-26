@@ -123,15 +123,6 @@ export default {
     ]),
     checkPrivilege() {
       const that = this;
-
-      if (that.$route.matched.length <= 0) {
-        if (that.$route.fullPath === '/') {
-          that.$router.push(defaultPath);
-        } else {
-          that.$router.push('error');
-        }
-        return;
-      }
       if (that.robotID === '') {
         // when robotID is empty, path should in manage page only
         if (that.$route.matched[0].path !== '/manage') {
@@ -152,23 +143,63 @@ export default {
       // If user has no privileges, invalid user
       // TODO: if user has no privileges of this robot, return to list
       if (codes.length === 0) {
-        window.location = '/login.html?invalid=1';
+        that.$router.push('/manage/robot-manage');
+        return;
       }
 
+      if (that.$route.matched.length <= 0) {
+        if (that.$route.fullPath === '/') {
+          that.$router.push(defaultPath);
+        } else {
+          that.$router.push('error');
+        }
+        return;
+      }
       const route = that.$route.matched[0];
       if (!route.components.default) {
         return;
       }
       const component = route.components.default;
-      if (codes.indexOf(component.privCode) < 0) {
-        that.$router.push('error');
-        return;
-      }
-
       const commands = privileges[component.privCode];
-      if (commands.indexOf('view') < 0 && commands.indexOf('edit') < 0) {
-        that.$router.push('error');
+      if (codes.indexOf(component.privCode) < 0 ||
+        (commands.indexOf('view') < 0 && commands.indexOf('edit') < 0)) {
+        let foundPage = false;
+        Object.keys(modules).forEach((moduleName) => {
+          if (foundPage) {
+            return;
+          }
+          const pageModule = modules[moduleName];
+          if (!pageModule.pages) {
+            return;
+          }
+          Object.keys(pageModule.pages).forEach((pageName) => {
+            const page = pageModule.pages[pageName];
+            if (!foundPage && codes.indexOf(page.privCode) >= 0) {
+              const codeCommands = privileges[page.privCode];
+              if (codeCommands.indexOf('view') >= 0 || codeCommands.indexOf('edit') >= 0) {
+                that.goPage(pageModule, page);
+                foundPage = true;
+              }
+            }
+          });
+        });
+        if (!foundPage) {
+          that.$router.push('error');
+        }
       }
+    },
+    goPage(pageModule, page) {
+      const that = this;
+      const newPage = {
+        path: page.path,
+        name: `${pageModule.displayNameKey}.${page.displayNameKey}`,
+        display: `pages.${pageModule.displayNameKey}.${page.displayNameKey}`,
+        privCode: page.privCode,
+        icon: `${page.icon}`,
+        isIFrame: page.isIFrame && true,
+      };
+      that.$router.push(`/${page.path}`);
+      that.setCurrentPage(newPage);
     },
     startLoading(msg) {
       this.showLoading = true;

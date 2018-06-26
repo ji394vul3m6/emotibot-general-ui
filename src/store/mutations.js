@@ -68,6 +68,14 @@ export const mutations = {
   },
   [types.SET_PAGES]: (s, pageInfos) => {
     s.pageInfos = pageInfos;
+    s.pageInfos.forEach((info) => {
+      const idx = info.pages.findIndex(p => p.path === s.curPage.path);
+      if (idx >= 0) {
+        info.expanded = true;
+      } else {
+        info.expanded = false;
+      }
+    });
   },
   [types.SET_USER]: (s, userID) => {
     s.userID = userID;
@@ -82,7 +90,8 @@ export const mutations = {
     s.curPage = curPage;
     // current page may set before all page info is set
     s.pageInfos.forEach((info) => {
-      if (info.pages.indexOf(curPage) >= 0) {
+      const idx = info.pages.findIndex(p => p.path === curPage.path);
+      if (idx >= 0) {
         info.expanded = true;
       } else {
         info.expanded = false;
