@@ -117,7 +117,7 @@ http {
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Appid $appid;
             proxy_set_header X-UserID $user_id;
-            proxy_pass http://${SELF_IP}:8181/api/v1/task/mapping-table/export;
+            proxy_pass http://127.0.0.1:8181/api/v1/task/mapping-table/export;
         }
 
         # legacy php code, from 2.0 UI
