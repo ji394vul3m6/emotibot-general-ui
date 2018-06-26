@@ -11,7 +11,7 @@ export const state = {
   pageInfos: [],
   curPage: {},
   userID: '',
-  userRole: {},
+  userRole: [],
   userRoleMap: {},
   chatTest: false,
   userInfo: {},

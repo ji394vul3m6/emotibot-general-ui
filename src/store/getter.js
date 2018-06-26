@@ -49,11 +49,28 @@ export const currentPage = s => s.curPage;
 export const isChatOpen = s => s.chatTest;
 export const userInfo = s => s.userInfo;
 
+export const userPrivilege = (s) => {
+  const privileges = {};
+  s.userRole.forEach((role) => {
+    const localPrivilege = role.privileges;
+    const keys = Object.keys(localPrivilege);
+    keys.forEach((key) => {
+      let cmds = privileges[key];
+      if (!cmds) {
+        cmds = [];
+        privileges[key] = cmds;
+      }
+      cmds.push(...localPrivilege[key].filter(cmd => cmds.indexOf(cmd) < 0));
+    });
+  });
+  return privileges;
+};
+
 export const hasPrivilege = s => (mod, cmd) => {
   if (s.userInfo.type < 2) {
     return true;
   }
-  const nowPriv = s.userRole.privileges[mod];
+  const nowPriv = this.userPrivilege(s)[mod] || {};
   if (!nowPriv) {
     return false;
   }

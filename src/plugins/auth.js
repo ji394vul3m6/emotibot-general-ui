@@ -97,7 +97,10 @@ function setInfoWithToken(token) {
   .then((result) => {
     robots = result;
     robots.forEach((robot) => {
-      userRoleMap[robot.id] = robot.role;
+      if (userRoleMap[robot.id] === undefined) {
+        userRoleMap[robot.id] = [];
+      }
+      userRoleMap[robot.id].push(robot.role);
     });
   })
   .then(() => that.$reqGet(`${ENTERPRISE_PATH}/${enterprise}/modules`))

@@ -67,6 +67,7 @@ export default {
       'currentPage',
       'isChatOpen',
       'enterpriseID',
+      'userPrivilege',
     ]),
   },
   data() {
@@ -137,7 +138,8 @@ export default {
         return;
       }
       // TODO: get user privilege of specific robot
-      const privileges = that.userRole.privileges;
+      const privileges = that.userPrivilege;
+      console.log(privileges);
 
       const codes = Object.keys(privileges);
       // If user has no privileges, invalid user
@@ -211,7 +213,7 @@ export default {
     setupPages() {
       const that = this;
       const pages = [];
-      const privileges = that.userRole.privileges || {};
+      const privileges = that.userPrivilege || {};
       const privKeys = Object.keys(privileges);
       Object.keys(modules).forEach((moduleName) => {
         let moduleExpand = false;
