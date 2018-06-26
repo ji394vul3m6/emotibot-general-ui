@@ -85,53 +85,6 @@ const MyPlugin = {
             });
           }
         });
-
-        /*
-        tooltip.innerText = binding.value.msg;
-
-        const boundedBox = el.getBoundingClientRect();
-
-        const styleText = `
-          position: fixed;
-          word-break: break-all;
-
-          max-width: 172px;
-          border-radius: 4px;
-          background-color: #ffffff;
-          box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.2);
-          padding: 8px 16px;
-        `;
-
-        tooltip.style.cssText = styleText;
-        tooltip.style.visibility = 'hidden';
-
-        vnode.context.$nextTick(() => {
-          tooltip.style.top = `${boundedBox.top - tooltip.clientHeight - 8}px`;
-          tooltip.style.left = `${boundedBox.left}px`;
-        });
-
-        if (binding.value.clickShow) {
-          el.addEventListener('click', (clickEvent) => {
-            tooltip.style.visibility = 'visible';
-            const detectClickListener = (e) => {
-              const clickDom = e.target;
-              if (clickDom && !tooltip.contains(clickDom)) {
-                tooltip.style.visibility = 'hidden';
-                window.removeEventListener('click', detectClickListener);
-              }
-            };
-            window.addEventListener('click', detectClickListener);
-            clickEvent.stopPropagation();
-          });
-        } else {
-          el.addEventListener('mouseover', () => {
-            tooltip.style.visibility = 'visible';
-          });
-          el.addEventListener('mouseout', () => {
-            tooltip.style.visibility = 'hidden';
-          });
-        }
-        */
       },
     });
   },
