@@ -1,7 +1,6 @@
 <template>
   <transition-group tag="div" name="fade" class="notifications">
-    <div v-for="notification in notifications" class="notification" :key="notification.id" :class="notification.type">
-      <!-- <div class="icon"><div :class="`white_${notification.type}_icon`"></div></div> -->
+    <div v-for="notification in notifications" class="notification" :key="notification.msg" :class="notification.type">
       <icon :icon-type="`white_${notification.type}`"></icon>
       <label>{{ notification.msg }}</label>
     </div>
@@ -57,6 +56,9 @@ export default {
 <style lang="scss" scoped>
 @import "styles/variable";
 
+$animate-time: 1.5s;
+$animate-delay: 0.5s;
+
 .notifications {
   position: fixed;
   right: 10px;
@@ -96,9 +98,9 @@ export default {
   }
   &.fade-leave-active {
     transition:
-      height 1.5s cubic-bezier(0, 1, 0, 1) 0.5s,
-      padding 1.5s cubic-bezier(0, 1, 0, 1) 0.5s,
-      margin-top 1.5s linear 0.5s;
+      height $animate-time cubic-bezier(0, 1, 0, 1) $animate-delay,
+      padding $animate-time cubic-bezier(0, 1, 0, 1) $animate-delay,
+      margin-top $animate-time linear $animate-delay;
   }
   &.fade-enter {
     opacity: 0;

@@ -259,7 +259,6 @@ export default {
       }
       .item-name {
         flex: 1;
-        padding: 0 8px;
         position: relative;
         display:flex;
         align-items: center;

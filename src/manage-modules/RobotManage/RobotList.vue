@@ -92,31 +92,34 @@ export default {
     },
     editName(robot) {
       const that = this;
-      that.$pop({
-        title: that.$t('management.edit_robot'),
-        component: RobotForm,
-        validate: true,
-        extData: {
-          name: robot.name,
-          description: robot.description,
-        },
-        left_button: {
-          msg: that.$t('general.delete'),
-          type: 'error',
-          closeAfterClick: true,
-          callback: () => {
-            that.popDelete(robot);
+      that.$api.getRobots(that.enterpriseID).then((data) => {
+        that.$pop({
+          title: that.$t('management.edit_robot'),
+          component: RobotForm,
+          validate: true,
+          extData: {
+            name: robot.name,
+            description: robot.description,
+            existedRobots: data.map(robots => robots.name),
           },
-        },
-        callback: {
-          ok(retData) {
-            that.$api.updateRobot(that.enterpriseID, robot.id, retData)
-            .then(() => that.updateRobots())
-            .finally(() => {
-              that.$emit('endLoading');
-            });
+          left_button: {
+            msg: that.$t('general.delete'),
+            type: 'error',
+            closeAfterClick: true,
+            callback: () => {
+              that.popDelete(robot);
+            },
           },
-        },
+          callback: {
+            ok(retData) {
+              that.$api.updateRobot(that.enterpriseID, robot.id, retData)
+              .then(() => that.updateRobots())
+              .finally(() => {
+                that.$emit('endLoading');
+              });
+            },
+          },
+        });
       });
     },
     popDelete(robot) {
@@ -168,7 +171,7 @@ export default {
           title: that.$t('management.create_robot'),
           component: RobotForm,
           extData: {
-            existRobots: data.map(robot => robot.name),
+            existedRobots: data.map(robot => robot.name),
           },
           validate: true,
           callback: {

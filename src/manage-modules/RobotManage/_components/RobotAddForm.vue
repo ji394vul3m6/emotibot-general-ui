@@ -30,7 +30,7 @@ export default {
       description: '',
       existedRobots: [],
       nameTooltip: {
-        msg: this.$t('management.err_robot_duplicate'),
+        msg: '',
         eventOnly: true,
         animateShow: true,
       },
@@ -41,8 +41,14 @@ export default {
       const that = this;
 
       if (that.name === '') {
+        that.nameTooltip.msg = that.$t('management.err_robot_name_empty');
+        that.$refs.name.dispatchEvent(new Event('tooltip-reload'));
+        that.$refs.name.dispatchEvent(new Event('tooltip-show'));
+        that.$refs.name.focus();
         return;
-      } else if (that.existedRobots.indexOf(that.name) >= 0) {
+      } else if (that.name !== that.extData.name && that.existedRobots.indexOf(that.name) >= 0) {
+        that.nameTooltip.msg = that.$t('management.err_robot_duplicate');
+        that.$refs.name.dispatchEvent(new Event('tooltip-reload'));
         that.$refs.name.dispatchEvent(new Event('tooltip-show'));
         that.$refs.name.focus();
         return;
@@ -58,6 +64,7 @@ export default {
 
     that.name = that.extData.name || '';
     that.description = that.extData.description || '';
+    that.existedRobots = that.extData.existedRobots || [];
     that.$on('validate', that.validate);
   },
 };

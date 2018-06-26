@@ -348,31 +348,29 @@ export default {
           ok: (toCid) => {
             const movePromises = [];
             wordbanksToMove.forEach((bank) => {
-              movePromises.push(this.$api.moveToCategory(bank.wid, toCid));
+              movePromises.push(this.confirmMoveWordbank(bank.wid, toCid));
             });
 
             Promise.all(movePromises)
-            .then(() => {
-              wordbanksToMove.forEach((bank) => {
-                const theBank = this.currentCategory.wordbanks
-                  .find(wordbank => wordbank.wid === bank.wid);
-
-                const targetWordbank = {
-                  answer: theBank.answer,
-                  editable: theBank.editable,
-                  name: theBank.name,
-                  similar_words: theBank.similar_words,
-                  wid: theBank.wid,
-                };
-                this.deleteWordbankFromCategory(targetWordbank.wid);
-                const payload = {
-                  cid: toCid,
-                  newbank: targetWordbank,
-                };
-                this.addWordbankToCategory(payload);
-                this.loadCurrentWordbanks();
+            .then((response) => {
+              const hasError = response.filter(rsp => rsp.status === 'success').length !== response.length;
+              if (hasError) {
+                this.$notifyFail(this.$t('wordbank.error.move_wordbank_fail'));
+                response.forEach((rsp) => {
+                  if (rsp.status === 'fail') {
+                    this.$notifyFail(`${rsp.name}: ${rsp.msg}`);
+                  }
+                });
+              } else {
+                this.$notify({ text: this.$t('robot_command.movetopop.move_command_success') });
+              }
+              response.forEach((rsp) => {
+                if (rsp.status === 'success') {
+                  const theBank = this.wordbanks
+                    .find(wordbank => wordbank.name === rsp.name);
+                  this.removeSuccessfullyMovedWordbank(theBank, toCid);
+                }
               });
-              this.$notify({ text: this.$t('wordbank.success.moved') });
             })
             .catch((err) => {
               console.log(err);
@@ -382,6 +380,36 @@ export default {
         },
       };
       this.$pop(options);
+    },
+    confirmMoveWordbank(id, cid) {
+      const that = this;
+      const theWordbankIdx = that.wordbanks.findIndex(bank => bank.wid === id);
+      const wordbankname = that.wordbanks[theWordbankIdx].name;
+      return this.$api.moveToCategory(id, cid)
+      .then((response) => {
+        // TODO: only keep success return in 'then' block once api error criteria is fixed
+        if (response.data.status === 0) {
+          return { status: 'success', idx: theWordbankIdx, name: wordbankname };
+        }
+        return { status: 'fail', idx: theWordbankIdx, name: wordbankname, msg: response.data.result };
+      })
+      .catch(err => ({ status: 'fail', idx: theWordbankIdx, name: wordbankname, msg: err.response.data.result }));
+    },
+    removeSuccessfullyMovedWordbank(bank, toCid) {
+      const targetWordbank = {
+        answer: bank.answer,
+        editable: bank.editable,
+        name: bank.name,
+        similar_words: bank.similar_words,
+        wid: bank.wid,
+      };
+      this.deleteWordbankFromCategory(targetWordbank.wid);
+      const payload = {
+        cid: toCid,
+        newbank: targetWordbank,
+      };
+      this.addWordbankToCategory(payload);
+      this.loadCurrentWordbanks();
     },
     deleteWordbank(data) {
       const option = {

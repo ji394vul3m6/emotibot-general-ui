@@ -1,0 +1,39 @@
+#scenario-editor-pop{
+  display: flex;
+  flex-direction: column;
+  color: $text-color;
+  width: 100%;
+  height: 100%;
+
+  .scenario-editor-title{
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    font-size: 30px;
+    color: $main-color;
+  }
+
+  .scenario-editor-box{
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid $main-color;
+    padding: 20px;
+
+    .scenario-name-container{
+      display: flex;
+      flex-direction: row;
+      font-size: 24px;
+      color: $text-hightlight-color;
+      padding: 10px;
+      input {
+        color: black;
+        font-size: 20px;
+        width: 200px;
+        text-align: center;
+      }
+    }
+  }
+}

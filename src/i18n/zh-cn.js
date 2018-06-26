@@ -278,6 +278,7 @@ export default {
       move_fail: '移动指令失败',
       move_command_fail: '移动指令:{name} 失败',
       name_input_empty: '指令名称不得为空',
+      name_input_duplicate: '已存在指令名称',
       date_format_error: '开始时间不得晚于结束时间',
       reply_format_json_error: 'JSON格式错误',
     },
@@ -594,7 +595,9 @@ export default {
     delete_check_msg: '是否要删除话术：{item}',
   },
   task_engine: {
-    download_template: '下载模板',
+    download_template: '下载转换数据模版',
+    task_engine_upload: '上传转换数据',
+    import_button_hint: '支持扩展名：.xlsx',
   },
 
   learning: {
@@ -693,6 +696,7 @@ export default {
     task_engine: {
       module_name: '任务引擎',
       task_engine_scenario: '场景编辑',
+      task_engine_scenario_v3: '新场景编辑',
       task_engine_upload: '上传转换数据',
     },
     error: '',
@@ -737,6 +741,10 @@ export default {
     finish: '完成',
     folder: '目录',
     search_placeholder: '请输入搜索内容',
+    close: '关闭',
+    test: '测试',
+    modify: '修改',
+    save_change: '储存变更',
   },
   dimension: {
     categories: {
@@ -839,7 +847,7 @@ export default {
     edit_account: '编辑人员',
     add_role: '新增权限',
     privilege_setting: '权限设定',
-
+    role_name_placeholder: '输入角色名称',
     normal_user: '一般用户',
     enterprise_admin: '企业管理员',
     system_admin: '系统管理员',
@@ -874,6 +882,7 @@ export default {
     update_password_success: '更新密码成功',
 
     err_role_duplicate: '角色名称已存在',
+    err_robot_name_empty: '机器人名称不可为空',
     err_robot_duplicate: '机器人名称已存在',
 
     go_back: '返回',

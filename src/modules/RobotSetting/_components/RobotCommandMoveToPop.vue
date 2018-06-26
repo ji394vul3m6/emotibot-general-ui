@@ -38,6 +38,15 @@ export default {
       },
     };
   },
+  watch: {
+    activeItemId() {
+      if (this.activeItemId !== undefined) {
+        this.$emit('enableOK');
+      } else {
+        this.$emit('disableOK');
+      }
+    },
+  },
   methods: {
     handleActiveItemChange(activeItem) {
       this.activeItemId = activeItem.cid;

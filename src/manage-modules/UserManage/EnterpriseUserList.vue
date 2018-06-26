@@ -213,6 +213,7 @@ export default {
         },
       };
 
+      that.$emit('startLoading');
       Promise.all(promises)
       .then(([roles, groups, robots, users]) => {
         popOption.extData.roles = roles;
@@ -220,6 +221,9 @@ export default {
         popOption.extData.robots = robots;
         popOption.extData.users = users;
         that.$pop(popOption);
+      })
+      .finally(() => {
+        that.$emit('endLoading');
       });
     },
     popAddUser(dftUserType) {
@@ -273,6 +277,7 @@ export default {
         },
       };
 
+      that.$emit('startLoading');
       Promise.all(promises)
       .then(([roles, groups, robots, users]) => {
         popOption.extData.roles = roles;
@@ -280,6 +285,9 @@ export default {
         popOption.extData.robots = robots;
         popOption.extData.users = users;
         that.$pop(popOption);
+      })
+      .finally(() => {
+        that.$emit('endLoading');
       });
     },
     deleteUser(user) {

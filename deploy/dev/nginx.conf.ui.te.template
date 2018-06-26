@@ -65,27 +65,34 @@ http {
             proxy_set_header X-Appid $appid;
             proxy_set_header X-UserID $user_id;
             proxy_set_header X-Real-IP $remote_addr;
-            proxy_pass http://${SELF_IP}:8182/api/v1/task/apps;
-            # proxy_pass http://${SELF_IP}:8099/api/ApiKey/task_engine_app.php;
+            proxy_pass http://${SELF_IP}:8888/api/v1/task/apps;
+            # proxy_pass http://${SELF_IP}:8888/api/ApiKey/task_engine_app.php;
         }
         location = /php/api/ApiKey/task_engine_scenario.php {
             proxy_set_header Authorization $appid;
             proxy_set_header X-Appid $appid;
             proxy_set_header X-UserID $user_id;
             proxy_set_header X-Real-IP $remote_addr;
-            proxy_pass http://${SELF_IP}:8182/api/v1/task/scenarios;
-            # proxy_pass http://${SELF_IP}:8099/api/ApiKey/task_engine_scenario.php;
+            proxy_pass http://${SELF_IP}:8888/api/v1/task/scenarios;
+            # proxy_pass http://${SELF_IP}:8888/api/ApiKey/task_engine_scenario.php;
         }
         location = /php/api/ApiKey/scenario_json_upload.php { 
             proxy_set_header Authorization $appid; 
             proxy_set_header X-Appid $appid; 
             proxy_set_header X-UserID $user_id; 
             proxy_set_header X-Real-IP $remote_addr; 
-            proxy_pass http://${SELF_IP}:8182/api/v1/task/scenarios-upload; 
-            # proxy_pass http://${SELF_IP}:8099/api/ApiKey/scenario_json_upload.php;
+            proxy_pass http://${SELF_IP}:8888/api/v1/task/scenarios-upload; 
+            # proxy_pass http://${SELF_IP}:8888/api/ApiKey/scenario_json_upload.php;
+        }
+        location = /php/api/ApiKey/get_intent.php { 
+            proxy_set_header Authorization $appid; 
+            proxy_set_header X-Appid $appid; 
+            proxy_set_header X-UserID $user_id; 
+            proxy_set_header X-Real-IP $remote_addr; 
+            proxy_pass http://${SELF_IP}:8888/api/ApiKey/get_intent.php;
         }
         location /php {
-            proxy_pass http://${SELF_IP}:8099;
+            proxy_pass http://${SELF_IP}:8888;
         }
         location /Files {
             proxy_pass http://${REMOTE_IP};
@@ -94,13 +101,13 @@ http {
             proxy_pass http://${REMOTE_IP};
         }
         location /login.html {
-            proxy_pass http://${SELF_IP}:8081;
+            proxy_pass http://${SELF_IP}:8888;
         }
         location /BF/scenario {
-            proxy_pass http://${SELF_IP}:8099;
+            proxy_pass http://${SELF_IP}:8888;
         }
         location /BF/login.html {
-            return 301 http://${SELF_IP}/login.html;
+            return 301 http://${SELF_IP}:8888/login.html;
         }
         location = /BF_login {
             proxy_pass http://${BF_IP}/login;
@@ -167,10 +174,10 @@ http {
         }
 
         location /api {
-            proxy_pass http://${SELF_IP}:8182;
+            proxy_pass http://${SELF_IP}:8888;
         }
         location / {
-            proxy_pass http://${SELF_IP}:8081;
+            proxy_pass http://${SELF_IP}:8888;
         }
     }
 }

@@ -32,8 +32,8 @@
           v-on:click="click(false)"
           ref="cancelBtn"
           v-if="buttons.indexOf('cancel') != -1">{{ cancel_msg }}</text-button>
-        <text-button :disabled=disable_ok
-          button-type="fill"
+        <text-button
+          :button-type="disable_ok ? 'disable' : 'fill'"
           v-on:click="click(true)"
           ref="okBtn"
           v-if="buttons.indexOf('ok') != -1">{{ ok_msg }}</text-button>
@@ -176,6 +176,7 @@ export default {
 
 $pop-title-font-size: 20px;
 $pop-title-font-color: #333333;
+$pop-spacing: 24px;
 
 @keyframes showup {
   from {
@@ -244,13 +245,14 @@ $pop-title-font-color: #333333;
     border-radius: 4px;
     // padding: 5px;
 
+    $content-padding-top: 5px;  /* leave some space to show box-shadow of the first-child */
+
     & > .title {
       color: $color-font-active;
       line-height: $pop-title-font-size;
       font-size: $pop-title-font-size;
-      padding: 25px;
-      padding-bottom: 5px;
-
+      padding: $pop-spacing;
+      padding-bottom: calc(#{$pop-spacing} - #{$content-padding-top});
       width: 100%;
       & > label {
         display: inline-block;
@@ -261,10 +263,10 @@ $pop-title-font-color: #333333;
     }
 
     & > .content {
-      padding-top: 5px;
       position: relative;
       min-height: 30px;
       max-height: calc(#{$pop-max-height} - 140px);
+      padding-top: $content-padding-top;
       // padding: 20px;
       box-sizing: border-box;
       @include auto-overflow();
@@ -278,7 +280,7 @@ $pop-title-font-color: #333333;
     .pop-button {
       text-align: right;
       width: 100%;
-      padding: 25px;
+      padding: $pop-spacing;
       box-sizing: border-box;
 
       display: flex;

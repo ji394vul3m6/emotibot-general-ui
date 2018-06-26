@@ -276,6 +276,7 @@ export default {
         title: this.$t('robot_command.add_command'),
         data: {
           command,
+          existedNames: this.getAllCommandName(),
         },
         validate: true,
         callback: {
@@ -295,12 +296,20 @@ export default {
       };
       this.$pop(options);
     },
+    getAllCommandName() {
+      const commandNames = [];
+      this.categoryTree.children.forEach((child) => {
+        child.cmds.forEach(cmd => commandNames.push(cmd.name));
+      });
+      return commandNames;
+    },
     popEditCommand(command) {
       const options = {
         component: CommandEditPop,
         title: this.$t('robot_command.edit_command'),
         data: {
           command,
+          existedNames: this.getAllCommandName(),
         },
         validate: true,
         callback: {
@@ -345,6 +354,7 @@ export default {
           categoryTree: this.categoryTree,
         },
         validate: true,
+        disable_ok: true,
         callback: {
           ok: (toCid) => {
             let cmd = this.checkedCommand.shift();

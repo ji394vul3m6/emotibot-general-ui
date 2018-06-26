@@ -29,7 +29,7 @@
       <div class="icon-container">
         <icon :size=22 icon-type="header_user"/>
       </div>
-      <div>{{ userInfo.display_name }}</div>
+      <div>{{ userInfo.display_name || userInfo.user_name }}</div>
       <div class="icon-container icon-right">
         <icon :size=7 icon-type="header_dropdown"/>
       </div>

@@ -149,7 +149,6 @@ export default {
           }
         })
         .catch((err) => {
-          console.log(err.response);
           if (err.response.status === 400) {
             that.$notifyFail(that.$t('wordbank.error.import_format_invalid'));
           } else {
@@ -326,6 +325,6 @@ export default {
 .clickable-link {
   color: $color-primary;
   text-decoration: underline;
-  cursor: pointer;
+  @include click-button();
 }
 </style>

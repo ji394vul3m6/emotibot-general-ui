@@ -1,22 +1,31 @@
 <template>
   <div id="task-engine-upload">
-    <div class="content">
-      <div class="row">
-        <text-button main @click="downloadTemplate()">{{ $t('task_engine.download_template') }}</text-button>
+    <div class="content card h-fill w-fill">
+      <div class="row title">
+        {{ $t("task_engine.task_engine_upload") }}
       </div>
       <div class="row">
-        <text-button main @click="triggerUpload" class="file-selector">{{ $t("general.browse") }}</text-button>
-        <span>{{ fileName }}</span>
-        <input type="file" ref="uploadInput" v-on:change="changeFile()" accept=".csv">
-        <text-button main @click="upload()" v-if="fileName !== ''">{{ $t("general.upload") }}</text-button>
+        <div>
+          <text-button main @click="triggerUpload" class="file-selector">{{ $t("general.upload") }}</text-button>
+          <span>{{ fileName }}</span>
+          <input type="file" ref="uploadInput" v-on:change="changeFile()" accept=".csv">
+        </div>
+        <div class="import_button_hint"> {{ $t('task_engine.import_button_hint') }}</div>
       </div>
-      {{ $t("general.description") }}：
-      <div>
-        <ol>
-          <li v-for="(line, idx) in desc" :key="idx">{{ line }}</li>
-        </ol>
+      <div class="row">
+        {{ $t("general.description") }}：
+        <div>
+          <ol>
+            <li v-for="(line, idx) in desc" :key="idx">
+              {{ line }}
+              <span v-if="idx === 0" class="clickable-link" @click="downloadTemplate">
+                {{ $t('task_engine.download_template') }}
+              </span>
+            </li>
+          </ol>
+        </div>
       </div>
-      <div>
+      <div class="table-container" style="max-width: 600px;">
         <general-table :tableData="tableData" :tableHeader="tableHeader" :action="action"></general-table>
       </div>
     </div>
@@ -66,6 +75,7 @@ export default {
       const file = files[0] || undefined;
       if (file) {
         this.fileName = file.name;
+        this.upload();
       } else {
         this.fileName = '';
       }
@@ -75,11 +85,8 @@ export default {
       const file = files[0] || undefined;
       const that = this;
       const appid = that.$cookie.get('appid');
-
-      if (!file) {
-        that.$notify({ text: that.$t('error_msg.upload_file_undefined') });
-      } else if (file.size <= 0 || file.size > 2 * 1024 * 1024) {
-        that.$notify({ text: that.$t('error_msg.upload_file_size_error') });
+      if (file.size <= 0 || file.size > 2 * 1024 * 1024) {
+        that.$notifyFail(that.$t('error_msg.upload_file_size_error'));
       } else {
         that.$emit('startLoading');
         that.$api.uploadMapping(appid, file).then((data) => {
@@ -94,6 +101,7 @@ export default {
           }
           that.$emit('endLoading');
         }, (err) => {
+          that.$refs.uploadInput.value = '';
           that.$notifyFail(`${that.$t('error_msg.save_fail')}:${err.message}`);
           that.$emit('endLoading');
         });
@@ -121,15 +129,9 @@ export default {
       that.$emit('startLoading');
       that.$api.downloadMappingList(fileName, user).then((data) => {
         that.$emit('endLoading');
-        const mappingTable = JSON.parse(data.data);
-        const mappingDataArray = mappingTable.mapping_table;
-        const tableName = mappingTable.metadata.mapping_table_name;
-        let csvData = '';
-        mappingDataArray.forEach((mappingData) => {
-          csvData += `${mappingData.key},${mappingData.value}\r\n`;
-        });
+        const csvData = data.data;
         const blobData = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvData], { type: 'text/csv' });
-        misc.downloadRawFile(blobData, `${tableName}.csv`);
+        misc.downloadRawFile(blobData, `${fileName}.csv`);
       }, (err) => {
         that.$notifyFail(`${that.$t('error_msg.save_fail')}:${err.message}`);
         that.$emit('endLoading');
@@ -218,24 +220,56 @@ export default {
 @import 'styles/variable.scss';
 $row-height: $default-line-height;
 
+.clickable-link {
+  @include click-button();
+  color: $color-primary;
+  text-decoration: underline;
+}
+.import_button_hint {
+  @include font-12px();
+  margin-top: 5px;
+  color: $color-font-mark;
+}
+
 #task-engine-upload {
-  .row {
-    margin: 5px 0;
-    .text-button {
-      margin-right: 10px;
-    }
-    input[type=file] {
-      visibility: hidden;
-    }
-    .file-selector {
-      & ~ input {
-        display: none;
+  .content {
+    display: flex;
+    flex-direction: column;
+    .row {
+      flex: 0 0 auto;
+      padding-left: 20px;
+
+      &.title {
+        @include font-16px();
+        color: $color-font-active;
+        flex: 0 0 60px;
+        border-bottom: 1px solid $color-borderline;
+        display: flex;
+        align-items: center;
+      }
+      &:not(.title) {
+        margin-top: 20px;
+      }
+
+      .text-button {
+        margin-right: 10px;
+      }
+      input[type=file] {
+        visibility: hidden;
+      }
+      .file-selector {
+        & ~ input {
+          display: none;
+        }
       }
     }
-  }
-  ol {
-    list-style: decimal inside none;
-    line-height: $row-height;
+    .table-container {
+      flex: 1;
+    }
+    ol {
+      list-style: decimal inside none;
+      line-height: $row-height;
+    }
   }
 }
 

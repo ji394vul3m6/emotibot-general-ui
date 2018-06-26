@@ -155,8 +155,8 @@ export default {
       selectedTags: [],
 
       commandNameTooltip: {
-        msg: this.$t('robot_command.error.name_input_empty'),
         eventOnly: true,
+        msg: '',
       },
       datePickerTooltip: {
         msg: this.$t('robot_command.error.date_format_error'),
@@ -169,9 +169,16 @@ export default {
     };
   },
   computed: {
-    isNameValid() {
+    isNameEmpty() {
       this.commandName = this.commandName.trim();
-      return this.commandName !== '';
+      return this.commandName === '';
+    },
+    isNameDuplicate() {
+      return this.value.existedNames
+        .findIndex(name => name !== this.value.command.name && name === this.commandName) !== -1;
+    },
+    isNameValid() {
+      return !this.isNameEmpty && !this.isNameDuplicate;
     },
     isTimeValid() {
       if (this.dateFormat === 'custom') {
@@ -206,20 +213,16 @@ export default {
         this.replyContentText = '';
       }
     },
-    isNameValid() {
-      if (!this.isNameValid) {
-        const event = new Event('tooltip-show');
-        this.$refs.commandName.dispatchEvent(event);
-      } else {
-        const event = new Event('tooltip-hide');
-        this.$refs.commandName.dispatchEvent(event);
-      }
+    isNameEmpty() {
+      this.updateNameTooltip();
+    },
+    isNameDuplicate() {
+      this.updateNameTooltip();
     },
     isTimeValid() {
       if (this.dateFormat === 'custom') {
         if (!this.isTimeValid) {
           const event = new Event('tooltip-show');
-          console.log(this.$refs.datePicker);
           this.$refs.datePicker.dispatchEvent(event);
         } else {
           const event = new Event('tooltip-hide');
@@ -244,10 +247,8 @@ export default {
     validate() {
       // build return obj and return
       if (!this.isReturnDataValid()) {
-        if (!this.isNameValid) {
-          const event = new Event('tooltip-show');
-          this.$refs.commandName.dispatchEvent(event);
-        }
+        this.updateNameTooltip();
+
         if (!this.isTimeValid) {
           if (this.dateFormat === 'custom') {
             const event = new Event('tooltip-show');
@@ -312,6 +313,22 @@ export default {
     closeJSONTooltip() {
       const event = new Event('tooltip-hide');
       this.$refs.replyFormatJSON.dispatchEvent(event);
+    },
+    updateNameTooltip() {
+      if (!this.isNameValid) {
+        if (this.isNameEmpty) {
+          this.commandNameTooltip.msg = this.$t('robot_command.error.name_input_empty');
+        } else if (this.isNameDuplicate) {
+          this.commandNameTooltip.msg = this.$t('robot_command.error.name_input_duplicate');
+        }
+        const reload = new Event('tooltip-reload');
+        this.$refs.commandName.dispatchEvent(reload);
+        const event = new Event('tooltip-show');
+        this.$refs.commandName.dispatchEvent(event);
+      } else {
+        const event = new Event('tooltip-hide');
+        this.$refs.commandName.dispatchEvent(event);
+      }
     },
     parseCommandDetail() {
       const that = this;
@@ -525,7 +542,7 @@ input[type=radio], input[type=checkbox] {
   align-items: center;
   #pickers {
     margin-left: 10px;
-    display: flex;
+    display: inline-flex;
     align-items: center;
   }
 }
