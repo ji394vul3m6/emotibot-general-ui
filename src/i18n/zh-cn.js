@@ -696,6 +696,7 @@ export default {
     task_engine: {
       module_name: '任务引擎',
       task_engine_scenario: '场景编辑',
+      task_engine_scenario_v3: '新场景编辑',
       task_engine_upload: '上传转换数据',
     },
     error: '',
@@ -740,6 +741,10 @@ export default {
     finish: '完成',
     folder: '目录',
     search_placeholder: '请输入搜索内容',
+    close: '关闭',
+    test: '测试',
+    modify: '修改',
+    save_change: '储存变更',
   },
   dimension: {
     categories: {
