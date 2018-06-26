@@ -43,6 +43,7 @@ import modules from '@/modules';
 import PageHeader from '@/components/layout/Header';
 import PageMenu from '@/components/layout/Menu';
 import QATest from '@/modules/SSM/QATestFloat';
+import constant from '@/utils/js/constant';
 
 const defaultPath = '/statistic-dash';
 
@@ -76,6 +77,8 @@ export default {
       userInfo: {},
       isPopOpen: false,
       testComponent: QATest,
+      checkCookieMs: 5000,
+      checkCookieLoop: undefined,
     };
   },
   watch: {
@@ -83,7 +86,7 @@ export default {
       if (val === '') {
         return;
       }
-      this.$cookie.set('appid', val);
+      this.$cookie.set('appid', val, { expires: constant.cookieTimeout });
       this.$setReqAppid(val);
 
       const robotData = {
@@ -97,7 +100,7 @@ export default {
       this.setupPages();
     },
     userID() {
-      this.$cookie.set('userid', this.userID);
+      this.$cookie.set('userid', this.userID, { expires: constant.cookieTimeout });
     },
     $route() {
       this.checkPrivilege();
@@ -234,10 +237,37 @@ export default {
       });
       that.setPageInfos(pages);
     },
+    checkCookie() {
+      const that = this;
+      that.checkCookieLoop = undefined;
+      if (!that.$cookie.get('verify')) {
+        that.$logout();
+        that.goLoginPage();
+      } else if (that.checkCookieLoop === undefined) {
+        that.checkCookieLoop = setTimeout(() => {
+          that.checkCookie();
+        }, that.checkCookieMs);
+      }
+    },
+    goLoginPage(notification) {
+      const that = this;
+      const fullPath = that.$route.fullPath;
+      if (notification) {
+        window.location = `/login.html?invalid=1&redirect=${encodeURIComponent(fullPath)}`;
+      } else {
+        window.location = `/login.html?redirect=${encodeURIComponent(fullPath)}`;
+      }
+    },
   },
   mounted() {
     const that = this;
     const token = that.$getToken();
+
+    if (!token) {
+      that.goLoginPage(false);
+    }
+
+    that.checkCookie();
     that.$setReqToken(token);
     that.$setIntoWithToken(token).then(() => {
       const robots = that.$getRobots();

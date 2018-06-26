@@ -1,6 +1,7 @@
 import md5 from 'js-md5';
 import qs from 'qs';
 import 'babel-polyfill';
+import constant from '@/utils/js/constant';
 
 const LOGIN_PATH = '/auth/v3/login';
 const ENTERPRISE_PATH = '/auth/v3/enterprise';
@@ -122,7 +123,7 @@ function login(input) {
     account: input.account,
     passwd: md5(input.password),
   };
-  that.$cookie.set('verify', md5(input.password));
+  that.$cookie.set('verify', md5(input.password), { expires: constant.cookieTimeout });
 
   let token;
   return that.$reqGet(ENV_PATH).then((envRsp) => {
@@ -157,7 +158,7 @@ function login(input) {
           return failPromise('bf logging fail');
         }
         const accessToken = data.data.access_token;
-        that.$cookie.set('access_token', accessToken);
+        that.$cookie.set('access_token', accessToken, { expires: constant.cookieTimeout });
         return accessToken;
       });
     }
@@ -198,7 +199,9 @@ function checkPrivilege(moduleCode, cmd) {
 
 function clearAuth() {
   this.$cookie.delete('appid');
-  this.$cookie.delete('user_id');
+  this.$cookie.delete('userid');
+  this.$cookie.delete('verify');
+  this.$cookie.delete('access_token');
   localStorage.removeItem('userInfo');
   localStorage.removeItem('token');
   localStorage.removeItem('enterpriseInfo');
