@@ -17,7 +17,7 @@ fi
 
 # add env to php-fpm config
 env | grep ADMIN_HT | sed -e "s/^ADMIN_//" | sed -e "s/^\([A-Z_a-z0-9]*\)=\"\{0,1\}\([^\"]*\)\"\{0,1\}/env[\1] = \"\2\"/g" >> /etc/php5/fpm.d/www.conf
-php-fpm -R
+php-fpm5 -R
 
 # start crond
 crond -f &
