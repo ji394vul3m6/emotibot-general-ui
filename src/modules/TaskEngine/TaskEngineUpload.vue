@@ -129,15 +129,9 @@ export default {
       that.$emit('startLoading');
       that.$api.downloadMappingList(fileName, user).then((data) => {
         that.$emit('endLoading');
-        const mappingTable = JSON.parse(data.data);
-        const mappingDataArray = mappingTable.mapping_table;
-        const tableName = mappingTable.metadata.mapping_table_name;
-        let csvData = '';
-        mappingDataArray.forEach((mappingData) => {
-          csvData += `${mappingData.key},${mappingData.value}\r\n`;
-        });
+        const csvData = data.data;
         const blobData = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvData], { type: 'text/csv' });
-        misc.downloadRawFile(blobData, `${tableName}.csv`);
+        misc.downloadRawFile(blobData, `${fileName}.csv`);
       }, (err) => {
         that.$notifyFail(`${that.$t('error_msg.save_fail')}:${err.message}`);
         that.$emit('endLoading');
