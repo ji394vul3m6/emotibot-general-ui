@@ -62,6 +62,9 @@ http {
         }
         location /php/api/ApiKey/task_engine_app.php {
             proxy_set_header Authorization $appid;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Appid $appid;
+            proxy_set_header X-UserID $user_id;
             proxy_pass http://${SELF_IP}:8182/api/v1/task/apps; 
             # proxy_pass http://${SELF_IP}:8099/api/ApiKey/task_engine_app.php;
         }
