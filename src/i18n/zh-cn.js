@@ -885,6 +885,8 @@ export default {
     err_role_duplicate: '角色名称已存在',
     err_robot_name_empty: '机器人名称不可为空',
     err_robot_duplicate: '机器人名称已存在',
+    err_group_name_empty: '群组名称不可为空',
+    err_group_duplicate: '群组名称已存在',
 
     go_back: '返回',
 
