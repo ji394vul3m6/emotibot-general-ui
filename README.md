@@ -8,6 +8,18 @@
 ```
 git config commit.template ./.git-commit-template
 ```
+> If you are using vscode, can use command belows
+```
+# Add 'code' into path
+cat << EOF >> ~/.bash_profile
+# Add Visual Studio Code (code)
+export PATH="\$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
+EOF
+
+# Set git commit editor to vscode
+git config core.editor "code --wait"
+
+```
 
 ## Build Setup
 
