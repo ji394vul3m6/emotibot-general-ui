@@ -102,14 +102,15 @@ export default {
   },
   watch: {
     duplicateIdx(val) {
-      if (this.$refs.nameInput) {
+      const input = this.$refs.nameInput ? this.$refs.nameInput[0] : undefined;
+      if (input) {
         const idx = this.roles.findIndex(role => role.editMode);
         if (val !== -1 && val !== idx) {
           const event = new Event('tooltip-show');
-          this.$refs.nameInput[0].dispatchEvent(event);
+          input[0].dispatchEvent(event);
         } else {
           const event = new Event('tooltip-hide');
-          this.$refs.nameInput[0].dispatchEvent(event);
+          input[0].dispatchEvent(event);
         }
       }
     },
@@ -174,8 +175,11 @@ export default {
     },
     deleteRole(role) {
       const that = this;
-      that.$api.deleteEnterpriseRole(that.enterpriseID, role.uuid).then(() => {
-        that.loadRoles();
+      that.$emit('startLoading');
+      return that.$api.deleteEnterpriseRole(that.enterpriseID, role.uuid)
+      .then(() => that.loadRoles())
+      .finally(() => {
+        that.$emit('endLoading');
       });
     },
     addRole() {
@@ -274,7 +278,8 @@ export default {
     loadRoles() {
       const that = this;
       that.$emit('startLoading');
-      that.$api.getEnterpriseRoles(that.enterpriseID)
+      that.roles = [];
+      return that.$api.getEnterpriseRoles(that.enterpriseID)
       .then((roles) => {
         that.roles = roles;
         that.roles.forEach((role) => {
