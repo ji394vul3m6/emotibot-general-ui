@@ -142,11 +142,11 @@ export default {
     },
     goRobot(robot) {
       const that = this;
-      const roleIDs = that.userRoleMap[robot.id];
-      const roleID = roleIDs[0];
       let promise;
 
       if (that.userInfo.type === 2) {
+        const roleIDs = that.userRoleMap[robot.id];
+        const roleID = roleIDs[0];
         const promises = roleIDs.map(id => that.$api.getEnterpriseRole(that.enterpriseID, id));
         promise = Promise.all(promises).then((roles) => {
           that.setUserRole(roles);
