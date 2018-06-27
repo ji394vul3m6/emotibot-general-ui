@@ -6,12 +6,13 @@ html, body {
 }
 
 input {
-  @include font-12px();
+  @include font-14px();
   box-sizing: border-box;
   display: inline-block;
   padding: 4px 8px;
   border: solid 1px $color-borderline;
   border-radius: 2px;
+  color: $color-font-normal;
   &::placeholder {
     color: $color-font-disabled;
   }
@@ -70,7 +71,7 @@ input {
   }
 }
 textarea {
-  @include font-12px();
+  @include font-14px();
   resize: none;
   box-sizing: border-box;
   display: inline-block;

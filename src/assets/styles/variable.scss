@@ -17,6 +17,9 @@ $color-borderline-hover: #4b4b64;
 $color-button: #4b4b64;
 $color-white: #ffffff;
 
+$color-select: #F4F4F4;
+$color-select-hover: #9393A2;
+
 
 /*** Font ***/
 @mixin font-16px() {
@@ -281,7 +284,6 @@ $success-color: #5cd29d;
     border-top: 0px;
     background-clip: padding-box;
     background-color: #cccccc;
-    border-radius: 8px;
   }
 
   &::-webkit-scrollbar-track {

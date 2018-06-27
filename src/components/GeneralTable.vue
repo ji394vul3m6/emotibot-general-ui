@@ -209,6 +209,7 @@ table {
   table-layout: fixed;
   border-spacing: 0px;
   overflow-x: hidden;
+  color: $color-font-normal;
   thead {
     background: $table-header-background;
     tr {
@@ -226,14 +227,16 @@ table {
       td:first-child {
         padding-left: 20px;
       }
-
+      td:last-child.table-col-action {
+        padding-right: 20px;
+      }
       .table-col-checkbox {
         flex: 0 0 50px;
       }
       .table-col-action {
         flex: 0 0 60px;
         &.multi-action {
-          flex: 0 0 140px;
+          flex: 0 0 110px;
         }
       }
     }
@@ -262,24 +265,25 @@ table {
       td:first-child {
         padding-left: 20px;
       }
+      td:last-child.table-col-action {
+        padding-right: 20px;
+      }
       .table-col-checkbox {
         flex: 0 0 50px;
       }
       .table-col-action {
         flex: 0 0 60px;
         &.multi-action {
-          flex: 0 0 140px;
+          flex: 0 0 110px;
+          display: flex;
+          justify-content: space-between;
         }
         .actions {
-          margin: 0 10px;
           &.primary {
             color: $color-primary;
           }
           &.error {
             color: $color-error;
-          }
-          &:first-child {
-            margin-left: 0px;
           }
           &:hover {
             cursor:pointer;

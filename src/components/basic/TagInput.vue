@@ -8,7 +8,7 @@
       <div class="tags-input-container" @click.stop="$refs.taginput.focus()">
         <span class="tags" v-for="(tag, idx) in selectedTags" :key="tag" :data-index="idx">
           <!-- <span class="tag-remove-btn" @click="removeTag(idx)">x</span> -->
-          <span>{{ tag }}</span>
+          {{ tag }}
           <span v-if="!readonly" class="tag-remove-btn">
             <icon icon-type="close" :size="8" @click.stop="removeTag(idx)"/>
           </span>
@@ -46,8 +46,8 @@
         @mousemove="changeSelectItemFocus(idx)"
         @mouseout="changeSelectItemFocus(-1)">
         <span>{{ item }}</span>
-        <icon icon-type="checked" v-if="isSelectItemFocus(item, idx)" :size=14></icon>
-        <icon icon-type="check" v-else-if="isItemSelected(item)" :size=14></icon>
+        <icon icon-type="checked" v-if="isSelectItemFocus(item, idx)" :size=16></icon>
+        <icon icon-type="check" v-else-if="isItemSelected(item)" :size=16></icon>
       </div>
     </div>
   </div>
@@ -432,7 +432,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 @import "styles/variable";
-$row-height: 30px;
+$row-height: 32px;
 $color-tag-hover: $color-disabled;
 .tags-wrapper {
   position: relative;
@@ -472,6 +472,10 @@ $color-tag-hover: $color-disabled;
       flex: 1;
       overflow: auto;
       white-space: nowrap;
+      height: 100%;
+      @include customScrollbar();
+      display: flex;
+      align-items: center;
       &:hover {
         cursor: text;
       }
@@ -492,10 +496,14 @@ $color-tag-hover: $color-disabled;
 
       .tags {
         @include font-12px();
+        display: inline-flex;
+        align-items: center;
         color: $color-font-normal;
         background-color: #eeeeee;
         margin: 0 3px;
-        padding: 0px 10px;
+        height: 20px;
+        padding-left: 10px;
+        padding-right: 5px;
         border-radius: 2px;
         line-height: 22px;
         &.tag-focus {
@@ -505,7 +513,7 @@ $color-tag-hover: $color-disabled;
 
         .tag-remove-btn {
           font-weight: bold;
-          margin-left: 3px;
+          margin-left: 10px;
           &:hover {
             cursor: pointer;
           }
@@ -524,7 +532,8 @@ $color-tag-hover: $color-disabled;
   }
 
   .tags-selector {
-    @include font-12px();
+    @include font-14px();
+    @include customScrollbar();
     background-color: #ffffff;
     position: absolute;
     width: inherit;
@@ -536,23 +545,22 @@ $color-tag-hover: $color-disabled;
     border-radius: 2px;
     box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2);
     .tags-selector-items {
+      box-sizing: border-box;
       height: $row-height;
       padding: 5px 15px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      color: $color-font-normal;
       &:hover {
         color: $color-white;
-        background-color: $color-button;
-        opacity: 0.4;
+        background-color: $color-select-hover;
       }
       &.tags-selector-items-selected {
-        color: $color-font-normal;
-        background-color: $color-tag-hover;
+        background-color: $color-select;
         &:hover {
           color: $color-white;
-          background-color: $color-button;
-          opacity: 0.4;
+          background-color: $color-select-hover;
         }
       }
       &:hover {

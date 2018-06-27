@@ -51,7 +51,7 @@ export default {
 
 $navbar-font-size: 16px;
 $navbar-line-height: 18px;
-$navbar-active-color: #1875f0;
+$navbar-active-color: $color-primary;
 
 .nav-bar {
   height: 60px;
@@ -72,6 +72,9 @@ $navbar-active-color: #1875f0;
       color: $navbar-active-color;
       border-bottom: 3px solid $navbar-active-color;
       padding-bottom: 0px;
+    }
+    &:hover {
+      color: $navbar-active-color;
     }
   }
 }

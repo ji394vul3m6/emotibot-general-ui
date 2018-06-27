@@ -1,6 +1,6 @@
 <template>
   <div class="dropdown-select" :style="styleObj">
-    <div class="input-bar" ref="input" @click="showSelection">
+    <div class="input-bar" :class="{'is-focus': show}" ref="input" @click="showSelection">
       <div class="input-block">
         <template v-if="multi">
         <tag class="input-tag" v-for="value in checkedValues" :key="value.value" font-class="font-12">
@@ -20,10 +20,15 @@
       <template v-for="(option, idx) in localOptions">
       <div class="select-item item" :key="idx" v-if="!option.isGroup"
         :class="{checked: option.checked, 'in-group': option.inGroup}"
-        @click="selectOption(idx)">
+        @click="selectOption(idx)"
+        @mouseover="toggleHover(option, true)" @mouseout="toggleHover(option, false)">
         <div class="select-text"> {{option.text}} </div>
-        <div class="select-icon" v-if="showCheck && option.checked">
-          <icon icon-type="checked" :size=12></icon>
+        <div class="select-icon" v-if="!option.checked">
+          <icon icon-type="checked" :size=16></icon>
+        </div>
+        <div class="select-icon" v-if="option.checked">
+          <icon v-if="option.hovered" icon-type="checked" :size=16></icon>
+          <icon v-else icon-type="check" :size=16></icon>
         </div>
       </div>
       <div class="select-item group" v-if="option.isGroup" :key="idx">
@@ -96,6 +101,7 @@ export default {
       const that = this;
       if (that.multi) {
         that.localOptions[idx].checked = !that.localOptions[idx].checked;
+        that.toggleHover(that.localOptions[idx], false);
       } else {
         that.localOptions.forEach((option) => {
           option.checked = false;
@@ -119,11 +125,12 @@ export default {
       that.show = true;
 
       const inputBox = that.$refs.input.getBoundingClientRect();
+      console.log(inputBox);
       that.listStyle = {
         position: 'fixed',
         top: `${inputBox.top + inputBox.height + 3}px`,
         left: `${inputBox.left}px`,
-        width: that.width !== 'auto' ? that.width : '',
+        width: `${inputBox.width}px`,
       };
 
       that.detectClickListener = (e) => {
@@ -154,6 +161,9 @@ export default {
         }
       });
     },
+    toggleHover(option, bool) {
+      option.hovered = bool;
+    },
   },
   mounted() {
     const that = this;
@@ -165,6 +175,7 @@ export default {
       that.localOptions.push({
         ...opt,
         checked: initCheck,
+        hovered: false,
       });
     });
 
@@ -177,13 +188,24 @@ export default {
 <style lang="scss" scoped>
 @import 'styles/variable.scss';
 
-$border-color: #e9e9e9;
+$border-color: $color-borderline;
 
 .input-bar {
   display: flex;
   height: 28px;
   border: 1px solid $border-color;
+  border-radius: 2px;
   @include click-button();
+
+  &:hover {
+    border-color: $color-borderline-hover;
+  }
+  &.is-focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(75, 75, 100, 0.2);
+    border-color: $color-borderline-hover;
+  }
+
   .input-block {
     flex: 1;
     overflow: hidden;
@@ -193,6 +215,8 @@ $border-color: #e9e9e9;
     border-right: 1px solid $border-color;
     display: flex;
     align-items: center;
+    padding: 5px 8px;
+
     .input-tag {
       margin-left: 5px;
       .close-icon {
@@ -200,8 +224,8 @@ $border-color: #e9e9e9;
       }
     }
     .input-text {
-      margin-left: 5px;
-      color: #666666;
+      @include font-14px();
+      color: $color-font-normal;
     }
   }
   .icon-block {
@@ -213,13 +237,15 @@ $border-color: #e9e9e9;
   }
 }
 .select-list {
+  @include font-14px();
   box-sizing: border-box;
   width: 150px;
   box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2);
   border-radius: 2px;
   border: 1px solid $color-borderline;
-  background: white;
-  max-height: calc(6 * 32px);
+  color: $color-font-normal;
+  background: $color-white;
+  max-height: calc(4 * 32px);
   @include auto-overflow();
   @include customScrollbar();
 
@@ -227,15 +253,14 @@ $border-color: #e9e9e9;
   flex-direction: column;
   .select-item {
     flex: 0 0 32px;
-
     &.item {
       @include click-button();
       &.checked {
-        background: #9393a2;
-        color: white;
+        background: $color-select;
       }
-      &:not(.checked):hover {
-        background: #f0f0f3;
+      &:hover {
+        background: $color-select-hover;
+        color: $color-white;
       }
       &.in-group {
         .select-text {
@@ -257,6 +282,8 @@ $border-color: #e9e9e9;
     }
     .select-icon {
       flex: 0 0 32px;
+      display: flex;
+      align-items: center;
     }
   }
 }

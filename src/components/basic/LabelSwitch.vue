@@ -101,6 +101,10 @@ $active-border-color: #1875f0;
     box-shadow: inset 0 -1px 0 0 $active-border-color;
     border-bottom: solid 1px $active-border-color;
   }
+
+  &:hover {
+    background: $color-disabled;
+  }
 }
 
 </style>
