@@ -876,6 +876,7 @@ export default {
     err_empty_username: 'ID 不可为空',
     err_existed_username: 'ID 已存在',
     err_empty_email: 'Email 不可为空',
+    err_empty_display_name: '姓名不可为空',
     err_empty_password: '密码不可为空',
     err_password: '密码错误',
     err_manager_empty_password: '管理员密码不可为空',
