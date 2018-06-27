@@ -174,6 +174,7 @@ export default {
       business: '业务',
       chat: '聊天',
       other: '其他',
+      all: '全部',
     },
 
     audit: {

@@ -44,7 +44,7 @@
             <div class="row-title">{{ $t('statistics.qtypes.title') }}</div>
             <div class="row-value">
               <dropdown-select class="single-input"
-                :options="qtypesOptions" multi v-model="qtypeFilters"/>
+                :options="qtypesOptions" v-model="qtypeFilters"/>
             </div>
           </div>
           <div class="row dimension">
@@ -81,7 +81,7 @@
         <text-button v-if="canExport"
           v-on:click="doExport()"
           :disabled="!validFormInput"
-          :button-type="totalCount > 0 ? 'normal' : 'disable'">
+          :button-type="totalCount > 0 ? 'default' : 'disable'">
           {{ $t('general.export') }}</text-button>
         <div v-if="totalCount > 0" class="total-show">
           {{ $t('statistics.total_records', {num: totalCount}) }}
@@ -167,12 +167,13 @@ export default {
         { value: 'neutral', text: this.$t('statistics.emotions.neutral') },
       ],
       qtypesOptions: [
+        { value: '', text: this.$t('statistics.qtypes.all') },
         { value: 'business', text: this.$t('statistics.qtypes.business') },
         { value: 'chat', text: this.$t('statistics.qtypes.chat') },
         { value: 'other', text: this.$t('statistics.qtypes.other') },
       ],
       emotionFilters: [],
-      qtypeFilters: [],
+      qtypeFilters: [''],
     };
   },
   methods: {
@@ -270,6 +271,9 @@ export default {
         if (that.qtypeFilters.length > 0) {
           const group = [];
           that.qtypesOptions.forEach((opt) => {
+            if (opt.value === '') {
+              return;
+            }
             if (that.qtypeFilters.indexOf(opt.value) >= 0) {
               group.push({
                 id: opt.value,
@@ -277,10 +281,12 @@ export default {
               });
             }
           });
-          params.filter.qtypes = [{
-            type: 'qtype',
-            group,
-          }];
+          if (group.length > 0) {
+            params.filter.qtypes = [{
+              type: 'qtype',
+              group,
+            }];
+          }
         }
       }
       return params;
