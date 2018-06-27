@@ -25,6 +25,7 @@ const MyPlugin = {
               topOffset: binding.value.top || 0,
               buttons: binding.value.buttons || [],
               data: binding.value.data,
+              tooltipType: binding.value.errorType ? 'error' : 'default',
             },
           });
           vm.$mount();
@@ -43,6 +44,7 @@ const MyPlugin = {
                 topOffset: binding.value.top || 0,
                 buttons: binding.value.buttons || [],
                 data: binding.value.data,
+                tooltipType: binding.value.errorType ? 'error' : 'default',
               },
             });
             vm.$mount();

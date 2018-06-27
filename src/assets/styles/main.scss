@@ -36,6 +36,9 @@ input {
     -webkit-box-shadow:0 0 0 50px white inset;
     -webkit-text-fill-color: #333;
   }
+  &.error {
+    background-color: $color-input-error;
+  }
 }
 
 .icon-input {
@@ -53,6 +56,9 @@ input {
     outline: none;
     box-shadow: 0 0 0 2px rgba(75, 75, 100, 0.2);
     border-color: $color-borderline-hover;
+  }
+  &.error {
+    background-color: $color-input-error;
   }
 
   input {
@@ -92,6 +98,9 @@ textarea {
     &:hover{
       border-color: $color-borderline;
     }
+  }
+  &.error {
+    background-color: $color-input-error;
   }
 }
 
