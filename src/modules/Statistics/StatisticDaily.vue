@@ -6,7 +6,7 @@
           <div class="row">
             <div class="row-title">{{ $t('statistics.keyword_search') }}</div>
             <div class="row-value">
-              <label-switch v-model="keywordType" :options="keywordOption"/>
+              <!-- <label-switch v-model="keywordType" :options="keywordOption"/> -->
               <div class="input">
                 <search-input v-model="keyword" fill/>
               </div>
@@ -147,7 +147,7 @@ export default {
       headerInfo: [],
       showTable: false,
       totalCount: 0,
-      keywordType: 'all',
+      keywordType: 'question',
       keyword: '',
       userID: '',
       startValidity: true,
@@ -155,11 +155,11 @@ export default {
       pageIndex: 1,
       startDisableDate: undefined,
       endDisableDate: undefined,
-      keywordOption: [
-        { val: 'all', text: this.$t('general.all') },
-        { val: 'question', text: this.$t('general.question') },
-        { val: 'answer', text: this.$t('general.answer') },
-      ],
+      // keywordOption: [
+      //   { val: 'all', text: this.$t('general.all') },
+      //   { val: 'question', text: this.$t('general.question') },
+      //   { val: 'answer', text: this.$t('general.answer') },
+      // ],
       emotionOptions: [
         { value: 'angry', text: this.$t('statistics.emotions.angry') },
         { value: 'not_satisfied', text: this.$t('statistics.emotions.not_satisfied') },
@@ -176,6 +176,9 @@ export default {
     };
   },
   methods: {
+    escapeRegExp(str) {
+      return str.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
+    },
     selectDimension() {
       const that = this;
       const tagTypes = JSON.parse(JSON.stringify(this.tagTypes));
@@ -210,9 +213,10 @@ export default {
       const that = this;
 
       if (that.trimmedKeyword) {
+        const escapedKeyword = that.escapeRegExp(that.trimmedKeyword);
         params.filter.contains = {
           type: that.keywordType,
-          text: that.trimmedKeyword,
+          text: escapedKeyword,
         };
       }
 
@@ -587,7 +591,7 @@ $main-color: black;
         flex: 0 0 auto;
       }
       .input {
-        padding-left: 10px;
+        // padding-left: 10px;
         flex: 1;
         display: flex;
       }
