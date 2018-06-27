@@ -2,6 +2,13 @@
 
 > A general vue project for UI
 
+## Notification
+
+> Please use commands below to set up commit template
+```
+git config commit.template ./.git-commit-template
+```
+
 ## Build Setup
 
 ``` bash
