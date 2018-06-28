@@ -3,7 +3,7 @@
     <div class="row">
       <div class="row-title">{{ $t('management.user_name') }}</div>
       <div v-if="editMode">{{ userName }}</div>
-      <input v-else class="row-input" ref="userName" v-model="userName" :placeholder="$t('management.input_placeholder')">
+      <input v-else class="row-input" ref="userName" v-model="userName" :placeholder="$t('management.input_placeholder')" v-tooltip="userNameTooltip">
     </div>
     <div class="row">
       <div class="row-title">{{ $t('management.user_type') }}</div>
@@ -15,15 +15,15 @@
         <div>********</div>
         <text-button class="modify" @click="startEditPassword">{{ $t('management.modify_password') }}</text-button>
       </div>
-      <input v-else class="row-input" ref="password" v-model="password" type="password" :placeholder="$t('management.set_passowrd_placeholder')">
+      <input v-else class="row-input" ref="password" v-model="password" type="password" :placeholder="$t('management.set_passowrd_placeholder')" v-tooltip="passwordTooltip">
     </div>
     <div class="row" v-if="!editMode || passwordEdit">
       <div class="row-title">{{ $t('management.check_password') }}</div>
-      <input class="row-input" ref="checkPassword" v-model="checkPassword" type="password" :placeholder="$t('management.check_password_placeholder')">
+      <input class="row-input" ref="checkPassword" v-model="checkPassword" type="password" :placeholder="$t('management.check_password_placeholder')" v-tooltip="passwordCheckTooltip">
     </div>
     <div class="row">
       <div class="row-title">{{ $t('management.user_display_name') }}</div>
-      <input class="row-input" ref="displayName" v-model="displayName" :placeholder="$t('management.input_placeholder')">
+      <input class="row-input" ref="displayName" v-model="displayName" :placeholder="$t('management.input_placeholder')" v-tooltip="displayNameTooltip">
     </div>
     <div class="row">
       <div class="row-title">{{ $t('management.phone') }}</div>
@@ -31,7 +31,7 @@
     </div>
     <div class="row">
       <div class="row-title">{{ $t('management.email') }}</div>
-      <input class="row-input" ref="email" v-model="email" :placeholder="$t('management.input_placeholder')">
+      <input class="row-input" ref="email" v-model="email" :placeholder="$t('management.input_placeholder')" v-tooltip="emailTooltip">
     </div>
     <template v-if="!isAdmin">
     <div class="row" v-for="(privilege, idx) in privilegeSet" :key="idx">
@@ -52,9 +52,6 @@
       <text-button button-type="primary" @click="addPrivilege">{{ $t('general.add') }}</text-button>
     </div>
     </template>
-    <div class='err-tooltip' ref="tooltip">
-      {{ errMsg }}
-    </div>
   </div>
 </template>
 
@@ -80,6 +77,31 @@ export default {
       return this.userType === 1;
     },
   },
+  watch: {
+    displayName() {
+      if (this.displayName.trim() !== '') {
+        this.$refs.displayName.dispatchEvent(new Event('tooltip-hide'));
+      }
+    },
+    userName() {
+      if (this.userName.trim() !== '') {
+        this.$refs.userName.dispatchEvent(new Event('tooltip-hide'));
+      }
+    },
+    email() {
+      if (this.email.trim() !== '') {
+        this.$refs.email.dispatchEvent(new Event('tooltip-hide'));
+      }
+    },
+    password() {
+      if (this.password.trim() !== '') {
+        this.$refs.password.dispatchEvent(new Event('tooltip-hide'));
+      }
+    },
+    checkPassword() {
+      this.$refs.checkPassword.dispatchEvent(new Event('tooltip-hide'));
+    },
+  },
   data() {
     return {
       userType: 2,
@@ -97,15 +119,36 @@ export default {
         role: [],
       }],
 
-      errColumn: '',
-      errMsg: '',
-      showErr: false,
-      toolTipTimer: undefined,
-
       machineOptions: [],
       privilegeOptions: [],
       editPasswordCallback: undefined,
       existedUsers: [],
+
+      userNameTooltip: {
+        msg: this.$t('management.err_empty_username'),
+        eventOnly: true,
+        errorType: true,
+      },
+      emailTooltip: {
+        msg: this.$t('management.err_empty_email'),
+        eventOnly: true,
+        errorType: true,
+      },
+      displayNameTooltip: {
+        msg: this.$t('management.err_empty_display_name'),
+        eventOnly: true,
+        errorType: true,
+      },
+      passwordTooltip: {
+        msg: this.$t('management.err_empty_password'),
+        eventOnly: true,
+        errorType: true,
+      },
+      passwordCheckTooltip: {
+        msg: this.$t('management.err_invalid_check_password'),
+        eventOnly: true,
+        errorType: true,
+      },
     };
   },
   methods: {
@@ -130,75 +173,10 @@ export default {
     removePrivilege(idx) {
       this.privilegeSet.splice(idx, 1);
     },
-    showError() {
-      const that = this;
-
-      const input = that.$refs[that.errColumn];
-      if (input === undefined) {
-        return;
-      }
-      input.focus();
-      const boundedBox = input.getBoundingClientRect();
-
-      const tooltip = that.$refs.tooltip;
-      if (tooltip) {
-        tooltip.style.position = 'fixed';
-        tooltip.style.visibility = 'visible';
-        tooltip.style.opacity = 1;
-        tooltip.style.top = `${boundedBox.top - tooltip.clientHeight}px`;
-        tooltip.style.left = `${boundedBox.left + 200}px`;
-        tooltip.className = tooltip.className.replace('fade-out', '');
-      } else {
-        return;
-      }
-
-      if (that.toolTipTimer) {
-        clearTimeout(that.toolTipTimer);
-      }
-      that.$nextTick(() => {
-        if (tooltip.classList) {
-          tooltip.classList.add('fade-out');
-        } else {
-          tooltip.className += ' fade-out';
-        }
-        tooltip.style.opacity = 0.01;
-      });
-      that.toolTipTimer = setTimeout(() => {
-        tooltip.style.visibility = 'hidden';
-        that.toolTipTimer = undefined;
-      }, 2000);
-    },
     validate() {
       const that = this;
-      if (that.userName.trim() === '') {
-        that.errColumn = 'userName';
-        that.errMsg = that.$t('management.err_empty_username');
-      } else if (that.email.trim() === '') {
-        that.errColumn = 'email';
-        that.errMsg = that.$t('management.err_empty_email');
-      } else if (that.displayName.trim() === '') {
-        that.errColumn = 'displayName';
-        that.errMsg = that.$t('management.err_empty_display_name');
-      } else if (!that.editMode && that.password === '') {
-        that.errColumn = 'password';
-        that.errMsg = that.$t('management.err_empty_password');
-      } else if (that.checkPassword !== that.password) {
-        that.errColumn = 'checkPassword';
-        that.errMsg = that.$t('management.err_invalid_check_password');
-      } else {
-        that.errColumn = '';
-        that.errMsg = '';
-      }
-
-      if (!that.editMode) {
-        if (that.existedUsers.indexOf(that.userName) >= 0) {
-          that.errColumn = 'userName';
-          that.errMsg = that.$t('management.err_existed_username');
-        }
-      }
-
-      if (that.errColumn) {
-        that.showError();
+      const isValid = this.checkInputValidation();
+      if (!isValid) {
         return;
       }
 
@@ -236,6 +214,39 @@ export default {
       });
       ret.apps = JSON.stringify(retApps);
       that.$emit('validateSuccess', ret);
+    },
+    checkInputValidation() {
+      const that = this;
+      let isValid = true;
+      if (that.userName.trim() === '') {
+        isValid = false;
+        that.userNameTooltip.msg = that.$t('management.err_empty_username');
+        that.$refs.userName.dispatchEvent(new Event('tooltip-reload'));
+        that.$refs.userName.dispatchEvent(new Event('tooltip-show'));
+      } else if (!that.editMode) {
+        if (that.existedUsers.indexOf(that.userName) >= 0) {
+          isValid = false;
+          that.userNameTooltip.msg = that.$t('management.err_existed_username');
+          that.$refs.userName.dispatchEvent(new Event('tooltip-reload'));
+          that.$refs.userName.dispatchEvent(new Event('tooltip-show'));
+        }
+      }
+      if (that.email.trim() === '') {
+        isValid = false;
+        that.$refs.email.dispatchEvent(new Event('tooltip-show'));
+      }
+      if (that.displayName.trim() === '') {
+        isValid = false;
+        that.$refs.displayName.dispatchEvent(new Event('tooltip-show'));
+      }
+      if (!that.editMode && that.password === '') {
+        isValid = false;
+        that.$refs.password.dispatchEvent(new Event('tooltip-show'));
+      } else if (that.checkPassword !== that.password) {
+        isValid = false;
+        that.$refs.checkPassword.dispatchEvent(new Event('tooltip-show'));
+      }
+      return isValid;
     },
   },
   beforeMount() {
@@ -364,19 +375,6 @@ export default {
       flex: 0 0 140px;
       max-width: 140px;
     }
-  }
-}
-.err-tooltip {
-  position: fixed;
-  visibility: hidden;
-  max-width: 172px;
-  min-height: 36px;
-  border-radius: 4px;
-  background-color: #ffffff;
-  box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.2);
-  padding: 8px 16px;
-  &.fade-out {
-    transition: opacity 1s 1s;
   }
 }
 </style>

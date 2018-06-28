@@ -93,10 +93,12 @@ export default {
       synonymTooltip: {
         msg: this.$t('wordbank.error.synonym_duplicate'),
         eventOnly: true,
+        errorType: true,
       },
       wordbankNameTooltip: {
         msg: '',
         eventOnly: true,
+        errorType: true,
       },
     };
   },

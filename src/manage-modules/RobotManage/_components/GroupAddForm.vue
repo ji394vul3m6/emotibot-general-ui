@@ -42,9 +42,16 @@ export default {
       nameTooltip: {
         msg: '',
         eventOnly: true,
-        animateShow: true,
+        errorType: true,
       },
     };
+  },
+  watch: {
+    name() {
+      if (this.name.trim() !== '') {
+        this.$refs.name.dispatchEvent(new Event('tooltip-hide'));
+      }
+    },
   },
   methods: {
     showTooltip(e, robot) {

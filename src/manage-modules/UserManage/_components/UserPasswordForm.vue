@@ -3,20 +3,20 @@
     <div class="row">
       <div class="row-title">{{ $t('management.manager_password') }}</div>
       <input type="password" class="row-input" ref="managerPassword" v-model="managerPassword"
-      :placeholder="$t('management.input_placeholder')" autocomplete="new-password">
+      :placeholder="$t('management.input_placeholder')" autocomplete="new-password"
+      v-tooltip="managerPasswordTooltip">
     </div>
     <div class="row">
       <div class="row-title">{{ $t('management.new_password') }}</div>
       <input type="password" class="row-input" ref="password" v-model="password"
-      :placeholder="$t('management.input_placeholder')" autocomplete="new-password">
+      :placeholder="$t('management.input_placeholder')" autocomplete="new-password"
+      v-tooltip="passwordTooltip">
     </div>
     <div class="row">
       <div class="row-title">{{ $t('management.check_new_password') }}</div>
       <input type="password" class="row-input" ref="newPassword" v-model="newPassword"
-      :placeholder="$t('management.input_placeholder')" autocomplete="new-password">
-    </div>
-    <div class="row">
-      <div class="err-msg" v-if="errMsg !== ''">{{ errMsg }}</div>
+      :placeholder="$t('management.input_placeholder')" autocomplete="new-password"
+      v-tooltip="newPasswordTooltip">
     </div>
   </div>
 </template>
@@ -43,20 +43,49 @@ export default {
       password: '',
       newPassword: '',
       userType: 2,
-      errMsg: '',
+      managerPasswordTooltip: {
+        msg: this.$t('management.err_manager_empty_password'),
+        eventOnly: true,
+        errorType: true,
+      },
+      passwordTooltip: {
+        msg: this.$t('management.err_empty_password'),
+        eventOnly: true,
+        errorType: true,
+      },
+      newPasswordTooltip: {
+        msg: this.$t('management.err_invalid_check_password'),
+        eventOnly: true,
+        errorType: true,
+      },
     };
+  },
+  watch: {
+    managerPassword() {
+      if (this.managerPassword !== '') {
+        this.$refs.managerPassword.dispatchEvent(new Event('tooltip-hide'));
+      }
+    },
+    password() {
+      if (this.password !== '') {
+        this.$refs.password.dispatchEvent(new Event('tooltip-hide'));
+      }
+    },
+    newPassword() {
+      this.$refs.newPassword.dispatchEvent(new Event('tooltip-hide'));
+    },
   },
   methods: {
     validate() {
       const that = this;
       if (that.managerPassword === '') {
-        that.errMsg = that.$t('management.err_manager_empty_password');
+        that.$refs.managerPassword.dispatchEvent(new Event('tooltip-show'));
         that.$refs.managerPassword.focus();
       } else if (that.password === '') {
-        that.errMsg = that.$t('management.err_empty_password');
+        that.$refs.password.dispatchEvent(new Event('tooltip-show'));
         that.$refs.password.focus();
       } else if (that.newPassword !== that.password) {
-        that.errMsg = that.$t('management.err_invalid_check_password');
+        that.$refs.newPassword.dispatchEvent(new Event('tooltip-show'));
         that.$refs.newPassword.focus();
       } else {
         that.$emit('validateSuccess', {
