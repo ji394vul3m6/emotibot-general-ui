@@ -843,6 +843,10 @@ export default {
     input_personal_pass: '输入个人密码',
     reason_description: '原因描述',
 
+    user_preference: '个人资料',
+    edit_data: '修改资料',
+    edit_user_preference: '修改个人资料',
+
     enterprise_privilege_manage: '企业权限管理',
     add_account: '新增帐号',
     edit_account: '编辑人员',
@@ -861,6 +865,7 @@ export default {
     email: 'Email',
     next_step: '下一步',
     last_step: '上一步',
+    password: '密码',
     set_password: '设置密码',
     check_password: '确认密码',
     modify_password: '修改密码',
@@ -870,6 +875,7 @@ export default {
     privilege_is: '权限为',
 
     manager_password: '管理员密码',
+    orig_password: '原密码',
     new_password: '新密码',
     check_new_password: '确认新密码',
 
@@ -879,7 +885,9 @@ export default {
     err_empty_display_name: '姓名不可为空',
     err_empty_password: '密码不可为空',
     err_password: '密码错误',
+    err_origin_password: '原密码错误',
     err_manager_empty_password: '管理员密码不可为空',
+    err_origin_empty_password: '原密码不可为空',
     err_invalid_check_password: '两次密码输入不同',
     update_password_success: '更新密码成功',
 

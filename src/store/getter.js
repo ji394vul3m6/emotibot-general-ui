@@ -76,3 +76,5 @@ export const hasPrivilege = s => (mod, cmd) => {
   }
   return nowPriv.indexOf(cmd) >= 0;
 };
+
+export const showUserInfoPage = s => s.showUserInfo;

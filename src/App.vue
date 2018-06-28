@@ -30,6 +30,9 @@
           </div>
         </div>
       </template>
+      <template v-if="showUserInfoPage && ready">
+        <user-preference/>
+      </template>
     </div>
     <pop-windows></pop-windows>
     <notification></notification>
@@ -44,6 +47,7 @@ import PageHeader from '@/components/layout/Header';
 import PageMenu from '@/components/layout/Menu';
 import QATest from '@/modules/SSM/QATestFloat';
 import constant from '@/utils/js/constant';
+import UserPreference from '@/manage-modules/UserPreference';
 
 const defaultPath = '/statistic-dash';
 
@@ -52,6 +56,7 @@ export default {
   components: {
     'page-header': PageHeader,
     'page-menu': PageMenu,
+    'user-preference': UserPreference,
   },
   computed: {
     pageName() {
@@ -68,6 +73,7 @@ export default {
       'isChatOpen',
       'enterpriseID',
       'userPrivilege',
+      'showUserInfoPage',
     ]),
   },
   data() {

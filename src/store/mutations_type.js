@@ -14,3 +14,5 @@ export const OPEN_CHAT_TEST = 'openChatTest';
 export const CLOSE_CHAT_TEST = 'closeChatTest';
 
 export const SET_USER_INFO = 'setUserInfo';
+export const SHOW_USER_PREFERENCE = 'showUserPreference';
+export const HIDE_USER_PREFERENCE = 'hideUserPreference';
