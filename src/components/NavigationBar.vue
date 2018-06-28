@@ -2,7 +2,7 @@
   <div class="nav-bar">
     <div class="tag"
       v-for="(text, val) in options" :key=val
-      :class="{active: selectedPage === val}"
+      :class="{active: selectedPage === val, 'no-hover': Object.keys(options).length <= 1}"
       @click="clickPage(val)">
       {{text}}
     </div>
@@ -51,14 +51,13 @@ export default {
 
 $navbar-font-size: 16px;
 $navbar-line-height: 18px;
-$navbar-active-color: #1875f0;
+$navbar-active-color: $color-primary;
 
 .nav-bar {
   height: 60px;
   display: flex;
   box-shadow: inset 0 -1px 0 0 #e9e9e9;
   .tag {
-    @include click-button();
     color: $color-font-active;
     box-sizing: border-box;
     height: 60px;
@@ -72,6 +71,12 @@ $navbar-active-color: #1875f0;
       color: $navbar-active-color;
       border-bottom: 3px solid $navbar-active-color;
       padding-bottom: 0px;
+    }
+    &:not(.no-hover) {
+      @include click-button();
+      &:hover {
+        color: $navbar-active-color;
+      }
     }
   }
 }

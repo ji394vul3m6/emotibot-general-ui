@@ -36,7 +36,7 @@ function checkAjaxError(context, error) {
     status = error.response.status;
   }
 
-  if (status === 401 || status === 403) {
+  if (status === 401) {
     handleUnAuthenticated.bind(context)();
   }
 

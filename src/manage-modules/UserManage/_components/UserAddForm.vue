@@ -176,6 +176,9 @@ export default {
       } else if (that.email.trim() === '') {
         that.errColumn = 'email';
         that.errMsg = that.$t('management.err_empty_email');
+      } else if (that.displayName.trim() === '') {
+        that.errColumn = 'displayName';
+        that.errMsg = that.$t('management.err_empty_display_name');
       } else if (!that.editMode && that.password === '') {
         that.errColumn = 'password';
         that.errMsg = that.$t('management.err_empty_password');

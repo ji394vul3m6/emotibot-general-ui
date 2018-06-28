@@ -142,13 +142,14 @@ export default {
     },
     goRobot(robot) {
       const that = this;
-      const roleID = that.userRoleMap[robot.id];
       let promise;
 
       if (that.userInfo.type === 2) {
-        promise = that.$api.getEnterpriseRole(that.enterpriseID, roleID)
-        .then((role) => {
-          that.setUserRole(role);
+        const roleIDs = that.userRoleMap[robot.id];
+        const roleID = roleIDs[0];
+        const promises = roleIDs.map(id => that.$api.getEnterpriseRole(that.enterpriseID, id));
+        promise = Promise.all(promises).then((roles) => {
+          that.setUserRole(roles);
         })
         .then(() => that.$api.updateBFUserRole(that.enterpriseID, that.userInfo.id, roleID));
       } else {

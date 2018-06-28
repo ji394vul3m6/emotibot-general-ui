@@ -11,10 +11,11 @@ export const state = {
   pageInfos: [],
   curPage: {},
   userID: '',
-  userRole: {},
+  userRole: [],
   userRoleMap: {},
   chatTest: false,
   userInfo: {},
+  showUserInfo: false,
 };
 
 export const mutations = {
@@ -123,5 +124,11 @@ export const mutations = {
   },
   [types.SET_USER_INFO]: (s, info) => {
     s.userInfo = info;
+  },
+  [types.SHOW_USER_PREFERENCE]: (s) => {
+    s.showUserInfo = true;
+  },
+  [types.HIDE_USER_PREFERENCE]: (s) => {
+    s.showUserInfo = false;
   },
 };

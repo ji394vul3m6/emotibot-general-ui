@@ -2,8 +2,9 @@
   <div class="form">
     <div class="row">
       <div class="row-title">{{ $t('management.group_name') }}</div>
-      <input class="row-input" v-model="name"
-        :placeholder="$t('management.input_placeholder')">
+      <input class="row-input" v-model="name" ref="name"
+        :placeholder="$t('management.input_placeholder')"
+        v-tooltip="nameTooltip">
     </div>
     <div class="row">
       <div class="row-title">{{ $t('management.add_robot') }}</div>
@@ -38,6 +39,11 @@ export default {
       description: '',
       robots: [],
       showTooltipMsg: '',
+      nameTooltip: {
+        msg: '',
+        eventOnly: true,
+        animateShow: true,
+      },
     };
   },
   methods: {
@@ -69,12 +75,18 @@ export default {
       const that = this;
 
       if (that.name === '') {
-        console.log('name empty');
+        that.nameTooltip.msg = that.$t('management.err_group_name_empty');
+        that.$refs.name.dispatchEvent(new Event('tooltip-reload'));
+        that.$refs.name.dispatchEvent(new Event('tooltip-show'));
+        that.$refs.name.focus();
         return;
       }
       if (that.extData.groups && that.extData.groups.indexOf(that.name) >= 0) {
         if (!that.extData.group || that.name !== that.extData.group.name) {
-          console.log('name existed');
+          that.nameTooltip.msg = that.$t('management.err_group_duplicate');
+          that.$refs.name.dispatchEvent(new Event('tooltip-reload'));
+          that.$refs.name.dispatchEvent(new Event('tooltip-show'));
+          that.$refs.name.focus();
           return;
         }
       }

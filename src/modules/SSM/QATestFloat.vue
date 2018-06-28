@@ -37,7 +37,9 @@
           </template>
           <template v-if="data.content.type === 'cmd'">
             <div class="chat-content">
-            [{{ $t('qatest.cmd') }}]：{{ $t(`qatest.cmdlist.${data.content.subType}`) }}
+            [{{ $t('qatest.cmd') }}]：
+            {{ $t(`qatest.cmdlist.${data.content.subType}`) !== `qatest.cmdlist.${data.content.subType}`
+            ? $t(`qatest.cmdlist.${data.content.subType}`) : data.content.subType }}
             </div>
           </template>
           <div class="chat-time">{{ data.time }}</div>
@@ -230,16 +232,33 @@ export default {
     appendChat(text, role) {
       const that = this;
       let answerObj = {};
+      let oldAnswerFormat = false;
+      let parseText = text;
+
+      if (text.startsWith('[CMD]:')) {
+        oldAnswerFormat = true;
+        parseText = parseText.replace(/^\[CMD\]:/, '');
+      }
+
       try {
-        answerObj = JSON.parse(text.toString());
+        answerObj = JSON.parse(parseText.toString());
         if ((typeof answerObj).toLowerCase() !== 'object') {
           throw String('Not object');
+        }
+        // transform old format in openAPI
+        // TODO: check all format alive to parse
+        if (oldAnswerFormat) {
+          answerObj = {
+            type: 'cmd',
+            subType: answerObj.type,
+            value: answerObj.urls.join(','),
+          };
         }
       } catch (err) {
         answerObj = {
           type: 'text',
           subType: 'text',
-          value: text,
+          value: parseText,
         };
       }
       const chatNode = {

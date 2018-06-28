@@ -6,7 +6,7 @@
           <div class="row">
             <div class="row-title">{{ $t('statistics.keyword_search') }}</div>
             <div class="row-value">
-              <label-switch v-model="keywordType" :options="keywordOption"/>
+              <!-- <label-switch v-model="keywordType" :options="keywordOption"/> -->
               <div class="input">
                 <search-input v-model="keyword" fill/>
               </div>
@@ -44,7 +44,7 @@
             <div class="row-title">{{ $t('statistics.qtypes.title') }}</div>
             <div class="row-value">
               <dropdown-select class="single-input"
-                :options="qtypesOptions" multi v-model="qtypeFilters"/>
+                :options="qtypesOptions" v-model="qtypeFilters"/>
             </div>
           </div>
           <div class="row dimension">
@@ -81,7 +81,7 @@
         <text-button v-if="canExport"
           v-on:click="doExport()"
           :disabled="!validFormInput"
-          :button-type="totalCount > 0 ? 'normal' : 'disable'">
+          :button-type="totalCount > 0 ? 'default' : 'disable'">
           {{ $t('general.export') }}</text-button>
         <div v-if="totalCount > 0" class="total-show">
           {{ $t('statistics.total_records', {num: totalCount}) }}
@@ -147,7 +147,7 @@ export default {
       headerInfo: [],
       showTable: false,
       totalCount: 0,
-      keywordType: 'all',
+      keywordType: 'question',
       keyword: '',
       userID: '',
       startValidity: true,
@@ -155,11 +155,11 @@ export default {
       pageIndex: 1,
       startDisableDate: undefined,
       endDisableDate: undefined,
-      keywordOption: [
-        { val: 'all', text: this.$t('general.all') },
-        { val: 'question', text: this.$t('general.question') },
-        { val: 'answer', text: this.$t('general.answer') },
-      ],
+      // keywordOption: [
+      //   { val: 'all', text: this.$t('general.all') },
+      //   { val: 'question', text: this.$t('general.question') },
+      //   { val: 'answer', text: this.$t('general.answer') },
+      // ],
       emotionOptions: [
         { value: 'angry', text: this.$t('statistics.emotions.angry') },
         { value: 'not_satisfied', text: this.$t('statistics.emotions.not_satisfied') },
@@ -167,15 +167,19 @@ export default {
         { value: 'neutral', text: this.$t('statistics.emotions.neutral') },
       ],
       qtypesOptions: [
+        { value: '', text: this.$t('statistics.qtypes.all') },
         { value: 'business', text: this.$t('statistics.qtypes.business') },
         { value: 'chat', text: this.$t('statistics.qtypes.chat') },
         { value: 'other', text: this.$t('statistics.qtypes.other') },
       ],
       emotionFilters: [],
-      qtypeFilters: [],
+      qtypeFilters: [''],
     };
   },
   methods: {
+    escapeRegExp(str) {
+      return str.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
+    },
     selectDimension() {
       const that = this;
       const tagTypes = JSON.parse(JSON.stringify(this.tagTypes));
@@ -210,9 +214,10 @@ export default {
       const that = this;
 
       if (that.trimmedKeyword) {
+        const escapedKeyword = that.escapeRegExp(that.trimmedKeyword);
         params.filter.contains = {
           type: that.keywordType,
-          text: that.trimmedKeyword,
+          text: escapedKeyword,
         };
       }
 
@@ -266,6 +271,9 @@ export default {
         if (that.qtypeFilters.length > 0) {
           const group = [];
           that.qtypesOptions.forEach((opt) => {
+            if (opt.value === '') {
+              return;
+            }
             if (that.qtypeFilters.indexOf(opt.value) >= 0) {
               group.push({
                 id: opt.value,
@@ -273,10 +281,12 @@ export default {
               });
             }
           });
-          params.filter.qtypes = [{
-            type: 'qtype',
-            group,
-          }];
+          if (group.length > 0) {
+            params.filter.qtypes = [{
+              type: 'qtype',
+              group,
+            }];
+          }
         }
       }
       return params;
@@ -587,7 +597,7 @@ $main-color: black;
         flex: 0 0 auto;
       }
       .input {
-        padding-left: 10px;
+        // padding-left: 10px;
         flex: 1;
         display: flex;
       }

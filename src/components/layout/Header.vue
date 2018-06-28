@@ -1,23 +1,23 @@
 <template>
 <div id="page-header">
-  <div class="robot-list column" @click="showRobotList">
+  <div class="robot-list column" @click="showRobotList" v-if="!showUserInfoPage">
     {{ $t('general.robot_list') }}
   </div>
   <div class="empty column"></div>
-  <div class="enterprise column">
+  <div class="enterprise column" v-if="!showUserInfoPage">
     <div class="icon-container">
       <icon :size=22 icon-type="header_enterprise"/>
     </div>
     <div>{{ enterpriseName }}</div>
   </div>
-  <template v-if="robotID !== ''">
+  <template v-if="robotID !== '' && !showUserInfoPage">
   <div class="robot column">
     <div class="icon-container">
       <icon :size=22 icon-type="robot"/>
     </div>
     <div>{{ robotName }}</div>
   </div>
-  <div class="chat-test column" @click="showChatTest">
+  <div class="chat-test column" @click="showChatTest" v-if="!showUserInfoPage">
     <div class="icon-container">
       <icon :size=22 icon-type="header_dialog"/>
     </div>
@@ -37,7 +37,7 @@
 
     <div class="user-menu-container" :class="[ showUserMenu ? 'show': '']" ref="list">
       <div class="user-menu">
-        <div class="menu-item">{{ $t('header.user_info') }}</div>
+        <div class="menu-item" @click="clickShowUserPreference">{{ $t('header.user_info') }}</div>
         <div class="menu-item" v-if="userInfo.type === 1" @click="goEnterprisePrivilege">{{ $t('header.enterprise_privilege_list') }}</div>
         <div class="menu-item" @click="logout">{{ $t('header.logout') }}</div>
       </div>
@@ -63,16 +63,24 @@ export default {
     'robotList',
     'enterpriseList',
     'userInfo',
+    'showUserInfoPage',
   ]),
   methods: {
     ...mapMutations([
       'setRobot',
       'setEnterprise',
+      'showUserPreference',
+      'hideUserPreference',
     ]),
+    clickShowUserPreference() {
+      this.showUserMenu = false;
+      this.showUserPreference();
+    },
     goEnterprisePrivilege() {
       const that = this;
       that.setRobot('');
       that.$router.push('/manage/enterprise-user-list');
+      that.hideUserPreference();
 
       that.showUserMenu = false;
       window.removeEventListener('click', that.clickHandler);

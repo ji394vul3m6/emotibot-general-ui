@@ -39,7 +39,7 @@ export default {
   methods: {
     validate() {
       const that = this;
-
+      that.name = that.name.trim();
       if (that.name === '') {
         that.nameTooltip.msg = that.$t('management.err_robot_name_empty');
         that.$refs.name.dispatchEvent(new Event('tooltip-reload'));

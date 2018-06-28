@@ -1,5 +1,5 @@
 <template>
-  <div class="tooltip" :style="style">
+  <div class="tooltip" :style="style" :class="{'error': error}" ref="tooltip">
     <div class="tooltip-text" v-if="buttons === undefined || buttons.length <= 0">
       {{ msg }}
     </div>
@@ -25,6 +25,8 @@
 </template>
 
 <script>
+const tooltipTypes = ['default', 'error'];
+
 export default {
   name: 'tooltip',
   props: {
@@ -51,6 +53,11 @@ export default {
     buttons: {
       type: Array,
       default: [],
+    },
+    tooltipType: {
+      type: String,
+      default: 'default',
+      validator: value => tooltipTypes.indexOf(value) > -1,
     },
     iconType: {
       type: String,
@@ -81,6 +88,9 @@ export default {
       return {
         left: `${left}px`,
       };
+    },
+    error() {
+      return this.tooltipType === 'error';
     },
   },
   methods: {
@@ -122,7 +132,6 @@ export default {
   & > .tooltip-text {
     max-width: 172px;
   }
-
   border-radius: 4px;
   color: #666666;
   background-color: #ffffff;
@@ -170,6 +179,18 @@ export default {
         &:not(:first-child) {
           margin-left: 10px;
         }
+      }
+    }
+  }
+
+  &.error {
+    background-color: #FEF3F0;
+    & > .tooltip-text {
+      color: #F76260;
+    }
+    .tooltip-triangle {
+      &::after {
+        background: #FEF3F0;
       }
     }
   }

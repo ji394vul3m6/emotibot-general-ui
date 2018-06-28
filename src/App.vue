@@ -30,6 +30,9 @@
           </div>
         </div>
       </template>
+      <template v-if="showUserInfoPage && ready">
+        <user-preference/>
+      </template>
     </div>
     <pop-windows></pop-windows>
     <notification></notification>
@@ -44,6 +47,7 @@ import PageHeader from '@/components/layout/Header';
 import PageMenu from '@/components/layout/Menu';
 import QATest from '@/modules/SSM/QATestFloat';
 import constant from '@/utils/js/constant';
+import UserPreference from '@/manage-modules/UserPreference';
 
 const defaultPath = '/statistic-dash';
 
@@ -52,6 +56,7 @@ export default {
   components: {
     'page-header': PageHeader,
     'page-menu': PageMenu,
+    'user-preference': UserPreference,
   },
   computed: {
     pageName() {
@@ -67,6 +72,8 @@ export default {
       'currentPage',
       'isChatOpen',
       'enterpriseID',
+      'userPrivilege',
+      'showUserInfoPage',
     ]),
   },
   data() {
@@ -137,7 +144,8 @@ export default {
         return;
       }
       // TODO: get user privilege of specific robot
-      const privileges = that.userRole.privileges;
+      const privileges = that.userPrivilege;
+      console.log(privileges);
 
       const codes = Object.keys(privileges);
       // If user has no privileges, invalid user
@@ -211,7 +219,7 @@ export default {
     setupPages() {
       const that = this;
       const pages = [];
-      const privileges = that.userRole.privileges || {};
+      const privileges = that.userPrivilege || {};
       const privKeys = Object.keys(privileges);
       Object.keys(modules).forEach((moduleName) => {
         let moduleExpand = false;

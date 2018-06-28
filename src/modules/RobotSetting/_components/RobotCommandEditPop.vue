@@ -3,7 +3,11 @@
     <div id="edit-command" class="edit-row">
       <div class="edit-title">{{ $t('robot_command.editpop.command.title') }}</div>
       <div id="edit-command-content" class="edit-content">
-        <input ref="commandName" id="edit-command-input" type="text" v-model="commandName" v-tooltip="commandNameTooltip" :disabled="readonly">
+        <input ref="commandName" id="edit-command-input" type="text"
+          v-model="commandName"
+          v-tooltip="commandNameTooltip"
+          :class="{'error': !isNameValid}"
+          :disabled="readonly">
       </div>
     </div>
 
@@ -90,8 +94,21 @@
     <div class="edit-row">
       <div class="edit-title"></div>
       <div id="edit-reply-textarea" class="edit-content" ref="replyFormatJSON" v-tooltip="replyJSONTooltip">
-        <textarea v-if="replyFormat === 'intext'" name="" id="" rows="5" v-model="replyContentText" :placeholder="$t('robot_command.editpop.reply.intext_placeholder')" :disabled="readonly"></textarea>
-        <textarea v-if="replyFormat === 'injson'" name="" id="" rows="5" v-model="replyContentJson" @keydown="closeJSONTooltip" :placeholder="$t('robot_command.editpop.reply.injson_placeholder')" :disabled="readonly"></textarea>
+        <textarea 
+          v-if="replyFormat === 'intext'"
+          name="" id="" rows="5" 
+          v-model="replyContentText"
+          :placeholder="$t('robot_command.editpop.reply.intext_placeholder')"
+          :disabled="readonly"
+          :class="{'error': isReplyJsonWarning}"></textarea>
+        <textarea 
+          v-if="replyFormat === 'injson'"
+          name="" id="" rows="5"
+          v-model="replyContentJson"
+          @keydown="closeJSONTooltip"
+          :placeholder="$t('robot_command.editpop.reply.injson_placeholder')"
+          :disabled="readonly"
+          :class="{'error': isReplyJsonWarning}"></textarea>
       </div>
     </div>
 
@@ -157,15 +174,19 @@ export default {
       commandNameTooltip: {
         eventOnly: true,
         msg: '',
+        errorType: true,
       },
       datePickerTooltip: {
         msg: this.$t('robot_command.error.date_format_error'),
         eventOnly: true,
+        errorType: true,
       },
       replyJSONTooltip: {
         msg: this.$t('robot_command.error.reply_format_json_error'),
         eventOnly: true,
+        errorType: true,
       },
+      isReplyJsonWarning: false,
     };
   },
   computed: {
@@ -303,6 +324,7 @@ export default {
           return true;
         } catch (err) {
           console.log(err);
+          this.isReplyJsonWarning = true;
           const event = new Event('tooltip-show');
           this.$refs.replyFormatJSON.dispatchEvent(event);
           return false;
@@ -311,6 +333,7 @@ export default {
       return true;
     },
     closeJSONTooltip() {
+      this.isReplyJsonWarning = false;
       const event = new Event('tooltip-hide');
       this.$refs.replyFormatJSON.dispatchEvent(event);
     },
