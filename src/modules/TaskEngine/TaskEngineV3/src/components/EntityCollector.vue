@@ -223,3 +223,8 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+@import "../scss/teVariable.scss";
+@import "../scss/entityCollectingPage.scss";
+</style>

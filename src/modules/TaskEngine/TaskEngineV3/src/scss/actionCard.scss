@@ -14,10 +14,10 @@
       display: flex;
       flex-direction: row;
       margin-left: 10px;
-      .v-select .dropdown-toggle{
+      .v-select /deep/ .dropdown-toggle{
         width: 300px;
       }
-      .v-select.narrow-select .dropdown-toggle{
+      .v-select.narrow-select /deep/ .dropdown-toggle{
           width: 160px;
       }
     }

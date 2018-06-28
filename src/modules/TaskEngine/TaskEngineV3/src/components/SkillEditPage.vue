@@ -117,3 +117,8 @@ export default {
   mounted() {},
 };
 </script>
+
+<style lang="scss" scoped>
+@import "../scss/teVariable.scss";
+@import "../scss/skillEditPage.scss";
+</style>

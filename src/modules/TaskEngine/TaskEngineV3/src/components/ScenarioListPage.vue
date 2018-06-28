@@ -169,7 +169,8 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+@import "../scss/teVariable.scss";
 .scenario-list-page{
   flex: 1 1 0;
   // display: flex;

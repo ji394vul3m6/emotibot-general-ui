@@ -87,7 +87,8 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+@import "../scss/teVariable.scss";
 .custom-entity-type-editor-pop{
   .header-title{
     min-width: 300px;

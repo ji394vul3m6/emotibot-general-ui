@@ -144,3 +144,8 @@ export default {
   mounted() {},
 };
 </script>
+
+<style lang="scss" scoped>
+@import "../scss/teVariable.scss";
+@import "../scss/actionCard.scss";
+</style>
