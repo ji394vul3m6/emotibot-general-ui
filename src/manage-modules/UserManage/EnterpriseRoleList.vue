@@ -39,7 +39,7 @@
                   <template v-if="role.editMode">
                     <template v-for="(cmds, mod) in val">
                       <div v-for="(check, cmd) in cmds" :key="`${mod}-${cmd}`" class="priv-item">
-                        <input type="checkbox" :id="`${mod}.${cmd}`" v-model="cmds[cmd]" @change="checkCmdDependency(cmds, cmd === 'view')">
+                        <input type="checkbox" :id="`${mod}.${cmd}`" v-model="cmds[cmd]" @change="checkCmdDependency(cmds, cmd)">
                         <label class="item-text" :for="`${mod}.${cmd}`">
                           {{ $t(`management.privilege.${mod}.${cmd}`) }}
                         </label>
@@ -133,18 +133,30 @@ export default {
     };
   },
   methods: {
-    checkCmdDependency(cmdStatus, isViewChange) {
+    checkCmdDependency(cmdStatus, changeCol) {
       const cmds = Object.keys(cmdStatus);
-      if (isViewChange) {
+      if (changeCol === 'view') {
         if (!cmdStatus.view) {
           cmds.forEach((cmd) => { cmdStatus[cmd] = false; });
         }
         return;
       }
+      if (changeCol === 'edit') {
+        if (!cmdStatus.edit) {
+          cmds.forEach((cmd) => {
+            if (cmd === 'import') {
+              cmdStatus[cmd] = false;
+            }
+          });
+        }
+      }
 
-      if (Object.keys(cmdStatus).indexOf('view') >= 0) {
+      if (cmds.indexOf('view') >= 0) {
         const shouldView = cmds.reduce((ret, cmd) => ret || cmdStatus[cmd], false);
         cmdStatus.view = shouldView;
+      }
+      if (cmds.indexOf('edit') >= 0 && cmds.indexOf('import') >= 0) {
+        cmdStatus.edit = cmdStatus.edit || cmdStatus.import;
       }
     },
     genRoleDeleteTooltip(role) {
@@ -348,13 +360,14 @@ export default {
     display: flex;
     flex-direction: column;
     padding: 0 20px;
-    margin-top: 20px;
+    padding-top: 20px;
   }
 }
 
 .role-card {
   background-color: #ffffff;
   border: solid 1px #e9e9e9;
+  border-radius: 4px;
   &.edit-mode {
     box-shadow: 0 0 14px 0 rgba(0, 0, 0, 0.2);
   }
@@ -367,6 +380,7 @@ export default {
     padding: 8px 10px;
     background-color: #f8f8f8;
     border: solid 1px #e9e9e9;
+    border-top: 0px;
 
     display: flex;
     justify-content: space-between;
