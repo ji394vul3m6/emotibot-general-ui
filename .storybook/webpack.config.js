@@ -93,7 +93,8 @@ module.exports = (baseConfig, env) => {
             options: {
               config: {
                 path: '../postcssrc.js'
-              }
+              },
+              plugins: function() { return []; } //had to add this line to avoid Error: No PostCSS Config found in ...
             }
           },
           {

@@ -14,6 +14,7 @@ import NavBarStory from './NavigationBar';
 import DropdownSelectStory from './DropdownSelect';
 import TooltipStory from './Tooltip';
 import TagInputStory from './TagInput';
+import './storybook.scss';
 
 Vue.use(VueI18n);
 
