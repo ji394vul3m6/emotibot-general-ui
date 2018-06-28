@@ -184,10 +184,10 @@ http {
         }
         # When redirect to robotpage or other else, change it to ssm module page
         location = /BF/index.html {
-            return 301 http://${BF_IP}/BF/index.html#index;
+            return 301 /BF/index.html#index;
         }
         location = /BF/index.html#robotpage {
-            return 301 http://${BF_IP}/BF/index.html#index;
+            return 301 /BF/index.html#index;
         }
         location /BF {
             proxy_pass http://${ADMIN_BF_SERVER_URL};
