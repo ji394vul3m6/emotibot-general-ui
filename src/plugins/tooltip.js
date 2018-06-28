@@ -3,7 +3,7 @@ import Tooltip from '../components/basic/Tooltip';
 function getPosition(el) {
   const boundedBox = el.getBoundingClientRect();
   return {
-    x: boundedBox.left,
+    x: boundedBox.right,
     y: boundedBox.top,
   };
 }
@@ -18,7 +18,7 @@ const MyPlugin = {
           const TooltipGenerator = Vue.extend(Tooltip);
           let vm = new TooltipGenerator({
             propsData: {
-              x: boundedBox.left,
+              x: boundedBox.right,
               y: boundedBox.top,
               msg: binding.value.msg,
               leftOffset: binding.value.left || 0,
@@ -37,7 +37,7 @@ const MyPlugin = {
             vm.$destroy();
             vm = new TooltipGenerator({
               propsData: {
-                x: boundedBox.left,
+                x: boundedBox.right,
                 y: boundedBox.top,
                 msg: binding.value.msg,
                 leftOffset: binding.value.left || 0,

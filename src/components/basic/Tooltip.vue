@@ -73,6 +73,7 @@ export default {
       show: false,
       showX: 0,
       showY: 0,
+      elemWidth: 0,
     };
   },
   computed: {
@@ -84,7 +85,7 @@ export default {
       };
     },
     triangleStyle() {
-      const left = this.leftOffset > 0 ? 0 : 0 - this.leftOffset;
+      const left = this.leftOffset > 0 ? 0 : (0 - this.leftOffset - 8) + (this.elemWidth / 2);
       return {
         left: `${left}px`,
       };
@@ -112,7 +113,8 @@ export default {
         that.x = pos.x;
         that.y = pos.y;
       }
-      that.showX = that.x + that.leftOffset;
+      that.elemWidth = that.$el.clientWidth;
+      that.showX = (that.x - that.$el.clientWidth) + that.leftOffset;
       that.showY = (that.y - that.$el.clientHeight - 8) + that.topOffset;
       that.show = true;
     });
@@ -126,39 +128,25 @@ export default {
 <style lang='scss' scoped>
 .tooltip {
   position: fixed;
+  z-index: 2;
   visibility: hidden;
   word-break: break-all;
 
   & > .tooltip-text {
     max-width: 172px;
   }
-  border-radius: 4px;
-  color: #666666;
-  background-color: #ffffff;
-  box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.2);
-  padding: 8px 16px;
+  font-size: 12px;
+  line-height: 18px;
+  border-radius: 2px;
+  color: #FFFFFF;
+  background-color: rgba(0, 0, 0, 0.85);
+  // box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.2);
+  padding: 5px 8px;
   cursor: default;
-  .tooltip-triangle {
-    position: absolute;
-    left: 25px;
-    top: 100%;
-    width: 16px;
-    height: 16px;
-    overflow: hidden;
-    &::after{
-      content: "";
-      background: white;
-      position: absolute;
-      transform: rotate(45deg);
-      box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
-      width: 8px;
-      height: 8px;
-      top: -4px;
-      left: 4px;
-    }
-  }
 
   .tooltip-form {
+    background-color: #FFFFFF;
+    color: #000000;
     .tooltip-info {
       display: flex;
       .tooltip-icon {
@@ -184,13 +172,30 @@ export default {
   }
 
   &.error {
+    z-index: 1;
     background-color: #FEF3F0;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
     & > .tooltip-text {
       color: #F76260;
     }
     .tooltip-triangle {
-      &::after {
+      position: absolute;
+      left: 25px;
+      top: 100%;
+      width: 16px;
+      height: 16px;
+      overflow: hidden;
+      &::after{
+        content: "";
         background: #FEF3F0;
+        position: absolute;
+        transform: rotate(45deg);
+        box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+        width: 8px;
+        height: 8px;
+        top: -4px;
+        left: 4px;
       }
     }
   }

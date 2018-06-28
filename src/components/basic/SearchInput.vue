@@ -8,7 +8,7 @@
       @focus="toggleFocus"
       @blur="toggleFocus">
     <div class="input-icon"> 
-      <icon icon-type="search" :size=12 />
+      <icon icon-type="search" :size=16 />
     </div> 
   </div>
 </template>
@@ -53,9 +53,10 @@ export default {
 <style lang="scss" scoped>
 @import "styles/variable";
 
-$input-height: 28px;
+$input-height: 30px;
 
 .search-input {
+  display: inline-flex;
   height: $input-height;
   &.fill {
     width: 100%;
