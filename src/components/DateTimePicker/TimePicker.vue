@@ -593,6 +593,6 @@ export default {
 </span>
 </template>
 
-<style>
-@import './vue-timepicker.css';
+<style lang="scss" scoped>
+@import './vue-timepicker';
 </style>
