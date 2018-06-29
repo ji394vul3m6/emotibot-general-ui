@@ -6,8 +6,16 @@
         <input ref="commandName" id="edit-command-input" type="text"
           v-model="commandName"
           v-tooltip="commandNameTooltip"
-          :class="{'error': !isNameValid}"
+          :class="{'error': isAddNewCommand ? false : !isNameValid}"
           :disabled="readonly">
+        <!-- <info-input
+          v-model="commandName"
+          :msg="'輸入不得為空'"
+          fill
+          :disabled="readonly"
+          :error="!isNameValid"
+          :errorMsg="isNameEmpty ? $t('robot_command.error.name_input_empty') : $t('robot_command.error.name_input_duplicate')">
+        </info-input> -->
       </div>
     </div>
 
@@ -39,6 +47,13 @@
       <div class="edit-title">{{ $t('robot_command.editpop.keyword.title') }}</div>
       <div id="edit-keyword-content" class="edit-content">
         <input type="text" v-model="keywords" :placeholder="$t('robot_command.editpop.keyword.keyword_placeholder')" :disabled="readonly">
+        <!-- <info-input
+          v-model="keywords"
+          :msg="$t('robot_command.editpop.keyword.keyword_placeholder')"
+          fill
+          :disabled="readonly"
+        >
+        </info-input> -->
         <div id="advanced-block">
           <input id="advanced" type="checkbox" v-model="hasAdvanced" :disabled="readonly">
           <label for="advanced">{{ $t('robot_command.editpop.keyword.advanced') }}</label>
@@ -187,6 +202,8 @@ export default {
         errorType: true,
       },
       isReplyJsonWarning: false,
+
+      isAddNewCommand: false,
     };
   },
   computed: {
@@ -235,6 +252,7 @@ export default {
       }
     },
     isNameEmpty() {
+      this.isAddNewCommand = false;
       this.updateNameTooltip();
     },
     isNameDuplicate() {
@@ -339,6 +357,7 @@ export default {
     },
     updateNameTooltip() {
       if (!this.isNameValid) {
+        this.isAddNewCommand = false;
         if (this.isNameEmpty) {
           this.commandNameTooltip.msg = this.$t('robot_command.error.name_input_empty');
         } else if (this.isNameDuplicate) {
@@ -371,6 +390,7 @@ export default {
       }
 
       const cmd = that.value.command;
+      that.isAddNewCommand = cmd.name === '';
       that.commandName = cmd.name;
       that.ruleTo = cmd.target;
       that.replyPlace = cmd.response_type;

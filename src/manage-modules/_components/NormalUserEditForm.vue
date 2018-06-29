@@ -40,32 +40,51 @@ export default {
       nameTooltip: {
         msg: this.$t('management.err_empty_display_name'),
         eventOnly: true,
-        animateShow: true,
+        errorType: true,
       },
       emailTooltip: {
         msg: this.$t('management.err_empty_email'),
         eventOnly: true,
-        animateShow: true,
+        errorType: true,
       },
       name: '',
       phone: '',
       email: '',
     };
   },
+  watch: {
+    name() {
+      if (this.name.trim() !== '') {
+        this.$refs.name.dispatchEvent(new Event('tooltip-hide'));
+      }
+    },
+    email() {
+      if (this.email.trim() !== '') {
+        this.$refs.email.dispatchEvent(new Event('tooltip-hide'));
+      }
+    },
+  },
   methods: {
     validate() {
       const that = this;
+      let isValid = true;
       if (that.name.trim() === '') {
         that.$refs.name.dispatchEvent(new Event('tooltip-show'));
-      } else if (that.email.trim() === '') {
-        that.$refs.email.dispatchEvent(new Event('tooltip-show'));
-      } else {
-        that.$emit('validateSuccess', {
-          name: that.name,
-          email: that.email,
-          phone: that.phone,
-        });
+        isValid = false;
       }
+      if (that.email.trim() === '') {
+        that.$refs.email.dispatchEvent(new Event('tooltip-show'));
+        isValid = false;
+      }
+      if (!isValid) {
+        return;
+      }
+
+      that.$emit('validateSuccess', {
+        name: that.name,
+        email: that.email,
+        phone: that.phone,
+      });
     },
   },
   mounted() {

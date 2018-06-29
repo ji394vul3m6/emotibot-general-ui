@@ -3,20 +3,20 @@
     <div class="row">
       <div class="row-title">{{ $t('management.orig_password') }}</div>
       <input type="password" class="row-input" ref="origPassword" v-model="origPassword"
-      :placeholder="$t('management.input_placeholder')" autocomplete="new-password">
+      :placeholder="$t('management.input_placeholder')" autocomplete="new-password"
+      v-tooltip="origPasswordTooltip">
     </div>
     <div class="row">
       <div class="row-title">{{ $t('management.new_password') }}</div>
       <input type="password" class="row-input" ref="password" v-model="password"
-      :placeholder="$t('management.input_placeholder')" autocomplete="new-password">
+      :placeholder="$t('management.input_placeholder')" autocomplete="new-password"
+      v-tooltip="passwordTooltip">
     </div>
     <div class="row">
       <div class="row-title">{{ $t('management.check_new_password') }}</div>
       <input type="password" class="row-input" ref="newPassword" v-model="newPassword"
-      :placeholder="$t('management.input_placeholder')" autocomplete="new-password">
-    </div>
-    <div class="row">
-      <div class="err-msg" v-if="errMsg !== ''">{{ errMsg }}</div>
+      :placeholder="$t('management.input_placeholder')" autocomplete="new-password"
+      v-tooltip="newPasswordTooltip">
     </div>
   </div>
 </template>
@@ -43,24 +43,60 @@ export default {
       password: '',
       newPassword: '',
       userType: 2,
-      errMsg: '',
+
+      origPasswordTooltip: {
+        msg: this.$t('management.err_origin_empty_password'),
+        eventOnly: true,
+        errorType: true,
+      },
+      passwordTooltip: {
+        msg: this.$t('management.err_empty_password'),
+        eventOnly: true,
+        errorType: true,
+      },
+      newPasswordTooltip: {
+        msg: this.$t('management.err_invalid_check_password'),
+        eventOnly: true,
+        errorType: true,
+      },
     };
+  },
+  watch: {
+    origPassword() {
+      if (this.origPassword !== '') {
+        this.$refs.origPassword.dispatchEvent(new Event('tooltip-hide'));
+      }
+    },
+    password() {
+      if (this.password !== '') {
+        this.$refs.password.dispatchEvent(new Event('tooltip-hide'));
+      }
+    },
+    newPassword() {
+      if (this.newPassword !== '') {
+        this.$refs.newPassword.dispatchEvent(new Event('tooltip-hide'));
+      }
+    },
   },
   methods: {
     validate() {
       const that = this;
       const verify = that.$cookie.get('verify');
       if (that.origPassword === '') {
-        that.errMsg = that.$t('management.err_origin_empty_password');
+        that.origPasswordTooltip.msg = that.$t('management.err_origin_empty_password');
+        that.$refs.origPassword.dispatchEvent(new Event('tooltip-reload'));
+        that.$refs.origPassword.dispatchEvent(new Event('tooltip-show'));
         that.$refs.origPassword.focus();
       } else if (md5(that.origPassword) !== verify) {
-        that.errMsg = that.$t('management.err_origin_password');
+        that.origPasswordTooltip.msg = that.$t('management.err_origin_password');
+        that.$refs.origPassword.dispatchEvent(new Event('tooltip-reload'));
+        that.$refs.origPassword.dispatchEvent(new Event('tooltip-show'));
         that.$refs.origPassword.focus();
       } else if (that.password === '') {
-        that.errMsg = that.$t('management.err_empty_password');
+        that.$refs.password.dispatchEvent(new Event('tooltip-show'));
         that.$refs.password.focus();
       } else if (that.newPassword !== that.password) {
-        that.errMsg = that.$t('management.err_invalid_check_password');
+        that.$refs.newPassword.dispatchEvent(new Event('tooltip-show'));
         that.$refs.newPassword.focus();
       } else {
         that.$emit('validateSuccess', {
