@@ -128,26 +128,31 @@ export default {
         msg: this.$t('management.err_empty_username'),
         eventOnly: true,
         errorType: true,
+        alignLeft: true,
       },
       emailTooltip: {
         msg: this.$t('management.err_empty_email'),
         eventOnly: true,
         errorType: true,
+        alignLeft: true,
       },
       displayNameTooltip: {
         msg: this.$t('management.err_empty_display_name'),
         eventOnly: true,
         errorType: true,
+        alignLeft: true,
       },
       passwordTooltip: {
         msg: this.$t('management.err_empty_password'),
         eventOnly: true,
         errorType: true,
+        alignLeft: true,
       },
       passwordCheckTooltip: {
         msg: this.$t('management.err_invalid_check_password'),
         eventOnly: true,
         errorType: true,
+        alignLeft: true,
       },
     };
   },

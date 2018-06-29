@@ -33,6 +33,7 @@ export default {
         msg: '',
         eventOnly: true,
         errorType: true,
+        alignLeft: true,
       },
     };
   },

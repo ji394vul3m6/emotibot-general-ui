@@ -129,6 +129,8 @@ export default {
       nameTooltip: {
         msg: this.$t('management.err_role_duplicate'),
         eventOnly: true,
+        errorType: true,
+        alignLeft: true,
       },
     };
   },

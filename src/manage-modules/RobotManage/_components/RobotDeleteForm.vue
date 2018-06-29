@@ -35,6 +35,7 @@ export default {
         msg: this.$t('management.err_password'),
         eventOnly: true,
         errorType: true,
+        alignLeft: true,
       },
     };
   },

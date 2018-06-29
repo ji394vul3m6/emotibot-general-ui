@@ -35,6 +35,8 @@ export default {
       warnTooltip: {
         msg: this.$t('robot_command.movetopop.tooltip'),
         eventOnly: true,
+        errorType: true,
+        alignLeft: true,
       },
     };
   },

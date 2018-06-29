@@ -48,16 +48,19 @@ export default {
         msg: this.$t('management.err_origin_empty_password'),
         eventOnly: true,
         errorType: true,
+        alignLeft: true,
       },
       passwordTooltip: {
         msg: this.$t('management.err_empty_password'),
         eventOnly: true,
         errorType: true,
+        alignLeft: true,
       },
       newPasswordTooltip: {
         msg: this.$t('management.err_invalid_check_password'),
         eventOnly: true,
         errorType: true,
+        alignLeft: true,
       },
     };
   },

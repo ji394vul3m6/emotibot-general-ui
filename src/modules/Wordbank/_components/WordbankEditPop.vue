@@ -94,11 +94,13 @@ export default {
         msg: this.$t('wordbank.error.synonym_duplicate'),
         eventOnly: true,
         errorType: true,
+        alignLeft: true,
       },
       wordbankNameTooltip: {
         msg: '',
         eventOnly: true,
         errorType: true,
+        alignLeft: true,
       },
     };
   },

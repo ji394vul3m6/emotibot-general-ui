@@ -41,11 +41,13 @@ export default {
         msg: this.$t('management.err_empty_display_name'),
         eventOnly: true,
         errorType: true,
+        alignLeft: true,
       },
       emailTooltip: {
         msg: this.$t('management.err_empty_email'),
         eventOnly: true,
         errorType: true,
+        alignLeft: true,
       },
       name: '',
       phone: '',

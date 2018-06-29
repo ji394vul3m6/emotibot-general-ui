@@ -190,16 +190,19 @@ export default {
         eventOnly: true,
         msg: '',
         errorType: true,
+        alignLeft: true,
       },
       datePickerTooltip: {
         msg: this.$t('robot_command.error.date_format_error'),
         eventOnly: true,
         errorType: true,
+        alignLeft: true,
       },
       replyJSONTooltip: {
         msg: this.$t('robot_command.error.reply_format_json_error'),
         eventOnly: true,
         errorType: true,
+        alignLeft: true,
       },
       isReplyJsonWarning: false,
 
