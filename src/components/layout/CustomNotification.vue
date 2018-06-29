@@ -1,8 +1,15 @@
 <template>
   <transition-group tag="div" name="fade" class="notifications">
-    <div v-for="notification in notifications" class="notification" :key="notification.msg" :class="notification.type">
-      <icon :icon-type="`white_${notification.type}`"></icon>
+    <div v-for="(notification, idx) in notifications" class="notification" :key="notification.msg" :class="notification.type">
+      <!-- <icon :icon-type="`white_${notification.type}`"></icon> -->
+      <icon v-if="notification.type === 'success'" icon-type='info_success' :size=20></icon>
+      <icon v-else-if="notification.type === 'fail'" icon-type='info_error' :size=20></icon>
+      <icon v-else-if="notification.type === 'warning'" icon-type='info_warning' :size=20></icon>
+      <icon v-else-if="notification.type === 'info'" icon-type='info_hover' :size=20></icon>
       <label>{{ notification.msg }}</label>
+      <div class="close-icons" @click="closeNotification(idx)">
+        <icon iconType="info_close" :size=16></icon>
+      </div>
     </div>
   </transition-group>
 </template>
@@ -19,8 +26,8 @@ export default {
     return {
       msg: '',
       notifications: [],
-      defaultDelay: 4000,
-      notificationTypes: ['success', 'fail'],
+      defaultDelay: 5000,
+      notificationTypes: ['success', 'fail', 'warning', 'info'],
       defaultType: 'success',
     };
   },
@@ -38,6 +45,9 @@ export default {
         type: this.getType(option),
         id: (new Date()).getTime(),
       });
+    },
+    closeNotification(idx) {
+      this.notifications.splice(idx, 1);
     },
     getType(option) {
       if (this.notificationTypes.indexOf(option.type) !== -1) {
@@ -61,36 +71,39 @@ $animate-delay: 0.5s;
 
 .notifications {
   position: fixed;
-  right: 10px;
-  bottom: 10px;
-
+  right: calc(50% - #{$notification-width} / 2);
+  top: 40px;
   display: flex;
-  flex-direction: column-reverse;
-  align-items: flex-end;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .notification {
-  height: 50px;
+  @include font-14px();
+  height: $notification-height;
   padding: 10px;
   margin-top: 5px;
-  color: white;
-  font-weight: bold;
+  color: $color-font-active;
+  background: $color-white;
   opacity: 1;
   border-radius: $notification-border-radius;
+  box-shadow: $notification-box-shadow;
   width: $notification-width;
   overflow: hidden;
 
   display: flex;
+  align-items: center;
   label {
-    margin-top: 1px;
-    line-height: $default-line-height;
+    flex: 1;
+    margin-left: 8px;
   }
 
-  &.success {
-    background: $notification-background;
-  }
-  &.fail {
-    background: $notification-fail-background;
+  .close-icons {
+    &:hover {
+      cursor: pointer;
+    }
+    display: flex;
+    align-items: center;
   }
 
   &.fade-enter-active {

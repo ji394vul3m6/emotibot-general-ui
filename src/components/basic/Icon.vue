@@ -186,6 +186,12 @@ export default {
   @include iconType("info");
   @include iconType("info_hover");
   
+  /** used on notifications */
+  @include iconType("info_success");
+  @include iconType("info_warning");
+  @include iconType("info_error");
+  @include iconType("info_close");
+
   // robot icon should a little bit larger than other icons
   .white_robot_icon {
     background-size: 25px 25px;

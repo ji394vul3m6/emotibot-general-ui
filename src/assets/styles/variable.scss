@@ -84,8 +84,10 @@ $tool-tip-text: white;
 
 $notification-background: #5cd29d;
 $notification-fail-background: #fa7a7a;
-$notification-border-radius: 4px;
+$notification-border-radius: 2px;
+$notification-box-shadow: 0 1px 6px rgba(0, 0, 0, 0.15);
 $notification-width: 300px;
+$notification-height: 36px;
 
 $tag-background-color: #444444;
 $tag-font-color: white;
