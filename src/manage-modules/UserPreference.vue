@@ -17,6 +17,12 @@
           <text-button v-if="col.key==='password'"
           @click="popEditPassword">{{ $t('management.modify_password') }}</text-button>
         </div>
+        <!-- <div class="row">
+          <div class="row-title">{{ $t('general.language') }}：</div>
+          <div class="row-content">
+            <dropdown-select :options="languageOption" width="150px" v-model="nowLanguage" ref="language" @input="changeLanguage"/>
+          </div>
+        </div> -->
       </div>
     </div>
   </div>
@@ -25,6 +31,7 @@
 <script>
 import { mapGetters, mapMutations } from 'vuex';
 import NavBar from '@/components/NavigationBar';
+import DropdownSelector from '@/components/DropdownSelect';
 import api from './_api/user';
 import UserForm from './_components/NormalUserEditForm';
 import PasswordForm from './_components/NormalUserPasswordForm';
@@ -33,6 +40,7 @@ export default {
   name: 'user-preference',
   components: {
     NavBar,
+    'dropdown-select': DropdownSelector,
   },
   api,
   data() {
@@ -63,17 +71,30 @@ export default {
           text: this.$t('management.email'),
         },
       ],
+      languageOption: [
+        {
+          value: 'zh-cn',
+          text: this.$t('general.zh_cn'),
+        },
+        {
+          value: 'zh-tw',
+          text: this.$t('general.zh_tw'),
+        },
+      ],
+      nowLanguage: [],
     };
   },
   computed: {
     ...mapGetters([
       'userInfo',
       'enterpriseID',
+      'showLanguage',
     ]),
   },
   methods: {
     ...mapMutations([
       'hideUserPreference',
+      'setLanguage',
     ]),
     loadUser() {
       const that = this;
@@ -175,9 +196,16 @@ export default {
       });
       return JSON.stringify(privileges);
     },
+    changeLanguage(value) {
+      const language = value[0];
+      this.setLanguage(language);
+    },
   },
   mounted() {
     this.loadUser();
+    if (this.$refs.language !== undefined) {
+      this.$refs.language.$emit('select', this.showLanguage);
+    }
   },
 };
 </script>

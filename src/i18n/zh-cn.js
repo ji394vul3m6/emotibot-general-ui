@@ -703,6 +703,9 @@ export default {
     error: '',
   },
   general: {
+    language: '语言',
+    zh_tw: '繁体中文',
+    zh_cn: '简体中文',
     delete_success: '删除成功',
     robot_list: '机器人列表',
     no_data: '暂无数据',

@@ -16,6 +16,7 @@ export const state = {
   chatTest: false,
   userInfo: {},
   showUserInfo: false,
+  locale: 'zh-cn',
 };
 
 export const mutations = {
@@ -130,5 +131,8 @@ export const mutations = {
   },
   [types.HIDE_USER_PREFERENCE]: (s) => {
     s.showUserInfo = false;
+  },
+  [types.SET_LANGUAGE]: (s, language) => {
+    s.locale = language;
   },
 };

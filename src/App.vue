@@ -74,6 +74,7 @@ export default {
       'enterpriseID',
       'userPrivilege',
       'showUserInfoPage',
+      'showLanguage',
     ]),
   },
   data() {
@@ -112,6 +113,10 @@ export default {
     $route() {
       this.checkPrivilege();
       this.endLoading();
+    },
+    showLanguage(val) {
+      this.$i18n.locale = val;
+      this.$root.$forceUpdate();
     },
   },
   methods: {
