@@ -79,6 +79,7 @@ export default {
       return {
         msg,
         top: 0,
+        alignLeft: true,
       };
     },
   },

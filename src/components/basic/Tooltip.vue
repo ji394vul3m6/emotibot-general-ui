@@ -50,6 +50,13 @@ export default {
       type: Number,
       default: 0,
     },
+    /** Default to show tooltip on right hand side.
+    /*  Use alignLeft to show tooltip on left hand side */
+    alignLeft: {
+      type: Boolean,
+      default: false,
+    },
+
     buttons: {
       type: Array,
       default: [],
@@ -114,8 +121,13 @@ export default {
         that.y = pos.y;
       }
       that.elemWidth = that.$el.clientWidth;
-      that.showX = (that.x - that.$el.clientWidth) + that.leftOffset;
-      that.showY = (that.y - that.$el.clientHeight - 8) + that.topOffset;
+      if (that.alignLeft) {
+        that.showX = (that.x - that.$el.clientWidth) + that.leftOffset;
+        that.showY = (that.y - that.$el.clientHeight - 8) + that.topOffset;
+      } else {
+        that.showX = that.x + that.leftOffset;
+        that.showY = (that.y - that.$el.clientHeight - 8) + that.topOffset;
+      }
       that.show = true;
     });
     that.$on('hide', () => {
@@ -133,7 +145,7 @@ export default {
   word-break: break-all;
 
   & > .tooltip-text {
-    max-width: 172px;
+    max-width: 300px;
   }
   font-size: 12px;
   line-height: 18px;

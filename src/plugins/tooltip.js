@@ -26,6 +26,7 @@ const MyPlugin = {
               buttons: binding.value.buttons || [],
               data: binding.value.data,
               tooltipType: binding.value.errorType ? 'error' : 'default',
+              alignLeft: binding.value.alignLeft || false,
             },
           });
           vm.$mount();
@@ -45,6 +46,7 @@ const MyPlugin = {
                 buttons: binding.value.buttons || [],
                 data: binding.value.data,
                 tooltipType: binding.value.errorType ? 'error' : 'default',
+                alignLeft: binding.value.alignLeft || false,
               },
             });
             vm.$mount();

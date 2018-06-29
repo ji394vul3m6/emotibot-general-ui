@@ -7,10 +7,11 @@ export default [
     func: () => {
       const option = object('setting', {
         msg: 'test',
+        alignLeft: false,
       });
       const template = `
       <div>
-        <div :style="divStyle">只需要寫 option 到 v-tooltip 即可使用的 tooltip</div>
+        <div :style="divStyle">只需要寫 option 到 v-tooltip 即可使用的 tooltip<br>Tooltip 預設顯示原點在右上角，往右顯示，使用 alignLeft 可指定往左顯示</div>
         <span v-tooltip="option" style="display: inline-block;" :style="divStyle"> 移入顯示 </span>
       </div>`;
       return {
@@ -139,6 +140,7 @@ export default [
       const option = object('setting', {
         msg: '這是一個錯誤提示',
         errorType: true,
+        alignLeft: true,
       });
       const template = `
       <div>
