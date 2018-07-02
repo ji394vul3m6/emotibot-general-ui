@@ -169,6 +169,15 @@ export default {
             .then(() => {
               that.$notify({ text: that.$t('management.update_password_success') });
             })
+            .catch((err) => {
+              if (err.response.status === 403) {
+                that.popEditPassword();
+                that.$notifyFail(that.$t('management.err_origin_password'));
+              } else {
+                that.popEditPassword();
+                that.$notifyFail(that.$t('management.err_update_password_fail'));
+              }
+            })
             .finally(() => {
               that.$emit('endLoading');
             });
