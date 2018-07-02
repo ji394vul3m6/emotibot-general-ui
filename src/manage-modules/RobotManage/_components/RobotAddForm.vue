@@ -5,6 +5,7 @@
       <input class="row-input" v-model="name"
         :placeholder="$t('management.input_placeholder')"
         v-tooltip="nameTooltip"
+        maxlength=50
         ref="name">
     </div>
     <div class="row">
