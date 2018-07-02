@@ -15,7 +15,7 @@
         </div>
       </div>
       <transition name="slide-in">
-      <div id="chat-test-pop" v-if="isChatOpen">
+      <div id="chat-test-pop" :class="{show: isChatOpen}">
         <component :is="testComponent"></component>
       </div>
       </transition>
@@ -400,12 +400,16 @@ export default {
 }
 #chat-test-pop {
   position: fixed;
-  right: 0;
+  right: -700px;
   top: 0;
   height: 100vh;
   width: 700px;
   background: #EEEEEE;
   box-shadow: 0 0 5px #CCCCCC;
+  transition: right 1s;
+  &.show {
+    right: 0px;
+  }
   .page {
     height: 100%;
   }
