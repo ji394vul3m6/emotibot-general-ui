@@ -8,8 +8,8 @@
       :type="type"
       :autocomplete="autocomplete"
       @keyup="$emit('input', text)"
-      @focus="toggleFocus"
-      @blur="toggleFocus">
+      @focus="toggleFocus(true)"
+      @blur="toggleFocus(false)">
     <div ref="infoIcon" class="input-icon info-icon" 
       v-tooltip="infoTooltip"
       @mouseover="toggleHover(true)"
@@ -126,8 +126,12 @@ export default {
     },
   },
   methods: {
-    toggleFocus() {
-      this.isFocus = !this.isFocus;
+    focus() {
+      this.$refs.input.focus();
+      this.toggleFocus(true);
+    },
+    toggleFocus(bool) {
+      this.isFocus = bool;
     },
     toggleHover(bool) {
       this.isHover = bool;

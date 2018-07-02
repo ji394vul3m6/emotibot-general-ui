@@ -18,6 +18,7 @@
         {{ $t('management.new_password') }}
       </div>
       <info-input
+        ref="password"
         type="password"
         v-model="password"
         :placeholder="$t('management.input_placeholder')"
@@ -119,9 +120,11 @@ export default {
       } else if ((that.password.length < that.passwordMinlength ||
                   that.password.length > that.passwordMaxlength)) {
         that.passwordErrorMsg = that.$t('management.err_password_length');
+        that.$refs.password.focus();
         that.isPasswordTooltipShown = true;
       } else if ((validPasswordReg.test(that.password) === false)) {
         that.passwordErrorMsg = that.$t('management.err_password_invalid');
+        that.$refs.password.focus();
         that.isPasswordTooltipShown = true;
       } else if (that.newPassword !== that.password) {
         that.$refs.newPassword.dispatchEvent(new Event('tooltip-show'));
