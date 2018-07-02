@@ -320,6 +320,7 @@ export default {
       .card-description {
         @include font-14px();
         color: #666666;
+        word-break: break-all;
       }
     }
   }
