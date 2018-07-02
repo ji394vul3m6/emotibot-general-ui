@@ -99,7 +99,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'styles/variable.scss';
 .user-edit-form {
   width: 465px;
   padding: 0 30px;

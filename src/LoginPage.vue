@@ -102,7 +102,7 @@ export default {
 
 <style lang="scss">
 @import "styles/reset.scss";
-@import "styles/variable.scss";
+
 input:-webkit-autofill {
   -webkit-box-shadow:0 0 0 50px white inset;
   -webkit-text-fill-color: #333;

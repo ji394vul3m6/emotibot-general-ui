@@ -354,7 +354,6 @@ export default {
 
 <style lang="scss">
 @import "styles/reset.scss";
-@import "styles/variable";
 @import "styles/main.scss";
 @import "styles/editors.scss";
 

@@ -131,8 +131,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'styles/variable.scss';
-
 .tooltip {
   visibility: hidden;
   word-break: break-all;

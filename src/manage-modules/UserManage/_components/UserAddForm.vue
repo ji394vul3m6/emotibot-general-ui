@@ -405,8 +405,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'styles/variable.scss';
-
 .user-info-form {
   color: #666666;
   padding: 0 25px;

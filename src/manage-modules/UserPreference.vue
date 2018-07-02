@@ -224,8 +224,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import './styles/variable.scss';
-
 .user-preference {
   position: absolute;
   left: 0;

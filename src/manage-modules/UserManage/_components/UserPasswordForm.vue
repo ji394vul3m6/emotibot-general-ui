@@ -148,8 +148,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'styles/variable.scss';
-
 .password-form {
   color: #666666;
   padding: 0 25px;
