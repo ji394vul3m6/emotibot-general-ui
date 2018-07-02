@@ -1,13 +1,17 @@
 <template>
   <div class="user-preference">
     <div class="card h-fill w-fill">
-      <nav-bar class='nav-bar' :options=pageOption></nav-bar>
-      <div class="button-container">
-        <div class="back-button">
-          <text-button @click="hideUserPreference">{{ $t('management.go_back') }}</text-button>
+      <div class="header">
+        <div class='nav-bar'>
+          {{ $t('management.user_preference') }}
         </div>
-        <div class="edit-button">
-          <text-button button-type="primary" width="80px" @click="popEditUser">{{ $t('management.edit_data') }}</text-button>
+        <div class="button-container">
+          <div class="back-button">
+            <text-button @click="hideUserPreference">{{ $t('management.go_back') }}</text-button>
+          </div>
+          <div class="edit-button">
+            <text-button button-type="primary" width="80px" @click="popEditUser">{{ $t('management.edit_data') }}</text-button>
+          </div>
         </div>
       </div>
       <div class="content">
@@ -237,17 +241,29 @@ export default {
     @include card();
   }
 
-  .button-container {
+  .header {
     display: flex;
-    align-items: flex-end;
-    position: absolute;
-    right: 20px;
-    top: 20px;
-    .edit-button {
-      margin-left: 10px;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid $color-borderline;
+    height: 60px;
+    padding: 0 20px;
+    .nav-bar {
+      flex: 1;
+      border-bottom: 0px;
+      @include font-16px();
+      color: $color-font-active;
+    }
+    .button-container {
+      flex: 0 0 auto;
+      display: flex;
+      justify-content: flex-end;
+      .edit-button {
+        margin-left: 10px;
+      }
     }
   }
-
+  
   .content {
     width: 100%;
     display: flex;

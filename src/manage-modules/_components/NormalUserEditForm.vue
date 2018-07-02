@@ -2,7 +2,7 @@
   <div class="user-edit-form">
     <div class="row">
       <div class="row-title">
-        {{ $t('management.user_display_name') }}：
+        {{ $t('management.user_display_name') }}
       </div>
       <div class="row-input">
         <input ref="name" v-tooltip="nameTooltip" v-model="name">
@@ -10,7 +10,7 @@
     </div>
     <div class="row">
       <div class="row-title">
-        {{ $t('management.phone') }}：
+        {{ $t('management.phone') }}
       </div>
       <div class="row-input">
         <input ref="phone" v-model="phone">
@@ -18,7 +18,7 @@
     </div>
     <div class="row">
       <div class="row-title">
-        {{ $t('management.email') }}：
+        {{ $t('management.email') }}
       </div>
       <div class="row-input">
         <input ref="email" v-tooltip="emailTooltip" v-model="email">
@@ -99,10 +99,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import 'styles/variable.scss';
 .user-edit-form {
   width: 465px;
   padding: 0 30px;
-
+  @include font-14px();
   display: flex;
   flex-direction: column;
 
