@@ -2,6 +2,8 @@
 <div id="scenario-list-page" class="scenario-list-page page">
   <div class="header-row">
     <button class="btn-basic btn-border" @click="createNewScenario">{{$t("task_engine_v3.scenario_list_page.button_create_new_scenario")}}</button>
+    <button class="btn-basic btn-border" @click="createFromSpreadSheet">SpreadSheet</button>
+    <input type="file" ref="uploadInput" v-on:change="changeFile()" accept=".xlsx">
     <input class="search_input border_bottom" type="text" name="key_word" 
       :placeholder="$t('task_engine_v3.scenario_list_page.placeholder_search')"
     >
@@ -82,7 +84,8 @@ export default {
               if ('template' in data && 'metadata' in data.template) {
                 const metadata = data.template.metadata;
                 const scenarioId = metadata.scenario_id;
-                this.updateInitialScenario(metadata).then(() => {
+                const scenario = scenarioConvertor.initialScenario(metadata);
+                this.saveScenario(scenarioId, scenario).then(() => {
                   const path = general.composePath(`scenario/${scenarioId}`);
                   this.$router.replace(path);
                 });
@@ -103,19 +106,17 @@ export default {
       };
       this.$root.$emit('showWindow', options);
     },
-    updateInitialScenario(metadata) {
-      const scenario = scenarioConvertor.initialScenario(metadata);
-      const editingContent = scenario.editingContent;
-      const editingLayout = scenario.editingLayout;
+    saveScenario(scenarioId, scenario) {
+      console.log(scenario);
       return taskEngineApi.saveScenario(
         this.appId,
-        metadata.scenario_id,
-        JSON.stringify(editingContent),
-        JSON.stringify(editingLayout),
+        scenarioId,
+        JSON.stringify(scenario.editingContent),
+        JSON.stringify(scenario.editingLayout),
       ).then(() => {
-        console.log('场景已更新');
+        this.$notify({ text: this.$t('error_msg.save_success') });
       }, (err) => {
-        general.popErrorWindow(this, 'saveScenario error', err.message);
+        this.$notifyFail(`${this.$t('error_msg.save_fail')}:${err.message}`);
       });
     },
     editScenario(scenarioId) {
@@ -159,6 +160,54 @@ export default {
         general.popErrorWindow(this, 'switchScenario error', err.message);
       });
     },
+    createFromSpreadSheet() {
+      this.$refs.uploadInput.click();
+    },
+    changeFile() {
+      const files = this.$refs.uploadInput.files;
+      const file = files[0] || undefined;
+      const fileName = file.name;
+      const scenarioName = fileName.substring(0, fileName.lastIndexOf('.xlsx'));
+      const that = this;
+      if (file.size <= 0 || file.size > 2 * 1024 * 1024) {
+        // maximum size: 2MB
+        that.$notifyFail(that.$t('error_msg.upload_file_size_error'));
+      } else {
+        taskEngineApi.createScenario(this.appId, scenarioName).then((data) => {
+          if ('template' in data && 'metadata' in data.template) {
+            const metadata = data.template.metadata;
+            const scenarioId = metadata.scenario_id;
+            const initialScenario = scenarioConvertor.initialScenario(metadata);
+            that.uploadSpreadSheet(scenarioId, initialScenario, file).then(() => {
+              const path = general.composePath(`scenario/${scenarioId}`);
+              this.$router.replace(path);
+            });
+          } else {
+            general.popErrorWindow(this, this.i18n.task_engine_v3.error_msg.create_new_scenario_failed, '');
+          }
+        }, (err) => {
+          general.popErrorWindow(this, 'createScenario error', err.message);
+        });
+      }
+    },
+    uploadSpreadSheet(scenarioId, scenario, file) {
+      const that = this;
+      return taskEngineApi.uploadSpreadsheet(
+        scenarioId,
+        JSON.stringify(scenario),
+        file,
+      ).then((resp) => {
+        if (resp.return === 0) {
+          that.$notify({ text: that.$t('error_msg.success') });
+          that.$refs.uploadInput.value = '';
+        } else {
+          that.$notifyFail(`${that.$t('error_msg.save_fail')}:${resp.error}`);
+        }
+      }, (err) => {
+        that.$refs.uploadInput.value = '';
+        that.$notifyFail(`${that.$t('error_msg.save_fail')}:${err.message}`);
+      });
+    },
   },
   beforeMount() {},
   mounted() {
@@ -199,6 +248,9 @@ export default {
       border: 0;
       outline: 0;
       border-bottom: 1px solid black;
+    }
+    input[type=file] {
+      visibility: hidden;
     }
   }
   .table{
