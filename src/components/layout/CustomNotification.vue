@@ -71,6 +71,7 @@ $animate-delay: 0.5s;
 
 .notifications {
   position: fixed;
+  z-index: 101; // larger than pop window
   right: calc(50% - #{$notification-width} / 2);
   top: 40px;
   display: flex;

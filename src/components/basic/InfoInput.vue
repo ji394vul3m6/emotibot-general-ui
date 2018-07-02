@@ -4,6 +4,9 @@
       ref="input"
       :placeholder="placeholder"
       :disabled="disabled"
+      :maxlength="maxlength"
+      :type="type"
+      :autocomplete="autocomplete"
       @keyup="$emit('input', text)"
       @focus="toggleFocus"
       @blur="toggleFocus">
@@ -25,6 +28,11 @@ export default {
       type: String,
       required: true,
     },
+    type: {
+      type: String,
+      required: false,
+      default: 'text',
+    },
     fill: {
       type: Boolean,
       required: false,
@@ -45,6 +53,10 @@ export default {
       required: false,
       default: false,
     },
+    maxlength: {
+      type: Number,
+      required: false,
+    },
     error: {
       type: Boolean,
       required: false,
@@ -60,6 +72,11 @@ export default {
       required: true,
       default: '',
     },
+    autocomplete: {
+      type: String,
+      required: false,
+      default: '',
+    },
   },
   data() {
     return {
@@ -70,6 +87,7 @@ export default {
         msg: '',
         eventOnly: true,
         errorType: true,
+        alignLeft: true,
       },
     };
   },
