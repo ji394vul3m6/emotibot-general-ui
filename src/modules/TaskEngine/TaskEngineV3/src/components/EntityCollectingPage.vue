@@ -134,6 +134,12 @@ export default {
           },
           {
             entityCategory: '通用实体类别',
+            entityType: '时间日期(粒度-天)(未来时间)',
+            sourceType: 'system',
+            slotType: 'time-day-future',
+          },
+          {
+            entityCategory: '通用实体类别',
             entityType: '整数',
             sourceType: 'system',
             slotType: 'integer',
@@ -152,15 +158,21 @@ export default {
           },
           {
             entityCategory: '通用实体类别',
-            entityType: '电子邮件',
+            entityType: '来电人姓氏',
             sourceType: 'system',
-            slotType: 'email',
+            slotType: 'your-last-name',
           },
           {
             entityCategory: '通用实体类别',
-            entityType: '大陆固定电话号码',
+            entityType: '联络人姓氏',
             sourceType: 'system',
-            slotType: 'telephone-number',
+            slotType: 'his-last-name',
+          },
+          {
+            entityCategory: '通用实体类别',
+            entityType: '电子邮件',
+            sourceType: 'system',
+            slotType: 'email',
           },
           {
             entityCategory: '通用实体类别',
