@@ -118,3 +118,8 @@ export default {
 };
 
 </script>
+
+<style lang="scss" scoped>
+@import "../scss/teVariable.scss";
+@import "../scss/popWindow.scss";
+</style>

@@ -124,6 +124,9 @@ export default {
     deleteCustomEntityType() {
       this.$emit('deleteCustomNer', this.entityCollector.ner);
       this.entityCollector.ner = this.categoryToNerTypeMap[this.entityCollector.entityCategory][0];
+      this.$nextTick(() => {
+        this.categoryToNerTypeMap = JSON.parse(JSON.stringify(this.initialCategoryToNerTypeMap));
+      });
     },
     editCustomEntityType() {
       const options = {
@@ -141,6 +144,10 @@ export default {
         callback: {
           ok: (ner) => {
             this.$emit('addCustomNer', ner);
+            this.$nextTick(() => {
+              this.categoryToNerTypeMap =
+                JSON.parse(JSON.stringify(this.initialCategoryToNerTypeMap));
+            });
             this.entityCollector.ner = ner;
           },
         },
@@ -171,6 +178,10 @@ export default {
         callback: {
           ok: (ner) => {
             this.$emit('addCustomNer', ner);
+            this.$nextTick(() => {
+              this.categoryToNerTypeMap =
+                JSON.parse(JSON.stringify(this.initialCategoryToNerTypeMap));
+            });
             this.entityCollector.ner = ner;
           },
         },
@@ -223,3 +234,8 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+@import "../scss/teVariable.scss";
+@import "../scss/entityCollectingPage.scss";
+</style>

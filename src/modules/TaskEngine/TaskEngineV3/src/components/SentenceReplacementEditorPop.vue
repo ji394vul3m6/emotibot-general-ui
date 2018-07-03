@@ -66,7 +66,8 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+@import "../scss/teVariable.scss";
 .sentence-replacement-editor-pop{
   .pattern-text-container{
     border: 1px solid #e4eaec;

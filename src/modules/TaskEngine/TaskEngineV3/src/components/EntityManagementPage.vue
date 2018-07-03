@@ -152,7 +152,8 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+@import "../scss/teVariable.scss";
 .entity-management-page{
   flex: 1 1 0;
   .row{

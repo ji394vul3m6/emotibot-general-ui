@@ -295,3 +295,8 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+@import "../scss/teVariable.scss";
+@import "../scss/scenarioEditPage.scss";
+</style>

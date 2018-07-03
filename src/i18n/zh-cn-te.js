@@ -170,7 +170,7 @@ export default {
       request_failed: '请求失败',
       please_enter_the_scenario_name: '请为场景取名',
       please_enter_the_skill_name: '请为任务取名',
-      create_new_scenario_failed: '场景创见失败',
+      create_new_scenario_failed: '场景创建失败',
       custom_entity_list_length_must_greater_than_two: '至少两个以上的信息使用自定义实体型别，才可设置实体关联',
     },
     'entity-relation-editor-pop': {

@@ -7,6 +7,7 @@ const BASE_URL = '/php/api/ApiKey/';
 const TASK_ENGINE_APP_PATH = `${BASE_URL}task_engine_app.php`;
 const TASK_ENGINE_SCENARIO_PATH = `${BASE_URL}task_engine_scenario.php`;
 const NLU_TDE_REGISTER_PATH = `${BASE_URL}tde_register.php`;
+const UPLOAD_SPREADSHEET_PATH = `${BASE_URL}spreadsheet.php`;
 
 export default {
   listScenarios(appId) {
@@ -104,5 +105,28 @@ export default {
       data,
       config: { headers: { 'Content-Type': 'application/json' } },
     }).then(resp => resp.data);
+  },
+  uploadSpreadsheet(appId, scenarioId, scenario, file) {
+    if (!file) {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          reject('Empty file');
+        }, 0);
+      });
+    } else if (file.size <= 0 || file.size > 2 * 1024 * 1024) {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          reject('File size need more than 0, less than 2MB');
+        }, 0);
+      });
+    }
+
+    const data = new FormData();
+    data.append('appId', appId);
+    data.append('scenarioId', scenarioId);
+    data.append('scenario', scenario);
+    data.append('spreadsheet', file);
+
+    return axios.post(UPLOAD_SPREADSHEET_PATH, data).then(resp => resp.data);
   },
 };

@@ -1,0 +1,122 @@
+$text-color: #5E5E5E;
+$text-hightlight-color: #004D7F;
+
+.entity-collecting-page{
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  color: $text-color;
+  overflow: auto;
+  .clickable{
+    cursor: pointer; 
+  }
+  .title-container{
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: $text-hightlight-color;
+    padding: 10px;
+    .title{
+      font-size: 30px;
+      margin: 10px;
+      width: 100%;
+      min-width: 400px;
+      text-align: center;
+    }
+    .title-description{
+      font-size: 14px;
+      margin: 10px;
+      width: 50%;
+      min-width: 500px;
+      text-align: center;
+    }
+  }
+  .hr{
+    flex: 0 0 auto;
+    hr {
+      border:1px solid $text-color;
+    }
+  }
+  .entity-collector-container{
+    flex: 0 0 auto;
+    border: 1px solid #e4eaec;
+    line-height: 50px;
+    min-width: 936px;
+    width: 100%;
+    display:flex;
+    flex-direction: row;
+    a{
+      text-decoration: none;
+    }
+    .order_column{
+      flex:0.2;
+      display:flex;
+      flex-direction: row;
+    }
+    .entity_name_column{
+      flex:1;
+      display:flex;
+      flex-direction: row;
+    }
+    .entity_category_column{
+      flex:1;
+      display:flex;
+      flex-direction: row;
+      align-items: center;
+      .entity_category_select{
+        min-width: 150px;
+      }
+    }
+    .entity_type_column{
+      flex:2;
+      display:flex;
+      flex-direction: row;
+      align-items: center;
+      .entity_type_select{
+        min-width: 150px;
+      }
+    }
+    .prompt_column{
+      flex:1;
+      display:flex;
+      flex-direction: row;
+    }
+    input{
+      font-size: 16px;
+    }
+
+    .full_width{
+      width:100%;
+    }
+    .no_border{
+      border:none;
+    }
+    .order{
+      display:flex;
+    }
+    .delete-entity-collector-button{
+      width: 10px;
+      display:inline-block;
+    }
+  }
+  .add-new-entity-button{
+    flex: 0 0 auto;
+  }
+  .bottom-container{
+    flex: 0 0 auto;
+    margin-top: auto;
+    display:flex;
+    flex-direction: row;
+    .edit-entity-relation-button{
+      width: 300px;
+    }
+    .edit-sentence-replacement-button{
+      width: 300px;
+    }
+    .edit-tde-setting-button{
+      width: 300px;
+    }
+  }
+}

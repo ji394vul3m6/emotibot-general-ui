@@ -69,19 +69,8 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+@import "../scss/teVariable.scss";
 @import "../scss/wizardMode.scss";
-@import "../scss/scenarioEditPage.scss";
-@import "../scss/skillEditPage.scss";
-@import "../scss/triggerPage.scss";
-@import "../scss/actionPage.scss";
-@import "../scss/actionGroup.scss";
-@import "../scss/actionCard.scss";
-@import "../scss/conditionCard.scss";
-@import "../scss/createScenarioPop.scss";
-@import "../scss/createSkillPop.scss";
-@import "../scss/intentEditorPop.scss";
-@import "../scss/intentTesterPop.scss";
-@import "../scss/popWindow.scss";
 // @import '../node_modules/vue-on-toast/dist/vue-on-toast.css'
 </style>

@@ -28,12 +28,12 @@
         height: 50px;
         font-size: 30px;
       }
-      .v-select .dropdown-toggle{
+      .v-select /deep/ .dropdown-toggle{
         width: 200px;
         border: none;
         background: $bar-color;
       }
-      .v-select .selected-tag{
+      .v-select /deep/ .selected-tag{
         color: $text-hightlight-color;
       }
     }

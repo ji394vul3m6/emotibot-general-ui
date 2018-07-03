@@ -156,7 +156,8 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+@import "../scss/teVariable.scss";
 .entity-relation-editor-pop{
   height: 100%;
   overflow: auto;
