@@ -178,7 +178,7 @@ export default {
             const metadata = data.template.metadata;
             const scenarioId = metadata.scenario_id;
             const initialScenario = scenarioConvertor.initialScenario(metadata);
-            that.uploadSpreadSheet(scenarioId, initialScenario, file).then(() => {
+            that.uploadSpreadSheet(this.appId, scenarioId, initialScenario, file).then(() => {
               const path = general.composePath(`scenario/${scenarioId}`);
               this.$router.replace(path);
             });
@@ -190,9 +190,10 @@ export default {
         });
       }
     },
-    uploadSpreadSheet(scenarioId, scenario, file) {
+    uploadSpreadSheet(appId, scenarioId, scenario, file) {
       const that = this;
       return taskEngineApi.uploadSpreadsheet(
+        appId,
         scenarioId,
         JSON.stringify(scenario),
         file,

@@ -106,7 +106,7 @@ export default {
       config: { headers: { 'Content-Type': 'application/json' } },
     }).then(resp => resp.data);
   },
-  uploadSpreadsheet(scenarioId, scenario, file) {
+  uploadSpreadsheet(appId, scenarioId, scenario, file) {
     if (!file) {
       return new Promise((resolve, reject) => {
         setTimeout(() => {
@@ -122,6 +122,7 @@ export default {
     }
 
     const data = new FormData();
+    data.append('appId', appId);
     data.append('scenarioId', scenarioId);
     data.append('scenario', scenario);
     data.append('spreadsheet', file);
