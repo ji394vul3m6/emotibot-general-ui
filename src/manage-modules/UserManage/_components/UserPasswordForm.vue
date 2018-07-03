@@ -1,22 +1,47 @@
 <template>
   <div class="password-form" :class="[isAdmin ? 'admin' : 'normal']">
     <div class="row">
-      <div class="row-title">{{ $t('management.manager_password') }}</div>
+      <div class="row-title">
+        <span class="required">＊</span>
+        {{ $t('management.manager_password') }}
+      </div>
       <input type="password" class="row-input" ref="managerPassword" v-model="managerPassword"
-      :placeholder="$t('management.input_placeholder')" autocomplete="new-password">
+      :placeholder="$t('management.input_placeholder')" autocomplete="new-password"
+      v-tooltip="managerPasswordTooltip"
+      :maxlength="passwordMaxlength"
+      :class="{'error': isManagerPasswordTooltipShown}">
     </div>
+
     <div class="row">
-      <div class="row-title">{{ $t('management.new_password') }}</div>
-      <input type="password" class="row-input" ref="password" v-model="password"
-      :placeholder="$t('management.input_placeholder')" autocomplete="new-password">
+      <div class="row-title">
+        <span class="required">＊</span>
+        {{ $t('management.new_password') }}
+      </div>
+      <info-input
+        ref="password"
+        type="password"
+        v-model="password"
+        :placeholder="$t('management.input_placeholder')"
+        :msg="$t('management.password_format')"
+        fill
+        :maxlength="passwordMaxlength"
+        :error="isPasswordTooltipShown"
+        :errorMsg="passwordErrorMsg"
+        autocomplete='new-password'
+      >
+      </info-input>
     </div>
+
     <div class="row">
-      <div class="row-title">{{ $t('management.check_new_password') }}</div>
+      <div class="row-title">
+        <span class="required">＊</span>
+        {{ $t('management.check_new_password') }}
+      </div>
       <input type="password" class="row-input" ref="newPassword" v-model="newPassword"
-      :placeholder="$t('management.input_placeholder')" autocomplete="new-password">
-    </div>
-    <div class="row">
-      <div class="err-msg" v-if="errMsg !== ''">{{ errMsg }}</div>
+      :placeholder="$t('management.input_placeholder')" autocomplete="new-password"
+      v-tooltip="newPasswordTooltip"
+      :maxlength="passwordMaxlength"
+      :class="{'error': isNewPasswordTooltipShown}">
     </div>
   </div>
 </template>
@@ -43,21 +68,68 @@ export default {
       password: '',
       newPassword: '',
       userType: 2,
-      errMsg: '',
+      passwordMaxlength: 16,
+      passwordMinlength: 4,
+      managerPasswordTooltip: {
+        msg: this.$t('management.err_password_length'),
+        eventOnly: true,
+        errorType: true,
+        alignLeft: true,
+      },
+      newPasswordTooltip: {
+        msg: this.$t('management.err_invalid_check_password'),
+        eventOnly: true,
+        errorType: true,
+        alignLeft: true,
+      },
+      isManagerPasswordTooltipShown: false,
+      isPasswordTooltipShown: false,
+      isNewPasswordTooltipShown: false,
+
+      passwordErrorMsg: '',
     };
+  },
+  watch: {
+    managerPassword() {
+      if (this.managerPassword !== '') {
+        this.isManagerPasswordTooltipShown = false;
+        this.$refs.managerPassword.dispatchEvent(new Event('tooltip-hide'));
+      }
+    },
+    password() {
+      if (this.password !== '') {
+        this.isPasswordTooltipShown = false;
+      }
+    },
+    newPassword() {
+      this.isNewPasswordTooltipShown = false;
+      this.$refs.newPassword.dispatchEvent(new Event('tooltip-hide'));
+    },
   },
   methods: {
     validate() {
       const that = this;
-      if (that.managerPassword === '') {
-        that.errMsg = that.$t('management.err_manager_empty_password');
+      const validPasswordReg = /^[a-zA-Z0-9~!$%^&*()[\]{}:;"',./?<>+\-=|_ ]+$/g;
+      if ((that.managerPassword.length < that.passwordMinlength ||
+                  that.managerPassword.length > that.passwordMaxlength)) {
+        that.managerPasswordTooltip.msg = that.$t('management.err_password_length');
+        that.$refs.managerPassword.dispatchEvent(new Event('tooltip-reload'));
+        that.$refs.managerPassword.dispatchEvent(new Event('tooltip-show'));
         that.$refs.managerPassword.focus();
-      } else if (that.password === '') {
-        that.errMsg = that.$t('management.err_empty_password');
+        that.isManagerPasswordTooltipShown = true;
+      } else if ((that.password.length < that.passwordMinlength ||
+                  that.password.length > that.passwordMaxlength)) {
+        that.passwordErrorMsg = that.$t('management.err_password_length');
         that.$refs.password.focus();
+        that.isPasswordTooltipShown = true;
+      } else if ((validPasswordReg.test(that.password) === false)) {
+        that.passwordErrorMsg = that.$t('management.err_password_invalid');
+        that.$refs.password.focus();
+        that.isPasswordTooltipShown = true;
       } else if (that.newPassword !== that.password) {
-        that.errMsg = that.$t('management.err_invalid_check_password');
+        that.$refs.newPassword.dispatchEvent(new Event('tooltip-show'));
         that.$refs.newPassword.focus();
+        that.isNewPasswordTooltipShown = true;
       } else {
         that.$emit('validateSuccess', {
           password: md5(that.password),
@@ -76,8 +148,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'styles/variable.scss';
-
 .password-form {
   color: #666666;
   padding: 0 25px;
@@ -97,15 +167,17 @@ export default {
     display: flex;
     align-items: center;
     .row-title {
-      flex: 0 0 90px;
+      flex: 0 0 100px;
+      .required {
+        display: inline-block;
+        width: 14px;
+        color: $color-primary;
+      }
     }
     .row-input {
-      flex: 0 1 340px;
+      flex: 1;
       padding: 3px 8px;
       @include font-14px();
-    }
-    .err-msg {
-      color: #f76260;
     }
   }
 }

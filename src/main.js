@@ -7,6 +7,7 @@ import 'es6-promise/auto';
 
 import TextButton from '@/components/basic/TextButton';
 import SearchInput from '@/components/basic/SearchInput';
+import InfoInput from '@/components/basic/InfoInput';
 import Loading from '@/components/basic/Loading';
 import Toggle from '@/components/basic/Toggle';
 import Icon from '@/components/basic/Icon';
@@ -45,6 +46,7 @@ Vue.use(api);
 
 Vue.component('text-button', TextButton);
 Vue.component('search-input', SearchInput);
+Vue.component('info-input', InfoInput);
 Vue.component('loading', Loading);
 Vue.component('toggle', Toggle);
 Vue.component('icon', Icon);

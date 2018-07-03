@@ -7,18 +7,19 @@ export default [
     func: () => {
       const option = object('setting', {
         msg: 'test',
+        alignLeft: false,
       });
       const template = `
       <div>
-        <div :style="divStyle">只需要寫 option 到 v-tooltip 即可使用的 tooltip</div>
-        <span v-tooltip="option"> 移入顯示 </span>
+        <div :style="divStyle">只需要寫 option 到 v-tooltip 即可使用的 tooltip<br>Tooltip 預設顯示原點在右上角，往右顯示，使用 alignLeft 可指定往左顯示</div>
+        <span v-tooltip="option" style="display: inline-block;" :style="divStyle"> 移入顯示 </span>
       </div>`;
       return {
         data() {
           return {
             option,
             divStyle: {
-              margin: '20px 0px',
+              margin: '20px 50px',
             },
           };
         },
@@ -36,14 +37,14 @@ export default [
       const template = `
       <div>
         <div :style="divStyle">只需要寫 option 到 v-tooltip 即可使用的 tooltip</div>
-        <span v-tooltip="option">點擊</span>
+        <div v-tooltip="option" style="display: inline-block;" :style="divStyle">點擊</div>
       </div>`;
       return {
         data() {
           return {
             option,
             divStyle: {
-              margin: '20px 0px',
+              margin: '20px 50px',
             },
           };
         },
@@ -82,14 +83,14 @@ export default [
           每個按鈕各自可設定點擊後，是否關閉 tooltip</br>
           設定 callback，也可以設置按鈕的類型
         </div>
-        <span v-tooltip="option">點擊</span>
+        <span v-tooltip="option" style="display: inline-block; margin-left: 200px">點擊</span>
       </div>`;
       return {
         data() {
           return {
             option,
             divStyle: {
-              margin: '20px 0px',
+              margin: '20px 50px',
             },
           };
         },
@@ -126,7 +127,40 @@ export default [
         },
         methods: {
           show() {
-            console.log(this.$refs);
+            this.$refs.input.dispatchEvent(new Event('tooltip-show'));
+          },
+        },
+        template,
+      };
+    },
+  },
+  {
+    name: '錯誤提示 Error Style',
+    func: () => {
+      const option = object('setting', {
+        msg: '這是一個錯誤提示',
+        errorType: true,
+        alignLeft: true,
+      });
+      const template = `
+      <div>
+        <div :style="divStyle">
+          option 使用 'errorType: true' 讓 Tooltip 顯示 Error style
+        </div>
+        <input v-tooltip="option" ref='input'>
+        <button @click='show'>顯示</button>
+      </div>`;
+      return {
+        data() {
+          return {
+            option,
+            divStyle: {
+              margin: '20px 0px',
+            },
+          };
+        },
+        methods: {
+          show() {
             this.$refs.input.dispatchEvent(new Event('tooltip-show'));
           },
         },

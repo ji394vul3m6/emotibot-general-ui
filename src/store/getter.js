@@ -78,3 +78,5 @@ export const hasPrivilege = s => (mod, cmd) => {
 };
 
 export const showUserInfoPage = s => s.showUserInfo;
+
+export const showLanguage = s => s.locale;

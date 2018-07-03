@@ -25,4 +25,9 @@ function loadStories() {
   require('../src/stories');
 }
 
+/** Have to comment out "background: url('...')"" in main.scss 
+ *  for storybook to work for now */
+require('../src/assets/styles/reset.scss');
+require('../src/assets/styles/main.scss'); 
+
 configure(loadStories, module);

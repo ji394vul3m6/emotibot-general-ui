@@ -34,9 +34,15 @@ export default {
       passwordTooltip: {
         msg: this.$t('management.err_password'),
         eventOnly: true,
-        left: 100,
+        errorType: true,
+        alignLeft: true,
       },
     };
+  },
+  watch: {
+    password() {
+      this.$refs.password.dispatchEvent(new Event('tooltip-hide'));
+    },
   },
   methods: {
     validate() {

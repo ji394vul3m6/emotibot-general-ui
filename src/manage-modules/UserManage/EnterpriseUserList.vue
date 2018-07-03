@@ -176,6 +176,14 @@ export default {
             .then(() => {
               that.$notify({ text: that.$t('management.update_password_success') });
               that.popEditUser(tempUser);
+            })
+            .catch((err) => {
+              that.popEditPassword(tempUser);
+              if (err.response.status === 403) {
+                that.$notifyFail(that.$t('management.err_manager_password'));
+              } else {
+                that.$notifyFail(that.$t('management.err_update_password_fail'));
+              }
             });
           },
           cancel() {
@@ -315,8 +323,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'styles/variable.scss';
-
 .card {
   overflow: hidden;
 

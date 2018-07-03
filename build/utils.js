@@ -42,7 +42,8 @@ exports.cssLoaders = function (options) {
           includePaths: [
             "src/assets",
             "src/assets/images"
-          ]
+          ],
+          data: '@import "styles/variable.scss";',
         })
       })
     }

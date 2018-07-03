@@ -997,126 +997,154 @@ export default {
 };
 </script>
 
-<style lang="stylus">
-
-$width = 300px
-
-.rtl
-    direction:rtl
-.vdp-datepicker
-    position relative
-    text-align left
-    *
-        box-sizing border-box
-
-.vdp-datepicker__calendar
-    position fixed
-    z-index 100
-    background white
-    width $width
-    border 1px solid #ccc
-    header
-        display block
-        line-height 40px
-        span
-            display inline-block
-            text-align center
-            width (100 - (100/7)*2)%
-            float left
-
-        .prev
-        .next
-            width (100/7)%
-            float left
-            text-indent -10000px
-            position relative
-            &:after
-                content ''
-                position absolute
-                left 50%
-                top 50%
-                transform translateX(-50%) translateY(-50%)
-                border 6px solid transparent
-
-        .prev
-            &:after
-                border-right 10px solid #000
-                margin-left -5px
-            &.disabled:after
-                border-right 10px solid #ddd
-        .next
-            &:after
-                border-left 10px solid #000
-                margin-left 5px
-            &.disabled:after
-                border-left 10px solid #ddd
-
-        .prev:not(.disabled)
-        .next:not(.disabled)
-        .up:not(.disabled)
-            cursor pointer
-            &:hover
-                background #eee
-
-    .disabled
-        color #ddd
-        cursor default
-    .flex-rtl
-        display flex
-        width inherit
-        flex-wrap wrap
-
-    .cell
-        display inline-block
-        padding 0 5px
-        width (100/7)%
-        height 40px
-        line-height 40px
-        text-align center
-        vertical-align middle
-        border 1px solid transparent
-        &:not(.blank):not(.disabled).day
-        &:not(.blank):not(.disabled).month
-        &:not(.blank):not(.disabled).year
-            cursor pointer
-            &:hover
-                border 1px solid #4bd
-        &.selected
-            background #4bd
-            &:hover
-                background #4bd
-            &.highlighted
-                background #4bd
-        &.highlighted
-            background #cae5ed
-        &.grey
-            color #888
-
-            &:hover
-                background inherit
-
-
-        &.day-header
-            font-size 75%
-            white-space no-wrap
-            cursor inherit
-            &:hover
-                background inherit
-
-    .month,
-    .year
-        width 33.333%
-
-.vdp-datepicker__clear-button
-.vdp-datepicker__calendar-button
-    cursor pointer
-    font-style normal
-    &.disabled
-      color #999
-      cursor default
-</style>
-
 <style lang="scss">
+@import "styles/variable";
+
+$background-active: $color-button;
+$color-date-active: $color-white;
+$color-date-now: #4A90E2;
+$color-date-disabled: $color-font-disabled;
+
+.rtl {
+  direction: rtl;
+}
+
+.vdp-datepicker {
+  color: $color-font-active;
+  position: relative;
+  text-align: left;
+  * {
+    box-sizing: border-box;
+  }
+}
+
+.vdp-datepicker__calendar {
+  position: fixed;
+  z-index: 100;
+  background: $color-white;
+  width: 218px;
+  border: 1px solid $color-borderline;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  header {
+    display: block;
+    line-height: 30px;
+    span {
+      display: inline-block;
+      text-align: center;
+      width: calc(100% - (100%/7)*2);
+      float: left;
+    }
+    .prev, .next {
+      width: calc(100%/7);
+      float: left;
+      text-indent: -10000px;
+      position: relative;
+    }
+    .prev:after, .next:after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translateX(-50%) translateY(-50%);
+      border: 6px solid transparent;
+    }
+    .prev {
+      &:after {
+        border-right: 10px solid $color-icon;
+        margin-left: -5px;
+      }
+      &.disabled:after {
+        border-right: 10px solid $color-borderline;
+      }
+    }
+    .next {
+      &:after {
+        border-left: 10px solid $color-icon;
+        margin-left: 5px;
+      }
+      &.disabled:after {
+        border-left: 10px solid $color-borderline;
+      }
+    }
+    .prev:not(.disabled), .next:not(.disabled), .up:not(.disabled) {
+      cursor: pointer;
+    }
+    .prev:not(.disabled):hover, .next:not(.disabled):hover, .up:not(.disabled):hover {
+      background: $color-date-disabled;
+    }
+  }
+  .disabled {
+    color: $color-date-disabled;
+    cursor: default;
+  }
+  .flex-rtl {
+    display: flex;
+    width: inherit;
+    flex-wrap: wrap;
+  }
+  .cell {
+    display: inline-block;
+    padding: 0 5px;
+    width: calc(100%/7);
+    height: 28px;
+    line-height: 28px;
+    text-align: center;
+    vertical-align: middle;
+    // border: 1px solid transparent;
+    border-radius: 2px;
+    &:not(.blank):not(.disabled) {
+      &.day, &.month, &.year {
+        cursor: pointer;
+      }
+      &.day:hover, &.month:hover, &.year:hover {
+        background: $background-active;
+        color: $color-date-active;
+      }
+    }
+    &.selected {
+      background: $background-active;
+      color: $color-date-active;
+      &:hover, &.highlighted {
+        background: $background-active;
+        color: $color-date-active;
+      }
+    }
+    &.highlighted {
+      background: #cae5ed;
+    }
+    &.grey {
+      color: #888;
+      &:hover {
+        background: inherit;
+      }
+    }
+    &.day-header {
+      font-size: 75%;
+      white-space: no-wrap;
+      color: $color-font-mark;
+      cursor: inherit;
+      &:hover {
+        background: inherit;
+      }
+    }
+  }
+  .month, .year {
+    width: 33.333%;
+  }
+}
+
+.vdp-datepicker__clear-button, .vdp-datepicker__calendar-button {
+  cursor: pointer;
+  font-style: normal;
+}
+
+.vdp-datepicker__clear-button.disabled, .vdp-datepicker__calendar-button.disabled {
+  color: #999;
+  cursor: default;
+}
+
+
 .vdp-datepicker input.invalid-datepicker-input {
   background-color: pink;
 }

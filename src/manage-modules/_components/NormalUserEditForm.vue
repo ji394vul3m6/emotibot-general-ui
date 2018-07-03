@@ -2,7 +2,7 @@
   <div class="user-edit-form">
     <div class="row">
       <div class="row-title">
-        {{ $t('management.user_display_name') }}：
+        {{ $t('management.user_display_name') }}
       </div>
       <div class="row-input">
         <input ref="name" v-tooltip="nameTooltip" v-model="name">
@@ -10,7 +10,7 @@
     </div>
     <div class="row">
       <div class="row-title">
-        {{ $t('management.phone') }}：
+        {{ $t('management.phone') }}
       </div>
       <div class="row-input">
         <input ref="phone" v-model="phone">
@@ -18,7 +18,7 @@
     </div>
     <div class="row">
       <div class="row-title">
-        {{ $t('management.email') }}：
+        {{ $t('management.email') }}
       </div>
       <div class="row-input">
         <input ref="email" v-tooltip="emailTooltip" v-model="email">
@@ -40,32 +40,53 @@ export default {
       nameTooltip: {
         msg: this.$t('management.err_empty_display_name'),
         eventOnly: true,
-        animateShow: true,
+        errorType: true,
+        alignLeft: true,
       },
       emailTooltip: {
         msg: this.$t('management.err_empty_email'),
         eventOnly: true,
-        animateShow: true,
+        errorType: true,
+        alignLeft: true,
       },
       name: '',
       phone: '',
       email: '',
     };
   },
+  watch: {
+    name() {
+      if (this.name.trim() !== '') {
+        this.$refs.name.dispatchEvent(new Event('tooltip-hide'));
+      }
+    },
+    email() {
+      if (this.email.trim() !== '') {
+        this.$refs.email.dispatchEvent(new Event('tooltip-hide'));
+      }
+    },
+  },
   methods: {
     validate() {
       const that = this;
+      let isValid = true;
       if (that.name.trim() === '') {
         that.$refs.name.dispatchEvent(new Event('tooltip-show'));
-      } else if (that.email.trim() === '') {
-        that.$refs.email.dispatchEvent(new Event('tooltip-show'));
-      } else {
-        that.$emit('validateSuccess', {
-          name: that.name,
-          email: that.email,
-          phone: that.phone,
-        });
+        isValid = false;
       }
+      if (that.email.trim() === '') {
+        that.$refs.email.dispatchEvent(new Event('tooltip-show'));
+        isValid = false;
+      }
+      if (!isValid) {
+        return;
+      }
+
+      that.$emit('validateSuccess', {
+        name: that.name,
+        email: that.email,
+        phone: that.phone,
+      });
     },
   },
   mounted() {
@@ -81,7 +102,7 @@ export default {
 .user-edit-form {
   width: 465px;
   padding: 0 30px;
-
+  @include font-14px();
   display: flex;
   flex-direction: column;
 

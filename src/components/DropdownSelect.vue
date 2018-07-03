@@ -125,7 +125,6 @@ export default {
       that.show = true;
 
       const inputBox = that.$refs.input.getBoundingClientRect();
-      console.log(inputBox);
       that.listStyle = {
         position: 'fixed',
         top: `${inputBox.top + inputBox.height + 3}px`,
@@ -160,6 +159,7 @@ export default {
           opt.checked = true;
         }
       });
+      that.checkedValues = this.localOptions.filter(opt => opt.checked);
     },
     toggleHover(option, bool) {
       option.hovered = bool;

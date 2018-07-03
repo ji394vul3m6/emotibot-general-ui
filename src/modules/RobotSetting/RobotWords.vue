@@ -8,9 +8,8 @@
           v-if="words.page === currentPage">
           <div class="words-title">
             <div class="title-text">{{ words.name }}</div>
-            <div class="icon-container" @mouseover.stop="showTooltip($event, words.type)" @mouseout.stop="hideTooltip(words.type)">
+            <div class="icon-container" v-tooltip="words.tooltip">
               <icon icon-type="help" :size="13"></icon>
-              <div class="tooltip" :ref="`tooltip_${words.type}`">{{ words.comment }}</div>
             </div>
           </div>
           <div class="button-container">
@@ -160,27 +159,6 @@ export default {
       const that = this;
       that.callAPI(that.$api.deleteRobotChatContentV2, words.type, contentID);
     },
-    showTooltip(e, wordsType) {
-      let tooltip = this.$refs[`tooltip_${wordsType}`];
-      if (tooltip.length > 0) {
-        tooltip = tooltip[0];
-      }
-
-      const target = e.currentTarget;
-      const boundedBox = target.getBoundingClientRect();
-
-      tooltip.style.visibility = 'visible';
-      tooltip.style.position = 'fixed';
-      tooltip.style.top = `${boundedBox.top - tooltip.clientHeight - 16}px`;
-      tooltip.style.left = `${boundedBox.left - 20}px`;
-    },
-    hideTooltip(wordsType) {
-      let tooltip = this.$refs[`tooltip_${wordsType}`];
-      if (tooltip.length > 0) {
-        tooltip = tooltip[0];
-      }
-      tooltip.style.visibility = 'hidden';
-    },
     loadRobotWords() {
       const that = this;
       that.$emit('startLoading');
@@ -193,6 +171,10 @@ export default {
               words.page = page;
             }
           });
+
+          words.tooltip = {
+            msg: words.comment,
+          };
         });
       })
       .finally(() => {
@@ -218,11 +200,6 @@ $words-list-header-bg: #f7f7f7;
 $words-list-edit-color: #1875f0;
 $words-list-delete-color: #f76260;
 
-$tooltip-border-radius: 4px;
-$tooltip-font-size: 12px;
-$tooltip-line-height: 18px;
-$tooltip-color: #666666;
-
 .words-list {
   display: flex;
   flex-direction: column;
@@ -244,27 +221,6 @@ $tooltip-color: #666666;
       }
       .icon-container {
         position: relative;
-        .tooltip {
-          visibility: hidden;
-          position: absolute;
-          font-size: $tooltip-font-size;
-          line-height: $tooltip-line-height;
-          color: $tooltip-color;
-          width: 190px;
-          padding: 8px 6px 8px 16px;
-          box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.2);
-          background: white;
-          border-radius: $tooltip-border-radius;
-          &::before{
-            border-top: 6px solid white;
-            border-left: 5px solid transparent;
-            border-right: 5px solid transparent;
-            content: "";
-            position: absolute;
-            left: 25px;
-            top: 100%;
-          }
-        }
       }
     }
     .button-container {

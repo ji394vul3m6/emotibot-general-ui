@@ -220,8 +220,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'styles/variable.scss';
-
 .card {
   display: flex;
   flex-direction: column;
@@ -320,6 +318,7 @@ export default {
       .card-description {
         @include font-14px();
         color: #666666;
+        word-break: break-all;
       }
     }
   }

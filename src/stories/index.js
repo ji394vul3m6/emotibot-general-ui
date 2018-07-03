@@ -14,6 +14,9 @@ import NavBarStory from './NavigationBar';
 import DropdownSelectStory from './DropdownSelect';
 import TooltipStory from './Tooltip';
 import TagInputStory from './TagInput';
+import InputStory from './Input';
+
+import './storybook.scss';
 
 Vue.use(VueI18n);
 
@@ -55,4 +58,9 @@ TooltipStory.forEach((story) => {
 const tagInputStory = storiesOf('TagInput', module).addDecorator(withKnobs);
 TagInputStory.forEach((story) => {
   tagInputStory.add(story.name, story.func);
+});
+
+const inputStory = storiesOf('Input', module).addDecorator(withKnobs);
+InputStory.forEach((story) => {
+  inputStory.add(story.name, story.func.bind(null, i18n));
 });

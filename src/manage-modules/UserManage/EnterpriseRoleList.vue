@@ -26,7 +26,7 @@
               <div class="title-text">{{ role.name }}</div>
               <div class="title-action" v-if="!oneInEdit">
                 <div class="action" @click="editRole(role)">{{ $t('general.edit') }}</div>
-                <div class="action delete" v-tooltip="genRoleDeleteTooltip(role)">{{ $t('general.delete') }}</div>
+                <div class="action delete" @click="deleteRolePop(role)">{{ $t('general.delete') }}</div>
               </div>
             </template>
             </div>
@@ -129,6 +129,8 @@ export default {
       nameTooltip: {
         msg: this.$t('management.err_role_duplicate'),
         eventOnly: true,
+        errorType: true,
+        alignLeft: true,
       },
     };
   },
@@ -159,28 +161,18 @@ export default {
         cmdStatus.edit = cmdStatus.edit || cmdStatus.import;
       }
     },
-    genRoleDeleteTooltip(role) {
+    deleteRolePop(role) {
       const that = this;
-      return {
-        // icon: 'alert',
-        msg: that.$t('privileges.check_delete', { role: role.name }),
-        data: role,
-        left: -150,
-        top: 0,
-        clickShow: true,
-        buttons: [
-          {
-            msg: that.$t('general.cancel'),
-            closeAfterClick: true,
+      that.$popCheck({
+        data: {
+          msg: that.$t('privileges.check_delete', { role: role.name }),
+        },
+        callback: {
+          ok() {
+            that.deleteRole(role);
           },
-          {
-            msg: that.$t('general.ok'),
-            callback: that.deleteRole,
-            closeAfterClick: true,
-            buttonType: 'fill',
-          },
-        ],
-      };
+        },
+      });
     },
     goUserList() {
       this.$router.push('/manage/enterprise-user-list');
@@ -337,7 +329,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'styles/variable.scss';
 .card {
   overflow: hidden;
   position: relative;

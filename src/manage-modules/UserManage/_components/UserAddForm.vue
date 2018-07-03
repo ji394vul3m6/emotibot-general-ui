@@ -1,37 +1,77 @@
 <template>
   <div class="user-info-form" :class="[isAdmin ? 'admin' : 'normal']">
     <div class="row">
-      <div class="row-title">{{ $t('management.user_name') }}</div>
+      <div class="row-title">
+        <div class="required">＊ </div>
+        {{ $t('management.user_name') }}
+      </div>
       <div v-if="editMode">{{ userName }}</div>
-      <input v-else class="row-input" ref="userName" v-model="userName" :placeholder="$t('management.input_placeholder')">
+      <input v-else class="row-input" ref="userName" v-model="userName" :placeholder="$t('management.input_placeholder')" v-tooltip="userNameTooltip"
+      :class="{'error': isUserNameTooltipShown}">
     </div>
+
     <div class="row">
-      <div class="row-title">{{ $t('management.user_type') }}</div>
+      <div class="row-title">
+        <span class="required"></span>
+      {{ $t('management.user_type') }}
+      </div>
       <div>{{ isAdmin ? $t('management.enterprise_admin') : $t('management.normal_user')}}</div>
     </div>
+
     <div class="row">
-      <div class="row-title">{{ $t('management.set_password') }}</div>
+      <div class="row-title">
+        <span class="required">＊ </span>
+        {{ $t('management.set_password') }}
+      </div>
       <div class="row-input-col" v-if="editMode && !passwordEdit">
         <div>********</div>
         <text-button class="modify" @click="startEditPassword">{{ $t('management.modify_password') }}</text-button>
       </div>
-      <input v-else class="row-input" ref="password" v-model="password" type="password" :placeholder="$t('management.set_passowrd_placeholder')">
+      <info-input v-else
+        type="password"
+        v-model="password"
+        :placeholder="$t('management.set_passowrd_placeholder')"
+        :msg="$t('management.password_format')"
+        fill
+        :maxlength="passwordMaxlength"
+        :error="isPasswordTooltipShown"
+        :errorMsg="passwordErrorMsg"
+      >
+      </info-input>
     </div>
+
     <div class="row" v-if="!editMode || passwordEdit">
-      <div class="row-title">{{ $t('management.check_password') }}</div>
-      <input class="row-input" ref="checkPassword" v-model="checkPassword" type="password" :placeholder="$t('management.check_password_placeholder')">
+      <div class="row-title">
+        <span class="required">＊ </span>
+        {{ $t('management.check_password') }}
+      </div>
+      <input class="row-input" ref="checkPassword" v-model="checkPassword" type="password" :placeholder="$t('management.check_password_placeholder')" v-tooltip="passwordCheckTooltip" :maxlength="passwordMaxlength"
+      :class="{'error': isPasswordCheckTooltipShown}">
     </div>
+
     <div class="row">
-      <div class="row-title">{{ $t('management.user_display_name') }}</div>
-      <input class="row-input" ref="displayName" v-model="displayName" :placeholder="$t('management.input_placeholder')">
+      <div class="row-title">
+        <span class="required">＊ </span>
+        {{ $t('management.user_display_name') }}
+      </div>
+      <input class="row-input" ref="displayName" v-model="displayName" :placeholder="$t('management.input_placeholder')" v-tooltip="displayNameTooltip"
+      :class="{'error': isDisplayNameTooltipShown}">
     </div>
+    
     <div class="row">
-      <div class="row-title">{{ $t('management.phone') }}</div>
+      <div class="row-title">
+        <span class="required"></span>
+        {{ $t('management.phone') }}
+      </div>
       <input class="row-input" ref="phone" v-model="phone" :placeholder="$t('management.input_placeholder')">
     </div>
     <div class="row">
-      <div class="row-title">{{ $t('management.email') }}</div>
-      <input class="row-input" ref="email" v-model="email" :placeholder="$t('management.input_placeholder')">
+      <div class="row-title">
+        <span class="required">＊ </span>
+        {{ $t('management.email') }}
+      </div>
+      <input class="row-input" ref="email" v-model="email" :placeholder="$t('management.input_placeholder')" v-tooltip="emailTooltip"
+      :class="{'error': isEmailTooltipShown}">
     </div>
     <template v-if="!isAdmin">
     <div class="row" v-for="(privilege, idx) in privilegeSet" :key="idx">
@@ -52,9 +92,6 @@
       <text-button button-type="primary" @click="addPrivilege">{{ $t('general.add') }}</text-button>
     </div>
     </template>
-    <div class='err-tooltip' ref="tooltip">
-      {{ errMsg }}
-    </div>
   </div>
 </template>
 
@@ -80,6 +117,35 @@ export default {
       return this.userType === 1;
     },
   },
+  watch: {
+    displayName() {
+      if (this.displayName.trim() !== '') {
+        this.isDisplayNameTooltipShown = false;
+        this.$refs.displayName.dispatchEvent(new Event('tooltip-hide'));
+      }
+    },
+    userName() {
+      if (!this.editMode && this.userName.trim() !== '') {
+        this.isUserNameTooltipShown = false;
+        this.$refs.userName.dispatchEvent(new Event('tooltip-hide'));
+      }
+    },
+    email() {
+      if (this.email.trim() !== '') {
+        this.isEmailTooltipShown = false;
+        this.$refs.email.dispatchEvent(new Event('tooltip-hide'));
+      }
+    },
+    password() {
+      if (this.password.trim() !== '') {
+        this.isPasswordTooltipShown = false;
+      }
+    },
+    checkPassword() {
+      this.isPasswordCheckTooltipShown = false;
+      this.$refs.checkPassword.dispatchEvent(new Event('tooltip-hide'));
+    },
+  },
   data() {
     return {
       userType: 2,
@@ -91,21 +157,56 @@ export default {
       email: '',
       editMode: false,
       passwordEdit: false,
+      passwordMaxlength: 16,
+      passwordMinlength: 4,
 
       privilegeSet: [{
         machine: [],
         role: [],
       }],
 
-      errColumn: '',
-      errMsg: '',
-      showErr: false,
-      toolTipTimer: undefined,
-
       machineOptions: [],
       privilegeOptions: [],
       editPasswordCallback: undefined,
       existedUsers: [],
+
+      userNameTooltip: {
+        msg: this.$t('management.err_empty_username'),
+        eventOnly: true,
+        errorType: true,
+        alignLeft: true,
+      },
+      emailTooltip: {
+        msg: this.$t('management.err_empty_email'),
+        eventOnly: true,
+        errorType: true,
+        alignLeft: true,
+      },
+      displayNameTooltip: {
+        msg: this.$t('management.err_empty_display_name'),
+        eventOnly: true,
+        errorType: true,
+        alignLeft: true,
+      },
+      passwordTooltip: {
+        msg: this.$t('management.err_password_length'),
+        eventOnly: true,
+        errorType: true,
+        alignLeft: true,
+      },
+      passwordCheckTooltip: {
+        msg: this.$t('management.err_invalid_check_password'),
+        eventOnly: true,
+        errorType: true,
+        alignLeft: true,
+      },
+      isUserNameTooltipShown: false,
+      isEmailTooltipShown: false,
+      isDisplayNameTooltipShown: false,
+      isPasswordTooltipShown: false,
+      isPasswordCheckTooltipShown: false,
+
+      passwordErrorMsg: '',
     };
   },
   methods: {
@@ -130,75 +231,10 @@ export default {
     removePrivilege(idx) {
       this.privilegeSet.splice(idx, 1);
     },
-    showError() {
-      const that = this;
-
-      const input = that.$refs[that.errColumn];
-      if (input === undefined) {
-        return;
-      }
-      input.focus();
-      const boundedBox = input.getBoundingClientRect();
-
-      const tooltip = that.$refs.tooltip;
-      if (tooltip) {
-        tooltip.style.position = 'fixed';
-        tooltip.style.visibility = 'visible';
-        tooltip.style.opacity = 1;
-        tooltip.style.top = `${boundedBox.top - tooltip.clientHeight}px`;
-        tooltip.style.left = `${boundedBox.left + 200}px`;
-        tooltip.className = tooltip.className.replace('fade-out', '');
-      } else {
-        return;
-      }
-
-      if (that.toolTipTimer) {
-        clearTimeout(that.toolTipTimer);
-      }
-      that.$nextTick(() => {
-        if (tooltip.classList) {
-          tooltip.classList.add('fade-out');
-        } else {
-          tooltip.className += ' fade-out';
-        }
-        tooltip.style.opacity = 0.01;
-      });
-      that.toolTipTimer = setTimeout(() => {
-        tooltip.style.visibility = 'hidden';
-        that.toolTipTimer = undefined;
-      }, 2000);
-    },
     validate() {
       const that = this;
-      if (that.userName.trim() === '') {
-        that.errColumn = 'userName';
-        that.errMsg = that.$t('management.err_empty_username');
-      } else if (that.email.trim() === '') {
-        that.errColumn = 'email';
-        that.errMsg = that.$t('management.err_empty_email');
-      } else if (that.displayName.trim() === '') {
-        that.errColumn = 'displayName';
-        that.errMsg = that.$t('management.err_empty_display_name');
-      } else if (!that.editMode && that.password === '') {
-        that.errColumn = 'password';
-        that.errMsg = that.$t('management.err_empty_password');
-      } else if (that.checkPassword !== that.password) {
-        that.errColumn = 'checkPassword';
-        that.errMsg = that.$t('management.err_invalid_check_password');
-      } else {
-        that.errColumn = '';
-        that.errMsg = '';
-      }
-
-      if (!that.editMode) {
-        if (that.existedUsers.indexOf(that.userName) >= 0) {
-          that.errColumn = 'userName';
-          that.errMsg = that.$t('management.err_existed_username');
-        }
-      }
-
-      if (that.errColumn) {
-        that.showError();
+      const isValid = this.checkInputValidation();
+      if (!isValid) {
         return;
       }
 
@@ -236,6 +272,56 @@ export default {
       });
       ret.apps = JSON.stringify(retApps);
       that.$emit('validateSuccess', ret);
+    },
+    checkInputValidation() {
+      const that = this;
+      const validPasswordReg = /^[a-zA-Z0-9~!$%^&*()[\]{}:;"',./?<>+\-=|_ ]+$/g;
+
+      let isValid = true;
+      if (that.userName.trim() === '') {
+        isValid = false;
+        that.userNameTooltip.msg = that.$t('management.err_empty_username');
+        that.$refs.userName.dispatchEvent(new Event('tooltip-reload'));
+        that.$refs.userName.dispatchEvent(new Event('tooltip-show'));
+        that.isUserNameTooltipShown = true;
+      } else if (!that.editMode) {
+        if (that.existedUsers.indexOf(that.userName) >= 0) {
+          isValid = false;
+          that.userNameTooltip.msg = that.$t('management.err_existed_username');
+          that.$refs.userName.dispatchEvent(new Event('tooltip-reload'));
+          that.$refs.userName.dispatchEvent(new Event('tooltip-show'));
+          that.isUserNameTooltipShown = true;
+        }
+      }
+      if (that.email.trim() === '') {
+        isValid = false;
+        that.$refs.email.dispatchEvent(new Event('tooltip-show'));
+        that.isEmailTooltipShown = true;
+      }
+      if (that.displayName.trim() === '') {
+        isValid = false;
+        that.$refs.displayName.dispatchEvent(new Event('tooltip-show'));
+        that.isDisplayNameTooltipShown = true;
+      }
+      if (!that.editMode &&
+          (that.password.length < that.passwordMinlength ||
+           that.password.length > that.passwordMaxlength)) {
+        isValid = false;
+        that.passwordErrorMsg = that.$t('management.err_password_length');
+        that.isPasswordTooltipShown = true;
+      } else if (validPasswordReg.test(that.password) === false) {
+        isValid = false;
+        that.passwordTooltip.msg = that.$t('management.err_password_invalid');
+        that.$refs.password.dispatchEvent(new Event('tooltip-reload'));
+        that.$refs.password.dispatchEvent(new Event('tooltip-show'));
+        that.passwordErrorMsg = that.$t('management.err_password_invalid');
+        that.isPasswordTooltipShown = true;
+      } else if (that.checkPassword !== that.password) {
+        isValid = false;
+        that.$refs.checkPassword.dispatchEvent(new Event('tooltip-show'));
+        that.isPasswordCheckTooltipShown = true;
+      }
+      return isValid;
     },
   },
   beforeMount() {
@@ -319,8 +405,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'styles/variable.scss';
-
 .user-info-form {
   color: #666666;
   padding: 0 25px;
@@ -340,11 +424,16 @@ export default {
     display: flex;
     align-items: center;
     .row-title {
-      flex: 0 0 90px;
-      max-width: 90px;
+      flex: 0 0 100px;
+      max-width: 100px;
+      .required {
+        display: inline-block;
+        width: 14px;
+        color: $color-primary;
+      }
     }
     .row-input {
-      flex: 0 1 340px;
+      flex: 0 1 100%;
       padding: 3px 8px;
       @include font-14px();
     }
@@ -361,22 +450,8 @@ export default {
       margin-left: 10px;
     }
     .selector {
-      flex: 0 0 140px;
-      max-width: 140px;
+      flex: 1;
     }
-  }
-}
-.err-tooltip {
-  position: fixed;
-  visibility: hidden;
-  max-width: 172px;
-  min-height: 36px;
-  border-radius: 4px;
-  background-color: #ffffff;
-  box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.2);
-  padding: 8px 16px;
-  &.fade-out {
-    transition: opacity 1s 1s;
   }
 }
 </style>

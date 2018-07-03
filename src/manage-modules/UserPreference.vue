@@ -1,13 +1,17 @@
 <template>
   <div class="user-preference">
     <div class="card h-fill w-fill">
-      <nav-bar class='nav-bar' :options=pageOption></nav-bar>
-      <div class="button-container">
-        <div class="back-button">
-          <text-button @click="hideUserPreference">{{ $t('management.go_back') }}</text-button>
+      <div class="header">
+        <div class='nav-bar'>
+          {{ $t('management.user_preference') }}
         </div>
-        <div class="edit-button">
-          <text-button button-type="primary" width="80px" @click="popEditUser">{{ $t('management.edit_data') }}</text-button>
+        <div class="button-container">
+          <div class="back-button">
+            <text-button @click="hideUserPreference">{{ $t('management.go_back') }}</text-button>
+          </div>
+          <div class="edit-button">
+            <text-button button-type="primary" width="80px" @click="popEditUser">{{ $t('management.edit_data') }}</text-button>
+          </div>
         </div>
       </div>
       <div class="content">
@@ -17,6 +21,12 @@
           <text-button v-if="col.key==='password'"
           @click="popEditPassword">{{ $t('management.modify_password') }}</text-button>
         </div>
+        <!-- <div class="row">
+          <div class="row-title">{{ $t('general.language') }}：</div>
+          <div class="row-content">
+            <dropdown-select :options="languageOption" width="150px" v-model="nowLanguage" ref="language" @input="changeLanguage"/>
+          </div>
+        </div> -->
       </div>
     </div>
   </div>
@@ -25,6 +35,7 @@
 <script>
 import { mapGetters, mapMutations } from 'vuex';
 import NavBar from '@/components/NavigationBar';
+import DropdownSelector from '@/components/DropdownSelect';
 import api from './_api/user';
 import UserForm from './_components/NormalUserEditForm';
 import PasswordForm from './_components/NormalUserPasswordForm';
@@ -33,6 +44,7 @@ export default {
   name: 'user-preference',
   components: {
     NavBar,
+    'dropdown-select': DropdownSelector,
   },
   api,
   data() {
@@ -63,17 +75,30 @@ export default {
           text: this.$t('management.email'),
         },
       ],
+      languageOption: [
+        {
+          value: 'zh-cn',
+          text: this.$t('general.zh_cn'),
+        },
+        {
+          value: 'zh-tw',
+          text: this.$t('general.zh_tw'),
+        },
+      ],
+      nowLanguage: [],
     };
   },
   computed: {
     ...mapGetters([
       'userInfo',
       'enterpriseID',
+      'showLanguage',
     ]),
   },
   methods: {
     ...mapMutations([
       'hideUserPreference',
+      'setLanguage',
     ]),
     loadUser() {
       const that = this;
@@ -148,6 +173,15 @@ export default {
             .then(() => {
               that.$notify({ text: that.$t('management.update_password_success') });
             })
+            .catch((err) => {
+              if (err.response.status === 403) {
+                that.popEditPassword();
+                that.$notifyFail(that.$t('management.err_origin_password'));
+              } else {
+                that.popEditPassword();
+                that.$notifyFail(that.$t('management.err_update_password_fail'));
+              }
+            })
             .finally(() => {
               that.$emit('endLoading');
             });
@@ -175,16 +209,21 @@ export default {
       });
       return JSON.stringify(privileges);
     },
+    changeLanguage(value) {
+      const language = value[0];
+      this.setLanguage(language);
+    },
   },
   mounted() {
     this.loadUser();
+    if (this.$refs.language !== undefined) {
+      this.$refs.language.$emit('select', this.showLanguage);
+    }
   },
 };
 </script>
 
 <style lang="scss" scoped>
-@import './styles/variable.scss';
-
 .user-preference {
   position: absolute;
   left: 0;
@@ -200,17 +239,29 @@ export default {
     @include card();
   }
 
-  .button-container {
+  .header {
     display: flex;
-    align-items: flex-end;
-    position: absolute;
-    right: 20px;
-    top: 20px;
-    .edit-button {
-      margin-left: 10px;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid $color-borderline;
+    height: 60px;
+    padding: 0 20px;
+    .nav-bar {
+      flex: 1;
+      border-bottom: 0px;
+      @include font-16px();
+      color: $color-font-active;
+    }
+    .button-container {
+      flex: 0 0 auto;
+      display: flex;
+      justify-content: flex-end;
+      .edit-button {
+        margin-left: 10px;
+      }
     }
   }
-
+  
   .content {
     width: 100%;
     display: flex;

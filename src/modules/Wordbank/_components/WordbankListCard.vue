@@ -273,6 +273,7 @@ export default {
         data: {
           wordbank: wordbankProp,
         },
+        disable_ok: true,
         validate: true,
         callback: {
           ok: (addedWordbank) => {

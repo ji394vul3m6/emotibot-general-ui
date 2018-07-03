@@ -17,8 +17,14 @@ export default [
         error: '錯誤按鈕',
       };
       const buttonType = select('按鈕類型', buttonTypes, 'default');
+      const iconType = text('iconType', 'search');
       const template = `
-        <text-button width='${width}' height='${height}' button-type='${buttonType}' @click="test">
+        <text-button
+          width='${width}'
+          height='${height}'
+          button-type='${buttonType}'
+          iconType="${iconType}"
+          @click="test">
           ${buttonTxt}
         </text-button>`;
       const escape = () => {
@@ -35,7 +41,9 @@ export default [
         template: `<div>
         ${template}
         <br>
+        <pre>
         ${templateStr}
+        </pre>
         </div>`,
       };
     },

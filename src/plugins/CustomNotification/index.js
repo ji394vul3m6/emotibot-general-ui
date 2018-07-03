@@ -18,6 +18,12 @@ function popNotification(option) {
 function popFailNotification(text) {
   this.$notify({ text, type: 'fail' });
 }
+function popWarnNotification(text) {
+  this.$notify({ text, type: 'warning' });
+}
+function popInfoNotification(text) {
+  this.$notify({ text, type: 'info' });
+}
 
 const MyPlugin = {
   install(Vue, option) {
@@ -35,6 +41,8 @@ const MyPlugin = {
     // user can use vue.$notify to use notification
     Vue.prototype.$notify = popNotification;
     Vue.prototype.$notifyFail = popFailNotification;
+    Vue.prototype.$notifyWarn = popWarnNotification;
+    Vue.prototype.$notifyInfo = popInfoNotification;
   },
 };
 

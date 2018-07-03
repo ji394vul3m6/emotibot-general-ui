@@ -42,9 +42,17 @@ export default {
       nameTooltip: {
         msg: '',
         eventOnly: true,
-        animateShow: true,
+        errorType: true,
+        alignLeft: true,
       },
     };
+  },
+  watch: {
+    name() {
+      if (this.name.trim() !== '') {
+        this.$refs.name.dispatchEvent(new Event('tooltip-hide'));
+      }
+    },
   },
   methods: {
     showTooltip(e, robot) {
@@ -123,8 +131,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'styles/variable.scss';
-
 .tooltip {
   visibility: hidden;
   word-break: break-all;

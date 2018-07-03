@@ -146,8 +146,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'styles/variable.scss';
-
 .card {
   display: flex;
   flex-direction: column;

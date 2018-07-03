@@ -5,6 +5,7 @@
       <input class="row-input" v-model="name"
         :placeholder="$t('management.input_placeholder')"
         v-tooltip="nameTooltip"
+        maxlength=50
         ref="name">
     </div>
     <div class="row">
@@ -32,9 +33,17 @@ export default {
       nameTooltip: {
         msg: '',
         eventOnly: true,
-        animateShow: true,
+        errorType: true,
+        alignLeft: true,
       },
     };
+  },
+  watch: {
+    name() {
+      if (this.name.trim() !== '') {
+        this.$refs.name.dispatchEvent(new Event('tooltip-hide'));
+      }
+    },
   },
   methods: {
     validate() {

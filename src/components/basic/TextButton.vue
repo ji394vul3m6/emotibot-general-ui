@@ -5,7 +5,7 @@
     :class="classObj"
     @click="$emit('click', $event)"
     @keyup.enter="$emit('click', $event)">
-    <icon :icon-type="iconType" v-if="showIcon"></icon>
+    <icon :iconType="iconType" v-if="showIcon" :size=16></icon>
     <div class="button-content">
       <slot></slot>
     </div>
@@ -151,9 +151,6 @@ $btn-error-color: $color-white;
     @include font-14px();
   }
 
-  &.icon-button {
-    padding-left: 0;
-  }
   & > .button-content {
     text-align: center;
   }
