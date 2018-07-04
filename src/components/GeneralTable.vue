@@ -18,15 +18,16 @@
     </table>
     </div>
     <div class="general-table-body">
-    <table class="general-table" :class="[autoHeight ? 'auto-height': '', fontClass]" v-if="tableData && tableData.length > 0">
-      <tbody>
+    <table class="general-table" :class="[autoHeight ? 'auto-height' : '', fontClass]" v-if="tableData && tableData.length > 0">
+      <tbody :class="[onclickRow ? 'clickable-row' : '']">
         <tr v-for="(data, idx) in tableData" :key="idx">
           <td v-if="checkbox" class="table-col-checkbox">
             <input type="checkbox" @click="checkSelf(data, idx)" :checked="data.isChecked">
           </td>
           <td v-for="header in tableHeader" :key="uniqueId(header.key)"
             :style="{width: header.width}"
-            :class="{'fixed': header.width}">
+            :class="{'fixed': header.width}"
+            @click="handleOnclickRow(onclickRow, data, idx)">
             <template v-if="header.type === 'tag'">
               <tag class="tags" v-for="(tag, tagIdx) in data[header.key]" :key="`${tagIdx}-${tag}`" :fontClass="fontClass">{{ tag }}</tag>
             </template>
@@ -90,6 +91,11 @@ export default {
       default() {
         return [];
       },
+    },
+    onclickRow: {
+      type: Function,
+      required: false,
+      default: undefined,
     },
     autoHeight: {
       type: Boolean,
@@ -162,6 +168,11 @@ export default {
     setCheckedData() {
       this.checkedData = this.tableData.filter(data => data.isChecked === true);
     },
+    handleOnclickRow(onclickRow, data, idx) {
+      if (onclickRow !== undefined) {
+        onclickRow(data, idx);
+      }
+    },
   },
 };
 </script>
@@ -187,6 +198,19 @@ $table-row-height: 50px;
   .general-table-body {
     @include auto-overflow-Y();
     overflow-x: hidden;
+    tr {
+      &:hover{
+      background-color: #F6F9FF;
+      }
+    }
+    .clickable-row {
+      tr {
+        cursor: pointer;
+        .table-col-action, .table-col-checkbox {
+          cursor: default;
+        }
+      }
+    }
   }
   .empty-display {
     flex: 1;
