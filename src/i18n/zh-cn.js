@@ -199,7 +199,11 @@ export default {
     chat_info_desc: '我的名字叫 {name}，你可以在下面设置我的形象喔',
     modify_qas: '修改语料',
     input_qa_placeholder: '请输入答案',
-    input_qa_ext_placeholder: '请输入答案扩展',
+    input_qa_ext_placeholder: '新增扩展答案',
+    input_q_ext_placeholder: '新增相似问题',
+    answer_empty: '无',
+    similar_question: '相似问题',
+    extend_answer: '扩展答案',
 
     weather: '天气模块',
     computation: '数学计算模块',
@@ -813,6 +817,7 @@ export default {
     input_empty: '输入不可为空',
     auth_expire: '授权已失效，请重新登入',
     no_page_priv: '无法浏览此页面',
+    invalid_id: '无效的ID',
 
     import_success: '导入成功',
   },
