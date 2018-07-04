@@ -240,6 +240,9 @@ export default {
         slotName: item.entityName,
         slotType: item.ner.slotType,
         slotBizType: 'OrderProperty',
+        hidden: item.ner.hidden,
+        needRecogize: item.ner.needRecogize,
+        slotFinder: item.ner.slotFinder,
       };
     });
     const indices = [];
