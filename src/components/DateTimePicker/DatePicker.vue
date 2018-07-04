@@ -1024,8 +1024,10 @@ $color-date-disabled: $color-font-disabled;
   background: $color-white;
   width: 218px;
   border: 1px solid $color-borderline;
+  border-radius: 2px;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
   padding: 10px;
+  margin-top: 10px;
   header {
     display: block;
     line-height: 30px;
