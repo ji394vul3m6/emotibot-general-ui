@@ -14,7 +14,7 @@
           <toggle v-model="showAnalysis"></toggle>
         </div>
         <div class="close-button" @click="closeQATest">
-          <icon icon-type="close" :size=16 />
+          <icon icon-type="info_close" :size=16 />
         </div>
       </div>
     </div>

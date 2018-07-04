@@ -1,11 +1,10 @@
 <template>
   <transition-group tag="div" name="fade" class="notifications">
     <div v-for="(notification, idx) in notifications" class="notification" :key="notification.msg" :class="notification.type">
-      <!-- <icon :icon-type="`white_${notification.type}`"></icon> -->
-      <icon v-if="notification.type === 'success'" icon-type='info_success' :size=20></icon>
-      <icon v-else-if="notification.type === 'fail'" icon-type='info_error' :size=20></icon>
-      <icon v-else-if="notification.type === 'warning'" icon-type='info_warning' :size=20></icon>
-      <icon v-else-if="notification.type === 'info'" icon-type='info_hover' :size=20></icon>
+      <icon v-if="notification.type === 'success'" icon-type="info_success" :size=20></icon>
+      <icon v-else-if="notification.type === 'fail'" icon-type="info_error" :size=20></icon>
+      <icon v-else-if="notification.type === 'warning'" icon-type="info_warning" :size=20></icon>
+      <icon v-else-if="notification.type === 'info'" icon-type="info_hover" :size=20></icon>
       <label>{{ notification.msg }}</label>
       <div class="close-icons" @click="closeNotification(idx)">
         <icon iconType="info_close" :size=16></icon>
