@@ -114,44 +114,38 @@ export default {
       });
     },
     addNewIntent(triggerIndex) {
-      const options = {
+      const that = this;
+      that.$pop({
+        title: '',
         component: IntentEditorPop,
-        buttons: ['ok', 'cancel'],
         validate: true,
         data: {
           editor_type: 'add_new_intent',
-          app_id: this.appId,
+          app_id: that.appId,
           intent_id: '',
           intent_name: '',
           sentences: [],
         },
-        ok_msg: this.$t('general.add'),
-        cancel_msg: this.$t('general.close'),
+        ok_msg: that.$t('general.add'),
         callback: {
           ok: (newIntent) => {
-            this.updateIntent(newIntent);
+            that.updateIntent(newIntent);
             const trigger = {
               intent_name: newIntent.intent_name,
               type: 'intent_engine',
               editable: true,
             };
-            this.triggerList[triggerIndex] = trigger;
+            that.triggerList[triggerIndex] = trigger;
           },
         },
-        customPopContentStyle: {
-          width: '70%',
-          height: '70%',
-          'min-width': '700px',
-          'min-height': '500px',
-        },
-      };
-      this.$root.$emit('showWindow', options);
+      });
     },
     editIntent(trigger) {
       const intent = this.intentList.find(i => i.intent_name === trigger.intent_name);
-      const options = {
+      const that = this;
+      that.$pop({
+        title: '',
         component: IntentEditorPop,
-        buttons: ['ok', 'cancel'],
         validate: true,
         data: {
           editor_type: 'edit_intent',
@@ -160,38 +154,24 @@ export default {
           intent_name: intent.intent_name,
           sentences: intent.sentences,
         },
-        ok_msg: this.$t('general.save'),
-        cancel_msg: this.$t('general.close'),
+        ok_msg: that.$t('general.save'),
         callback: {
           ok: (newIntent) => {
-            this.updateIntent(newIntent);
+            that.updateIntent(newIntent);
           },
         },
-        customPopContentStyle: {
-          width: '70%',
-          height: '70%',
-          'min-width': '700px',
-          'min-height': '500px',
-        },
-      };
-      this.$root.$emit('showWindow', options);
+      });
     },
     testIntent() {
-      const options = {
+      const that = this;
+      that.$pop({
+        title: '',
         component: IntentTesterPop,
         buttons: ['cancel'],
+        cancel_msg: that.$t('general.close'),
         validate: true,
-        data: {
-        },
-        cancel_msg: this.$t('general.close'),
-        customPopContentStyle: {
-          width: '70%',
-          height: '70%',
-          'min-width': '700px',
-          'min-height': '500px',
-        },
-      };
-      this.$root.$emit('showWindow', options);
+        data: {},
+      });
     },
     updateIntent(intent) {
       intent.sentences = intent.sentences.map((sentence) => {

@@ -129,75 +129,63 @@ export default {
       });
     },
     editCustomEntityType() {
-      const options = {
+      const that = this;
+      that.$pop({
+        title: '',
         component: CustomEntityTypeEditorPop,
-        buttons: ['ok', 'cancel'],
         validate: true,
-        customPopContentStyle: {
-          width: '70%',
-          height: '70%',
-        },
         data: {
-          customEntity: this.entityCollector.ner,
-          nerCategoryList: Object.keys(this.categoryToNerTypeMap),
+          customEntity: that.entityCollector.ner,
+          nerCategoryList: Object.keys(that.categoryToNerTypeMap),
         },
         callback: {
           ok: (ner) => {
-            this.$emit('addCustomNer', ner);
-            this.$nextTick(() => {
-              this.categoryToNerTypeMap =
-                JSON.parse(JSON.stringify(this.initialCategoryToNerTypeMap));
+            that.$emit('addCustomNer', ner);
+            that.$nextTick(() => {
+              that.categoryToNerTypeMap =
+                JSON.parse(JSON.stringify(that.initialCategoryToNerTypeMap));
             });
-            this.entityCollector.ner = ner;
+            that.entityCollector.ner = ner;
           },
         },
-      };
-      this.$root.$emit('showWindow', options);
+      });
     },
     addCustomEntityType() {
-      const options = {
+      const that = this;
+      that.$pop({
+        title: '',
         component: CustomEntityTypeEditorPop,
-        buttons: ['ok', 'cancel'],
         validate: true,
-        customPopContentStyle: {
-          width: '70%',
-          height: '70%',
-        },
         data: {
           customEntity: {
-            id: this.$uuid.v1(),
+            id: that.$uuid.v1(),
             entityType: null,
             entityTypeDescription: null,
-            entityCategory: this.entityCollector.entityCategory,
+            entityCategory: that.entityCollector.entityCategory,
             entitySynonymsList: [],
             sourceType: 'custom',
             slotType: 'pText',
           },
-          nerCategoryList: Object.keys(this.categoryToNerTypeMap),
+          nerCategoryList: Object.keys(that.categoryToNerTypeMap),
         },
         callback: {
           ok: (ner) => {
-            this.$emit('addCustomNer', ner);
-            this.$nextTick(() => {
-              this.categoryToNerTypeMap =
-                JSON.parse(JSON.stringify(this.initialCategoryToNerTypeMap));
+            that.$emit('addCustomNer', ner);
+            that.$nextTick(() => {
+              that.categoryToNerTypeMap =
+                JSON.parse(JSON.stringify(that.initialCategoryToNerTypeMap));
             });
-            this.entityCollector.ner = ner;
+            that.entityCollector.ner = ner;
           },
         },
-      };
-      this.$root.$emit('showWindow', options);
+      });
     },
     editPrompt() {
-      const options = {
+      const that = this;
+      that.$pop({
+        title: '',
         component: PromptEditorPop,
-        buttons: ['ok', 'cancel'],
         validate: true,
-        customPopContentStyle: {
-          width: '70%',
-          height: '250px',
-          'min-width': '400px',
-        },
         data: {
           must_retry: this.entityCollector.must_retry,
           retry_num: this.entityCollector.retry_num,
@@ -211,8 +199,7 @@ export default {
             this.updateData();
           },
         },
-      };
-      this.$root.$emit('showWindow', options);
+      });
     },
     moveUp() {
       this.$emit('moveUp');

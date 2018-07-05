@@ -38,7 +38,6 @@ import i18nUtils from '../utils/i18nUtil';
 import scenarioConvertor from '../utils/scenarioConvertor';
 import general from '../utils/general';
 import CreateScenarioPop from './CreateScenarioPop';
-import ConfirmPop from './ConfirmPop';
 import taskEngineApi from './_api/taskEngine';
 
 
@@ -69,45 +68,37 @@ export default {
       });
     },
     createNewScenario() {
-      const options = {
+      const that = this;
+      that.$pop({
+        title: '',
         component: CreateScenarioPop,
-        buttons: ['ok', 'cancel'],
         validate: true,
+        ok_msg: that.$t('general.add'),
         data: {
           scenarioName: '',
         },
-        ok_msg: this.$t('general.add'),
-        cancel_msg: this.$t('general.cancel'),
         callback: {
           ok: (scenarioName) => {
-            taskEngineApi.createScenario(this.appId, scenarioName).then((data) => {
+            taskEngineApi.createScenario(that.appId, scenarioName).then((data) => {
               if ('template' in data && 'metadata' in data.template) {
                 const metadata = data.template.metadata;
                 const scenarioId = metadata.scenario_id;
                 const scenario = scenarioConvertor.initialScenario(metadata);
-                this.saveScenario(scenarioId, scenario).then(() => {
+                that.saveScenario(scenarioId, scenario).then(() => {
                   const path = general.composePath(`scenario/${scenarioId}`);
-                  this.$router.replace(path);
+                  that.$router.replace(path);
                 });
               } else {
-                general.popErrorWindow(this, this.i18n.task_engine_v3.error_msg.create_new_scenario_failed, '');
+                general.popErrorWindow(that, that.i18n.task_engine_v3.error_msg.create_new_scenario_failed, '');
               }
             }, (err) => {
-              general.popErrorWindow(this, 'createScenario error', err.message);
+              general.popErrorWindow(that, 'createScenario error', err.message);
             });
           },
         },
-        customPopContentStyle: {
-          width: '40%',
-          height: '30%',
-          'min-width': '500px',
-          'min-height': '275px',
-        },
-      };
-      this.$root.$emit('showWindow', options);
+      });
     },
     saveScenario(scenarioId, scenario) {
-      console.log(scenario);
       return taskEngineApi.saveScenario(
         this.appId,
         scenarioId,
@@ -124,35 +115,26 @@ export default {
       this.$router.replace(path);
     },
     deleteScenario(scenario) {
-      const options = {
-        component: ConfirmPop,
-        buttons: ['ok', 'cancel'],
-        validate: false,
+      const that = this;
+      that.$popCheck({
         data: {
-          msg: this.i18n.task_engine_v3.scenario_list_page.ask_delete_confirm,
-          info: scenario.scenarioName,
+          msg: that.$t(
+            'task_engine_v3.scenario_list_page.ask_delete_confirm',
+            { scenario: scenario.scenarioName },
+          ),
         },
-        ok_msg: this.$t('general.delete'),
-        cancel_msg: this.$t('general.cancel'),
         callback: {
-          ok: () => {
+          ok() {
             taskEngineApi.deleteScenario(scenario.scenarioID).then((data) => {
               if ('msg' in data && data.msg === 'Update success') {
-                this.listAllScenarios();
+                that.listAllScenarios();
               } else {
-                general.popErrorWindow(this, 'deleteScenario error', 'failed to delete scenario.');
+                general.popErrorWindow(that, 'deleteScenario error', 'failed to delete scenario.');
               }
             });
           },
         },
-        customPopContentStyle: {
-          width: '30%',
-          height: '20%',
-          'min-width': '400px',
-          'min-height': '200px',
-        },
-      };
-      this.$root.$emit('showWindow', options);
+      });
     },
     switchScenario(scenario) {
       taskEngineApi.switchScenario(this.appId, scenario.scenarioID, scenario.enable).then(() => {

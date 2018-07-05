@@ -4,6 +4,9 @@
   color: $text-color;
   width: 100%;
   height: 100%;
+  min-width: 500px;
+  min-height: 275px;
+  padding: 20px;
 
   .scenario-editor-title{
     flex: 0 0 auto;
