@@ -150,6 +150,7 @@ export default {
             status: {
               val: cmd.status,
               onclick: that.toggleCommandStatus,
+              disabled: !that.canEdit,
             },
           };
           return tablerow;

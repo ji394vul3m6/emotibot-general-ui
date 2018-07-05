@@ -35,6 +35,7 @@
             <template v-else-if="header.type === 'toggle'">
               <toggle class="toggles"
                 v-model="data[header.key].val"
+                :disabled="data[header.key].disabled"
                 @change="data[header.key].onclick(data, idx)"></toggle>
             </template>
             <template v-else>{{ data[header.key] }}</template>
