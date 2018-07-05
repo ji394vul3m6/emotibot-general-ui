@@ -211,10 +211,12 @@ export default {
   },
   computed: {
     isNameEmpty() {
+      if (this.readonly) return false;
       this.commandName = this.commandName.trim();
       return this.commandName === '';
     },
     isNameDuplicate() {
+      if (this.readonly) return false;
       return this.value.existedNames
         .findIndex(name => name !== this.value.command.name && name === this.commandName) !== -1;
     },
