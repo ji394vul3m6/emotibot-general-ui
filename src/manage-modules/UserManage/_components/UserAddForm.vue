@@ -303,23 +303,24 @@ export default {
         that.$refs.displayName.dispatchEvent(new Event('tooltip-show'));
         that.isDisplayNameTooltipShown = true;
       }
-      if (!that.editMode &&
-          (that.password.length < that.passwordMinlength ||
-           that.password.length > that.passwordMaxlength)) {
-        isValid = false;
-        that.passwordErrorMsg = that.$t('management.err_password_length');
-        that.isPasswordTooltipShown = true;
-      } else if (validPasswordReg.test(that.password) === false) {
-        isValid = false;
-        that.passwordTooltip.msg = that.$t('management.err_password_invalid');
-        that.$refs.password.dispatchEvent(new Event('tooltip-reload'));
-        that.$refs.password.dispatchEvent(new Event('tooltip-show'));
-        that.passwordErrorMsg = that.$t('management.err_password_invalid');
-        that.isPasswordTooltipShown = true;
-      } else if (that.checkPassword !== that.password) {
-        isValid = false;
-        that.$refs.checkPassword.dispatchEvent(new Event('tooltip-show'));
-        that.isPasswordCheckTooltipShown = true;
+      if (!that.editMode) {
+        if (that.password.length < that.passwordMinlength ||
+           that.password.length > that.passwordMaxlength) {
+          isValid = false;
+          that.passwordErrorMsg = that.$t('management.err_password_length');
+          that.isPasswordTooltipShown = true;
+        } else if (validPasswordReg.test(that.password) === false) {
+          isValid = false;
+          that.passwordTooltip.msg = that.$t('management.err_password_invalid');
+          that.$refs.password.dispatchEvent(new Event('tooltip-reload'));
+          that.$refs.password.dispatchEvent(new Event('tooltip-show'));
+          that.passwordErrorMsg = that.$t('management.err_password_invalid');
+          that.isPasswordTooltipShown = true;
+        } else if (that.checkPassword !== that.password) {
+          isValid = false;
+          that.$refs.checkPassword.dispatchEvent(new Event('tooltip-show'));
+          that.isPasswordCheckTooltipShown = true;
+        }
       }
       return isValid;
     },
