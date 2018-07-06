@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import intentEngineApi from './_api/intentEngine';
+import IntentEngine from './_api/intentEngine';
 import i18nUtils from '../utils/i18nUtil';
 import general from '../utils/general';
 import IntentEditorPop from './IntentEditorPop';
@@ -54,6 +54,7 @@ export default {
     return {
       i18n: {},
       appId: '',
+      ieApi: null,
       triggerList: JSON.parse(JSON.stringify(this.initialTriggerList)),
       intentList: [],
       intentOptionList: [],
@@ -79,15 +80,13 @@ export default {
       return true;
     },
     checkIntent(intentName) {
-      intentEngineApi.checkIntent(this.appId, intentName).then((data) => {
-        console.log('checkIntent:');
-        console.log(data);
+      this.ieApi.checkIntent(intentName).then(() => {
       }, (err) => {
         general.popErrorWindow(this, 'checkIntent error', err.message);
       });
     },
     loadIntentOptionList() {
-      intentEngineApi.listIntents(this.appId).then((data) => {
+      this.ieApi.listIntents().then((data) => {
         this.intentList = data.content;
         this.intentOptionList = [
           // {
@@ -178,7 +177,7 @@ export default {
         sentence.sentenceid = this.$uuid.v1();
         return sentence;
       });
-      intentEngineApi.updateIntent(this.appId, JSON.stringify([intent])).then((data) => {
+      this.ieApi.updateIntent(JSON.stringify([intent])).then((data) => {
         if (data.code !== 0) {
           general.popErrorWindow(this, 'updateIntent error', `code: ${data.code}`);
         }
@@ -188,7 +187,7 @@ export default {
       });
     },
     deleteIntent(intentName) {
-      intentEngineApi.deleteIntent(this.appId, intentName).then((data) => {
+      this.ieApi.deleteIntent(intentName).then((data) => {
         if (data.code !== 0) {
           general.popErrorWindow(this, 'deleteIntent error', `code: ${data.code}`);
         }
@@ -203,6 +202,8 @@ export default {
   },
   beforeMount() {
     this.appId = this.$cookie.get('appid');
+    this.ieApi = new IntentEngine(this, '1.0', this.appId);
+    // this.ieApi = new IntentEngine(this, '2.0', '');
     this.loadIntentOptionList();
     this.$on('rerender', this.rerender);
   },
