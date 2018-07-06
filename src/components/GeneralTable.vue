@@ -1,7 +1,7 @@
 <template>
   <div class="general-table-container" :class="[showEmpty ? 'show-empty': '']">
     <div class="general-table-header">
-    <table class="general-table" :class="[autoHeight ? 'auto-height': '', fontClass]">
+    <table ref="tableHeader" class="general-table" :class="[autoHeight ? 'auto-height': '', fontClass]">
       <thead>
         <tr>
           <td v-if="checkbox" class="table-col-checkbox">
@@ -9,8 +9,17 @@
           </td>
           <td v-for="header in tableHeader" :key="header.key" 
             :style="{width: header.width}"
-            :class="{'fixed': header.width}">
+            :class="{'fixed': header.width}"
+            class="table-header-item">
             {{ header.text }}
+            <div v-if="header.info" :ref="`${header.key}-info`"
+              class="table-header-icon"
+              v-tooltip="headerInfoTooltip"
+              @mouseover="updateHeaderInfoTooltip(header.key, header.info)"
+              @mouseout="toggleIconStyle(header.key, 'info')">
+              <icon :ref="`${header.key}-icon`" icon-type="info" :size=16></icon>
+              <!-- <icon icon-type="info_hover" :size=16></icon> -->
+            </div>
           </td>
           <td v-if="hasAction" class="table-col-action" :class="{'multi-action': action.length > 1}"> {{ $t('general.actions') }} </td>
         </tr>
@@ -118,6 +127,9 @@ export default {
     return {
       isAllChecked: false,
       checkedData: [],
+      headerInfoTooltip: {
+        msg: '',
+      },
     };
   },
   computed: {
@@ -174,6 +186,29 @@ export default {
         onclickRow(data, idx);
       }
     },
+    updateHeaderInfoTooltip(key, msg) {
+      const tableHeaderDom = this.$refs.tableHeader;
+      const infoIconBlockDom = this.$refs[`${key}-info`][0];
+      const tableHeaderRightPos = tableHeaderDom.getBoundingClientRect().right;
+      const infoIconRightPos = infoIconBlockDom.getBoundingClientRect().right;
+
+      /** Change icon style on hover */
+      this.toggleIconStyle(key, 'info_hover');
+
+      /** Max-width of tooltip is 300px,
+      /*  Let tooltip alignLeft if infoIcon is too close to righthand side of table */
+      if (tableHeaderRightPos - infoIconRightPos < 350) {
+        this.headerInfoTooltip.alignLeft = true;
+      } else {
+        this.headerInfoTooltip.alignLeft = false;
+      }
+      this.headerInfoTooltip.msg = msg;
+      infoIconBlockDom.dispatchEvent(new Event('tooltip-reload'));
+    },
+    toggleIconStyle(key, icon) {
+      const infoIconDom = this.$refs[`${key}-icon`][0];
+      infoIconDom.iconType = icon;
+    },
   },
 };
 </script>
@@ -195,6 +230,16 @@ $table-row-height: 50px;
   width: inherit;
   .general-table-header {
     flex: 0 0 auto;
+    .table-header-item {
+      display: flex;
+      align-items: center;
+      .table-header-icon {
+        display: flex;
+        align-items: center;
+        margin-left: 5px;
+        cursor: pointer;
+      }
+    }
   }
   .general-table-body {
     @include auto-overflow-Y();
