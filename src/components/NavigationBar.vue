@@ -63,10 +63,13 @@ $navbar-active-color: $color-primary;
     height: 60px;
     font-size: $navbar-font-size;
     line-height: $navbar-line-height;
-    margin-left: 18px;
+    margin-left: 24px;
     display: flex;
     align-items: center;
     padding-bottom: 3px;
+    &:first-child{
+      margin-left: 18px;
+    }
     &.active {
       color: $navbar-active-color;
       border-bottom: 3px solid $navbar-active-color;
