@@ -19,7 +19,6 @@ $button-color: white;
 $button-primary: #118EEB;
 $button-hover-background-color: rgba(118,131,143,.1);
 
-
 $row-height: 40px;
 
 .side-menu {
@@ -53,49 +52,6 @@ $row-height: 40px;
   flex:10 10 0;
   background: $window-color;
   color: $text-color;
-}
-
-.text-button {
-  display: inline-block;
-  width: 200px;
-  height: $row-height;
-  text-align: center;
-  line-height: $row-height;
-  border: 1px solid black;
-  padding: 0 15px;
-  box-sizing: border-box;
-  white-space: nowrap;
-  cursor: pointer;
-  user-select: none;
-  background: $button-color;
-  border-radius: 5px;
-
-  &:hover {
-    background-color: darken($button-color, 1%);
-  }
-
-  &.primary {
-    color: white;
-    background-color: $button-primary;
-  }
-  &:not(.disabled) {
-    &.primary:hover {
-      background-color: lighten($button-primary, 15%);
-    }
-    &.primary:active {
-      background-color: $button-primary;
-    }
-  }
-
-  &.auto-size {
-    width: auto;
-  }
-
-  &.disabled {
-    opacity: 0.2;
-    cursor: no-drop;
-    pointer-events: none;
-  }
 }
 
 .btn-basic{
@@ -143,9 +99,6 @@ $row-height: 40px;
   &.auto-size {
     width: auto;
   }
-}
-.page{
-  padding: 20px;
 }
 
 .btn-hightlight-border{

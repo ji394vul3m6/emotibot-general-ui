@@ -20,18 +20,6 @@ $button-color: white;
 $button-primary: #118EEB;
 $button-hover-background-color: rgba(118,131,143,.1);
 
-
-$row-height: 40px;
-
-body {
-    margin: 0;
-}
-
 #wizard_mode {
-  display: flex;
-  flex-direction: row;
   height: 100%;
-  width: 100%;
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
 }
-

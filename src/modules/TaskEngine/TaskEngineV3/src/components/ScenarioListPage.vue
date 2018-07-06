@@ -1,32 +1,40 @@
 <template lang="html">
-<div id="scenario-list-page" class="scenario-list-page page">
-  <div class="header-row">
-    <button class="btn-basic btn-border" @click="createNewScenario">{{$t("task_engine_v3.scenario_list_page.button_create_new_scenario")}}</button>
-    <button class="btn-basic btn-border" @click="createFromSpreadSheet">SpreadSheet</button>
-    <input type="file" ref="uploadInput" v-on:change="changeFile()" accept=".xlsx">
-    <input class="search_input border_bottom" type="text" name="key_word" 
-      :placeholder="$t('task_engine_v3.scenario_list_page.placeholder_search')"
-    >
-  </div>
-  <div class="table">
-    <div class="table-row table-row-title">
+<div id="scenario-list-page">
+  <div class="content card h-fill w-fill">
+    <div class="row title">
       {{$t("task_engine_v3.scenario_list_page.scenario_list")}}
     </div>
+    <div class="row">
+      <div id="toolbar">
+        <div id="left-buttons">
+          <text-button button-type='primary' width='100px' height='28px' @click="createNewScenario">
+            {{$t("task_engine_v3.scenario_list_page.button_create_new_scenario")}}
+          </text-button>
+          <text-button button-type='primary' width='100px' height='28px' @click="createFromSpreadSheet">
+            SpreadSheet
+          </text-button>
+          <input type="file" ref="uploadInput" v-on:change="changeFile()" accept=".xlsx">
+        </div>
+        <div id="right-buttons">
+          <search-input v-model="searchKeyWord"></search-input>
+        </div>
+      </div>
+    </div>
     <template v-for="(scenario, index) in scenarioList">
-      <div class="table-row table-row-content clickable">
-        <div class="name-label" @click="editScenario(scenario.scenarioID)">{{scenario.scenarioName}}</div>
-        <button class="delete-button"
-          @click="deleteScenario(scenario)">
-          {{$t("general.delete")}}
-        </button>
-        <toggle-button class="toggle-button"
-          v-model="scenario.enable"
-          :labels="true"
-          :width="60"
-          :height="30"
-          :color="{checked: '#337ab7', unchecked: '#CCCCCC'}"
-          @change="switchScenario(scenario)"
-        />
+      <div class="row">
+        <div id="scenario-grid">
+          <div id="scenario-toggle-container">
+            <toggle v-model="scenario.enable" @change="switchScenario(scenario)" :big="false"></toggle>
+          </div>
+          <div id="scenario-content-container">
+            <div class="name-label"  @click="editScenario(scenario.scenarioID)">
+              {{scenario.scenarioName}}
+            </div>
+            <div @click="deleteScenario(scenario)" class="delete-button">
+              {{$t("general.delete")}}
+            </div>
+          </div>
+        </div>
       </div>
     </template>
   </div>
@@ -34,22 +42,28 @@
 </template>
 
 <script>
+import TextButton from '@/components/basic/TextButton';
+import SearchInput from '@/components/basic/SearchInput';
+import Toggle from '@/components/basic/Toggle';
 import i18nUtils from '../utils/i18nUtil';
 import scenarioConvertor from '../utils/scenarioConvertor';
 import general from '../utils/general';
 import CreateScenarioPop from './CreateScenarioPop';
 import taskEngineApi from './_api/taskEngine';
 
-
 export default {
   name: 'scenario-list-page',
   components: {
+    TextButton,
+    SearchInput,
+    Toggle,
   },
   data() {
     return {
       i18n: {},
       appId: '',
       scenarioList: [],
+      searchKeyWord: '',
     };
   },
   computed: {},
@@ -202,78 +216,87 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import 'styles/variable.scss';
+$row-height: $default-line-height;
 @import "../scss/teVariable.scss";
-.scenario-list-page{
-  flex: 1 1 0;
-  // display: flex;
-  // flex-direction: column;
-  .btn-basic{
-    font-size: 20px;
-  }
 
-  .clickable{
-    cursor: pointer; 
-  }
-  .header-row{
-    display:flex;
-    flex-direction: row;
-    justify-content: space-between;
-    margin-top: 20px;
-    button{
-      width: 150px;
-    }
-    .search_input{
-      width: 200px;
-      height: 40px;
-      font-size: 20px;
-    }
-    .border_bottom{
-      border: 0;
-      outline: 0;
-      border-bottom: 1px solid black;
-    }
-    input[type=file] {
-      visibility: hidden;
-    }
-  }
-  .table{
-    display:flex;
+#scenario-list-page{
+  height: 100%;
+  .content {
+    display: flex;
     flex-direction: column;
-    margin-top: 20px;
-    .table-row{
-      display:flex;
-      flex-direction: row;
-      align-items:center;
-      padding: 10px;
-      border: 1px solid #e4eaec;
-      height: 50px;
-      line-height: 50px;
-      font-size: 20px;
-      &.table-row-title{
-        background-color:#e4eaec;
+    .row {
+      flex: 0 0 auto;
+      padding-left: 20px;
+
+      &.title {
+        @include font-16px();
+        color: $color-font-active;
+        flex: 0 0 60px;
+        border-bottom: 1px solid $color-borderline;
+        display: flex;
+        align-items: center;
       }
-      &.table-row-content{
-        &:hover{
-          background: rgba(118,131,143,.1);
+      &:not(.title) {
+        margin-top: 20px;
+      }
+
+      .text-button {
+        margin-right: 10px;
+      }
+      input[type=file] {
+        visibility: hidden;
+      }
+      .file-selector {
+        & ~ input {
+          display: none;
         }
       }
-      .name-label{
-        flex: 1 1 auto;
+
+      #toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-right: 20px;
       }
-      .delete-button{
-        flex: 0 0 auto;
-        font-size: 16px;
-        width: 60px;
-        height: 30px;
-        cursor: pointer; 
-        &:hover{
-          background: rgba(118,131,143,.1);
+
+      #scenario-grid {
+        display: flex;
+        margin-right: 20px;
+        height: 82px;
+        border-radius: 4px;
+        border: solid 1px #dbdbdb;
+
+        &:hover {
+          box-shadow: 0 4px 9px 0 rgba(115, 115, 115, 0.2), 0 5px 8px 0 rgba(228, 228, 228, 0.5);
         }
-      }
-      .toggle-button{
-        flex: 0 0 auto;
-        font-size: 16px;
-        margin-left: 10px;
+
+        #scenario-toggle-container {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 68px;
+          border-right: solid 1px #dbdbdb;
+        }
+        #scenario-content-container {
+          flex: 1 1 auto;
+          display: flex;
+          align-items: center;
+          .name-label {
+            display: flex;
+            align-items: center;
+            flex: 1 1 auto;
+            height: 100%;
+            font-size: 14px;
+            padding-left: 20px;
+            cursor: pointer;
+          }
+          .delete-button {
+            flex: 0 0 68px;
+            cursor: pointer;
+            color: $color-error;
+          }
+        }
       }
     }
   }

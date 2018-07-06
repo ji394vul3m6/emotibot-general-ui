@@ -45,12 +45,3 @@ export default {
   methods: {},
 };
 </script>
-
-<style lang="scss" scoped>
-#task-engine-v3 {
-  wizard-mode {
-    width: 100%;
-    height: 100%;
-  }
-}
-</style>
