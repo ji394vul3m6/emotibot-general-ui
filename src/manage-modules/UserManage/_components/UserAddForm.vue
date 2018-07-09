@@ -275,7 +275,7 @@ export default {
     },
     checkInputValidation() {
       const that = this;
-      const validPasswordReg = /^[a-zA-Z0-9~!$%^&*()[\]{}:;"',./?<>+\-=|_ ]+$/g;
+      const validPasswordReg = /^[a-zA-Z0-9~@!$%^&*()[\]{}:;"',./?<>+\-=|_ ]+$/g;
 
       let isValid = true;
       if (that.userName.trim() === '') {

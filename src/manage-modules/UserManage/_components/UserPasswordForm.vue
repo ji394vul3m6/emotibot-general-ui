@@ -109,7 +109,7 @@ export default {
   methods: {
     validate() {
       const that = this;
-      const validPasswordReg = /^[a-zA-Z0-9~!$%^&*()[\]{}:;"',./?<>+\-=|_ ]+$/g;
+      const validPasswordReg = /^[a-zA-Z0-9~@!$%^&*()[\]{}:;"',./?<>+\-=|_ ]+$/g;
       if ((that.managerPassword.length < that.passwordMinlength ||
                   that.managerPassword.length > that.passwordMaxlength)) {
         that.managerPasswordTooltip.msg = that.$t('management.err_password_length');
