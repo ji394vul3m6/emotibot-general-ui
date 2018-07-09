@@ -26,7 +26,7 @@ export const enterpriseList = (s) => {
     ret.push({
       enterpriseID: key,
       name: s.enterpriseList[key].name,
-      discription: s.enterpriseList[key].discription || '',
+      description: s.enterpriseList[key].description || '',
     });
   });
   return ret;

@@ -32,8 +32,19 @@ function parseJwt(token) {
 
 function getRobots(userInfo) {
   const that = this;
-  if (userInfo.type < 2) {
+  // enterprise admin
+  if (userInfo.type === 1) {
     return that.$reqGet(`${ENTERPRISE_PATH}/${userInfo.enterprise}/apps`)
+      .then(rsp => rsp.data.result);
+  }
+  // system admin
+  if (userInfo.type === 0) {
+    const currentEnterprise = window.localStorage.getItem('enterprise');
+    if (currentEnterprise === '' || currentEnterprise === undefined) {
+      return new Promise(r => r([]));
+    }
+
+    return that.$reqGet(`${ENTERPRISE_PATH}/${currentEnterprise}/apps`)
       .then(rsp => rsp.data.result);
   }
   const groups = userInfo.roles.groups;
@@ -78,7 +89,7 @@ function setInfoWithToken(token) {
   let robots = [];
 
   that.$setReqToken(token);
-  return that.$reqGet(`${TOKEN_PATH}`)
+  let promise = that.$reqGet(`${TOKEN_PATH}`)
   .then(() => {
     if (userInfo.type === 0) {
       return that.$reqGet(`${ENTERPRISE_PATH}s`);
@@ -92,32 +103,40 @@ function setInfoWithToken(token) {
     } else {
       enterpriseInfos = [data.result];
     }
-  })
-  .then(() => getRobots.bind(that)(userInfo))
-  .then((result) => {
-    robots = result;
-    robots.forEach((robot) => {
-      if (userRoleMap[robot.id] === undefined) {
-        userRoleMap[robot.id] = [];
-      }
-      userRoleMap[robot.id].push(robot.role);
+  });
+
+  if (userInfo.type !== 0) {
+    promise = promise
+    .then(() => getRobots.bind(that)(userInfo))
+    .then((result) => {
+      robots = result;
+      robots.forEach((robot) => {
+        if (userRoleMap[robot.id] === undefined) {
+          userRoleMap[robot.id] = [];
+        }
+        userRoleMap[robot.id].push(robot.role);
+      });
+    })
+    .then(() => that.$reqGet(`${ENTERPRISE_PATH}/${enterprise}/modules`))
+    .then((rsp) => {
+      const data = rsp.data;
+      modules = data.result;
     });
-  })
-  .then(() => that.$reqGet(`${ENTERPRISE_PATH}/${enterprise}/modules`))
-  .then((rsp) => {
-    const data = rsp.data;
-    modules = data.result;
-  })
+  }
+  promise = promise
   .then(() => new Promise((r) => {
     localStorage.setItem('userInfo', JSON.stringify(userInfo));
-    localStorage.setItem('enterprise', JSON.stringify(enterprise));
     localStorage.setItem('token', token);
     localStorage.setItem('enterpriseInfo', JSON.stringify(enterpriseInfos));
+
+    // belowing informations only used in specific enterprise
+    localStorage.setItem('enterprise', enterprise);
     localStorage.setItem('modules', JSON.stringify(modules));
     localStorage.setItem('robots', JSON.stringify(robots));
     localStorage.setItem('roleMap', JSON.stringify(userRoleMap));
     r(userInfo);
   }));
+  return promise;
 }
 
 function login(input) {
@@ -147,7 +166,7 @@ function login(input) {
         const data = rsp.data;
         token = data.result.token;
         localStorage.setItem('token', token);
-        return token;
+        return data.result;
       });
     }
     if (authTypes.indexOf('all') >= 0 || authTypes.indexOf('authBF') >= 0) {
@@ -162,7 +181,7 @@ function login(input) {
         }
         const accessToken = data.data.access_token;
         that.$cookie.set('access_token', accessToken, { expires: constant.cookieTimeout });
-        return accessToken;
+        return data.data;
       });
     }
     const keys = Object.keys(promiseMap);

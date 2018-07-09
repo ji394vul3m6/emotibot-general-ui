@@ -62,11 +62,26 @@ export default {
         return;
       }
       that.$refs.btn.$emit('loading');
-      that.$login(that.input).then(() => {
+      that.$login(that.input).then((result) => {
+        console.log(result);
+        if (result.authV2 === undefined) {
+          return;
+        }
+
+        const info = result.authV2.info;
+        if (info === undefined) {
+          return;
+        }
+
+        if (info.type === 0) {
+          window.location = '/#/manage/enterprise-manage';
+        } else {
+          window.location = '/#/manage/robot-manage';
+        }
         // if (that.redirect && that.redirect !== '') {
         //   window.location = `/#${that.redirect}`;
         // } else {
-        window.location = '/#/manage/robot-manage';
+        //
         // }
       }, (err) => {
         that.$notify({ text: '登录失败', type: 'fail' });

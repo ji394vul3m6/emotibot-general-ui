@@ -830,6 +830,20 @@ export default {
   },
 
   management: {
+    enterprise_list: '企業列表',
+    enterprise: '企業',
+    create_enterprise: '創建企業',
+    delete_enterprise: '刪除企業',
+    edit_enterprise: '編輯企業',
+    create_time: '創建時間',
+
+    enterprise_name: '企業名稱',
+    enterprise_description: '企業描述',
+    module_list: '功能列表',
+
+    system_admin_list: '系統管理人員',
+    system_admin_desc: '創建企業時，必須指定一位企業管理人員',
+
     robot_group: '機器人羣組',
     robots: '機器人',
     robot_list: '機器人列表',
@@ -887,9 +901,12 @@ export default {
     new_password: '新密碼',
     check_new_password: '確認新密碼',
     password_format: '介於4~16字的英文字母、數字或常見符號',
+    username_format: '介於4~64字的英文字母、數字或簡單符號',
     err_empty_username: 'ID 不可爲空',
     err_existed_username: 'ID 已存在',
+    err_invalid_username: 'ID 格式錯誤',
     err_empty_email: 'Email 不可爲空',
+    err_invalid_email: '不合法的 Email 格式',
     err_empty_display_name: '姓名不可爲空',
     err_password_length: '密碼長度需介於4~16字之間',
     err_password_invalid: '密碼含不合法字元',
@@ -904,6 +921,8 @@ export default {
     err_role_duplicate: '角色名稱已存在',
     err_robot_name_empty: '機器人名稱不可爲空',
     err_robot_duplicate: '機器人名稱已存在',
+    err_enterprise_name_empty: '機器人名稱不可爲空',
+    err_enterprise_duplicate: '機器人名稱已存在',
     err_group_name_empty: '羣組名稱不可爲空',
     err_group_duplicate: '羣組名稱已存在',
 
@@ -967,6 +986,7 @@ export default {
   header: {
     user_info: '個人資料',
     enterprise_privilege_list: '企業權限管理',
+    back_to_system_manage: '返回系統管理',
     logout: '登出',
   },
 };

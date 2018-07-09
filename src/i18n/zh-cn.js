@@ -830,6 +830,20 @@ export default {
   },
 
   management: {
+    enterprise_list: '企业列表',
+    enterprise: '企业',
+    create_enterprise: '创建企业',
+    delete_enterprise: '删除企业',
+    edit_enterprise: '编辑企业',
+    create_time: '创建时间',
+
+    enterprise_name: '企业名称',
+    enterprise_description: '企业描述',
+    module_list: '功能列表',
+
+    system_admin_list: '系统管理人员',
+    system_admin_desc: '创建企业时，必须指定一位企业管理人员',
+
     robot_group: '机器人群组',
     robots: '机器人',
     robot_list: '机器人列表',
@@ -887,9 +901,12 @@ export default {
     new_password: '新密码',
     check_new_password: '确认新密码',
     password_format: '介于4~16字的英文字母、数字或常见符号',
+    username_format: '介于4~64字的英文字母、数字或简单符号',
     err_empty_username: 'ID 不可为空',
     err_existed_username: 'ID 已存在',
+    err_invalid_username: 'ID 格式错误',
     err_empty_email: 'Email 不可为空',
+    err_invalid_email: '不合法的 Email 格式',
     err_empty_display_name: '姓名不可为空',
     err_password_length: '密码长度需介于4~16字之间',
     err_password_invalid: '密码含不合法字元',
@@ -904,6 +921,8 @@ export default {
     err_role_duplicate: '角色名称已存在',
     err_robot_name_empty: '机器人名称不可为空',
     err_robot_duplicate: '机器人名称已存在',
+    err_enterprise_name_empty: '机器人名称不可为空',
+    err_enterprise_duplicate: '机器人名称已存在',
     err_group_name_empty: '群组名称不可为空',
     err_group_duplicate: '群组名称已存在',
 
@@ -967,6 +986,7 @@ export default {
   header: {
     user_info: '个人资料',
     enterprise_privilege_list: '企业权限管理',
+    back_to_system_manage: '返回系统管理',
     logout: '登出',
   },
 };

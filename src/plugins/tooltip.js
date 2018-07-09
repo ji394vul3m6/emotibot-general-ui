@@ -53,7 +53,10 @@ const MyPlugin = {
             parent.appendChild(vm.$el);
             vm.$forceUpdate();
           });
-          el.addEventListener('tooltip-show', () => {
+          el.addEventListener('tooltip-show', (e) => {
+            if (e.target !== el) {
+              return;
+            }
             vm.$emit('show', getPosition(el));
           });
           el.addEventListener('tooltip-hide', () => {
