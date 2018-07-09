@@ -42,9 +42,6 @@
 </template>
 
 <script>
-import TextButton from '@/components/basic/TextButton';
-import SearchInput from '@/components/basic/SearchInput';
-import Toggle from '@/components/basic/Toggle';
 import i18nUtils from '../utils/i18nUtil';
 import scenarioConvertor from '../utils/scenarioConvertor';
 import general from '../utils/general';
@@ -53,11 +50,7 @@ import taskEngineApi from './_api/taskEngine';
 
 export default {
   name: 'scenario-list-page',
-  components: {
-    TextButton,
-    SearchInput,
-    Toggle,
-  },
+  components: {},
   data() {
     return {
       i18n: {},
@@ -84,7 +77,7 @@ export default {
     createNewScenario() {
       const that = this;
       that.$pop({
-        title: '',
+        title: this.i18n.task_engine_v3.create_scenario_pop.label_create_new_scenario,
         component: CreateScenarioPop,
         validate: true,
         ok_msg: that.$t('general.add'),

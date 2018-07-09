@@ -1,42 +1,20 @@
+$title-font-size: 14px;
 #scenario-editor-pop{
+  line-height: $default-line-height;
+  margin: 10px 0;
+  padding: 0 30px;
   display: flex;
-  flex-direction: column;
-  color: $text-color;
-  width: 100%;
-  height: 100%;
-  min-width: 500px;
-  min-height: 275px;
-  padding: 20px;
-
-  .scenario-editor-title{
-    flex: 0 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 10px;
-    font-size: 30px;
-    color: $main-color;
+  .edit-title {
+    font-size: $title-font-size;
+    min-width: 100px;
   }
-
-  .scenario-editor-box{
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
-    border: 1px solid $main-color;
-    padding: 20px;
-
-    .scenario-name-container{
-      display: flex;
-      flex-direction: row;
-      font-size: 24px;
-      color: $text-hightlight-color;
-      padding: 10px;
-      input {
-        color: black;
-        font-size: 20px;
-        width: 200px;
-        text-align: center;
-      }
+  .edit-data {
+    font-size: $title-font-size;
+    position: relative;
+    input {
+      width: 400px;
+      padding: 5px 8px;
+      font-size: 12px;
     }
   }
 }
