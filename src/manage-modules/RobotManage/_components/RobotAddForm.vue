@@ -100,7 +100,6 @@ export default {
     .row-input {
       flex: 1;
       display: flex;
-      padding: 5px 8px;
     }
   }
 }

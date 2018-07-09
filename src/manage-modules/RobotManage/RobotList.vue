@@ -190,6 +190,7 @@ export default {
     },
     updateRobots() {
       const that = this;
+      that.$emit('startLoading');
       return that.$loadRobotOfUser(that.userInfo).then((robots) => {
         const promises = [];
         const robotMap = {};
@@ -209,6 +210,9 @@ export default {
         }).then(() => {
           that.setRobotList(robots);
         });
+      })
+      .finally(() => {
+        that.$emit('endLoading');
       });
     },
   },
@@ -297,7 +301,7 @@ export default {
           margin: 0 20px;
           text-overflow: ellipsis;
           overflow: hidden;
-          white-space: nowarp;
+          white-space: nowrap;
         }
         .card-title-edit {
           flex: 0 0 24px;
