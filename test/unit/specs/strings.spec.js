@@ -1,6 +1,6 @@
-import utils from '@/utils/strings';
+import utils from '@/utils/js/strings';
 
-describe('utils/strings.js', () => {
+describe('utils/js/strings.js', () => {
   it('test for padding', () => {
     const testcases = [
       [0, 2, undefined, '00'],
