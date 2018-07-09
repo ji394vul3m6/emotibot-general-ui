@@ -180,6 +180,7 @@ export default {
     flex-wrap: wrap;
     .group-card {
       flex: 0 0 274px;
+      max-width: 274px;
       height: 180px;
       margin-right: 30px;
       margin-bottom: 30px;
@@ -199,6 +200,7 @@ export default {
       flex-direction: column;
       .card-title {
         flex: 0 0 auto;
+
         border-top-left-radius: 4px;
         border-top-right-radius: 4px;
         background-color: #ffffff;
@@ -211,6 +213,9 @@ export default {
         align-items: center;
         .card-title-text {
           flex: 1;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
         .card-title-edit {
           flex: 0 0 24px;

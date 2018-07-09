@@ -135,6 +135,9 @@ export default {
 
   .column {
     flex: 0 0 auto;
+    &:not(.empty) {
+      max-width: 300px;
+    }
     display: flex;
     align-items: center;
     .icon-container {
