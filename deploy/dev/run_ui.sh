@@ -6,10 +6,10 @@ SELF_IP=`ifconfig | grep "inet " | grep -Fv 127.0.0.1 | awk '{print $2}' | head 
 while getopts "IHh" opts ; do
   case ${opts} in
     I)
-      API_IP=$SELF_IP;
+      API_IP=$SELF_IP:8182;
       ;;
     H)
-      AUTH_IP=$SELF_IP;
+      AUTH_IP=$SELF_IP:8088;
       ;;
     h)
       echo "Usage: $0 [-I|-H] <remote_ip>";
