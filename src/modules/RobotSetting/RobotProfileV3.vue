@@ -151,11 +151,9 @@ export default {
   },
   methods: {
     compositionstart() {
-      console.log('start');
       this.inComposition = true;
     },
     compositionend() {
-      console.log('end');
       this.inComposition = false;
     },
     cancelEdit(obj) {

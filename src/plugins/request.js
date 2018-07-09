@@ -56,7 +56,6 @@ function ajax(config) {
   const that = this;
   const getConfigWithCustomHeader = addCustomHeader.bind(that);
   const header = getConfigWithCustomHeader(config);
-  console.log(header);
   return axios(header).catch((err) => {
     checkAjaxError.bind(this)(that, err);
   });
