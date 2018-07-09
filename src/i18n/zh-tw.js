@@ -602,7 +602,7 @@ export default {
   task_engine: {
     download_template: '下載轉換數據模版',
     task_engine_upload: '上傳轉換數據',
-    import_button_hint: '支援副檔名：.xlsx',
+    import_button_hint: '支援副檔名：.csv',
   },
 
   learning: {
