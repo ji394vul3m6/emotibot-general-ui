@@ -53,7 +53,7 @@ export default {
 <style lang="scss" scoped>
 @import "styles/variable";
 
-$input-height: 30px;
+$input-height: 28px;
 
 .search-input {
   display: inline-flex;
