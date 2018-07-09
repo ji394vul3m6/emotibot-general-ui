@@ -1,12 +1,6 @@
 <template>
 <div id="wizard_mode">
-  <div class="side-menu">
-    <div @click="routeTo('/task-engine-scenario-v3')" :class="{ 'selected': '/task-engine-scenario-v3' === selectedMenu }" class="clickable side-menu-item">{{$t("task_engine_v3.wizard_mode.side_menu_tab.scenario_list")}}</div>
-    <div @click="routeTo('/task-engine-scenario-v3/entity')" :class="{ 'selected': '/task-engine-scenario-v3/entity' === selectedMenu }" class="clickable side-menu-item">{{$t("task_engine_v3.wizard_mode.side_menu_tab.entity_list")}}</div>
-  </div>
-  <div class="main-content">
-    <router-view></router-view>
-  </div>
+  <router-view></router-view>
   <template v-for="popWindow in popWindows">
     <pop-window ref="pops" :key="popWindow.name"></pop-window>
   </template>
@@ -27,16 +21,11 @@ export default {
     return {
       i18n: {},
       popWindows: [],
-      selectedMenu: '/task-engine-scenario-v3',
     };
   },
   computed: {},
   watch: {},
   methods: {
-    routeTo(toPath) {
-      this.$router.replace(toPath);
-      this.selectedMenu = toPath;
-    },
     showPopWindow(option) {
       if (this.popWindows.length > 0) {
         const lastOption = this.popWindows[this.popWindows.length - 1];

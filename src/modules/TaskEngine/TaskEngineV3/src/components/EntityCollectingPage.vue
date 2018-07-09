@@ -204,6 +204,65 @@ export default {
             sourceType: 'system',
             slotType: 'car-plate',
           },
+          {
+            entityCategory: '通用实体类别',
+            entityType: '来电号码(大陆固定电话号码+手机号码)',
+            sourceType: 'system',
+            slotType: 'phone-mainland',
+            hidden: true,
+            needRecogize: false,
+          },
+          {
+            entityCategory: '通用实体类别',
+            entityType: '联络人即来电人',
+            sourceType: 'system',
+            slotType: 'binary',
+            slotFinder: 'CONTACT_IS_CALLER',
+          },
+          {
+            entityCategory: '通用实体类别',
+            entityType: '地址',
+            sourceType: 'system',
+            slotType: 'address-shipping',
+            slotFinder: 'ADDRESS',
+          },
+        ],
+        富士康电视装机实体类别: [
+          {
+            entityCategory: '富士康电视装机实体类别',
+            entityType: '是否只有一台',
+            sourceType: 'system',
+            slotType: 'binary',
+            slotFinder: 'MACHINE_COUNT',
+          },
+          {
+            entityCategory: '富士康电视装机实体类别',
+            entityType: '电视机型',
+            sourceType: 'system',
+            slotType: 'pText',
+            slotFinder: 'MACHINE_MODEL',
+          },
+          {
+            entityCategory: '富士康电视装机实体类别',
+            entityType: '电视尺寸',
+            sourceType: 'system',
+            slotType: 'integer',
+            slotFinder: 'MACHINE_SIZE',
+          },
+          {
+            entityCategory: '富士康电视装机实体类别',
+            entityType: '装机方式',
+            sourceType: 'system',
+            slotType: 'pText',
+            slotFinder: 'MOUNT_MANNER',
+          },
+          {
+            entityCategory: '富士康电视装机实体类别',
+            entityType: '支架',
+            sourceType: 'system',
+            slotType: 'pText',
+            slotFinder: 'PYLON',
+          },
         ],
         餐饮实体类别: [
           {
@@ -293,75 +352,62 @@ export default {
         general.popErrorWindow(this,
           this.i18n.task_engine_v3.error_msg.custom_entity_list_length_must_greater_than_two,
           '',
-          '30%',
-          '10%',
         );
       } else {
-        const options = {
+        const that = this;
+        that.$pop({
+          title: '',
           component: EntityRelationEditPop,
-          buttons: ['ok', 'cancel'],
           validate: true,
-          customPopContentStyle: {
-            width: '70%',
-            height: '70%',
-          },
+          ok_msg: that.$t('general.add'),
           data: {
             customEntityCollectorList,
-            relatedEntityCollectorList: this.relatedEntities.relatedEntityCollectorList,
-            relatedEntityMatrix: this.relatedEntities.relatedEntityMatrix,
+            relatedEntityCollectorList: that.relatedEntities.relatedEntityCollectorList,
+            relatedEntityMatrix: that.relatedEntities.relatedEntityMatrix,
           },
           callback: {
             ok: (rtnObj) => {
-              this.relatedEntities.relatedEntityCollectorList = rtnObj.relatedEntityCollectorList;
-              this.relatedEntities.relatedEntityMatrix = rtnObj.relatedEntityMatrix;
-              this.$emit('updateRelatedEntities', this.relatedEntities);
+              that.relatedEntities.relatedEntityCollectorList = rtnObj.relatedEntityCollectorList;
+              that.relatedEntities.relatedEntityMatrix = rtnObj.relatedEntityMatrix;
+              that.$emit('updateRelatedEntities', that.relatedEntities);
             },
           },
-        };
-        this.$root.$emit('showWindow', options);
+        });
       }
     },
     editSentenceReplacement() {
-      const options = {
+      const that = this;
+      that.$pop({
+        title: '',
         component: SentenceReplacementEditorPop,
-        buttons: ['ok', 'cancel'],
         validate: true,
-        customPopContentStyle: {
-          width: '70%',
-          height: '70%',
-        },
         data: {
-          re_parsers: this.re_parsers,
+          re_parsers: that.re_parsers,
         },
         callback: {
           ok: (reParsers) => {
-            this.$emit('updateREParsers', reParsers);
-            this.re_parsers = reParsers;
+            that.$emit('updateREParsers', reParsers);
+            that.re_parsers = reParsers;
           },
         },
-      };
-      this.$root.$emit('showWindow', options);
+      });
     },
     editTDESetting() {
-      const options = {
+      const that = this;
+      that.$pop({
+        title: '',
         component: TDESettingEditorPop,
-        buttons: ['ok', 'cancel'],
         validate: true,
-        customPopContentStyle: {
-          width: '70%',
-          height: '70%',
-        },
         data: {
-          tde_setting: this.tde_setting,
+          tde_setting: that.tde_setting,
         },
         callback: {
           ok: (tdeSetting) => {
-            this.$emit('updateTDESetting', tdeSetting);
-            this.tde_setting = tdeSetting;
+            that.$emit('updateTDESetting', tdeSetting);
+            that.tde_setting = tdeSetting;
           },
         },
-      };
-      this.$root.$emit('showWindow', options);
+      });
     },
     addNewEntityCollector() {
       this.entityCollectorList.push({

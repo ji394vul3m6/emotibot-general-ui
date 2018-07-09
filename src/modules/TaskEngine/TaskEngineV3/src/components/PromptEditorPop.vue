@@ -43,3 +43,12 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+@import "../scss/teVariable.scss";
+#prompt-editor-pop{
+  min-width: 400;
+  min-height: 120px;
+  padding: 20px;
+}
+</style>

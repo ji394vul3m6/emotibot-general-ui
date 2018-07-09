@@ -83,6 +83,9 @@ export default {
       case 'intent_zoo':
         rule = this.createEntryRule('cu_parser', 'Intent', ['Intent'], trigger.intent_name);
         break;
+      case 'intent_engine_2.0':
+        rule = this.createEntryRuleV2('intent_parser', trigger.intent_name, trigger.type);
+        break;
       default:
         rule = this.createEntryRule('custom_cu_parser', 'userDefine', [], trigger.intent_name);
     }
@@ -112,6 +115,23 @@ export default {
               },
             ],
             function_name: 'key_val_match',
+          },
+        ],
+      },
+    ];
+    return rule;
+  },
+  createEntryRuleV2(functionName, intentName, module) {
+    const rule = [
+      {
+        source: 'extend_data',
+        functions: [
+          {
+            function_name: functionName,
+            content: {
+              intentName,
+              module,
+            },
           },
         ],
       },
@@ -240,6 +260,9 @@ export default {
         slotName: item.entityName,
         slotType: item.ner.slotType,
         slotBizType: 'OrderProperty',
+        hidden: item.ner.hidden,
+        needRecogize: item.ner.needRecogize,
+        slotFinder: item.ner.slotFinder,
       };
     });
     const indices = [];

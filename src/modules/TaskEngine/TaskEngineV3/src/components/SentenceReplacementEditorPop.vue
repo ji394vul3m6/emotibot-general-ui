@@ -69,6 +69,9 @@ export default {
 <style lang="scss" scoped>
 @import "../scss/teVariable.scss";
 .sentence-replacement-editor-pop{
+  min-width: 800px;
+  min-height: 500px;
+  padding: 20px;
   .pattern-text-container{
     border: 1px solid #e4eaec;
     width: 100%;

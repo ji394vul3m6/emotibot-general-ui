@@ -114,28 +114,21 @@ export default {
   },
   methods: {
     addNewSkill() {
-      const options = {
+      const that = this;
+      that.$pop({
+        title: '',
         component: CreateSkillPop,
-        buttons: ['ok', 'cancel'],
         validate: true,
+        ok_msg: that.$t('general.add'),
         data: {
           skillName: '',
         },
-        ok_msg: this.$t('general.add'),
-        cancel_msg: this.$t('general.cancel'),
         callback: {
           ok: (skillName) => {
-            this.$root.$emit('addNewSkill', skillName);
+            that.$root.$emit('addNewSkill', skillName);
           },
         },
-        customPopContentStyle: {
-          width: '40%',
-          height: '30%',
-          'min-width': '500px',
-          'min-height': '275px',
-        },
-      };
-      this.$root.$emit('showWindow', options);
+      });
     },
   },
   beforeMount() {

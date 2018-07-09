@@ -10,7 +10,7 @@ export default {
       button_create_new_scenario: '+创建新场景',
       scenario_list: '场景列表',
       placeholder_search: '搜寻...',
-      ask_delete_confirm: '是否确认要删除此场景？',
+      ask_delete_confirm: '确认要删除场景：{scenario}',
     },
     scenario_edit_page: {
       main_skill: '主任务',

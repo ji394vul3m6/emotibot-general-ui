@@ -40,8 +40,6 @@ export default {
         general.popErrorWindow(this,
           this.i18n.task_engine_v3.error_msg.please_enter_the_scenario_name,
           '',
-          '30%',
-          '10%',
         );
       } else {
         this.$emit('validateSuccess', this.scenarioName);
