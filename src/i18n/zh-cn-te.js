@@ -16,9 +16,9 @@ export default {
       main_skill: '主任务',
       placeholder_name_the_scenario: '为场景取名',
       tab: {
-        trigger: '怎么触发场景',
-        entity_collecting: '要收集哪些信息',
-        action: '信息蒐集完要执行什么动作',
+        trigger: '触发场景',
+        entity_collecting: '收集讯息',
+        action: '执行动作',
       },
       toast_save_success: '储存成功！',
       button_save_and_next_step: '储存并下一步',

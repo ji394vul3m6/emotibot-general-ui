@@ -258,7 +258,8 @@ $row-height: $default-line-height;
         margin-right: 20px;
         height: 82px;
         border-radius: 4px;
-        border: solid 1px #dbdbdb;
+        border: solid 1px $color-borderline;
+        color: $color-font-active;
 
         &:hover {
           box-shadow: 0 4px 9px 0 rgba(115, 115, 115, 0.2), 0 5px 8px 0 rgba(228, 228, 228, 0.5);
@@ -269,7 +270,7 @@ $row-height: $default-line-height;
           align-items: center;
           justify-content: center;
           width: 68px;
-          border-right: solid 1px #dbdbdb;
+          border-right: solid 1px $color-borderline;
         }
         #scenario-content-container {
           flex: 1 1 auto;
