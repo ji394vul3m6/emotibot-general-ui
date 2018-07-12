@@ -4,7 +4,7 @@
     <div id="card-category-header" v-if="!selectOnly">
       <div id="card-category-header-block">
         <div id="card-category-row">
-          <div class="card-category-title">{{ $t('category.title') }}</div>
+          <div class="card-category-title">{{ title }}</div>
           <div v-if="canSetting" class="card-category-setting" @click="toggleEditMode">
             <span v-if="isEditMode"> {{ $t('category.leave_setting') }}</span>
             <span v-else> {{ $t('category.setting') }} </span>
@@ -69,6 +69,10 @@ Vue.component('category-tree-item', CategoryTreeItem);
 export default {
   // api,
   props: {
+    title: {
+      type: String,
+      default: '',
+    },
     categoryTree: {
       type: Object,
       default: {},
@@ -412,17 +416,17 @@ $category-item-height: 32px;
     background: #fcfcfc;
     flex: 0 0 auto;
     #card-category-header-block {
-      padding: 10px;
-      padding-bottom: 14px;
+      padding: 0 10px 14px 10px;
       border-bottom: 1px solid $color-borderline;
       #card-category-row {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 10px;
+        height: 60px;
         .card-category-title {
           @include font-16px();
           font-weight: 500;
+          color: $color-font-active;
         }
         .card-category-setting {
           @include font-12px();
