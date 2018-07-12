@@ -60,6 +60,9 @@ http {
         location /admin {
             proxy_pass http://${REMOTE_IP};
         }
+        location = /php/api/ApiKey/tde_register.php { 
+            proxy_pass http://${SELF_IP}:10999/tde/register;
+        }
         location /php/api/ApiKey/task_engine_app.php {
             proxy_set_header Authorization $appid;
             proxy_set_header X-Real-IP $remote_addr;
