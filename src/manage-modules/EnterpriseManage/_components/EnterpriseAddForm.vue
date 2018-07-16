@@ -52,7 +52,7 @@
         v-tooltip="adminErrTooltip"
         ref="displayName">
     </div>
-    <div class="row">
+    <!-- <div class="row">
       <div class="row-title">
         <div class="required">＊</div>
         {{ $t('management.email') }}
@@ -62,7 +62,7 @@
         v-model="adminEmail"
         v-tooltip="adminErrTooltip"
         ref="email">
-    </div>
+    </div> -->
     <div class="row">
       <div class="row-title">
         <div class="required">＊</div>
@@ -94,7 +94,7 @@
 import validate from '@/utils/js/validate';
 
 export default {
-  name: 'robot-add-form',
+  name: 'enterprise-add-form',
   props: {
     extData: {
       type: Object,
@@ -164,12 +164,14 @@ export default {
       } else if (that.adminDiaplayName === '') {
         that.showUpdatedTooltip(that.$refs.displayName, that.adminErrTooltip, that.$t('management.err_empty_display_name'));
         return;
-      } else if (that.adminEmail === '') {
-        that.showUpdatedTooltip(that.$refs.email, that.adminErrTooltip, that.$t('management.err_empty_email'));
-        return;
-      } else if (!validate.isValidEmail(that.adminEmail)) {
-        that.showUpdatedTooltip(that.$refs.email, that.adminErrTooltip, that.$t('management.err_invalid_email'));
-        return;
+      // } else if (that.adminEmail === '') {
+      //   that.showUpdatedTooltip(that.$refs.email, that.adminErrTooltip,
+      //     that.$t('management.err_empty_email'));
+      //   return;
+      // } else if (!validate.isValidEmail(that.adminEmail)) {
+      //   that.showUpdatedTooltip(that.$refs.email, that.adminErrTooltip,
+      //     that.$t('management.err_invalid_email'));
+      //   return;
       } else if (that.adminPassword.length < 4 || that.adminPassword.length > 16) {
         that.showUpdatedTooltip(that.$refs.password, that.adminErrTooltip, that.$t('management.err_password_length'));
         return;
@@ -187,9 +189,8 @@ export default {
         description: that.description,
         modules: that.modules.filter(mod => mod.checked).map(mod => mod.code),
         admin: {
-          username: that.adminUserName,
-          displayName: that.adminDiaplayName,
-          email: that.adminEmail,
+          account: that.adminUserName,
+          name: that.adminDiaplayName,
           password: that.adminPassword,
         },
       });

@@ -6,7 +6,7 @@
         <command-row class="commands" @search="doSearch">
             <template v-if="isAdmin">
             <text-button button-type="primary"
-            @click="addEnterprise">{{ $t('management.create_enterprise') }}</text-button>
+            @click="popAddEnterprise">{{ $t('management.create_enterprise') }}</text-button>
             </template>
         </command-row>
         <div class="enterprise-list">
@@ -17,7 +17,7 @@
               <div class="card-title-text">
                 {{ enterprise.name }}
               </div>
-              <div class="card-title-edit" @click.stop="editName(enterprise)" v-if="isAdmin">
+              <div class="card-title-edit" @click.stop="popEditEnterprise(enterprise)" v-if="isAdmin">
                 <icon :size=12 icon-type="edit_blue"></icon>
               </div>
             </div>
@@ -35,6 +35,8 @@
 import { mapGetters, mapMutations } from 'vuex';
 import NavBar from '@/components/NavigationBar';
 import EnterpriseAddForm from './_components/EnterpriseAddForm';
+import EnterpriseEditForm from './_components/EnterpriseEditForm';
+import EnterpriseDeleteForm from './_components/EnterpriseDeleteForm';
 import enterpriseAPI from './_api/enterprise';
 import systemAPI from './_api/system';
 import CommandRow from '../_components/CommandRow';
@@ -79,26 +81,86 @@ export default {
       'setRobotList',
       'setUserRoleMap',
       'setPrivilegeList',
+      'setPrivilegedEnterprise',
     ]),
     doSearch(word) {
       this.keyword = word;
     },
     goEnterprise(enterprise) {
       const that = this;
-      localStorage.setItem('enterprise', enterprise.enterpriseID);
-      this.setEnterprise(enterprise.enterpriseID);
+      that.$api.getEnterpriseModules(enterprise.enterpriseID).then((modules) => {
+        localStorage.setItem('enterprise', enterprise.enterpriseID);
+        localStorage.setItem('modules', JSON.stringify(modules));
+        this.setEnterprise(enterprise.enterpriseID);
 
-      const robots = that.$getRobots();
-      const userRoleMap = JSON.parse(localStorage.getItem('roleMap'));
-      that.setRobotList(robots);
-      that.setUserRoleMap(userRoleMap);
-      that.setPrivilegeList(that.$getPrivModules());
-      that.$router.push(robotListPage);
+        const robots = that.$getRobots();
+        const userRoleMap = JSON.parse(localStorage.getItem('roleMap'));
+        that.setRobotList(robots);
+        that.setUserRoleMap(userRoleMap);
+        that.setPrivilegeList(that.$getPrivModules());
+        that.$router.push(robotListPage);
+      });
     },
     editName(enterprise) {
       console.log(enterprise);
     },
-    addEnterprise() {
+    popDeleteEnterprise(enterprise) {
+      const that = this;
+      that.$pop({
+        title: that.$t('management.delete_enterprise'),
+        component: EnterpriseDeleteForm,
+        validate: true,
+        extData: {
+          name: enterprise.name,
+          description: enterprise.description,
+        },
+        callback: {
+          ok() {
+            that.$api.deleteEnterprise(enterprise.enterpriseID)
+              .then(() => that.reloadEnterprise());
+          },
+        },
+      });
+    },
+    popEditEnterprise(enterprise) {
+      console.log(enterprise);
+      const that = this;
+      const promises = [
+        that.$api.getEnterprises(),
+        that.$api.getModules(),
+        that.$api.getEnterpriseModules(enterprise.enterpriseID),
+      ];
+
+      return Promise.all(promises).then((datas) => {
+        const [enterprises, modules, enterpriseModules] = datas;
+        that.$pop({
+          title: that.$t('management.create_enterprise'),
+          component: EnterpriseEditForm,
+          extData: {
+            existedEnterprises: enterprises.map(e => e.name),
+            modules,
+            name: enterprise.name,
+            description: enterprise.description,
+            checkedModules: enterpriseModules,
+          },
+          left_button: {
+            msg: that.$t('general.delete'),
+            type: 'error',
+            closeAfterClick: true,
+            callback: () => {
+              that.popDeleteEnterprise(enterprise);
+            },
+          },
+          validate: true,
+          callback: {
+            ok(retData) {
+              that.addEnterprise(retData);
+            },
+          },
+        });
+      });
+    },
+    popAddEnterprise() {
       const that = this;
       const promises = [
         that.$api.getEnterprises(),
@@ -117,10 +179,28 @@ export default {
           validate: true,
           callback: {
             ok(retData) {
-              console.log(retData);
+              that.addEnterprise(retData);
             },
           },
         });
+      });
+    },
+    addEnterprise(data) {
+      const that = this;
+      that.$emit('startLoading');
+      that.$api.addEnterprise(data)
+      .then(() => that.reloadEnterprise())
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        that.$emit('endLoading');
+      });
+    },
+    reloadEnterprise() {
+      const that = this;
+      return that.$api.getEnterprises().then((datas) => {
+        that.setPrivilegedEnterprise(datas);
       });
     },
   },
