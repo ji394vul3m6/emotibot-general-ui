@@ -54,8 +54,12 @@ function addEnterprise(info) {
     })));
 }
 
-function updateEnterprise() {
-
+function updateEnterprise(id, data) {
+  const params = {
+    ...data,
+  };
+  params.modules = JSON.stringify(data.modules);
+  return this.$reqPutForm(`${ENTERPRISE_URL}/${id}`, params);
 }
 
 export default {

@@ -101,9 +101,6 @@ export default {
         that.$router.push(robotListPage);
       });
     },
-    editName(enterprise) {
-      console.log(enterprise);
-    },
     popDeleteEnterprise(enterprise) {
       const that = this;
       that.$pop({
@@ -118,6 +115,9 @@ export default {
           ok() {
             that.$api.deleteEnterprise(enterprise.enterpriseID)
               .then(() => that.reloadEnterprise());
+          },
+          cancel() {
+            that.popEditEnterprise(enterprise);
           },
         },
       });
@@ -154,7 +154,7 @@ export default {
           validate: true,
           callback: {
             ok(retData) {
-              that.addEnterprise(retData);
+              that.editEnterprise(enterprise.enterpriseID, retData);
             },
           },
         });
@@ -193,6 +193,15 @@ export default {
       .catch((err) => {
         console.log(err);
       })
+      .finally(() => {
+        that.$emit('endLoading');
+      });
+    },
+    editEnterprise(id, data) {
+      const that = this;
+      that.$emit('startLoading');
+      return this.$api.updateEnterprise(id, data)
+      .then(() => that.reloadEnterprise())
       .finally(() => {
         that.$emit('endLoading');
       });
