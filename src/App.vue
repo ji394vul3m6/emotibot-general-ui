@@ -135,13 +135,22 @@ export default {
     ]),
     checkPrivilege() {
       const that = this;
+      if (that.enterpriseID === '') {
+        // when renterprise is empty, path should only in enterprise list or system user list
+        const validURL = [
+          '/manage/enterprise-manage',
+          '/manage/system-user-manage',
+        ];
+        if (validURL.indexOf(that.$route.matched[0].path) < 0) {
+          that.$router.push('/manage/enterprise-manage');
+        }
+      }
       if (that.robotID === '') {
-        // when robotID is empty, path should in manage page only
-        if (that.$route.matched[0].path !== '/manage') {
+        // when robotID or enterprise is empty, path should in manage page only
+        if (that.$route.matched.length <= 0 || that.$route.matched[0].path !== '/manage') {
           that.$router.push('/manage/robot-manage');
           return;
         }
-        return;
       }
 
       if (that.userInfo.type < 2) {
@@ -314,21 +323,21 @@ export default {
     that.checkCookie();
     that.$setReqToken(token);
     that.$setIntoWithToken(token).then(() => {
-      const robots = that.$getRobots();
       const enterpriseList = that.$getUserEnterprises();
       const userInfo = JSON.parse(localStorage.getItem('userInfo'));
       that.userInfo = userInfo;
-
-      const userRoleMap = JSON.parse(localStorage.getItem('roleMap'));
-      that.setPrivilegedEnterprise(enterpriseList);
-      that.setRobotList(robots);
       that.setUser(userInfo.id);
       that.setUserInfo(userInfo);
-      that.setUserRoleMap(userRoleMap);
-      that.setPrivilegeList(that.$getPrivModules());
-      // that.setupPages();
+      that.setPrivilegedEnterprise(enterpriseList);
+      if (userInfo.type !== 0) {
+        const robots = that.$getRobots();
+        const userRoleMap = JSON.parse(localStorage.getItem('roleMap'));
+        that.setRobotList(robots);
+        that.setUserRoleMap(userRoleMap);
+        that.setPrivilegeList(that.$getPrivModules());
+        // that.setupPages();
+      }
       that.checkPrivilege();
-
       that.ready = true;
     }).catch((err) => {
       console.log(err);
