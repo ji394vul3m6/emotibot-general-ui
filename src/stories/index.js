@@ -16,6 +16,7 @@ import TooltipStory from './Tooltip';
 import TagInputStory from './TagInput';
 import InputStory from './Input';
 import ToggleStory from './Toggle';
+import DropdownMenuStory from './DropdownMenu';
 
 import './storybook.scss';
 
@@ -69,4 +70,9 @@ InputStory.forEach((story) => {
 const toggleStory = storiesOf('Toggle', module).addDecorator(withKnobs);
 ToggleStory.forEach((story) => {
   toggleStory.add(story.name, story.func);
+});
+
+const dropdownMenuStory = storiesOf('DropdownMenu', module).addDecorator(withKnobs);
+DropdownMenuStory.forEach((story) => {
+  dropdownMenuStory.add(story.name, story.func);
 });
