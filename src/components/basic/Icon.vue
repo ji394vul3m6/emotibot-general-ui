@@ -124,6 +124,7 @@ export default {
   @include iconType("menu_te");
   @include iconType("menu_privilege");
   @include iconType("menu_dashboard");
+  @include iconType("menu_intent");
 
   @include iconType("add");
   @include iconType("check");
@@ -172,7 +173,11 @@ export default {
   @include iconType("header_dialog");
   @include iconType("header_dropdown");
 
-
+  @include iconType("more");
+  @include iconType("intent");
+  @include iconType("info_warning_gray");
+  @include iconType("close_expand");
+  @include iconType("upload");
   // robot icon should a little bit larger than other icons
   .white_robot_icon {
     background-size: 25px 25px;

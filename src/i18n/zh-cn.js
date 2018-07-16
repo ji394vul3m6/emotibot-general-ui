@@ -652,6 +652,38 @@ export default {
       not_select_question: '没有选择标准问',
     },
   },
+  intent_engine: {
+    train: '意图训练',
+    is_training: '意图训练中...',
+    training_success: '意图训练成功',
+    training_fail: '意图训练失败',
+    version_not_exist: '意图版本不存在',
+    manage: {
+      add_intent: '新增意图',
+      corpus_num: ' ({num}笔语料)',
+      cancel_edit_msg: '尚未保存编辑，确定要取消编辑吗？',
+      addin: '加入',
+      placeholder: {
+        intent_title: '输入意图名称',
+        edit_corpus: '编辑语料，Enter完成编辑',
+        add_corpus: '新增语料，Enter 加入上方列表',
+      },
+    },
+    import: {
+      title: '导入意图',
+      choose_file: '请选择档案',
+      success: '意图导入成功',
+      fail: '意图导入失败',
+      support_format: '支援格式 .xlsx',
+      upload_file: '上传档案',
+      upload_file_undefined: '档案无法辨识',
+      upload_file_size_error: '档案大小需介于 0 ~ 2M',
+      upload_file_type_invalid: '档案格式限 .xlsx 档',
+      by_update: '新增数据',
+      by_replace: '全量替换',
+      tooltip: '选择全量替换将删除之前所有数据',
+    },
+  },
   pages: {
     null: '',
     status: {
@@ -704,6 +736,11 @@ export default {
       task_engine_scenario_v3: '新场景编辑',
       task_engine_upload: '上传转换数据',
     },
+    intent_engine: {
+      module_name: '意图引擎',
+      intent_manage: '意图管理',
+      intent_test: '意图测试',
+    },
     error: '',
   },
   general: {
@@ -741,6 +778,7 @@ export default {
     default: '默认',
     indicate: '指定',
     force_cancel: '强制取消',
+    import: '导入',
     export: '导出',
     success: '成功',
     fail: '失败',
