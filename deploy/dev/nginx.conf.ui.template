@@ -55,7 +55,7 @@ http {
         proxy_set_header X-Appid $appid;
         proxy_set_header X-UserID $user_id;
         location /stats {
-            proxy_pass http://${REMOTE_IP};
+            proxy_pass http://${REMOTE_IP}:8200;
         }
         location /admin {
             proxy_pass http://${REMOTE_IP};

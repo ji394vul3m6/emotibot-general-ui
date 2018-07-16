@@ -85,7 +85,7 @@ export default {
   data() {
     const latestDate = new Date();
     const earliestDate = new Date();
-    latestDate.setDate(latestDate.getDate() - 1);
+    latestDate.setDate(latestDate.getDate());
     earliestDate.setDate(earliestDate.getDate() - 365);
     return {
       pageMap: {
