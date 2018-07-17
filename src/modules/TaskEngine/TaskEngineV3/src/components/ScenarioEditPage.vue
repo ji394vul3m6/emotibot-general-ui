@@ -10,6 +10,10 @@
           v-model="scenarioName"
           :placeholder="$t('task_engine_v3.scenario_edit_page.placeholder_name_the_scenario')"
           @input="resizeScenarioNameInput">
+        <div id="scenario-toggle-container">
+          <!-- <toggle v-model="scenario.enable" @change="switchScenario(scenario)" :big="false"></toggle> -->
+          <toggle :big="false"></toggle>
+        </div>
       </div>
       <div>
         <text-button button-type='default' @click="$router.replace('/task-engine-scenario-v3');">{{$t("general.close")}}</text-button>
@@ -18,12 +22,17 @@
     </div>
     <div class="main-content">
       <div class="sidebar">
-        <dropdown-select
-          ref="dropdownSelect"
-          v-model="currentSkillName"
-          :options="skillNameList"
-          width="130px"
-        />
+        <div class="slect-skill-container">
+          <dropdown-select
+            ref="dropdownSelect"
+            v-model="currentSkillName"
+            :options="skillNameList"
+            width="141px"
+          />
+          <div class="setting-button">
+            <icon icon-type="setting" :size=15 @click=""/>
+          </div>
+        </div>
         <ul class="list-ic vertical">
           <template v-for="(page, key, idx) in pages">
             <li :key="key" :class="{ 'active': key === currentPage }">

@@ -144,6 +144,7 @@ export default {
   @include iconType("tooltip");
   @include iconType("daggle");
   @include iconType("more");
+  @include iconType("setting");
 
   /** used on robot profile icon */
   @include iconType("profile_question");

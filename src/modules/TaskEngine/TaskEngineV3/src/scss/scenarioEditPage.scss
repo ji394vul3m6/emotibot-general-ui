@@ -39,9 +39,20 @@ $bullet-point-color: #9b9b9b;
       display: flex;
       flex-direction: row;
       .sidebar{
-        width: 150px;
+        width: 196px;
         border-right: 1px solid $color-borderline;
-        margin: 20px;
+        padding: 20px;
+        padding-right: 0px;
+        .slect-skill-container{
+          display: flex;
+          flex-direction: row;
+          .setting-button{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin-left: 10px;
+          }
+        }
 
         .list-ic li {
           position: relative;

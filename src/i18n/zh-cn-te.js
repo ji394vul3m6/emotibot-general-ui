@@ -58,6 +58,8 @@ export default {
       button_edit_memory: '修改内存',
     },
     trigger_page: {
+      label_add_trigger: '这个场景会被哪些意图触发？',
+      button_add_trigger: '加入',
       label_title: '这个场景会被哪个意图触发？',
       label_title_description: '设定场景的进入条件，只有当使用者与机器人的对话满足预设的触发条件，会进入此场景，触发相对应的多轮对话。',
       label_intent_setting: '设定触发场景的意图',
