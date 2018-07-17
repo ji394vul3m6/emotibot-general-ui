@@ -141,12 +141,18 @@ export default {
     checkPrivilege() {
       const that = this;
       if (that.enterpriseID === '') {
+        if (that.userInfo.type >= 1) {
+          that.$router.push('error');
+          return;
+        }
         // when renterprise is empty, path should only in enterprise list or system user list
         const validURL = [
           '/manage/enterprise-manage',
-          '/manage/system-user-manage',
+          '/manage/system-admin-list',
         ];
-        if (validURL.indexOf(that.$route.matched[0].path) < 0) {
+        const valid = that.$route.matched.reduce((val, match) =>
+          val || validURL.indexOf(match.path) >= 0, false);
+        if (!valid) {
           that.$router.push('/manage/enterprise-manage');
         }
       }

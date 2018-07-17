@@ -873,6 +873,7 @@ export default {
 
   management: {
     enterprise_list: '企业列表',
+    admin_list: '系统管理人员',
     enterprise: '企业',
     create_enterprise: '创建企业',
     delete_enterprise: '删除企业',

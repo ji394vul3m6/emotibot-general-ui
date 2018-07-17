@@ -1,13 +1,11 @@
 <template>
   <div>
     <div class="card h-fill w-fill">
-      <nav-bar class='nav-bar' :options=pageOption></nav-bar>
+      <nav-bar class='nav-bar' :options=pageOption v-model="currentPage"></nav-bar>
       <div class="page">
         <command-row class="commands" @search="doSearch">
-            <template v-if="isAdmin">
             <text-button button-type="primary"
             @click="popAddEnterprise">{{ $t('management.create_enterprise') }}</text-button>
-            </template>
         </command-row>
         <div class="enterprise-list">
           <div class="enterprise-card" 
@@ -17,7 +15,7 @@
               <div class="card-title-text">
                 {{ enterprise.name }}
               </div>
-              <div class="card-title-edit" @click.stop="popEditEnterprise(enterprise)" v-if="isAdmin">
+              <div class="card-title-edit" @click.stop="popEditEnterprise(enterprise)">
                 <icon :size=12 icon-type="edit_blue"></icon>
               </div>
             </div>
@@ -42,6 +40,7 @@ import systemAPI from './_api/system';
 import CommandRow from '../_components/CommandRow';
 
 const robotListPage = '/manage/robot-manage';
+const adminListPage = '/manage/system-admin-list';
 export default {
   path: 'enterprise-manage',
   name: 'enterprise-manage',
@@ -55,9 +54,6 @@ export default {
       'userInfo',
       'enterpriseList',
     ]),
-    isAdmin() {
-      return this.userInfo.type < 1;
-    },
     filteredEnterprise() {
       if (this.keyword === '') {
         return this.enterpriseList;
@@ -71,9 +67,18 @@ export default {
     return {
       pageOption: {
         enterpriseList: this.$t('management.enterprise_list'),
+        systemAdminList: this.$t('management.admin_list'),
       },
       keyword: '',
+      currentPage: 'enterpriseList',
     };
+  },
+  watch: {
+    currentPage(val) {
+      if (val === 'systemAdminList') {
+        this.$router.push(adminListPage);
+      }
+    },
   },
   methods: {
     ...mapMutations([

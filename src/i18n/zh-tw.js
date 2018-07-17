@@ -831,6 +831,7 @@ export default {
 
   management: {
     enterprise_list: '企業列表',
+    admin_list: '系統管理人員',
     enterprise: '企業',
     create_enterprise: '創建企業',
     delete_enterprise: '刪除企業',
