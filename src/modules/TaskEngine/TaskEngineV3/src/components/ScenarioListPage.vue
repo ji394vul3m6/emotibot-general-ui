@@ -276,12 +276,12 @@ $row-height: $default-line-height;
           flex: 1 1 auto;
           display: flex;
           align-items: center;
+          @include font-14px();
           .name-label {
             display: flex;
             align-items: center;
             flex: 1 1 auto;
             height: 100%;
-            font-size: 14px;
             padding-left: 20px;
             cursor: pointer;
           }

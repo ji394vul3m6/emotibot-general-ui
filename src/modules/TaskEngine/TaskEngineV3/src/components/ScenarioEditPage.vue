@@ -143,7 +143,7 @@ export default {
         text: this.skills[skillId].skillName,
         value: skillId,
       }));
-      this.$refs.dropdownSelect.$emit('updateOptions');
+      this.$refs.dropdownSelect.$emit('updateOptions', this.skillNameList);
       this.$refs.dropdownSelect.$emit('select', this.currentSkillId);
     },
     addNewSkill(skillName) {

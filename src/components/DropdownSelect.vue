@@ -164,10 +164,10 @@ export default {
     toggleHover(option, bool) {
       option.hovered = bool;
     },
-    initOptions() {
+    initOptions(options) {
       const that = this;
       that.localOptions = [];
-      that.options.forEach((opt) => {
+      options.forEach((opt) => {
         let initCheck = false;
         if (that.value.length > 0) {
           initCheck = that.value.indexOf(opt.value) >= 0;
@@ -182,7 +182,7 @@ export default {
   },
   mounted() {
     const that = this;
-    that.initOptions();
+    that.initOptions(that.options);
     that.checkedValues = this.localOptions.filter(opt => opt.checked);
     that.$on('select', that.selectValue);
     that.$on('updateOptions', that.initOptions);
