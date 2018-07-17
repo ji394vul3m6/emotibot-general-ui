@@ -36,7 +36,9 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import FlexTable from '@/components/FlexTable';
+import apiBF from '@/api/BF';
 import api from './_api/qalabel';
 
 export default {
@@ -48,7 +50,7 @@ export default {
   components: {
     'flex-table': FlexTable,
   },
-  api,
+  api: [api, apiBF],
   data() {
     return {
       appid: this.getAppID('appid'),
@@ -65,6 +67,10 @@ export default {
     };
   },
   computed: {
+    ...mapGetters([
+      'robotID',
+      'userID',
+    ]),
     canEdit() {
       return this.$hasRight('edit');
     },
@@ -225,7 +231,10 @@ export default {
     },
   },
   mounted() {
-    this.loadLabels();
+    this.$api.focusRobot(this.userID, this.robotID)
+    .then(() => {
+      this.loadLabels();
+    });
   },
 };
 </script>
