@@ -16,6 +16,7 @@
           <text-button v-if="canImport" @click="importIntentList">{{ $t('general.import') }}</text-button>
           <text-button v-if="canExport" @click="exportIntentList(currentVersion)">{{ $t('general.export') }}</text-button>
         </div>
+        <!-- <intent-list :intentList="intentList"></intent-list> -->
         <div class="intent-list">
           <div v-for="(intent, idx) in intentList" :key="idx" class="intent-block" :class="{'active': intent.expand}" >
             <div class="intent-block-header" @click="beforeExpandIntent(intent)">
@@ -23,12 +24,12 @@
                 <icon icon-type="intent" :size="16"/>
               </div>
               <div class="intent-title">
-                <input v-if="intent.isEditMode" type="text" v-model="editIntentName" :placeholder="$t('intent_engine.manage.placeholder.intent_title')"/>
+                <input v-if="intent.isEditMode" type="text" ref="intentName" v-model="editIntentName" v-tooltip="intentNameTooltip" :placeholder="$t('intent_engine.manage.placeholder.intent_title')" />
                 <span v-else>{{intent.name}}{{$t('intent_engine.manage.corpus_num', { num: intent.total })}}</span>
               </div>
               <div class="intent-action">
                 <div v-if="intent.isEditMode" class="intent-save-tool">
-                  <text-button button-type="primary">{{ $t('general.save') }}</text-button>
+                  <text-button button-type="primary" @click="saveEditIntent(intent)">{{ $t('general.save') }}</text-button>
                   <text-button @click.stop="cancelEditIntent(intent)">{{ $t('general.cancel') }}</text-button>
                 </div>
                 <div v-else class="intent-action-tool">
@@ -92,11 +93,11 @@
                 <icon icon-type="intent" :size="16"/>
               </div>
               <div class="intent-title">
-                <input type="text" v-model="newIntent.name" :placeholder="$t('intent_engine.manage.placeholder.intent_title')"/>
+                <input type="text" ref="intentAddName" v-model="newIntentName" v-tooltip="intentNameTooltip" :placeholder="$t('intent_engine.manage.placeholder.intent_title')"/>
               </div>
               <div class="intent-action">
                 <div class="intent-save-tool">
-                  <text-button button-type="primary">{{ $t('general.save') }}</text-button>
+                  <text-button button-type="primary" @click="saveAddIntent()">{{ $t('general.save') }}</text-button>
                   <text-button @click.stop="cancelAddNewIntent()">{{ $t('general.cancel') }}</text-button>
                 </div>
               </div>
@@ -146,6 +147,7 @@
 </template>
 <script>
 import api from './_api/intent';
+// import IntentList from './_components/IntentList';
 import ImportIntentPop from './_components/ImportIntentPop';
 
 export default {
@@ -154,6 +156,9 @@ export default {
   displayNameKey: 'intent_manage',
   name: 'intent-manage',
   api,
+  // components: {
+  //   IntentList,
+  // },
   data() {
     return {
       statusTimer: null,
@@ -165,52 +170,12 @@ export default {
 
       intentList: [
         {
-          name: 'Blank Space',
-          total: 8,
+          name: '',
+          total: 0,
           corpus: [
             {
-              id: 1,
-              text: 'Nice to meet you',
-              isHover: false,
-              isSelect: false,
-            },
-            {
-              id: 2,
-              text: 'Where youve been',
-              isHover: false,
-              isSelect: false,
-            },
-            {
-              id: 3,
-              text: 'I could show you incredible things',
-              isHover: false,
-              isSelect: false,
-            },
-          ],
-          expand: false,
-          isEditMode: false,
-          hasCorpusSelected: false,
-          hasCorpusEditing: false,
-        },
-        {
-          name: 'Wildest Dream',
-          total: 7,
-          corpus: [
-            {
-              id: 4,
-              text: 'Say youll remember me',
-              isHover: false,
-              isSelect: false,
-            },
-            {
-              id: 5,
-              text: 'Standing in a nice dress',
-              isHover: false,
-              isSelect: false,
-            },
-            {
-              id: 6,
-              text: 'Staring at the sunset',
+              id: 0,
+              text: '',
               isHover: false,
               isSelect: false,
             },
@@ -226,7 +191,7 @@ export default {
       editIntentName: '',
       editCorpusContent: '',
 
-      // newIntentName: '',
+      newIntentName: '',
       newCorpus: '',
       newIntent: {
         name: '',
@@ -243,6 +208,13 @@ export default {
           onclick: this.beforeEditIntent,
           // onclick: this.beforeEditIntent(intent, idx),
         }],
+        alignLeft: true,
+      },
+
+      intentNameTooltip: {
+        msg: '',
+        eventOnly: true,
+        errorType: true,
         alignLeft: true,
       },
       compositionState: false,
@@ -270,6 +242,18 @@ export default {
     },
     shouldTrain() {
       return this.trainStatus === 'NOT_TRAINED' || this.trainStatus === 'TRAIN_FAILED';
+    },
+  },
+  watch: {
+    editIntentName() {
+      if (this.$refs.intentName !== undefined) {
+        this.$refs.intentName[0].dispatchEvent(new Event('tooltip-hide'));
+      }
+    },
+    newIntentName() {
+      if (this.$refs.intentAddName !== undefined) {
+        this.$refs.intentAddName.dispatchEvent(new Event('tooltip-hide'));
+      }
     },
   },
   methods: {
@@ -348,7 +332,6 @@ export default {
     addIntent() {
       const that = this;
       that.closeAllIntent();
-      that.isAddIntent = true;
       that.newIntent = {
         name: '',
         corpus: [],
@@ -357,6 +340,10 @@ export default {
         hasCorpusSelected: false,
         hasCorpusEditing: false,
       };
+      that.isAddIntent = true;
+      that.$nextTick(() => {
+        that.$refs.intentAddName.focus();
+      });
     },
     beforeExpandIntent(intent) {
       const that = this;
@@ -381,6 +368,7 @@ export default {
     expandIntent(intent) {
       const that = this;
       that.closeAllIntent();
+      // TODO: call api to get coupus from the target intent;
       intent.expand = true;
     },
     closeExpandIntent(intent) {
@@ -406,6 +394,36 @@ export default {
       that.editIntentName = intent.name;
       that.$forceUpdate();
     },
+    saveEditIntent(intent) {
+      const that = this;
+      console.log('intent:', intent);
+      const intentNameValid = that.validateIntentName(that.editIntentName, intent.name);
+      // TODO: validate, call api to save, reload everything
+      if (intentNameValid) {
+        // form request param
+        // call api to save, call api to reload itself
+      } else {
+        // Show tooltip
+        console.log(that.$refs);
+        that.$refs.intentName[0].focus();
+        that.$refs.intentName[0].dispatchEvent(new Event('tooltip-reload'));
+        that.$refs.intentName[0].dispatchEvent(new Event('tooltip-show'));
+      }
+    },
+    validateIntentName(name, oldname) {
+      const that = this;
+      if (name.length === 0) {
+        that.intentNameTooltip.msg = that.$t('intent_engine.manage.tooltip.name_empty');
+        return false;
+      }
+      const isNotOldName = (oldname === undefined) ? true : (oldname !== name);
+      const hasDuplicateName = that.intentList.find(intent => intent.name === name) !== undefined;
+      if (isNotOldName && hasDuplicateName) {
+        that.intentNameTooltip.msg = that.$t('intent_engine.manage.tooltip.name_duplicate');
+        return false;
+      }
+      return true;
+    },
     cancelEditIntent(intent, nextAction) {
       const that = this;
       const option = {
@@ -414,6 +432,7 @@ export default {
         },
         callback: {
           ok: () => {
+            that.$refs.intentName[0].dispatchEvent(new Event('tooltip-hide'));
             intent.isEditMode = false;
             intent.hasCorpusSelected = false;
             intent.hasCorpusEditing = false;
@@ -428,6 +447,19 @@ export default {
         },
       };
       that.$popCheck(option);
+    },
+    saveAddIntent() {
+      const that = this;
+      const intentNameValid = that.validateIntentName(that.newIntentName);
+      // TODO: validate, call api to save, reload everything
+      if (intentNameValid) {
+        // form request param
+        // call api to add, call api to reload all
+      } else {
+        that.$refs.intentAddName.focus();
+        that.$refs.intentAddName.dispatchEvent(new Event('tooltip-reload'));
+        that.$refs.intentAddName.dispatchEvent(new Event('tooltip-show'));
+      }
     },
     cancelAddNewIntent(nextAction) {
       const that = this;
@@ -586,6 +618,11 @@ export default {
         console.log(intents);
         that.intentList = [];
         intents.forEach((intent) => {
+          // that.intentList.push({
+          //   name: intent,
+          //   total: 0,
+          //   corpus: [],
+          // });
           that.intentList.push({
             name: intent,
             total: 0,
@@ -668,7 +705,7 @@ export default {
   .intent-block {
     border: 1px solid #DBDBDB;
     border-radius: 4px;
-    transition: all .5s ease-in-out;
+    transition: all .3s ease-in-out;
     &:hover {
       box-shadow: 0 4px 9px 0 rgba(115, 115, 115, 0.2), 0 5px 8px 0 rgba(228, 228, 228, 0.5);
     }

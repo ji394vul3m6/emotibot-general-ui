@@ -663,6 +663,10 @@ export default {
       corpus_num: ' ({num}笔语料)',
       cancel_edit_msg: '尚未保存编辑，确定要取消编辑吗？',
       addin: '加入',
+      tooltip: {
+        name_empty: '意图名称不可为空',
+        name_duplicate: '意图名称已存在',
+      },
       placeholder: {
         intent_title: '输入意图名称',
         edit_corpus: '编辑语料，Enter完成编辑',
