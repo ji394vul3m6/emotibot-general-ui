@@ -1,13 +1,8 @@
 <template lang="html">
 <div id="scenario-editor-pop">
-  <div class="scenario-editor-title">
-    <div>{{$t('task_engine_v3.create_scenario_pop.label_create_new_scenario')}}</div>
-  </div>
-  <div class="scenario-editor-box">
-    <div class="scenario-name-container">
-      <div class="input-label">{{$t("task_engine_v3.create_scenario_pop.label_name_the_scenario")}}</div>
-      <input v-model="scenarioName" :placeholder="$t('task_engine_v3.create_scenario_pop.placeholder_enter_scenario_name')"></input>
-    </div>
+  <div class="edit-title">{{$t("task_engine_v3.create_scenario_pop.label_name_the_scenario")}}</div>
+  <div class="edit-data">
+    <input v-model="scenarioName" :placeholder="$t('task_engine_v3.create_scenario_pop.placeholder_enter_scenario_name')"></input>
   </div>
 </div>
 </template>
@@ -55,6 +50,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import 'styles/variable.scss';
+$row-height: $default-line-height;
 @import "../scss/teVariable.scss";
 @import "../scss/createScenarioPop.scss";
 </style>

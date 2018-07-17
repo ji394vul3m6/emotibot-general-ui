@@ -1,33 +1,49 @@
 <template lang="html">
 <div id="entity-collecting-page" class="page entity-collecting-page">
-  <div class="title-container">
-    <div class="title">{{$t("task_engine_v3.entity_collecting_page.title")}}</div>
-    <div class="title-description">{{$t("task_engine_v3.entity_collecting_page.description")}}</div>
+  <div class="tool-box">
+    <div class="row">
+      <div class="title-container">
+        <div class="title">{{$t("task_engine_v3.entity_collecting_page.title")}}</div>
+        <div class="tooltip_container" v-tooltip="{ msg: $t('task_engine_v3.entity_collecting_page.description'), clickShow: true }">
+          <icon :size=20 icon-type="tooltip"/>
+        </div>
+      </div>
+      <div class="advanced-config">
+        {{$t("task_engine_v3.entity_collecting_page.advanced_config")}}
+      </div>
+    </div>
+    <div class="row">
+      <text-button button-type='primary' width='100px' height='28px' @click="addNewEntityCollector">
+        {{$t("task_engine_v3.entity_collecting_page.add_new_entity_collector")}}
+      </text-button>
+    </div>
   </div>
-  <div class="hr"><hr/></div>
-  <div class="entity-collector-container">
-    <div class="order_column">{{$t("task_engine_v3.entity_collecting_page.order")}}</div>
-    <div class="entity_name_column">{{$t("task_engine_v3.entity_collecting_page.entity_name")}}</div>
-    <div class="entity_category_column">{{$t("task_engine_v3.entity_collecting_page.entity_category")}}</div>
-    <div class="entity_type_column">{{$t("task_engine_v3.entity_collecting_page.entity_type")}}</div>
-    <div class="prompt_column">{{$t("task_engine_v3.entity_collecting_page.prompt")}}</div>
+  <div class="entity-collector-header-container">
+    <div class="entity-collector-container">
+      <div class="order_column">{{$t("task_engine_v3.entity_collecting_page.order")}}</div>
+      <div class="required_column">{{$t("task_engine_v3.entity_collecting_page.required")}}</div>
+      <div class="entity_name_column">{{$t("task_engine_v3.entity_collecting_page.entity_name")}}</div>
+      <div class="entity_type_column">{{$t("task_engine_v3.entity_collecting_page.entity_type")}}</div>
+      <div class="prompt_column">{{$t("task_engine_v3.entity_collecting_page.prompt")}}</div>
+      <div class="retry_times_column">{{$t("task_engine_v3.entity_collecting_page.retry_times")}}</div>
+      <div class="more_setting_column"></div>
+    </div>
   </div>
-  <div v-for="(entityCollector, index) in entityCollectorList" :key="entityCollector.id">
-    <entity-collector
-      :order="getOrder(index, entityCollectorList.length)"
-      :initialEntityCollector="entityCollector"
-      :initialCategoryToNerTypeMap="categoryToNerTypeMap"
-      @deleteEntityCollectorButtonClick="deleteEntityCollector(index)"
-      @moveUp="moveUp(index)"
-      @moveDown="moveDown(index)"
-      @updateData="updateData(index, $event)"
-      @addCustomNer="addCustomNer"
-      @deleteCustomNer="deleteCustomNer"
-    ></entity-collector>
+  <div class="entity-collector-list-container">
+    <div class="entity-collector-row" v-for="(entityCollector, index) in entityCollectorList" :key="entityCollector.id">
+      <entity-collector
+        :order="getOrder(index, entityCollectorList.length)"
+        :initialEntityCollector="entityCollector"
+        :initialCategoryToNerTypeMap="categoryToNerTypeMap"
+        @deleteEntityCollectorButtonClick="deleteEntityCollector(index)"
+        @moveUp="moveUp(index)"
+        @moveDown="moveDown(index)"
+        @updateData="updateData(index, $event)"
+        @addCustomNer="addCustomNer"
+        @deleteCustomNer="deleteCustomNer"
+      ></entity-collector>
+    </div>
   </div>
-  <button class="btn-basic add-new-entity-button"
-      @click="addNewEntityCollector"
-    >{{$t("task_engine_v3.entity_collecting_page.add_new_entity_collector")}}</button>
   <div class="bottom-container">
     <button class="btn-basic edit-entity-relation-button"
         @click="editEntityRelation"
@@ -421,7 +437,6 @@ export default {
           slotType: 'time',
         },
         prompt: null,
-        must_retry: true,
         retry_num: 3,
         required: true,
       });

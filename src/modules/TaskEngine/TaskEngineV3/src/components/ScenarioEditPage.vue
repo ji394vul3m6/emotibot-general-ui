@@ -1,52 +1,53 @@
 <template>
 <div id="scenario_edit_page">
-  <div id="te-page-header" class="te-page-header">
-    <div class="scenario-name">
-      <div class="arrow">&lt;</div>
-      <input
-        ref="scenarioName"
-        v-model="scenarioName"
-        :placeholder="$t('task_engine_v3.scenario_edit_page.placeholder_name_the_scenario')"
-        @input="resizeScenarioNameInput">
-      </input>
-      <a>:</a>
-      <v-select
-        v-model="currentSkillName"
-        :options="skillNameList"
-        :searchable="false"
-        label="skillName">
-      </v-select>
+  <div class="content card h-fill w-fill">
+    <div class="row title">
+      <div class="breadcrumb">
+        <div class="back-to-list" @click="$router.replace('/task-engine-scenario-v3');">{{$t("task_engine_v3.scenario_list_page.scenario_list")}}</div>
+        <div>&gt;</div>
+        <input
+          ref="scenarioName"
+          v-model="scenarioName"
+          :placeholder="$t('task_engine_v3.scenario_edit_page.placeholder_name_the_scenario')"
+          @input="resizeScenarioNameInput">
+      </div>
+      <div>
+        <text-button button-type='default' @click="$router.replace('/task-engine-scenario-v3');">{{$t("general.close")}}</text-button>
+        <text-button button-type='primary' @click="toNextPage">{{saveButtonText}}</text-button>
+      </div>
     </div>
-    <div class="multi-window-radio">
-      <template v-for="(page, key, idx) in pages">
-        <input :id="key" type="radio" name="name" :checked="currentPage==key"></input>
-        <div>
-          <label :for="key" style="padding:20px;"
-                @click="pageChange(key)">
-          {{ page.name }}
-          </label>
-        </div>
-      </template>
+    <div class="main-content">
+      <div class="sidebar">
+        <dropdown-select
+          ref="dropdownSelect"
+          v-model="currentSkillName"
+          :options="skillNameList"
+          width="130px"
+        />
+        <ul class="list-ic vertical">
+          <template v-for="(page, key, idx) in pages">
+            <li :key="key" :class="{ 'active': key === currentPage }">
+              <span class="order">{{idx+1}}</span>
+              <span class="title" @click="pageChange(key)">{{ page.name }}</span>
+            </li>
+          </template>
+        </ul>
+      </div>
+      <skill-edit-page
+          ref="skillEditPage"
+          :currentPage="currentPage"
+          :initialIdToNerMap="idToNerMap"
+          :initialSkillNameList="skillNameList"
+          @update="updateSkill"
+          @updateIdToNerMap="updateIdToNerMap"
+        ></skill-edit-page>
     </div>
-  </div>
-  <div id="multi-window-container" class="multi-window-container">
-    <skill-edit-page
-      ref="skillEditPage"
-      :currentPage="currentPage"
-      :initialIdToNerMap="idToNerMap"
-      :initialSkillNameList="skillNameList"
-      @update="updateSkill"
-      @updateIdToNerMap="updateIdToNerMap"
-    ></skill-edit-page>
-  </div>
-  <div id="page-footer" class="page-footer">
-    <button class="btn-basic btn-border primary" @click="toNextPage">{{saveButtonText}}</button>
-    <button class="btn-basic btn-border" @click="$router.replace('/scenarios');">{{$t("general.close")}}</button>
   </div>
 </div>
 </template>
 
 <script>
+import DropdownSelect from '@/components/DropdownSelect';
 import SkillEditPage from './SkillEditPage';
 import TriggerPage from './TriggerPageV2';
 import EntityCollectingPage from './EntityCollectingPage';
@@ -63,6 +64,7 @@ export default {
     'trigger-page': TriggerPage,
     'entity-collecting-page': EntityCollectingPage,
     'action-page': ActionPage,
+    'dropdown-select': DropdownSelect,
   },
   data() {
     return {
@@ -84,15 +86,12 @@ export default {
     currentSkillName: {
       get() {
         if (this.skills[this.currentSkillId] !== undefined) {
-          return {
-            skillId: this.currentSkillId,
-            skillName: this.skills[this.currentSkillId].skillName,
-          };
+          return [this.currentSkillId];
         }
-        return {};
+        return [];
       },
       set(newValue) {
-        this.currentSkillId = newValue.skillId;
+        this.currentSkillId = newValue[0];
       },
     },
     saveButtonText() {
@@ -141,9 +140,11 @@ export default {
     },
     updateSkillNameList() {
       this.skillNameList = Object.keys(this.skills).map(skillId => ({
-        skillId,
-        skillName: this.skills[skillId].skillName,
+        text: this.skills[skillId].skillName,
+        value: skillId,
       }));
+      this.$refs.dropdownSelect.$emit('updateOptions', this.skillNameList);
+      this.$refs.dropdownSelect.$emit('select', this.currentSkillId);
     },
     addNewSkill(skillName) {
       const skillId = this.$uuid.v1();

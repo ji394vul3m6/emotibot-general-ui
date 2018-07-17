@@ -164,23 +164,28 @@ export default {
     toggleHover(option, bool) {
       option.hovered = bool;
     },
+    initOptions(options) {
+      const that = this;
+      that.localOptions = [];
+      options.forEach((opt) => {
+        let initCheck = false;
+        if (that.value.length > 0) {
+          initCheck = that.value.indexOf(opt.value) >= 0;
+        }
+        that.localOptions.push({
+          ...opt,
+          checked: initCheck,
+          hovered: false,
+        });
+      });
+    },
   },
   mounted() {
     const that = this;
-    that.options.forEach((opt) => {
-      let initCheck = false;
-      if (that.value.length > 0) {
-        initCheck = that.value.indexOf(opt.value) >= 0;
-      }
-      that.localOptions.push({
-        ...opt,
-        checked: initCheck,
-        hovered: false,
-      });
-    });
-
+    that.initOptions(that.options);
     that.checkedValues = this.localOptions.filter(opt => opt.checked);
     that.$on('select', that.selectValue);
+    that.$on('updateOptions', that.initOptions);
   },
 };
 </script>
@@ -238,6 +243,7 @@ $border-color: $color-borderline;
 }
 .select-list {
   @include font-14px();
+  z-index: 10;
   box-sizing: border-box;
   width: 150px;
   box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2);

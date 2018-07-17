@@ -2565,7 +2565,7 @@
   }
 
   function insertMappingTableOptions(element){
-    element.append('<option disabled selected value> -- 选择一个转换数据 -- </option>');
+    element.append('<optgroup disabled label="任务引擎词库">');
     for(var index in window.templateUserMappingTableList) {
       var tableName = window.templateUserMappingTableList[index];
       element.append('<option value="' + tableName + '">'+ he.encode(tableName) + '</option>');
@@ -2574,6 +2574,7 @@
       var tableName = window.mappingTableList[index];
       element.append('<option value="' + tableName + '">'+ he.encode(tableName) + '</option>');
     }
+    element.append('</optgroup>');
   }
 
   function removeGlobalVarsTypeahead(input_ui){

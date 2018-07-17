@@ -42,9 +42,6 @@
 </template>
 
 <script>
-import TextButton from '@/components/basic/TextButton';
-import SearchInput from '@/components/basic/SearchInput';
-import Toggle from '@/components/basic/Toggle';
 import i18nUtils from '../utils/i18nUtil';
 import scenarioConvertor from '../utils/scenarioConvertor';
 import general from '../utils/general';
@@ -53,11 +50,7 @@ import taskEngineApi from './_api/taskEngine';
 
 export default {
   name: 'scenario-list-page',
-  components: {
-    TextButton,
-    SearchInput,
-    Toggle,
-  },
+  components: {},
   data() {
     return {
       i18n: {},
@@ -84,7 +77,7 @@ export default {
     createNewScenario() {
       const that = this;
       that.$pop({
-        title: '',
+        title: this.i18n.task_engine_v3.create_scenario_pop.label_create_new_scenario,
         component: CreateScenarioPop,
         validate: true,
         ok_msg: that.$t('general.add'),
@@ -265,7 +258,8 @@ $row-height: $default-line-height;
         margin-right: 20px;
         height: 82px;
         border-radius: 4px;
-        border: solid 1px #dbdbdb;
+        border: solid 1px $color-borderline;
+        color: $color-font-active;
 
         &:hover {
           box-shadow: 0 4px 9px 0 rgba(115, 115, 115, 0.2), 0 5px 8px 0 rgba(228, 228, 228, 0.5);
@@ -276,18 +270,18 @@ $row-height: $default-line-height;
           align-items: center;
           justify-content: center;
           width: 68px;
-          border-right: solid 1px #dbdbdb;
+          border-right: solid 1px $color-borderline;
         }
         #scenario-content-container {
           flex: 1 1 auto;
           display: flex;
           align-items: center;
+          @include font-14px();
           .name-label {
             display: flex;
             align-items: center;
             flex: 1 1 auto;
             height: 100%;
-            font-size: 14px;
             padding-left: 20px;
             cursor: pointer;
           }
