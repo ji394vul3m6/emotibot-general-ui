@@ -18,6 +18,7 @@ COPY docker/conf/nginx.conf.template /etc/nginx/nginx.conf.template
 COPY --from=api-server /usr/local/bin /api
 COPY --from=build-env /build/dist/index.html /build/dist/
 COPY --from=build-env /build/dist/login.html /build/dist/
+COPY --from=build-env /build/dist/version.html /build/dist/
 COPY --from=build-env /build/dist/static /build/dist/static
 COPY --from=authentication /usr/local/bin /auth
 WORKDIR /build/dist

@@ -238,7 +238,7 @@ http {
         location /robots {
             proxy_pass http://${ADMIN_BF_SERVER_URL};
         }
-        location /version {
+        location = /version {
             proxy_pass http://${ADMIN_BF_SERVER_URL};
         }
         location /chatlog {

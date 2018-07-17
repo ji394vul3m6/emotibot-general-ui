@@ -186,7 +186,7 @@ http {
         location /robots {
             proxy_pass http://${BF_IP};
         }
-        location /version {
+        location = version {
             proxy_pass http://${BF_IP};
         }
         location /chatlog {
