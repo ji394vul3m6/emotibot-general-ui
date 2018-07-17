@@ -96,7 +96,7 @@ http {
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Appid $appid;
             proxy_set_header X-UserID $user_id;
-            proxy_pass http://127.0.0.1:8181/api/v1/task/mapping-tables;
+            proxy_pass http://127.0.0.1:8181/api/v2/task/mapping-tables;
         }
         location = /php/api/ApiKey/mapping_table_upload.php { 
             proxy_set_header Authorization $appid;
