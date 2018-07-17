@@ -2565,16 +2565,22 @@
   }
 
   function insertMappingTableOptions(element){
-    element.append('<optgroup disabled label="任务引擎词库">');
-    for(var index in window.templateUserMappingTableList) {
-      var tableName = window.templateUserMappingTableList[index];
-      element.append('<option value="' + tableName + '">'+ he.encode(tableName) + '</option>');
+    if(window.templateUserMappingTableList.length > 0){
+      element.append('<optgroup disabled label="系统预设词库">');
+      for(var index in window.templateUserMappingTableList) {
+        var tableName = window.templateUserMappingTableList[index];
+        element.append('<option style="padding-left:4px;" value="' + tableName + '">'+ he.encode(tableName) + '</option>');
+      }
+      element.append('</optgroup>');
     }
-    for(var index in window.mappingTableList) {
-      var tableName = window.mappingTableList[index];
-      element.append('<option value="' + tableName + '">'+ he.encode(tableName) + '</option>');
+    if(window.mappingTableList.length > 0){
+      element.append('<optgroup disabled label="任务引擎词库">');
+      for(var index in window.mappingTableList) {
+        var tableName = window.mappingTableList[index];
+        element.append('<option style="padding-left:4px;" value="' + tableName + '">'+ he.encode(tableName) + '</option>');
+      }
+      element.append('</optgroup>');
     }
-    element.append('</optgroup>');
   }
 
   function removeGlobalVarsTypeahead(input_ui){

@@ -72,6 +72,9 @@ export default {
         this.intentList = resp.data.result;
         this.intentOptionList = [];
         this.intentList.forEach((intent) => {
+          if (intent === 'other' || intent === '其他') {
+            return;
+          }
           const object = {
             intent_name: intent,
             type: 'intent_engine_2.0',
