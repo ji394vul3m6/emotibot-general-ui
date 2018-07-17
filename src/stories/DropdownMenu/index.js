@@ -12,6 +12,18 @@ export default [{
       }, {
         text: '選項2',
         onclick: action('click option 2'),
+      }, {
+        text: '選項3',
+        onclick: action('click option 3'),
+      }, {
+        text: '選項4',
+        onclick: action('click option 4'),
+      }, {
+        text: '選項5',
+        onclick: action('click option 5'),
+      }, {
+        text: '選項6',
+        onclick: action('click option 6'),
       }],
       width: '300px',
     };

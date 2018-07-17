@@ -1,7 +1,7 @@
 <template>
-  <div class="context-menu-container" :style="style">
-    <div class="context-menu">
-      <div v-for="(option, idx) in options" :key="idx" class="menu-option" @click="option.onclick">
+  <div class="dropdown-menu-container" :style="style">
+    <div class="dropdown-menu">
+      <div v-for="(option, idx) in options" :key="idx" class="menu-option" @click.stop="clickOption($event, option.onclick)">
         {{ option.text }}
       </div>
     </div>
@@ -51,6 +51,13 @@ export default {
       };
     },
   },
+  methods: {
+    clickOption(e, onclickFunction) {
+      const that = this;
+      onclickFunction(e);
+      that.show = false;
+    },
+  },
   mounted() {
     const that = this;
     that.$on('show', (pos) => {
@@ -81,19 +88,23 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.context-menu-container {
+$option-height: 32px;
+.dropdown-menu-container {
   position: absolute;
   padding: 10px;
   z-index: 5;
 }
-.context-menu {
+.dropdown-menu {
   background-color: $color-white;
   color: $color-font-normal;
   border-radius: 2px;
   box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2);
+  max-height: calc(#{$option-height} * 4);
+  @include auto-overflow();
+  @include customScrollbar();
   .menu-option {
     @include font-14px;
-    height: 32px;
+    height: $option-height;
     padding: 7px 15px;
     display: flex;
     align-items: center;
