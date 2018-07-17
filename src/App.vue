@@ -51,6 +51,11 @@ import UserPreference from '@/manage-modules/UserPreference';
 
 const defaultPath = '/statistic-dash';
 
+const debugCodeArr = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
+  'ArrowLeft', 'ArrowRight', 'KeyB', 'KeyA'];
+let debugCodeIdx = 0;
+let debugTimer;
+
 export default {
   name: 'app',
   components: {
@@ -311,6 +316,28 @@ export default {
         window.location = `/login.html?redirect=${encodeURIComponent(fullPath)}`;
       }
     },
+    debugListener(e) {
+      if (debugTimer) {
+        clearTimeout(debugTimer);
+        debugTimer = undefined;
+      }
+
+      const code = e.code;
+      if (code === debugCodeArr[debugCodeIdx]) {
+        debugCodeIdx += 1;
+      } else if (code === debugCodeArr[0]) {
+        debugCodeIdx = 1;
+      }
+
+      if (debugCodeIdx === debugCodeArr.length) {
+        window.open('/version.html');
+        debugCodeIdx = 0;
+      } else if (debugCodeIdx !== 0) {
+        debugTimer = setTimeout(() => {
+          debugCodeIdx = 0;
+        }, 500);
+      }
+    },
   },
   mounted() {
     const that = this;
@@ -357,6 +384,8 @@ export default {
     that.$root.$on('close-chat-test', () => {
       that.closeChatTest();
     });
+
+    window.addEventListener('keydown', that.debugListener);
   },
 };
 </script>
