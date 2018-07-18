@@ -4,8 +4,7 @@
     <div class="row">
       <div class="title-container">
         <div class="title">{{$t("task_engine_v3.entity_collecting_page.title")}}</div>
-        <div class="tooltip_container" v-tooltip="{ msg: $t('task_engine_v3.entity_collecting_page.description'), clickShow: true }">
-          <icon :size=20 icon-type="tooltip"/>
+        <div class="tooltip_container" v-tooltip="{ msg: $t('task_engine_v3.entity_collecting_page.description')}">
         </div>
       </div>
       <div class="advanced-config" v-dropdown="advancedConfigOptions">
