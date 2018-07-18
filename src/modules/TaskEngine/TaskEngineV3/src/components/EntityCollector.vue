@@ -2,8 +2,7 @@
   <div id="entity-collector" class="entity-collector-container" @mouseover="moreIcon = true" @mouseleave="moreIcon = false">
     <div class="order_column">
       <icon :size=20 icon-type="daggle"/>
-      <div class="order clickable" @click="moveUp" v-if="order !== 'start' && order !== 'single'">▲</div>
-      <div class="order clickable" @click="moveDown" v-if="order !== 'end' && order !== 'single'">▼</div>
+      <div>{{order+1}}</div>
     </div>
     <div class="required_column">
       <input type="checkbox" v-model="entityCollector.required" @change="updateData">
@@ -47,24 +46,24 @@
       <input type="number" v-model="entityCollector.retry_num" @input="updateData">
     </div>
     <div class="more_setting_column">
-      <div class="icon_container" v-show="moreIcon">
+      <div class="icon_container" v-show="moreIcon" v-dropdown="moreOptions">
         <icon :size=25 icon-type="more"/>
       </div>
     </div>
-    <!--
-      <div class="delete-entity-collector-button clickable" @click="deleteThisEntityCollector">X</div>
-    -->
   </div>
 </template>
 
 <script>
 import DropdownSelect from '@/components/DropdownSelect';
+import DropdownMenu from '@/components/basic/DropdownMenu';
 import CustomEntityTypeEditorPop from './CustomEntityTypeEditorPop';
+import i18nUtils from '../utils/i18nUtil';
 
 export default {
   name: 'entity-collector',
   components: {
     'dropdown-select': DropdownSelect,
+    'dropdown-menu': DropdownMenu,
   },
   props: {
     initialEntityCollector: {
@@ -72,7 +71,7 @@ export default {
       required: true,
     },
     order: {
-      type: String,
+      type: Number,
       required: true,
     },
     initialCategoryToNerTypeMap: {
@@ -82,9 +81,11 @@ export default {
   },
   data() {
     return {
+      i18n: {},
       moreIcon: false,
       entityCollector: {},
       categoryToNerTypeMap: {},
+      moreOptions: {},
     };
   },
   computed: {
@@ -203,12 +204,6 @@ export default {
         },
       });
     },
-    moveUp() {
-      this.$emit('moveUp');
-    },
-    moveDown() {
-      this.$emit('moveDown');
-    },
     updateData() {
       this.$emit('updateData', this.entityCollector);
     },
@@ -217,8 +212,16 @@ export default {
     },
   },
   beforeMount() {
+    this.i18n = i18nUtils.getLocaleMsgs(this.$i18n);
     this.entityCollector = JSON.parse(JSON.stringify(this.initialEntityCollector));
     this.categoryToNerTypeMap = JSON.parse(JSON.stringify(this.initialCategoryToNerTypeMap));
+    this.moreOptions = {
+      options: [{
+        text: this.i18n.task_engine_v3.entity_collecting_page.delete,
+        onclick: this.deleteThisEntityCollector,
+      }],
+      alignLeft: true,
+    };
   },
   mounted() {
   },

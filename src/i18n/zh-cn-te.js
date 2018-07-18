@@ -141,6 +141,7 @@ export default {
       entity_type: '信息实体型别',
       prompt: '信息对应问句',
       prompt_placeholder: '请填入信息对应问句',
+      delete: '刪除',
     },
     custom_entity_type_editor_pop: {
       title: '新增自定义实体型别',
@@ -195,11 +196,11 @@ export default {
       text_placeholder: '请输入要替换成的语句',
       add_replacement_rule: '新增替换规则',
     },
-    'tde-setting-editor-pop': {
+    tde_setting_editor_pop: {
       title: 'TDE属性设置',
-      nlgTemplate: '模版',
-      service: '服务',
-      jumpOutTimes: '跳出场景重试次数上限值',
+      nlgTemplate: '模版：',
+      service: '服务：',
+      jumpOutTimes: '跳出场景重试次数上限值：',
     },
   },
 };
