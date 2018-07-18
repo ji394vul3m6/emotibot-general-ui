@@ -8,8 +8,8 @@ ADD src build/src
 ADD .babelrc .postcssrc.js .eslintrc.js .eslintignore login.html index.html version.html package.json build/
 RUN cd build && npm install --production && npm run build
 
-FROM docker-reg.emotibot.com.cn:55688/token-auth:20180709-98b8453 AS authentication
-FROM docker-reg.emotibot.com.cn:55688/admin-api:20180718-40f656d AS api-server
+FROM docker-reg.emotibot.com.cn:55688/token-auth:20180718-40f656d AS authentication
+FROM docker-reg.emotibot.com.cn:55688/admin-api:20180718-a0e5a03 AS api-server
 
 FROM nginx:1.13-alpine
 
