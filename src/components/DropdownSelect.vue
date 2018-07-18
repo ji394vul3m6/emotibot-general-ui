@@ -22,7 +22,7 @@
         :class="{checked: option.checked, 'in-group': option.inGroup}"
         @click="selectOption(idx)"
         @mouseover="toggleHover(option, true)" @mouseout="toggleHover(option, false)">
-        <div class="select-text"> {{option.text}} </div>
+        <div class="select-text" :style="selectTextStyle"> {{option.text}} </div>
         <div class="select-icon" v-if="!option.checked">
           <icon icon-type="checked" :size=16></icon>
         </div>
@@ -70,6 +70,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    fixedListWidth: {
+      type: Boolean,
+      default: true,
+    },
   },
   computed: {
     styleObj() {
@@ -88,6 +92,7 @@ export default {
       show: false,
       localOptions: [],
       listStyle: {},
+      selectTextStyle: {},
       checkedValues: [],
       detectClickListener: undefined,
     };
@@ -131,6 +136,14 @@ export default {
         left: `${inputBox.left}px`,
         width: `${inputBox.width}px`,
       };
+
+      if (!this.fixedListWidth) {
+        that.listStyle.width = 'auto';
+        that.listStyle['min-width'] = `${inputBox.width}px`;
+        that.selectTextStyle['flex-grow'] = 0;
+        that.selectTextStyle['flex-shrink'] = 0;
+        that.selectTextStyle['flex-basis'] = 'auto';
+      }
 
       that.detectClickListener = (e) => {
         const clickDom = e.target;

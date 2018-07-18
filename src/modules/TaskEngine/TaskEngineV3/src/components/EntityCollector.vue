@@ -19,14 +19,16 @@
         ref="categorySelect"
         v-model="category"
         :options="categoryList"
-        width="150px"
+        :width="`150px`"
+        :fixedListWidth="false"
         @input="changeEntityCategory"
       />
       <dropdown-select
         ref="entityTypeSelect"
         v-model="entityType"
         :options="entityTypeList"
-        width="150px"
+        :width="`150px`"
+        :fixedListWidth="false"
         @input="updateData"
       />
       <!--
