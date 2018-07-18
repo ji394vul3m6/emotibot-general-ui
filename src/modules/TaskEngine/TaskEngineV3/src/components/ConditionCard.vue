@@ -1,6 +1,35 @@
 <template lang="html">
 <div id="condition-card">
-  <div class="delete-condition-button" @click="deleteThisCondition">X</div>
+  <div class="label-when" v-if="index==0">{{$t("task_engine_v3.condition_card.if")}}</div>
+  <div class="label-when" v-if="index!=0">{{$t("task_engine_v3.condition_card.and")}}</div>  
+  <dropdown-select
+    class="select-entity selector"
+    ref="selectEntity"
+    v-model="targetNameModel"
+    :options="entityOptions"
+    width="160px"
+  />
+  <dropdown-select
+    v-if="needOperator"
+    class="select-operator selector"
+    ref="selectOperator"
+    v-model="operatorModel"
+    :options="operatorOptions"
+    width="96px"
+  />
+  <input
+    v-if="needContent"
+    class="input-content selector"
+    type="text"
+    v-model="condition.content"
+  />
+
+  <div class="button-delete-condition-container">
+    <div class="button-delete-condition" @click="deleteThisCondition">X</div>
+  </div>
+
+
+  <!-- <div class="delete-condition-button" @click="deleteThisCondition">X</div>
   <div class="condition-text" v-if="index==0">{{$t("task_engine_v3.condition_card.if")}}</div>
   <div class="condition-text" v-if="index!=0">{{$t("task_engine_v3.condition_card.and")}}</div>
   <div class="condition-input-with-menu"
@@ -48,16 +77,18 @@
   </div>
   <div class="content-input" v-if="isContentInputVisible">
     <input type="text" v-model="condition.content"></input>
-  </div>
+  </div> -->
 </div>
 </template>
 
 <script>
+import DropdownSelect from '@/components/DropdownSelect';
 import i18nUtils from '../utils/i18nUtil';
 
 export default {
   name: 'condition-card',
   components: {
+    'dropdown-select': DropdownSelect,
   },
   props: {
     initialCondition: {
@@ -81,50 +112,76 @@ export default {
       columns: ['entity', 'context'],
       contexts: ['on_complete', 'on_cancel', 'on_transfer_to_manual', 'on_parse_fail'],
       comparisonOperators: [],
+      operatorOptions: [],
     };
   },
   computed: {
     entityOptions() {
       return this.entities.map((entity) => {
         const object = {
-          name: entity.entityName,
-          displayText: entity.entityName,
+          text: entity.entityName,
+          value: entity.entityName,
         };
         return object;
       });
     },
-    contextOptions() {
-      return this.contexts.map((context) => {
-        const object = {
-          name: context,
-          displayText: this.i18n.task_engine_v3.condition_card.context_status[context],
+    targetNameModel: {
+      get() {
+        return [this.condition.target.name];
+      },
+      set(newSelected) {
+        this.condition.target = {
+          displayText: newSelected[0],
+          type: 'entity',
+          name: newSelected[0],
         };
-        return object;
-      });
+      },
     },
-    targetItems() {
-      return {
-        entity: this.entityOptions,
-        context: this.contextOptions,
-      };
+    operatorModel: {
+      get() {
+        return [this.condition.comparisonOperator.displayText];
+      },
+      set(newSelected) {
+        this.condition.comparisonOperator = this.comparisonOperators.filter(
+          operator => operator.displayText === newSelected[0],
+        );
+      },
     },
-    comparisonItems() {
-      return {
-        entity: this.comparisonOperators,
-      };
+    needOperator() {
+      return this.condition.target.type === 'entity';
     },
-    isContentInputVisible() {
-      if (this.condition.target.displayText !== '' && this.condition.target.type === 'entity') {
-        if (this.condition.comparisonOperator.needContent === true) {
-          return true;
-        }
-      }
-      this.condition.content = '';
-      return false;
+    needContent() {
+      return this.condition.comparisonOperator.needContent;
     },
     entities() {
       return JSON.parse(JSON.stringify(this.initialEntityCollectorList));
     },
+    // contextOptions() {
+    //   return this.contexts.map((context) => {
+    //     const object = {
+    //       name: context,
+    //       displayText: this.i18n.task_engine_v3.condition_card.context_status[context],
+    //     };
+    //     return object;
+    //   });
+    // },
+
+    // targetItems() {
+    //   return {
+    //     entity: this.entityOptions,
+    //     context: this.contextOptions,
+    //   };
+    // },
+
+    // isContentInputVisible() {
+    //   if (this.condition.target.displayText !== '' && this.condition.target.type === 'entity') {
+    //     if (this.condition.comparisonOperator.needContent === true) {
+    //       return true;
+    //     }
+    //   }
+    //   this.condition.content = '';
+    //   return false;
+    // },
   },
   watch: {
     condition: {
@@ -138,40 +195,25 @@ export default {
     deleteThisCondition() {
       this.$emit('deleteConditionButtonClick');
     },
-    showTargetItemMenu(visible) {
-      this.isInputMenuVisible = visible;
-    },
-    showComparisonItemMenu(visible) {
-      this.isSelectMenuVisible = visible;
-    },
-    isTargetItemActive(column, index) {
-      const displayText = this.targetItems[column][index].displayText;
-      return this.condition.target.type === column &&
-        this.condition.target.displayText === displayText;
-    },
-    isComparisonItemActive(column, index) {
-      const displayText = this.comparisonItems[column][index].displayText;
-      return this.condition.comparisonOperator.displayText === displayText;
-    },
-    targetItemClick(column, index) {
-      this.condition.target.name = this.targetItems[column][index].name;
-      this.condition.target.displayText = this.targetItems[column][index].displayText;
-      this.condition.target.type = column;
-      if (this.comparisonItems[column] !== undefined && this.comparisonItems[column].length > 0) {
-        this.condition.comparisonOperator = JSON.parse(
-          JSON.stringify(this.comparisonItems[column][0]));
-      }
-      this.showTargetItemMenu(false);
-    },
-    comparisonItemClick(column, index) {
-      const item = this.comparisonItems[column][index];
-      this.condition.comparisonOperator = JSON.parse(JSON.stringify(item));
-      this.showComparisonItemMenu(false);
-    },
+    // targetItemClick(column, index) {
+    //   this.condition.target.name = this.targetItems[column][index].name;
+    //   this.condition.target.displayText = this.targetItems[column][index].displayText;
+    //   this.condition.target.type = column;
+    //   if (this.comparisonItems[column] !== undefined &&
+    //     this.comparisonItems[column].length > 0) {
+    //     this.condition.comparisonOperator = JSON.parse(
+    //       JSON.stringify(this.comparisonItems[column][0]));
+    //   }
+    //   this.showTargetItemMenu(false);
+    // },
+    // comparisonItemClick(column, index) {
+    //   const item = this.comparisonItems[column][index];
+    //   this.condition.comparisonOperator = JSON.parse(JSON.stringify(item));
+    //   this.showComparisonItemMenu(false);
+    // },
   },
   activated() {},
-  beforeMount() {},
-  mounted() {
+  beforeMount() {
     this.i18n = i18nUtils.getLocaleMsgs(this.$i18n);
     this.comparisonOperators = [
       {
@@ -249,11 +291,63 @@ export default {
         needContent: true,
       },
     ];
+    this.comparisonOperators.forEach((operator) => {
+      this.operatorOptions.push({
+        text: operator.displayText,
+        value: operator.displayText,
+      });
+    });
+  },
+  mounted() {
   },
 };
 </script>
 
 <style lang="scss" scoped>
 @import "../scss/teVariable.scss";
-@import "../scss/conditionCard.scss";
+// @import "../scss/conditionCard.scss";
+#condition-card{
+  display: flex;
+  flex-direction: row;
+  margin-top: 10px;
+  .label-when{
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+    line-height: 28px;
+    color: $color-font-normal;
+  }
+  .selector{
+    height: 28px;
+    margin-right: 10px;
+  }
+  .select-entity{
+    margin-left: 15px;
+  }
+  .select-operator{
+  }
+  .input-content{
+    width: 144px;
+  }
+
+  .button-delete-condition-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    .button-delete-condition{
+      width: 18px;
+      height: 18px;
+      border-radius: 9px;
+      background-color: #f7f7f7;
+      font-size: 12px;
+      text-align: center;
+      line-height: 18px;
+      color: $color-error;
+      &:hover {
+        cursor: pointer;
+        color: darken($color-error, 15%);
+      }
+    }
+  }
+}
 </style>

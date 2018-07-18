@@ -24,13 +24,15 @@ export default {
       button_save_and_next_step: '储存并下一步',
     },
     condition_card: {
+      if: '当',
+      and: '而且',
+
+
       columns: {
         intent: '使用者的意图',
         entity: '信息名称',
         context: '场景现况',
       },
-      if: '当',
-      and: '而且',
       comparison_operators: {
         present: '存在',
         not_present: '不存在',
@@ -51,11 +53,8 @@ export default {
       },
     },
     action_group: {
-      button_add_new_condition: '+条件',
-      button_send_message: '传送讯息',
-      button_go_to: '前往',
-      button_call_api: '调用API',
-      button_edit_memory: '修改内存',
+      button_add_new_condition: '＋过滤条件',
+      button_delete_action_group: '移除',
     },
     trigger_page: {
       label_add_trigger: '这个场景会被哪些意图触发？',
@@ -95,31 +94,31 @@ export default {
       button_upload_batch_phrases: '上传批量测试资料(TBA)',
     },
     action_page: {
-      label_title: '蒐集所有必要的讯息后，你需要执行什么动作来完成任务？',
-      button_add_new_msg: '＋文字回应',
-      button_add_new_webhook: '＋Webhook连接外部服务',
-      button_add_new_goto: '＋连接下一个任务(TBA)',
+      label_add_action: '蒐集所有必要的讯息后，你需要执行什么动作来完成任务？',
+      button_add_new_msg: '新增文字回应',
+      button_add_new_webhook: '新增外部服务连接',
+      button_add_new_goto: '新增下一个任务连接',
     },
     action_card: {
-      btn_add_new_condition: '＋加入过滤条件',
+      label_msg_type: '文字回应',
+      label_webhook_type: '外部服务连接',
+      label_goto_type: '下一个任务连接',
+      msg: {
+        label_response: '回应',
+      },
       webhook: {
-        label_call_webhook: 'Webhook API 调用',
         label_variable: 'API回传值存放位置',
         label_method: '调用方法',
         label_url: '服务提供位址(URL)',
-        label_header_content_type: 'Header(Content-Type)',
+        label_content_type: 'Content-Type',
         label_body: 'Body',
-        placeholder_input_variable_name: '请为变量取名',
-        placeholder_input_url: 'ex. http://api.server.com/webhook',
+        placeholder_input_variable: '请为变量取名',
+        placeholder_input_url: 'http://api.server.com/webhook',
         placeholder_input_body: '{"parameter":"value"}',
       },
-      msg: {
-        label_msg_return: '文字回应',
-        label_return_msg: '回应文字：',
-      },
       goto: {
-        label_goto_next_skill: '连接下一个任务',
         label_goto: '前往',
+        label_goto_next_skill: '连接下一个任务',
         button_add_new_task: '建立新任务',
         option_finish_scenario: '结束场景',
       },

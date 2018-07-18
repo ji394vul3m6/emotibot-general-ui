@@ -1,6 +1,43 @@
 <template lang="html">
 <div id="action-group" class="action-group">
-  <div class="delete-action-group-button" @click="deleteThisActionGroup">X</div>
+  <div class="label-first-action-type">{{labelFirstActionType}}</div>
+  <div class="action-group-container">
+    <div class="row">
+      <div
+        class="button-add-condition"
+        @click="addNewCondition">
+        {{$t("task_engine_v3.action_group.button_add_new_condition")}}
+      </div>
+      <div
+        class="button-delete-action-group"
+        @click="deleteThisActionGroup">
+        {{$t("task_engine_v3.action_group.button_delete_action_group")}}
+      </div>
+    </div>
+    <template v-for="(condition, index) in actionGroup.conditionList">
+      <condition-card class="condition-card"
+        :initialCondition="condition"
+        :index="index"
+        :initialEntityCollectorList="initialEntityCollectorList"
+        @update="updateCondition(index, $event)"
+        @deleteConditionButtonClick="deleteCondition(index)"
+      ></condition-card>
+    </template>
+    <template v-for="(action, index) in actionGroup.actionList">
+      <action-card
+        :initialAction="action"
+        :initialSkillNameList="initialSkillNameList"
+        @update="updateAction(index, $event)"
+      ></action-card>
+    </template>
+  </div>
+
+
+
+
+
+
+  <!-- <div class="delete-action-group-button" @click="deleteThisActionGroup">X</div>
   <div class="button-add-new-condition margin-top-bottom"
     v-if="actionGroup.conditionList.length == 0"
     @click="addNewCondition">
@@ -35,7 +72,7 @@
         @update="updateAction(index, $event)"
       ></action-card>
     </template>
-  </div>
+  </div> -->
 </div>
 </template>
 
@@ -70,7 +107,27 @@ export default {
       actionGroup: JSON.parse(JSON.stringify(this.initialActionGroup)),
     };
   },
-  computed: {},
+  computed: {
+    firstActionType() {
+      if (this.actionGroup.actionList.length > 0) {
+        return this.actionGroup.actionList[0].type;
+      }
+      return '';
+    },
+    labelFirstActionType() {
+      let label = '';
+      if (this.firstActionType === 'msg') {
+        label = this.$t('task_engine_v3.action_card.label_msg_type');
+      }
+      if (this.firstActionType === 'webhook') {
+        label = this.$t('task_engine_v3.action_card.label_webhook_type');
+      }
+      if (this.firstActionType === 'goto') {
+        label = this.$t('task_engine_v3.action_card.label_goto_type');
+      }
+      return label;
+    },
+  },
   watch: {},
   methods: {
     updateCondition(index, newCondition) {
@@ -115,5 +172,52 @@ export default {
 
 <style lang="scss" scoped>
 @import "../scss/teVariable.scss";
-@import "../scss/actionGroup.scss";
+// @import "../scss/actionGroup.scss";
+#action-group{
+  .label-first-action-type{
+    height: 28px;
+    font-size: 12px;
+    line-height: 28px;
+    color: #999999;
+  }
+  .action-group-container{
+    padding: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    background-color: #ffffff;
+    border: solid 1px #dbdbdb;
+    border-radius: 4px;
+    box-shadow: 0 4px 9px 0 rgba(115, 115, 115, 0.2), 0 5px 8px 0 rgba(228, 228, 228, 0.5);
+  }
+  .row{
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    .button-add-condition{
+      width: 75px;
+      height: 28px;
+      font-size: 14px;
+      line-height: 28px;
+      color: $color-primary;
+      &:hover {
+        cursor: pointer;
+        color: darken($color-primary, 15%);
+      }
+    }
+    .button-delete-action-group{
+      position: absolute;
+      right: 0px;
+      height: 28px;
+      font-size: 14px;
+      line-height: 28px;
+      text-align: center;
+      color: $color-error;
+      &:hover {
+        cursor: pointer;
+        color: darken($color-error, 15%);
+      }
+    }
+  }
+}
+
 </style>

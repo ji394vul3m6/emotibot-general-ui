@@ -1,6 +1,45 @@
 <template lang="html">
 <div id="action-page" class="page action-page">
-  <div class="title-container">
+  <div class="add-action-container">
+    <div class="row">
+      <div class="label-add-action">{{$t("task_engine_v3.action_page.label_add_action")}}</div>
+      <div class="icon-container" v-tooltip="{msg: 'tooltip'}">
+        <icon icon-type="info" :size=18 />
+      </div>
+    </div>
+    <div class="row row-margin-top">
+      <text-button
+        class="button-add-action-group"
+        button-type='primary'
+        @click="addNewActionGroup('msg')">
+        {{$t("task_engine_v3.action_page.button_add_new_msg")}}
+      </text-button>
+      <text-button
+        class="button-add-action-group"
+        button-type='primary'
+        @click="addNewActionGroup('webhook')">
+        {{$t("task_engine_v3.action_page.button_add_new_webhook")}}
+      </text-button>
+      <text-button
+        class="button-add-action-group"
+        button-type='primary'
+        @click="addNewActionGroup('goto')">
+        {{$t("task_engine_v3.action_page.button_add_new_goto")}}
+      </text-button>
+    </div>
+  </div>
+  <div class="action-group-list-container">
+    <template v-for="(actionGroup, index) in actionGroupList">
+      <action-group :key="actionGroup.actionGroupId"
+        :initialActionGroup="actionGroup"
+        :initialEntityCollectorList="initialEntityCollectorList"
+        :initialSkillNameList="initialSkillNameList"
+        @update="updateActionGroup(index, $event)"
+        @deleteActionGroupButtonClick="deleteActionGroup(index)"
+      ></action-group>
+    </template>
+  </div>
+  <!-- <div class="title-container">
     <div class="title">{{$t("task_engine_v3.action_page.label_title")}}</div>
   </div>
   <div class="content-container">
@@ -20,7 +59,7 @@
       <div class="add-new-action-btn" @click="addNewActionGroup('webhook')">{{$t("task_engine_v3.action_page.button_add_new_webhook")}}</div>
       <div class="add-new-action-btn" @click="addNewActionGroup('goto')">{{$t("task_engine_v3.action_page.button_add_new_goto")}}</div>
     </div>
-  </div>
+  </div> -->
 </div>
 </template>
 
@@ -107,5 +146,36 @@ export default {
 
 <style lang="scss" scoped>
 @import "../scss/teVariable.scss";
-@import "../scss/actionPage.scss";
+#action-page{
+  padding: 20px;
+  .add-action-container{
+    padding: 10px;
+    height: 86px;
+    background: #f8f8f8;
+    .row{
+      display: flex;
+      flex-direction: row;
+      .label-add-action{
+        color: $color-font-active;
+        line-height: 28px;
+        font-size: 14px;
+      }
+      .icon-container{
+        margin-left: 4px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .button-add-action-group{
+        margin-right: 10px;
+      }
+    }
+    .row-margin-top{
+      margin-top: 10px;
+    }
+  }
+  .action-group-list-container{
+    margin-top: 10px;
+  }
+}
 </style>

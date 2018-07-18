@@ -92,7 +92,6 @@ export default {
     },
     loadIntentOptionList() {
       this.ieApi.listIntents().then((resp) => {
-        console.log(resp);
         this.intentList = resp.data.result;
         this.intentOptionList = [];
         this.intentList.forEach((intent) => {
