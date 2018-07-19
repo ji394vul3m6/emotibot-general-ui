@@ -24,7 +24,8 @@ function updateAdmin(id, user) {
 }
 
 function deleteAdmin(id) {
-  return this.$reqDelete(`${ADMIN_URL}/${id}`);
+  return this.$reqDelete(`${ADMIN_URL}/${id}`)
+  .then(() => this.$reqDelete(`${BF2_USER_URL}/${id}`));
 }
 
 function addAdmin(user) {
