@@ -5,6 +5,7 @@
       <div class="title-container">
         <div class="title">{{$t("task_engine_v3.entity_collecting_page.title")}}</div>
         <div class="tooltip_container" v-tooltip="{ msg: $t('task_engine_v3.entity_collecting_page.description')}">
+          <icon icon-type="info" :enableHover="true" :size=20 />
         </div>
       </div>
       <div class="advanced-config" v-dropdown="advancedConfigOptions">

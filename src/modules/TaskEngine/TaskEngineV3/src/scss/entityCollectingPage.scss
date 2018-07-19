@@ -25,13 +25,8 @@
           color: $color-font-active;
         }
         .tooltip_container{
-          width: 20px;
-          height: 20px;
-          background-size: 20px 20px;
-          background: url('../../../../../assets/icons/info_icon.svg') no-repeat center center;
-          &:hover{
-            background: url('../../../../../assets/icons/info_hover_icon.svg') no-repeat center center;
-          }
+          display: flex;
+          align-items: center;
         }
       }
       &:not(:first-child){

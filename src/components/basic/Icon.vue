@@ -1,6 +1,7 @@
 <template>
   <div class="icon" :class="{button: button}" @click="$emit('click', $event)" :style="containerStyle">
-    <div :class="`${iconType}_icon`" :style="styleObj"></div>
+    <div v-if="enableHover" :class="`${iconType}_icon_hover`" :style="styleObj"></div>
+    <div v-else :class="`${iconType}_icon`" :style="styleObj"></div>
   </div>
 </template>
 
@@ -18,6 +19,10 @@ export default {
       required: true,
     },
     button: {
+      type: Boolean,
+      default: false,
+    },
+    enableHover: {
       type: Boolean,
       default: false,
     },
@@ -115,6 +120,18 @@ export default {
       }
     }
   }
+  @mixin iconTypeHover($name) {
+    .#{$name}_icon_hover {
+      background: url("../../assets/icons/#{$name}_icon.svg") no-repeat center center;
+      // background: url("./icons/#{$name}_icon.svg") no-repeat center center;
+      background-size: 20px 20px;
+      width: 100%;
+      height: 100%;
+      &:hover {
+        background: url("../../assets/icons/#{$name}_hover_icon.svg") no-repeat center center;
+      }
+    }
+  }
 
   @include iconType("menu_expand");
   @include iconType("menu_statistics");
@@ -159,6 +176,7 @@ export default {
   /** used on input info */
   @include iconType("info");
   @include iconType("info_hover");
+  @include iconTypeHover("info");
 
   /** used on category memu */
   @include iconType("category_add");
