@@ -31,48 +31,6 @@
       ></action-card>
     </template>
   </div>
-
-
-
-
-
-
-  <!-- <div class="delete-action-group-button" @click="deleteThisActionGroup">X</div>
-  <div class="button-add-new-condition margin-top-bottom"
-    v-if="actionGroup.conditionList.length == 0"
-    @click="addNewCondition">
-    {{$t("task_engine_v3.action_card.btn_add_new_condition")}}
-  </div>
-  <div class="condition-list-container">
-    <template v-for="(condition, index) in actionGroup.conditionList">
-      <div class="condition-card-row">
-        <condition-card class="condition-card"
-          :initialCondition="condition"
-          :index="index"
-          :initialEntityCollectorList="initialEntityCollectorList"
-          @update="updateCondition(index, $event)"
-          @deleteConditionButtonClick="deleteCondition(index)"
-        ></condition-card>
-        <div class="button-block button-box-add-new-condition"
-          v-if="index == actionGroup.conditionList.length - 1"
-          @click="addNewCondition">
-          <a>+</a>
-        </div>
-        <div class="button-block"
-          v-if="index != actionGroup.conditionList.length - 1">
-        </div>
-      </div>
-    </template>
-  </div>
-  <div class="action-list-container">
-    <template v-for="(action, index) in actionGroup.actionList">
-      <action-card
-        :initialAction="action"
-        :initialSkillNameList="initialSkillNameList"
-        @update="updateAction(index, $event)"
-      ></action-card>
-    </template>
-  </div> -->
 </div>
 </template>
 
@@ -172,7 +130,6 @@ export default {
 
 <style lang="scss" scoped>
 @import "../scss/teVariable.scss";
-// @import "../scss/actionGroup.scss";
 #action-group{
   .label-first-action-type{
     height: 28px;
@@ -219,5 +176,4 @@ export default {
     }
   }
 }
-
 </style>

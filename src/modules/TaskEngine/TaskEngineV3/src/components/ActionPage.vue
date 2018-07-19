@@ -39,27 +39,6 @@
       ></action-group>
     </template>
   </div>
-  <!-- <div class="title-container">
-    <div class="title">{{$t("task_engine_v3.action_page.label_title")}}</div>
-  </div>
-  <div class="content-container">
-    <div class="action-group-list-container">
-      <template v-for="(actionGroup, index) in actionGroupList">
-        <action-group :key="actionGroup.actionGroupId"
-          :initialActionGroup="actionGroup"
-          :initialEntityCollectorList="initialEntityCollectorList"
-          :initialSkillNameList="initialSkillNameList"
-          @update="updateActionGroup(index, $event)"
-          @deleteActionGroupButtonClick="deleteActionGroup(index)"
-        ></action-group>
-      </template>
-    </div>
-    <div class="add-new-action-container">
-      <div class="add-new-action-btn" @click="addNewActionGroup('msg')">{{$t("task_engine_v3.action_page.button_add_new_msg")}}</div>
-      <div class="add-new-action-btn" @click="addNewActionGroup('webhook')">{{$t("task_engine_v3.action_page.button_add_new_webhook")}}</div>
-      <div class="add-new-action-btn" @click="addNewActionGroup('goto')">{{$t("task_engine_v3.action_page.button_add_new_goto")}}</div>
-    </div>
-  </div> -->
 </div>
 </template>
 
@@ -147,8 +126,12 @@ export default {
 <style lang="scss" scoped>
 @import "../scss/teVariable.scss";
 #action-page{
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
   padding: 20px;
   .add-action-container{
+    flex: 0 0 auto;
     padding: 10px;
     height: 86px;
     background: #f8f8f8;
@@ -175,6 +158,8 @@ export default {
     }
   }
   .action-group-list-container{
+    flex: 1 1 auto;
+    overflow: auto;
     margin-top: 10px;
   }
 }

@@ -139,8 +139,12 @@ export default {
 <style lang="scss" scoped>
 @import "../scss/teVariable.scss";
 #trigger-page{
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
   padding: 20px;
   .add-trigger-container{
+    flex: 0 0 auto;
     padding: 10px;
     height: 86px;
     background: #f8f8f8;
@@ -173,6 +177,8 @@ export default {
     }
   }
   .trigger-list-container{
+    flex: 1 1 auto;
+    overflow: auto;
     padding-top: 25px;
     .trigger{
       margin-bottom: 12px;
