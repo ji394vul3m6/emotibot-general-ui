@@ -5,15 +5,17 @@
       <div class="breadcrumb">
         <div class="back-to-list" @click="$router.replace('/task-engine-scenario-v3');">{{$t("task_engine_v3.scenario_list_page.scenario_list")}}</div>
         <div>&gt;</div>
-        <input
-          ref="scenarioName"
-          v-model="scenarioName"
-          :placeholder="$t('task_engine_v3.scenario_edit_page.placeholder_name_the_scenario')"
-          @input="resizeScenarioNameInput">
-        <div id="scenario-toggle-container">
-          <!-- <toggle v-model="scenario.enable" @change="switchScenario(scenario)" :big="false"></toggle> -->
-          <toggle :big="false"></toggle>
+        <div class="scenario-name-container">
+          <div class="blank"/>
+          <input
+            class="input-scenario-name"
+            v-model="scenarioName"
+            :placeholder="$t('task_engine_v3.scenario_edit_page.placeholder_name_the_scenario')">
+          <div class="bottom-border"/>
         </div>
+        <div class="label-switch-off label-switch">{{$t("task_engine_v3.scenario_edit_page.switch_off")}}</div>
+        <toggle class="button-switch-enable" v-model="enable" @change="switchScenario()" :big="false"></toggle>
+        <div class="label-switch-on label-switch">{{$t("task_engine_v3.scenario_edit_page.switch_on")}}</div>
       </div>
       <div>
         <text-button button-type='default' @click="$router.replace('/task-engine-scenario-v3');">{{$t("general.close")}}</text-button>
@@ -89,6 +91,7 @@ export default {
       pages: {},
       currentPage: 'triggerPage',
       idToNerMap: {},
+      enable: false,
     };
   },
   computed: {
@@ -183,14 +186,10 @@ export default {
         window.moduleData = JSON.parse(data.result.editingContent);
         window.moduleDataLayouts = JSON.parse(data.result.editingLayout);
         this.scenarioName = window.moduleData.metadata.scenario_name;
-        this.resizeScenarioNameInput();
         this.renderData(window.moduleData);
       }, (err) => {
         general.popErrorWindow(this, 'loadScenario error', err.message);
       });
-    },
-    resizeScenarioNameInput() {
-      this.$refs.scenarioName.style.width = `${(this.scenarioName.length + 1) * 16}px`;
     },
     renderData(moduleData) {
       this.currentSkillId = 'mainSkill';
@@ -278,12 +277,29 @@ export default {
       }
       return true;
     },
+    setSwitchToggle(appId, scenarioId) {
+      api.listScenarios(appId).then((data) => {
+        if (typeof (data) === 'object' && 'msg' in data) {
+          const scenario = data.msg.find(s => s.scenarioID === scenarioId);
+          this.enable = scenario.enable;
+        }
+      }, (err) => {
+        general.popErrorWindow(this, 'listScenarios error', err.message);
+      });
+    },
+    switchScenario() {
+      api.switchScenario(this.appId, this.scenarioId, this.enable).then(() => {
+      }, (err) => {
+        general.popErrorWindow(this, 'switchScenario error', err.message);
+      });
+    },
   },
   beforeMount() {
     this.appId = this.$cookie.get('appid');
     this.scenarioId = this.$route.params.id;
     this.i18n = i18nUtils.getLocaleMsgs(this.$i18n);
     this.loadScenario(this.scenarioId);
+    this.setSwitchToggle(this.appId, this.scenarioId);
   },
   mounted() {
     this.allPages = {

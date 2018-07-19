@@ -21,6 +21,8 @@ export default {
       },
       toast_save_success: '储存成功！',
       button_save_and_next_step: '储存并下一步',
+      switch_on: '启动',
+      switch_off: '停用',
     },
     condition_card: {
       if: '当',
