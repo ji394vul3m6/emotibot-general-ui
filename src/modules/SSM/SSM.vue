@@ -48,5 +48,6 @@ iframe {
   top: -50px;
   left: -150px;
   position: relative;
+  min-width: 800px;
 }
 </style>
