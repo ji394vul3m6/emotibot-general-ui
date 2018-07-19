@@ -178,7 +178,7 @@ export default {
       create_new_scenario_failed: '场景创建失败',
       custom_entity_list_length_must_greater_than_two: '至少两个以上的信息使用自定义实体型别，才可设置实体关联',
     },
-    'entity-relation-editor-pop': {
+    entity_relation_editor_pop: {
       title: '实体关联性设置',
       main_entity: '主要实体',
       related_entity: '关联实体',
@@ -187,13 +187,14 @@ export default {
       entity_type: '实体型别',
       entity: '实体',
     },
-    'sentence-replacement-editor-pop': {
+    sentence_replacement_editor_pop: {
       title: '语句替换设置',
       pattern: '语句比对模式',
       text: '替换语句',
       pattern_placeholder: '请输入要比对的语句模式',
       text_placeholder: '请输入要替换成的语句',
-      add_replacement_rule: '新增替换规则',
+      add_replacement_rule: '新增',
+      delete_replacement_rule: '删除',
     },
     tde_setting_editor_pop: {
       title: 'TDE属性设置',

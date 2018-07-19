@@ -171,7 +171,13 @@ export default {
   @include iconType("header_user");
   @include iconType("header_dialog");
   @include iconType("header_dropdown");
+  @include iconType("header_dropdown_gray");
 
+  /** used on calendar */
+  @include iconType("year_left");
+  @include iconType("year_right");
+  @include iconType("month_left");
+  @include iconType("month_right");
 
   // robot icon should a little bit larger than other icons
   .white_robot_icon {

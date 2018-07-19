@@ -8,7 +8,9 @@
         </div>
       </div>
       <div class="advanced-config" v-dropdown="advancedConfigOptions">
-        {{$t("task_engine_v3.entity_collecting_page.advanced_config")}}
+        <text-button iconType="header_dropdown_gray" width="100px">
+          {{$t("task_engine_v3.entity_collecting_page.advanced_config")}}
+        </text-button>
       </div>
     </div>
     <div class="row">
@@ -366,7 +368,7 @@ export default {
     editSentenceReplacement() {
       const that = this;
       that.$pop({
-        title: '',
+        title: this.i18n.task_engine_v3.sentence_replacement_editor_pop.title,
         component: SentenceReplacementEditorPop,
         validate: true,
         data: {
