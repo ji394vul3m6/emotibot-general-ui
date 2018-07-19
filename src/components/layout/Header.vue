@@ -1,6 +1,6 @@
 <template>
 <div id="page-header">
-  <div class="robot-list column" @click="showRobotList" v-if="!showUserInfoPage">
+  <div class="robot-list column" @click="showRobotList" v-if="!showUserInfoPage && enterpriseID !== ''">
     {{ $t('general.robot_list') }}
   </div>
   <div class="empty column"></div>
