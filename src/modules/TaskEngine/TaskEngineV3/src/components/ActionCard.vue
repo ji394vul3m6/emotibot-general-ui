@@ -186,7 +186,6 @@ export default {
 
 <style lang="scss" scoped>
 @import "../scss/teVariable.scss";
-// @import "../scss/actionCard.scss";
 #action-card{
   margin-top: 10px;
   .msg-action{

@@ -292,6 +292,7 @@ $border-color: $color-borderline;
     }
     display: flex;
     align-items: center;
+    justify-content: space-between;
     .select-text {
       flex: 1;
       padding-left: 16px;
@@ -300,7 +301,8 @@ $border-color: $color-borderline;
       white-space: nowrap;
     }
     .select-icon {
-      flex: 0 0 32px;
+      margin-right:16px;
+      flex: 0 0 16px;
       display: flex;
       align-items: center;
     }

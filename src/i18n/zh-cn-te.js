@@ -26,14 +26,7 @@ export default {
     condition_card: {
       if: '当',
       and: '而且',
-
-
-      columns: {
-        intent: '使用者的意图',
-        entity: '信息名称',
-        context: '场景现况',
-      },
-      comparison_operators: {
+      operators: {
         present: '存在',
         not_present: '不存在',
         contain: '包含',
@@ -45,11 +38,15 @@ export default {
         belong_to: '属于',
         not_belong_to: '不属于',
       },
-      context_status: {
+      context_targets: {
         on_complete: '蒐集完所有参数',
         on_cancel: '用户取消参数蒐集',
         on_transfer_to_manual: '触发转人工意图',
         on_parse_fail: '用户发话理解失败',
+      },
+      target_type: {
+        entity: '信息实体',
+        context: '场景现况',
       },
     },
     action_group: {
