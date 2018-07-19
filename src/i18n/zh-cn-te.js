@@ -57,13 +57,7 @@ export default {
     trigger_page: {
       label_add_trigger: '这个场景会被哪些意图触发？',
       button_add_trigger: '加入',
-      label_title: '这个场景会被哪个意图触发？',
-      label_title_description: '设定场景的进入条件，只有当使用者与机器人的对话满足预设的触发条件，会进入此场景，触发相对应的多轮对话。',
-      label_intent_setting: '设定触发场景的意图',
-      label_choose_intent: '选择意图：',
-      button_add_new_intent: '建立新意图',
-      btn_add_new_trigger: '新增触发条件',
-      option_choose_one: '请选择',
+      description: '设定场景的进入条件，只有当使用者与机器人的对话满足预设的触发条件，会进入此场景，触发相对应的多轮对话。',
     },
     create_scenario_pop: {
       label_create_new_scenario: '创建新场景',
@@ -92,6 +86,7 @@ export default {
       button_upload_batch_phrases: '上传批量测试资料(TBA)',
     },
     action_page: {
+      description: '蒐集所有必要的讯息后，你需要执行什么动作来完成任务？',
       label_add_action: '蒐集所有必要的讯息后，你需要执行什么动作来完成任务？',
       button_add_new_msg: '新增文字回应',
       button_add_new_webhook: '新增外部服务连接',

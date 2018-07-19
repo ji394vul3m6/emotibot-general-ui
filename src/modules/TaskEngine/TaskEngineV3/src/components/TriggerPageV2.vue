@@ -3,7 +3,7 @@
   <div class="add-trigger-container">
     <div class="row">
       <div class="label-add-trigger">{{$t("task_engine_v3.trigger_page.label_add_trigger")}}</div>
-      <div class="icon-container" v-tooltip="{msg: 'tooltip'}">
+      <div class="icon-container" v-tooltip="{ msg: $t('task_engine_v3.trigger_page.description')}">
         <icon icon-type="info" :size=18 />
       </div>
     </div>
