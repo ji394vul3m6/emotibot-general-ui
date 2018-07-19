@@ -127,45 +127,47 @@
         tasks.sort(function (a, b) { return a.scenarioName.localeCompare(b.scenarioName) });
         for (var i in tasks) {
             var task = tasks[i];
-            var taskHTML = $("#taskTemplate").val();
-            container.append(taskHTML);
-            var elt = container.children("div:last");
-            elt.children(".id").attr("id", task.scenarioID);
-            elt.find(".name").html(he.encode(task.scenarioName));
-            elt.find(".badge").html(task.scenarioID);
-            elt.find("a").attr("href", "index.html?id=" + task.scenarioID);
-            elt.find("#delete-button").click(removeScenario.bind(null, task.scenarioID));
-            elt.find("#deploy-button").click(publishScenario.bind(null, task.scenarioID, elt.find(".switch")));
-            elt.find("#download-button").click(exportScenarioToJSONfile.bind(null, task.scenarioID));
-            elt.find(".switch").bootstrapSwitch({
-                size:"small", 
-                state:task.enable,
-                onSwitchChange: function(scenarioID){
-                    return function(event, state) {
-                        $.ajax({
-                            type: "POST",
-                            url: BASE_URL + "task_engine_app.php",
-                            cache: false,
-                            dataType: 'json',
-                            data: {
-                                method: 'POST',
-                                appid: appId,
-                                scenarioid: scenarioID,
-                                enable: state
-                            },
-                            success: function (res) {
-                                toastr.options = { "positionClass": "toast-bottom-right" };
-                                if(state){
-                                    toastr.success('场景已启用');
-                                }else{
-                                    toastr.success('场景已停用');
-                                }
-                            },
-                            error:G.ajaxError
-                        });
-                    }
-                }(task.scenarioID)
-            });
+            if(task.version === ''){
+                var taskHTML = $("#taskTemplate").val();
+                container.append(taskHTML);
+                var elt = container.children("div:last");
+                elt.children(".id").attr("id", task.scenarioID);
+                elt.find(".name").html(he.encode(task.scenarioName));
+                elt.find(".badge").html(task.scenarioID);
+                elt.find("a").attr("href", "index.html?id=" + task.scenarioID);
+                elt.find("#delete-button").click(removeScenario.bind(null, task.scenarioID));
+                elt.find("#deploy-button").click(publishScenario.bind(null, task.scenarioID, elt.find(".switch")));
+                elt.find("#download-button").click(exportScenarioToJSONfile.bind(null, task.scenarioID));
+                elt.find(".switch").bootstrapSwitch({
+                    size:"small", 
+                    state:task.enable,
+                    onSwitchChange: function(scenarioID){
+                        return function(event, state) {
+                            $.ajax({
+                                type: "POST",
+                                url: BASE_URL + "task_engine_app.php",
+                                cache: false,
+                                dataType: 'json',
+                                data: {
+                                    method: 'POST',
+                                    appid: appId,
+                                    scenarioid: scenarioID,
+                                    enable: state
+                                },
+                                success: function (res) {
+                                    toastr.options = { "positionClass": "toast-bottom-right" };
+                                    if(state){
+                                        toastr.success('场景已启用');
+                                    }else{
+                                        toastr.success('场景已停用');
+                                    }
+                                },
+                                error:G.ajaxError
+                            });
+                        }
+                    }(task.scenarioID)
+                });
+            }
         }
 
         userOperaPri()
