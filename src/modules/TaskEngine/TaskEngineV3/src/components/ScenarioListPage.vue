@@ -16,11 +16,11 @@
           <input type="file" ref="uploadInput" v-on:change="changeFile()" accept=".xlsx">
         </div>
         <div id="right-buttons">
-          <search-input v-model="searchKeyWord"></search-input>
+          <search-input v-model="filteredKeyWord" ></search-input>
         </div>
       </div>
     </div>
-    <template v-for="(scenario, index) in scenarioList">
+    <template v-for="(scenario, index) in filteredScenarioList">
       <div class="row" @mouseover="moreIcon = true" @mouseleave="moreIcon = false">
         <div id="scenario-grid">
           <div id="scenario-toggle-container">
@@ -58,11 +58,16 @@ export default {
       i18n: {},
       appId: '',
       scenarioList: [],
-      searchKeyWord: '',
+      filteredKeyWord: '',
       moreIcon: false,
     };
   },
-  computed: {},
+  computed: {
+    filteredScenarioList() {
+      return this.scenarioList.filter(
+        scenario => scenario.scenarioName.indexOf(this.filteredKeyWord) !== -1);
+    },
+  },
   watch: {},
   methods: {
     moreOptions(scenario) {
