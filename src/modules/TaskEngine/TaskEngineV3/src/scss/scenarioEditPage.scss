@@ -80,71 +80,74 @@ $bullet-point-color: #9b9b9b;
       flex-direction: row;
       .sidebar{
         width: 196px;
-        border-right: 1px solid $color-borderline;
         padding: 20px;
         padding-right: 0px;
-        .slect-skill-container{
-          display: flex;
-          flex-direction: row;
-          .setting-button{
+        .sidebar-content{
+          height: 100%;
+          border-right: 1px solid $color-borderline;
+          .slect-skill-container{
             display: flex;
-            flex-direction: column;
-            justify-content: center;
-            margin-left: 10px;
+            flex-direction: row;
+            .setting-button{
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              margin-left: 10px;
+            }
           }
-        }
 
-        .list-ic li {
-          position: relative;
-        }
-        .list-ic li .title {
-          @include font-16px();
-          margin-left: 10px;
-          cursor: pointer;
-        }
-        .list-ic li .order { // order number
-          display: inline-block;
-          font-weight: 800;
-          width: 2em;
-          height: 2em;
-          text-align: center;
-          line-height: 2em;
-          border-radius: 1em;
-          background: $bullet-point-color;
-          color: white;
-          position: relative;
-          z-index: 1;
-        }
-        .list-ic li.active .order{
-          background: $color-primary;
-        }
-        .list-ic li.active .title{
-          color: $color-primary;
-        }
-        .list-ic li::before {
-          content: '';
-          position: absolute;
-          background: $bullet-point-color;
-        }
-        .list-ic.vertical {
-          padding: 0;
-          margin: 0;
-        }
-        .list-ic.vertical li {
-          list-style-type: none;
-          text-align: left;
-        }
-        .list-ic.vertical li .order {
-          margin: 1.4em 0;
-        }
-        .list-ic.vertical li::before { // vertical line
-          top: -25px;
-          left: 11px;
-          width: 0.2em;
-          height: 4em;
-        }
-        .list-ic li:first-child::before {
-          display: none;
+          .list-ic li {
+            position: relative;
+          }
+          .list-ic li .title {
+            @include font-16px();
+            margin-left: 10px;
+            cursor: pointer;
+          }
+          .list-ic li .order { // order number
+            display: inline-block;
+            font-weight: 800;
+            width: 2em;
+            height: 2em;
+            text-align: center;
+            line-height: 2em;
+            border-radius: 1em;
+            background: $bullet-point-color;
+            color: white;
+            position: relative;
+            z-index: 1;
+          }
+          .list-ic li.active .order{
+            background: $color-primary;
+          }
+          .list-ic li.active .title{
+            color: $color-primary;
+          }
+          .list-ic li::before {
+            content: '';
+            position: absolute;
+            background: $bullet-point-color;
+          }
+          .list-ic.vertical {
+            padding: 0;
+            margin: 0;
+          }
+          .list-ic.vertical li {
+            list-style-type: none;
+            text-align: left;
+          }
+          .list-ic.vertical li .order {
+            margin: 1.4em 0;
+          }
+          .list-ic.vertical li::before { // vertical line
+            top: -25px;
+            left: 11px;
+            width: 0.2em;
+            height: 4em;
+          }
+          .list-ic li:first-child::before {
+            display: none;
+          }
         }
       }
     }

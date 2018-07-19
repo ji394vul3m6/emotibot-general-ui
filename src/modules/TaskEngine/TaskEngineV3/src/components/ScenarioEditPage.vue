@@ -24,25 +24,27 @@
     </div>
     <div class="main-content">
       <div class="sidebar">
-        <div class="slect-skill-container">
-          <dropdown-select
-            ref="dropdownSelect"
-            v-model="currentSkillName"
-            :options="skillNameList"
-            width="141px"
-          />
-          <div class="setting-button">
-            <icon icon-type="setting" :size=15 @click=""/>
+        <div class="sidebar-content">
+          <div class="slect-skill-container">
+            <dropdown-select
+              ref="dropdownSelect"
+              v-model="currentSkillName"
+              :options="skillNameList"
+              width="141px"
+            />
+            <div class="setting-button">
+              <icon icon-type="setting" :size=15 @click=""/>
+            </div>
           </div>
+          <ul class="list-ic vertical">
+            <template v-for="(page, key, idx) in pages">
+              <li :key="key" :class="{ 'active': key === currentPage }">
+                <span class="order">{{idx+1}}</span>
+                <span class="title" @click="pageChange(key)">{{ page.name }}</span>
+              </li>
+            </template>
+          </ul>
         </div>
-        <ul class="list-ic vertical">
-          <template v-for="(page, key, idx) in pages">
-            <li :key="key" :class="{ 'active': key === currentPage }">
-              <span class="order">{{idx+1}}</span>
-              <span class="title" @click="pageChange(key)">{{ page.name }}</span>
-            </li>
-          </template>
-        </ul>
       </div>
       <skill-edit-page
           ref="skillEditPage"
