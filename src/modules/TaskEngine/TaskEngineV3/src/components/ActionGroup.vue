@@ -144,7 +144,6 @@ export default {
     background-color: #ffffff;
     border: solid 1px #dbdbdb;
     border-radius: 4px;
-    box-shadow: 0 4px 9px 0 rgba(115, 115, 115, 0.2), 0 5px 8px 0 rgba(228, 228, 228, 0.5);
   }
   .row{
     position: relative;

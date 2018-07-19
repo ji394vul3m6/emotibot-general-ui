@@ -29,25 +29,29 @@
     </div>
   </div>
   <div class="action-group-list-container">
-    <template v-for="(actionGroup, index) in actionGroupList">
-      <action-group :key="actionGroup.actionGroupId"
-        :initialActionGroup="actionGroup"
-        :initialEntityCollectorList="initialEntityCollectorList"
-        :initialSkillNameList="initialSkillNameList"
-        @update="updateActionGroup(index, $event)"
-        @deleteActionGroupButtonClick="deleteActionGroup(index)"
-      ></action-group>
-    </template>
+    <draggable v-model="actionGroupList" :options="{ghostClass:'ghost'}" @start="drag=true" @end="drag=false">
+      <div class="action-group-container" v-for="(actionGroup, index) in actionGroupList">
+        <action-group :key="actionGroup.actionGroupId"
+          :initialActionGroup="actionGroup"
+          :initialEntityCollectorList="initialEntityCollectorList"
+          :initialSkillNameList="initialSkillNameList"
+          @update="updateActionGroup(index, $event)"
+          @deleteActionGroupButtonClick="deleteActionGroup(index)"
+        ></action-group>
+      </div>
+    </draggable>
   </div>
 </div>
 </template>
 
 <script>
+import draggable from 'vuedraggable';
 import ActionGroup from '../components/ActionGroup';
 
 export default {
   name: 'action-page',
   components: {
+    draggable,
     'action-group': ActionGroup,
   },
   props: {
@@ -130,9 +134,11 @@ export default {
   display: flex;
   flex-direction: column;
   padding: 20px;
+  padding-right: 0px;
   .add-action-container{
     flex: 0 0 auto;
     padding: 10px;
+    margin-right: 20px;
     height: 86px;
     background: #f8f8f8;
     .row{
@@ -161,6 +167,22 @@ export default {
     flex: 1 1 auto;
     overflow: auto;
     margin-top: 10px;
+    padding-right: 20px;
+    .action-group-container{
+      cursor: move;
+      &:hover{
+        box-shadow: 0 4px 9px 0 rgba(115, 115, 115, 0.2), 0 5px 8px 0 rgba(228, 228, 228, 0.5);
+      }
+      &:active{
+        box-shadow: none;
+      }
+      &:last-child{
+        margin-bottom: 30px;
+      }
+      &.ghost{
+        background-color: #f8f8f8;
+      }
+    }
   }
 }
 </style>
