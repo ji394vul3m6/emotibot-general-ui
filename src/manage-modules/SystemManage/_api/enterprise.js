@@ -15,7 +15,13 @@ function getEnterpriseModules(id) {
 }
 
 function deleteEnterprise(id) {
-  return this.$reqDelete(`${ENTERPRISE_URL}/${id}`).then(rsp => rsp.data.result);
+  let result;
+  return this.$reqDelete(`${ENTERPRISE_URL}/${id}`)
+  .then((rsp) => {
+    result = rsp.data.result;
+  })
+  .then(() => this.$reqDelete(`${BF2_ENTERPRISE_URL}/${id}`))
+  .then(() => result);
 }
 
 function addEnterprise(info) {
@@ -25,9 +31,7 @@ function addEnterprise(info) {
       reject('Invalid parameter');
     });
   }
-  const data = {
-    ...info,
-  };
+  const data = JSON.parse(JSON.stringify(info));
   window.test = md5;
   data.modules = JSON.stringify(info.modules);
   data.admin.password = md5(info.admin.password);
@@ -48,7 +52,7 @@ function addEnterprise(info) {
     })
     .then(admin => this.$reqPostForm(BF2_USER_URL, {
       id: admin.id,
-      account: info.admin.username,
+      account: info.admin.account,
       password: md5(info.admin.password),
       enterprise: enterprise.id,
     })));
