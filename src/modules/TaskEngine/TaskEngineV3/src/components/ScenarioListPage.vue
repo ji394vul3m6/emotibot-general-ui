@@ -21,7 +21,7 @@
       </div>
     </div>
     <template v-for="(scenario, index) in scenarioList">
-      <div class="row">
+      <div class="row" @mouseover="moreIcon = true" @mouseleave="moreIcon = false">
         <div id="scenario-grid">
           <div id="scenario-toggle-container">
             <toggle v-model="scenario.enable" @change="switchScenario(scenario)" :big="false"></toggle>
@@ -30,8 +30,10 @@
             <div class="name-label"  @click="editScenario(scenario.scenarioID)">
               {{scenario.scenarioName}}
             </div>
-            <div @click="deleteScenario(scenario)" class="delete-button">
-              {{$t("general.delete")}}
+            <div class="delete-button">
+              <div class="icon_container" v-show="moreIcon" v-dropdown="moreOptions(scenario)">
+                <icon :size=25 icon-type="more"/>
+              </div>
             </div>
           </div>
         </div>
@@ -57,11 +59,24 @@ export default {
       appId: '',
       scenarioList: [],
       searchKeyWord: '',
+      moreIcon: false,
     };
   },
   computed: {},
   watch: {},
   methods: {
+    moreOptions(scenario) {
+      const that = this;
+      return {
+        options: [{
+          text: this.i18n.general.delete,
+          onclick() {
+            that.deleteScenario(scenario);
+          },
+        }],
+        alignLeft: true,
+      };
+    },
     listAllScenarios() {
       taskEngineApi.listScenarios(this.appId).then((data) => {
         if (typeof (data) === 'object' && 'msg' in data) {
@@ -287,8 +302,16 @@ $row-height: $default-line-height;
           }
           .delete-button {
             flex: 0 0 68px;
-            cursor: pointer;
-            color: $color-error;
+            .icon_container{
+              position: relative;
+              width: 25px;
+              height: 25px;
+              border-radius: 25px;
+              cursor: pointer;
+              &:hover{
+                background-color: #f7f7f7;
+              }
+            }
           }
         }
       }
