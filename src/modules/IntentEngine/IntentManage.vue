@@ -5,8 +5,11 @@
         <div class="header-title">
           {{ $t('pages.intent_engine.intent_manage') }}
         </div>
+        <div class="header-subtitle">
+          {{ $t('intent_engine.manage.intent_num', {inum: intentList.length}) }}
+        </div>
         <div class="header-tool">
-          <text-button id="train-button" :button-type="canTrain ? 'default' : 'disable'" :icon-type="canTrain ? 'info_warning' : 'info_warning_gray'" width="100px" @click="startTraining">{{ $t('intent_engine.train') }}</text-button>
+          <text-button id="train-button" :button-type="canTrain ? 'default' : 'disable'" :icon-type="canTrain ? 'info_warning' : 'info_warning_gray'" width="100px" @click="startTraining" v-tooltip="trainButtonTooltip">{{ $t('intent_engine.train') }}</text-button>
           <search-input v-model="intentKeyword"></search-input>
         </div>
       </div>
@@ -17,8 +20,9 @@
           <text-button v-if="canExport" @click="exportIntentList(currentVersion)">{{ $t('general.export') }}</text-button>
         </div>
         <intent-list 
-          :intentList="intentList"
-          :canDeleteIntent="false"
+          :intentList="intentListToShow"
+          :canEditIntent="canEdit"
+          :canDeleteIntent="canEdit"
           :addIntentMode="isAddIntent"
           @addIntentDone="finishAddIntent()">
         </intent-list>
@@ -68,6 +72,10 @@ export default {
         },
       ],
       currentVersion: '',
+      trainButtonTooltip: {
+        msg: this.$t('intent_engine.manage.train_button_tooltip'),
+        alignLeft: true,
+      },
     };
   },
   computed: {
@@ -92,10 +100,18 @@ export default {
     shouldTrain() {
       return this.trainStatus === 'NOT_TRAINED' || this.trainStatus === 'TRAIN_FAILED';
     },
+    intentListToShow() {
+      if (this.intentKeyword !== '') {
+        return this.intentList.filter(intent => intent.name.includes(this.intentKeyword));
+        // NOTE: 'includes' may not support IE
+      }
+      return this.intentList;
+    },
   },
   methods: {
     addIntent() {
       this.isAddIntent = true;
+      this.intentKeyword = '';
     },
     finishAddIntent() {
       this.isAddIntent = false;
@@ -262,6 +278,12 @@ export default {
   .header-title {
     @include font-16px();
     color: $color-font-active;
+  }
+  .header-subtitle {
+    @include font-16px();
+    color: $color-font-mark;
+    flex: 1;
+    margin-left: 20px;
   }
   .header-tool {
     display: flex;

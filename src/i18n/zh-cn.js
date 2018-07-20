@@ -660,9 +660,12 @@ export default {
     version_not_exist: '意图版本不存在',
     manage: {
       add_intent: '新增意图',
+      intent_num: '共有{inum}组意图',
       corpus_num: ' ({num}笔语料)',
       cancel_edit_msg: '尚未保存编辑，确定要取消编辑吗？',
       addin: '加入',
+      positive: '正例',
+      negative: '反例',
       tooltip: {
         name_empty: '意图名称不可为空',
         name_duplicate: '意图名称已存在',
@@ -670,8 +673,9 @@ export default {
       placeholder: {
         intent_title: '输入意图名称',
         edit_corpus: '编辑语料，Enter完成编辑',
-        add_corpus: '新增语料，Enter 加入上方列表',
+        add_corpus: '新增语料，Enter 加入下方列表',
       },
+      train_button_tooltip: '机器人是依据语料来学习，每次新增语料后，必须进行意图训练以提高机器人识别正确率',
     },
     import: {
       title: '导入意图',
