@@ -767,6 +767,7 @@ export default {
     status: '状态',
     edit: '编辑',
     delete: '删除',
+    remove: '移除',
     question: '问题',
     answer: '答案',
     ext_answer: '答案扩展',

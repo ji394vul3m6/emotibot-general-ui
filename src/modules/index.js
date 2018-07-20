@@ -5,13 +5,13 @@ import SSM from './SSM';
 import Statistics from './Statistics';
 import TaskEngine from './TaskEngine';
 import Status from './Status';
-// import IntentEngine from './IntentEngine';
+import IntentEngine from './IntentEngine';
 
 export default {
   Status,
   SSM,
   TaskEngine,
-  // IntentEngine,
+  IntentEngine,
   Wordbank,
   Statistics,
   Robot,
