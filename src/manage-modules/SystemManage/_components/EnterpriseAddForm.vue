@@ -182,7 +182,10 @@ export default {
         that.showUpdatedTooltip(that.$refs.checkPassword, that.adminErrTooltip, that.$t('management.err_invalid_check_password'));
         return;
       }
-
+      const pickAnyModule = that.modules.reduce((val, mod) => val || mod.checked, false);
+      if (!pickAnyModule) {
+        that.$notifyFail(that.$t('management.err_pick_no_modules'));
+      }
 
       that.$emit('validateSuccess', {
         name: that.name,

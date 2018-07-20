@@ -18,7 +18,7 @@
     </div>
     <div class="row multi-line">
       <div v-for="(mod, idx) in modules" :key="idx" class="module">
-        <input type="checkbox" v-model="mod.checked">
+        <input type="checkbox" v-model="mod.checked" disabled>
         <div class="module-name">{{ $t(`privileges.modules.${mod.code}`) }}</div>
         <icon icon-type="help" :size=15 v-if="mod.description && mod.description !== ''"
          v-tooltip="{msg: mod.description}" />
@@ -108,7 +108,7 @@ export default {
     if (that.extData.checkedModules.length >= 0) {
       that.extData.checkedModules.forEach((mod) => {
         if (modMap[mod.code]) {
-          modMap[mod.code].checked = true;
+          modMap[mod.code].checked = mod.status;
         }
       });
     }

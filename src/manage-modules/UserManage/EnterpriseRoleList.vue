@@ -309,7 +309,9 @@ export default {
           if (page.privCode === 'management') {
             return;
           }
-          if (page.privCode && privCodes[page.privCode] === undefined) {
+          if (page.privCode
+            && privCodes[page.privCode] === undefined
+            && that.privilegeMap[page.privCode] !== undefined) {
             privCodes[page.privCode] = {};
             that.privilegeMap[page.privCode].forEach((cmd) => {
               privCodes[page.privCode][cmd] = false;

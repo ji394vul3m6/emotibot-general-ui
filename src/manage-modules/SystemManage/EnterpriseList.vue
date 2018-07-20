@@ -94,8 +94,9 @@ export default {
     goEnterprise(enterprise) {
       const that = this;
       that.$api.getEnterpriseModules(enterprise.enterpriseID).then((modules) => {
+        const showModules = modules.filter(mod => mod.status);
         localStorage.setItem('enterprise', enterprise.enterpriseID);
-        localStorage.setItem('modules', JSON.stringify(modules));
+        localStorage.setItem('modules', JSON.stringify(showModules));
         this.setEnterprise(enterprise.enterpriseID);
 
         const robots = that.$getRobots();

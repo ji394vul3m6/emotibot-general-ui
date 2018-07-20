@@ -80,6 +80,7 @@ export default {
       'userPrivilege',
       'showUserInfoPage',
       'showLanguage',
+      'privilegeList',
     ]),
   },
   data() {
@@ -95,6 +96,10 @@ export default {
     };
   },
   watch: {
+    enterpriseID() {
+      console.log('here');
+      this.setPrivilegeList(this.$getPrivModules());
+    },
     robotID(val) {
       if (val === '') {
         return;
@@ -154,6 +159,7 @@ export default {
           val || validURL.indexOf(match.path) >= 0, false);
         if (!valid) {
           that.$router.push('/manage/enterprise-manage');
+          return;
         }
       }
       if (that.robotID === '') {
@@ -162,10 +168,20 @@ export default {
           that.$router.push('/manage/robot-manage');
           return;
         }
+        return;
       }
 
+      const route = that.$route.matched[0];
+      if (!route.components.default) {
+        return;
+      }
+      const component = route.components.default;
       if (that.userInfo.type < 2) {
-        // system admin and enterprise admin can use all module
+        // system admin and enterprise admin can use all module active in enterprise
+        if (that.privilegeList.findIndex(l => l.code === component.privCode) < 0) {
+          that.$router.push('error');
+          return;
+        }
         return;
       }
       // TODO: get user privilege of specific robot
@@ -188,11 +204,6 @@ export default {
         }
         return;
       }
-      const route = that.$route.matched[0];
-      if (!route.components.default) {
-        return;
-      }
-      const component = route.components.default;
       const commands = privileges[component.privCode];
       if (codes.indexOf(component.privCode) < 0 ||
         (commands.indexOf('view') < 0 && commands.indexOf('edit') < 0)) {
@@ -256,6 +267,11 @@ export default {
         if (pageModule.pages) {
           Object.keys(pageModule.pages).forEach((pageName) => {
             const page = pageModule.pages[pageName];
+            // check if module is available in the enterprise
+            if (that.privilegeList.findIndex(p => p.code === page.privCode) < 0) {
+              return;
+            }
+
             if (that.userInfo.type >= 2) {
               if (page.hidden) {
                 return;

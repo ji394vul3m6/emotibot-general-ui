@@ -969,6 +969,7 @@ export default {
     err_enterprise_duplicate: '机器人名称已存在',
     err_group_name_empty: '群组名称不可为空',
     err_group_duplicate: '群组名称已存在',
+    err_pick_no_modules: '功能列表至少需勾选一个',
 
     go_back: '返回',
 
