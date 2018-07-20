@@ -37,7 +37,8 @@
     "vue-router": "~3.0.1",
     "vue-select": "~2.4.0",
     "vue-uuid": "~1.0.0",
-    "vuex": "~2.4.0"
+    "vuex": "~2.4.0",
+    "vuedraggable": "~2.16.0"
   },
   "devDependencies": {
     "@storybook/addon-actions": "~3.3.14",

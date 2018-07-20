@@ -1,11 +1,36 @@
 <template lang="html">
 <div id="action-page" class="page action-page">
-  <div class="title-container">
-    <div class="title">{{$t("task_engine_v3.action_page.label_title")}}</div>
+  <div class="add-action-container">
+    <div class="row">
+      <div class="label-add-action">{{$t("task_engine_v3.action_page.label_add_action")}}</div>
+      <div class="icon-container" v-tooltip="{ msg: $t('task_engine_v3.action_page.description')}">
+        <icon icon-type="info" :size=18 />
+      </div>
+    </div>
+    <div class="row row-margin-top">
+      <text-button
+        class="button-add-action-group"
+        button-type='primary'
+        @click="addNewActionGroup('msg')">
+        {{$t("task_engine_v3.action_page.button_add_new_msg")}}
+      </text-button>
+      <text-button
+        class="button-add-action-group"
+        button-type='primary'
+        @click="addNewActionGroup('webhook')">
+        {{$t("task_engine_v3.action_page.button_add_new_webhook")}}
+      </text-button>
+      <text-button
+        class="button-add-action-group"
+        button-type='primary'
+        @click="addNewActionGroup('goto')">
+        {{$t("task_engine_v3.action_page.button_add_new_goto")}}
+      </text-button>
+    </div>
   </div>
-  <div class="content-container">
-    <div class="action-group-list-container">
-      <template v-for="(actionGroup, index) in actionGroupList">
+  <div class="action-group-list-container">
+    <draggable v-model="actionGroupList" :options="{ghostClass:'ghost'}" @start="drag=true" @end="drag=false">
+      <div class="action-group-container" v-for="(actionGroup, index) in actionGroupList">
         <action-group :key="actionGroup.actionGroupId"
           :initialActionGroup="actionGroup"
           :initialEntityCollectorList="initialEntityCollectorList"
@@ -13,23 +38,20 @@
           @update="updateActionGroup(index, $event)"
           @deleteActionGroupButtonClick="deleteActionGroup(index)"
         ></action-group>
-      </template>
-    </div>
-    <div class="add-new-action-container">
-      <div class="add-new-action-btn" @click="addNewActionGroup('msg')">{{$t("task_engine_v3.action_page.button_add_new_msg")}}</div>
-      <div class="add-new-action-btn" @click="addNewActionGroup('webhook')">{{$t("task_engine_v3.action_page.button_add_new_webhook")}}</div>
-      <div class="add-new-action-btn" @click="addNewActionGroup('goto')">{{$t("task_engine_v3.action_page.button_add_new_goto")}}</div>
-    </div>
+      </div>
+    </draggable>
   </div>
 </div>
 </template>
 
 <script>
+import draggable from 'vuedraggable';
 import ActionGroup from '../components/ActionGroup';
 
 export default {
   name: 'action-page',
   components: {
+    draggable,
     'action-group': ActionGroup,
   },
   props: {
@@ -107,5 +129,60 @@ export default {
 
 <style lang="scss" scoped>
 @import "../scss/teVariable.scss";
-@import "../scss/actionPage.scss";
+#action-page{
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  padding-right: 0px;
+  .add-action-container{
+    flex: 0 0 auto;
+    padding: 10px;
+    margin-right: 20px;
+    height: 86px;
+    background: #f8f8f8;
+    .row{
+      display: flex;
+      flex-direction: row;
+      .label-add-action{
+        color: $color-font-active;
+        line-height: 28px;
+        font-size: 14px;
+      }
+      .icon-container{
+        margin-left: 4px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .button-add-action-group{
+        margin-right: 10px;
+      }
+    }
+    .row-margin-top{
+      margin-top: 10px;
+    }
+  }
+  .action-group-list-container{
+    flex: 1 1 auto;
+    overflow: auto;
+    margin-top: 10px;
+    padding-right: 20px;
+    .action-group-container{
+      cursor: move;
+      &:hover{
+        box-shadow: 0 4px 9px 0 rgba(115, 115, 115, 0.2), 0 5px 8px 0 rgba(228, 228, 228, 0.5);
+      }
+      &:active{
+        box-shadow: none;
+      }
+      &:last-child{
+        margin-bottom: 30px;
+      }
+      &.ghost{
+        background-color: #f8f8f8;
+      }
+    }
+  }
+}
 </style>

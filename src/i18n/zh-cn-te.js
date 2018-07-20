@@ -9,7 +9,6 @@ export default {
     scenario_list_page: {
       button_create_new_scenario: '+创建新场景',
       scenario_list: '场景列表',
-      placeholder_search: '搜寻...',
       ask_delete_confirm: '确认要删除场景：{scenario}',
     },
     scenario_edit_page: {
@@ -22,16 +21,13 @@ export default {
       },
       toast_save_success: '储存成功！',
       button_save_and_next_step: '储存并下一步',
+      switch_on: '启动',
+      switch_off: '停用',
     },
     condition_card: {
-      columns: {
-        intent: '使用者的意图',
-        entity: '信息名称',
-        context: '场景现况',
-      },
       if: '当',
       and: '而且',
-      comparison_operators: {
+      operators: {
         present: '存在',
         not_present: '不存在',
         contain: '包含',
@@ -43,28 +39,25 @@ export default {
         belong_to: '属于',
         not_belong_to: '不属于',
       },
-      context_status: {
+      context_targets: {
         on_complete: '蒐集完所有参数',
         on_cancel: '用户取消参数蒐集',
         on_transfer_to_manual: '触发转人工意图',
         on_parse_fail: '用户发话理解失败',
       },
+      target_type: {
+        entity: '信息实体',
+        context: '场景现况',
+      },
     },
     action_group: {
-      button_add_new_condition: '+条件',
-      button_send_message: '传送讯息',
-      button_go_to: '前往',
-      button_call_api: '调用API',
-      button_edit_memory: '修改内存',
+      button_add_new_condition: '＋过滤条件',
+      button_delete_action_group: '移除',
     },
     trigger_page: {
-      label_title: '这个场景会被哪个意图触发？',
-      label_title_description: '设定场景的进入条件，只有当使用者与机器人的对话满足预设的触发条件，会进入此场景，触发相对应的多轮对话。',
-      label_intent_setting: '设定触发场景的意图',
-      label_choose_intent: '选择意图：',
-      button_add_new_intent: '建立新意图',
-      btn_add_new_trigger: '新增触发条件',
-      option_choose_one: '请选择',
+      label_add_trigger: '这个场景会被哪些意图触发？',
+      button_add_trigger: '加入',
+      description: '设定场景的进入条件，只有当使用者与机器人的对话满足预设的触发条件，会进入此场景，触发相对应的多轮对话。',
     },
     create_scenario_pop: {
       label_create_new_scenario: '创建新场景',
@@ -93,31 +86,32 @@ export default {
       button_upload_batch_phrases: '上传批量测试资料(TBA)',
     },
     action_page: {
-      label_title: '蒐集所有必要的讯息后，你需要执行什么动作来完成任务？',
-      button_add_new_msg: '＋文字回应',
-      button_add_new_webhook: '＋Webhook连接外部服务',
-      button_add_new_goto: '＋连接下一个任务(TBA)',
+      description: '蒐集所有必要的讯息后，你需要执行什么动作来完成任务？',
+      label_add_action: '蒐集所有必要的讯息后，你需要执行什么动作来完成任务？',
+      button_add_new_msg: '新增文字回应',
+      button_add_new_webhook: '新增外部服务连接',
+      button_add_new_goto: '新增下一个任务连接',
     },
     action_card: {
-      btn_add_new_condition: '＋加入过滤条件',
+      label_msg_type: '文字回应',
+      label_webhook_type: '外部服务连接',
+      label_goto_type: '下一个任务连接',
+      msg: {
+        label_response: '回应',
+      },
       webhook: {
-        label_call_webhook: 'Webhook API 调用',
         label_variable: 'API回传值存放位置',
         label_method: '调用方法',
         label_url: '服务提供位址(URL)',
-        label_header_content_type: 'Header(Content-Type)',
+        label_content_type: 'Content-Type',
         label_body: 'Body',
-        placeholder_input_variable_name: '请为变量取名',
-        placeholder_input_url: 'ex. http://api.server.com/webhook',
+        placeholder_input_variable: '请为变量取名',
+        placeholder_input_url: 'http://api.server.com/webhook',
         placeholder_input_body: '{"parameter":"value"}',
       },
-      msg: {
-        label_msg_return: '文字回应',
-        label_return_msg: '回应文字：',
-      },
       goto: {
-        label_goto_next_skill: '连接下一个任务',
         label_goto: '前往',
+        label_goto_next_skill: '连接下一个任务',
         button_add_new_task: '建立新任务',
         option_finish_scenario: '结束场景',
       },
@@ -139,6 +133,7 @@ export default {
       entity_type: '信息实体型别',
       prompt: '信息对应问句',
       prompt_placeholder: '请填入信息对应问句',
+      delete: '刪除',
     },
     custom_entity_type_editor_pop: {
       title: '新增自定义实体型别',
@@ -176,7 +171,7 @@ export default {
       create_new_scenario_failed: '场景创建失败',
       custom_entity_list_length_must_greater_than_two: '至少两个以上的信息使用自定义实体型别，才可设置实体关联',
     },
-    'entity-relation-editor-pop': {
+    entity_relation_editor_pop: {
       title: '实体关联性设置',
       main_entity: '主要实体',
       related_entity: '关联实体',
@@ -185,19 +180,20 @@ export default {
       entity_type: '实体型别',
       entity: '实体',
     },
-    'sentence-replacement-editor-pop': {
+    sentence_replacement_editor_pop: {
       title: '语句替换设置',
       pattern: '语句比对模式',
       text: '替换语句',
       pattern_placeholder: '请输入要比对的语句模式',
       text_placeholder: '请输入要替换成的语句',
-      add_replacement_rule: '新增替换规则',
+      add_replacement_rule: '新增',
+      delete_replacement_rule: '删除',
     },
-    'tde-setting-editor-pop': {
+    tde_setting_editor_pop: {
       title: 'TDE属性设置',
-      nlgTemplate: '模版',
-      service: '服务',
-      jumpOutTimes: '跳出场景重试次数上限值',
+      nlgTemplate: '模版：',
+      service: '服务：',
+      jumpOutTimes: '跳出场景重试次数上限值：',
     },
   },
 };

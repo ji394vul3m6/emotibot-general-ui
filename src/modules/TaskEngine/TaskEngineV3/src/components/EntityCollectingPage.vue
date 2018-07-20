@@ -4,12 +4,14 @@
     <div class="row">
       <div class="title-container">
         <div class="title">{{$t("task_engine_v3.entity_collecting_page.title")}}</div>
-        <div class="tooltip_container" v-tooltip="{ msg: $t('task_engine_v3.entity_collecting_page.description'), clickShow: true }">
-          <icon :size=20 icon-type="tooltip"/>
+        <div class="tooltip_container" v-tooltip="{ msg: $t('task_engine_v3.entity_collecting_page.description')}">
+          <icon icon-type="info" :enableHover="true" :size=20 />
         </div>
       </div>
-      <div class="advanced-config">
-        {{$t("task_engine_v3.entity_collecting_page.advanced_config")}}
+      <div class="advanced-config" v-dropdown="advancedConfigOptions">
+        <text-button iconType="header_dropdown_gray" width="100px">
+          {{$t("task_engine_v3.entity_collecting_page.advanced_config")}}
+        </text-button>
       </div>
     </div>
     <div class="row">
@@ -30,35 +32,31 @@
     </div>
   </div>
   <div class="entity-collector-list-container">
-    <div class="entity-collector-row" v-for="(entityCollector, index) in entityCollectorList" :key="entityCollector.id">
-      <entity-collector
-        :order="getOrder(index, entityCollectorList.length)"
-        :initialEntityCollector="entityCollector"
-        :initialCategoryToNerTypeMap="categoryToNerTypeMap"
-        @deleteEntityCollectorButtonClick="deleteEntityCollector(index)"
-        @moveUp="moveUp(index)"
-        @moveDown="moveDown(index)"
-        @updateData="updateData(index, $event)"
-        @addCustomNer="addCustomNer"
-        @deleteCustomNer="deleteCustomNer"
-      ></entity-collector>
-    </div>
+    <draggable v-model="entityCollectorList" :options="{ghostClass:'ghost'}" @start="drag=true" @end="drag=false">
+      <div class="entity-collector-row" v-for="(entityCollector, index) in entityCollectorList" :key="entityCollector.id">
+        <entity-collector
+          :order="index"
+          :initialEntityCollector="entityCollector"
+          :initialCategoryToNerTypeMap="categoryToNerTypeMap"
+          @deleteEntityCollectorButtonClick="deleteEntityCollector(index)"
+          @updateData="updateData(index, $event)"
+          @addCustomNer="addCustomNer"
+          @deleteCustomNer="deleteCustomNer"
+        ></entity-collector>
+      </div>
+    </draggable>
   </div>
-  <div class="bottom-container">
-    <button class="btn-basic edit-entity-relation-button"
-        @click="editEntityRelation"
-      >{{$t("task_engine_v3.entity_collecting_page.edit_entity_relation")}}</button>
-    <button class="btn-basic edit-sentence-replacement-button"
-        @click="editSentenceReplacement"
-      >{{$t("task_engine_v3.entity_collecting_page.edit_sentence_replacement")}}</button>
-    <button class="btn-basic edit-tde-setting-button"
-        @click="editTDESetting"
-      >{{$t("task_engine_v3.entity_collecting_page.edit_tde_setting")}}</button>
-  </div>
+  <!--
+  <button class="btn-basic edit-entity-relation-button"
+      @click="editEntityRelation"
+    >{{$t("task_engine_v3.entity_collecting_page.edit_entity_relation")}}</button>
+  -->
 </div>
 </template>
 
 <script>
+import draggable from 'vuedraggable';
+import DropdownMenu from '@/components/basic/DropdownMenu';
 import EntityCollector from './EntityCollector';
 import EntityRelationEditPop from './EntityRelationEditPop';
 import SentenceReplacementEditorPop from './SentenceReplacementEditorPop';
@@ -69,7 +67,9 @@ import general from '../utils/general';
 export default {
   name: 'entity-collecting-page',
   components: {
+    draggable,
     'entity-collector': EntityCollector,
+    'dropdown-menu': DropdownMenu,
   },
   props: {
     initialEntityCollectorList: {
@@ -105,6 +105,7 @@ export default {
       },
       re_parsers: [],
       tde_setting: {},
+      advancedConfigOptions: {},
     };
   },
   computed: {},
@@ -336,32 +337,6 @@ export default {
       this.entityCollectorList[index] = JSON.parse(JSON.stringify(newEntityCollector));
       this.$emit('update', this.entityCollectorList);
     },
-    moveUp(index) {
-      const tmp = this.entityCollectorList[index - 1];
-      this.entityCollectorList[index - 1] = this.entityCollectorList[index];
-      this.entityCollectorList[index] = tmp;
-      this.$nextTick(() => {
-        this.$forceUpdate();
-      });
-    },
-    moveDown(index) {
-      const tmp = this.entityCollectorList[index + 1];
-      this.entityCollectorList[index + 1] = this.entityCollectorList[index];
-      this.entityCollectorList[index] = tmp;
-      this.$nextTick(() => {
-        this.$forceUpdate();
-      });
-    },
-    getOrder(index, length) {
-      if (index === 0 && index === length - 1) {
-        return 'single';
-      } else if (index === 0) {
-        return 'start';
-      } else if (index === length - 1) {
-        return 'end';
-      }
-      return 'mid';
-    },
     editEntityRelation() {
       const customEntityCollectorList = this.entityCollectorList.filter(collector => collector.ner.sourceType === 'custom');
       if (customEntityCollectorList.length < 2) {
@@ -394,7 +369,7 @@ export default {
     editSentenceReplacement() {
       const that = this;
       that.$pop({
-        title: '',
+        title: this.i18n.task_engine_v3.sentence_replacement_editor_pop.title,
         component: SentenceReplacementEditorPop,
         validate: true,
         data: {
@@ -411,7 +386,7 @@ export default {
     editTDESetting() {
       const that = this;
       that.$pop({
-        title: '',
+        title: this.i18n.task_engine_v3.tde_setting_editor_pop.title,
         component: TDESettingEditorPop,
         validate: true,
         data: {
@@ -426,16 +401,13 @@ export default {
       });
     },
     addNewEntityCollector() {
+      const firstCategory = Object.keys(this.categoryToNerTypeMap)[0];
+      const firstNer = this.categoryToNerTypeMap[firstCategory][0];
       this.entityCollectorList.push({
         id: this.$uuid.v1(),
         entityName: null,
-        entityCategory: '通用实体类别',
-        ner: {
-          entityCategory: '通用实体类别',
-          entityType: '时间日期',
-          sourceType: 'system',
-          slotType: 'time',
-        },
+        entityCategory: firstCategory,
+        ner: firstNer,
         prompt: null,
         retry_num: 3,
         required: true,
@@ -453,10 +425,25 @@ export default {
       this.updateCategoryToNerTypeMap(this.idToNerMap);
     },
   },
-  beforeMount() {},
-  mounted() {
+  beforeMount() {
     this.i18n = i18nUtils.getLocaleMsgs(this.$i18n);
+    this.advancedConfigOptions = {
+      options: [{
+        text: this.i18n.task_engine_v3.entity_collecting_page.edit_sentence_replacement,
+        onclick: this.editSentenceReplacement,
+      }, {
+        text: this.i18n.task_engine_v3.entity_collecting_page.edit_tde_setting,
+        onclick: this.editTDESetting,
+      }],
+      alignLeft: true,
+    };
     this.$on('rerender', this.rerender);
+    this.rerender();
+  },
+  mounted() {
+    if (this.entityCollectorList.length === 0) {
+      this.addNewEntityCollector();
+    }
   },
   activated() {
     this.rerender();

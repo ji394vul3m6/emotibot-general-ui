@@ -5,11 +5,17 @@
       <div class="breadcrumb">
         <div class="back-to-list" @click="$router.replace('/task-engine-scenario-v3');">{{$t("task_engine_v3.scenario_list_page.scenario_list")}}</div>
         <div>&gt;</div>
-        <input
-          ref="scenarioName"
-          v-model="scenarioName"
-          :placeholder="$t('task_engine_v3.scenario_edit_page.placeholder_name_the_scenario')"
-          @input="resizeScenarioNameInput">
+        <div class="scenario-name-container">
+          <div class="blank"/>
+          <input
+            class="input-scenario-name"
+            v-model="scenarioName"
+            :placeholder="$t('task_engine_v3.scenario_edit_page.placeholder_name_the_scenario')">
+          <div class="bottom-border"/>
+        </div>
+        <div class="label-switch-off label-switch">{{$t("task_engine_v3.scenario_edit_page.switch_off")}}</div>
+        <toggle class="button-switch-enable" v-model="enable" @change="switchScenario()" :big="false"></toggle>
+        <div class="label-switch-on label-switch">{{$t("task_engine_v3.scenario_edit_page.switch_on")}}</div>
       </div>
       <div>
         <text-button button-type='default' @click="$router.replace('/task-engine-scenario-v3');">{{$t("general.close")}}</text-button>
@@ -18,20 +24,27 @@
     </div>
     <div class="main-content">
       <div class="sidebar">
-        <dropdown-select
-          ref="dropdownSelect"
-          v-model="currentSkillName"
-          :options="skillNameList"
-          width="130px"
-        />
-        <ul class="list-ic vertical">
-          <template v-for="(page, key, idx) in pages">
-            <li :key="key" :class="{ 'active': key === currentPage }">
-              <span class="order">{{idx+1}}</span>
-              <span class="title" @click="pageChange(key)">{{ page.name }}</span>
-            </li>
-          </template>
-        </ul>
+        <div class="sidebar-content">
+          <div class="slect-skill-container">
+            <dropdown-select
+              ref="dropdownSelect"
+              v-model="currentSkillName"
+              :options="skillNameList"
+              width="141px"
+            />
+            <div class="setting-button">
+              <icon icon-type="setting" :size=15 @click=""/>
+            </div>
+          </div>
+          <ul class="list-ic vertical">
+            <template v-for="(page, key, idx) in pages">
+              <li :key="key" :class="{ 'active': key === currentPage }">
+                <span class="order">{{idx+1}}</span>
+                <span class="title" @click="pageChange(key)">{{ page.name }}</span>
+              </li>
+            </template>
+          </ul>
+        </div>
       </div>
       <skill-edit-page
           ref="skillEditPage"
@@ -80,6 +93,7 @@ export default {
       pages: {},
       currentPage: 'triggerPage',
       idToNerMap: {},
+      enable: false,
     };
   },
   computed: {
@@ -174,14 +188,10 @@ export default {
         window.moduleData = JSON.parse(data.result.editingContent);
         window.moduleDataLayouts = JSON.parse(data.result.editingLayout);
         this.scenarioName = window.moduleData.metadata.scenario_name;
-        this.resizeScenarioNameInput();
         this.renderData(window.moduleData);
       }, (err) => {
         general.popErrorWindow(this, 'loadScenario error', err.message);
       });
-    },
-    resizeScenarioNameInput() {
-      this.$refs.scenarioName.style.width = `${(this.scenarioName.length + 1) * 16}px`;
     },
     renderData(moduleData) {
       this.currentSkillId = 'mainSkill';
@@ -269,12 +279,29 @@ export default {
       }
       return true;
     },
+    setSwitchToggle(appId, scenarioId) {
+      api.listScenarios(appId).then((data) => {
+        if (typeof (data) === 'object' && 'msg' in data) {
+          const scenario = data.msg.find(s => s.scenarioID === scenarioId);
+          this.enable = scenario.enable;
+        }
+      }, (err) => {
+        general.popErrorWindow(this, 'listScenarios error', err.message);
+      });
+    },
+    switchScenario() {
+      api.switchScenario(this.appId, this.scenarioId, this.enable).then(() => {
+      }, (err) => {
+        general.popErrorWindow(this, 'switchScenario error', err.message);
+      });
+    },
   },
   beforeMount() {
     this.appId = this.$cookie.get('appid');
     this.scenarioId = this.$route.params.id;
     this.i18n = i18nUtils.getLocaleMsgs(this.$i18n);
     this.loadScenario(this.scenarioId);
+    this.setSwitchToggle(this.appId, this.scenarioId);
   },
   mounted() {
     this.allPages = {

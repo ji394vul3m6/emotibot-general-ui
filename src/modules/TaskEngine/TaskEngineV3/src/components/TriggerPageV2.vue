@@ -1,34 +1,40 @@
 <template lang="html">
 <div id="trigger-page" class="page trigger-page">
-  <div class="title-container">
-    <div class="title">{{$t("task_engine_v3.trigger_page.label_title")}}</div>
-    <div class="title-description">{{$t("task_engine_v3.trigger_page.label_title_description")}}</div>
+  <div class="add-trigger-container">
+    <div class="row">
+      <div class="label-add-trigger">{{$t("task_engine_v3.trigger_page.label_add_trigger")}}</div>
+      <div class="icon-container" v-tooltip="{ msg: $t('task_engine_v3.trigger_page.description')}">
+        <icon icon-type="info" :size=18 />
+      </div>
+    </div>
+    <div class="row row-margin-top">
+      <dropdown-select
+        class="select-add-trigger"
+        ref="selectAddTrigger"
+        v-model="newIntentModel"
+        :options="intentOptionList"
+        width="160px"
+      />
+      <text-button
+        class="button-add-trigger"
+        button-type='primary'
+        @click="addNewTrigger">
+        {{$t("task_engine_v3.trigger_page.button_add_trigger")}}
+      </text-button>
+    </div>
   </div>
-  <div class="hr"><hr/></div>
-  <div class="label-intent-setting">{{$t("task_engine_v3.trigger_page.label_intent_setting")}}</div>
-  <div class="content-container">
-    <template v-for="(trigger, triggerIndex) in triggerList">
-      <div class="intent-editor-box">
-        <div class="delete-intent-button" @click="deleteThisTrigger(triggerIndex)">X</div>
-        <div class="intent-editor-container">
-          <div class="left">
-            <div class="label-choose-intent">{{$t("task_engine_v3.trigger_page.label_choose_intent")}}</div>
-            <v-select
-              v-model="triggerList[triggerIndex]"
-              :options="intentOptionList"
-              :searchable="false"
-              label="intent_name">
-            </v-select>
-          </div>
-        </div>
+  <div class="trigger-list-container">
+    <template v-for="trigger in triggerList">
+      <div class="trigger">
+        <div class="label-trigger">{{trigger.intent_name}}</div>
       </div>
     </template>
-    <div class="button-add-new-trigger" @click="addNewTrigger">{{$t("task_engine_v3.trigger_page.btn_add_new_trigger")}}</div>
   </div>
 </div>
 </template>
 
 <script>
+import DropdownSelect from '@/components/DropdownSelect';
 import IntentEngine from './_api/intentEngine';
 import i18nUtils from '../utils/i18nUtil';
 import general from '../utils/general';
@@ -36,6 +42,7 @@ import general from '../utils/general';
 export default {
   name: 'trigger-page',
   components: {
+    'dropdown-select': DropdownSelect,
   },
   props: {
     initialTriggerList: {
@@ -49,11 +56,24 @@ export default {
       appId: '',
       ieApi: null,
       triggerList: JSON.parse(JSON.stringify(this.initialTriggerList)),
+      newIntent: '',
       intentList: [],
       intentOptionList: [],
     };
   },
-  computed: {},
+  computed: {
+    newIntentModel: {
+      get() {
+        if (this.newIntent === '') {
+          return [];
+        }
+        return [this.newIntent];
+      },
+      set(newSelected) {
+        this.newIntent = newSelected[0];
+      },
+    },
+  },
   watch: {
     triggerList() {
       this.$emit('update', this.triggerList);
@@ -61,14 +81,17 @@ export default {
   },
   methods: {
     addNewTrigger() {
-      this.triggerList.push(null);
+      this.triggerList.push({
+        type: 'intent_engine_2.0',
+        intent_name: this.newIntent,
+        editable: true,
+      });
     },
     deleteThisTrigger(index) {
       this.triggerList.splice(index, 1);
     },
     loadIntentOptionList() {
       this.ieApi.listIntents().then((resp) => {
-        console.log(resp);
         this.intentList = resp.data.result;
         this.intentOptionList = [];
         this.intentList.forEach((intent) => {
@@ -76,12 +99,18 @@ export default {
             return;
           }
           const object = {
-            intent_name: intent,
-            type: 'intent_engine_2.0',
-            editable: true,
+            text: intent,
+            value: intent,
+            // intent_name: intent,
+            // type: 'intent_engine_2.0',
+            // editable: true,
           };
           this.intentOptionList.push(object);
         });
+        this.$refs.selectAddTrigger.$emit('updateOptions', this.intentOptionList);
+        if (this.intentOptionList.length > 0) {
+          this.$refs.selectAddTrigger.$emit('select', this.intentOptionList[0].value);
+        }
       }, (err) => {
         general.popErrorWindow(this, 'listIntents error', err.message);
       });
@@ -109,5 +138,61 @@ export default {
 
 <style lang="scss" scoped>
 @import "../scss/teVariable.scss";
-@import "../scss/triggerPage.scss";
+#trigger-page{
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  .add-trigger-container{
+    flex: 0 0 auto;
+    padding: 10px;
+    height: 86px;
+    background: #f8f8f8;
+    .row{
+      display: flex;
+      flex-direction: row;
+      .label-add-trigger{
+        color: $color-font-active;
+        line-height: 28px;
+        font-size: 14px;
+      }
+      .icon-container{
+        margin-left: 4px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .select-add-trigger{
+        height: 28px;
+        background: #ffffff;
+        border-radius: 2px;
+        border: solid 1px #dbdbdb;
+      }
+      .button-add-trigger{
+        margin-left: 10px;
+      }
+    }
+    .row-margin-top{
+      margin-top: 10px;
+    }
+  }
+  .trigger-list-container{
+    flex: 1 1 auto;
+    overflow: auto;
+    padding-top: 25px;
+    .trigger{
+      margin-bottom: 12px;
+      padding: 10px;
+      height: 48px;
+      border-radius: 4px;
+      background-color: #ffffff;
+      border: solid 1px #dbdbdb;
+      .label-trigger{
+        color: $color-font-normal;
+        line-height: 28px;
+        font-size: 14px;
+      }
+    }
+  }
+}
 </style>

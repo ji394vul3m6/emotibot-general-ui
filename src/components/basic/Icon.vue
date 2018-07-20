@@ -1,6 +1,7 @@
 <template>
   <div class="icon" :class="{button: button}" @click="$emit('click', $event)" :style="containerStyle">
-    <div :class="`${iconType}_icon`" :style="styleObj"></div>
+    <div v-if="enableHover" :class="`${iconType}_icon_hover`" :style="styleObj"></div>
+    <div v-else :class="`${iconType}_icon`" :style="styleObj"></div>
   </div>
 </template>
 
@@ -18,6 +19,10 @@ export default {
       required: true,
     },
     button: {
+      type: Boolean,
+      default: false,
+    },
+    enableHover: {
       type: Boolean,
       default: false,
     },
@@ -115,6 +120,18 @@ export default {
       }
     }
   }
+  @mixin iconTypeHover($name) {
+    .#{$name}_icon_hover {
+      background: url("../../assets/icons/#{$name}_icon.svg") no-repeat center center;
+      // background: url("./icons/#{$name}_icon.svg") no-repeat center center;
+      background-size: 20px 20px;
+      width: 100%;
+      height: 100%;
+      &:hover {
+        background: url("../../assets/icons/#{$name}_hover_icon.svg") no-repeat center center;
+      }
+    }
+  }
 
   @include iconType("menu_expand");
   @include iconType("menu_statistics");
@@ -142,9 +159,9 @@ export default {
   @include iconType("robot");
   @include iconType("search");
   @include iconType("white_add");
-  @include iconType("tooltip");
   @include iconType("daggle");
   @include iconType("more");
+  @include iconType("setting");
 
   /** used on robot profile icon */
   @include iconType("profile_question");
@@ -160,6 +177,7 @@ export default {
   /** used on input info */
   @include iconType("info");
   @include iconType("info_hover");
+  @include iconTypeHover("info");
 
   /** used on category memu */
   @include iconType("category_add");
@@ -172,12 +190,18 @@ export default {
   @include iconType("header_user");
   @include iconType("header_dialog");
   @include iconType("header_dropdown");
+  @include iconType("header_dropdown_gray");
 
-  @include iconType("more");
   @include iconType("intent");
   @include iconType("info_warning_gray");
   @include iconType("close_expand");
   @include iconType("upload");
+  /** used on calendar */
+  @include iconType("year_left");
+  @include iconType("year_right");
+  @include iconType("month_left");
+  @include iconType("month_right");
+
   // robot icon should a little bit larger than other icons
   .white_robot_icon {
     background-size: 25px 25px;
