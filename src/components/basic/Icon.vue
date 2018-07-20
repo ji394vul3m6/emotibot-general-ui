@@ -147,6 +147,9 @@ export default {
   @include iconType("check");
   @include iconType("checked");
   @include iconType("close");
+  @include iconType("delete");
+  @include iconType("delete_hover");
+  @include iconTypeHover("delete");
   @include iconType("drop_down");
   @include iconType("edit");
   @include iconType("edit_blue");
@@ -162,6 +165,8 @@ export default {
   @include iconType("daggle");
   @include iconType("more");
   @include iconType("setting");
+  @include iconType("setting_hover");
+  @include iconTypeHover("setting");
 
   /** used on robot profile icon */
   @include iconType("profile_question");

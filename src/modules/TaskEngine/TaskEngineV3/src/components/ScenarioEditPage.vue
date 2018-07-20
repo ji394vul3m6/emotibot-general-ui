@@ -33,7 +33,7 @@
               width="141px"
             />
             <div class="setting-button">
-              <icon icon-type="setting" :size=15 @click="editSkills"/>
+              <icon icon-type="setting" :enableHover="true" :size=15 @click="editSkills"/>
             </div>
           </div>
           <ul class="list-ic vertical">

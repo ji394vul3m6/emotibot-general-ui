@@ -24,8 +24,8 @@
     type="text"
     v-model="condition.content"
   />
-  <div class="button-delete-condition-container">
-    <div class="button-delete-condition" @click="deleteThisCondition">X</div>
+  <div class="button-delete-condition">
+    <icon icon-type="delete" :enableHover="true" :size=20 @click="deleteThisCondition"/>
   </div>
 </div>
 </template>
@@ -170,6 +170,7 @@ export default {
   display: flex;
   flex-direction: row;
   margin-top: 10px;
+  align-items: center;
   .label-when{
     width: 28px;
     height: 28px;
@@ -190,23 +191,9 @@ export default {
     width: 144px;
   }
 
-  .button-delete-condition-container{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    .button-delete-condition{
-      width: 18px;
-      height: 18px;
-      border-radius: 9px;
-      background-color: #f7f7f7;
-      font-size: 12px;
-      text-align: center;
-      line-height: 18px;
-      color: $color-error;
-      &:hover {
-        cursor: pointer;
-        color: darken($color-error, 15%);
-      }
+  .button-delete-condition{
+    &:hover {
+      cursor: pointer;
     }
   }
 }

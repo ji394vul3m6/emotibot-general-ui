@@ -93,6 +93,9 @@ $bullet-point-color: #9b9b9b;
               flex-direction: column;
               justify-content: center;
               margin-left: 10px;
+              &:hover{
+                cursor: pointer;
+              }
             }
           }
 
