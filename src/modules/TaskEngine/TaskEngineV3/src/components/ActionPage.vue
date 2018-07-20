@@ -4,7 +4,7 @@
     <div class="row">
       <div class="label-add-action">{{$t("task_engine_v3.action_page.label_add_action")}}</div>
       <div class="icon-container" v-tooltip="{ msg: $t('task_engine_v3.action_page.description')}">
-        <icon icon-type="info" :size=18 />
+        <icon icon-type="info" :enableHover="true" :size=20 />
       </div>
     </div>
     <div class="row row-margin-top">
@@ -177,7 +177,7 @@ export default {
         box-shadow: none;
       }
       &:last-child{
-        margin-bottom: 30px;
+        margin-bottom: 80px;
       }
       &.ghost{
         background-color: #f8f8f8;

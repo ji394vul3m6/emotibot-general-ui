@@ -1,13 +1,12 @@
 <template lang="html">
 <div id="create-skill-pop">
-  <div class="create-skill-title">
-    <div>{{$t('task_engine_v3.create_skill_pop.label_create_new_skill')}}</div>
-  </div>
-  <div class="create-skill-box">
-    <div class="skill-name-container">
-      <div class="input-label">{{$t("task_engine_v3.create_skill_pop.label_name_the_skill")}}</div>
-      <input v-model="skillName" :placeholder="$t('task_engine_v3.create_skill_pop.placeholder_enter_skill_name')"></input>
-    </div>
+  <div class="edit-skill-container">
+    <div class="label-skill-name">{{$t('task_engine_v3.create_skill_pop.label_skill_name')}}</div>
+    <input
+      class="input-skill-name"
+      v-model="skillName"
+      :placeholder="$t('task_engine_v3.create_skill_pop.placeholder_enter_skill_name')"
+    />
   </div>
 </div>
 </template>
@@ -56,5 +55,31 @@ export default {
 
 <style lang="scss" scoped>
 @import "../scss/teVariable.scss";
-@import "../scss/createSkillPop.scss";
+#create-skill-pop{
+  display: flex;
+  flex-direction: column;
+  width: 428px;
+  .edit-skill-container{
+    display: flex;
+    flex-direction: row;
+    .label-skill-name{
+      flex: 0 0 auto;
+      width: 60px;
+      height: 28px;
+      font-size: 14px;
+      line-height: 2;
+      color: $color-font-normal;
+      margin-left: 25px;
+    }
+    .input-skill-name{
+      flex: 1 1 0;
+      height: 28px;
+      font-size: 14px;
+      line-height: 2;
+      color: $color-font-active;
+      margin-left: 10px;
+      margin-right: 22px;
+    }
+  }
+}
 </style>

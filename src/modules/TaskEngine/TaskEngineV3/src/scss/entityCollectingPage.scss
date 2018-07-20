@@ -4,6 +4,10 @@
   flex-direction: column;
   margin: 20px 20px 0px 20px;
   color: $color-font-normal;
+  .tooltip_container{
+    display: flex;
+    align-items: center;
+  }
   .clickable{
     cursor: pointer; 
   }
@@ -23,10 +27,6 @@
         align-items: center;
         .title{
           color: $color-font-active;
-        }
-        .tooltip_container{
-          display: flex;
-          align-items: center;
         }
       }
       &:not(:first-child){
@@ -50,20 +50,19 @@
     .order_column{
       flex: 0 0 50px;
       display:flex;
-      flex-direction: row;
     }
     .required_column{
       flex: 0 0 50px;
+      display: flex;
     }
     .entity_name_column{
       flex: 0 0 150px;
       padding-right: 10px;
+      display:flex;
     }
     .entity_type_column{
       flex: 0 0 320px;
       display:flex;
-      flex-direction: row;
-      align-items: center;
       .dropdown-select{
         margin-right: 10px;
       }
@@ -71,9 +70,11 @@
     .prompt_column{
       flex: 1 1 auto;
       padding-right: 10px;
+      display:flex;
     }
     .retry_times_column{
-      flex: 0 0 60px;
+      flex: 0 0 80px;
+      display:flex;
       input[type="number"] {
         width:50px;
       }

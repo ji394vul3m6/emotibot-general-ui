@@ -103,6 +103,10 @@ export default {
         text: this.i18n.task_engine_v3.action_card.goto.option_finish_scenario,
         value: 'exit',
       });
+      skillNameList.push({
+        text: '创建新任务',
+        value: 'add_new_skill',
+      });
       return skillNameList;
     },
     skillModel: {
@@ -110,7 +114,11 @@ export default {
         return [this.action.targetSkillId];
       },
       set(newValue) {
-        this.action.targetSkillId = newValue[0];
+        if (newValue[0] === 'add_new_skill') {
+          this.addNewSkill();
+        } else {
+          this.action.targetSkillId = newValue[0];
+        }
       },
     },
     methodOptions() {
@@ -162,10 +170,9 @@ export default {
     addNewSkill() {
       const that = this;
       that.$pop({
-        title: '',
+        title: this.i18n.task_engine_v3.create_skill_pop.label_title,
         component: CreateSkillPop,
         validate: true,
-        ok_msg: that.$t('general.add'),
         data: {
           skillName: '',
         },
