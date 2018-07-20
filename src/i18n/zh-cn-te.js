@@ -70,6 +70,13 @@ export default {
       label_skill_name: '任务名称',
       placeholder_enter_skill_name: '输入任务名称...',
     },
+    edit_skill_pop: {
+      label_title: '场景任务管理',
+      label_skill_name: '任务名称',
+      button_add_skill: '新增任务',
+      button_delete_skill: '删除',
+      tooltip_empty_name: '不能为空白',
+    },
     intent_editor_pop: {
       label_edit_intent: '编辑意图',
       label_add_new_intent: '新增意图',

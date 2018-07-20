@@ -33,7 +33,7 @@
               width="141px"
             />
             <div class="setting-button">
-              <icon icon-type="setting" :size=15 @click=""/>
+              <icon icon-type="setting" :size=15 @click="editSkills"/>
             </div>
           </div>
           <ul class="list-ic vertical">
@@ -65,6 +65,7 @@ import SkillEditPage from './SkillEditPage';
 import TriggerPage from './TriggerPageV2';
 import EntityCollectingPage from './EntityCollectingPage';
 import ActionPage from './ActionPage';
+import EditSkillsPop from './EditSkillsPop';
 import i18nUtils from '../utils/i18nUtil';
 import api from './_api/taskEngine';
 import general from '../utils/general';
@@ -119,6 +120,9 @@ export default {
     skills: {
       handler() {
         this.updateSkillNameList();
+        if (!this.skills[this.currentSkillId]) {
+          this.currentSkillId = 'mainSkill';
+        }
       },
       deep: true,
     },
@@ -295,6 +299,23 @@ export default {
       api.switchScenario(this.appId, this.scenarioId, this.enable).then(() => {
       }, (err) => {
         general.popErrorWindow(this, 'switchScenario error', err.message);
+      });
+    },
+    editSkills() {
+      const that = this;
+      that.$pop({
+        title: this.i18n.task_engine_v3.edit_skill_pop.label_title,
+        component: EditSkillsPop,
+        validate: true,
+        bindValue: false,
+        data: {
+          skills: this.skills,
+        },
+        callback: {
+          ok: (newSkills) => {
+            this.skills = newSkills;
+          },
+        },
       });
     },
   },

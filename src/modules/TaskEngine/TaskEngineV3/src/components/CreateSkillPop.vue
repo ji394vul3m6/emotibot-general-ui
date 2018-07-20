@@ -2,7 +2,11 @@
 <div id="create-skill-pop">
   <div class="edit-skill-container">
     <div class="label-skill-name">{{$t('task_engine_v3.create_skill_pop.label_skill_name')}}</div>
-    <input class="input-skill-name" v-model="skillName" :placeholder="$t('task_engine_v3.create_skill_pop.placeholder_enter_skill_name')"></input>
+    <input
+      class="input-skill-name"
+      v-model="skillName"
+      :placeholder="$t('task_engine_v3.create_skill_pop.placeholder_enter_skill_name')"
+    />
   </div>
 </div>
 </template>
