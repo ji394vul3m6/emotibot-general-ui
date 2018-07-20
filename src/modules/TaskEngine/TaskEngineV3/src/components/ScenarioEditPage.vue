@@ -157,8 +157,10 @@ export default {
         text: this.skills[skillId].skillName,
         value: skillId,
       }));
-      this.$refs.dropdownSelect.$emit('updateOptions', this.skillNameList);
-      this.$refs.dropdownSelect.$emit('select', this.currentSkillId);
+      if (this.$refs.dropdownSelect) {
+        this.$refs.dropdownSelect.$emit('updateOptions', this.skillNameList);
+        this.$refs.dropdownSelect.$emit('select', this.currentSkillId);
+      }
     },
     addNewSkill(skillName) {
       const skillId = this.$uuid.v1();
@@ -173,9 +175,9 @@ export default {
         re_parsers: [],
         tde_setting: {},
       };
-      this.updateSkillNameList();
       // route to new skill
       this.currentSkillId = skillId;
+      this.updateSkillNameList();
     },
     updateIdToNerMap(idToNerMap) {
       // save new nerMap

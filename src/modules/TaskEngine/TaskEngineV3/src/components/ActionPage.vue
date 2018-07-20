@@ -177,7 +177,7 @@ export default {
         box-shadow: none;
       }
       &:last-child{
-        margin-bottom: 30px;
+        margin-bottom: 80px;
       }
       &.ghost{
         background-color: #f8f8f8;

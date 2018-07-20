@@ -66,8 +66,8 @@ export default {
       placeholder_enter_scenario_name: '输入场景名称...',
     },
     create_skill_pop: {
-      label_create_new_skill: '创建新任务',
-      label_name_the_skill: '给任务取个名字：',
+      label_title: '创建新任务',
+      label_skill_name: '任务名称',
       placeholder_enter_skill_name: '输入任务名称...',
     },
     intent_editor_pop: {
