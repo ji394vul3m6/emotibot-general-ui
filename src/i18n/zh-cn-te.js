@@ -76,6 +76,7 @@ export default {
       button_add_skill: '新增任务',
       button_delete_skill: '删除',
       tooltip_empty_name: '不能为空白',
+      warn_delete_skill: '您确认要删除此任务吗？',
     },
     intent_editor_pop: {
       label_edit_intent: '编辑意图',

@@ -71,9 +71,21 @@ export default {
       this.$forceUpdate();
     },
     deleteSkill(skillId) {
-      delete this.skills[skillId];
-      delete this.nameTooltipMap[skillId];
-      this.$forceUpdate();
+      const options = {
+        ok_msg: this.$t('general.ok'),
+        cancel_msg: this.$t('general.cancel'),
+        callback: {
+          ok: () => {
+            delete this.skills[skillId];
+            delete this.nameTooltipMap[skillId];
+            this.$forceUpdate();
+          },
+        },
+        data: {
+          msg: `${this.$t('task_engine_v3.edit_skill_pop.warn_delete_skill')}`,
+        },
+      };
+      this.$popCheck(options);
     },
     validateDate() {
       let success = true;
@@ -157,6 +169,10 @@ export default {
         font-size: 12px;
         line-height: 28px;
         color: $color-error;
+        &:hover {
+          cursor: pointer;
+          color: darken($color-error, 15%);
+        }
       }
     }
   }
