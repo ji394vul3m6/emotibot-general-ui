@@ -21,8 +21,8 @@
         </div>
         <intent-list 
           :intentList="intentListToShow"
-          :canEditIntent="canEdit"
-          :canDeleteIntent="canEdit"
+          :canEditIntent="false"
+          :canDeleteIntent="false"
           :addIntentMode="isAddIntent"
           @addIntentDone="finishAddIntent()">
         </intent-list>
