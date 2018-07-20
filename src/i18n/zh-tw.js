@@ -983,6 +983,11 @@ export default {
         view: '指令設置查看',
         edit: '指令設置編輯',
       },
+      intent_manage: {
+        view: '意圖管理查看',
+        export: '意圖管理導入',
+        import: '意圖管理導出',
+      },
     },
   },
   header: {

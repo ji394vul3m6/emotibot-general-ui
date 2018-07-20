@@ -1030,6 +1030,11 @@ export default {
         view: '指令设置查看',
         edit: '指令设置编辑',
       },
+      intent_manage: {
+        view: '意图管理查看',
+        export: '意图管理导入',
+        import: '意图管理导出',
+      },
     },
   },
   header: {
