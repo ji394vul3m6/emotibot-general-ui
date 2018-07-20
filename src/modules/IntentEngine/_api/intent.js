@@ -23,14 +23,25 @@ function getTrainingStatus(version) {
     .then((rsp) => {
       const result = rsp.data.result;
       const IE = result.ie_status;
-      const RE = result.re_status;
+      // const RE = result.re_status;
       let status = '';
 
-      if (IE === 'TRAINING' || RE === 'TRAINING') {
+      /** Use this if Training Button can train both IE and RE */
+      // if (IE === 'TRAINING' || RE === 'TRAINING') {
+      //   status = 'TRAINING';
+      // } else if (IE === 'NOT_TRAINED' || RE === 'NOT_TRAINED') {
+      //   status = 'NOT_TRAINED';
+      // } else if (IE === 'TRAIN_FAILED' || RE === 'TRAIN_FAILED') {
+      //   status = 'TRAIN_FAILED';
+      // } else {
+      //   status = 'TRAINED';
+      // }
+
+      if (IE === 'TRAINING') {
         status = 'TRAINING';
-      } else if (IE === 'NOT_TRAINED' || RE === 'NOT_TRAINED') {
+      } else if (IE === 'NOT_TRAINED') {
         status = 'NOT_TRAINED';
-      } else if (IE === 'TRAIN_FAILED' || IE === 'TRAIN_FAILED') {
+      } else if (IE === 'TRAIN_FAILED') {
         status = 'TRAIN_FAILED';
       } else {
         status = 'TRAINED';
