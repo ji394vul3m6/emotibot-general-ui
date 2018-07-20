@@ -77,9 +77,6 @@ export default {
   mounted() {
     const obj = JSON.parse(JSON.stringify(this.value));
     this.re_parsers = obj.re_parsers;
-    if (this.re_parsers.length === 0) {
-      this.addREParser();
-    }
     this.$on('validate', this.validateDate);
   },
 };

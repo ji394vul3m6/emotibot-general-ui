@@ -471,9 +471,6 @@ export default {
     this.rerender();
   },
   mounted() {
-    if (this.entityCollectorList.length === 0) {
-      this.addNewEntityCollector();
-    }
   },
   activated() {
     this.rerender();
