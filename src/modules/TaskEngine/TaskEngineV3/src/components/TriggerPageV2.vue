@@ -24,17 +24,19 @@
     </div>
   </div>
   <div class="trigger-list-container">
-    <template v-for="trigger in triggerList">
-      <div class="trigger">
-        <div class="label-trigger">{{trigger.intent_name}}</div>
-      </div>
-    </template>
+    <intent-list
+      :intentList="intentList"
+      :canDeleteIntent="false"
+      :canRemoveIntent="true"
+      @removeIntent="deleteThisTrigger"
+    ></intent-list>
   </div>
 </div>
 </template>
 
 <script>
 import DropdownSelect from '@/components/DropdownSelect';
+import IntentList from '@/modules/IntentEngine/_components/IntentList';
 import IntentEngine from './_api/intentEngine';
 import i18nUtils from '../utils/i18nUtil';
 import general from '../utils/general';
@@ -43,6 +45,7 @@ export default {
   name: 'trigger-page',
   components: {
     'dropdown-select': DropdownSelect,
+    IntentList,
   },
   props: {
     initialTriggerList: {
@@ -77,24 +80,32 @@ export default {
   watch: {
     triggerList() {
       this.$emit('update', this.triggerList);
+      this.intentList = this.triggerList.map(triggered => ({
+        name: triggered.intent_name,
+      }));
     },
   },
   methods: {
+    isDuplicateTrigger() {
+      const that = this;
+      return that.triggerList.findIndex(intent => intent.intent_name === that.newIntent) !== -1;
+    },
     addNewTrigger() {
-      this.triggerList.push({
-        type: 'intent_engine_2.0',
-        intent_name: this.newIntent,
-        editable: true,
-      });
+      if (!this.isDuplicateTrigger()) {
+        this.triggerList.push({
+          type: 'intent_engine_2.0',
+          intent_name: this.newIntent,
+          editable: true,
+        });
+      }
     },
     deleteThisTrigger(index) {
       this.triggerList.splice(index, 1);
     },
     loadIntentOptionList() {
       this.ieApi.listIntents().then((resp) => {
-        this.intentList = resp.data.result;
         this.intentOptionList = [];
-        this.intentList.forEach((intent) => {
+        resp.data.result.forEach((intent) => {
           if (intent === 'other' || intent === '其他') {
             return;
           }
@@ -110,6 +121,7 @@ export default {
         this.$refs.selectAddTrigger.$emit('updateOptions', this.intentOptionList);
         if (this.intentOptionList.length > 0) {
           this.$refs.selectAddTrigger.$emit('select', this.intentOptionList[0].value);
+          this.newIntent = this.intentOptionList[0].value;
         }
       }, (err) => {
         general.popErrorWindow(this, 'listIntents error', err.message);
