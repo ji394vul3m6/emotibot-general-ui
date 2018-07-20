@@ -75,10 +75,14 @@ http {
         location /auth { 
             # auth_request /auth/v1/appid/validate 
             proxy_pass http://127.0.0.1:8088; 
-        } 
+        }
+        
+        location = /stats/record {
+            proxy_pass http://${ADMIN_STAT_SERVER_URL};
+        }
         
         location /stats {
-            proxy_pass http://${ADMIN_STAT_SERVER_URL};
+            proxy_pass http://${ADMIN_ELK_STAT_SERVER_URL};
         }
 
         # ========== legacy houta ==========
