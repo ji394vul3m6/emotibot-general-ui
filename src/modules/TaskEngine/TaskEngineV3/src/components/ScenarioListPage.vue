@@ -10,10 +10,14 @@
           <text-button button-type='primary' width='100px' height='28px' @click="createNewScenario">
             {{$t("task_engine_v3.scenario_list_page.button_create_new_scenario")}}
           </text-button>
+          <text-button button-type='primary' width='100px' height='28px' @click="importScenarioJSON">
+            {{$t("task_engine_v3.scenario_list_page.button_import_scenario")}}
+          </text-button>
           <text-button button-type='primary' width='100px' height='28px' @click="createFromSpreadSheet">
             SpreadSheet
           </text-button>
           <input type="file" ref="uploadInput" v-on:change="changeFile()" accept=".xlsx">
+          <input type="file" ref="uploadScenarioJSONInput" @change="changeScenarioJSONFile()" accept=".json">
         </div>
         <div id="right-buttons">
           <search-input v-model="filteredKeyWord" ></search-input>
@@ -74,6 +78,11 @@ export default {
       const that = this;
       return {
         options: [{
+          text: this.i18n.general.export,
+          onclick() {
+            taskEngineApi.exportScenario(scenario.scenarioID);
+          },
+        }, {
           text: this.i18n.general.delete,
           onclick() {
             that.deleteScenario(scenario);
@@ -171,6 +180,39 @@ export default {
     },
     createFromSpreadSheet() {
       this.$refs.uploadInput.click();
+    },
+    importScenarioJSON() {
+      this.$refs.uploadScenarioJSONInput.click();
+    },
+    changeScenarioJSONFile() {
+      const files = this.$refs.uploadScenarioJSONInput.files;
+      const file = files[0] || undefined;
+      const that = this;
+      if (file.size <= 0 || file.size > 2 * 1024 * 1024) {
+        // maximum size: 2MB
+        that.$notifyFail(that.$t('error_msg.upload_file_size_error'));
+      } else {
+        that.uploadScenarioJSON(this.appId, file).then(() => {
+          this.listAllScenarios();
+        });
+      }
+    },
+    uploadScenarioJSON(appId, file) {
+      const that = this;
+      return taskEngineApi.uploadScenarioJSON(
+        appId,
+        file,
+      ).then((resp) => {
+        if (resp.return === 0) {
+          that.$notify({ text: that.$t('error_msg.success') });
+          that.$refs.uploadInput.value = '';
+        } else {
+          that.$notifyFail(`${that.$t('error_msg.save_fail')}:${resp.error}`);
+        }
+      }, (err) => {
+        that.$refs.uploadInput.value = '';
+        that.$notifyFail(`${that.$t('error_msg.save_fail')}:${err.message}`);
+      });
     },
     changeFile() {
       const files = this.$refs.uploadInput.files;
