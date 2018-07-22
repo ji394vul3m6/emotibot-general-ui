@@ -249,6 +249,7 @@ export default {
         7: this.$t('pages.privileges.user_manage'),
         8: this.$t('pages.privileges.role_manage'),
         9: this.$t('pages.task_engine.module_name'),
+        10: this.$t('pages.intent_engine.module_name'),
       },
       selectModule: '-1',
       tableData: [],
