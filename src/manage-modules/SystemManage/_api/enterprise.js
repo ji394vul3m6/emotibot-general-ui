@@ -35,7 +35,7 @@ function addEnterprise(info) {
   window.test = md5;
   data.modules = JSON.stringify(info.modules);
   data.admin.password = md5(info.admin.password);
-  data.admin = JSON.stringify(info.admin);
+  data.admin = JSON.stringify(data.admin);
 
   return this.$reqPostForm(ENTERPRISE_URL, data)
     .then(rsp => rsp.data.result)
