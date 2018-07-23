@@ -103,6 +103,6 @@ echo "http://wiki.emotibot.com:8090/x/sQqS";
 sleep 3;
 
 MR_URL="https://gitlab.emotibot.com/deployment/general-ui/merge_requests/new?merge_request%5Bsource_branch%5D="`urlencode $RELEASE_BRANCH`;
-NEW_RELEASE_PAGE="http://wiki.emotibot.com:8090/pages/createpage.action?spaceKey=BOT&fromPageId=9570993"
+NEW_RELEASE_PAGE="http://wiki.emotibot.com:8090/pages/createpage.action?spaceKey=ENG&fromPageId=9570993"
 open $MR_URL;
 open $NEW_RELEASE_PAGE;
