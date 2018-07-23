@@ -23,14 +23,13 @@
       </text-button>
     </div>
   </div>
-  <div class="trigger-list-container">
-    <intent-list
-      :intentList="intentList"
-      :canDeleteIntent="false"
-      :canRemoveIntent="true"
-      @removeIntent="deleteThisTrigger"
-    ></intent-list>
-  </div>
+  <intent-list
+    class="intent-list"
+    :intentList="intentList"
+    :canDeleteIntent="false"
+    :canRemoveIntent="true"
+    @removeIntent="deleteThisTrigger"
+  ></intent-list>
 </div>
 </template>
 
@@ -188,23 +187,8 @@ export default {
       margin-top: 10px;
     }
   }
-  .trigger-list-container{
-    flex: 1 1 auto;
-    overflow: auto;
+  .intent-list{
     padding-top: 25px;
-    .trigger{
-      margin-bottom: 12px;
-      padding: 10px;
-      height: 48px;
-      border-radius: 4px;
-      background-color: #ffffff;
-      border: solid 1px #dbdbdb;
-      .label-trigger{
-        color: $color-font-normal;
-        line-height: 28px;
-        font-size: 14px;
-      }
-    }
   }
 }
 </style>

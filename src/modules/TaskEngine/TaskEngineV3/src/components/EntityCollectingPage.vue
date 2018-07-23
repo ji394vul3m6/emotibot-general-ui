@@ -454,6 +454,18 @@ export default {
       this.tde_setting = JSON.parse(JSON.stringify(this.initialTDESetting));
       this.updateCategoryToNerTypeMap(this.idToNerMap);
     },
+    printSlotType() {
+      // print ner slotType list for use of copying and pasteing to
+      // SlotType list in emotigo spreadsheet upload
+      let out = '';
+      Object.keys(this.categoryToNerTypeMap).forEach((category) => {
+        const nerList = this.categoryToNerTypeMap[category];
+        nerList.forEach((ner) => {
+          out += `"${ner.entityType}": "${ner.slotType}",\n`;
+        });
+      });
+      console.log(out);
+    },
   },
   beforeMount() {
     this.i18n = i18nUtils.getLocaleMsgs(this.$i18n);
@@ -469,6 +481,7 @@ export default {
     };
     this.$on('rerender', this.rerender);
     this.rerender();
+    // this.printSlotType();
   },
   mounted() {
   },
