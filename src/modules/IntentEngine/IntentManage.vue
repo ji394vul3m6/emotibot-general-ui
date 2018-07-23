@@ -86,7 +86,7 @@ export default {
       return !this.hasIntents && this.currentVersion === '';
     },
     canImport() {
-      return this.$hasRight('import') && !this.versionNotAvailable;
+      return this.$hasRight('import');
     },
     canExport() {
       return this.$hasRight('export') && !this.versionNotAvailable;
