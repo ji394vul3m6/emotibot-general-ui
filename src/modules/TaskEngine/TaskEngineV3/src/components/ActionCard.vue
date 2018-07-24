@@ -106,6 +106,7 @@ export default {
       skillNameList.push({
         text: '创建新任务',
         value: 'add_new_skill',
+        isButton: true,
       });
       return skillNameList;
     },

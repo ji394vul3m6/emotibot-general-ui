@@ -19,11 +19,15 @@
     <div ref="list" v-if="show" class="select-list" :style="listStyle">
       <template v-for="(option, idx) in localOptions">
       <div class="select-item item" :key="idx" v-if="!option.isGroup"
-        :class="{checked: option.checked, 'in-group': option.inGroup}"
+        :class="{
+          checked: option.checked,
+          'in-group': option.inGroup,
+          'is-button': option.isButton
+        }"
         @click="selectOption(idx)"
         @mouseover="toggleHover(option, true)" @mouseout="toggleHover(option, false)">
         <div class="select-text" :style="selectTextStyle"> {{option.text}} </div>
-        <div class="select-icon" v-if="!option.checked">
+        <div class="select-icon" v-if="!option.checked && !option.isButton">
           <icon icon-type="checked" :size=16></icon>
         </div>
         <div class="select-icon" v-if="option.checked">
@@ -285,6 +289,9 @@ $border-color: $color-borderline;
         .select-text {
           padding-left: 24px;
         }
+      }
+      &.is-button {
+        color: $color-primary;
       }
     }
     &.group {
