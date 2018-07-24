@@ -44,8 +44,9 @@ export default {
   computed: {
     style() {
       return {
-        top: `${this.showY}px`,
-        left: `${this.showX}px`,
+        top: this.show ? `${this.showY}px` : 0,
+        left: this.show ? `${this.showX}px` : 0,
+        position: this.show ? 'absolute' : 'fixed',
         visibility: this.show ? 'visible' : 'hidden',
         width: this.width,
       };
