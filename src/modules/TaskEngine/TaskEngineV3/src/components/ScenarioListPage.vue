@@ -22,7 +22,7 @@
       </div>
     </div>
     <template v-for="(scenario, index) in filteredScenarioList">
-      <div class="row" @mouseover="moreIcon = true" @mouseleave="moreIcon = false">
+      <div class="row" @mouseover="scenario.show = true" @mouseleave="scenario.show = false">
         <div id="scenario-grid">
           <div id="scenario-toggle-container">
             <toggle v-model="scenario.enable" @change="switchScenario(scenario)" :big="false"></toggle>
@@ -32,7 +32,7 @@
               {{scenario.scenarioName}}
             </div>
             <div class="delete-button">
-              <div class="icon_container" v-show="moreIcon" v-dropdown="moreOptions(scenario)">
+              <div class="icon_container" v-show="scenario.show" v-dropdown="moreOptions(scenario)">
                 <icon :size=25 icon-type="more"/>
               </div>
             </div>
@@ -61,7 +61,6 @@ export default {
       appId: '',
       scenarioList: [],
       filteredKeyWord: '',
-      moreIcon: false,
     };
   },
   computed: {
@@ -92,7 +91,8 @@ export default {
     listAllScenarios() {
       taskEngineApi.listScenarios(this.appId).then((data) => {
         if (typeof (data) === 'object' && 'msg' in data) {
-          this.scenarioList = data.msg.filter(scenario => scenario.version === '2.0');
+          this.scenarioList = data.msg.filter(scenario => scenario.version === '2.0')
+                                      .map((scenario) => { scenario.show = false; return scenario; });
         } else {
           general.popErrorWindow(this, 'listAllScenarios error',
             `unexpected return value from listScenarios API: ${data}`);
