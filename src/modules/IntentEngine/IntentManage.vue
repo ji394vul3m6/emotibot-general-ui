@@ -1,6 +1,6 @@
 <template>
   <div id="intent-manage">
-    <div class="card w-fill h-fill">
+    <div id="intent-manage-card" class="card w-fill h-fill">
       <div class="header">
         <div class="header-title">
           {{ $t('pages.intent_engine.intent_manage') }}
@@ -15,14 +15,24 @@
       </div>
       <div class="content">
         <div class="content-tool">
-          <!-- <text-button v-if="canEdit" button-type="primary" @click="addIntent">{{ $t('intent_engine.manage.add_intent') }}</text-button> -->
-          <text-button v-if="canImport" @click="importIntentList">{{ $t('general.import') }}</text-button>
-          <text-button v-if="canExport" @click="exportIntentList(currentVersion)">{{ $t('general.export') }}</text-button>
+          <div class="content-tool-left">
+            <text-button v-if="canAdd" button-type="primary" @click="addIntent">{{ $t('intent_engine.manage.add_intent') }}</text-button>
+            <text-button v-if="canImport" @click="importIntentList">{{ $t('general.import') }}</text-button>
+            <text-button v-if="canExport" :button-type="allowExport ? 'default' : 'disable'" @click="exportIntentList(currentVersion)">{{ $t('general.export') }}</text-button>
+          </div>
+          <div v-if="!hasIntents" class="content-tool-right">
+            <text-button>{{ $t('intent_engine.import.download_template') }}</text-button>
+          </div>
         </div>
-        <intent-list 
+        <div v-if="!hasIntents && !isAddIntent" class="init_page">
+          {{ $t('intent_engine.manage.no_data.title') }}<br>
+          {{ $t('intent_engine.manage.no_data.hint_left') }}<br>
+          {{ $t('intent_engine.manage.no_data.hint_right') }}
+        </div>
+        <intent-list
           :intentList="intentListToShow"
-          :canEditIntent="false"
-          :canDeleteIntent="false"
+          :canEditIntent="canEdit"
+          :canDeleteIntent="canEdit"
           :addIntentMode="isAddIntent"
           @addIntentDone="finishAddIntent()">
         </intent-list>
@@ -54,22 +64,22 @@ export default {
       isAddIntent: false,
 
       intentList: [
-        {
-          name: '',
-          total: 0,
-          // corpus: [
-          //   {
-          //     id: 0,
-          //     text: '',
-          //     isHover: false,
-          //     isSelect: false,
-          //   },
-          // ],
-          // expand: false,
-          // isEditMode: false,
-          // hasCorpusSelected: false,
-          // hasCorpusEditing: false,
-        },
+        // {
+        //   name: '',
+        //   total: 0,
+        //   corpus: [
+        //     {
+        //       id: 0,
+        //       text: '',
+        //       isHover: false,
+        //       isSelect: false,
+        //     },
+        //   ],
+        //   expand: false,
+        //   isEditMode: false,
+        //   hasCorpusSelected: false,
+        //   hasCorpusEditing: false,
+        // },
       ],
       currentVersion: '',
       trainButtonTooltip: {
@@ -89,10 +99,16 @@ export default {
       return this.$hasRight('import');
     },
     canExport() {
-      return this.$hasRight('export') && !this.versionNotAvailable;
+      return this.$hasRight('export');
+    },
+    allowExport() {
+      return !this.versionNotAvailable && this.hasIntents;
     },
     canEdit() {
       return this.$hasRight('edit') && !this.versionNotAvailable;
+    },
+    canAdd() {
+      return this.$hasRight('edit');
     },
     canTrain() {
       return !this.versionNotAvailable && (this.hasIntents && this.shouldTrain);
@@ -117,6 +133,7 @@ export default {
       this.isAddIntent = false;
     },
     exportIntentList(version) {
+      if (!this.allowExport) return;
       const EXPORT_INTENT_URL = 'api/v1/intents/download';
       if (version) {
         window.open(`${EXPORT_INTENT_URL}?version=${version}`, '_blank');
@@ -268,6 +285,14 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+
+#intent-manage-card {
+  display: flex;
+  flex-direction: column;
+  .content {
+    flex: 1;
+  }
+}
 .header {
   height: 60px;
   padding: 0 20px;
@@ -301,12 +326,35 @@ export default {
 }
 .content {
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  @include customScrollbar();
+
   .content-tool {
+    flex: 0 0 auto;
     margin-bottom: 20px;
     display: flex;
+    justify-content: space-between;
     .text-button {
       margin-right: 10px;
+      &:last-child {
+        margin-right: 0px;
+      }
     }
+  }
+  .intent-list {
+    flex: 1;
+  }
+  .init_page {
+    @include font-14px();
+    color: $color-font-disabled;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
   }
 }
 </style>

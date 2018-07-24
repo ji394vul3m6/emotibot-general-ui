@@ -660,9 +660,10 @@ export default {
     version_not_exist: '意图版本不存在',
     manage: {
       add_intent: '新增意图',
-      intent_num: '共有{inum}组意图',
-      corpus_num: ' ({num}笔语料)',
+      intent_num: '共有 {inum} 组意图',
+      corpus_num: ' ({num} 笔语料)',
       cancel_edit_msg: '尚未保存编辑，确定要取消编辑吗？',
+      cancel_add_msg: '尚未保存意图，确定要取消新增吗？',
       addin: '加入',
       positive: '正例',
       negative: '反例',
@@ -675,6 +676,11 @@ export default {
         edit_corpus: '编辑语料，Enter完成编辑',
         add_corpus: '新增语料，Enter 加入下方列表',
       },
+      no_data: {
+        title: '暂无数据',
+        hint_left: '左上角可手动新增，导入意图',
+        hint_right: '右上角可下载意图范本',
+      },
       train_button_tooltip: '机器人是依据语料来学习，每次新增语料后，必须进行意图训练以提高机器人识别正确率',
     },
     import: {
@@ -683,6 +689,7 @@ export default {
       success: '意图导入成功',
       fail: '意图导入失败',
       support_format: '支援格式 .xlsx',
+      download_template: '下载意图范本',
       upload_file: '上传档案',
       upload_file_undefined: '档案无法辨识',
       upload_file_size_error: '档案大小需介于 0 ~ 2M',
