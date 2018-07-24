@@ -146,6 +146,7 @@ export default {
       edit_entity_relation: '设置实体关联性',
       edit_sentence_replacement: '设置语句替换',
       edit_tde_setting: '设置TDE属性',
+      edit_register_json: '编辑注册JSON',
       order: '排序',
       order_description: '询问用户信息的顺序，可透过拖曳方式改变信息询问的顺序',
       required: '必要',
@@ -222,6 +223,10 @@ export default {
       nlgTemplate: '模版：',
       service: '服务：',
       jumpOutTimes: '跳出场景重试次数上限值：',
+    },
+    register_json_editor_pop: {
+      title: '编辑注册JSON',
+      title_description: '若自行编辑注册JSON，将使用JSON的设定，即原有介面上的设定会失效',
     },
   },
 };
