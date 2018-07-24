@@ -46,7 +46,12 @@ export default {
     if (skillId === 'mainSkill') {
       nodes.push(this.newEntryNode(skill.triggerList, skillId));
     }
-    nodes.push(this.newNluPcNode(skill.entityCollectorList, skill.re_parsers, skillId, skill.register_json));
+    nodes.push(this.newNluPcNode(
+      skill.entityCollectorList,
+      skill.re_parsers,
+      skillId,
+      skill.register_json,
+    ));
     nodes.push(this.newActionNode(skill.actionGroupList, skillId));
     return nodes;
   },

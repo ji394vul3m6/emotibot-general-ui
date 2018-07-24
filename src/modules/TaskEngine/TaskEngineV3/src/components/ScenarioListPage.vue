@@ -92,7 +92,10 @@ export default {
       taskEngineApi.listScenarios(this.appId).then((data) => {
         if (typeof (data) === 'object' && 'msg' in data) {
           this.scenarioList = data.msg.filter(scenario => scenario.version === '2.0')
-                                      .map((scenario) => { scenario.show = false; return scenario; });
+                                      .map((scenario) => {
+                                        scenario.show = false;
+                                        return scenario;
+                                      });
         } else {
           general.popErrorWindow(this, 'listAllScenarios error',
             `unexpected return value from listScenarios API: ${data}`);
