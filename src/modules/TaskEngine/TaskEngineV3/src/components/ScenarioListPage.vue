@@ -7,14 +7,11 @@
     <div class="row">
       <div id="toolbar">
         <div id="left-buttons">
-          <text-button button-type='primary' width='100px' height='28px' @click="createNewScenario">
+          <text-button button-type='primary' width='68px' height='28px' @click="createNewScenario">
             {{$t("task_engine_v3.scenario_list_page.button_create_new_scenario")}}
           </text-button>
-          <text-button button-type='primary' width='100px' height='28px' @click="importScenarioJSON">
+          <text-button button-type='default' width='68px' height='28px' @click="showImportPop">
             {{$t("task_engine_v3.scenario_list_page.button_import_scenario")}}
-          </text-button>
-          <text-button button-type='primary' width='100px' height='28px' @click="createFromSpreadSheet">
-            SpreadSheet
           </text-button>
           <input type="file" ref="uploadInput" v-on:change="changeFile()" accept=".xlsx">
           <input type="file" ref="uploadScenarioJSONInput" @change="changeScenarioJSONFile()" accept=".json">
@@ -48,6 +45,7 @@
 </template>
 
 <script>
+import ImportScenarioPop from './ImportScenarioPop';
 import i18nUtils from '../utils/i18nUtil';
 import scenarioConvertor from '../utils/scenarioConvertor';
 import general from '../utils/general';
@@ -178,24 +176,46 @@ export default {
         general.popErrorWindow(this, 'switchScenario error', err.message);
       });
     },
-    createFromSpreadSheet() {
-      this.$refs.uploadInput.click();
-    },
-    importScenarioJSON() {
-      this.$refs.uploadScenarioJSONInput.click();
-    },
-    changeScenarioJSONFile() {
-      const files = this.$refs.uploadScenarioJSONInput.files;
-      const file = files[0] || undefined;
+    showImportPop() {
       const that = this;
-      if (file.size <= 0 || file.size > 2 * 1024 * 1024) {
-        // maximum size: 2MB
-        that.$notifyFail(that.$t('error_msg.upload_file_size_error'));
-      } else {
-        that.uploadScenarioJSON(this.appId, file).then(() => {
-          this.listAllScenarios();
-        });
-      }
+      that.$pop({
+        title: that.$t('task_engine_v3.import_scenario_pop.label_title'),
+        component: ImportScenarioPop,
+        disable_ok: true,
+        validate: true,
+        data: {
+          skillName: '',
+        },
+        callback: {
+          ok: (retData) => {
+            const file = retData.file;
+            const importFormat = retData.importFormat;
+            if (importFormat === 'json') {
+              that.uploadScenarioJSON(that.appId, file).then(() => {
+                that.listAllScenarios();
+              });
+            } else if (importFormat === 'xlsx') {
+              const fileName = file.name;
+              const scenarioName = fileName.substring(0, fileName.lastIndexOf('.xlsx'));
+              taskEngineApi.createScenario(that.appId, scenarioName).then((data) => {
+                if ('template' in data && 'metadata' in data.template) {
+                  const metadata = data.template.metadata;
+                  const scenarioId = metadata.scenario_id;
+                  const initialScenario = scenarioConvertor.initialScenario(metadata);
+                  that.uploadSpreadSheet(that.appId, scenarioId, initialScenario, file).then(() => {
+                    const path = general.composePath(`scenario/${scenarioId}`);
+                    that.$router.replace(path);
+                  });
+                } else {
+                  that.$notifyFail(that.$t('task_engine_v3.error_msg.create_new_scenario_failed'));
+                }
+              }, (err) => {
+                that.$notifyFail(`${that.$t('task_engine_v3.error_msg.create_new_scenario_failed')}:${err.message}`);
+              });
+            }
+          },
+        },
+      });
     },
     uploadScenarioJSON(appId, file) {
       const that = this;
@@ -213,33 +233,6 @@ export default {
         that.$refs.uploadInput.value = '';
         that.$notifyFail(`${that.$t('error_msg.save_fail')}:${err.message}`);
       });
-    },
-    changeFile() {
-      const files = this.$refs.uploadInput.files;
-      const file = files[0] || undefined;
-      const fileName = file.name;
-      const scenarioName = fileName.substring(0, fileName.lastIndexOf('.xlsx'));
-      const that = this;
-      if (file.size <= 0 || file.size > 2 * 1024 * 1024) {
-        // maximum size: 2MB
-        that.$notifyFail(that.$t('error_msg.upload_file_size_error'));
-      } else {
-        taskEngineApi.createScenario(this.appId, scenarioName).then((data) => {
-          if ('template' in data && 'metadata' in data.template) {
-            const metadata = data.template.metadata;
-            const scenarioId = metadata.scenario_id;
-            const initialScenario = scenarioConvertor.initialScenario(metadata);
-            that.uploadSpreadSheet(this.appId, scenarioId, initialScenario, file).then(() => {
-              const path = general.composePath(`scenario/${scenarioId}`);
-              this.$router.replace(path);
-            });
-          } else {
-            general.popErrorWindow(this, this.i18n.task_engine_v3.error_msg.create_new_scenario_failed, '');
-          }
-        }, (err) => {
-          general.popErrorWindow(this, 'createScenario error', err.message);
-        });
-      }
     },
     uploadSpreadSheet(appId, scenarioId, scenario, file) {
       const that = this;
