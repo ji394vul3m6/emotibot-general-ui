@@ -14,7 +14,8 @@ function importIntents(file) {
 }
 
 function startTraining() {
-  return this.$reqPost(TRAIN_URL);
+  // use only intent engine in v1.2
+  return this.$reqPost(`${TRAIN_URL}?engine=intent_engine`);
 }
 
 function getTrainingStatus(version) {
