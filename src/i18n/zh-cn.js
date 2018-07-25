@@ -34,6 +34,10 @@ export default {
       delete: '删除',
       export: '导出',
       import: '导入',
+      login: '登入',
+      publish: '发布',
+      active: '启动',
+      deactive: '关闭',
     },
 
     modules: {

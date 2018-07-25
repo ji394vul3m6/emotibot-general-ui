@@ -34,6 +34,10 @@ export default {
       delete: '刪除',
       export: '導出',
       import: '導入',
+      login: '登入',
+      publish: '發布',
+      active: '啟動',
+      deactive: '關閉',
     },
 
     modules: {
