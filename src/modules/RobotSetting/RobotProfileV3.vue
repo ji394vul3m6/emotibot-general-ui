@@ -268,6 +268,7 @@ export default {
         if (robotQA.answers.length === 1) {
           robotQA.show_answer = data.content;
         }
+        document.activeElement.blur();
       });
       that.newQuestion = '';
     },
@@ -289,6 +290,7 @@ export default {
       return that.$api.updateRobotQAAnswer(robotQA.id, answer.id, content).then((data) => {
         answer.content = data.content;
         answer.id = data.id;
+        document.activeElement.blur();
       });
     },
     handlePageChange(idx) {
@@ -304,7 +306,7 @@ export default {
         a.editMode = false;
       });
       if (robotQA.answers.length > 0) {
-        robotQA.show_answer = robotQA.answers[0];
+        robotQA.show_answer = robotQA.answers[0].content;
       }
       robotQA.relate_questions.forEach((q) => {
         q.editMode = false;
