@@ -100,7 +100,6 @@ export default {
   },
   watch: {
     enterpriseID() {
-      console.log('here');
       this.setPrivilegeList(this.$getPrivModules());
     },
     robotID(val) {
