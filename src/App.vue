@@ -48,6 +48,8 @@ import PageMenu from '@/components/layout/Menu';
 import QATest from '@/modules/SSM/QATestFloat';
 import constant from '@/utils/js/constant';
 import UserPreference from '@/manage-modules/UserPreference';
+import userAPI from '@/manage-modules/_api/user';
+import adminAPI from '@/manage-modules/SystemManage/_api/system';
 
 const defaultPath = '/statistic-dash';
 
@@ -63,6 +65,7 @@ export default {
     'page-menu': PageMenu,
     'user-preference': UserPreference,
   },
+  api: [userAPI, adminAPI],
   computed: {
     pageName() {
       return this.$t(this.currentPage.display);
@@ -386,13 +389,23 @@ export default {
     that.checkCookie();
     that.$setReqToken(token);
     that.$setIntoWithToken(token).then(() => {
-      const enterpriseList = that.$getUserEnterprises();
       const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-      that.userInfo = userInfo;
-      that.setUser(userInfo.id);
-      that.setUserInfo(userInfo);
+
+      let getUserInfoPromise;
+      if (userInfo.type === 0) {
+        getUserInfoPromise = that.$api.getAdmin(userInfo.id);
+      } else {
+        getUserInfoPromise = that.$api.getEnterpriseUser(userInfo.enterprise, userInfo.id);
+      }
+      return getUserInfoPromise;
+    })
+    .then((data) => {
+      const enterpriseList = that.$getUserEnterprises();
+      that.userInfo = data;
+      that.setUser(data.id);
+      that.setUserInfo(data);
       that.setPrivilegedEnterprise(enterpriseList);
-      if (userInfo.type !== 0) {
+      if (data.type !== 0) {
         const robots = that.$getRobots();
         const userRoleMap = JSON.parse(localStorage.getItem('roleMap'));
         that.setRobotList(robots);
@@ -402,7 +415,8 @@ export default {
       }
       that.checkPrivilege();
       that.ready = true;
-    }).catch((err) => {
+    })
+    .catch((err) => {
       console.log(err);
       const fullPath = that.$route.fullPath;
       window.location = `/login.html?invalid=1&redirect=${encodeURIComponent(fullPath)}`;
