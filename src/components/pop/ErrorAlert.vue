@@ -21,5 +21,6 @@ export default {
 <style lang="scss" scoped>
 #error-alert{
   padding: 20px;
+  min-width: 200px;
 }
 </style>
