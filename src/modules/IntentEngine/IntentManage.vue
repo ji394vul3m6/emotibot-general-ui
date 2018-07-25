@@ -21,7 +21,7 @@
             <text-button v-if="canExport" :button-type="allowExport ? 'default' : 'disable'" @click="exportIntentList(currentVersion)">{{ $t('general.export') }}</text-button>
           </div>
           <div v-if="!hasIntents" class="content-tool-right">
-            <text-button>{{ $t('intent_engine.import.download_template') }}</text-button>
+            <text-button @click="downloadTemplate">{{ $t('intent_engine.import.download_template') }}</text-button>
           </div>
         </div>
         <div v-if="!hasIntents && !isAddIntent" class="init_page">
@@ -125,6 +125,9 @@ export default {
     },
   },
   methods: {
+    downloadTemplate() {
+      // window.open(, '_blank');
+    },
     addIntent() {
       this.isAddIntent = true;
       this.intentKeyword = '';
