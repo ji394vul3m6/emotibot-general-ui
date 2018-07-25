@@ -81,6 +81,7 @@ export default {
     },
     validate() {
       const that = this;
+      that.name = that.name.trim();
 
       if (that.name === '') {
         that.nameTooltip.msg = that.$t('management.err_group_name_empty');
