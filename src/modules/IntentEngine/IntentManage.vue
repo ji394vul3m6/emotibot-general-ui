@@ -6,21 +6,24 @@
           {{ $t('pages.intent_engine.intent_manage') }}
         </div>
         <div class="header-subtitle">
-          {{ $t('intent_engine.manage.intent_num', {inum: intentList.length}) }}
+          {{ $t('intent_engine.manage.intent_num', {inum: intentList.length, cnum: corpusCounts}) }}
         </div>
         <div class="header-tool">
-          <text-button id="train-button"
-            :button-type="canTrain ? 'default' : 'disable'"
-            :icon-type="canTrain ? 'info_warning' : 'info_warning_gray'" width="100px"
-            @click="startTraining" v-tooltip="trainButtonTooltip">{{ $t('intent_engine.train') }}</text-button>
+          <div v-if="isTraining" class="train-hint training">
+            {{ $t('intent_engine.manage.train_status_msg.is_training', {percentage: trainingProgress}) }}
+          </div>
+          <div v-else class="train-hint">
+            {{ $t('intent_engine.manage.train_status_msg.last_train', {timestr: lastTrainedTime}) }}
+          </div>
+          <text-button id="train-button" :button-type="canTrain ? 'default' : 'disable'" :icon-type="canTrain ? 'info_warning' : 'info_warning_gray'" width="100px" @click="startTraining" v-tooltip="trainButtonTooltip">{{ $t('intent_engine.train') }}</text-button>
           <search-input v-model="intentKeyword"></search-input>
         </div>
       </div>
       <div class="content">
         <div class="content-tool">
           <div class="content-tool-left">
-            <text-button v-if="canAdd" button-type="primary" @click="addIntent">{{ $t('intent_engine.manage.add_intent') }}</text-button>
-            <text-button v-if="canImport" @click="importIntentList">{{ $t('general.import') }}</text-button>
+            <text-button v-if="canAdd" :button-type="allowAdd ? 'primary' : 'disable'" @click="addIntent">{{ $t('intent_engine.manage.add_intent') }}</text-button>
+            <text-button v-if="canImport" :button-type="allowImport ? 'default' : 'disable'" @click="importIntentList">{{ $t('general.import') }}</text-button>
             <text-button v-if="canExport" :button-type="allowExport ? 'default' : 'disable'" @click="exportIntentList(currentVersion)">{{ $t('general.export') }}</text-button>
           </div>
           <div v-if="!hasIntents" class="content-tool-right">
@@ -33,11 +36,13 @@
           {{ $t('intent_engine.manage.no_data.hint_right') }}
         </div>
         <intent-list
-          :intentList="intentListToShow"
-          :canEditIntent="canEdit"
-          :canDeleteIntent="canEdit"
+          :intentList="intentList"
+          :canEditIntent="canEdit && allowEdit"
+          :canDeleteIntent="canEdit && allowEdit"
           :addIntentMode="isAddIntent"
-          @addIntentDone="finishAddIntent()">
+          :keyword="intentKeyword"
+          @addIntentDone="finishAddIntent($event)"
+          @deleteIntentDone="refreshIntentPage()">
         </intent-list>
       </div>
     </div>
@@ -84,11 +89,14 @@ export default {
         //   hasCorpusEditing: false,
         // },
       ],
+      corpusCounts: 0,
       currentVersion: '',
       trainButtonTooltip: {
         msg: this.$t('intent_engine.manage.train_button_tooltip'),
         alignLeft: true,
       },
+      trainingProgress: 50,
+      lastTrainedTime: '2018-07-09 16:53',
     };
   },
   computed: {
@@ -104,8 +112,11 @@ export default {
     canExport() {
       return this.$hasRight('export');
     },
+    allowImport() {
+      return !this.isTraining;
+    },
     allowExport() {
-      return !this.versionNotAvailable && this.hasIntents;
+      return !this.versionNotAvailable && this.hasIntents && !this.isTraining;
     },
     canEdit() {
       return this.$hasRight('edit') && !this.versionNotAvailable;
@@ -113,18 +124,39 @@ export default {
     canAdd() {
       return this.$hasRight('edit');
     },
+    allowEdit() {
+      return !this.isTraining;
+    },
+    allowAdd() {
+      return !this.isTraining;
+    },
     canTrain() {
       return !this.versionNotAvailable && (this.hasIntents && this.shouldTrain);
     },
     shouldTrain() {
       return this.trainStatus === 'NOT_TRAINED' || this.trainStatus === 'TRAIN_FAILED';
     },
-    intentListToShow() {
-      if (this.intentKeyword !== '') {
-        return this.intentList.filter(intent => intent.name.includes(this.intentKeyword));
-        // NOTE: 'includes' may not support IE
+    isTraining() {
+      return this.trainStatus === 'TRAINING';
+    },
+    isSearchMode() {
+      return this.intentKeyword !== '';
+    },
+    // intentListToShow() {
+    //   if (this.intentKeyword !== '') {
+    //     return this.intentList.filter(intent => intent.name.includes(this.intentKeyword));
+    //     // NOTE: 'includes' may not support IE
+    //   }
+    //   return this.intentList;
+    // },
+  },
+  watch: {
+    intentList() {
+      const that = this;
+      if (!that.isSearchMode) {
+        that.corpusCounts = that.intentList.reduce((acc, intent) => acc + intent.total
+      , 0);
       }
-      return this.intentList;
     },
   },
   methods: {
@@ -132,11 +164,15 @@ export default {
       window.open('/Files/intent_template.xlsx', '_blank');
     },
     addIntent() {
+      if (!this.allowAdd) return;
       this.isAddIntent = true;
       this.intentKeyword = '';
     },
-    finishAddIntent() {
+    finishAddIntent(done) {
       this.isAddIntent = false;
+      if (done) {
+        this.refreshIntentPage();
+      }
     },
     exportIntentList(version) {
       if (!this.allowExport) return;
@@ -149,6 +185,8 @@ export default {
     },
     importIntentList() {
       const that = this;
+      if (!that.allowImport) return;
+
       const popOption = {
         title: that.$t('intent_engine.import.title'),
         component: ImportIntentPop,
@@ -194,7 +232,7 @@ export default {
       that.$api.getTrainingStatus(version)
       .then((status) => {
         if (status === 'TRAINING') {
-          that.$emit('startLoading', that.$t('intent_engine.is_training'));
+          // that.$emit('startLoading', that.$t('intent_engine.is_training'));
           that.trainStatus = status;
         } else if (prevStatus === 'TRAINING') {
           that.refreshIntentPage(); // also hideloading
@@ -251,13 +289,17 @@ export default {
     refreshIntentPage() {
       const that = this;
       this.$emit('startLoading');
-      that.$api.getIntents()
+      // that.$api.getIntents()
+      that.$api.getIntentsDetail(that.intentKeyword)
       .then((intents) => {
         that.intentList = [];
         intents.forEach((intent) => {
           that.intentList.push({
-            name: intent,
-            total: 0,
+            id: intent.id,
+            name: intent.name,
+            total: intent.count,
+            positiveCount: intent.positive_count,
+            negativeCount: intent.negative_count,
             // corpus: [],
             // expand: false,
             // isEditMode: false,
@@ -324,6 +366,13 @@ export default {
     > :not(:last-child) {
       margin-right: 10px;
     }
+    .train-hint {
+      @include font-14px();
+      color: $color-font-mark;
+      &.training {
+        color: $color-primary;
+      }
+    }
     .text-button {
       border-color: $color-warning;
       &.disabled {
@@ -337,7 +386,6 @@ export default {
   display: flex;
   flex-direction: column;
   overflow-y: scroll;
-  overflow-x: hidden;
   @include customScrollbar();
 
   .content-tool {
