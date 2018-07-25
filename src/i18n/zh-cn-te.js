@@ -9,7 +9,7 @@ export default {
     scenario_list_page: {
       button_create_new_scenario: '创建场景',
       button_import_scenario: '导入',
-      scenario_list: '场景列表',
+      scenario_list: '新版场景列表',
       ask_delete_confirm: '确认要删除场景：{scenario}',
     },
     import_scenario_pop: {

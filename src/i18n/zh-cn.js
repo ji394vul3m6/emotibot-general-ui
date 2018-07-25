@@ -741,8 +741,8 @@ export default {
     },
     task_engine: {
       module_name: '任务引擎',
-      task_engine_scenario: '场景编辑',
-      task_engine_scenario_v3: '新场景编辑',
+      task_engine_scenario: '场景列表',
+      task_engine_scenario_v3: '新版场景列表',
       task_engine_upload: '上传转换数据',
     },
     intent_engine: {
