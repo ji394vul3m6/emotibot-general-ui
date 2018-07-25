@@ -93,10 +93,18 @@ export default {
       return ret;
     },
     showSave() {
-      const idx = this.roles.findIndex(role => role.editMode);
-      const role = this.roles[idx];
+      const that = this;
+      const idx = that.roles.findIndex(role => role.editMode);
+      const role = that.roles[idx];
       const existedRole = role.uuid !== undefined && role.uuid !== '';
-      return this.editName.trim() !== '' &&
+      const selectAny = Object.keys(that.showPrivilegeMap).reduce((val, cat) => {
+        const category = that.showPrivilegeMap[cat];
+        return val || Object.keys(category).reduce((val2, name) => {
+          const mod = category[name];
+          return val2 || Object.keys(mod).reduce((val3, cmd) => val3 || mod[cmd], false);
+        }, false);
+      }, false);
+      return selectAny && this.editName.trim() !== '' &&
         ((existedRole && this.duplicateIdx === idx) || this.duplicateIdx < 0);
     },
   },
