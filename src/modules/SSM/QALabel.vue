@@ -104,7 +104,7 @@ export default {
       that.$popCheck({
         title: `${that.$t('general.delete')}${that.$t('qa_label.label')}`,
         data: {
-          msg: that.$t('qa_label.delete_label_name', { label: item.name }),
+          msg: that.$t('qa_label.delete_label_name', { tag: item.name }),
         },
         callback: {
           ok() {
