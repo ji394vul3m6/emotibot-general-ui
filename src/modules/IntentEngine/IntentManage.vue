@@ -15,9 +15,14 @@
       </div>
       <div class="content">
         <div class="content-tool">
-          <!-- <text-button v-if="canEdit" button-type="primary" @click="addIntent">{{ $t('intent_engine.manage.add_intent') }}</text-button> -->
-          <text-button v-if="canImport" @click="importIntentList">{{ $t('general.import') }}</text-button>
-          <text-button v-if="canExport" @click="exportIntentList(currentVersion)">{{ $t('general.export') }}</text-button>
+          <div class="content-tool-left">
+            <!-- <text-button v-if="canAdd" button-type="primary" @click="addIntent">{{ $t('intent_engine.manage.add_intent') }}</text-button> -->
+            <text-button v-if="canImport" @click="importIntentList">{{ $t('general.import') }}</text-button>
+            <text-button v-if="canExport" @click="exportIntentList(currentVersion)">{{ $t('general.export') }}</text-button>
+          </div>
+          <div v-if="!hasIntents" class="content-tool-right">
+            <text-button @click="downloadTemplate">{{ $t('intent_engine.import.download_template') }}</text-button>
+          </div>
         </div>
         <intent-list 
           :intentList="intentListToShow"
@@ -109,6 +114,9 @@ export default {
     },
   },
   methods: {
+    downloadTemplate() {
+      // window.open(, '_blank');
+    },
     addIntent() {
       this.isAddIntent = true;
       this.intentKeyword = '';
