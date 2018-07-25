@@ -142,6 +142,8 @@ export default {
       'openChatTest',
       'closeChatTest',
       'setUserInfo',
+      'setRobot',
+      'setEnterprise',
     ]),
     checkPrivilege() {
       const that = this;
@@ -171,6 +173,19 @@ export default {
         return;
       }
 
+      // check if user use 'last page' to go management page, not use button on page
+      that.$route.matched.forEach((route) => {
+        if (route.path === '/manage') {
+          if (that.robotID !== '') {
+            that.setRobot('');
+            that.$router.push('/manage/robot-manage');
+          } else if (that.enterpriseID !== '') {
+            that.setEnterprise('');
+            that.$router.push('/manage/enterprise-manage');
+          }
+        }
+      });
+
       const route = that.$route.matched[0];
       if (!route.components.default) {
         return;
@@ -179,14 +194,13 @@ export default {
       if (that.userInfo.type < 2) {
         // system admin and enterprise admin can use all module active in enterprise
         if (that.privilegeList.findIndex(l => l.code === component.privCode) < 0) {
-          that.$router.push('error');
+          that.$router.push('/error');
           return;
         }
         return;
       }
       // TODO: get user privilege of specific robot
       const privileges = that.userPrivilege;
-      console.log(privileges);
 
       const codes = Object.keys(privileges);
       // If user has no privileges, invalid user
@@ -200,7 +214,7 @@ export default {
         if (that.$route.fullPath === '/') {
           that.$router.push(defaultPath);
         } else {
-          that.$router.push('error');
+          that.$router.push('/error');
         }
         return;
       }
