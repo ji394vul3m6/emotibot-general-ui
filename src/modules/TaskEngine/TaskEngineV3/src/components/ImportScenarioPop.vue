@@ -206,6 +206,7 @@ export default {
     }
   }
   .button-download-template{
+    width: 132px;
     margin-top: 20px;
     height: 28px;
     font-size: 12px;
