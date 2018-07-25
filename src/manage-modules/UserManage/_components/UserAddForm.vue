@@ -451,7 +451,8 @@ export default {
       margin-left: 10px;
     }
     .selector {
-      flex: 1;
+      flex: 0 0 165px;
+      max-width: 165px;
     }
   }
 }
