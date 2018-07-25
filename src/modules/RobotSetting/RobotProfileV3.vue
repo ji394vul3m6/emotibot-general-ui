@@ -303,6 +303,9 @@ export default {
       robotQA.answers.forEach((a) => {
         a.editMode = false;
       });
+      if (robotQA.answers.length > 0) {
+        robotQA.show_answer = robotQA.answers[0];
+      }
       robotQA.relate_questions.forEach((q) => {
         q.editMode = false;
       });
