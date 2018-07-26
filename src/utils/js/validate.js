@@ -13,8 +13,14 @@ function isValidUserName(input) {
   return validRegex.test(input);
 }
 
+function isValidPhone(input) {
+  const validRegex = /^(?!-)[0-9-]+[0-9]+$/g;
+  return validRegex.test(input);
+}
+
 export default {
   isValidPassword,
   isValidEmail,
   isValidUserName,
+  isValidPhone,
 };
