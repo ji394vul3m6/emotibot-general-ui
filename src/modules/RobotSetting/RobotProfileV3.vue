@@ -32,7 +32,8 @@
                 @compositionend="compositionend"
                 @keydown="handleKey($event, robotQA, robotQA.answers[0], 'answer')"
                 @blur="resetShowAnswer(robotQA)"
-                v-model="newAnswer"> 
+                v-model="newAnswer" v-if="canEdit">
+              <span v-else>{{ robotQA.show_answer }}</span> 
             </div>
             <div class="close-button">
               <icon icon-type="info_close" :size=18 @click="closeQA($event, robotQA)"/>
@@ -46,7 +47,7 @@
                   :class="[relate.editMode ? 'edit-row' : '']">
                   <template v-if="relate.editMode !== true">
                   <div class="list-content">{{ relate.content }}</div>
-                  <div class="command">
+                  <div class="command" v-if="canEdit">
                     <div class="clickable edit"
                     @click="startEdit(relate)">{{ $t('general.edit') }}</div>
                     <div class="clickable delete"
@@ -59,7 +60,7 @@
                     @keydown="handleKey($event, robotQA, relate, 'question')">
                   </template>
                 </div>
-                <div class="list-row add-row">
+                <div class="list-row add-row" v-if="canEdit">
                   <input
                   @compositionstart="compositionstart"
                   @compositionend="compositionend"
@@ -77,7 +78,7 @@
                   :class="[answer.editMode ? 'edit-row' : '']">
                   <template v-if="answer.editMode !== true">
                   <div class="list-content">{{ answer.content }}</div>
-                  <div class="command">
+                  <div class="command" v-if="canEdit">
                     <div class="clickable edit"
                     @click="startEdit(answer)">{{ $t('general.edit') }}</div>
                     <div class="clickable delete"
@@ -90,7 +91,7 @@
                     @keydown="handleKey($event, robotQA, answer, 'ext-answer')">
                   </template>
                 </div>
-                <div class="list-row add-row">
+                <div class="list-row add-row" v-if="canEdit">
                   <input :placeholder="$t('robot_setting.input_qa_ext_placeholder')" v-model="newExtAnswer"
                   @compositionstart="compositionstart"
                   @compositionend="compositionend"
@@ -135,6 +136,9 @@ export default {
       return this.robotQAs.slice(
         (this.curPageIdx - 1) * this.pageLimit,
         this.curPageIdx * this.pageLimit);
+    },
+    canEdit() {
+      return this.$hasRight('edit');
     },
   },
   data() {
@@ -388,6 +392,10 @@ $header-color: #333333;
       margin-left: 10px;
       margin-right: 80px;
       flex: 1;
+    }
+    span {
+      margin-left: 10px;
+      margin-right: 80px;
     }
   }
   .close-button {
