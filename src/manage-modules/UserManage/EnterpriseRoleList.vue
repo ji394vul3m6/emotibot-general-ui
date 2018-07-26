@@ -14,7 +14,7 @@
             <div class="card-title">
             <template v-if="role.editMode">
               <div class="title-text">
-                <input v-model="editName" v-tooltip="nameTooltip" ref='nameInput' :placeholder="$t('management.role_name_placeholder')">
+                <input v-model="editName" v-tooltip="nameTooltip" ref='nameInput' maxlength=50 :placeholder="$t('management.role_name_placeholder')">
               </div>
               <div class="title-action">
                 <div class="action" @click="closeEditRole(role, false)">{{ $t('general.cancel') }}</div>
@@ -276,8 +276,9 @@ export default {
           promise = that.$api.addEnterpriseRole(that.enterpriseID, options);
         }
 
-        promise.then(() => that.loadRoles())
+        promise
         .finally(() => {
+          that.loadRoles();
           that.$emit('endLoading');
         });
       } else if (role.uuid === '') {
