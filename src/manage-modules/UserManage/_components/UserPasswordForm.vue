@@ -48,6 +48,7 @@
 
 <script>
 import md5 from 'md5';
+import validate from '@/utils/js/validate';
 
 export default {
   name: 'user-password-form',
@@ -109,7 +110,7 @@ export default {
   methods: {
     validate() {
       const that = this;
-      const validPasswordReg = /^[a-zA-Z0-9~@#!$%^&*()[\]{}:;"',./?<>+\-=|_ ]+$/g;
+
       if ((that.managerPassword.length < that.passwordMinlength ||
                   that.managerPassword.length > that.passwordMaxlength)) {
         that.managerPasswordTooltip.msg = that.$t('management.err_password_length');
@@ -122,7 +123,7 @@ export default {
         that.passwordErrorMsg = that.$t('management.err_password_length');
         that.$refs.password.focus();
         that.isPasswordTooltipShown = true;
-      } else if ((validPasswordReg.test(that.password) === false)) {
+      } else if (!validate.isValidPassword(that.password)) {
         that.passwordErrorMsg = that.$t('management.err_password_invalid');
         that.$refs.password.focus();
         that.isPasswordTooltipShown = true;

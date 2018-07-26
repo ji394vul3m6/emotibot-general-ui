@@ -288,7 +288,6 @@ export default {
     },
     checkInputValidation() {
       const that = this;
-      const validPasswordReg = /^[a-zA-Z0-9~@#!$%^&*()[\]{}:;"',./?<>+\-=|_ ]+$/g;
 
       let isValid = true;
       if (that.userName.trim() === '') {
@@ -347,7 +346,7 @@ export default {
           isValid = false;
           that.passwordErrorMsg = that.$t('management.err_password_length');
           that.isPasswordTooltipShown = true;
-        } else if (validPasswordReg.test(that.password) === false) {
+        } else if (!validate.isValidPassword(that.password)) {
           isValid = false;
           that.passwordErrorMsg = that.$t('management.err_password_invalid');
           that.isPasswordTooltipShown = true;

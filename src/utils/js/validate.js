@@ -1,5 +1,5 @@
 function isValidPassword(input) {
-  const validRegex = /^[a-zA-Z0-9~@!#$%^&*()[\]{}:;"',./?<>+\-=|_ ]{6,16}$/g;
+  const validRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9~@!#$%^&*()[\]{}:;"',./?<>+\-=|_ ]{6,16}$/g;
   return validRegex.test(input);
 }
 
