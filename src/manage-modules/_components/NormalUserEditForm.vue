@@ -89,7 +89,7 @@ export default {
       let isValid = true;
       if (that.name.trim() === '') {
         isValid = false;
-        that.$refs.name.dispatchEvent(new Event('tooltip-show')); 
+        that.$refs.name.dispatchEvent(new Event('tooltip-show'));
         that.isNameTooltipShown = true;
       } else if (!validate.isValidDisplayName(that.name.trim())) {
         isValid = false;
