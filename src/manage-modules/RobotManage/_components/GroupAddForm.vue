@@ -3,7 +3,8 @@
     <div class="row">
       <div class="row-title">{{ $t('management.group_name') }}</div>
       <input class="row-input" v-model="name" ref="name"
-        :placeholder="$t('management.input_placeholder')"
+        maxlength=50
+        :placeholder="$t('management.length_50_placeholder')"
         v-tooltip="nameTooltip">
     </div>
     <div class="row">
