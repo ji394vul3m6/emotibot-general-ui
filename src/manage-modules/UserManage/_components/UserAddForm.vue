@@ -158,7 +158,7 @@ export default {
       editMode: false,
       passwordEdit: false,
       passwordMaxlength: 16,
-      passwordMinlength: 4,
+      passwordMinlength: 6,
 
       privilegeSet: [{
         machine: [],
@@ -275,7 +275,7 @@ export default {
     },
     checkInputValidation() {
       const that = this;
-      const validPasswordReg = /^[a-zA-Z0-9~@!$%^&*()[\]{}:;"',./?<>+\-=|_ ]+$/g;
+      const validPasswordReg = /^[a-zA-Z0-9~@#!$%^&*()[\]{}:;"',./?<>+\-=|_ ]+$/g;
 
       let isValid = true;
       if (that.userName.trim() === '') {
@@ -311,9 +311,6 @@ export default {
           that.isPasswordTooltipShown = true;
         } else if (validPasswordReg.test(that.password) === false) {
           isValid = false;
-          that.passwordTooltip.msg = that.$t('management.err_password_invalid');
-          that.$refs.password.dispatchEvent(new Event('tooltip-reload'));
-          that.$refs.password.dispatchEvent(new Event('tooltip-show'));
           that.passwordErrorMsg = that.$t('management.err_password_invalid');
           that.isPasswordTooltipShown = true;
         } else if (that.checkPassword !== that.password) {

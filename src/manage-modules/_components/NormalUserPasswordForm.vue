@@ -67,7 +67,7 @@ export default {
       newPassword: '',
       userType: 2,
       passwordMaxlength: 16,
-      passwordMinlength: 4,
+      passwordMinlength: 6,
       origPasswordTooltip: {
         msg: this.$t('management.err_password_length'),
         eventOnly: true,
@@ -115,7 +115,7 @@ export default {
   methods: {
     validate() {
       const that = this;
-      const validPasswordReg = /^[a-zA-Z0-9~@!$%^&*()[\]{}:;"',./?<>+\-=|_ ]+$/g;
+      const validPasswordReg = /^[a-zA-Z0-9~@!#$%^&*()[\]{}:;"',./?<>+\-=|_ ]+$/g;
       if ((that.origPassword.length < that.passwordMinlength ||
                   that.origPassword.length > that.passwordMaxlength)) {
         that.origPasswordTooltip.msg = that.$t('management.err_password_length');

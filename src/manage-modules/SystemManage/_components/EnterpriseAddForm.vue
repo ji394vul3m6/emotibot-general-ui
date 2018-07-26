@@ -172,7 +172,7 @@ export default {
       //   that.showUpdatedTooltip(that.$refs.email, that.adminErrTooltip,
       //     that.$t('management.err_invalid_email'));
       //   return;
-      } else if (that.adminPassword.length < 4 || that.adminPassword.length > 16) {
+      } else if (that.adminPassword.length < 6 || that.adminPassword.length > 16) {
         that.showUpdatedTooltip(that.$refs.password, that.adminErrTooltip, that.$t('management.err_password_length'));
         return;
       } else if (!validate.isValidPassword(that.adminPassword)) {
