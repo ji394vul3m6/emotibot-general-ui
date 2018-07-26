@@ -863,7 +863,7 @@ export default {
     description: '描述',
 
     input_placeholder: '輸入文字',
-    length_45_placeholder: '字數限制45內',
+    length_50_placeholder: '字數限制50內',
 
     create_group: '創建羣組',
     add_robot: '加入機器人',
