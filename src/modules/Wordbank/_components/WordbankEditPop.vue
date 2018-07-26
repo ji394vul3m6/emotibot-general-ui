@@ -23,7 +23,7 @@
             ref="synonymInput"
             v-model="newSynonym"
             v-tooltip="synonymTooltip"
-            :maxlength="lengthLimit"
+            :maxlength="synonymLengthLimit"
             :placeholder="$t('wordbank.placeholder_synonym')"
             @compositionstart="setCompositionState(true)"
             @compositionend="setCompositionState(false)"
@@ -89,6 +89,7 @@ export default {
       curPageIdx: 1,
       pageLimit: 100,
       lengthLimit: 35,
+      synonymLengthLimit: 64,
 
       synonymTooltip: {
         msg: this.$t('wordbank.error.synonym_duplicate'),
@@ -151,7 +152,7 @@ export default {
     },
     isNewSynonymTooLong() {
       this.newSynonym = this.newSynonym.trim();
-      return this.newSynonym.length > this.lengthLimit;
+      return this.newSynonym.length > this.synonymLengthLimit;
     },
     isDuplicate() {
       return this.synonyms.filter(synonym => synonym === this.newSynonym).length > 0;
