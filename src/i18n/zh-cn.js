@@ -962,6 +962,7 @@ export default {
     err_invalid_email: '不合法的 Email 格式',
     err_invalid_phone: '不合法的电话格式',
     err_empty_display_name: '姓名不可为空',
+    err_display_name_length: '姓名长度需介于2~50字之间',
     err_password_length: '密码长度需介于6~16字之间',
     err_password_invalid: '密码含不合法字元',
     err_password: '密码错误',

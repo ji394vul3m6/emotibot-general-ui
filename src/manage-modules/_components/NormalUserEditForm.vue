@@ -5,7 +5,7 @@
         {{ $t('management.user_display_name') }}
       </div>
       <div class="row-input">
-        <input ref="name" v-tooltip="nameTooltip" v-model="name">
+        <input ref="name" v-tooltip="nameTooltip" v-model="name" :class="{'error': isNameTooltipShown}">
       </div>
     </div>
     <div class="row">
@@ -40,7 +40,7 @@ export default {
   data() {
     return {
       nameTooltip: {
-        msg: this.$t('management.err_empty_display_name'),
+        msg: this.$t('management.err_display_name_length'),
         eventOnly: true,
         errorType: true,
         alignLeft: true,
@@ -60,6 +60,7 @@ export default {
       name: '',
       phone: '',
       email: '',
+      isNameTooltipShown: false,
       isEmailTooltipShown: false,
       isPhoneTooltipShown: false,
     };
@@ -67,6 +68,7 @@ export default {
   watch: {
     name() {
       if (this.name.trim() !== '') {
+        this.isNameTooltipShown = false;
         this.$refs.name.dispatchEvent(new Event('tooltip-hide'));
       }
     },
@@ -86,8 +88,13 @@ export default {
       const that = this;
       let isValid = true;
       if (that.name.trim() === '') {
-        that.$refs.name.dispatchEvent(new Event('tooltip-show'));
         isValid = false;
+        that.$refs.name.dispatchEvent(new Event('tooltip-show')); 
+        that.isNameTooltipShown = true;
+      } else if (!validate.isValidDisplayName(that.name.trim())) {
+        isValid = false;
+        that.$refs.name.dispatchEvent(new Event('tooltip-show'));
+        that.isNameTooltipShown = true;
       }
       if (that.email.trim() === '') {
         isValid = false;

@@ -18,9 +18,16 @@ function isValidPhone(input) {
   return validRegex.test(input);
 }
 
+function isValidDisplayName(input) {
+  const minlength = 2;
+  const maxlength = 50;
+  return input.length >= minlength && input.length <= maxlength;
+}
+
 export default {
   isValidPassword,
   isValidEmail,
   isValidUserName,
   isValidPhone,
+  isValidDisplayName,
 };

@@ -189,7 +189,7 @@ export default {
         alignLeft: true,
       },
       displayNameTooltip: {
-        msg: this.$t('management.err_empty_display_name'),
+        msg: this.$t('management.err_display_name_length'),
         eventOnly: true,
         errorType: true,
         alignLeft: true,
@@ -297,6 +297,12 @@ export default {
         that.$refs.userName.dispatchEvent(new Event('tooltip-reload'));
         that.$refs.userName.dispatchEvent(new Event('tooltip-show'));
         that.isUserNameTooltipShown = true;
+      } else if (!validate.isValidUserName(that.userName)) {
+        isValid = false;
+        that.userNameTooltip.msg = that.$t('management.err_invalid_username');
+        that.$refs.userName.dispatchEvent(new Event('tooltip-reload'));
+        that.$refs.userName.dispatchEvent(new Event('tooltip-show'));
+        that.isUserNameTooltipShown = true;
       } else if (!that.editMode) {
         if (that.existedUsers.indexOf(that.userName) >= 0) {
           isValid = false;
@@ -327,6 +333,10 @@ export default {
       }
 
       if (that.displayName.trim() === '') {
+        isValid = false;
+        that.$refs.displayName.dispatchEvent(new Event('tooltip-show'));
+        that.isDisplayNameTooltipShown = true;
+      } else if (!validate.isValidDisplayName(that.displayName.trim())) {
         isValid = false;
         that.$refs.displayName.dispatchEvent(new Event('tooltip-show'));
         that.isDisplayNameTooltipShown = true;
