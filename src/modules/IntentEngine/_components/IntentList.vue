@@ -305,8 +305,15 @@ export default {
       const currentCorpus = intent.corpus[intent.viewCorpusType];
       return currentCorpus.length;
     },
+    toFirstPage(intent) {
+      intent.curPage = 1;
+    },
     handlePageChange(pageIdx, intent) {
       intent.curPage = pageIdx;
+      if (intent.hasCorpusEditing) {
+        const editingCorpus = intent.corpus[intent.viewCorpusType].find(cp => cp.isEdit === true);
+        this.leaveEditCorpus(editingCorpus, intent);
+      }
     },
     setCompositionState(bool) {
       this.compositionState = bool;
@@ -410,6 +417,7 @@ export default {
         });
         intent.corpus = corpus;
         intent.expand = true;
+        that.toFirstPage(intent);
       })
       .catch((err) => {
         console.log(err);
@@ -439,6 +447,9 @@ export default {
         pos: [].concat(intent.corpus.pos),
         neg: [].concat(intent.corpus.neg),
       };
+      that.$nextTick(() => {
+        that.$refs.intentName[0].focus();
+      });
     },
     cancelEditIntent(intent, nextAction) {
       const that = this;
@@ -554,6 +565,7 @@ export default {
           console.log('finished');
           that.$emit('addIntentDone', true);  // reload all
           that.initEditStorage();
+          that.newIntentName = '';
         })
         .catch((err) => {
           console.log(err);
@@ -590,7 +602,7 @@ export default {
       // cancel all actions of previous type
       intent.hasCorpusEditing = false;
       intent.hasCorpusSelected = false;
-      intent.curPage = 1;
+      this.toFirstPage(intent);
       if (type === POSITIVE_CORPUS) {
         intent.corpus[NEGATIVE_CORPUS].forEach((cp) => {
           cp.isSelect = false;
@@ -720,6 +732,7 @@ export default {
           type: intent.viewCorpusType,
         });
         that.newCorpus = '';
+        that.toFirstPage(intent);
       }
     },
   },
