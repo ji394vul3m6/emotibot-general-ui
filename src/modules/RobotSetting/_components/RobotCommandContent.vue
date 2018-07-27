@@ -234,8 +234,7 @@ export default {
       const command = this.currentCommands.find(cmd => cmd.id === data.id);
       command.status = !command.status;
       this.$api.editRobotCommand(command)
-        .then((rsp) => {
-          const rspCommand = this.parseCommand(rsp);
+        .then((rspCommand) => {
           const theCommandIdx = this.currentCommands
             .findIndex(cmd => cmd.id === rspCommand.id);
           this.currentCommands.splice(theCommandIdx, 1, command);
