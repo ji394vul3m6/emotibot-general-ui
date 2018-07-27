@@ -762,6 +762,8 @@ export default {
       tooltip: {
         name_empty: '意图名称不可为空',
         name_duplicate: '意图名称已存在',
+        corpus_duplicate_positive: '已存在相同正例语料',
+        corpus_duplicate_negative: '已存在相同反例语料',
       },
       placeholder: {
         intent_title: '输入意图名称',
@@ -773,9 +775,11 @@ export default {
         hint_left: '左上角可手动新增，导入意图',
         hint_right: '右上角可下载意图范本',
       },
-      errmsg: {
+      notify: {
+        add_intent_success: '新增意图成功',
         add_intent_fail: '新增意图失败',
         delete_intent_fail: '删除意图失败',
+        update_intent_success: '编辑意图成功',
         update_intent_fail: '编辑意图失败',
         get_corpus_fail: '读取语料失败',
       },
@@ -800,6 +804,11 @@ export default {
       by_update: '新增数据',
       by_replace: '全量替换',
       tooltip: '选择全量替换将删除之前所有数据',
+    },
+    test: {
+      run_test: '进行测试',
+      last_test: '最后测试时间：',
+      download_prev_report: '下载历次测试报告',
     },
   },
   pages: {
