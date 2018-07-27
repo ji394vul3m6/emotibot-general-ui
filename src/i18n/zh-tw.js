@@ -34,6 +34,10 @@ export default {
       delete: '刪除',
       export: '導出',
       import: '導入',
+      login: '登入',
+      publish: '發布',
+      active: '啟動',
+      deactive: '關閉',
     },
 
     modules: {
@@ -845,23 +849,25 @@ export default {
     system_admin_list: '系統管理人員',
     system_admin_desc: '創建企業時，必須指定一位企業管理人員',
 
-    robot_group: '機器人羣組',
+    robot_group: '機器人群組',
     robots: '機器人',
     robot_list: '機器人列表',
 
     create_robot: '創建機器人',
     delete_robot: '刪除機器人',
     edit_robot: '編輯機器人',
-    group_manage: '機器人羣組管理',
+    group_manage: '機器人群組管理',
 
-    group_name: '羣組名稱',
+    group_name: '群組名稱',
     robot_name: '機器人名字',
     description: '描述',
 
     input_placeholder: '輸入文字',
-    length_45_placeholder: '字數限制45內',
+    length_50_placeholder: '字數限制50內',
 
-    create_group: '創建羣組',
+    create_group: '創建群組',
+    edit_group: '修改群組',
+    delete_group: '刪除群組',
     add_robot: '加入機器人',
     input_personal_pass: '輸入個人密碼',
     reason_description: '原因描述',
@@ -924,8 +930,8 @@ export default {
     err_robot_duplicate: '機器人名稱已存在',
     err_enterprise_name_empty: '機器人名稱不可爲空',
     err_enterprise_duplicate: '機器人名稱已存在',
-    err_group_name_empty: '羣組名稱不可爲空',
-    err_group_duplicate: '羣組名稱已存在',
+    err_group_name_empty: '群組名稱不可爲空',
+    err_group_duplicate: '群組名稱已存在',
     err_pick_no_modules: '功能列表至少需勾選一個',
 
     go_back: '返回',

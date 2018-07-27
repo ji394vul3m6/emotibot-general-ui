@@ -34,6 +34,10 @@ export default {
       delete: '删除',
       export: '导出',
       import: '导入',
+      login: '登入',
+      publish: '发布',
+      active: '启动',
+      deactive: '关闭',
     },
 
     modules: {
@@ -58,6 +62,7 @@ export default {
       task_engine: '任务引擎',
 
       management: '权限管理',
+      intent_manage: '意圖引擎',
     },
     tools: {
       encrypt: {
@@ -747,8 +752,8 @@ export default {
     },
     task_engine: {
       module_name: '任务引擎',
-      task_engine_scenario: '场景编辑',
-      task_engine_scenario_v3: '新场景编辑',
+      task_engine_scenario: '场景列表',
+      task_engine_scenario_v3: '新版场景列表',
       task_engine_upload: '上传转换数据',
     },
     intent_engine: {
@@ -913,9 +918,11 @@ export default {
     description: '描述',
 
     input_placeholder: '输入文字',
-    length_45_placeholder: '字数限制45内',
+    length_50_placeholder: '字数限制50内',
 
     create_group: '创建群组',
+    edit_group: '修改群组',
+    delete_group: '删除群组',
     add_robot: '加入机器人',
     input_personal_pass: '输入个人密码',
     reason_description: '原因描述',
@@ -955,16 +962,18 @@ export default {
     orig_password: '原密码',
     new_password: '新密码',
     check_new_password: '确认新密码',
-    password_format: '介于4~16字的英文字母、数字或常见符号',
+    password_format: '介于6~16字的英文字母、数字或符号，须包含大小写英文字母与数字',
     username_format: '介于4~64字的英文字母、数字或简单符号',
     err_empty_username: 'ID 不可为空',
     err_existed_username: 'ID 已存在',
     err_invalid_username: 'ID 格式错误',
     err_empty_email: 'Email 不可为空',
     err_invalid_email: '不合法的 Email 格式',
+    err_invalid_phone: '不合法的电话格式',
     err_empty_display_name: '姓名不可为空',
-    err_password_length: '密码长度需介于4~16字之间',
-    err_password_invalid: '密码含不合法字元',
+    err_display_name_length: '姓名长度需介于2~50字之间',
+    err_password_length: '密码长度需介于6~16字之间',
+    err_password_invalid: '不合法的密码格式',
     err_password: '密码错误',
     err_origin_password: '原密码错误',
     err_manager_password: '管理员密码错误',

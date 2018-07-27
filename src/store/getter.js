@@ -70,7 +70,7 @@ export const hasPrivilege = s => (mod, cmd) => {
   if (s.userInfo.type < 2) {
     return true;
   }
-  const nowPriv = this.userPrivilege(s)[mod] || {};
+  const nowPriv = userPrivilege(s)[mod] || {};
   if (!nowPriv) {
     return false;
   }

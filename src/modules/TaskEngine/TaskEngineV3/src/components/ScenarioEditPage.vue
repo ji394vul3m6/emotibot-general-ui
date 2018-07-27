@@ -245,7 +245,7 @@ export default {
       content.metadata.scenario_name = this.scenarioName;
       content.metadata.update_time = general.getLocalDateTimeIsoString();
       this.saveScenario(content).then(() => {
-        this.$vueOnToast.pop('success', this.i18n.task_engine_v3.scenario_edit_page.toast_save_success, '');
+        this.$notify({ text: this.i18n.task_engine_v3.scenario_edit_page.toast_save_success });
         this.registerNluTdeScenario(this.scenarioId, content);
         this.publishScenario(content);
       });
@@ -253,7 +253,7 @@ export default {
     registerNluTdeScenario(scenarioId, content) {
       Object.keys(content.skills).map((skillId) => {
         const skill = content.skills[skillId];
-        if (skill.entityCollectorList.length > 0) {
+        if (skill.entityCollectorList.length > 0 || skill.register_json) {
           const data = scenarioConvertor.convertToRegistryData(scenarioId, skill, skillId);
           api.registerNluTdeScenario(data);
         }

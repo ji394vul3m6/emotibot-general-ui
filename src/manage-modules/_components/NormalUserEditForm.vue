@@ -5,7 +5,7 @@
         {{ $t('management.user_display_name') }}
       </div>
       <div class="row-input">
-        <input ref="name" v-tooltip="nameTooltip" v-model="name">
+        <input ref="name" v-tooltip="nameTooltip" v-model="name" :class="{'error': isNameTooltipShown}">
       </div>
     </div>
     <div class="row">
@@ -13,7 +13,7 @@
         {{ $t('management.phone') }}
       </div>
       <div class="row-input">
-        <input ref="phone" v-model="phone">
+        <input ref="phone" v-tooltip="phoneTooltip" v-model="phone" :class="{'error': isPhoneTooltipShown}">
       </div>
     </div>
     <div class="row">
@@ -21,13 +21,15 @@
         {{ $t('management.email') }}
       </div>
       <div class="row-input">
-        <input ref="email" v-tooltip="emailTooltip" v-model="email">
+        <input ref="email" v-tooltip="emailTooltip" v-model="email" :class="{'error': isEmailTooltipShown}">
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import validate from '@/utils/js/validate';
+
 export default {
   props: {
     extData: {
@@ -38,7 +40,7 @@ export default {
   data() {
     return {
       nameTooltip: {
-        msg: this.$t('management.err_empty_display_name'),
+        msg: this.$t('management.err_display_name_length'),
         eventOnly: true,
         errorType: true,
         alignLeft: true,
@@ -49,21 +51,36 @@ export default {
         errorType: true,
         alignLeft: true,
       },
+      phoneTooltip: {
+        msg: this.$t('management.err_invalid_phone'),
+        eventOnly: true,
+        errorType: true,
+        alignLeft: true,
+      },
       name: '',
       phone: '',
       email: '',
+      isNameTooltipShown: false,
+      isEmailTooltipShown: false,
+      isPhoneTooltipShown: false,
     };
   },
   watch: {
     name() {
       if (this.name.trim() !== '') {
+        this.isNameTooltipShown = false;
         this.$refs.name.dispatchEvent(new Event('tooltip-hide'));
       }
     },
     email() {
       if (this.email.trim() !== '') {
         this.$refs.email.dispatchEvent(new Event('tooltip-hide'));
+        this.isEmailTooltipShown = false;
       }
+    },
+    phone() {
+      this.isPhoneTooltipShown = false;
+      this.$refs.phone.dispatchEvent(new Event('tooltip-hide'));
     },
   },
   methods: {
@@ -71,13 +88,33 @@ export default {
       const that = this;
       let isValid = true;
       if (that.name.trim() === '') {
-        that.$refs.name.dispatchEvent(new Event('tooltip-show'));
         isValid = false;
+        that.$refs.name.dispatchEvent(new Event('tooltip-show'));
+        that.isNameTooltipShown = true;
+      } else if (!validate.isValidDisplayName(that.name.trim())) {
+        isValid = false;
+        that.$refs.name.dispatchEvent(new Event('tooltip-show'));
+        that.isNameTooltipShown = true;
       }
       if (that.email.trim() === '') {
-        that.$refs.email.dispatchEvent(new Event('tooltip-show'));
         isValid = false;
+        that.emailTooltip.msg = that.$t('management.err_empty_email');
+        that.$refs.email.dispatchEvent(new Event('tooltip-reload'));
+        that.$refs.email.dispatchEvent(new Event('tooltip-show'));
+        that.isEmailTooltipShown = true;
+      } else if (!validate.isValidEmail(that.email)) {
+        isValid = false;
+        that.emailTooltip.msg = that.$t('management.err_invalid_email');
+        that.$refs.email.dispatchEvent(new Event('tooltip-reload'));
+        that.$refs.email.dispatchEvent(new Event('tooltip-show'));
+        that.isEmailTooltipShown = true;
       }
+      if (that.phone !== '' && !validate.isValidPhone(that.phone)) {
+        isValid = false;
+        that.$refs.phone.dispatchEvent(new Event('tooltip-show'));
+        that.isPhoneTooltipShown = true;
+      }
+
       if (!isValid) {
         return;
       }

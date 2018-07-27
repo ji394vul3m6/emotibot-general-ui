@@ -1,7 +1,7 @@
 <template lang="html">
 <div id="action-group" class="action-group">
   <div class="label-first-action-type">{{labelFirstActionType}}</div>
-  <div class="action-group-container">
+  <div class="action-group-box">
     <div class="row">
       <div
         class="button-add-condition"
@@ -137,40 +137,44 @@ export default {
     line-height: 28px;
     color: #999999;
   }
-  .action-group-container{
+  .action-group-box{
     padding: 10px;
     padding-left: 20px;
     padding-right: 20px;
     background-color: #ffffff;
     border: solid 1px #dbdbdb;
     border-radius: 4px;
-  }
-  .row{
-    position: relative;
-    display: flex;
-    flex-direction: row;
-    .button-add-condition{
-      width: 75px;
-      height: 28px;
-      font-size: 14px;
-      line-height: 28px;
-      color: $color-primary;
-      &:hover {
-        cursor: pointer;
-        color: darken($color-primary, 15%);
-      }
+    cursor: move;
+    &:hover{
+      box-shadow: 0 4px 9px 0 rgba(115, 115, 115, 0.2), 0 5px 8px 0 rgba(228, 228, 228, 0.5);
     }
-    .button-delete-action-group{
-      position: absolute;
-      right: 0px;
-      height: 28px;
-      font-size: 14px;
-      line-height: 28px;
-      text-align: center;
-      color: $color-error;
-      &:hover {
-        cursor: pointer;
-        color: darken($color-error, 15%);
+    .row{
+      position: relative;
+      display: flex;
+      flex-direction: row;
+      .button-add-condition{
+        width: 75px;
+        height: 28px;
+        font-size: 14px;
+        line-height: 28px;
+        color: $color-primary;
+        &:hover {
+          cursor: pointer;
+          color: darken($color-primary, 15%);
+        }
+      }
+      .button-delete-action-group{
+        position: absolute;
+        right: 0px;
+        height: 28px;
+        font-size: 14px;
+        line-height: 28px;
+        text-align: center;
+        color: $color-error;
+        &:hover {
+          cursor: pointer;
+          color: darken($color-error, 15%);
+        }
       }
     }
   }

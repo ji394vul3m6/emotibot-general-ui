@@ -63,7 +63,8 @@
         <span class="required"></span>
         {{ $t('management.phone') }}
       </div>
-      <input class="row-input" ref="phone" v-model="phone" :placeholder="$t('management.input_placeholder')">
+      <input class="row-input" ref="phone" v-model="phone" :placeholder="$t('management.input_placeholder')" v-tooltip="phoneTooltip"
+      :class="{'error': isPhoneTooltipShown}">
     </div>
     <div class="row">
       <div class="row-title">
@@ -97,6 +98,7 @@
 
 <script>
 import md5 from 'md5';
+import validate from '@/utils/js/validate';
 import DropdownSelector from '@/components/DropdownSelect';
 
 export default {
@@ -136,6 +138,10 @@ export default {
         this.$refs.email.dispatchEvent(new Event('tooltip-hide'));
       }
     },
+    phone() {
+      this.isPhoneTooltipShown = false;
+      this.$refs.phone.dispatchEvent(new Event('tooltip-hide'));
+    },
     password() {
       if (this.password.trim() !== '') {
         this.isPasswordTooltipShown = false;
@@ -158,7 +164,7 @@ export default {
       editMode: false,
       passwordEdit: false,
       passwordMaxlength: 16,
-      passwordMinlength: 4,
+      passwordMinlength: 6,
 
       privilegeSet: [{
         machine: [],
@@ -183,7 +189,13 @@ export default {
         alignLeft: true,
       },
       displayNameTooltip: {
-        msg: this.$t('management.err_empty_display_name'),
+        msg: this.$t('management.err_display_name_length'),
+        eventOnly: true,
+        errorType: true,
+        alignLeft: true,
+      },
+      phoneTooltip: {
+        msg: this.$t('management.err_invalid_phone'),
         eventOnly: true,
         errorType: true,
         alignLeft: true,
@@ -202,6 +214,7 @@ export default {
       },
       isUserNameTooltipShown: false,
       isEmailTooltipShown: false,
+      isPhoneTooltipShown: false,
       isDisplayNameTooltipShown: false,
       isPasswordTooltipShown: false,
       isPasswordCheckTooltipShown: false,
@@ -275,12 +288,17 @@ export default {
     },
     checkInputValidation() {
       const that = this;
-      const validPasswordReg = /^[a-zA-Z0-9~@!$%^&*()[\]{}:;"',./?<>+\-=|_ ]+$/g;
 
       let isValid = true;
       if (that.userName.trim() === '') {
         isValid = false;
         that.userNameTooltip.msg = that.$t('management.err_empty_username');
+        that.$refs.userName.dispatchEvent(new Event('tooltip-reload'));
+        that.$refs.userName.dispatchEvent(new Event('tooltip-show'));
+        that.isUserNameTooltipShown = true;
+      } else if (!validate.isValidUserName(that.userName)) {
+        isValid = false;
+        that.userNameTooltip.msg = that.$t('management.err_invalid_username');
         that.$refs.userName.dispatchEvent(new Event('tooltip-reload'));
         that.$refs.userName.dispatchEvent(new Event('tooltip-show'));
         that.isUserNameTooltipShown = true;
@@ -295,10 +313,29 @@ export default {
       }
       if (that.email.trim() === '') {
         isValid = false;
+        that.emailTooltip.msg = that.$t('management.err_empty_email');
+        that.$refs.email.dispatchEvent(new Event('tooltip-reload'));
+        that.$refs.email.dispatchEvent(new Event('tooltip-show'));
+        that.isEmailTooltipShown = true;
+      } else if (!validate.isValidEmail(that.email)) {
+        isValid = false;
+        that.emailTooltip.msg = that.$t('management.err_invalid_email');
+        that.$refs.email.dispatchEvent(new Event('tooltip-reload'));
         that.$refs.email.dispatchEvent(new Event('tooltip-show'));
         that.isEmailTooltipShown = true;
       }
+
+      if (that.phone !== '' && !validate.isValidPhone(that.phone)) {
+        isValid = false;
+        that.$refs.phone.dispatchEvent(new Event('tooltip-show'));
+        that.isPhoneTooltipShown = true;
+      }
+
       if (that.displayName.trim() === '') {
+        isValid = false;
+        that.$refs.displayName.dispatchEvent(new Event('tooltip-show'));
+        that.isDisplayNameTooltipShown = true;
+      } else if (!validate.isValidDisplayName(that.displayName.trim())) {
         isValid = false;
         that.$refs.displayName.dispatchEvent(new Event('tooltip-show'));
         that.isDisplayNameTooltipShown = true;
@@ -309,11 +346,8 @@ export default {
           isValid = false;
           that.passwordErrorMsg = that.$t('management.err_password_length');
           that.isPasswordTooltipShown = true;
-        } else if (validPasswordReg.test(that.password) === false) {
+        } else if (!validate.isValidPassword(that.password)) {
           isValid = false;
-          that.passwordTooltip.msg = that.$t('management.err_password_invalid');
-          that.$refs.password.dispatchEvent(new Event('tooltip-reload'));
-          that.$refs.password.dispatchEvent(new Event('tooltip-show'));
           that.passwordErrorMsg = that.$t('management.err_password_invalid');
           that.isPasswordTooltipShown = true;
         } else if (that.checkPassword !== that.password) {
@@ -451,7 +485,8 @@ export default {
       margin-left: 10px;
     }
     .selector {
-      flex: 1;
+      flex: 0 0 165px;
+      max-width: 165px;
     }
   }
 }

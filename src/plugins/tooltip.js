@@ -13,7 +13,8 @@ const MyPlugin = {
     Vue.directive('tooltip', {
       inserted(el, binding, vnode) {
         const parent = el.parentElement;
-        const boundedBox = el.getBoundingClientRect();
+        let scrollParent;
+        let boundedBox = el.getBoundingClientRect();
         vnode.context.$nextTick(() => {
           const TooltipGenerator = Vue.extend(Tooltip);
           let vm = new TooltipGenerator({
@@ -33,9 +34,31 @@ const MyPlugin = {
           parent.appendChild(vm.$el);
           vm.$forceUpdate();
 
+          for (let temp = parent; temp != null; temp = temp.parentElement) {
+            if (temp.scrollHeight !== temp.clientHeight) {
+              scrollParent = temp;
+              break;
+            }
+          }
+          if (scrollParent) {
+            scrollParent.addEventListener('scroll', () => {
+              const parentPos = scrollParent.getBoundingClientRect();
+              const pos = el.getBoundingClientRect();
+              const inRange = parentPos.top <= pos.top && parentPos.bottom >= pos.bottom;
+              if (!inRange && vm.show) {
+                el.dispatchEvent(new Event('tooltip-hide'));
+                vm.hideWithScroll = true;
+              } else if (inRange && (vm.show || vm.hideWithScroll)) {
+                el.dispatchEvent(new Event('tooltip-show'));
+                vm.hideWithScroll = false;
+              }
+            });
+          }
+
           el.addEventListener('tooltip-reload', () => {
             parent.removeChild(vm.$el);
             vm.$destroy();
+            boundedBox = el.getBoundingClientRect();
             vm = new TooltipGenerator({
               propsData: {
                 x: boundedBox.right,
@@ -56,6 +79,15 @@ const MyPlugin = {
           el.addEventListener('tooltip-show', (e) => {
             if (e.target !== el) {
               return;
+            }
+            if (scrollParent) {
+              const parentPos = scrollParent.getBoundingClientRect();
+              const pos = el.getBoundingClientRect();
+              const inRange = parentPos.top <= pos.top && parentPos.bottom >= pos.bottom;
+              if (!inRange) {
+                vm.hideWithScroll = true;
+                return;
+              }
             }
             vm.$emit('show', getPosition(el));
           });

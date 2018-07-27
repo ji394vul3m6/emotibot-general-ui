@@ -48,6 +48,8 @@ import PageMenu from '@/components/layout/Menu';
 import QATest from '@/modules/SSM/QATestFloat';
 import constant from '@/utils/js/constant';
 import UserPreference from '@/manage-modules/UserPreference';
+import userAPI from '@/manage-modules/_api/user';
+import adminAPI from '@/manage-modules/SystemManage/_api/system';
 
 const defaultPath = '/statistic-dash';
 
@@ -63,6 +65,7 @@ export default {
     'page-menu': PageMenu,
     'user-preference': UserPreference,
   },
+  api: [userAPI, adminAPI],
   computed: {
     pageName() {
       return this.$t(this.currentPage.display);
@@ -97,7 +100,6 @@ export default {
   },
   watch: {
     enterpriseID() {
-      console.log('here');
       this.setPrivilegeList(this.$getPrivModules());
     },
     robotID(val) {
@@ -142,6 +144,8 @@ export default {
       'openChatTest',
       'closeChatTest',
       'setUserInfo',
+      'setRobot',
+      'setEnterprise',
     ]),
     checkPrivilege() {
       const that = this;
@@ -171,6 +175,19 @@ export default {
         return;
       }
 
+      // check if user use 'last page' to go management page, not use button on page
+      that.$route.matched.forEach((route) => {
+        if (route.path === '/manage') {
+          if (that.robotID !== '') {
+            that.setRobot('');
+            that.$router.push('/manage/robot-manage');
+          } else if (that.enterpriseID !== '') {
+            that.setEnterprise('');
+            that.$router.push('/manage/enterprise-manage');
+          }
+        }
+      });
+
       const route = that.$route.matched[0];
       if (!route.components.default) {
         return;
@@ -179,14 +196,13 @@ export default {
       if (that.userInfo.type < 2) {
         // system admin and enterprise admin can use all module active in enterprise
         if (that.privilegeList.findIndex(l => l.code === component.privCode) < 0) {
-          that.$router.push('error');
+          that.$router.push('/error');
           return;
         }
         return;
       }
       // TODO: get user privilege of specific robot
       const privileges = that.userPrivilege;
-      console.log(privileges);
 
       const codes = Object.keys(privileges);
       // If user has no privileges, invalid user
@@ -200,7 +216,7 @@ export default {
         if (that.$route.fullPath === '/') {
           that.$router.push(defaultPath);
         } else {
-          that.$router.push('error');
+          that.$router.push('/error');
         }
         return;
       }
@@ -372,13 +388,23 @@ export default {
     that.checkCookie();
     that.$setReqToken(token);
     that.$setIntoWithToken(token).then(() => {
-      const enterpriseList = that.$getUserEnterprises();
       const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-      that.userInfo = userInfo;
-      that.setUser(userInfo.id);
-      that.setUserInfo(userInfo);
+
+      let getUserInfoPromise;
+      if (userInfo.type === 0) {
+        getUserInfoPromise = that.$api.getAdmin(userInfo.id);
+      } else {
+        getUserInfoPromise = that.$api.getEnterpriseUser(userInfo.enterprise, userInfo.id);
+      }
+      return getUserInfoPromise;
+    })
+    .then((data) => {
+      const enterpriseList = that.$getUserEnterprises();
+      that.userInfo = data;
+      that.setUser(data.id);
+      that.setUserInfo(data);
       that.setPrivilegedEnterprise(enterpriseList);
-      if (userInfo.type !== 0) {
+      if (data.type !== 0) {
         const robots = that.$getRobots();
         const userRoleMap = JSON.parse(localStorage.getItem('roleMap'));
         that.setRobotList(robots);
@@ -388,7 +414,8 @@ export default {
       }
       that.checkPrivilege();
       that.ready = true;
-    }).catch((err) => {
+    })
+    .catch((err) => {
       console.log(err);
       const fullPath = that.$route.fullPath;
       window.location = `/login.html?invalid=1&redirect=${encodeURIComponent(fullPath)}`;

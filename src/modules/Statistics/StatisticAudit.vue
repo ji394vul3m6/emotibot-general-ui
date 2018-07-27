@@ -235,6 +235,10 @@ export default {
         2: this.$t('privileges.actions.delete'),
         3: this.$t('privileges.actions.import'),
         4: this.$t('privileges.actions.export'),
+        6: this.$t('privileges.actions.login'),
+        7: this.$t('privileges.actions.publish'),
+        8: this.$t('privileges.actions.active'),
+        9: this.$t('privileges.actions.deactive'),
       },
       selectAction: '-1',
       moduleList: {

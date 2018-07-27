@@ -10,15 +10,15 @@
     </div>
     <div class="row">
       <div class="row-title">{{ $t('management.enterprise_description') }}</div>
-      <input class="row-input long" v-model="description" maxlength=45
-        :placeholder="$t('management.length_45_placeholder')">
+      <input class="row-input long" v-model="description" maxlength=50
+        :placeholder="$t('management.length_50_placeholder')">
     </div>
     <div class="row">
       <div class="row-title part">{{ $t('management.module_list') }}</div>
     </div>
     <div class="row multi-line">
       <div v-for="(mod, idx) in modules" :key="idx" class="module">
-        <input type="checkbox" v-model="mod.checked" disabled>
+        <input type="checkbox" v-model="mod.checked">
         <div class="module-name">{{ $t(`privileges.modules.${mod.code}`) }}</div>
         <icon icon-type="help" :size=15 v-if="mod.description && mod.description !== ''"
          v-tooltip="{msg: mod.description}" />

@@ -11,6 +11,10 @@ function getAdmins() {
   return this.$reqGet(ADMINS_URL).then(rsp => rsp.data.result);
 }
 
+function getAdmin(id) {
+  return this.$reqGet(`${ADMIN_URL}/${id}`).then(rsp => rsp.data.result);
+}
+
 function updateAdmin(id, user) {
   return this.$reqPutForm(`${ADMIN_URL}/${id}`, user)
   .then((data) => {
@@ -41,6 +45,7 @@ function addAdmin(user) {
 export default {
   getModules,
   getAdmins,
+  getAdmin,
   updateAdmin,
   addAdmin,
   deleteAdmin,

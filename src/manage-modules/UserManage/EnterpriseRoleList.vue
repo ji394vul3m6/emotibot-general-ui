@@ -14,7 +14,7 @@
             <div class="card-title">
             <template v-if="role.editMode">
               <div class="title-text">
-                <input v-model="editName" v-tooltip="nameTooltip" ref='nameInput' :placeholder="$t('management.role_name_placeholder')">
+                <input v-model="editName" v-tooltip="nameTooltip" ref='nameInput' maxlength=50 :placeholder="$t('management.role_name_placeholder')">
               </div>
               <div class="title-action">
                 <div class="action" @click="closeEditRole(role, false)">{{ $t('general.cancel') }}</div>
@@ -93,10 +93,18 @@ export default {
       return ret;
     },
     showSave() {
-      const idx = this.roles.findIndex(role => role.editMode);
-      const role = this.roles[idx];
+      const that = this;
+      const idx = that.roles.findIndex(role => role.editMode);
+      const role = that.roles[idx];
       const existedRole = role.uuid !== undefined && role.uuid !== '';
-      return this.editName !== '' &&
+      const selectAny = Object.keys(that.showPrivilegeMap).reduce((val, cat) => {
+        const category = that.showPrivilegeMap[cat];
+        return val || Object.keys(category).reduce((val2, name) => {
+          const mod = category[name];
+          return val2 || Object.keys(mod).reduce((val3, cmd) => val3 || mod[cmd], false);
+        }, false);
+      }, false);
+      return selectAny && this.editName.trim() !== '' &&
         ((existedRole && this.duplicateIdx === idx) || this.duplicateIdx < 0);
     },
   },
@@ -268,8 +276,9 @@ export default {
           promise = that.$api.addEnterpriseRole(that.enterpriseID, options);
         }
 
-        promise.then(() => that.loadRoles())
+        promise
         .finally(() => {
+          that.loadRoles();
           that.$emit('endLoading');
         });
       } else if (role.uuid === '') {

@@ -129,7 +129,6 @@ export default {
       });
     },
     popEditEnterprise(enterprise) {
-      console.log(enterprise);
       const that = this;
       const promises = [
         that.$api.getEnterprises(),

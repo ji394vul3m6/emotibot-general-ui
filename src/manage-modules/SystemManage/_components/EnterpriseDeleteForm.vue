@@ -10,7 +10,7 @@
     <div class="row">
       <div class="row-title">{{ $t('management.reason_description') }}</div>
       <input class="row-input" v-model="reason"
-        :placeholder="$t('management.length_45_placeholder')"
+        :placeholder="$t('management.length_50_placeholder')"
         maxlength="45">
     </div>
   </div>  

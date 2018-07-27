@@ -91,6 +91,7 @@ import EntityCollector from './EntityCollector';
 import EntityRelationEditPop from './EntityRelationEditPop';
 import SentenceReplacementEditorPop from './SentenceReplacementEditorPop';
 import TDESettingEditorPop from './TDESettingEditorPop';
+import RegisterJSONEditorPop from './RegisterJSONEditorPop';
 import i18nUtils from '../utils/i18nUtil';
 import general from '../utils/general';
 
@@ -122,6 +123,10 @@ export default {
       type: Object,
       required: true,
     },
+    initialRegisterJSON: {
+      type: Object,
+      required: true,
+    },
   },
   data() {
     return {
@@ -135,6 +140,7 @@ export default {
       },
       re_parsers: [],
       tde_setting: {},
+      register_json: {},
       advancedConfigOptions: {},
     };
   },
@@ -250,65 +256,6 @@ export default {
             entityType: '车牌号码',
             sourceType: 'system',
             slotType: 'car-plate',
-          },
-          {
-            entityCategory: '通用实体类别',
-            entityType: '来电号码(大陆固定电话号码+手机号码)',
-            sourceType: 'system',
-            slotType: 'phone-mainland',
-            hidden: true,
-            needRecogize: false,
-          },
-          {
-            entityCategory: '通用实体类别',
-            entityType: '联络人即来电人',
-            sourceType: 'system',
-            slotType: 'binary',
-            slotFinder: 'CONTACT_IS_CALLER',
-          },
-          {
-            entityCategory: '通用实体类别',
-            entityType: '地址',
-            sourceType: 'system',
-            slotType: 'address-shipping',
-            slotFinder: 'ADDRESS',
-          },
-        ],
-        富士康电视装机实体类别: [
-          {
-            entityCategory: '富士康电视装机实体类别',
-            entityType: '是否只有一台',
-            sourceType: 'system',
-            slotType: 'binary',
-            slotFinder: 'MACHINE_COUNT',
-          },
-          {
-            entityCategory: '富士康电视装机实体类别',
-            entityType: '电视机型',
-            sourceType: 'system',
-            slotType: 'pText',
-            slotFinder: 'MACHINE_MODEL',
-          },
-          {
-            entityCategory: '富士康电视装机实体类别',
-            entityType: '电视尺寸',
-            sourceType: 'system',
-            slotType: 'integer',
-            slotFinder: 'MACHINE_SIZE',
-          },
-          {
-            entityCategory: '富士康电视装机实体类别',
-            entityType: '装机方式',
-            sourceType: 'system',
-            slotType: 'pText',
-            slotFinder: 'MOUNT_MANNER',
-          },
-          {
-            entityCategory: '富士康电视装机实体类别',
-            entityType: '支架',
-            sourceType: 'system',
-            slotType: 'pText',
-            slotFinder: 'PYLON',
           },
         ],
         餐饮实体类别: [
@@ -430,6 +377,23 @@ export default {
         },
       });
     },
+    editRegisterJSON() {
+      const that = this;
+      that.$pop({
+        title: this.i18n.task_engine_v3.register_json_editor_pop.title,
+        component: RegisterJSONEditorPop,
+        validate: true,
+        data: {
+          register_json: that.register_json,
+        },
+        callback: {
+          ok: (registerJSON) => {
+            that.$emit('updateRegisterJSON', registerJSON);
+            that.register_json = registerJSON;
+          },
+        },
+      });
+    },
     addNewEntityCollector() {
       const firstCategory = Object.keys(this.categoryToNerTypeMap)[0];
       const firstNer = this.categoryToNerTypeMap[firstCategory][0];
@@ -452,7 +416,20 @@ export default {
       this.relatedEntities = JSON.parse(JSON.stringify(this.initialRelatedEntities));
       this.re_parsers = JSON.parse(JSON.stringify(this.initialREParsers));
       this.tde_setting = JSON.parse(JSON.stringify(this.initialTDESetting));
+      this.register_json = JSON.parse(JSON.stringify(this.initialRegisterJSON));
       this.updateCategoryToNerTypeMap(this.idToNerMap);
+    },
+    printSlotType() {
+      // print ner slotType list for use of copying and pasteing to
+      // SlotType list in emotigo spreadsheet upload
+      let out = '';
+      Object.keys(this.categoryToNerTypeMap).forEach((category) => {
+        const nerList = this.categoryToNerTypeMap[category];
+        nerList.forEach((ner) => {
+          out += `"${ner.entityType}": "${ner.slotType}",\n`;
+        });
+      });
+      console.log(out);
     },
   },
   beforeMount() {
@@ -464,11 +441,15 @@ export default {
       }, {
         text: this.i18n.task_engine_v3.entity_collecting_page.edit_tde_setting,
         onclick: this.editTDESetting,
+      }, {
+        text: this.i18n.task_engine_v3.entity_collecting_page.edit_register_json,
+        onclick: this.editRegisterJSON,
       }],
       alignLeft: true,
     };
     this.$on('rerender', this.rerender);
     this.rerender();
+    // this.printSlotType();
   },
   mounted() {
   },

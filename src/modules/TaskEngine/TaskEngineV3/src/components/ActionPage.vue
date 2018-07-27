@@ -133,12 +133,10 @@ export default {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  padding: 20px;
-  padding-right: 0px;
   .add-action-container{
     flex: 0 0 auto;
+    margin: 20px 20px 0px 20px;
     padding: 10px;
-    margin-right: 20px;
     height: 86px;
     background: #f8f8f8;
     .row{
@@ -166,13 +164,10 @@ export default {
   .action-group-list-container{
     flex: 1 1 auto;
     overflow: auto;
-    margin-top: 10px;
-    padding-right: 20px;
+    margin: 10px 0px 20px 0px;
+    padding: 0px 20px 0px 20px;
     .action-group-container{
-      cursor: move;
-      &:hover{
-        box-shadow: 0 4px 9px 0 rgba(115, 115, 115, 0.2), 0 5px 8px 0 rgba(228, 228, 228, 0.5);
-      }
+      padding-bottom: 10px;
       &:active{
         box-shadow: none;
       }

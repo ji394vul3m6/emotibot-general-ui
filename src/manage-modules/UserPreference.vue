@@ -99,6 +99,7 @@ export default {
     ...mapMutations([
       'hideUserPreference',
       'setLanguage',
+      'setUserInfo',
     ]),
     loadUser() {
       const that = this;
@@ -107,6 +108,9 @@ export default {
       .then((data) => {
         data.password = '********';
         that.user = data;
+        const userInfo = JSON.parse(JSON.stringify(data));
+        delete userInfo.password;
+        that.setUserInfo(userInfo);
       })
       .finally(() => {
         that.$emit('endLoading');

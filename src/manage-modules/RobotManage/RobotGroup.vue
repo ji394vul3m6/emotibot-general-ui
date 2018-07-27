@@ -36,6 +36,7 @@ import { mapGetters } from 'vuex';
 import NavBar from '@/components/NavigationBar';
 import CommandRow from '../_components/CommandRow';
 import GroupAddForm from './_components/GroupAddForm';
+import GroupDeleteForm from './_components/GroupDeleteForm';
 import GroupAPI from '../_api/group';
 import AppAPI from '../_api/robot';
 
@@ -93,12 +94,12 @@ export default {
       }));
     },
     popGroupEditor(group) {
+      // when group is undefined, create new robot group
       const that = this;
-
       that.$emit('startLoading');
       that.getRobotsAndGroups()
       .then((data) => {
-        that.$pop({
+        const option = {
           title: that.$t('management.create_group'),
           component: GroupAddForm,
           validate: true,
@@ -122,10 +123,40 @@ export default {
               });
             },
           },
-        });
+        };
+        if (group !== undefined) {
+          option.title = that.$t('management.edit_group');
+          option.left_button = {
+            msg: that.$t('general.delete'),
+            type: 'error',
+            closeAfterClick: true,
+            callback: () => {
+              that.popDelete(group);
+            },
+          };
+        }
+        that.$pop(option);
       })
       .finally(() => {
         that.$emit('endLoading');
+      });
+    },
+    popDelete(group) {
+      const that = this;
+      that.$pop({
+        title: that.$t('management.delete_group'),
+        component: GroupDeleteForm,
+        validate: true,
+        extData: {
+          name: group.name,
+          description: group.description,
+        },
+        callback: {
+          ok() {
+            that.$api.deleteRobotGroup(that.enterpriseID, group.id)
+              .then(() => that.loadGroup());
+          },
+        },
       });
     },
     loadGroup() {

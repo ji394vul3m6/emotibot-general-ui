@@ -24,6 +24,7 @@ function updateRobotGroup(enterpriseID, groupID, group) {
     },
   }).then(rsp => rsp.data);
 }
+
 function deleteRobotGroup(enterpriseID, groupID) {
   return this.$reqDelete(`${baseURL}/${enterpriseID}/group/${groupID}`).then(rsp => rsp.data);
 }

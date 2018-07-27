@@ -4,7 +4,7 @@
       <nav-bar class='nav-bar' :options=pageOption></nav-bar>
       <div class="page">
         <command-row class="commands" @search="changeKeyword">
-          <text-button button-type="primary" @click="popAddUser">{{ $t('management.add_account') }}</text-button>
+          <text-button button-type="primary" @click="popAddUser(2)">{{ $t('management.add_account') }}</text-button>
           <text-button @click="goRoleList">{{ $t('management.privilege_setting') }}</text-button>
         </command-row>
         <div class="table-container">

@@ -157,20 +157,19 @@ export default {
               password: retData.password,
               verify_password: retData.verify,
             };
-            console.log(updatedUser);
-            // that.$api.updateEnterpriseUser(that.enterpriseID, origUser.id, updatedUser)
-            // .then(() => {
-            //   that.$notify({ text: that.$t('management.update_password_success') });
-            //   that.popEditUser(tempUser);
-            // })
-            // .catch((err) => {
-            //   that.popEditPassword(tempUser);
-            //   if (err.response.status === 403) {
-            //     that.$notifyFail(that.$t('management.err_manager_password'));
-            //   } else {
-            //     that.$notifyFail(that.$t('management.err_update_password_fail'));
-            //   }
-            // });
+            that.$api.updateAdmin(origUser.id, updatedUser)
+            .then(() => {
+              that.$notify({ text: that.$t('management.update_password_success') });
+              that.popEditUser(tempUser);
+            })
+            .catch((err) => {
+              that.popEditPassword(tempUser);
+              if (err.response.status === 403) {
+                that.$notifyFail(that.$t('management.err_manager_password'));
+              } else {
+                that.$notifyFail(that.$t('management.err_update_password_fail'));
+              }
+            });
           },
           cancel() {
             that.popEditUser(tempUser);

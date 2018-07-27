@@ -20,7 +20,7 @@
 import md5 from 'md5';
 
 export default {
-  name: 'robot-delete-form',
+  name: 'group-delete-form',
   props: {
     extData: {
       type: Object,
