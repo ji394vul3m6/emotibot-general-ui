@@ -252,6 +252,7 @@ export default {
     replyFormat() {
       if (this.replyFormat === 'intext') {
         this.replyContentJson = '';
+        this.closeJSONTooltip();
       } else if (this.replyFormat === 'injson') {
         this.replyContentText = '';
       }
