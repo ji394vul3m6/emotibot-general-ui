@@ -68,6 +68,8 @@ export default {
       trainStatus: undefined,  // 'TRAINED', 'NOT_TRAINED', 'TRAINING'
       trainBtnClicked: false,
       intentKeyword: '',
+      keywordTimer: null,
+      keywordDelay: 500, // ms
 
       isAddIntent: false,
 
@@ -142,13 +144,6 @@ export default {
     isSearchMode() {
       return this.intentKeyword !== '';
     },
-    // intentListToShow() {
-    //   if (this.intentKeyword !== '') {
-    //     return this.intentList.filter(intent => intent.name.includes(this.intentKeyword));
-    //     // NOTE: 'includes' may not support IE
-    //   }
-    //   return this.intentList;
-    // },
   },
   watch: {
     intentList() {
@@ -157,6 +152,15 @@ export default {
         that.corpusCounts = that.intentList.reduce((acc, intent) => acc + intent.total
       , 0);
       }
+    },
+    intentKeyword() {
+      const that = this;
+      if (that.keywordTimer) {
+        clearTimeout(that.keywordTimer);
+      }
+      that.keywordTimer = setTimeout(() => {
+        that.refreshIntentPage();
+      }, that.keywordDelay);
     },
   },
   methods: {
