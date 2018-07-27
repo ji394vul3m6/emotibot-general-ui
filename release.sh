@@ -47,8 +47,8 @@ fi
 
 LATEST_TAG=`git tag | sort -u | tail -n 1`;
 RAW_LOG=`git log ${LATEST_TAG}..HEAD --pretty=tformat:"=====%n%an  %h%n%s%n%n%b %n%n"`;
-BFOP_ISSUES=`echo $RAW_LOG | grep -o "BFOP-[0-9]\+" | paste -sd ", " -`;
-OTHER_ISSUES=`echo $RAW_LOG | grep -o "[A-Z]\+-[0-9]\+" | grep -v BFOP | paste -sd ", " -`;
+BFOP_ISSUES=`echo $RAW_LOG | grep -o "BFOP-[0-9]\+" | paste -sd "," -`;
+OTHER_ISSUES=`echo $RAW_LOG | grep -o "[A-Z]\+-[0-9]\+" | grep -v BFOP | paste -sd "," -`;
 
 echo "API version" > ./.release_tmp;
 cat docker/Dockerfile | grep docker-reg | grep -v base | sed -e 's/FROM docker-reg.emotibot.com.cn:55688\/\(.*\) AS .*/\1/g' >> ./.release_tmp;
