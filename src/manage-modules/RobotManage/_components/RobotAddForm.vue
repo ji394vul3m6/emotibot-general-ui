@@ -10,8 +10,8 @@
     </div>
     <div class="row">
       <div class="row-title">{{ $t('management.description') }}</div>
-      <input class="row-input" v-model="description" maxlength=45
-        :placeholder="$t('management.length_45_placeholder')">
+      <input class="row-input" v-model="description" maxlength=50
+        :placeholder="$t('management.length_50_placeholder')">
     </div>
   </div>  
 </template>
@@ -100,7 +100,6 @@ export default {
     .row-input {
       flex: 1;
       display: flex;
-      padding: 5px 8px;
     }
   }
 }

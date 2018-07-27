@@ -80,7 +80,6 @@ fi
 RELEASE_BRANCH="release/$RELEASE_TAG";
 
 echo -e $YELLOW"Create branch"$RESET;
-exit 0;
 git checkout -q -b $RELEASE_BRANCH;
 if ! [[ $? -eq 0 ]]; then
   echo -e $RET"Create branch fail"$RESET;

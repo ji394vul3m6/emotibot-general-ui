@@ -1,6 +1,7 @@
 <template>
   <div id="robot-command">
     <category-card ref="categoryCard" id="card-category" class="card h-fill"
+      :title="$t('pages.robot_setting.robot_command')"
       :maxLayer="1"
       :categoryTree="categoryTree"
       :allowSubCategory="false"

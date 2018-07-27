@@ -18,6 +18,7 @@ export default [{
     const showCheck = boolean('showCheck', true);
     const width = text('width', '150px');
     const option = object('options', options);
+    const fixedListWidth = boolean('fixedListWidth', true);
 
     const template = `
       <dropdown-select
@@ -25,6 +26,7 @@ export default [{
         :multi=multiChoice
         :showCheck=showCheck
         :width=width
+        :fixedListWidth="fixedListWidth"
         v-model="checkValues"
         @input="input"
       />`;
@@ -40,6 +42,7 @@ export default [{
           multiChoice,
           checkValues,
           width,
+          fixedListWidth,
         };
       },
       methods: {

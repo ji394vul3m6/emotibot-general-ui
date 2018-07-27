@@ -88,18 +88,15 @@ export default {
       this.entityList.splice(index, 1);
     },
     editCustomEntityType(index) {
-      const options = {
+      const that = this;
+      that.$pop({
+        title: '',
         component: CustomEntityTypeEditorPop,
-        buttons: ['ok', 'cancel'],
         validate: true,
-        data: this.entityList[index],
-        customPopContentStyle: {
-          width: '70%',
-          height: '70%',
-        },
+        data: that.entityList[index],
         callback: {
           ok: (response) => {
-            this.entityList[index] = {
+            that.entityList[index] = {
               entityType: response.entityType,
               createDate: response.createDate,
               entityCategory: response.entityCategory,
@@ -107,33 +104,29 @@ export default {
               entityTypeDescription: response.entityTypeDescription,
               entitySynonymsList: response.entitySynonymsList,
             };
-            this.$nextTick(() => {
-              this.$forceUpdate();
+            that.$nextTick(() => {
+              that.$forceUpdate();
             });
           },
         },
-      };
-      this.$root.$emit('showWindow', options);
+      });
     },
     addCustomEntityType() {
-      const options = {
+      const that = this;
+      that.$pop({
+        title: '',
         component: CustomEntityTypeEditorPop,
-        buttons: ['ok', 'cancel'],
         validate: true,
-        customPopContentStyle: {
-          width: '70%',
-          height: '70%',
-        },
         data: {
           entityType: null,
           entityTypeDescription: null,
           entityCategory: '通用实体类别',
-          entityCategoryList: this.entityCategoryList,
+          entityCategoryList: that.entityCategoryList,
           entitySynonymsList: [],
         },
         callback: {
           ok: (response) => {
-            this.entityList.push({
+            that.entityList.push({
               entityType: response.entityType,
               createDate: new Date().toJSON().slice(0, 10).replace(/-/g, '-'),
               entityCategory: response.entityCategory,
@@ -143,8 +136,7 @@ export default {
             });
           },
         },
-      };
-      this.$root.$emit('showWindow', options);
+      });
     },
   },
   beforeMount() {},
@@ -152,7 +144,8 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+@import "../scss/teVariable.scss";
 .entity-management-page{
   flex: 1 1 0;
   .row{

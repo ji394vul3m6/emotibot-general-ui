@@ -1,7 +1,7 @@
 <template>
   <div class="general-table-container" :class="[showEmpty ? 'show-empty': '']">
     <div class="general-table-header">
-    <table class="general-table" :class="[autoHeight ? 'auto-height': '', fontClass]">
+    <table ref="tableHeader" class="general-table" :class="[autoHeight ? 'auto-height': '', fontClass]">
       <thead>
         <tr>
           <td v-if="checkbox" class="table-col-checkbox">
@@ -9,8 +9,16 @@
           </td>
           <td v-for="header in tableHeader" :key="header.key" 
             :style="{width: header.width}"
-            :class="{'fixed': header.width}">
+            :class="{'fixed': header.width}"
+            class="table-header-item">
             {{ header.text }}
+            <div v-if="header.info && header.info !== ''" :ref="`${header.key}-info`"
+              class="table-header-icon"
+              v-tooltip="headerInfoTooltip"
+              @mouseover="updateHeaderInfoTooltip(header)"
+              @mouseout="toggleIconStyle(header, 'info')">
+              <icon :ref="`${header.key}-icon`" :icon-type="header.infoicon" :size=16></icon>
+            </div>
           </td>
           <td v-if="hasAction" class="table-col-action" :class="{'multi-action': action.length > 1}"> {{ $t('general.actions') }} </td>
         </tr>
@@ -18,15 +26,16 @@
     </table>
     </div>
     <div class="general-table-body">
-    <table class="general-table" :class="[autoHeight ? 'auto-height': '', fontClass]" v-if="tableData && tableData.length > 0">
-      <tbody>
+    <table class="general-table" :class="[autoHeight ? 'auto-height' : '', fontClass]" v-if="tableData && tableData.length > 0">
+      <tbody :class="[onclickRow ? 'clickable-row' : '']">
         <tr v-for="(data, idx) in tableData" :key="idx">
           <td v-if="checkbox" class="table-col-checkbox">
             <input type="checkbox" @click="checkSelf(data, idx)" :checked="data.isChecked">
           </td>
           <td v-for="header in tableHeader" :key="uniqueId(header.key)"
             :style="{width: header.width}"
-            :class="{'fixed': header.width}">
+            :class="{'fixed': header.width}"
+            @click="handleOnclickRow(onclickRow, data, idx)">
             <template v-if="header.type === 'tag'">
               <tag class="tags" v-for="(tag, tagIdx) in data[header.key]" :key="`${tagIdx}-${tag}`" :fontClass="fontClass">{{ tag }}</tag>
             </template>
@@ -34,6 +43,7 @@
             <template v-else-if="header.type === 'toggle'">
               <toggle class="toggles"
                 v-model="data[header.key].val"
+                :disabled="data[header.key].disabled"
                 @change="data[header.key].onclick(data, idx)"></toggle>
             </template>
             <template v-else>{{ data[header.key] }}</template>
@@ -91,6 +101,11 @@ export default {
         return [];
       },
     },
+    onclickRow: {
+      type: Function,
+      required: false,
+      default: undefined,
+    },
     autoHeight: {
       type: Boolean,
       required: false,
@@ -111,6 +126,9 @@ export default {
     return {
       isAllChecked: false,
       checkedData: [],
+      headerInfoTooltip: {
+        msg: '',
+      },
     };
   },
   computed: {
@@ -128,6 +146,13 @@ export default {
         // this.setCheckedData();
         // this.$emit('checkedChange', this.checkedData);
       }
+    },
+    tableHeader() {
+      this.tableHeader.forEach((header) => {
+        if (header.info && header.info !== '') {
+          header.infoicon = 'info';
+        }
+      });
     },
   },
   methods: {
@@ -162,6 +187,41 @@ export default {
     setCheckedData() {
       this.checkedData = this.tableData.filter(data => data.isChecked === true);
     },
+    handleOnclickRow(onclickRow, data, idx) {
+      if (onclickRow !== undefined) {
+        onclickRow(data, idx);
+      }
+    },
+    updateHeaderInfoTooltip(header) {
+      const tableHeaderDom = this.$refs.tableHeader;
+      const infoIconBlockDom = this.$refs[`${header.key}-info`][0];
+      const tableHeaderRightPos = tableHeaderDom.getBoundingClientRect().right;
+      const infoIconRightPos = infoIconBlockDom.getBoundingClientRect().right;
+
+      /** Change icon style on hover */
+      this.toggleIconStyle(header, 'info_hover');
+
+      /** Max-width of tooltip is 300px,
+      /*  Let tooltip alignLeft if infoIcon is too close to righthand side of table */
+      if (tableHeaderRightPos - infoIconRightPos < 350) {
+        this.headerInfoTooltip.alignLeft = true;
+      } else {
+        this.headerInfoTooltip.alignLeft = false;
+      }
+      this.headerInfoTooltip.msg = header.info;
+      infoIconBlockDom.dispatchEvent(new Event('tooltip-reload'));
+    },
+    toggleIconStyle(header, icon) {
+      header.infoicon = icon;
+      this.$forceUpdate();
+    },
+  },
+  beforeMount() {
+    this.tableHeader.forEach((header) => {
+      if (header.info && header.info !== '') {
+        header.infoicon = 'info';
+      }
+    });
   },
 };
 </script>
@@ -183,10 +243,34 @@ $table-row-height: 50px;
   width: inherit;
   .general-table-header {
     flex: 0 0 auto;
+    .table-header-item {
+      display: flex;
+      align-items: center;
+      .table-header-icon {
+        display: flex;
+        align-items: center;
+        margin-left: 5px;
+        cursor: pointer;
+      }
+    }
   }
   .general-table-body {
     @include auto-overflow-Y();
+    @include customScrollbar();
     overflow-x: hidden;
+    tr {
+      &:hover{
+      background-color: #F6F9FF;
+      }
+    }
+    .clickable-row {
+      tr {
+        cursor: pointer;
+        .table-col-action, .table-col-checkbox {
+          cursor: default;
+        }
+      }
+    }
   }
   .empty-display {
     flex: 1;

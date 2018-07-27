@@ -19,11 +19,15 @@
     <div ref="list" v-if="show" class="select-list" :style="listStyle">
       <template v-for="(option, idx) in localOptions">
       <div class="select-item item" :key="idx" v-if="!option.isGroup"
-        :class="{checked: option.checked, 'in-group': option.inGroup}"
+        :class="{
+          checked: option.checked,
+          'in-group': option.inGroup,
+          'is-button': option.isButton
+        }"
         @click="selectOption(idx)"
         @mouseover="toggleHover(option, true)" @mouseout="toggleHover(option, false)">
-        <div class="select-text"> {{option.text}} </div>
-        <div class="select-icon" v-if="!option.checked">
+        <div class="select-text" :style="selectTextStyle"> {{option.text}} </div>
+        <div class="select-icon" v-if="!option.checked && !option.isButton">
           <icon icon-type="checked" :size=16></icon>
         </div>
         <div class="select-icon" v-if="option.checked">
@@ -70,6 +74,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    fixedListWidth: {
+      type: Boolean,
+      default: true,
+    },
   },
   computed: {
     styleObj() {
@@ -88,6 +96,7 @@ export default {
       show: false,
       localOptions: [],
       listStyle: {},
+      selectTextStyle: {},
       checkedValues: [],
       detectClickListener: undefined,
     };
@@ -132,6 +141,14 @@ export default {
         width: `${inputBox.width}px`,
       };
 
+      if (!this.fixedListWidth) {
+        that.listStyle.width = 'auto';
+        that.listStyle['min-width'] = `${inputBox.width}px`;
+        that.selectTextStyle['flex-grow'] = 0;
+        that.selectTextStyle['flex-shrink'] = 0;
+        that.selectTextStyle['flex-basis'] = 'auto';
+      }
+
       that.detectClickListener = (e) => {
         const clickDom = e.target;
         const listDom = that.$refs.list;
@@ -164,23 +181,28 @@ export default {
     toggleHover(option, bool) {
       option.hovered = bool;
     },
+    initOptions(options) {
+      const that = this;
+      that.localOptions = [];
+      options.forEach((opt) => {
+        let initCheck = false;
+        if (that.value.length > 0) {
+          initCheck = that.value.indexOf(opt.value) >= 0;
+        }
+        that.localOptions.push({
+          ...opt,
+          checked: initCheck,
+          hovered: false,
+        });
+      });
+    },
   },
   mounted() {
     const that = this;
-    that.options.forEach((opt) => {
-      let initCheck = false;
-      if (that.value.length > 0) {
-        initCheck = that.value.indexOf(opt.value) >= 0;
-      }
-      that.localOptions.push({
-        ...opt,
-        checked: initCheck,
-        hovered: false,
-      });
-    });
-
+    that.initOptions(that.options);
     that.checkedValues = this.localOptions.filter(opt => opt.checked);
     that.$on('select', that.selectValue);
+    that.$on('updateOptions', that.initOptions);
   },
 };
 </script>
@@ -238,6 +260,7 @@ $border-color: $color-borderline;
 }
 .select-list {
   @include font-14px();
+  z-index: 10;
   box-sizing: border-box;
   width: 150px;
   box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2);
@@ -267,12 +290,16 @@ $border-color: $color-borderline;
           padding-left: 24px;
         }
       }
+      &.is-button {
+        color: $color-primary;
+      }
     }
     &.group {
       font-weight: bold;
     }
     display: flex;
     align-items: center;
+    justify-content: space-between;
     .select-text {
       flex: 1;
       padding-left: 16px;
@@ -281,7 +308,8 @@ $border-color: $color-borderline;
       white-space: nowrap;
     }
     .select-icon {
-      flex: 0 0 32px;
+      margin-right:16px;
+      flex: 0 0 16px;
       display: flex;
       align-items: center;
     }

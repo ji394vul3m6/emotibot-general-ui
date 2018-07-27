@@ -6,4 +6,4 @@ if ! [[ "$BRANCH" =~ release\/v[0-9]+.[0-9]+.[0-9]+ ]]; then
   exit 1;
 fi
 
-git checkout development && git branch -D $BRANCH;
+git checkout development && git branch -D $BRANCH && git push -d origin $BRANCH;

@@ -1,56 +1,71 @@
 <template>
 <div id="scenario_edit_page">
-  <div id="te-page-header" class="te-page-header">
-    <div class="scenario-name">
-      <div class="arrow">&lt;</div>
-      <input
-        ref="scenarioName"
-        v-model="scenarioName"
-        :placeholder="$t('task_engine_v3.scenario_edit_page.placeholder_name_the_scenario')"
-        @input="resizeScenarioNameInput">
-      </input>
-      <a>:</a>
-      <v-select
-        v-model="currentSkillName"
-        :options="skillNameList"
-        :searchable="false"
-        label="skillName">
-      </v-select>
-    </div>
-    <div class="multi-window-radio">
-      <template v-for="(page, key, idx) in pages">
-        <input :id="key" type="radio" name="name" :checked="currentPage==key"></input>
-        <div>
-          <label :for="key" style="padding:20px;"
-                @click="pageChange(key)">
-          {{ page.name }}
-          </label>
+  <div class="content card h-fill w-fill">
+    <div class="row title">
+      <div class="breadcrumb">
+        <div class="back-to-list" @click="$router.replace('/task-engine-scenario-v3');">{{$t("task_engine_v3.scenario_list_page.scenario_list")}}</div>
+        <div>&gt;</div>
+        <div class="scenario-name-container">
+          <div class="blank"/>
+          <input
+            class="input-scenario-name"
+            v-model="scenarioName"
+            :placeholder="$t('task_engine_v3.scenario_edit_page.placeholder_name_the_scenario')">
+          <div class="bottom-border"/>
         </div>
-      </template>
+        <div class="label-switch-off label-switch">{{$t("task_engine_v3.scenario_edit_page.switch_off")}}</div>
+        <toggle class="button-switch-enable" v-model="enable" @change="switchScenario()" :big="false"></toggle>
+        <div class="label-switch-on label-switch">{{$t("task_engine_v3.scenario_edit_page.switch_on")}}</div>
+      </div>
+      <div>
+        <text-button button-type='default' @click="$router.replace('/task-engine-scenario-v3');">{{$t("general.close")}}</text-button>
+        <text-button button-type='primary' @click="toNextPage">{{saveButtonText}}</text-button>
+      </div>
     </div>
-  </div>
-  <div id="multi-window-container" class="multi-window-container">
-    <skill-edit-page
-      ref="skillEditPage"
-      :currentPage="currentPage"
-      :initialIdToNerMap="idToNerMap"
-      :initialSkillNameList="skillNameList"
-      @update="updateSkill"
-      @updateIdToNerMap="updateIdToNerMap"
-    ></skill-edit-page>
-  </div>
-  <div id="page-footer" class="page-footer">
-    <button class="btn-basic btn-border primary" @click="toNextPage">{{saveButtonText}}</button>
-    <button class="btn-basic btn-border" @click="$router.replace('/scenarios');">{{$t("general.close")}}</button>
+    <div class="main-content">
+      <div class="sidebar">
+        <div class="sidebar-content">
+          <div class="slect-skill-container">
+            <dropdown-select
+              ref="dropdownSelect"
+              v-model="currentSkillName"
+              :options="skillNameList"
+              width="141px"
+            />
+            <div class="setting-button">
+              <icon icon-type="setting" :enableHover="true" :size=15 @click="editSkills"/>
+            </div>
+          </div>
+          <ul class="list-ic vertical">
+            <template v-for="(page, key, idx) in pages">
+              <li :key="key" :class="{ 'active': key === currentPage }">
+                <span class="order">{{idx+1}}</span>
+                <span class="title" @click="pageChange(key)">{{ page.name }}</span>
+              </li>
+            </template>
+          </ul>
+        </div>
+      </div>
+      <skill-edit-page
+          ref="skillEditPage"
+          :currentPage="currentPage"
+          :initialIdToNerMap="idToNerMap"
+          :initialSkillNameList="skillNameList"
+          @update="updateSkill"
+          @updateIdToNerMap="updateIdToNerMap"
+        ></skill-edit-page>
+    </div>
   </div>
 </div>
 </template>
 
 <script>
+import DropdownSelect from '@/components/DropdownSelect';
 import SkillEditPage from './SkillEditPage';
-import TriggerPage from './TriggerPage';
+import TriggerPage from './TriggerPageV2';
 import EntityCollectingPage from './EntityCollectingPage';
 import ActionPage from './ActionPage';
+import EditSkillsPop from './EditSkillsPop';
 import i18nUtils from '../utils/i18nUtil';
 import api from './_api/taskEngine';
 import general from '../utils/general';
@@ -63,6 +78,7 @@ export default {
     'trigger-page': TriggerPage,
     'entity-collecting-page': EntityCollectingPage,
     'action-page': ActionPage,
+    'dropdown-select': DropdownSelect,
   },
   data() {
     return {
@@ -78,21 +94,19 @@ export default {
       pages: {},
       currentPage: 'triggerPage',
       idToNerMap: {},
+      enable: false,
     };
   },
   computed: {
     currentSkillName: {
       get() {
         if (this.skills[this.currentSkillId] !== undefined) {
-          return {
-            skillId: this.currentSkillId,
-            skillName: this.skills[this.currentSkillId].skillName,
-          };
+          return [this.currentSkillId];
         }
-        return {};
+        return [];
       },
       set(newValue) {
-        this.currentSkillId = newValue.skillId;
+        this.currentSkillId = newValue[0];
       },
     },
     saveButtonText() {
@@ -106,6 +120,9 @@ export default {
     skills: {
       handler() {
         this.updateSkillNameList();
+        if (!this.skills[this.currentSkillId]) {
+          this.currentSkillId = 'mainSkill';
+        }
       },
       deep: true,
     },
@@ -141,9 +158,13 @@ export default {
     },
     updateSkillNameList() {
       this.skillNameList = Object.keys(this.skills).map(skillId => ({
-        skillId,
-        skillName: this.skills[skillId].skillName,
+        text: this.skills[skillId].skillName,
+        value: skillId,
       }));
+      if (this.$refs.dropdownSelect) {
+        this.$refs.dropdownSelect.$emit('updateOptions', this.skillNameList);
+        this.$refs.dropdownSelect.$emit('select', this.currentSkillId);
+      }
     },
     addNewSkill(skillName) {
       const skillId = this.$uuid.v1();
@@ -158,9 +179,9 @@ export default {
         re_parsers: [],
         tde_setting: {},
       };
-      this.updateSkillNameList();
       // route to new skill
       this.currentSkillId = skillId;
+      this.updateSkillNameList();
     },
     updateIdToNerMap(idToNerMap) {
       // save new nerMap
@@ -173,14 +194,10 @@ export default {
         window.moduleData = JSON.parse(data.result.editingContent);
         window.moduleDataLayouts = JSON.parse(data.result.editingLayout);
         this.scenarioName = window.moduleData.metadata.scenario_name;
-        this.resizeScenarioNameInput();
         this.renderData(window.moduleData);
       }, (err) => {
         general.popErrorWindow(this, 'loadScenario error', err.message);
       });
-    },
-    resizeScenarioNameInput() {
-      this.$refs.scenarioName.style.width = `${(this.scenarioName.length + 1) * 16}px`;
     },
     renderData(moduleData) {
       this.currentSkillId = 'mainSkill';
@@ -228,7 +245,7 @@ export default {
       content.metadata.scenario_name = this.scenarioName;
       content.metadata.update_time = general.getLocalDateTimeIsoString();
       this.saveScenario(content).then(() => {
-        this.$vueOnToast.pop('success', this.i18n.task_engine_v3.scenario_edit_page.toast_save_success, '');
+        this.$notify({ text: this.i18n.task_engine_v3.scenario_edit_page.toast_save_success });
         this.registerNluTdeScenario(this.scenarioId, content);
         this.publishScenario(content);
       });
@@ -236,7 +253,7 @@ export default {
     registerNluTdeScenario(scenarioId, content) {
       Object.keys(content.skills).map((skillId) => {
         const skill = content.skills[skillId];
-        if (skill.entityCollectorList.length > 0) {
+        if (skill.entityCollectorList.length > 0 || skill.register_json) {
           const data = scenarioConvertor.convertToRegistryData(scenarioId, skill, skillId);
           api.registerNluTdeScenario(data);
         }
@@ -268,12 +285,46 @@ export default {
       }
       return true;
     },
+    setSwitchToggle(appId, scenarioId) {
+      api.listScenarios(appId).then((data) => {
+        if (typeof (data) === 'object' && 'msg' in data) {
+          const scenario = data.msg.find(s => s.scenarioID === scenarioId);
+          this.enable = scenario.enable;
+        }
+      }, (err) => {
+        general.popErrorWindow(this, 'listScenarios error', err.message);
+      });
+    },
+    switchScenario() {
+      api.switchScenario(this.appId, this.scenarioId, this.enable).then(() => {
+      }, (err) => {
+        general.popErrorWindow(this, 'switchScenario error', err.message);
+      });
+    },
+    editSkills() {
+      const that = this;
+      that.$pop({
+        title: this.i18n.task_engine_v3.edit_skill_pop.label_title,
+        component: EditSkillsPop,
+        validate: true,
+        bindValue: false,
+        data: {
+          skills: this.skills,
+        },
+        callback: {
+          ok: (newSkills) => {
+            this.skills = newSkills;
+          },
+        },
+      });
+    },
   },
   beforeMount() {
     this.appId = this.$cookie.get('appid');
     this.scenarioId = this.$route.params.id;
     this.i18n = i18nUtils.getLocaleMsgs(this.$i18n);
     this.loadScenario(this.scenarioId);
+    this.setSwitchToggle(this.appId, this.scenarioId);
   },
   mounted() {
     this.allPages = {
@@ -295,3 +346,8 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+@import "../scss/teVariable.scss";
+@import "../scss/scenarioEditPage.scss";
+</style>

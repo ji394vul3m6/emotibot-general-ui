@@ -432,7 +432,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 @import "styles/variable";
-$row-height: 30px;
+$row-height: 28px;
 $color-tag-hover: $color-disabled;
 .tags-wrapper {
   position: relative;

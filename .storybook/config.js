@@ -10,10 +10,12 @@ import Textbutton from '../src/components/basic/TextButton';
 
 // Import self plugins.
 import tooltip from '../src/plugins/tooltip';
+import dropdown from '../src/plugins/dropdown';
 
 // Install Vue plugins.
 Vue.use(Vuex);
 Vue.use(tooltip);
+Vue.use(dropdown);
 
 // Install self component
 Vue.component('icon', Icon);

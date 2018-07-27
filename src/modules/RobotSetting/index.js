@@ -1,4 +1,4 @@
-import RobotProfile from './RobotProfile';
+import RobotProfile from './RobotProfileV3';
 import FunctionSetting from './FunctionSetting';
 import ChatSkill from './RobotWords';
 // import Command from './RobotCommand';

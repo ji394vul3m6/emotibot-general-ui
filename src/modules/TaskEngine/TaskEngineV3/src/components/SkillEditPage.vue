@@ -13,11 +13,13 @@
       :initialRelatedEntities="skill.relatedEntities"
       :initialREParsers="skill.re_parsers || []"
       :initialTDESetting="(skill.tde_setting === undefined || Array.isArray(skill.tde_setting)) ? {} : skill.tde_setting"
+      :initialRegisterJSON="skill.register_json || {}"
       @update="updateEntityCollectorList"
       @updateIdToNerMap="updateIdToNerMap"
       @updateRelatedEntities="updateRelatedEntities"
       @updateREParsers="updateREParsers"
       @updateTDESetting="updateTDESetting"
+      @updateRegisterJSON="updateRegisterJSON"
     ></entity-collecting-page>
     <action-page ref="actionPage"
       v-if="currentPage === 'actionPage'"
@@ -31,7 +33,7 @@
 </template>
 
 <script>
-import TriggerPage from './TriggerPage';
+import TriggerPage from './TriggerPageV2';
 import EntityCollectingPage from './EntityCollectingPage';
 import ActionPage from './ActionPage';
 import i18nUtils from '../utils/i18nUtil';
@@ -70,6 +72,7 @@ export default {
         },
         re_parsers: [],
         tde_setting: {},
+        register_json: {},
       },
     };
   },
@@ -98,6 +101,10 @@ export default {
       this.skill.tde_setting = tdeSetting;
       this.$emit('update', this.skill);
     },
+    updateRegisterJSON(registerJSON) {
+      this.skill.register_json = registerJSON;
+      this.$emit('update', this.skill);
+    },
     updateActionGroupList(newActionGroupList) {
       this.skill.actionGroupList = newActionGroupList;
       this.$emit('update', this.skill);
@@ -117,3 +124,8 @@ export default {
   mounted() {},
 };
 </script>
+
+<style lang="scss" scoped>
+@import "../scss/teVariable.scss";
+@import "../scss/skillEditPage.scss";
+</style>

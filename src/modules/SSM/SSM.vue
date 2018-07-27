@@ -1,16 +1,26 @@
 <template>
   <div>
-    <iframe ref="iframe" src="/BF/index.html#index"></iframe>
+    <iframe ref="iframe"></iframe>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+import api from '@/api/BF';
+
 export default {
   path: 'ssm',
   privCode: 'ssm',
   displayNameKey: 'ssm',
   name: 'ssm',
   isIFrame: true,
+  api,
+  computed: {
+    ...mapGetters([
+      'robotID',
+      'userID',
+    ]),
+  },
   methods: {
     checkIFrameMsg(e) {
       if (e.data === 'open-chat-test') {
@@ -21,7 +31,9 @@ export default {
     },
   },
   mounted() {
+    this.$api.focusRobot(this.userID, this.robotID);
     window.addEventListener('message', this.checkIFrameMsg);
+    this.$refs.iframe.src = '/BF/index.html#index';
   },
   beforeDestroy() {
     window.removeEventListener('message', this.checkIFrameMsg);
@@ -36,5 +48,6 @@ iframe {
   top: -50px;
   left: -150px;
   position: relative;
+  min-width: 800px;
 }
 </style>

@@ -4,6 +4,7 @@ It will do extra operations for all request
 ex: add auth token, log request, etc.
 After ajax finish, check error code automatically
 */
+import qs from 'qs';
 import axios from 'axios';
 
 let appid = '';
@@ -54,7 +55,8 @@ function checkAjaxError(context, error) {
 function ajax(config) {
   const that = this;
   const getConfigWithCustomHeader = addCustomHeader.bind(that);
-  return axios(getConfigWithCustomHeader(config)).catch((err) => {
+  const header = getConfigWithCustomHeader(config);
+  return axios(header).catch((err) => {
     checkAjaxError.bind(this)(that, err);
   });
 }
@@ -88,6 +90,26 @@ function post(url, data, config) {
   return this.$reqCustom(url, 'post', data, config);
 }
 
+function postForm(url, data, config) {
+  const localConfig = { ...config };
+  if (localConfig.headers === undefined) {
+    localConfig.headers = {};
+  }
+  localConfig.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+  const localData = qs.stringify(data);
+  return this.$reqCustom(url, 'post', localData, localConfig);
+}
+
+function putForm(url, data, config) {
+  const localConfig = { ...config };
+  if (localConfig.headers === undefined) {
+    localConfig.headers = {};
+  }
+  localConfig.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+  const localData = qs.stringify(data);
+  return this.$reqCustom(url, 'put', localData, localConfig);
+}
+
 function patch(url, data, config) {
   return this.$reqCustom(url, 'patch', data, config);
 }
@@ -101,7 +123,9 @@ const MyPlugin = {
     Vue.prototype.$reqGet = get;
     Vue.prototype.$reqCustom = customType;
     Vue.prototype.$reqPost = post;
+    Vue.prototype.$reqPostForm = postForm;
     Vue.prototype.$reqPut = put;
+    Vue.prototype.$reqPutForm = putForm;
     Vue.prototype.$reqDelete = deleteReq;
     Vue.prototype.$reqPatch = patch;
     Vue.prototype.$reqAjax = ajax;

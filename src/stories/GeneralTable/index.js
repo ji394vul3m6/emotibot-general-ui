@@ -13,15 +13,18 @@ export default [{
       key: 'wordbank',
       text: '詞庫',
       width: '120px',
+      info: '這個欄位顯示的是詞庫名',
     }, {
       key: 'synonym',
       text: '同義詞',
       type: 'tag',
+      info: '這個欄位顯示的是同義詞',
     }, {
       key: 'status',
       text: '狀態',
       type: 'toggle',
-      width: '60px',
+      width: '80px',
+      info: '這個欄位顯示的是狀態',
     }];
     const data = [{
       wordbank: '詞庫名稱',

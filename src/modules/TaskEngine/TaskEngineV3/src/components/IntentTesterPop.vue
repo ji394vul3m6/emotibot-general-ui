@@ -51,3 +51,8 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+@import "../scss/teVariable.scss";
+@import "../scss/intentTesterPop.scss";
+</style>

@@ -1,63 +1,43 @@
 <template lang="html">
 <div id="condition-card">
-  <div class="delete-condition-button" @click="deleteThisCondition">X</div>
-  <div class="condition-text" v-if="index==0">{{$t("task_engine_v3.condition_card.if")}}</div>
-  <div class="condition-text" v-if="index!=0">{{$t("task_engine_v3.condition_card.and")}}</div>
-  <div class="condition-input-with-menu"
-    v-click-outside="{method:'showTargetItemMenu', parameters:false, exceptClasses:['item']}">
-    <input type="text" v-model="condition.target.displayText"
-      readonly
-      @click="showTargetItemMenu(true)"
-      @focus="showTargetItemMenu(true)"
-      @keydown.tab.prevent=""
-    ></input>
-    <div v-if="isInputMenuVisible" class="condition-input-menu-container">
-      <div class="condition-input-menu-table">
-        <div v-for="column in columns" class="condition-input-menu-column" :class="[`${column}-column`]">
-          <div>
-            <label class="column-label">{{$t(`task_engine_v3.condition_card.columns.${column}`)}}</label>
-            <div v-for="(item, index) in targetItems[column]"
-              class="item"
-              :class="{'active-item': isTargetItemActive(column, index)}"
-              @click="targetItemClick(column, index)"
-            >{{item.displayText}}</div>
-          </div>
-        </div>
-      </div>
-      <div class="condition-input-menu-footer"></div>
-    </div>
-  </div>
-  <div class="condition-select-with-menu"
-    v-click-outside="{method:'showComparisonItemMenu', parameters:false, exceptClasses:['item']}"
-    v-if="condition.target.displayText!=='' && condition.target.type=='entity'">
-    <input type="text" v-model="condition.comparisonOperator.displayText"
-      readonly
-      @click="showComparisonItemMenu(true)"
-      @focus="showComparisonItemMenu(true)"
-      @keydown.tab.prevent=""
-    ></input>
-    <div v-if="isSelectMenuVisible">
-      <div class="condition-select-menu">
-        <div v-for="(item, index) in comparisonItems[condition.target.type]"
-          class="item"
-          :class="{'active-item': isComparisonItemActive(condition.target.type, index)}"
-          @click="comparisonItemClick(condition.target.type, index)"
-        >{{item.displayText}}</div>
-      </div>
-    </div>
-  </div>
-  <div class="content-input" v-if="isContentInputVisible">
-    <input type="text" v-model="condition.content"></input>
+  <div class="label-when" v-if="index==0">{{$t("task_engine_v3.condition_card.if")}}</div>
+  <div class="label-when" v-if="index!=0">{{$t("task_engine_v3.condition_card.and")}}</div>  
+  <dropdown-select
+    class="select-target selector"
+    ref="selectTarget"
+    v-model="targetModel"
+    :options="targetOptions"
+    :fixedListWidth="false"
+    width="160px"
+  />
+  <dropdown-select
+    v-if="needOperator"
+    class="select-operator selector"
+    ref="selectOperator"
+    v-model="operatorModel"
+    :options="operatorOptions"
+    width="96px"
+  />
+  <input
+    v-if="needContent"
+    class="input-content selector"
+    type="text"
+    v-model="condition.content"
+  />
+  <div class="button-delete-condition">
+    <icon icon-type="delete" :enableHover="true" :size=20 @click="deleteThisCondition"/>
   </div>
 </div>
 </template>
 
 <script>
-import i18nUtils from '../utils/i18nUtil';
+import DropdownSelect from '@/components/DropdownSelect';
+import selectOptions from '../utils/selectOptions';
 
 export default {
   name: 'condition-card',
   components: {
+    'dropdown-select': DropdownSelect,
   },
   props: {
     initialCondition: {
@@ -74,53 +54,76 @@ export default {
   },
   data() {
     return {
-      i18n: {},
       condition: JSON.parse(JSON.stringify(this.initialCondition)),
-      isInputMenuVisible: false,
-      isSelectMenuVisible: false,
-      columns: ['entity', 'context'],
-      contexts: ['on_complete', 'on_cancel', 'on_transfer_to_manual', 'on_parse_fail'],
-      comparisonOperators: [],
+      contextTargets: [],
+      operators: [],
+      operatorOptions: [],
     };
   },
   computed: {
-    entityOptions() {
-      return this.entities.map((entity) => {
-        const object = {
-          name: entity.entityName,
-          displayText: entity.entityName,
-        };
-        return object;
-      });
-    },
-    contextOptions() {
-      return this.contexts.map((context) => {
-        const object = {
-          name: context,
-          displayText: this.i18n.task_engine_v3.condition_card.context_status[context],
-        };
-        return object;
-      });
-    },
-    targetItems() {
-      return {
-        entity: this.entityOptions,
-        context: this.contextOptions,
-      };
-    },
-    comparisonItems() {
-      return {
-        entity: this.comparisonOperators,
-      };
-    },
-    isContentInputVisible() {
-      if (this.condition.target.displayText !== '' && this.condition.target.type === 'entity') {
-        if (this.condition.comparisonOperator.needContent === true) {
-          return true;
-        }
+    targetOptions() {
+      let options = [];
+      // append entity targets
+      let entityOptions = this.entities.map(entity => ({
+        text: entity.entityName,
+        value: entity.entityName,
+        inGroup: true,
+      }));
+      entityOptions = entityOptions.filter(option => option.text !== null);
+      if (entityOptions.length > 0) {
+        options.push(
+          {
+            text: this.$t('task_engine_v3.condition_card.target_type.entity'),
+            isGroup: true,
+          },
+        );
+        options = options.concat(entityOptions);
       }
-      this.condition.content = '';
-      return false;
+      // append context targets
+      options.push({
+        text: this.$t('task_engine_v3.condition_card.target_type.context'),
+        isGroup: true,
+      });
+      const contextOptions = this.contextTargets.map(contextTarget => ({
+        text: contextTarget.displayText,
+        value: contextTarget.name,
+        inGroup: true,
+      }));
+      options = options.concat(contextOptions);
+      return options;
+    },
+    targetModel: {
+      get() {
+        return [this.condition.target.name];
+      },
+      set(newSelected) {
+        const contextTarget = this.contextTargets.find(target => newSelected[0] === target.name);
+        if (contextTarget !== undefined) {
+          this.condition.target = contextTarget;
+          return;
+        }
+        this.condition.target = {
+          displayText: newSelected[0],
+          type: 'entity',
+          name: newSelected[0],
+        };
+      },
+    },
+    operatorModel: {
+      get() {
+        return [this.condition.comparisonOperator.displayText];
+      },
+      set(newSelected) {
+        this.condition.comparisonOperator = this.operators.find(
+          operator => operator.displayText === newSelected[0],
+        );
+      },
+    },
+    needOperator() {
+      return this.condition.target.type === 'entity';
+    },
+    needContent() {
+      return this.condition.comparisonOperator.needContent;
     },
     entities() {
       return JSON.parse(JSON.stringify(this.initialEntityCollectorList));
@@ -133,122 +136,65 @@ export default {
       },
       deep: true,
     },
+    targetOptions: {
+      handler() {
+        this.$refs.selectTarget.$emit('updateOptions', this.targetOptions);
+      },
+      deep: true,
+    },
   },
   methods: {
     deleteThisCondition() {
       this.$emit('deleteConditionButtonClick');
     },
-    showTargetItemMenu(visible) {
-      this.isInputMenuVisible = visible;
-    },
-    showComparisonItemMenu(visible) {
-      this.isSelectMenuVisible = visible;
-    },
-    isTargetItemActive(column, index) {
-      const displayText = this.targetItems[column][index].displayText;
-      return this.condition.target.type === column &&
-        this.condition.target.displayText === displayText;
-    },
-    isComparisonItemActive(column, index) {
-      const displayText = this.comparisonItems[column][index].displayText;
-      return this.condition.comparisonOperator.displayText === displayText;
-    },
-    targetItemClick(column, index) {
-      this.condition.target.name = this.targetItems[column][index].name;
-      this.condition.target.displayText = this.targetItems[column][index].displayText;
-      this.condition.target.type = column;
-      if (this.comparisonItems[column] !== undefined && this.comparisonItems[column].length > 0) {
-        this.condition.comparisonOperator = JSON.parse(
-          JSON.stringify(this.comparisonItems[column][0]));
-      }
-      this.showTargetItemMenu(false);
-    },
-    comparisonItemClick(column, index) {
-      const item = this.comparisonItems[column][index];
-      this.condition.comparisonOperator = JSON.parse(JSON.stringify(item));
-      this.showComparisonItemMenu(false);
-    },
   },
   activated() {},
-  beforeMount() {},
+  beforeMount() {
+    this.operators = selectOptions.getOperators.call(this);
+    this.operators.forEach((operator) => {
+      this.operatorOptions.push({
+        text: operator.displayText,
+        value: operator.displayText,
+      });
+    });
+    this.contextTargets = selectOptions.getContextTargets.call(this);
+  },
   mounted() {
-    this.i18n = i18nUtils.getLocaleMsgs(this.$i18n);
-    this.comparisonOperators = [
-      {
-        // 存在
-        displayText: this.i18n.task_engine_v3.condition_card.comparison_operators.present,
-        functionName: 'contain_key',
-        source: 'global_info',
-        needContent: false,
-      },
-      {
-        // 不存在
-        displayText: this.i18n.task_engine_v3.condition_card.comparison_operators.not_present,
-        functionName: 'not_contain_key',
-        source: 'global_info',
-        needContent: false,
-      },
-      {
-        // 包含
-        displayText: this.i18n.task_engine_v3.condition_card.comparison_operators.contain,
-        functionName: 'value_contains',
-        source: 'global_info',
-        needContent: true,
-      },
-      {
-        // 不包含
-        displayText: this.i18n.task_engine_v3.condition_card.comparison_operators.not_contain,
-        functionName: 'value_not_contains',
-        source: 'global_info',
-        needContent: true,
-      },
-      {
-        // 大于
-        displayText: this.i18n.task_engine_v3.condition_card.comparison_operators.greater_than,
-        functionName: 'key_val_match',
-        source: 'global_info',
-        needContent: true,
-        compare: '>',
-      },
-      {
-        // 小于
-        displayText: this.i18n.task_engine_v3.condition_card.comparison_operators.smaller_than,
-        functionName: 'key_val_match',
-        source: 'global_info',
-        needContent: true,
-        compare: '<',
-      },
-      {
-        // 等于
-        displayText: this.i18n.task_engine_v3.condition_card.comparison_operators.equal_to,
-        functionName: 'key_val_match',
-        source: 'global_info',
-        needContent: true,
-        compare: '==',
-      },
-      {
-        // 不等于
-        displayText: this.i18n.task_engine_v3.condition_card.comparison_operators.not_equal_to,
-        functionName: 'key_val_match',
-        source: 'global_info',
-        needContent: true,
-        compare: '!=',
-      },
-      {
-        // 属于
-        displayText: this.i18n.task_engine_v3.condition_card.comparison_operators.belong_to,
-        functionName: 'value_in',
-        source: 'global_info',
-        needContent: true,
-      },
-      {
-        // 不属于
-        displayText: this.i18n.task_engine_v3.condition_card.comparison_operators.not_belong_to,
-        functionName: 'value_not_in',
-        source: 'global_info',
-        needContent: true,
-      },
-    ];
   },
 };
 </script>
+
+<style lang="scss" scoped>
+@import "../scss/teVariable.scss";
+#condition-card{
+  display: flex;
+  flex-direction: row;
+  margin-top: 10px;
+  align-items: center;
+  .label-when{
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+    line-height: 28px;
+    color: $color-font-normal;
+  }
+  .selector{
+    height: 28px;
+    margin-right: 10px;
+  }
+  .select-target{
+    margin-left: 15px;
+  }
+  .select-operator{
+  }
+  .input-content{
+    width: 144px;
+  }
+
+  .button-delete-condition{
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}
+</style>

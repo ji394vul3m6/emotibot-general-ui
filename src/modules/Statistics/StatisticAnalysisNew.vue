@@ -34,7 +34,7 @@
             :disabled="{to: earliestDate, from: latestDate}"
           ></date-picker>
         </template>
-        <text-button v-if="canExport" class="export-button" button-type="primary" @click="doExport">{{ $t('general.export') }}</text-button>
+        <text-button v-if="canExport" class="export-button"  @click="doExport">{{ $t('general.export') }}</text-button>
       </div>
       <div class="chart-container" v-if="hasChart">
         <chart
@@ -85,7 +85,7 @@ export default {
   data() {
     const latestDate = new Date();
     const earliestDate = new Date();
-    latestDate.setDate(latestDate.getDate() - 1);
+    latestDate.setDate(latestDate.getDate());
     earliestDate.setDate(earliestDate.getDate() - 365);
     return {
       pageMap: {

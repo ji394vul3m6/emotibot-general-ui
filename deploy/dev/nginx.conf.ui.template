@@ -55,66 +55,66 @@ http {
         proxy_set_header X-Appid $appid;
         proxy_set_header X-UserID $user_id;
         location /stats {
-            proxy_pass http://${REMOTE_IP};
+            proxy_pass http://${REMOTE_IP}:8200;
         }
         location /admin {
             proxy_pass http://${REMOTE_IP};
+        }
+        location = /php/api/ApiKey/tde_register.php {
+            proxy_set_header Authorization $appid;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Appid $appid;
+            proxy_set_header X-UserID $user_id;
+            proxy_pass http://${REMOTE_IP}:10999/tde/register;
         }
         location /php/api/ApiKey/task_engine_app.php {
             proxy_set_header Authorization $appid;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Appid $appid;
             proxy_set_header X-UserID $user_id;
-            proxy_pass http://${SELF_IP}:8182/api/v1/task/apps; 
-            # proxy_pass http://${SELF_IP}:8099/api/ApiKey/task_engine_app.php;
+            proxy_pass http://127.0.0.1/api/v1/task/apps;
         }
         location /php/api/ApiKey/task_engine_scenario.php {
             proxy_set_header Authorization $appid;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Appid $appid;
             proxy_set_header X-UserID $user_id;
-            proxy_pass http://${SELF_IP}:8182/api/v1/task/scenarios;
-            # proxy_pass http://${SELF_IP}:8099/api/ApiKey/task_engine_scenario.php;
+            proxy_pass http://127.0.0.1/api/v1/task/scenarios;
         }
         location /php/api/ApiKey/scenario_json_upload.php { 
             proxy_set_header Authorization $appid;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Appid $appid;
             proxy_set_header X-UserID $user_id;
-            proxy_pass http://${SELF_IP}:8182/api/v1/task/scenarios-upload; 
-            # proxy_pass http://${SELF_IP}:8099/api/ApiKey/scenario_json_upload.php;
+            proxy_pass http://127.0.0.1/api/v1/task/scenarios-upload; 
         }
         location /php/api/ApiKey/mapping_table_list.php { 
             proxy_set_header Authorization $appid;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Appid $appid;
             proxy_set_header X-UserID $user_id;
-            proxy_pass http://${SELF_IP}:8182/api/v1/task/mapping-tables; 
-            # proxy_pass http://${SELF_IP}:8099/api/ApiKey/mapping_table_list.php;
+            proxy_pass http://127.0.0.1/api/v2/task/mapping-tables; 
         }
         location /php/api/ApiKey/mapping_table_download.php { 
             proxy_set_header Authorization $appid;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Appid $appid;
             proxy_set_header X-UserID $user_id;
-            proxy_pass http://${SELF_IP}:8182/api/v1/task/mapping-table/export; 
-            # proxy_pass http://${SELF_IP}:8099/api/ApiKey/mapping_table_list.php;
+            proxy_pass http://127.0.0.1/api/v1/task/mapping-table/export; 
         }
         location /php/api/ApiKey/mapping_table_upload.php { 
             proxy_set_header Authorization $appid;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Appid $appid;
             proxy_set_header X-UserID $user_id;
-            proxy_pass http://${SELF_IP}:8182/api/v1/task/mapping-table/upload; 
-            # proxy_pass http://${SELF_IP}:8099/api/ApiKey/mapping_table_list.php;
+            proxy_pass http://127.0.0.1/api/v1/task/mapping-table/upload; 
         }
         location /php/api/ApiKey/mapping_table_delete.php { 
             proxy_set_header Authorization $appid;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Appid $appid;
             proxy_set_header X-UserID $user_id;
-            proxy_pass http://${SELF_IP}:8182/api/v1/task/mapping-table/delete; 
-            # proxy_pass http://${SELF_IP}:8099/api/ApiKey/mapping_table_list.php;
+            proxy_pass http://127.0.0.1/api/v1/task/mapping-table/delete; 
         }
         location /php {
             proxy_pass http://${REMOTE_IP};
@@ -123,7 +123,7 @@ http {
             proxy_pass http://${REMOTE_IP};
         }
         location /auth {
-            proxy_pass http://${REMOTE_IP};
+            proxy_pass http://${AUTH_IP};
         }
         location /login.html {
             proxy_pass http://${SELF_IP}:8080;
@@ -179,7 +179,7 @@ http {
         location /robots {
             proxy_pass http://${BF_IP};
         }
-        location /version {
+        location = version {
             proxy_pass http://${BF_IP};
         }
         location /chatlog {
@@ -199,7 +199,7 @@ http {
         }
 
         location /api {
-            proxy_pass http://${REMOTE_IP};
+            proxy_pass http://${API_IP};
         }
         location / {
             proxy_pass http://${SELF_IP}:8080;

@@ -1,6 +1,7 @@
 <template>
   <div class="icon" :class="{button: button}" @click="$emit('click', $event)" :style="containerStyle">
-    <div :class="`${iconType}_icon`" :style="styleObj"></div>
+    <div v-if="enableHover" :class="`${iconType}_icon_hover`" :style="styleObj"></div>
+    <div v-else :class="`${iconType}_icon`" :style="styleObj"></div>
   </div>
 </template>
 
@@ -18,6 +19,10 @@ export default {
       required: true,
     },
     button: {
+      type: Boolean,
+      default: false,
+    },
+    enableHover: {
       type: Boolean,
       default: false,
     },
@@ -115,39 +120,18 @@ export default {
       }
     }
   }
-  @include iconType("add");
-  @include iconType("search");
-  @include iconType("delete");
-  @include iconType("privilege");
-  @include iconType("role");
-  @include iconType("user");
-  @include iconType("white_robot");
-  @include iconType("white_privilege");
-  @include iconType("white_role");
-  @include iconType("white_user");
-  @include iconType("white_add");
-  @include iconType("white_setting");
-  @include iconType("white_setting2");
-  @include iconType("white_refresh");
-  @include iconType("white_success");
-  @include iconType("white_fail");
-  @include iconType("white_wordbank");
-  @include iconType("white_folder");
-  @include iconType("home");
-  @include iconType("folder");
-  @include iconType("dictionary");
-  @include iconType("folder_add");
-  @include iconType("dictionary_add");
-  @include iconType("white_logout");
-  @include iconType("white_ssm");
-  @include iconType("white_chat");
-  @include iconType("white_SQ");
-  @include iconType("white_wordbank_upload");
-  @include iconType("white_dashboard");
-  @include iconType("white_statistics");
-  @include iconType("white_audit");
-  @include iconType("download");
-  @include iconType("white_task_engine");
+  @mixin iconTypeHover($name) {
+    .#{$name}_icon_hover {
+      background: url("../../assets/icons/#{$name}_icon.svg") no-repeat center center;
+      // background: url("./icons/#{$name}_icon.svg") no-repeat center center;
+      background-size: 20px 20px;
+      width: 100%;
+      height: 100%;
+      &:hover {
+        background: url("../../assets/icons/#{$name}_hover_icon.svg") no-repeat center center;
+      }
+    }
+  }
 
   @include iconType("menu_expand");
   @include iconType("menu_statistics");
@@ -157,24 +141,48 @@ export default {
   @include iconType("menu_te");
   @include iconType("menu_privilege");
   @include iconType("menu_dashboard");
-  @include iconType("close");
-  @include iconType("help");
-  @include iconType("expand");
-  @include iconType("drop_down");
+  @include iconType("menu_intent");
+
+  @include iconType("add");
   @include iconType("check");
   @include iconType("checked");
+  @include iconType("close");
+  @include iconType("delete");
+  @include iconType("delete_hover");
+  @include iconTypeHover("delete");
+  @include iconType("drop_down");
   @include iconType("edit");
-  @include iconType("robot");
   @include iconType("edit_blue");
   @include iconType("edit_white");
-  @include iconType("normal_acc");
   @include iconType("enterprise_admin");
+  @include iconType("expand");
+  @include iconType("help");
+  @include iconType("menu_expand");
+  @include iconType("normal_acc");
+  @include iconType("robot");
+  @include iconType("search");
+  @include iconType("white_add");
+  @include iconType("daggle");
+  @include iconType("more");
+  @include iconType("setting");
+  @include iconType("setting_hover");
+  @include iconTypeHover("setting");
 
-  /** used on page nav header */
-  @include iconType("header_enterprise");
-  @include iconType("header_user");
-  @include iconType("header_dialog");
-  @include iconType("header_dropdown");
+  /** used on robot profile icon */
+  @include iconType("profile_question");
+  @include iconType("profile_answer");
+  
+  /** used on notifications */
+  @include iconType("info_success");
+  @include iconType("info_warning");
+  @include iconType("info_error");
+  // info_close will be use in all close button if background is white
+  @include iconType("info_close");
+
+  /** used on input info */
+  @include iconType("info");
+  @include iconType("info_hover");
+  @include iconTypeHover("info");
 
   /** used on category memu */
   @include iconType("category_add");
@@ -182,15 +190,22 @@ export default {
   @include iconType("category_dropdown");
   @include iconType("category_open");
 
-  /** used on input info */
-  @include iconType("info");
-  @include iconType("info_hover");
-  
-  /** used on notifications */
-  @include iconType("info_success");
-  @include iconType("info_warning");
-  @include iconType("info_error");
-  @include iconType("info_close");
+  /** used on page nav header */
+  @include iconType("header_enterprise");
+  @include iconType("header_user");
+  @include iconType("header_dialog");
+  @include iconType("header_dropdown");
+  @include iconType("header_dropdown_gray");
+
+  @include iconType("intent");
+  @include iconType("info_warning_gray");
+  @include iconType("close_expand");
+  @include iconType("upload");
+  /** used on calendar */
+  @include iconType("year_left");
+  @include iconType("year_right");
+  @include iconType("month_left");
+  @include iconType("month_right");
 
   // robot icon should a little bit larger than other icons
   .white_robot_icon {

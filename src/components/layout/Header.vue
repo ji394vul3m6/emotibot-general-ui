@@ -1,6 +1,6 @@
 <template>
 <div id="page-header">
-  <div class="robot-list column" @click="showRobotList" v-if="!showUserInfoPage">
+  <div class="robot-list column" @click="showRobotList" v-if="!showUserInfoPage && enterpriseID !== ''">
     {{ $t('general.robot_list') }}
   </div>
   <div class="empty column"></div>
@@ -38,7 +38,8 @@
     <div class="user-menu-container" :class="[ showUserMenu ? 'show': '']" ref="list">
       <div class="user-menu">
         <div class="menu-item" @click="clickShowUserPreference">{{ $t('header.user_info') }}</div>
-        <div class="menu-item" v-if="userInfo.type === 1" @click="goEnterprisePrivilege">{{ $t('header.enterprise_privilege_list') }}</div>
+        <div class="menu-item" v-if="userInfo.type <= 1" @click="goEnterprisePrivilege">{{ $t('header.enterprise_privilege_list') }}</div>
+        <div class="menu-item" v-if="userInfo.type === 0" @click="goEnterpriseList">{{ $t('header.back_to_system_manage') }}</div>
         <div class="menu-item" @click="logout">{{ $t('header.logout') }}</div>
       </div>
     </div>
@@ -55,16 +56,24 @@ export default {
     showUserMenu: false,
     clickHandler: undefined,
   }),
-  computed: mapGetters([
-    'robotName',
-    'robotID',
-    'enterpriseName',
-    'enterpriseID',
-    'robotList',
-    'enterpriseList',
-    'userInfo',
-    'showUserInfoPage',
-  ]),
+  computed: {
+    ...mapGetters([
+      'robotName',
+      'robotID',
+      'enterpriseName',
+      'enterpriseID',
+      'robotList',
+      'enterpriseList',
+      'userInfo',
+      'showUserInfoPage',
+    ]),
+    showGoEnterpriseList() {
+      return this.enterpriseID !== '' && this.userInfo.type <= 0;
+    },
+    showGoEnterpriseUserList() {
+      return this.robotID !== '' && this.userInfo.type <= 1;
+    },
+  },
   methods: {
     ...mapMutations([
       'setRobot',
@@ -75,6 +84,17 @@ export default {
     clickShowUserPreference() {
       this.showUserMenu = false;
       this.showUserPreference();
+    },
+    goEnterpriseList() {
+      const that = this;
+      that.setRobot('');
+      that.setEnterprise('');
+      that.$router.push('/manage/enterprise-manage');
+      that.hideUserPreference();
+
+      that.showUserMenu = false;
+      window.removeEventListener('click', that.clickHandler);
+      that.clickHandler = undefined;
     },
     goEnterprisePrivilege() {
       const that = this;
@@ -135,6 +155,9 @@ export default {
 
   .column {
     flex: 0 0 auto;
+    &:not(.empty) {
+      max-width: 300px;
+    }
     display: flex;
     align-items: center;
     .icon-container {

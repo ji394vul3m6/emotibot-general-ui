@@ -5,7 +5,7 @@
     :class="classObj"
     @click="$emit('click', $event)"
     @keyup.enter="$emit('click', $event)">
-    <icon :iconType="iconType" v-if="showIcon" :size=16></icon>
+    <icon :iconType="iconType" v-if="showIcon" :size="iconSize"></icon>
     <div class="button-content">
       <slot></slot>
     </div>
@@ -36,6 +36,10 @@ export default {
     iconType: {
       type: String,
       default: '',
+    },
+    iconSize: {
+      type: Number,
+      default: 16,
     },
     color: {
       type: String,
@@ -191,6 +195,10 @@ $btn-error-color: $color-white;
       width: 100%;
       text-align: center;
     }
+  }
+
+  .icon {
+    margin-right: 10px;
   }
 }
 </style>

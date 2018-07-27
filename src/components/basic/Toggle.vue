@@ -1,5 +1,5 @@
 <template>
-  <div class="toggle-base" v-on:click="toggle" :class="{checked: checked, big: big}">
+  <div class="toggle-base" v-on:click="toggle" :class="{checked: checked, big: big, disabled: disabled}">
     <input type="checkbox" :id="id" v-model="checked">
     <label :for="id"></label>
   </div>
@@ -13,6 +13,10 @@ export default {
       default: false,
     },
     big: {
+      type: Boolean,
+      default: false,
+    },
+    disabled: {
       type: Boolean,
       default: false,
     },
@@ -50,7 +54,8 @@ export default {
 @import 'styles/variable.scss';
 
 $toggle-active-color: #3d80ff;
-
+$disabled-active-color: #A7C5FF;
+$disabled-deactive-color: #EBEBEB;
 .toggle-base {
   cursor: pointer;
   display: inline-block;
@@ -99,6 +104,15 @@ $toggle-active-color: #3d80ff;
       &:checked + label {
         left: 36px;
       }
+    }
+  }
+
+  &.disabled{
+    cursor: default;
+    pointer-events: none;
+    background: $disabled-deactive-color;
+    &.checked {
+      background: $disabled-active-color;
     }
   }
 }

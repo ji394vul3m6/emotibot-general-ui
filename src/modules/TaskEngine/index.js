@@ -1,11 +1,11 @@
 import TaskEngine from './TaskEngine';
-import TaskEngineUpload from './TaskEngineUpload';
+import TaskEngineV3 from './TaskEngineV3';
 
 export default {
   displayNameKey: 'task_engine',
   icon: 'menu_te',
   pages: {
     TaskEngine,
-    TaskEngineUpload,
+    TaskEngineV3,
   },
 };

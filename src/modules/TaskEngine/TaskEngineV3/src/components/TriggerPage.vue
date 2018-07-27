@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import intentEngineApi from './_api/intentEngine';
+import IntentEngine from './_api/intentEngine';
 import i18nUtils from '../utils/i18nUtil';
 import general from '../utils/general';
 import IntentEditorPop from './IntentEditorPop';
@@ -54,6 +54,7 @@ export default {
     return {
       i18n: {},
       appId: '',
+      ieApi: null,
       triggerList: JSON.parse(JSON.stringify(this.initialTriggerList)),
       intentList: [],
       intentOptionList: [],
@@ -79,15 +80,13 @@ export default {
       return true;
     },
     checkIntent(intentName) {
-      intentEngineApi.checkIntent(this.appId, intentName).then((data) => {
-        console.log('checkIntent:');
-        console.log(data);
+      this.ieApi.checkIntent(intentName).then(() => {
       }, (err) => {
         general.popErrorWindow(this, 'checkIntent error', err.message);
       });
     },
     loadIntentOptionList() {
-      intentEngineApi.listIntents(this.appId).then((data) => {
+      this.ieApi.listIntents().then((data) => {
         this.intentList = data.content;
         this.intentOptionList = [
           // {
@@ -114,44 +113,38 @@ export default {
       });
     },
     addNewIntent(triggerIndex) {
-      const options = {
+      const that = this;
+      that.$pop({
+        title: '',
         component: IntentEditorPop,
-        buttons: ['ok', 'cancel'],
         validate: true,
         data: {
           editor_type: 'add_new_intent',
-          app_id: this.appId,
+          app_id: that.appId,
           intent_id: '',
           intent_name: '',
           sentences: [],
         },
-        ok_msg: this.$t('general.add'),
-        cancel_msg: this.$t('general.close'),
+        ok_msg: that.$t('general.add'),
         callback: {
           ok: (newIntent) => {
-            this.updateIntent(newIntent);
+            that.updateIntent(newIntent);
             const trigger = {
               intent_name: newIntent.intent_name,
               type: 'intent_engine',
               editable: true,
             };
-            this.triggerList[triggerIndex] = trigger;
+            that.triggerList[triggerIndex] = trigger;
           },
         },
-        customPopContentStyle: {
-          width: '70%',
-          height: '70%',
-          'min-width': '700px',
-          'min-height': '500px',
-        },
-      };
-      this.$root.$emit('showWindow', options);
+      });
     },
     editIntent(trigger) {
       const intent = this.intentList.find(i => i.intent_name === trigger.intent_name);
-      const options = {
+      const that = this;
+      that.$pop({
+        title: '',
         component: IntentEditorPop,
-        buttons: ['ok', 'cancel'],
         validate: true,
         data: {
           editor_type: 'edit_intent',
@@ -160,45 +153,31 @@ export default {
           intent_name: intent.intent_name,
           sentences: intent.sentences,
         },
-        ok_msg: this.$t('general.save'),
-        cancel_msg: this.$t('general.close'),
+        ok_msg: that.$t('general.save'),
         callback: {
           ok: (newIntent) => {
-            this.updateIntent(newIntent);
+            that.updateIntent(newIntent);
           },
         },
-        customPopContentStyle: {
-          width: '70%',
-          height: '70%',
-          'min-width': '700px',
-          'min-height': '500px',
-        },
-      };
-      this.$root.$emit('showWindow', options);
+      });
     },
     testIntent() {
-      const options = {
+      const that = this;
+      that.$pop({
+        title: '',
         component: IntentTesterPop,
         buttons: ['cancel'],
+        cancel_msg: that.$t('general.close'),
         validate: true,
-        data: {
-        },
-        cancel_msg: this.$t('general.close'),
-        customPopContentStyle: {
-          width: '70%',
-          height: '70%',
-          'min-width': '700px',
-          'min-height': '500px',
-        },
-      };
-      this.$root.$emit('showWindow', options);
+        data: {},
+      });
     },
     updateIntent(intent) {
       intent.sentences = intent.sentences.map((sentence) => {
         sentence.sentenceid = this.$uuid.v1();
         return sentence;
       });
-      intentEngineApi.updateIntent(this.appId, JSON.stringify([intent])).then((data) => {
+      this.ieApi.updateIntent(JSON.stringify([intent])).then((data) => {
         if (data.code !== 0) {
           general.popErrorWindow(this, 'updateIntent error', `code: ${data.code}`);
         }
@@ -208,7 +187,7 @@ export default {
       });
     },
     deleteIntent(intentName) {
-      intentEngineApi.deleteIntent(this.appId, intentName).then((data) => {
+      this.ieApi.deleteIntent(intentName).then((data) => {
         if (data.code !== 0) {
           general.popErrorWindow(this, 'deleteIntent error', `code: ${data.code}`);
         }
@@ -223,6 +202,8 @@ export default {
   },
   beforeMount() {
     this.appId = this.$cookie.get('appid');
+    this.ieApi = new IntentEngine(this, '1.0', this.appId);
+    // this.ieApi = new IntentEngine(this, '2.0', '');
     this.loadIntentOptionList();
     this.$on('rerender', this.rerender);
   },
@@ -235,3 +216,8 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+@import "../scss/teVariable.scss";
+@import "../scss/triggerPage.scss";
+</style>

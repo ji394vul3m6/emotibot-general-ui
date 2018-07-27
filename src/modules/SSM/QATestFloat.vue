@@ -14,7 +14,7 @@
           <toggle v-model="showAnalysis"></toggle>
         </div>
         <div class="close-button" @click="closeQATest">
-          <icon icon-type="close" :size=16 />
+          <icon icon-type="info_close" :size=16 />
         </div>
       </div>
     </div>
@@ -165,14 +165,12 @@ export default {
       that.tagTypes.forEach((tagType) => {
         const selectedValue = tagType.values.find(tag => tag.checked);
         if (selectedValue) {
-          console.log(selectedValue);
           filter[tagType.type] = selectedValue.text;
         }
       });
 
       that.$api.QATest(text, filter).then((data) => {
         const res = data.data;
-        console.log(res);
         const answerData = res.data;
         const sentenceInfo = res.info;
 
@@ -194,7 +192,6 @@ export default {
         if (that.showAnalysis && chatNode) {
           if (sentenceInfo === undefined) {
             // old format analysis infomation in 'result' part in return obj, too
-            console.log(res.result.tokens);
             chatNode.analysis = {
               tokens: res.result.tokens ? res.result.tokens.join(', ') : '',
               emotion: res.result.emotion || that.$t('qatest.unknown'),

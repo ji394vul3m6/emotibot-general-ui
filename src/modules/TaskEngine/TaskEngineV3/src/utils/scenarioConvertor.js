@@ -46,7 +46,12 @@ export default {
     if (skillId === 'mainSkill') {
       nodes.push(this.newEntryNode(skill.triggerList, skillId));
     }
-    nodes.push(this.newNluPcNode(skill.entityCollectorList, skill.re_parsers, skillId));
+    nodes.push(this.newNluPcNode(
+      skill.entityCollectorList,
+      skill.re_parsers,
+      skillId,
+      skill.register_json,
+    ));
     nodes.push(this.newActionNode(skill.actionGroupList, skillId));
     return nodes;
   },
@@ -83,6 +88,9 @@ export default {
       case 'intent_zoo':
         rule = this.createEntryRule('cu_parser', 'Intent', ['Intent'], trigger.intent_name);
         break;
+      case 'intent_engine_2.0':
+        rule = this.createEntryRuleV2('intent_parser', trigger.intent_name, trigger.type);
+        break;
       default:
         rule = this.createEntryRule('custom_cu_parser', 'userDefine', [], trigger.intent_name);
     }
@@ -118,7 +126,30 @@ export default {
     ];
     return rule;
   },
-  newNluPcNode(entityCollectorList, reParsers, skillId) {
+  createEntryRuleV2(functionName, intentName, module) {
+    const rule = [
+      {
+        source: 'extend_data',
+        functions: [
+          {
+            function_name: functionName,
+            content: {
+              intentName,
+              module,
+            },
+          },
+        ],
+      },
+    ];
+    return rule;
+  },
+  newNluPcNode(entityCollectorList, reParsers, skillId, registerJson) {
+    let entities;
+    if (registerJson && registerJson.slotDefs) {
+      entities = registerJson.slotDefs.map(slot => ({ entityName: slot.slotName, prompt: null }));
+    } else {
+      entities = entityCollectorList;
+    }
     const node = {
       node_id: `wizard_mode_nlu_pc_node_${skillId}`,
       description: 'wizard_mode_nlu_pc_node',
@@ -126,7 +157,7 @@ export default {
       warnings: [],
       edges: [{ to_node_id: `wizard_mode_action_node_${skillId}`, edge_type: 'else_into', condition_rules: [], actions: [{ operation: 'set_to_global_info', key: 'parsing_failed', val: false }, { operation: 'set_to_global_info', key: 'sys_node_dialogue_cnt', val: 0 }] }],
       content: {
-        entities: entityCollectorList,
+        entities,
         reParsers,
       },
     };
@@ -227,6 +258,11 @@ export default {
     return -1;
   },
   convertToRegistryData(scenarioId, skill, skillId) {
+    if (skill.register_json) { // manually give register JSON
+      const registerJson = JSON.parse(JSON.stringify(skill.register_json));
+      registerJson.taskId = `wizard_mode_nlu_pc_node_${skillId}_${scenarioId}`;
+      return registerJson;
+    }
     const entityList = skill.entityCollectorList.map((item) => {
       if (item.ner.sourceType === 'custom') {
         return {
@@ -240,6 +276,9 @@ export default {
         slotName: item.entityName,
         slotType: item.ner.slotType,
         slotBizType: 'OrderProperty',
+        hidden: item.ner.hidden,
+        needRecogize: item.ner.needRecogize,
+        slotFinder: item.ner.slotFinder,
       };
     });
     const indices = [];
@@ -255,20 +294,20 @@ export default {
     let products = [];
     if (skill.relatedEntities.relatedEntityCollectorList.length > 0) {
       products = skill.relatedEntities.relatedEntityCollectorList[0].ner.entitySynonymsList
-      .map((item) => {
-        const tmpObj = {};
-        tmpObj[skill.relatedEntities.relatedEntityCollectorList[0].entityName] = item.entity;
-        return tmpObj;
-      });
+        .map((item) => {
+          const tmpObj = {};
+          tmpObj[skill.relatedEntities.relatedEntityCollectorList[0].entityName] = item.entity;
+          return tmpObj;
+        });
     }
     if (entityList.length > 0) {
       if (skill.relatedEntities.relatedEntityCollectorList.length > 0) {
         const productIndex = this.getEntityListIndex(entityList,
-          skill.relatedEntities.relatedEntityCollectorList[0].entityName);
+            skill.relatedEntities.relatedEntityCollectorList[0].entityName);
         entityList[productIndex].slotBizType = 'Product';
         for (let i = 1; i < skill.relatedEntities.relatedEntityCollectorList.length; i += 1) {
           const tmpIndex = this.getEntityListIndex(entityList,
-            skill.relatedEntities.relatedEntityCollectorList[i].entityName);
+              skill.relatedEntities.relatedEntityCollectorList[i].entityName);
           entityList[tmpIndex].slotBizType = 'ProductPropertySearchable';
         }
       }
@@ -278,7 +317,7 @@ export default {
       nlgTemplate: skill.tde_setting.nlgTemplate,
       service: skill.tde_setting.service,
       jumpOutTimes: isNaN(parseInt(skill.tde_setting.jumpOutTimes, 10)) ?
-        undefined : parseInt(skill.tde_setting.jumpOutTimes, 10),
+          undefined : parseInt(skill.tde_setting.jumpOutTimes, 10),
       slotDefs: entityList,
       intent: {
         operate: '订',

@@ -36,7 +36,9 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import FlexTable from '@/components/FlexTable';
+import apiBF from '@/api/BF';
 import api from './_api/qalabel';
 
 export default {
@@ -48,7 +50,7 @@ export default {
   components: {
     'flex-table': FlexTable,
   },
-  api,
+  api: [api, apiBF],
   data() {
     return {
       appid: this.getAppID('appid'),
@@ -65,6 +67,10 @@ export default {
     };
   },
   computed: {
+    ...mapGetters([
+      'robotID',
+      'userID',
+    ]),
     canEdit() {
       return this.$hasRight('edit');
     },
@@ -98,7 +104,7 @@ export default {
       that.$popCheck({
         title: `${that.$t('general.delete')}${that.$t('qa_label.label')}`,
         data: {
-          msg: that.$t('qa_label.delete_label_name', { label: item.name }),
+          msg: that.$t('qa_label.delete_label_name', { tag: item.name }),
         },
         callback: {
           ok() {
@@ -125,60 +131,58 @@ export default {
       });
     },
     addLabel() {
+      this.labels.forEach((l) => {
+        l.ifedit = false;
+      });
       this.labels.push(this.tagblank);
     },
     saveLabel(item) {
       const that = this;
       if (item.name.length <= 0) {
         that.$popError(that.$t('error_msg.input_empty'));
-      } else {
-        const params = {
-          appid: that.appid,
-          name: item.name,
-          type: 'userdefine',
-          category: 'sq',
-        };
-        if (item.name === item.namebak) {
-          this.$set(this, 'ifedit', false);
-          this.$set(item, 'ifedit', false);
-          return;
-        }
-        if (item.isadd) {
-          that.$api.addLabel(params).then((res) => {
-            if (res.error_code === 0) {
-              that.$set(this.tagblank, 'name', '');
-              that.loadLabels();
-            } else {
-              that.$popError(res.error_message);
-            }
-          }, (err) => {
-            // TODO: handle add error
-            that.$set(this.tagblank, 'name', '');
-            that.$popError(that.$t('error_msg.input_empty'));
-            console.log(err);
-          })
-            .then(() => {
-              that.$emit('endLoading');
-            });
-        } else {
-          params.id = item.id;
-          that.$api.updateLabel(params).then((res) => {
-            if (res.error_code === 0) {
-              that.$set(this.tagblank, 'name', '');
-              that.loadLabels();
-            } else {
-              that.$popError(res.error_message);
-            }
-          }, (err) => {
-            // TODO: handle add error
-            that.$set(this.tagblank, 'name', '');
-            console.log(err);
-          })
-            .then(() => {
-              that.$emit('endLoading');
-            });
-        }
+        return;
       }
+
+      const existedIdx = that.labels.findIndex(l => l.name === item.name && !item.ifedit);
+      if (existedIdx >= 0) {
+        that.$popError(that.$t('qa_label.err_existed_label'));
+        return;
+      }
+      const params = {
+        appid: that.appid,
+        name: item.name,
+        type: 'userdefine',
+        category: 'sq',
+      };
+      if (item.name === item.namebak) {
+        this.$set(this, 'ifedit', false);
+        this.$set(item, 'ifedit', false);
+        return;
+      }
+      let promise;
+      if (item.isadd) {
+        promise = that.$api.addLabel(params);
+      } else {
+        params.id = item.id;
+        promise = that.$api.updateLabel(params);
+        that.$api.updateLabel(params);
+      }
+      promise.then((res) => {
+        if (res.error_code === 0) {
+          that.$set(this.tagblank, 'name', '');
+          that.loadLabels();
+        } else {
+          that.$popError(res.error_message);
+        }
+      })
+      .catch((err) => {
+        // TODO: handle add error
+        that.$set(this.tagblank, 'name', '');
+        console.log(err);
+      })
+      .finally(() => {
+        that.$emit('endLoading');
+      });
     },
     cancelLabel() {
       this.labels = JSON.parse(JSON.stringify(this.labelsbak));
@@ -225,7 +229,10 @@ export default {
     },
   },
   mounted() {
-    this.loadLabels();
+    this.$api.focusRobot(this.userID, this.robotID)
+    .then(() => {
+      this.loadLabels();
+    });
   },
 };
 </script>

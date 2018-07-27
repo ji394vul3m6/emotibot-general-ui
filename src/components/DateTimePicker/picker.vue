@@ -101,19 +101,9 @@ $row-height: 30px;
 $light-main: $page-header-color;
 
 .datetimepicker {
-  display: inline-block;
+  display: flex;
+  align-items: center;
   position: relative;
-  @mixin pickerinput {
-    border: 1px solid #e9e9e9;
-    border-radius: 2px;
-    height: 28px;
-    padding: 8px 8px;
-    text-align: center;
-    font-size: 1em;
-  }
-  input {
-    cursor: pointer;
-  }
 
   .time-picker input.invalid-timepicker-input {
     background-color: pink;
@@ -127,18 +117,16 @@ $light-main: $page-header-color;
     display: inline-block;
   }
   #date-picker {
-    vertical-align: middle;
+    margin-right: 5px;
     input {
-      @include pickerinput();
-      width: 7em;
+      width: 100px;
     }
   }
   #time-picker {
     .time-picker {
       width: auto;
       input {
-        @include pickerinput();
-        width: 4.5em;
+      width: 60px;
       }
     }
   }

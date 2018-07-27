@@ -10,18 +10,6 @@
   * {
     box-sizing: border-box;
   }
-  input {
-    &.display-time {
-      border: 1px solid #d2d2d2;
-      width: 10em;
-      height: 2.2em;
-      padding: 0.3em 0.5em;
-      font-size: 1em;
-    }
-    &.invalid-timepicker-input {
-      background-color: pink;
-    }
-  }
   .clear-btn {
     position: absolute;
     display: flex;
@@ -60,10 +48,11 @@
     color: $color-font-normal;
     position: absolute;
     z-index: 5;
-    top: calc(2.2em + 2px);
+    top: calc(30px + 10px);
     left: 0;
     background: #fff;
     border: 1px solid $color-borderline;
+    border-radius: 2px;
     box-shadow: 0 1px 6px rgba(0, 0, 0, 0.15);
     width: 10em;
     height: 10em;

@@ -23,3 +23,7 @@ if (typeof Object.assign !== 'function') {
   };
   Object.assign = assign;
 }
+
+if (typeof Number.isInteger !== 'function') {
+  Number.isInteger = value => value === parseInt(value, 10);
+}

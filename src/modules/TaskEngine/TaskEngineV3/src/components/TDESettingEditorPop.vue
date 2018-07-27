@@ -1,17 +1,16 @@
 <template lang="html">
 <div id="tde-setting-editor-pop" class="tde-setting-editor-pop">
-    <h1 class="header-title">{{$t("task_engine_v3.tde-setting-editor-pop.title")}}</h1>
     <div class="row">
-      <div class="title_column">{{$t("task_engine_v3.tde-setting-editor-pop.nlgTemplate")}}</div>
+      <div class="title_column">{{$t("task_engine_v3.tde_setting_editor_pop.nlgTemplate")}}</div>
       <div class="input_column"><input type="text" v-model="tde_setting.nlgTemplate"></div>
     </div>
     <div class="row">
-      <div class="title_column">{{$t("task_engine_v3.tde-setting-editor-pop.service")}}</div>
+      <div class="title_column">{{$t("task_engine_v3.tde_setting_editor_pop.service")}}</div>
       <div class="input_column"><input type="text" v-model="tde_setting.service"></div>
     </div>
     <div class="row">
-      <div class="title_column">{{$t("task_engine_v3.tde-setting-editor-pop.jumpOutTimes")}}</div>
-      <div class="input_column"><input type="text" v-model="tde_setting.jumpOutTimes"></div>
+      <div class="title_column">{{$t("task_engine_v3.tde_setting_editor_pop.jumpOutTimes")}}</div>
+      <div class="input_column"><input type="number" v-model="tde_setting.jumpOutTimes"></div>
     </div>
 </div>
 </template>
@@ -50,34 +49,26 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+@import "../scss/teVariable.scss";
+$title-font-size: 14px;
 .tde-setting-editor-pop {
-  .header-title{
-    min-width: 300px;
-  }
+  line-height: $default-line-height;
+  margin: 10px 0;
+  padding: 0 30px;
   .row{
+    font-size: $title-font-size;
     display:flex;
     flex-direction: row;
     .title_column{
-      flex:1;
-      display:flex;
-      flex-direction: row;
-      min-width: 200px;
+      flex: 0 0 200px;
     }
     .input_column{
-      flex:4;
-      display:flex;
-      flex-direction: row;
-      .entity_category_select{
-        min-width: 150px;
+      flex: 1 1 200px;
+      input{
+        width: 100%;
       }
     }
-  }
-  .full_width {
-    width: 100%;
-  }
-  .no_border {
-    border: none;
   }
 }
 </style>

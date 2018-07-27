@@ -1,6 +1,6 @@
 <template>
   <div id="task-engine">
-    <iframe ref="iframe" src="/BF/scenario/scenario.html"></iframe>
+    <iframe ref="iframe" src="/static/scenario/scenario.html"></iframe>
   </div>
 </template>
 
@@ -17,11 +17,11 @@ export default {
   },
   methods: {
     reload() {
-      this.$refs.iframe.setAttribute('src', '/BF/scenario/scenario.html');
+      this.$refs.iframe.setAttribute('src', '/static/scenario/scenario.html');
     },
   },
   activated() {
-    this.$refs.iframe.setAttribute('src', '/BF/scenario/scenario.html');
+    this.$refs.iframe.setAttribute('src', '/static/scenario/scenario.html');
   },
   mounted() {
   },

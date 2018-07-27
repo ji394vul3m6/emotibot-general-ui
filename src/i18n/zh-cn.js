@@ -34,6 +34,10 @@ export default {
       delete: '删除',
       export: '导出',
       import: '导入',
+      login: '登入',
+      publish: '发布',
+      active: '启动',
+      deactive: '关闭',
     },
 
     modules: {
@@ -58,6 +62,7 @@ export default {
       task_engine: '任务引擎',
 
       management: '权限管理',
+      intent_manage: '意圖引擎',
     },
     tools: {
       encrypt: {
@@ -199,7 +204,11 @@ export default {
     chat_info_desc: '我的名字叫 {name}，你可以在下面设置我的形象喔',
     modify_qas: '修改语料',
     input_qa_placeholder: '请输入答案',
-    input_qa_ext_placeholder: '请输入答案扩展',
+    input_qa_ext_placeholder: '新增扩展答案',
+    input_q_ext_placeholder: '新增相似问题',
+    answer_empty: '无',
+    similar_question: '相似问题',
+    extend_answer: '扩展答案',
 
     weather: '天气模块',
     computation: '数学计算模块',
@@ -598,7 +607,7 @@ export default {
   task_engine: {
     download_template: '下载转换数据模版',
     task_engine_upload: '上传转换数据',
-    import_button_hint: '支持扩展名：.xlsx',
+    import_button_hint: '支持扩展名：.csv',
   },
 
   learning: {
@@ -646,6 +655,46 @@ export default {
       unmatched_standard_q: '没有搜寻到标准问题，您可以尝试更换关键词，或新增标准问题',
       keyword_emtpy: '搜寻关键字不可为空',
       not_select_question: '没有选择标准问',
+    },
+  },
+  intent_engine: {
+    train: '意图训练',
+    is_training: '意图训练中...',
+    training_success: '意图训练成功',
+    training_fail: '意图训练失败',
+    version_not_exist: '意图版本不存在',
+    manage: {
+      add_intent: '新增意图',
+      intent_num: '共有{inum}组意图',
+      corpus_num: ' ({num}笔语料)',
+      cancel_edit_msg: '尚未保存编辑，确定要取消编辑吗？',
+      addin: '加入',
+      positive: '正例',
+      negative: '反例',
+      tooltip: {
+        name_empty: '意图名称不可为空',
+        name_duplicate: '意图名称已存在',
+      },
+      placeholder: {
+        intent_title: '输入意图名称',
+        edit_corpus: '编辑语料，Enter完成编辑',
+        add_corpus: '新增语料，Enter 加入下方列表',
+      },
+      train_button_tooltip: '机器人是依据语料来学习，每次新增语料后，必须进行意图训练以提高机器人识别正确率',
+    },
+    import: {
+      title: '导入意图',
+      choose_file: '请选择档案',
+      success: '意图导入成功',
+      fail: '意图导入失败',
+      support_format: '支援格式 .xlsx',
+      upload_file: '上传档案',
+      upload_file_undefined: '档案无法辨识',
+      upload_file_size_error: '档案大小需介于 0 ~ 2M',
+      upload_file_type_invalid: '档案格式限 .xlsx 档',
+      by_update: '新增数据',
+      by_replace: '全量替换',
+      tooltip: '选择全量替换将删除之前所有数据',
     },
   },
   pages: {
@@ -696,9 +745,14 @@ export default {
     },
     task_engine: {
       module_name: '任务引擎',
-      task_engine_scenario: '场景编辑',
-      task_engine_scenario_v3: '新场景编辑',
+      task_engine_scenario: '场景列表',
+      task_engine_scenario_v3: '新版场景列表',
       task_engine_upload: '上传转换数据',
+    },
+    intent_engine: {
+      module_name: '意图引擎',
+      intent_manage: '意图管理',
+      intent_test: '意图测试',
     },
     error: '',
   },
@@ -722,6 +776,7 @@ export default {
     status: '状态',
     edit: '编辑',
     delete: '删除',
+    remove: '移除',
     question: '问题',
     answer: '答案',
     ext_answer: '答案扩展',
@@ -737,6 +792,7 @@ export default {
     default: '默认',
     indicate: '指定',
     force_cancel: '强制取消',
+    import: '导入',
     export: '导出',
     success: '成功',
     fail: '失败',
@@ -813,6 +869,7 @@ export default {
     input_empty: '输入不可为空',
     auth_expire: '授权已失效，请重新登入',
     no_page_priv: '无法浏览此页面',
+    invalid_id: '无效的ID',
 
     import_success: '导入成功',
   },
@@ -825,6 +882,21 @@ export default {
   },
 
   management: {
+    enterprise_list: '企业列表',
+    admin_list: '系统管理人员',
+    enterprise: '企业',
+    create_enterprise: '创建企业',
+    delete_enterprise: '删除企业',
+    edit_enterprise: '编辑企业',
+    create_time: '创建时间',
+
+    enterprise_name: '企业名称',
+    enterprise_description: '企业描述',
+    module_list: '功能列表',
+
+    system_admin_list: '系统管理人员',
+    system_admin_desc: '创建企业时，必须指定一位企业管理人员',
+
     robot_group: '机器人群组',
     robots: '机器人',
     robot_list: '机器人列表',
@@ -839,9 +911,11 @@ export default {
     description: '描述',
 
     input_placeholder: '输入文字',
-    length_45_placeholder: '字数限制45内',
+    length_50_placeholder: '字数限制50内',
 
     create_group: '创建群组',
+    edit_group: '修改群组',
+    delete_group: '删除群组',
     add_robot: '加入机器人',
     input_personal_pass: '输入个人密码',
     reason_description: '原因描述',
@@ -881,13 +955,18 @@ export default {
     orig_password: '原密码',
     new_password: '新密码',
     check_new_password: '确认新密码',
-    password_format: '介于4~16字的英文字母、数字或常见符号',
+    password_format: '介于6~16字的英文字母、数字或符号，须包含大小写英文字母与数字',
+    username_format: '介于4~64字的英文字母、数字或简单符号',
     err_empty_username: 'ID 不可为空',
     err_existed_username: 'ID 已存在',
+    err_invalid_username: 'ID 格式错误',
     err_empty_email: 'Email 不可为空',
+    err_invalid_email: '不合法的 Email 格式',
+    err_invalid_phone: '不合法的电话格式',
     err_empty_display_name: '姓名不可为空',
-    err_password_length: '密码长度需介于4~16字之间',
-    err_password_invalid: '密码含不合法字元',
+    err_display_name_length: '姓名长度需介于2~50字之间',
+    err_password_length: '密码长度需介于6~16字之间',
+    err_password_invalid: '不合法的密码格式',
     err_password: '密码错误',
     err_origin_password: '原密码错误',
     err_manager_password: '管理员密码错误',
@@ -899,8 +978,11 @@ export default {
     err_role_duplicate: '角色名称已存在',
     err_robot_name_empty: '机器人名称不可为空',
     err_robot_duplicate: '机器人名称已存在',
+    err_enterprise_name_empty: '机器人名称不可为空',
+    err_enterprise_duplicate: '机器人名称已存在',
     err_group_name_empty: '群组名称不可为空',
     err_group_duplicate: '群组名称已存在',
+    err_pick_no_modules: '功能列表至少需勾选一个',
 
     go_back: '返回',
 
@@ -957,11 +1039,17 @@ export default {
         view: '指令设置查看',
         edit: '指令设置编辑',
       },
+      intent_manage: {
+        view: '意图管理查看',
+        export: '意图管理导入',
+        import: '意图管理导出',
+      },
     },
   },
   header: {
     user_info: '个人资料',
     enterprise_privilege_list: '企业权限管理',
+    back_to_system_manage: '返回系统管理',
     logout: '登出',
   },
 };

@@ -2,20 +2,22 @@
 <div id="robot-skill">
   <div class="card h-fill w-fill">
     <div class="header">
-      <div class="header-text">{{ $t('robot_setting.general_function') }}</div>
+      <div class="header-text">{{ $t('pages.robot_setting.robot_function') }}</div>
+    </div>
+    <div class="row">
       <text-button v-if="canEdit" v-on:click="setAll(true)" :button-type="allActive ? 'disable': 'default'">{{ $t("robot_setting.all_active") }}</text-button>
       <text-button v-if="canEdit" v-on:click="setAll(false)" :button-type="allDeactive ? 'disable': 'default'">{{ $t("robot_setting.all_deactive") }}</text-button>
     </div>
     <div class="skill-card-container">
       <div v-for="skill in moduleList" :key="skill.id" class="skill-card" :class="{checked: skill.active}">
-        <div class="skill-text">
-          <div class="skill-name">{{ skill.name }}</div>
-          <div class="skill-remark">{{ skill.remark }}</div>
-        </div>
         <div class="skill-switch" v-if="canEdit">
           <toggle v-model="skill.active" @change="updateSkill(skill)"/>
         </div>
         <div class="skill-switch" v-else style="cursor: default;"></div>
+        <div class="skill-text">
+          <div class="skill-name">{{ skill.name }}</div>
+          <div class="skill-remark">{{ skill.remark }}</div>
+        </div>
       </div>
     </div>
   </div>
@@ -163,6 +165,12 @@ $card-remark-color: #999999;
       margin-right: 10px;
     }
   }
+  .row {
+    flex: 0 0 auto;
+    margin: 20px;
+    margin-top: 10px;
+    margin-bottom: 0;
+  }
   .skill-card-container {
     flex: 1;
     overflow-y: auto;
@@ -176,19 +184,24 @@ $card-remark-color: #999999;
     padding: 20px;
 
     .skill-card {
-      flex: 0 0 330px;
+      flex: 0 0 calc(50% - 10px);
+      flex-basis: calc(50% - 10px);
+      min-width: 300px;
+      height: 80px;
       border-radius: 2px;
       border: solid 1px #e9e9e9;
-      padding: 14px 20px;
       margin-bottom: 10px;
       margin-right: 20px;
+      &:nth-child(2n) {
+        margin-right: 0px;
+      }
 
       display: flex;
-      justify-content: space-between;
       align-items: center;
       .skill-text {
         display: flex;
         flex-direction: column;
+        margin-left: 20px;
         .skill-name {
           font-size: $card-name-font-size;
           color: $card-name-color;
@@ -197,10 +210,21 @@ $card-remark-color: #999999;
           margin-top: 6px;
           font-size: $card-remark-font-size;
           color: $card-remark-color;
+          &::before {
+            content: '"';
+          }
+          &::after {
+            content: '"';
+          }
         }
       }
       .skill-switch {
-
+        flex: 0 0 70px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-right: 1px solid #dbdbdb;
+        height: 100%;
       }
     }
   }

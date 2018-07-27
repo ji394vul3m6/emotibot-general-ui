@@ -1,30 +1,43 @@
 <template lang="html">
-<div id="scenario-list-page" class="scenario-list-page page">
-  <div class="header-row">
-    <button class="btn-basic btn-border" @click="createNewScenario">{{$t("task_engine_v3.scenario_list_page.button_create_new_scenario")}}</button>
-    <input class="search_input border_bottom" type="text" name="key_word" 
-      :placeholder="$t('task_engine_v3.scenario_list_page.placeholder_search')"
-    >
-  </div>
-  <div class="table">
-    <div class="table-row table-row-title">
+<div id="scenario-list-page">
+  <div class="content card h-fill w-fill">
+    <div class="row title">
       {{$t("task_engine_v3.scenario_list_page.scenario_list")}}
     </div>
-    <template v-for="(scenario, index) in scenarioList">
-      <div class="table-row table-row-content clickable">
-        <div class="name-label" @click="editScenario(scenario.scenarioID)">{{scenario.scenarioName}}</div>
-        <button class="delete-button"
-          @click="deleteScenario(scenario)">
-          {{$t("general.delete")}}
-        </button>
-        <toggle-button class="toggle-button"
-          v-model="scenario.enable"
-          :labels="true"
-          :width="60"
-          :height="30"
-          :color="{checked: '#337ab7', unchecked: '#CCCCCC'}"
-          @change="switchScenario(scenario)"
-        />
+    <div class="row">
+      <div id="toolbar">
+        <div id="left-buttons">
+          <text-button button-type='primary' width='68px' height='28px' @click="createNewScenario">
+            {{$t("task_engine_v3.scenario_list_page.button_create_new_scenario")}}
+          </text-button>
+          <text-button button-type='default' width='68px' height='28px' @click="showImportPop">
+            {{$t("task_engine_v3.scenario_list_page.button_import_scenario")}}
+          </text-button>
+          <input type="file" ref="uploadInput" v-on:change="changeFile()" accept=".xlsx">
+          <input type="file" ref="uploadScenarioJSONInput" @change="changeScenarioJSONFile()" accept=".json">
+        </div>
+        <div id="right-buttons">
+          <search-input v-model="filteredKeyWord" ></search-input>
+        </div>
+      </div>
+    </div>
+    <template v-for="(scenario, index) in filteredScenarioList">
+      <div class="row" @mouseover="scenario.show = true" @mouseleave="scenario.show = false">
+        <div id="scenario-grid">
+          <div id="scenario-toggle-container">
+            <toggle v-model="scenario.enable" @change="switchScenario(scenario)" :big="false"></toggle>
+          </div>
+          <div id="scenario-content-container">
+            <div class="name-label"  @click="editScenario(scenario.scenarioID)">
+              {{scenario.scenarioName}}
+            </div>
+            <div class="delete-button">
+              <div class="icon_container" v-show="scenario.show" v-dropdown="moreOptions(scenario)">
+                <icon :size=25 icon-type="more"/>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </template>
   </div>
@@ -32,32 +45,57 @@
 </template>
 
 <script>
+import ImportScenarioPop from './ImportScenarioPop';
 import i18nUtils from '../utils/i18nUtil';
 import scenarioConvertor from '../utils/scenarioConvertor';
 import general from '../utils/general';
 import CreateScenarioPop from './CreateScenarioPop';
-import ConfirmPop from './ConfirmPop';
 import taskEngineApi from './_api/taskEngine';
-
 
 export default {
   name: 'scenario-list-page',
-  components: {
-  },
+  components: {},
   data() {
     return {
       i18n: {},
       appId: '',
       scenarioList: [],
+      filteredKeyWord: '',
     };
   },
-  computed: {},
+  computed: {
+    filteredScenarioList() {
+      return this.scenarioList.filter(
+        scenario => scenario.scenarioName.indexOf(this.filteredKeyWord) !== -1);
+    },
+  },
   watch: {},
   methods: {
+    moreOptions(scenario) {
+      const that = this;
+      return {
+        options: [{
+          text: this.i18n.general.export,
+          onclick() {
+            taskEngineApi.exportScenario(scenario.scenarioID);
+          },
+        }, {
+          text: this.i18n.general.delete,
+          onclick() {
+            that.deleteScenario(scenario);
+          },
+        }],
+        alignLeft: true,
+      };
+    },
     listAllScenarios() {
       taskEngineApi.listScenarios(this.appId).then((data) => {
         if (typeof (data) === 'object' && 'msg' in data) {
-          this.scenarioList = data.msg.filter(scenario => scenario.version === '2.0');
+          this.scenarioList = data.msg.filter(scenario => scenario.version === '2.0')
+                                      .map((scenario) => {
+                                        scenario.show = false;
+                                        return scenario;
+                                      });
         } else {
           general.popErrorWindow(this, 'listAllScenarios error',
             `unexpected return value from listScenarios API: ${data}`);
@@ -67,55 +105,46 @@ export default {
       });
     },
     createNewScenario() {
-      const options = {
+      const that = this;
+      that.$pop({
+        title: this.i18n.task_engine_v3.create_scenario_pop.label_create_new_scenario,
         component: CreateScenarioPop,
-        buttons: ['ok', 'cancel'],
         validate: true,
+        ok_msg: that.$t('general.add'),
         data: {
           scenarioName: '',
         },
-        ok_msg: this.$t('general.add'),
-        cancel_msg: this.$t('general.cancel'),
         callback: {
           ok: (scenarioName) => {
-            taskEngineApi.createScenario(this.appId, scenarioName).then((data) => {
+            taskEngineApi.createScenario(that.appId, scenarioName).then((data) => {
               if ('template' in data && 'metadata' in data.template) {
                 const metadata = data.template.metadata;
                 const scenarioId = metadata.scenario_id;
-                this.updateInitialScenario(metadata).then(() => {
+                const scenario = scenarioConvertor.initialScenario(metadata);
+                that.saveScenario(scenarioId, scenario).then(() => {
                   const path = general.composePath(`scenario/${scenarioId}`);
-                  this.$router.replace(path);
+                  that.$router.replace(path);
                 });
               } else {
-                general.popErrorWindow(this, this.i18n.task_engine_v3.error_msg.create_new_scenario_failed, '');
+                general.popErrorWindow(that, that.i18n.task_engine_v3.error_msg.create_new_scenario_failed, '');
               }
             }, (err) => {
-              general.popErrorWindow(this, 'createScenario error', err.message);
+              general.popErrorWindow(that, 'createScenario error', err.message);
             });
           },
         },
-        customPopContentStyle: {
-          width: '40%',
-          height: '30%',
-          'min-width': '500px',
-          'min-height': '275px',
-        },
-      };
-      this.$root.$emit('showWindow', options);
+      });
     },
-    updateInitialScenario(metadata) {
-      const scenario = scenarioConvertor.initialScenario(metadata);
-      const editingContent = scenario.editingContent;
-      const editingLayout = scenario.editingLayout;
+    saveScenario(scenarioId, scenario) {
       return taskEngineApi.saveScenario(
         this.appId,
-        metadata.scenario_id,
-        JSON.stringify(editingContent),
-        JSON.stringify(editingLayout),
+        scenarioId,
+        JSON.stringify(scenario.editingContent),
+        JSON.stringify(scenario.editingLayout),
       ).then(() => {
-        console.log('场景已更新');
+        this.$notify({ text: this.$t('error_msg.save_success') });
       }, (err) => {
-        general.popErrorWindow(this, 'saveScenario error', err.message);
+        this.$notifyFail(`${this.$t('error_msg.save_fail')}:${err.message}`);
       });
     },
     editScenario(scenarioId) {
@@ -123,40 +152,108 @@ export default {
       this.$router.replace(path);
     },
     deleteScenario(scenario) {
-      const options = {
-        component: ConfirmPop,
-        buttons: ['ok', 'cancel'],
-        validate: false,
+      const that = this;
+      that.$popCheck({
         data: {
-          msg: this.i18n.task_engine_v3.scenario_list_page.ask_delete_confirm,
-          info: scenario.scenarioName,
+          msg: that.$t(
+            'task_engine_v3.scenario_list_page.ask_delete_confirm',
+            { scenario: scenario.scenarioName },
+          ),
         },
-        ok_msg: this.$t('general.delete'),
-        cancel_msg: this.$t('general.cancel'),
         callback: {
-          ok: () => {
+          ok() {
             taskEngineApi.deleteScenario(scenario.scenarioID).then((data) => {
               if ('msg' in data && data.msg === 'Update success') {
-                this.listAllScenarios();
+                that.listAllScenarios();
               } else {
-                general.popErrorWindow(this, 'deleteScenario error', 'failed to delete scenario.');
+                general.popErrorWindow(that, 'deleteScenario error', 'failed to delete scenario.');
               }
             });
           },
         },
-        customPopContentStyle: {
-          width: '30%',
-          height: '20%',
-          'min-width': '400px',
-          'min-height': '200px',
-        },
-      };
-      this.$root.$emit('showWindow', options);
+      });
     },
     switchScenario(scenario) {
       taskEngineApi.switchScenario(this.appId, scenario.scenarioID, scenario.enable).then(() => {
       }, (err) => {
         general.popErrorWindow(this, 'switchScenario error', err.message);
+      });
+    },
+    showImportPop() {
+      const that = this;
+      that.$pop({
+        title: that.$t('task_engine_v3.import_scenario_pop.label_title'),
+        component: ImportScenarioPop,
+        disable_ok: true,
+        validate: true,
+        data: {
+          skillName: '',
+        },
+        callback: {
+          ok: (retData) => {
+            const file = retData.file;
+            const importFormat = retData.importFormat;
+            if (importFormat === 'json') {
+              that.uploadScenarioJSON(that.appId, file).then(() => {
+                that.listAllScenarios();
+              });
+            } else if (importFormat === 'xlsx') {
+              const fileName = file.name;
+              const scenarioName = fileName.substring(0, fileName.lastIndexOf('.xlsx'));
+              taskEngineApi.createScenario(that.appId, scenarioName).then((data) => {
+                if ('template' in data && 'metadata' in data.template) {
+                  const metadata = data.template.metadata;
+                  const scenarioId = metadata.scenario_id;
+                  const initialScenario = scenarioConvertor.initialScenario(metadata);
+                  that.uploadSpreadSheet(that.appId, scenarioId, initialScenario, file).then(() => {
+                    const path = general.composePath(`scenario/${scenarioId}`);
+                    that.$router.replace(path);
+                  });
+                } else {
+                  that.$notifyFail(that.$t('task_engine_v3.error_msg.create_new_scenario_failed'));
+                }
+              }, (err) => {
+                that.$notifyFail(`${that.$t('task_engine_v3.error_msg.create_new_scenario_failed')}:${err.message}`);
+              });
+            }
+          },
+        },
+      });
+    },
+    uploadScenarioJSON(appId, file) {
+      const that = this;
+      return taskEngineApi.uploadScenarioJSON(
+        appId,
+        file,
+      ).then((resp) => {
+        if (resp.return === 0) {
+          that.$notify({ text: that.$t('error_msg.success') });
+          that.$refs.uploadInput.value = '';
+        } else {
+          that.$notifyFail(`${that.$t('error_msg.save_fail')}:${resp.error}`);
+        }
+      }, (err) => {
+        that.$refs.uploadInput.value = '';
+        that.$notifyFail(`${that.$t('error_msg.save_fail')}:${err.message}`);
+      });
+    },
+    uploadSpreadSheet(appId, scenarioId, scenario, file) {
+      const that = this;
+      return taskEngineApi.uploadSpreadsheet(
+        appId,
+        scenarioId,
+        JSON.stringify(scenario),
+        file,
+      ).then((resp) => {
+        if (resp.return === 0) {
+          that.$notify({ text: that.$t('error_msg.success') });
+          that.$refs.uploadInput.value = '';
+        } else {
+          that.$notifyFail(`${that.$t('error_msg.save_fail')}:${resp.error}`);
+        }
+      }, (err) => {
+        that.$refs.uploadInput.value = '';
+        that.$notifyFail(`${that.$t('error_msg.save_fail')}:${err.message}`);
       });
     },
   },
@@ -169,75 +266,97 @@ export default {
 };
 </script>
 
-<style lang="scss">
-.scenario-list-page{
-  flex: 1 1 0;
-  // display: flex;
-  // flex-direction: column;
-  .btn-basic{
-    font-size: 20px;
-  }
+<style lang="scss" scoped>
+@import 'styles/variable.scss';
+$row-height: $default-line-height;
+@import "../scss/teVariable.scss";
 
-  .clickable{
-    cursor: pointer; 
-  }
-  .header-row{
-    display:flex;
-    flex-direction: row;
-    justify-content: space-between;
-    margin-top: 20px;
-    button{
-      width: 150px;
-    }
-    .search_input{
-      width: 200px;
-      height: 40px;
-      font-size: 20px;
-    }
-    .border_bottom{
-      border: 0;
-      outline: 0;
-      border-bottom: 1px solid black;
-    }
-  }
-  .table{
-    display:flex;
+#scenario-list-page{
+  height: 100%;
+  .content {
+    display: flex;
     flex-direction: column;
-    margin-top: 20px;
-    .table-row{
-      display:flex;
-      flex-direction: row;
-      align-items:center;
-      padding: 10px;
-      border: 1px solid #e4eaec;
-      height: 50px;
-      line-height: 50px;
-      font-size: 20px;
-      &.table-row-title{
-        background-color:#e4eaec;
+    .row {
+      flex: 0 0 auto;
+      padding-left: 20px;
+
+      &.title {
+        @include font-16px();
+        color: $color-font-active;
+        flex: 0 0 60px;
+        border-bottom: 1px solid $color-borderline;
+        display: flex;
+        align-items: center;
       }
-      &.table-row-content{
-        &:hover{
-          background: rgba(118,131,143,.1);
+      &:not(.title) {
+        margin-top: 20px;
+      }
+
+      .text-button {
+        margin-right: 10px;
+      }
+      input[type=file] {
+        visibility: hidden;
+      }
+      .file-selector {
+        & ~ input {
+          display: none;
         }
       }
-      .name-label{
-        flex: 1 1 auto;
+
+      #toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-right: 20px;
       }
-      .delete-button{
-        flex: 0 0 auto;
-        font-size: 16px;
-        width: 60px;
-        height: 30px;
-        cursor: pointer; 
-        &:hover{
-          background: rgba(118,131,143,.1);
+
+      #scenario-grid {
+        display: flex;
+        margin-right: 20px;
+        height: 82px;
+        border-radius: 4px;
+        border: solid 1px $color-borderline;
+        color: $color-font-active;
+
+        &:hover {
+          box-shadow: 0 4px 9px 0 rgba(115, 115, 115, 0.2), 0 5px 8px 0 rgba(228, 228, 228, 0.5);
         }
-      }
-      .toggle-button{
-        flex: 0 0 auto;
-        font-size: 16px;
-        margin-left: 10px;
+
+        #scenario-toggle-container {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 68px;
+          border-right: solid 1px $color-borderline;
+        }
+        #scenario-content-container {
+          flex: 1 1 auto;
+          display: flex;
+          align-items: center;
+          @include font-14px();
+          .name-label {
+            display: flex;
+            align-items: center;
+            flex: 1 1 auto;
+            height: 100%;
+            padding-left: 20px;
+            cursor: pointer;
+          }
+          .delete-button {
+            flex: 0 0 68px;
+            .icon_container{
+              position: relative;
+              width: 25px;
+              height: 25px;
+              border-radius: 25px;
+              cursor: pointer;
+              &:hover{
+                background-color: #f7f7f7;
+              }
+            }
+          }
+        }
       }
     }
   }

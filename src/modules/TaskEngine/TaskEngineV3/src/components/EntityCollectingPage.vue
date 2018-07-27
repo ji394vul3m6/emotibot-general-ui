@@ -1,59 +1,106 @@
 <template lang="html">
 <div id="entity-collecting-page" class="page entity-collecting-page">
-  <div class="title-container">
-    <div class="title">{{$t("task_engine_v3.entity_collecting_page.title")}}</div>
-    <div class="title-description">{{$t("task_engine_v3.entity_collecting_page.description")}}</div>
+  <div class="tool-box">
+    <div class="row">
+      <div class="title-container">
+        <div class="title">{{$t("task_engine_v3.entity_collecting_page.title")}}</div>
+        <div class="tooltip_container" v-tooltip="{ msg: $t('task_engine_v3.entity_collecting_page.title_description')}">
+          <icon icon-type="info" :enableHover="true" :size=20 />
+        </div>
+      </div>
+      <div class="advanced-config" v-dropdown="advancedConfigOptions">
+        <text-button iconType="header_dropdown_gray" width="100px">
+          {{$t("task_engine_v3.entity_collecting_page.advanced_config")}}
+        </text-button>
+      </div>
+    </div>
+    <div class="row">
+      <text-button button-type='primary' width='100px' height='28px' @click="addNewEntityCollector">
+        {{$t("task_engine_v3.entity_collecting_page.add_new_entity_collector")}}
+      </text-button>
+    </div>
   </div>
-  <div class="hr"><hr/></div>
-  <div class="entity-collector-container">
-    <div class="order_column">{{$t("task_engine_v3.entity_collecting_page.order")}}</div>
-    <div class="entity_name_column">{{$t("task_engine_v3.entity_collecting_page.entity_name")}}</div>
-    <div class="entity_category_column">{{$t("task_engine_v3.entity_collecting_page.entity_category")}}</div>
-    <div class="entity_type_column">{{$t("task_engine_v3.entity_collecting_page.entity_type")}}</div>
-    <div class="prompt_column">{{$t("task_engine_v3.entity_collecting_page.prompt")}}</div>
+  <div class="entity-collector-header-container">
+    <div class="entity-collector-container">
+      <div class="order_column">
+        {{$t("task_engine_v3.entity_collecting_page.order")}}
+        <div class="tooltip_container" v-tooltip="{ msg: $t('task_engine_v3.entity_collecting_page.order_description')}">
+          <icon icon-type="info" :enableHover="true" :size=20 />
+        </div>
+      </div>
+      <div class="required_column">
+        {{$t("task_engine_v3.entity_collecting_page.required")}}
+        <div class="tooltip_container" v-tooltip="{ msg: $t('task_engine_v3.entity_collecting_page.required_description')}">
+          <icon icon-type="info" :enableHover="true" :size=20 />
+        </div>
+      </div>
+      <div class="entity_name_column">
+        {{$t("task_engine_v3.entity_collecting_page.entity_name")}}
+        <div class="tooltip_container" v-tooltip="{ msg: $t('task_engine_v3.entity_collecting_page.entity_name_description')}">
+          <icon icon-type="info" :enableHover="true" :size=20 />
+        </div>
+      </div>
+      <div class="entity_type_column">
+        {{$t("task_engine_v3.entity_collecting_page.entity_type")}}
+        <div class="tooltip_container" v-tooltip="{ msg: $t('task_engine_v3.entity_collecting_page.entity_type_description')}">
+          <icon icon-type="info" :enableHover="true" :size=20 />
+        </div>
+      </div>
+      <div class="prompt_column">
+        {{$t("task_engine_v3.entity_collecting_page.prompt")}}
+        <div class="tooltip_container" v-tooltip="{ msg: $t('task_engine_v3.entity_collecting_page.prompt_description')}">
+          <icon icon-type="info" :enableHover="true" :size=20 />
+        </div>
+      </div>
+      <div class="retry_times_column">
+        {{$t("task_engine_v3.entity_collecting_page.retry_times")}}
+        <div class="tooltip_container" v-tooltip="{ msg: $t('task_engine_v3.entity_collecting_page.retry_times_description')}">
+          <icon icon-type="info" :enableHover="true" :size=20 />
+        </div>
+      </div>
+      <div class="more_setting_column"></div>
+    </div>
   </div>
-  <div v-for="(entityCollector, index) in entityCollectorList" :key="entityCollector.id">
-    <entity-collector
-      :order="getOrder(index, entityCollectorList.length)"
-      :initialEntityCollector="entityCollector"
-      :initialCategoryToNerTypeMap="categoryToNerTypeMap"
-      @deleteEntityCollectorButtonClick="deleteEntityCollector(index)"
-      @moveUp="moveUp(index)"
-      @moveDown="moveDown(index)"
-      @updateData="updateData(index, $event)"
-      @addCustomNer="addCustomNer"
-      @deleteCustomNer="deleteCustomNer"
-    ></entity-collector>
+  <div class="entity-collector-list-container">
+    <draggable v-model="entityCollectorList" :options="{ghostClass:'ghost'}" @start="drag=true" @end="drag=false">
+      <div class="entity-collector-row" v-for="(entityCollector, index) in entityCollectorList" :key="entityCollector.id">
+        <entity-collector
+          :order="index"
+          :initialEntityCollector="entityCollector"
+          :initialCategoryToNerTypeMap="categoryToNerTypeMap"
+          @deleteEntityCollectorButtonClick="deleteEntityCollector(index)"
+          @updateData="updateData(index, $event)"
+          @addCustomNer="addCustomNer"
+          @deleteCustomNer="deleteCustomNer"
+        ></entity-collector>
+      </div>
+    </draggable>
   </div>
-  <button class="btn-basic add-new-entity-button"
-      @click="addNewEntityCollector"
-    >{{$t("task_engine_v3.entity_collecting_page.add_new_entity_collector")}}</button>
-  <div class="bottom-container">
-    <button class="btn-basic edit-entity-relation-button"
-        @click="editEntityRelation"
-      >{{$t("task_engine_v3.entity_collecting_page.edit_entity_relation")}}</button>
-    <button class="btn-basic edit-sentence-replacement-button"
-        @click="editSentenceReplacement"
-      >{{$t("task_engine_v3.entity_collecting_page.edit_sentence_replacement")}}</button>
-    <button class="btn-basic edit-tde-setting-button"
-        @click="editTDESetting"
-      >{{$t("task_engine_v3.entity_collecting_page.edit_tde_setting")}}</button>
-  </div>
+  <!--
+  <button class="btn-basic edit-entity-relation-button"
+      @click="editEntityRelation"
+    >{{$t("task_engine_v3.entity_collecting_page.edit_entity_relation")}}</button>
+  -->
 </div>
 </template>
 
 <script>
+import draggable from 'vuedraggable';
+import DropdownMenu from '@/components/basic/DropdownMenu';
 import EntityCollector from './EntityCollector';
 import EntityRelationEditPop from './EntityRelationEditPop';
 import SentenceReplacementEditorPop from './SentenceReplacementEditorPop';
 import TDESettingEditorPop from './TDESettingEditorPop';
+import RegisterJSONEditorPop from './RegisterJSONEditorPop';
 import i18nUtils from '../utils/i18nUtil';
 import general from '../utils/general';
 
 export default {
   name: 'entity-collecting-page',
   components: {
+    draggable,
     'entity-collector': EntityCollector,
+    'dropdown-menu': DropdownMenu,
   },
   props: {
     initialEntityCollectorList: {
@@ -76,6 +123,10 @@ export default {
       type: Object,
       required: true,
     },
+    initialRegisterJSON: {
+      type: Object,
+      required: true,
+    },
   },
   data() {
     return {
@@ -89,6 +140,8 @@ export default {
       },
       re_parsers: [],
       tde_setting: {},
+      register_json: {},
+      advancedConfigOptions: {},
     };
   },
   computed: {},
@@ -134,6 +187,12 @@ export default {
           },
           {
             entityCategory: '通用实体类别',
+            entityType: '时间日期(粒度-天)(未来时间)',
+            sourceType: 'system',
+            slotType: 'time-day-future',
+          },
+          {
+            entityCategory: '通用实体类别',
             entityType: '整数',
             sourceType: 'system',
             slotType: 'integer',
@@ -152,15 +211,21 @@ export default {
           },
           {
             entityCategory: '通用实体类别',
-            entityType: '电子邮件',
+            entityType: '来电人姓氏',
             sourceType: 'system',
-            slotType: 'email',
+            slotType: 'your-last-name',
           },
           {
             entityCategory: '通用实体类别',
-            entityType: '大陆固定电话号码',
+            entityType: '联络人姓氏',
             sourceType: 'system',
-            slotType: 'telephone-number',
+            slotType: 'his-last-name',
+          },
+          {
+            entityCategory: '通用实体类别',
+            entityType: '电子邮件',
+            sourceType: 'system',
+            slotType: 'email',
           },
           {
             entityCategory: '通用实体类别',
@@ -249,121 +314,95 @@ export default {
       this.entityCollectorList[index] = JSON.parse(JSON.stringify(newEntityCollector));
       this.$emit('update', this.entityCollectorList);
     },
-    moveUp(index) {
-      const tmp = this.entityCollectorList[index - 1];
-      this.entityCollectorList[index - 1] = this.entityCollectorList[index];
-      this.entityCollectorList[index] = tmp;
-      this.$nextTick(() => {
-        this.$forceUpdate();
-      });
-    },
-    moveDown(index) {
-      const tmp = this.entityCollectorList[index + 1];
-      this.entityCollectorList[index + 1] = this.entityCollectorList[index];
-      this.entityCollectorList[index] = tmp;
-      this.$nextTick(() => {
-        this.$forceUpdate();
-      });
-    },
-    getOrder(index, length) {
-      if (index === 0 && index === length - 1) {
-        return 'single';
-      } else if (index === 0) {
-        return 'start';
-      } else if (index === length - 1) {
-        return 'end';
-      }
-      return 'mid';
-    },
     editEntityRelation() {
       const customEntityCollectorList = this.entityCollectorList.filter(collector => collector.ner.sourceType === 'custom');
       if (customEntityCollectorList.length < 2) {
         general.popErrorWindow(this,
           this.i18n.task_engine_v3.error_msg.custom_entity_list_length_must_greater_than_two,
           '',
-          '30%',
-          '10%',
         );
       } else {
-        const options = {
+        const that = this;
+        that.$pop({
+          title: '',
           component: EntityRelationEditPop,
-          buttons: ['ok', 'cancel'],
           validate: true,
-          customPopContentStyle: {
-            width: '70%',
-            height: '70%',
-          },
+          ok_msg: that.$t('general.add'),
           data: {
             customEntityCollectorList,
-            relatedEntityCollectorList: this.relatedEntities.relatedEntityCollectorList,
-            relatedEntityMatrix: this.relatedEntities.relatedEntityMatrix,
+            relatedEntityCollectorList: that.relatedEntities.relatedEntityCollectorList,
+            relatedEntityMatrix: that.relatedEntities.relatedEntityMatrix,
           },
           callback: {
             ok: (rtnObj) => {
-              this.relatedEntities.relatedEntityCollectorList = rtnObj.relatedEntityCollectorList;
-              this.relatedEntities.relatedEntityMatrix = rtnObj.relatedEntityMatrix;
-              this.$emit('updateRelatedEntities', this.relatedEntities);
+              that.relatedEntities.relatedEntityCollectorList = rtnObj.relatedEntityCollectorList;
+              that.relatedEntities.relatedEntityMatrix = rtnObj.relatedEntityMatrix;
+              that.$emit('updateRelatedEntities', that.relatedEntities);
             },
           },
-        };
-        this.$root.$emit('showWindow', options);
+        });
       }
     },
     editSentenceReplacement() {
-      const options = {
+      const that = this;
+      that.$pop({
+        title: this.i18n.task_engine_v3.sentence_replacement_editor_pop.title,
         component: SentenceReplacementEditorPop,
-        buttons: ['ok', 'cancel'],
         validate: true,
-        customPopContentStyle: {
-          width: '70%',
-          height: '70%',
-        },
         data: {
-          re_parsers: this.re_parsers,
+          re_parsers: that.re_parsers,
         },
         callback: {
           ok: (reParsers) => {
-            this.$emit('updateREParsers', reParsers);
-            this.re_parsers = reParsers;
+            that.$emit('updateREParsers', reParsers);
+            that.re_parsers = reParsers;
           },
         },
-      };
-      this.$root.$emit('showWindow', options);
+      });
     },
     editTDESetting() {
-      const options = {
+      const that = this;
+      that.$pop({
+        title: this.i18n.task_engine_v3.tde_setting_editor_pop.title,
         component: TDESettingEditorPop,
-        buttons: ['ok', 'cancel'],
         validate: true,
-        customPopContentStyle: {
-          width: '70%',
-          height: '70%',
-        },
         data: {
-          tde_setting: this.tde_setting,
+          tde_setting: that.tde_setting,
         },
         callback: {
           ok: (tdeSetting) => {
-            this.$emit('updateTDESetting', tdeSetting);
-            this.tde_setting = tdeSetting;
+            that.$emit('updateTDESetting', tdeSetting);
+            that.tde_setting = tdeSetting;
           },
         },
-      };
-      this.$root.$emit('showWindow', options);
+      });
+    },
+    editRegisterJSON() {
+      const that = this;
+      that.$pop({
+        title: this.i18n.task_engine_v3.register_json_editor_pop.title,
+        component: RegisterJSONEditorPop,
+        validate: true,
+        data: {
+          register_json: that.register_json,
+        },
+        callback: {
+          ok: (registerJSON) => {
+            that.$emit('updateRegisterJSON', registerJSON);
+            that.register_json = registerJSON;
+          },
+        },
+      });
     },
     addNewEntityCollector() {
+      const firstCategory = Object.keys(this.categoryToNerTypeMap)[0];
+      const firstNer = this.categoryToNerTypeMap[firstCategory][0];
       this.entityCollectorList.push({
         id: this.$uuid.v1(),
         entityName: null,
-        entityCategory: '通用实体类别',
-        ner: {
-          entityCategory: '通用实体类别',
-          entityType: '时间日期',
-          sourceType: 'system',
-          slotType: 'time',
-        },
+        entityCategory: firstCategory,
+        ner: firstNer,
         prompt: null,
-        must_retry: true,
         retry_num: 3,
         required: true,
       });
@@ -377,13 +416,42 @@ export default {
       this.relatedEntities = JSON.parse(JSON.stringify(this.initialRelatedEntities));
       this.re_parsers = JSON.parse(JSON.stringify(this.initialREParsers));
       this.tde_setting = JSON.parse(JSON.stringify(this.initialTDESetting));
+      this.register_json = JSON.parse(JSON.stringify(this.initialRegisterJSON));
       this.updateCategoryToNerTypeMap(this.idToNerMap);
     },
+    printSlotType() {
+      // print ner slotType list for use of copying and pasteing to
+      // SlotType list in emotigo spreadsheet upload
+      let out = '';
+      Object.keys(this.categoryToNerTypeMap).forEach((category) => {
+        const nerList = this.categoryToNerTypeMap[category];
+        nerList.forEach((ner) => {
+          out += `"${ner.entityType}": "${ner.slotType}",\n`;
+        });
+      });
+      console.log(out);
+    },
   },
-  beforeMount() {},
-  mounted() {
+  beforeMount() {
     this.i18n = i18nUtils.getLocaleMsgs(this.$i18n);
+    this.advancedConfigOptions = {
+      options: [{
+        text: this.i18n.task_engine_v3.entity_collecting_page.edit_sentence_replacement,
+        onclick: this.editSentenceReplacement,
+      }, {
+        text: this.i18n.task_engine_v3.entity_collecting_page.edit_tde_setting,
+        onclick: this.editTDESetting,
+      }, {
+        text: this.i18n.task_engine_v3.entity_collecting_page.edit_register_json,
+        onclick: this.editRegisterJSON,
+      }],
+      alignLeft: true,
+    };
     this.$on('rerender', this.rerender);
+    this.rerender();
+    // this.printSlotType();
+  },
+  mounted() {
   },
   activated() {
     this.rerender();
@@ -391,127 +459,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
-$text-color: #5E5E5E;
-$text-hightlight-color: #004D7F;
-
-.entity-collecting-page{
-  flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
-  color: $text-color;
-  overflow: auto;
-  .clickable{
-    cursor: pointer; 
-  }
-  .title-container{
-    flex: 0 0 auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: $text-hightlight-color;
-    padding: 10px;
-    .title{
-      font-size: 30px;
-      margin: 10px;
-      width: 100%;
-      min-width: 400px;
-      text-align: center;
-    }
-    .title-description{
-      font-size: 14px;
-      margin: 10px;
-      width: 50%;
-      min-width: 500px;
-      text-align: center;
-    }
-  }
-  .hr{
-    flex: 0 0 auto;
-    hr {
-      border:1px solid $text-color;
-    }
-  }
-  .entity-collector-container{
-    flex: 0 0 auto;
-    border: 1px solid #e4eaec;
-    line-height: 50px;
-    min-width: 936px;
-    width: 100%;
-    display:flex;
-    flex-direction: row;
-    a{
-      text-decoration: none;
-    }
-    .order_column{
-      flex:0.2;
-      display:flex;
-      flex-direction: row;
-    }
-    .entity_name_column{
-      flex:1;
-      display:flex;
-      flex-direction: row;
-    }
-    .entity_category_column{
-      flex:1;
-      display:flex;
-      flex-direction: row;
-      align-items: center;
-      .entity_category_select{
-        min-width: 150px;
-      }
-    }
-    .entity_type_column{
-      flex:2;
-      display:flex;
-      flex-direction: row;
-      align-items: center;
-      .entity_type_select{
-        min-width: 150px;
-      }
-    }
-    .prompt_column{
-      flex:1;
-      display:flex;
-      flex-direction: row;
-    }
-    input{
-      font-size: 16px;
-    }
-
-    .full_width{
-      width:100%;
-    }
-    .no_border{
-      border:none;
-    }
-    .order{
-      display:flex;
-    }
-    .delete-entity-collector-button{
-      width: 10px;
-      display:inline-block;
-    }
-  }
-  .add-new-entity-button{
-    flex: 0 0 auto;
-  }
-  .bottom-container{
-    flex: 0 0 auto;
-    margin-top: auto;
-    display:flex;
-    flex-direction: row;
-    .edit-entity-relation-button{
-      width: 300px;
-    }
-    .edit-sentence-replacement-button{
-      width: 300px;
-    }
-    .edit-tde-setting-button{
-      width: 300px;
-    }
-  }
-}
+<style lang="scss" scoped>
+@import "../scss/teVariable.scss";
+@import "../scss/entityCollectingPage.scss";
 </style>

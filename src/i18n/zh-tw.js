@@ -34,6 +34,10 @@ export default {
       delete: '刪除',
       export: '導出',
       import: '導入',
+      login: '登入',
+      publish: '發布',
+      active: '啟動',
+      deactive: '關閉',
     },
 
     modules: {
@@ -199,7 +203,11 @@ export default {
     chat_info_desc: '我的名字叫 {name}，你可以在下面設置我的形象喔',
     modify_qas: '修改語料',
     input_qa_placeholder: '請輸入答案',
-    input_qa_ext_placeholder: '請輸入答案擴展',
+    input_qa_ext_placeholder: '新增擴展答案',
+    input_q_ext_placeholder: '新增相似問題',
+    answer_empty: '無',
+    similar_question: '相似問題',
+    extend_answer: '擴展答案',
 
     weather: '天氣模塊',
     computation: '數學計算模塊',
@@ -598,7 +606,7 @@ export default {
   task_engine: {
     download_template: '下載轉換數據模版',
     task_engine_upload: '上傳轉換數據',
-    import_button_hint: '支援副檔名：.xlsx',
+    import_button_hint: '支援副檔名：.csv',
   },
 
   learning: {
@@ -813,6 +821,7 @@ export default {
     input_empty: '輸入不可爲空',
     auth_expire: '授權已失效，請重新登入',
     no_page_priv: '無法瀏覽此頁面',
+    invalid_id: '無效的ID',
 
     import_success: '導入成功',
   },
@@ -825,23 +834,40 @@ export default {
   },
 
   management: {
-    robot_group: '機器人羣組',
+    enterprise_list: '企業列表',
+    admin_list: '系統管理人員',
+    enterprise: '企業',
+    create_enterprise: '創建企業',
+    delete_enterprise: '刪除企業',
+    edit_enterprise: '編輯企業',
+    create_time: '創建時間',
+
+    enterprise_name: '企業名稱',
+    enterprise_description: '企業描述',
+    module_list: '功能列表',
+
+    system_admin_list: '系統管理人員',
+    system_admin_desc: '創建企業時，必須指定一位企業管理人員',
+
+    robot_group: '機器人群組',
     robots: '機器人',
     robot_list: '機器人列表',
 
     create_robot: '創建機器人',
     delete_robot: '刪除機器人',
     edit_robot: '編輯機器人',
-    group_manage: '機器人羣組管理',
+    group_manage: '機器人群組管理',
 
-    group_name: '羣組名稱',
+    group_name: '群組名稱',
     robot_name: '機器人名字',
     description: '描述',
 
     input_placeholder: '輸入文字',
-    length_45_placeholder: '字數限制45內',
+    length_50_placeholder: '字數限制50內',
 
-    create_group: '創建羣組',
+    create_group: '創建群組',
+    edit_group: '修改群組',
+    delete_group: '刪除群組',
     add_robot: '加入機器人',
     input_personal_pass: '輸入個人密碼',
     reason_description: '原因描述',
@@ -881,24 +907,32 @@ export default {
     orig_password: '原密碼',
     new_password: '新密碼',
     check_new_password: '確認新密碼',
-
+    password_format: '介於4~16字的英文字母、數字或常見符號',
+    username_format: '介於4~64字的英文字母、數字或簡單符號',
     err_empty_username: 'ID 不可爲空',
     err_existed_username: 'ID 已存在',
+    err_invalid_username: 'ID 格式錯誤',
     err_empty_email: 'Email 不可爲空',
+    err_invalid_email: '不合法的 Email 格式',
     err_empty_display_name: '姓名不可爲空',
-    err_empty_password: '密碼不可爲空',
+    err_password_length: '密碼長度需介於4~16字之間',
+    err_password_invalid: '密碼含不合法字元',
     err_password: '密碼錯誤',
     err_origin_password: '原密碼錯誤',
+    err_manager_password: '管理員密碼錯誤',
     err_manager_empty_password: '管理員密碼不可爲空',
     err_origin_empty_password: '原密碼不可爲空',
     err_invalid_check_password: '兩次密碼輸入不同',
     update_password_success: '更新密碼成功',
-
+    err_update_password_fail: '更新密碼失敗',
     err_role_duplicate: '角色名稱已存在',
     err_robot_name_empty: '機器人名稱不可爲空',
     err_robot_duplicate: '機器人名稱已存在',
-    err_group_name_empty: '羣組名稱不可爲空',
-    err_group_duplicate: '羣組名稱已存在',
+    err_enterprise_name_empty: '機器人名稱不可爲空',
+    err_enterprise_duplicate: '機器人名稱已存在',
+    err_group_name_empty: '群組名稱不可爲空',
+    err_group_duplicate: '群組名稱已存在',
+    err_pick_no_modules: '功能列表至少需勾選一個',
 
     go_back: '返回',
 
@@ -955,11 +989,17 @@ export default {
         view: '指令設置查看',
         edit: '指令設置編輯',
       },
+      intent_manage: {
+        view: '意圖管理查看',
+        export: '意圖管理導入',
+        import: '意圖管理導出',
+      },
     },
   },
   header: {
     user_info: '個人資料',
     enterprise_privilege_list: '企業權限管理',
+    back_to_system_manage: '返回系統管理',
     logout: '登出',
   },
 };

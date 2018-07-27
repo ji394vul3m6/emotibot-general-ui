@@ -28,7 +28,7 @@ export const mutations = {
 
     const keys = Object.keys(s.enterpriseList);
     // If only one enterprise, it is normal user or enterprise admin
-    if (keys.length === 1) {
+    if (keys.length === 1 && s.userInfo.type >= 1) {
       s.enterpriseID = keys[0];
     }
   },
