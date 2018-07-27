@@ -914,6 +914,8 @@ export default {
     length_50_placeholder: '字数限制50内',
 
     create_group: '创建群组',
+    edit_group: '修改群组',
+    delete_group: '删除群组',
     add_robot: '加入机器人',
     input_personal_pass: '输入个人密码',
     reason_description: '原因描述',
