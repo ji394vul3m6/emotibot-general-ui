@@ -3,8 +3,8 @@ const STATS_QUESTION_URI = '/stats/questions';
 // const STATS_VISIT2_URI = '/stats/visit2';
 // const STATS_QUESTION2_URI = '/stats/questions2';
 
-const STATS_VISIT2_URI = '/stats/v1/visit';
-const STATS_QUESTION2_URI = '/stats/v1/question';
+const STATS_VISIT2_URI = '/api/v1/stats/visit';
+const STATS_QUESTION2_URI = '/api/v1/stats/question';
 
 const STATS_AUDIT_PATH = '/api/v1/statistic/audit';
 const STATS_RECORD_LIST = '/stats/record';
