@@ -1,5 +1,5 @@
 <template>
-  <div class="dropdown-menu-container" :style="style">
+  <div v-if="show" class="dropdown-menu-container" :style="style">
     <div class="dropdown-menu">
       <div v-for="(option, idx) in options" :key="idx" class="menu-option" @click.stop="clickOption($event, option.onclick)">
         {{ option.text }}
@@ -46,7 +46,6 @@ export default {
       return {
         top: this.show ? `${this.showY}px` : 0,
         left: this.show ? `${this.showX}px` : 0,
-        position: this.show ? 'absolute' : 'fixed',
         visibility: this.show ? 'visible' : 'hidden',
         width: this.width,
       };
@@ -62,19 +61,21 @@ export default {
   mounted() {
     const that = this;
     that.$on('show', (pos) => {
-      if (pos) {
-        that.x = pos.x;
-        that.y = pos.y;
-      }
-      if (that.alignLeft) {
-        that.showX = (that.x + 10) - that.$el.clientWidth;
-        that.showY = that.y;
-      } else {
-        that.showX = -10;
-        // we keep 10px padding to show box-shadow, shift left for 10px to pretty align elems
-        that.showY = that.y;
-      }
       that.show = true;
+      that.$nextTick(() => {
+        if (pos) {
+          that.x = pos.x;
+          that.y = pos.y;
+        }
+        if (that.alignLeft) {
+          that.showX = (that.x + 10) - that.$el.clientWidth;
+          that.showY = that.y;
+        } else {
+          that.showX = -10;
+          // we keep 10px padding to show box-shadow, shift left for 10px to pretty align elems
+          that.showY = that.y;
+        }
+      });
 
       that.clickOutsideListener = (e) => {
         if (!that.$el.contains(e.target)) {
