@@ -9,7 +9,7 @@
         </div>
       </div>
       <div class="advanced-config" v-dropdown="advancedConfigOptions">
-        <text-button iconType="header_dropdown_gray" iconSize="8" iconAlign="right" width="100px">
+        <text-button iconType="header_dropdown_gray" :iconSize="8" iconAlign="right" width="100px">
           {{$t("task_engine_v3.entity_collecting_page.advanced_config")}}
         </text-button>
       </div>
