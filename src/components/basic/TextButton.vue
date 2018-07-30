@@ -5,10 +5,11 @@
     :class="classObj"
     @click="$emit('click', $event)"
     @keyup.enter="$emit('click', $event)">
-    <icon :iconType="iconType" v-if="showIcon" :size="iconSize"></icon>
+    <icon :iconType="iconType" v-if="showIcon && iconAlign === 'left'" :size="iconSize"></icon>
     <div class="button-content">
       <slot></slot>
     </div>
+    <icon :iconType="iconType" v-if="showIcon && iconAlign === 'right'" :size="iconSize"></icon>
   </div>
 </template>
 
@@ -16,6 +17,7 @@
 import Icon from './Icon';
 
 const buttonTypes = ['default', 'fill', 'primary', 'disable', 'error'];
+const iconAlignTypes = ['left', 'right'];
 
 export default {
   name: 'text-button',
@@ -40,6 +42,11 @@ export default {
     iconSize: {
       type: Number,
       default: 16,
+    },
+    iconAlign: {
+      type: String,
+      default: 'left',
+      validator: value => iconAlignTypes.indexOf(value) > -1,
     },
     color: {
       type: String,
@@ -199,6 +206,10 @@ $btn-error-color: $color-white;
 
   .icon {
     margin-right: 10px;
+    &:last-child {
+      margin-left: 10px;
+      margin-right: 0px;
+    }
   }
 }
 </style>

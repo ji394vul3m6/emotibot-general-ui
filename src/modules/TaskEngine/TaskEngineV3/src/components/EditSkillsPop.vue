@@ -124,15 +124,17 @@ export default {
 <style lang="scss" scoped>
 @import "../scss/teVariable.scss";
 .edit-skills-pop{
-  padding-left: 24px;
-  padding-right: 24px;
   .button-add-skill{
+    margin-left: 24px;
     width: 68px;
     height: 28px;
     margin-bottom: 13px;
   }
   .skill-list-container{
-    overflow: auto;
+    @include auto-overflow();
+    @include customScrollbar();
+    padding-left: 24px;
+    padding-right: 24px;
     height: 254px;
     .skill-row{
       position: relative;

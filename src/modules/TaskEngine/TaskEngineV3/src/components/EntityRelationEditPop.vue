@@ -162,7 +162,8 @@ export default {
   min-width: 800px;
   min-height: 500px;
   padding: 20px;
-  overflow: auto;
+  @include auto-overflow();
+  @include customScrollbar();
   .headline{
     background-color:antiquewhite;
   }
