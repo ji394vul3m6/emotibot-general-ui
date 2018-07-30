@@ -19,8 +19,8 @@
     flex-direction: column;
     margin: 0px 20px 0px 20px;
     padding: 10px;
-    border-radius: 2px;
     background-color: #f8f8f8;
+    border-radius: 4px;
     .row{
       display: flex;
       justify-content: space-between;
@@ -32,7 +32,7 @@
         }
       }
       &:not(:first-child){
-        padding-top: 20px;
+        padding-top: 10px;
       }
       .advanced-config{
         cursor: pointer;
@@ -115,7 +115,8 @@
   .entity-collector-list-container{
     display: flex;
     flex-direction: column;
-    overflow: auto;
+    @include auto-overflow();
+    @include customScrollbar();
     flex: 0 1 auto;
     padding: 0px 20px 0px 20px;
     .entity-collector-row{
@@ -132,7 +133,7 @@
         margin-top: 20px;
       }
       &:last-child{
-        margin-bottom: 30px;
+        margin-bottom: 35px;
       }
       &:hover{
         box-shadow: 0 4px 9px 0 rgba(115, 115, 115, 0.2), 0 5px 8px 0 rgba(228, 228, 228, 0.5);

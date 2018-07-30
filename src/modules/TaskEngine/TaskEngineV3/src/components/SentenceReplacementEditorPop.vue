@@ -122,7 +122,8 @@ export default {
     flex: 1 1 100px;
     display: flex;
     flex-direction: column;
-    overflow: auto;
+    @include auto-overflow();
+    @include customScrollbar();
     .pattern_text_row{
       padding: 0 20px 0 20px;
       @include font-14px();

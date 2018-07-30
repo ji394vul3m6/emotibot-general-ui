@@ -191,10 +191,16 @@ export default {
       });
     },
     deleteAnswer(robotQA, answer) {
-      this.$api.deleteRobotQAAnswer(robotQA.id, answer.id).then(() => {
+      const that = this;
+      that.$api.deleteRobotQAAnswer(robotQA.id, answer.id).then(() => {
         const idx = robotQA.answers.indexOf(answer);
         if (idx >= 0) {
           robotQA.answers.splice(idx, 1);
+        }
+        if (robotQA.answers.length > 0) {
+          that.newAnswer = robotQA.answers[0].content;
+        } else {
+          that.newAnswer = '';
         }
       });
     },
@@ -216,7 +222,10 @@ export default {
             });
           }
         } else if (type === 'answer') {
-          if (robotQA.answers.length > 0) {
+          that.newAnswer = that.newAnswer.trim();
+          if (that.newAnswer === '') {
+            that.deleteAnswer(robotQA, robotQA.answers[0]);
+          } else if (robotQA.answers.length > 0) {
             that.updateAnswer(robotQA, robotQA.answers[0], that.newAnswer);
           } else {
             that.addAnswer(robotQA);

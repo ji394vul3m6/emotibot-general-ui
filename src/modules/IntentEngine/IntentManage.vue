@@ -177,7 +177,7 @@ export default {
       that.$api.startTraining()
       .then(() => {
         that.trainBtnClicked = true;
-        that.showLoading(that.$t('intent_engine.is_training'));
+        that.$emit('startLoading', that.$t('intent_engine.is_training'));
       });
     },
     pollTrainingStatus(version) {
