@@ -139,6 +139,7 @@ export default {
     padding: 10px;
     height: 86px;
     background: #f8f8f8;
+    border-radius: 4px;
     .row{
       display: flex;
       flex-direction: row;
@@ -163,7 +164,8 @@ export default {
   }
   .action-group-list-container{
     flex: 1 1 auto;
-    overflow: auto;
+    @include auto-overflow();
+    @include customScrollbar();
     margin: 10px 0px 20px 0px;
     padding: 0px 20px 0px 20px;
     .action-group-container{

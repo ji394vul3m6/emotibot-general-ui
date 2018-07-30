@@ -13,6 +13,7 @@
         ref="selectAddTrigger"
         v-model="newIntentModel"
         :options="intentOptionList"
+        :showCheckedIcon="false"
         width="160px"
       />
       <text-button
@@ -117,6 +118,13 @@ export default {
           };
           this.intentOptionList.push(object);
         });
+        if (this.intentOptionList.length === 0) {
+          this.intentOptionList.push({
+            text: this.$t('task_engine_v3.trigger_page.placeholder_import_intent_first'),
+            value: this.$t('task_engine_v3.trigger_page.placeholder_import_intent_first'),
+            isGroup: true,
+          });
+        }
         this.$refs.selectAddTrigger.$emit('updateOptions', this.intentOptionList);
         if (this.intentOptionList.length > 0) {
           this.$refs.selectAddTrigger.$emit('select', this.intentOptionList[0].value);
@@ -159,6 +167,7 @@ export default {
     padding: 10px;
     height: 86px;
     background: #f8f8f8;
+    border-radius: 4px;
     .row{
       display: flex;
       flex-direction: row;
@@ -176,8 +185,6 @@ export default {
       .select-add-trigger{
         height: 28px;
         background: #ffffff;
-        border-radius: 2px;
-        border: solid 1px #dbdbdb;
       }
       .button-add-trigger{
         margin-left: 10px;

@@ -20,19 +20,21 @@
       <template v-for="(option, idx) in localOptions">
       <div class="select-item item" :key="idx" v-if="!option.isGroup"
         :class="{
-          checked: option.checked,
+          checked: option.checked && showCheckedIcon,
           'in-group': option.inGroup,
           'is-button': option.isButton
         }"
         @click="selectOption(idx)"
         @mouseover="toggleHover(option, true)" @mouseout="toggleHover(option, false)">
         <div class="select-text" :style="selectTextStyle"> {{option.text}} </div>
-        <div class="select-icon" v-if="!option.checked && !option.isButton">
-          <icon icon-type="checked" :size=16></icon>
-        </div>
-        <div class="select-icon" v-if="option.checked">
-          <icon v-if="option.hovered" icon-type="checked" :size=16></icon>
-          <icon v-else icon-type="check" :size=16></icon>
+        <div class=select-icon-container v-if="showCheckedIcon">
+          <div class="select-icon" v-if="!option.checked && !option.isButton">
+            <icon icon-type="checked" :size=16></icon>
+          </div>
+          <div class="select-icon" v-if="option.checked">
+            <icon v-if="option.hovered" icon-type="checked" :size=16></icon>
+            <icon v-else icon-type="check" :size=16></icon>
+          </div>
         </div>
       </div>
       <div class="select-item group" v-if="option.isGroup" :key="idx">
@@ -75,6 +77,10 @@ export default {
       default: false,
     },
     fixedListWidth: {
+      type: Boolean,
+      default: true,
+    },
+    showCheckedIcon: {
       type: Boolean,
       default: true,
     },
@@ -307,11 +313,13 @@ $border-color: $color-borderline;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
-    .select-icon {
-      margin-right:16px;
-      flex: 0 0 16px;
-      display: flex;
-      align-items: center;
+    .select-icon-container{
+      .select-icon {
+        margin-right:16px;
+        flex: 0 0 16px;
+        display: flex;
+        align-items: center;
+      }
     }
   }
 }

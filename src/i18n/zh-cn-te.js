@@ -37,6 +37,7 @@ export default {
       button_save_and_next_step: '储存并下一步',
       switch_on: '启动',
       switch_off: '停用',
+      tooltip_skill_edit: '场景的任务管理',
     },
     condition_card: {
       if: '当',
@@ -72,6 +73,7 @@ export default {
       label_add_trigger: '这个场景会被哪些意图触发？',
       button_add_trigger: '加入',
       description: '设定场景的进入条件，只有当使用者与机器人的对话满足预设的触发条件，会进入此场景，触发相对应的多轮对话。',
+      placeholder_import_intent_first: '请先导入意图',
     },
     create_scenario_pop: {
       label_create_new_scenario: '创建新场景',

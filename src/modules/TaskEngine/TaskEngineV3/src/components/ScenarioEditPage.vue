@@ -30,9 +30,10 @@
               ref="dropdownSelect"
               v-model="currentSkillName"
               :options="skillNameList"
+              :showCheckedIcon="false"
               width="141px"
             />
-            <div class="setting-button">
+            <div class="setting-button" v-tooltip="{ msg: $t('task_engine_v3.scenario_edit_page.tooltip_skill_edit')}">
               <icon icon-type="setting" :enableHover="true" :size=15 @click="editSkills"/>
             </div>
           </div>
