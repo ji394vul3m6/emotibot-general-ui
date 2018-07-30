@@ -355,14 +355,10 @@ export default {
       return datas;
     },
     receiveAPIHeader(headerData) {
-      // TODO bfb output format with appid
-      const showCols = ['user_id', 'user_q', 'std_q', 'created_time', 'score', 'emotion', 'qtype'];
-      const nowrapCols = ['user_q', 'created_time', 'platform', 'qtype', 'brand', 'sex', 'age', 'hobbies'];
+      const nowrapCols = ['user_q', 'log_time', 'platform', 'qtype', 'brand', 'sex', 'age', 'hobbies'];
       const that = this;
-      const showHeaders = [];
       headerData.forEach((header) => {
         header.key = header.id;
-
         if (header.key === 'user_q') {
           header.type = 'clickable-text';
           header.callback = that.showContinueRecords;
@@ -379,12 +375,8 @@ export default {
         } else {
           header.wrap = true;
         }
-
-        if (showCols.indexOf(header.key) >= 0) {
-          showHeaders.push(header);
-        }
       });
-      return showHeaders;
+      return headerData;
     },
     showContinueRecords(record) {
       const param = {
