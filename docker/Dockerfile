@@ -9,7 +9,7 @@ ADD .babelrc .postcssrc.js .eslintrc.js .eslintignore login.html index.html vers
 RUN cd build && npm install --production && npm run build
 
 FROM docker-reg.emotibot.com.cn:55688/token-auth:20180726-a5879c7 AS authentication
-FROM docker-reg.emotibot.com.cn:55688/admin-api:20180730-385e9e1 AS api-server
+FROM docker-reg.emotibot.com.cn:55688/admin-api:20180730-8a31504 AS api-server
 
 FROM nginx:1.13-alpine
 
@@ -26,7 +26,7 @@ WORKDIR /build/dist
 ARG GITTAG
 RUN echo $GITTAG > /build/dist/uiversion.html
 
-COPY docker/file_init.sh file_init.sh
+COPY docker/file_init.sh file_init.shㄌ
 COPY docker/entrypoint.sh entrypoint.sh
 RUN rm -rf /build/dist/Files
 ENTRYPOINT ["./entrypoint.sh"]
