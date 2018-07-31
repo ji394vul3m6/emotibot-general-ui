@@ -188,6 +188,7 @@ export default {
       const pickAnyModule = that.modules.reduce((val, mod) => val || mod.checked, false);
       if (!pickAnyModule) {
         that.$notifyFail(that.$t('management.err_pick_no_modules'));
+        return;
       }
 
       that.$emit('validateSuccess', {
