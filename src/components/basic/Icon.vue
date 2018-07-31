@@ -1,5 +1,5 @@
 <template>
-  <div class="icon" :class="{button: button}" @click="$emit('click', $event)" :style="containerStyle">
+  <div class="icon" :class="{button: button || enableHover}" @click="$emit('click', $event)" :style="containerStyle">
     <div v-if="enableHover" :class="`${iconType}_icon_hover`" :style="styleObj"></div>
     <div v-else :class="`${iconType}_icon`" :style="styleObj"></div>
   </div>
