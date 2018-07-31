@@ -164,6 +164,9 @@ export default {
       } else if (that.adminDiaplayName === '') {
         that.showUpdatedTooltip(that.$refs.displayName, that.adminErrTooltip, that.$t('management.err_empty_display_name'));
         return;
+      } else if (!validate.isValidDisplayName(that.adminDiaplayName.trim())) {
+        that.showUpdatedTooltip(that.$refs.displayName, that.adminErrTooltip, that.$t('management.err_display_name_length'));
+        return;
       // } else if (that.adminEmail === '') {
       //   that.showUpdatedTooltip(that.$refs.email, that.adminErrTooltip,
       //     that.$t('management.err_empty_email'));

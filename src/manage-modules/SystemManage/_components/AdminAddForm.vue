@@ -15,7 +15,7 @@
         <span class="required"></span>
       {{ $t('management.user_type') }}
       </div>
-      <div>{{ isAdmin ? $t('management.enterprise_admin') : $t('management.normal_user')}}</div>
+      <div>{{ isAdmin ? $t('management.enterprise_admin') : $t('management.system_admin')}}</div>
     </div>
 
     <div class="row">
@@ -33,6 +33,7 @@
         :placeholder="$t('management.set_passowrd_placeholder')"
         :msg="$t('management.password_format')"
         fill
+        ref="password"
         :maxlength="passwordMaxlength"
         :error="isPasswordTooltipShown"
         :errorMsg="passwordErrorMsg"
@@ -63,7 +64,8 @@
         <span class="required"></span>
         {{ $t('management.phone') }}
       </div>
-      <input class="row-input" ref="phone" v-model="phone" :placeholder="$t('management.input_placeholder')">
+      <input class="row-input" ref="phone" v-model="phone" :placeholder="$t('management.input_placeholder')" v-tooltip="phoneTooltip"
+      :class="{'error': isPhoneTooltipShown}">
     </div>
     <div class="row">
       <div class="row-title">
@@ -130,6 +132,10 @@ export default {
       this.isPasswordCheckTooltipShown = false;
       this.$refs.checkPassword.dispatchEvent(new Event('tooltip-hide'));
     },
+    phone() {
+      this.isPhoneTooltipShown = false;
+      this.$refs.phone.dispatchEvent(new Event('tooltip-hide'));
+    },
   },
   data() {
     return {
@@ -165,6 +171,12 @@ export default {
         errorType: true,
         alignLeft: true,
       },
+      phoneTooltip: {
+        msg: this.$t('management.err_invalid_phone'),
+        eventOnly: true,
+        errorType: true,
+        alignLeft: true,
+      },
       passwordTooltip: {
         msg: this.$t('management.err_password_length'),
         eventOnly: true,
@@ -182,6 +194,7 @@ export default {
       isDisplayNameTooltipShown: false,
       isPasswordTooltipShown: false,
       isPasswordCheckTooltipShown: false,
+      isPhoneTooltipShown: false,
 
       passwordErrorMsg: '',
     };
@@ -228,6 +241,12 @@ export default {
         that.$refs.userName.dispatchEvent(new Event('tooltip-reload'));
         that.$refs.userName.dispatchEvent(new Event('tooltip-show'));
         that.isUserNameTooltipShown = true;
+      } else if (!validate.isValidUserName(that.userName)) {
+        isValid = false;
+        that.userNameTooltip.msg = that.$t('management.err_invalid_username');
+        that.$refs.userName.dispatchEvent(new Event('tooltip-reload'));
+        that.$refs.userName.dispatchEvent(new Event('tooltip-show'));
+        that.isUserNameTooltipShown = true;
       } else if (!that.editMode) {
         if (that.existedUsers.indexOf(that.userName) >= 0) {
           isValid = false;
@@ -241,9 +260,30 @@ export default {
         isValid = false;
         that.$refs.email.dispatchEvent(new Event('tooltip-show'));
         that.isEmailTooltipShown = true;
+      } else if (!validate.isValidEmail(that.email)) {
+        isValid = false;
+        that.emailTooltip.msg = that.$t('management.err_invalid_email');
+        that.$refs.email.dispatchEvent(new Event('tooltip-reload'));
+        that.$refs.email.dispatchEvent(new Event('tooltip-show'));
+        that.isEmailTooltipShown = true;
       }
+
+      if (that.phone !== '' && !validate.isValidPhone(that.phone)) {
+        isValid = false;
+        that.$refs.phone.dispatchEvent(new Event('tooltip-show'));
+        that.isPhoneTooltipShown = true;
+      }
+
       if (that.displayName.trim() === '') {
         isValid = false;
+        that.displayNameTooltip.msg = that.$t('management.err_empty_display_name');
+        that.$refs.displayName.dispatchEvent(new Event('tooltip-reload'));
+        that.$refs.displayName.dispatchEvent(new Event('tooltip-show'));
+        that.isDisplayNameTooltipShown = true;
+      } else if (!validate.isValidDisplayName(that.displayName.trim())) {
+        isValid = false;
+        that.displayNameTooltip.msg = that.$t('management.err_display_name_length');
+        that.$refs.displayName.dispatchEvent(new Event('tooltip-reload'));
         that.$refs.displayName.dispatchEvent(new Event('tooltip-show'));
         that.isDisplayNameTooltipShown = true;
       }
@@ -256,8 +296,8 @@ export default {
         } else if (validate.isValidPassword(that.password) === false) {
           isValid = false;
           that.passwordTooltip.msg = that.$t('management.err_password_invalid');
-          that.$refs.password.dispatchEvent(new Event('tooltip-reload'));
-          that.$refs.password.dispatchEvent(new Event('tooltip-show'));
+          that.$refs.password.$el.dispatchEvent(new Event('tooltip-reload'));
+          that.$refs.password.$el.dispatchEvent(new Event('tooltip-show'));
           that.passwordErrorMsg = that.$t('management.err_password_invalid');
           that.isPasswordTooltipShown = true;
         } else if (that.checkPassword !== that.password) {
