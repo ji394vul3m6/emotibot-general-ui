@@ -1407,6 +1407,11 @@
         content.children("div.triggers0").children("select").val(fun.content);
       }else if (type == "polarity_parser"){
         content.children("div.triggers0").children("select").val(fun.content.key);
+      }else if (type == "api_parser"){
+        content.children("div.triggers0").children("input").val(fun.content);
+        if(fun.content_text_array){
+          content.children("div.triggers1").children("input").val(fun.content_text_array.join(','));
+        }
       } else {
         content.children("div.triggers0").children("input").val(fun.content);
       }
@@ -1697,6 +1702,15 @@
         for(var tag_id = 0; tag_id < triggers0_text_array.length; tag_id++){
           global_vars.push(triggers0_text_array[tag_id]+"_"+node_id);
         }
+      }else if(type == "api_parser"){
+        let keyStr = $(triggers1).val().toString().trim();
+        let keyArray = keyStr.split(',');
+        fun = {
+          "function_name": type,
+          "content": $(triggers0).val() == null ? '' : $(triggers0).val().toString().trim(),
+          "content_text_array": keyArray,
+        }
+        global_vars = keyArray;
       }else {
         fun = {
           "function_name": type,
@@ -2139,6 +2153,7 @@
     parserFunUI.append('<option value="hotel_parser">酒店预订语句解析器</option>');
     parserFunUI.append('<option value="regular_exp">正则表示式</option>');
     parserFunUI.append('<option value="user_custom_parser">转换数据解析器</option>');
+    parserFunUI.append('<option value="api_parser">Web API 调用</option>');
     searchFunctionChange(parserFunUI[0]);
   }
 
@@ -2554,6 +2569,8 @@
 
         if(obj.value=="api_parser"){
           $(obj).parent().find("span.name0").html(CONSTANT.URL);
+          $(obj).parent().children("div.triggers1").show();
+          $(obj).parent().find("span.name1").html(CONSTANT.KEY);
         }else{
           $(obj).parent().find("span.name0").html(CONSTANT.CONTENT);
         }
