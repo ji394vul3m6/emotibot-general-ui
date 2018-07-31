@@ -18,7 +18,7 @@
       />
       <text-button
         class="button-add-trigger"
-        button-type='primary'
+        :button-type="buttonAddEnabled ? 'primary' : 'disable'"
         @click="addNewTrigger">
         {{$t("task_engine_v3.trigger_page.button_add_trigger")}}
       </text-button>
@@ -62,6 +62,7 @@ export default {
       newIntent: '',
       intentList: [],
       intentOptionList: [],
+      buttonAddEnabled: false,
     };
   },
   computed: {
@@ -91,6 +92,9 @@ export default {
       return that.triggerList.findIndex(intent => intent.intent_name === that.newIntent) !== -1;
     },
     addNewTrigger() {
+      if (!this.buttonAddEnabled) {
+        return;
+      }
       if (!this.isDuplicateTrigger()) {
         this.triggerList.push({
           type: 'intent_engine_2.0',
@@ -112,9 +116,6 @@ export default {
           const object = {
             text: intent,
             value: intent,
-            // intent_name: intent,
-            // type: 'intent_engine_2.0',
-            // editable: true,
           };
           this.intentOptionList.push(object);
         });
@@ -124,12 +125,13 @@ export default {
             value: this.$t('task_engine_v3.trigger_page.placeholder_import_intent_first'),
             isGroup: true,
           });
+          this.buttonAddEnabled = false;
+        } else {
+          this.newIntent = this.intentOptionList[0].value;
+          this.buttonAddEnabled = true;
         }
         this.$refs.selectAddTrigger.$emit('updateOptions', this.intentOptionList);
-        if (this.intentOptionList.length > 0) {
-          this.$refs.selectAddTrigger.$emit('select', this.intentOptionList[0].value);
-          this.newIntent = this.intentOptionList[0].value;
-        }
+        this.$refs.selectAddTrigger.$emit('select', this.intentOptionList[0].value);
       }, (err) => {
         general.popErrorWindow(this, 'listIntents error', err.message);
       });
