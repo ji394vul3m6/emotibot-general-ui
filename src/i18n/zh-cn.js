@@ -62,7 +62,7 @@ export default {
       task_engine: '任务引擎',
 
       management: '权限管理',
-      intent_manage: '意圖引擎',
+      intent_manage: '意图引擎',
     },
     tools: {
       encrypt: {

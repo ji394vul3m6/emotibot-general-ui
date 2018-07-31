@@ -34,7 +34,7 @@ import NavBar from '@/components/NavigationBar';
 import api from './_api/system';
 import CommandRow from '../_components/CommandRow';
 import UserAddForm from './_components/AdminAddForm';
-import PasswordForm from '../UserManage/_components//UserPasswordForm';
+import PasswordForm from '../UserManage/_components/UserPasswordForm';
 
 const enterpriseListPage = '/manage/enterprise-manage';
 export default {
@@ -163,7 +163,7 @@ export default {
               that.popEditUser(tempUser);
             })
             .catch((err) => {
-              that.popEditPassword(tempUser);
+              that.popEditPassword(origUser, tempUser);
               if (err.response.status === 403) {
                 that.$notifyFail(that.$t('management.err_manager_password'));
               } else {
@@ -172,6 +172,7 @@ export default {
             });
           },
           cancel() {
+            console.log(tempUser);
             that.popEditUser(tempUser);
           },
         },
