@@ -1,6 +1,6 @@
 <template>
   <div class="intent-list">
-    <div v-for="(intent, idx) in intentListShown" :key="idx" class="intent-block" :class="{'active': intent.expand}" >
+    <div v-for="(intent, idx) in intentListShown" :key="idx" class="intent-block" :class="{'active': intent.expand}" @mouseover="hoverIntent(intent, true)" @mouseout="hoverIntent(intent, false)">
       <div class="intent-block-header" @click="beforeExpandIntent(intent)">
         <div class="intent-icons">
           <icon icon-type="intent" :size="16"/>
@@ -17,7 +17,7 @@
             <text-button @click.stop="cancelEditIntent(intent)">{{ $t('general.cancel') }}</text-button>
           </div>
           <div v-else class="intent-action-tool">
-            <div class="intent-action-icon" :ref="`${idx}_intentAction`" @click.stop="showDropdown(intent, idx)" v-dropdown="intentActionDropdown">
+            <div v-if="intent.isHover || intent.expand" class="intent-action-icon" :ref="`${idx}_intentAction`" @click.stop="showDropdown(intent, idx)" v-dropdown="intentActionDropdown">
               <icon icon-type="more" :size="24"></icon> 
             </div>
             <div v-if="intent.expand" class="intent-action-icon close" @click.stop="closeExpandIntent(intent, idx)">
@@ -192,6 +192,7 @@ export default {
         },
         curPage: 1,
         expand: true,
+        isHover: false,
         isEditMode: true,
         viewCorpusType: POSITIVE_CORPUS,
         hasCorpusSelected: false,
@@ -242,6 +243,7 @@ export default {
         curPage: 1,
         corpus: [],
         expand: false,
+        isHover: false,
         isEditMode: false,
         viewCorpusType: POSITIVE_CORPUS,
         hasCorpusSelected: false,
@@ -285,6 +287,9 @@ export default {
     },
     detectCompositionState() {
       this.wasCompositioning = this.compositionState;
+    },
+    hoverIntent(intent, bool) {
+      intent.isHover = bool;
     },
     showDropdown(intent, idx) {
       const that = this;
