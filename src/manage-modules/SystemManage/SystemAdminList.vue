@@ -182,7 +182,7 @@ export default {
       const that = this;
 
       const popOption = {
-        title: that.$t('management.edit_account'),
+        title: user ? that.$t('management.edit_account') : that.$t('management.add_account'),
         component: UserAddForm,
         validate: true,
         extData: {

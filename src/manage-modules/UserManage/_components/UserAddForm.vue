@@ -6,8 +6,16 @@
         {{ $t('management.user_name') }}
       </div>
       <div v-if="editMode">{{ userName }}</div>
-      <input v-else class="row-input" ref="userName" v-model="userName" :placeholder="$t('management.input_placeholder')" v-tooltip="userNameTooltip"
-      :class="{'error': isUserNameTooltipShown}">
+      <info-input v-else
+        v-model="userName"
+        :placeholder="$t('management.input_placeholder')"
+        :msg="$t('management.username_format')"
+        fill
+        :maxlength="userNameMaxlength"
+        :error="isUserNameTooltipShown"
+        :errorMsg="userNameErrorMsg"
+      >
+      </info-input>
     </div>
 
     <div class="row">
@@ -33,6 +41,7 @@
         :placeholder="$t('management.set_passowrd_placeholder')"
         :msg="$t('management.password_format')"
         fill
+        autocomplete="new-password"
         :maxlength="passwordMaxlength"
         :error="isPasswordTooltipShown"
         :errorMsg="passwordErrorMsg"
@@ -129,7 +138,6 @@ export default {
     userName() {
       if (!this.editMode && this.userName.trim() !== '') {
         this.isUserNameTooltipShown = false;
-        this.$refs.userName.dispatchEvent(new Event('tooltip-hide'));
       }
     },
     email() {
@@ -165,6 +173,7 @@ export default {
       passwordEdit: false,
       passwordMaxlength: 16,
       passwordMinlength: 6,
+      userNameMaxlength: 64,
 
       privilegeSet: [{
         machine: [],
@@ -176,12 +185,6 @@ export default {
       editPasswordCallback: undefined,
       existedUsers: [],
 
-      userNameTooltip: {
-        msg: this.$t('management.err_empty_username'),
-        eventOnly: true,
-        errorType: true,
-        alignLeft: true,
-      },
       emailTooltip: {
         msg: this.$t('management.err_empty_email'),
         eventOnly: true,
@@ -200,12 +203,6 @@ export default {
         errorType: true,
         alignLeft: true,
       },
-      passwordTooltip: {
-        msg: this.$t('management.err_password_length'),
-        eventOnly: true,
-        errorType: true,
-        alignLeft: true,
-      },
       passwordCheckTooltip: {
         msg: this.$t('management.err_invalid_check_password'),
         eventOnly: true,
@@ -220,6 +217,7 @@ export default {
       isPasswordCheckTooltipShown: false,
 
       passwordErrorMsg: '',
+      userNameErrorMsg: '',
     };
   },
   methods: {
@@ -292,22 +290,16 @@ export default {
       let isValid = true;
       if (that.userName.trim() === '') {
         isValid = false;
-        that.userNameTooltip.msg = that.$t('management.err_empty_username');
-        that.$refs.userName.dispatchEvent(new Event('tooltip-reload'));
-        that.$refs.userName.dispatchEvent(new Event('tooltip-show'));
+        that.userNameErrorMsg = that.$t('management.err_username_length');
         that.isUserNameTooltipShown = true;
       } else if (!validate.isValidUserName(that.userName)) {
         isValid = false;
-        that.userNameTooltip.msg = that.$t('management.err_invalid_username');
-        that.$refs.userName.dispatchEvent(new Event('tooltip-reload'));
-        that.$refs.userName.dispatchEvent(new Event('tooltip-show'));
+        that.userNameErrorMsg = that.$t('management.err_invalid_username');
         that.isUserNameTooltipShown = true;
       } else if (!that.editMode) {
         if (that.existedUsers.indexOf(that.userName) >= 0) {
           isValid = false;
-          that.userNameTooltip.msg = that.$t('management.err_existed_username');
-          that.$refs.userName.dispatchEvent(new Event('tooltip-reload'));
-          that.$refs.userName.dispatchEvent(new Event('tooltip-show'));
+          that.userNameErrorMsg = that.$t('management.err_existed_username');
           that.isUserNameTooltipShown = true;
         }
       }

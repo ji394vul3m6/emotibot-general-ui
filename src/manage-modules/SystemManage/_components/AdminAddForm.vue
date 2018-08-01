@@ -6,8 +6,16 @@
         {{ $t('management.user_name') }}
       </div>
       <div v-if="editMode">{{ userName }}</div>
-      <input v-else class="row-input" ref="userName" v-model="userName" :placeholder="$t('management.input_placeholder')" v-tooltip="userNameTooltip"
-      :class="{'error': isUserNameTooltipShown}">
+      <info-input v-else
+        v-model="userName"
+        :placeholder="$t('management.input_placeholder')"
+        :msg="$t('management.username_format')"
+        fill
+        :maxlength="userNameMaxlength"
+        :error="isUserNameTooltipShown"
+        :errorMsg="userNameErrorMsg"
+      >
+      </info-input>
     </div>
 
     <div class="row">
@@ -34,6 +42,7 @@
         :msg="$t('management.password_format')"
         fill
         ref="password"
+        autocomplete="new-password"
         :maxlength="passwordMaxlength"
         :error="isPasswordTooltipShown"
         :errorMsg="passwordErrorMsg"
@@ -114,7 +123,6 @@ export default {
     userName() {
       if (!this.editMode && this.userName.trim() !== '') {
         this.isUserNameTooltipShown = false;
-        this.$refs.userName.dispatchEvent(new Event('tooltip-hide'));
       }
     },
     email() {
@@ -148,17 +156,12 @@ export default {
       email: '',
       passwordEdit: false,
       passwordMaxlength: 16,
-      passwordMinlength: 4,
+      passwordMinlength: 6,
+      userNameMaxlength: 64,
 
       editPasswordCallback: undefined,
       existedUsers: [],
 
-      userNameTooltip: {
-        msg: this.$t('management.err_empty_username'),
-        eventOnly: true,
-        errorType: true,
-        alignLeft: true,
-      },
       emailTooltip: {
         msg: this.$t('management.err_empty_email'),
         eventOnly: true,
@@ -166,19 +169,13 @@ export default {
         alignLeft: true,
       },
       displayNameTooltip: {
-        msg: this.$t('management.err_empty_display_name'),
+        msg: this.$t('management.err_display_name_length'),
         eventOnly: true,
         errorType: true,
         alignLeft: true,
       },
       phoneTooltip: {
         msg: this.$t('management.err_invalid_phone'),
-        eventOnly: true,
-        errorType: true,
-        alignLeft: true,
-      },
-      passwordTooltip: {
-        msg: this.$t('management.err_password_length'),
         eventOnly: true,
         errorType: true,
         alignLeft: true,
@@ -197,6 +194,7 @@ export default {
       isPhoneTooltipShown: false,
 
       passwordErrorMsg: '',
+      userNameErrorMsg: '',
     };
   },
   methods: {
@@ -237,27 +235,23 @@ export default {
       let isValid = true;
       if (that.userName.trim() === '') {
         isValid = false;
-        that.userNameTooltip.msg = that.$t('management.err_empty_username');
-        that.$refs.userName.dispatchEvent(new Event('tooltip-reload'));
-        that.$refs.userName.dispatchEvent(new Event('tooltip-show'));
+        that.userNameErrorMsg = that.$t('management.err_username_length');
         that.isUserNameTooltipShown = true;
       } else if (!validate.isValidUserName(that.userName)) {
         isValid = false;
-        that.userNameTooltip.msg = that.$t('management.err_invalid_username');
-        that.$refs.userName.dispatchEvent(new Event('tooltip-reload'));
-        that.$refs.userName.dispatchEvent(new Event('tooltip-show'));
+        that.userNameErrorMsg = that.$t('management.err_invalid_username');
         that.isUserNameTooltipShown = true;
       } else if (!that.editMode) {
         if (that.existedUsers.indexOf(that.userName) >= 0) {
           isValid = false;
-          that.userNameTooltip.msg = that.$t('management.err_existed_username');
-          that.$refs.userName.dispatchEvent(new Event('tooltip-reload'));
-          that.$refs.userName.dispatchEvent(new Event('tooltip-show'));
+          that.userNameErrorMsg = that.$t('management.err_existed_username');
           that.isUserNameTooltipShown = true;
         }
       }
       if (that.email.trim() === '') {
         isValid = false;
+        that.emailTooltip.msg = that.$t('management.err_empty_email');
+        that.$refs.email.dispatchEvent(new Event('tooltip-reload'));
         that.$refs.email.dispatchEvent(new Event('tooltip-show'));
         that.isEmailTooltipShown = true;
       } else if (!validate.isValidEmail(that.email)) {
@@ -276,14 +270,10 @@ export default {
 
       if (that.displayName.trim() === '') {
         isValid = false;
-        that.displayNameTooltip.msg = that.$t('management.err_empty_display_name');
-        that.$refs.displayName.dispatchEvent(new Event('tooltip-reload'));
         that.$refs.displayName.dispatchEvent(new Event('tooltip-show'));
         that.isDisplayNameTooltipShown = true;
       } else if (!validate.isValidDisplayName(that.displayName.trim())) {
         isValid = false;
-        that.displayNameTooltip.msg = that.$t('management.err_display_name_length');
-        that.$refs.displayName.dispatchEvent(new Event('tooltip-reload'));
         that.$refs.displayName.dispatchEvent(new Event('tooltip-show'));
         that.isDisplayNameTooltipShown = true;
       }
@@ -295,9 +285,6 @@ export default {
           that.isPasswordTooltipShown = true;
         } else if (validate.isValidPassword(that.password) === false) {
           isValid = false;
-          that.passwordTooltip.msg = that.$t('management.err_password_invalid');
-          that.$refs.password.$el.dispatchEvent(new Event('tooltip-reload'));
-          that.$refs.password.$el.dispatchEvent(new Event('tooltip-show'));
           that.passwordErrorMsg = that.$t('management.err_password_invalid');
           that.isPasswordTooltipShown = true;
         } else if (that.checkPassword !== that.password) {

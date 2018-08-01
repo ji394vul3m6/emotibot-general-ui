@@ -139,7 +139,7 @@ export default {
       return Promise.all(promises).then((datas) => {
         const [enterprises, modules, enterpriseModules] = datas;
         that.$pop({
-          title: that.$t('management.create_enterprise'),
+          title: that.$t('management.edit_enterprise'),
           component: EnterpriseEditForm,
           extData: {
             existedEnterprises: enterprises.map(e => e.name),
