@@ -1515,6 +1515,33 @@
         }
     }
 
+    function resetGlobalConnections(){
+        $('#global_connection_loading').remove();
+        if(window.moduleData == null){
+            return;
+        }
+        $('#moreconditions_module0').html("");
+        const gConn = window.moduleData.global_connections || [];
+        for (var index = 0; index < gConn.length; index++){
+            var edge = gConn[index];
+            addMoreConditions(0);
+            var eltEdge = $('#moreconditions_module0 > div:last');
+            if ('edge_type' in edge && edge.edge_type == 'qq'){
+                //qq edges
+                insertQQEdgesIntoUIFromJSON(eltEdge, edge);
+            }else{
+                //normal edges
+                if(edge.to_node_id == null){
+                    eltEdge.find("div.thenGoto > select").val("null");
+                }else{
+                    eltEdge.find("div.thenGoto > select").val(edge.to_node_id);
+                }
+                var rules = edge.condition_rules[0];
+                insertConditionsIntoUIFromJSON(rules, eltEdge, '.if-content');
+            }
+        }
+    }
+
     function uploadScenarioJson() {
         var taskScenario = window.moduleData
         var taskLayouts = window.moduleDataLayouts;
@@ -1704,6 +1731,15 @@
     $(document).ready(function() {
         $("#globalConfirmMessage").on('shown.bs.modal', function() {
             resetConfirmMessages();
+        });
+        $("#globalConnections").on('shown.bs.modal', function() {
+            getTemplateMappingTableList().then(getMappingTableList).then(function(){
+                resetGlobalConnections();
+            }, function(){
+                window.templateUserMappingTableList = [];
+                window.mappingTableList = [];
+                resetGlobalConnections();
+            });
         });
         $('#configureModule').on('show.bs.modal', function (e) {
             $("#configureModule .modal-content").html('<div style="padding-top:30px; text-align:center; position:absolute; width:100%; height:100%; background:white; z-index:99"><img style="height:150px;" src="images/loading_icon.gif" /></div>');

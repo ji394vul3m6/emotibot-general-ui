@@ -819,6 +819,29 @@
     insertElseIntoJSONFromUI($('#connections'), nodeId, node);
   }
 
+  function insertGlobalConnectionsIntoJSON(nodeId, node){
+    var elems = $('#moreconditions_module0 > div');
+    for (var idx=0; idx<elems.length; idx++) {
+      var rules = [];
+      var global_vars = [];
+      var elements = $(elems[idx]).find('.if-content > div');
+      //check is qq edge or not
+      if($($(elements[0]).children("select")[1]).val() == "qq_similarity"){
+        insertQQEdgesIntoJSONFromUI(elements[0], node);
+        continue;
+      }else{
+        var rets = getConditionsFromUI(elements, nodeId);
+        var rules = rets[0];
+        var global_vars = rets[1];
+        node.global_vars = node.global_vars.concat(global_vars);
+      }
+
+      var selectElts = $(elems[idx]).find("div.thenGoto > select");
+      var to_node_id = $(selectElts[0]).val();
+      insertEdgeIntoJSONwithRules(rules, to_node_id, node);
+    }
+  }
+
   function toggleExpertMode(){
     $("#settings > .row:eq(3)").slideToggle();
     $("#settings > .row:eq(4)").slideToggle();
@@ -932,6 +955,20 @@
     updateConnections();
     checkScenarioFormat();
     window.$('#'+window.currentNode.node_id+' h4').html(he.encode($('#settings').find('[name=moduleNickname]').val()));
+    uploadScenarioJson();
+  }
+
+  function saveGlobalConnections() {
+    const nodeId = 'global_connections'
+    const pseudoNode = {
+      "node_id": nodeId,
+      "description": "通用连线",
+      "node_type": 'global_connections',
+      "edges": [],
+      "global_vars": [],
+    }
+    insertGlobalConnectionsIntoJSON(nodeId, pseudoNode);
+    window.moduleData.global_connections = pseudoNode.edges
     uploadScenarioJson();
   }
 
@@ -1161,10 +1198,13 @@
         continue;
       }
       //should not choose exit node in entry node
-      if (!(window.currentNode.node_type == "entry" && node.description == 'Exit')){
-        select.append('<option value="' + node.node_id + '">'+ he.encode(node.description) + ' (ID: ' + node.node_id + ')</option>');
-        qq_select.append('<option value="' + node.node_id + '">'+ he.encode(node.description) + ' (ID: ' + node.node_id + ')</option>');
+      if (node.description == 'Exit'){
+        if (window.currentNode && window.currentNode.node_type == "entry") {
+          continue;
+        }
       }
+      select.append('<option value="' + node.node_id + '">'+ he.encode(node.description) + ' (ID: ' + node.node_id + ')</option>');
+      qq_select.append('<option value="' + node.node_id + '">'+ he.encode(node.description) + ' (ID: ' + node.node_id + ')</option>');
     }
     $("#moreconditions_module"+id).sortable();
   }
@@ -2713,4 +2753,9 @@
   window.insertGlobalVarsIntoEditor = insertGlobalVarsIntoEditor;
   window.loadNodeEditPage = loadNodeEditPage;
   window.checkIfNodeChanged = checkIfNodeChanged;
+  window.saveGlobalConnections = saveGlobalConnections;
+  window.insertConditionsIntoUIFromJSON = insertConditionsIntoUIFromJSON;
+  window.insertQQEdgesIntoUIFromJSON = insertQQEdgesIntoUIFromJSON;
+  window.getMappingTableList = getMappingTableList;
+  window.getTemplateMappingTableList = getTemplateMappingTableList;
 })();
