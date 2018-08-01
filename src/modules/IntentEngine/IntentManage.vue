@@ -174,6 +174,7 @@ export default {
     },
     startTraining() {
       const that = this;
+      if (!that.canTrain) return;
       that.$api.startTraining()
       .then(() => {
         that.trainBtnClicked = true;
