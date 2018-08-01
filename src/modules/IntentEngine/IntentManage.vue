@@ -10,6 +10,7 @@
         </div>
         <div class="header-tool">
           <div v-if="isTraining" class="train-hint training">
+            <loading-line></loading-line>
             {{ $t('intent_engine.manage.train_status_msg.is_training', {percentage: trainingProgress}) }}
           </div>
           <div v-else class="train-hint">
@@ -304,11 +305,6 @@ export default {
             total: intent.count,
             positiveCount: intent.positive_count,
             negativeCount: intent.negative_count,
-            // corpus: [],
-            // expand: false,
-            // isEditMode: false,
-            // hasCorpusSelected: false,
-            // hasCorpusEditing: false,
           });
         });
       })
