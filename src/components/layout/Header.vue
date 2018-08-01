@@ -4,7 +4,7 @@
     {{ $t('general.robot_list') }}
   </div>
   <div class="empty column"></div>
-  <div class="enterprise column" v-if="!showUserInfoPage">
+  <div class="enterprise column" v-if="!showUserInfoPage && enterpriseID !== ''">
     <div class="icon-container">
       <icon :size=22 icon-type="header_enterprise"/>
     </div>
@@ -38,8 +38,8 @@
     <div class="user-menu-container" :class="[ showUserMenu ? 'show': '']" ref="list">
       <div class="user-menu">
         <div class="menu-item" @click="clickShowUserPreference">{{ $t('header.user_info') }}</div>
-        <div class="menu-item" v-if="userInfo.type <= 1" @click="goEnterprisePrivilege">{{ $t('header.enterprise_privilege_list') }}</div>
-        <div class="menu-item" v-if="userInfo.type === 0" @click="goEnterpriseList">{{ $t('header.back_to_system_manage') }}</div>
+        <div class="menu-item" v-if="userInfo.type <= 1 && enterpriseID !== ''" @click="goEnterprisePrivilege">{{ $t('header.enterprise_privilege_list') }}</div>
+        <div class="menu-item" v-if="userInfo.type === 0 && enterpriseID !== ''" @click="goEnterpriseList">{{ $t('header.back_to_system_manage') }}</div>
         <div class="menu-item" @click="logout">{{ $t('header.logout') }}</div>
       </div>
     </div>
