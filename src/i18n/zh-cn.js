@@ -792,6 +792,7 @@ export default {
     },
     import: {
       title: '导入意图',
+      title_test: '导入测试题',
       choose_file: '请选择档案',
       success: '意图导入成功',
       fail: '意图导入失败',
@@ -809,6 +810,34 @@ export default {
       run_test: '进行测试',
       last_test: '最后测试时间：',
       download_prev_report: '下载历次测试报告',
+      how_to_improve: '如何优化测试数据报告？',
+      test_answer: '测试题',
+      test_corpus: '测试语料',
+      precision: '正确率',
+      robot_predict: '机器人预测',
+      scoring: '评分',
+      result: '结果',
+      no_data: {
+        title: '暂无测试题',
+        hint_left: '左上角可手动新增，导入意图测试题',
+        hint_right: '右上角可下载测试题范本',
+      },
+      test_status_msg: {
+        is_testing: '意图测试进行中，已完成{percentage}%',
+      },
+      tooltip: {
+        name_empty: '意图名称不可为空',
+        name_duplicate: '意图名称已存在',
+        corpus_duplicate: '已存在相同测试语料',
+        test_title: '这是测试题',
+        precision: '这是正确率',
+        robot_predict: '这是机器人预测',
+        scoring: '这是评分',
+        result: '这是结果',
+      },
+      notify: {
+        get_test_corpus_fail: '读取测试语料失败',
+      },
     },
   },
   pages: {
