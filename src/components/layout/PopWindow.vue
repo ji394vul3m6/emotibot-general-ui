@@ -20,12 +20,12 @@
       <div class="pop-button">
         <div class="left-part">
           <text-button v-if="left_button !== undefined"
-            :button-type="left_button.type ? left_button.type : 'normal'"
+            :button-type="left_button.type ? left_button.type : 'default'"
             v-on:click="customClick(left_button)" :key="left_button.msg">{{ left_button.msg }}</text-button>
         </div>
         <div class="right-part">
         <template v-for="button in custom_button">
-          <text-button :button-type="button.type ? button.type : 'normal'"
+          <text-button :button-type="button.type ? button.type : 'default'"
             v-on:click="customClick(button)" :key="button.msg">{{ button.msg }}</text-button>
         </template>
         <text-button
