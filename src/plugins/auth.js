@@ -120,7 +120,7 @@ function setInfoWithToken(token) {
     .then(() => that.$reqGet(`${ENTERPRISE_PATH}/${enterprise}/modules`))
     .then((rsp) => {
       const data = rsp.data;
-      modules = data.result;
+      modules = data.result.filter(mod => mod.status);
     });
   }
   promise = promise

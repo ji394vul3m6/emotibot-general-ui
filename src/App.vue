@@ -196,7 +196,26 @@ export default {
       if (that.userInfo.type < 2) {
         // system admin and enterprise admin can use all module active in enterprise
         if (that.privilegeList.findIndex(l => l.code === component.privCode) < 0) {
-          that.$router.push('/error');
+          let foundPage = false;
+          Object.keys(modules).forEach((moduleName) => {
+            if (foundPage) {
+              return;
+            }
+            const pageModule = modules[moduleName];
+            if (!pageModule.pages) {
+              return;
+            }
+            Object.keys(pageModule.pages).forEach((pageName) => {
+              const page = pageModule.pages[pageName];
+              if (!foundPage && that.privilegeList.findIndex(l => l.code === page.privCode) >= 0) {
+                that.goPage(pageModule, page);
+                foundPage = true;
+              }
+            });
+          });
+          if (!foundPage) {
+            that.$router.push('error');
+          }
           return;
         }
         return;
