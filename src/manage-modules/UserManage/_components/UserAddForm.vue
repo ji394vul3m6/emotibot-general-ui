@@ -6,7 +6,8 @@
         {{ $t('management.user_name') }}
       </div>
       <div v-if="editMode">{{ userName }}</div>
-      <info-input v-else
+      <div class="row-input-col" v-else>
+      <info-input
         v-model="userName"
         :placeholder="$t('management.input_placeholder')"
         :msg="$t('management.username_format')"
@@ -16,6 +17,7 @@
         :errorMsg="userNameErrorMsg"
       >
       </info-input>
+      </div>
     </div>
 
     <div class="row">
@@ -35,7 +37,8 @@
         <div>********</div>
         <text-button class="modify" @click="startEditPassword">{{ $t('management.modify_password') }}</text-button>
       </div>
-      <info-input v-else
+      <div class="row-input-col" v-else>
+      <info-input 
         type="password"
         v-model="password"
         :placeholder="$t('management.set_passowrd_placeholder')"
@@ -47,6 +50,7 @@
         :errorMsg="passwordErrorMsg"
       >
       </info-input>
+      </div>
     </div>
 
     <div class="row" v-if="!editMode || passwordEdit">
