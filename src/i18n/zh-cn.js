@@ -282,6 +282,7 @@ export default {
       delete_category_fail: '删除分类失败',
       load_commands_fail: '载入指令失败',
       add_new_tag_fail: '新增标签失败',
+      tag_invalid: '僅限10字长内的中文、半形英文与数字',
       add_command_fail: '创建指令失败',
       edit_command_fail: '编辑指令失败',
       delete_command_fail: '删除指令失败',

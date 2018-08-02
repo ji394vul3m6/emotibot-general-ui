@@ -155,6 +155,7 @@ export default {
       }
     },
     origTags() {
+      this.selectedTags = [];
       if (this.origTags.length > 0) {
         this.origTags.forEach((tag) => {
           this.selectedTags.push(tag);
