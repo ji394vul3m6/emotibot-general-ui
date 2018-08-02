@@ -55,6 +55,7 @@ export default {
     selectedIdx: 0,
     showUserMenu: false,
     clickHandler: undefined,
+    blurHandler: undefined,
   }),
   computed: {
     ...mapGetters([
@@ -123,7 +124,13 @@ export default {
           that.clickHandler = undefined;
         }
       };
+      that.blurHandler = () => {
+        that.showUserMenu = false;
+        window.removeEventListener('blur', that.blurHandler);
+        that.blurHandler = undefined;
+      };
       window.addEventListener('click', that.clickHandler);
+      window.addEventListener('blur', that.blurHandler);
     },
     logout() {
       this.$logout();
