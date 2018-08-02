@@ -16,7 +16,10 @@
           <div v-else class="train-hint">
             {{ $t('intent_engine.manage.train_status_msg.last_train', {timestr: lastTrainedTime}) }}
           </div>
-          <text-button id="train-button" :button-type="canTrain ? 'default' : 'disable'" :icon-type="canTrain ? 'info_warning' : 'info_warning_gray'" width="100px" @click="startTraining" v-tooltip="trainButtonTooltip">{{ $t('intent_engine.train') }}</text-button>
+          <text-button id="train-button"
+            :button-type="canTrain ? 'default' : 'disable'"
+            :icon-type="canTrain ? 'info_warning' : 'info_warning_gray'" width="100px"
+            @click="startTraining" v-tooltip="trainButtonTooltip">{{ $t('intent_engine.train') }}</text-button>
           <search-input v-model="intentKeyword" @focus="setSearchIntent"></search-input>
         </div>
       </div>
