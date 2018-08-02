@@ -39,6 +39,7 @@
 import { mapGetters } from 'vuex';
 import FlexTable from '@/components/FlexTable';
 import apiBF from '@/api/BF';
+import validate from '@/utils/js/validate';
 import api from './_api/qalabel';
 
 export default {
@@ -153,6 +154,10 @@ export default {
       const that = this;
       if (item.name.length <= 0) {
         that.$popError(that.$t('error_msg.input_empty'));
+        return;
+      }
+      if (!validate.isValidLabel(item.name)) {
+        that.$popError(that.$t('format.tag_format'));
         return;
       }
 

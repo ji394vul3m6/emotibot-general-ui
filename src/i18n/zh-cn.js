@@ -1056,4 +1056,7 @@ export default {
     back_to_system_manage: '返回系统管理',
     logout: '登出',
   },
+  format: {
+    tag_format: '僅限10字长内的中文、半形英文与数字',
+  },
 };
