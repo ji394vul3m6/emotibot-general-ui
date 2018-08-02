@@ -36,9 +36,9 @@
     <div class="support-format">
       {{ $t('intent_engine.import.support_format')}}      
     </div>
-    <!-- <div class="download-template">
+    <div class="download-template">
       <span @click="downloadTemplate">{{ $t('intent_engine.import.download_template')}}</span>      
-    </div> -->
+    </div>
   </div>
 </template>
 <script>
@@ -68,7 +68,7 @@ export default {
   },
   methods: {
     downloadTemplate() {
-      // window.open(, '_blank');
+      window.open('/Files/intent_template.xlsx', '_blank');
     },
     toggleIconHover(bool) {
       this.iconHover = bool;
