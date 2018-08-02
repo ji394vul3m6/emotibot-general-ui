@@ -12,10 +12,8 @@
       @blur="toggleFocus(false)">
     <div ref="infoIcon" class="input-icon info-icon" 
       v-tooltip="infoTooltip"
-      @mouseover="toggleHover(true)"
-      @mouseout="toggleHover(false)">
-      <icon v-if="isHover" icon-type="info_hover" :size=16 />
-      <icon v-else icon-type="info" :size=16 />
+    >
+      <icon icon-type="info" :size=16 enableHover/>
     </div> 
   </div>
 </template>
@@ -82,7 +80,6 @@ export default {
     return {
       text: '',
       isFocus: false,
-      isHover: false,
       errorTooltip: {
         msg: '',
         eventOnly: true,
@@ -115,7 +112,9 @@ export default {
       if (that.error) {
         that.$refs.infoInput.dispatchEvent(new Event('tooltip-show'));
         // reposition info tooltip
-        that.infoTooltip.top = 30 + 30 + 8; // inputHeight + tooltipHeight + padding
+        const extralines = Math.ceil(that.msg.length / 25) - 1;  // each line can fit about 25 words
+        that.infoTooltip.top = 30 + 30 + (extralines * 18) + 8;
+        // inputHeight + tooltipHeight + extralines * lineheight + padding
         that.$refs.infoIcon.dispatchEvent(new Event('tooltip-reload'));
       } else {
         that.$refs.infoInput.dispatchEvent(new Event('tooltip-hide'));
@@ -132,9 +131,6 @@ export default {
     },
     toggleFocus(bool) {
       this.isFocus = bool;
-    },
-    toggleHover(bool) {
-      this.isHover = bool;
     },
   },
 };
