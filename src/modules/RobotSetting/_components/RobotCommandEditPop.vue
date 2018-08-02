@@ -35,6 +35,7 @@
           :origTags="origTags"
           :tagsList="tagsList"
           :readonly="readonly"
+          :maxlength="10"
           width="100%"
           @selectedTagsChanged="updateTags"
           @addNewTag="addNewLabel"
@@ -142,6 +143,7 @@
 import DatePicker from '@/components/DateTimePicker/DatePicker';
 import TagInput from '@/components/basic/TagInput';
 import labelAPI from '@/modules/SSM/_api/qalabel';
+import validate from '@/utils/js/validate';
 
 export default {
   api: [labelAPI],
@@ -433,6 +435,20 @@ export default {
         type: 'userdefine',
         category: 'sq',
       };
+      console.log('add new label');
+      if (!validate.isValidLabel(tag)) {
+        // Reset tagList to old one and refresh tags
+        that.$notifyFail(that.$t('robot_command.error.tag_invalid'));
+        const idxInTagList = that.tagsList.indexOf(params.name);
+        that.tagsList.splice(idxInTagList, 1);
+        console.log('selected tags before', JSON.stringify(that.selectedTags));
+        const idxInSelectedTags = that.selectedTags.indexOf(params.name);
+        that.selectedTags.splice(idxInSelectedTags, 1);
+        console.log('selected tags', JSON.stringify(that.selectedTags));
+        that.origTags = that.selectedTags;
+        console.log('origTags', JSON.stringify(that.origTags));
+        return;
+      }
       that.$api.addLabel(params)
         .then((res) => {
           if (res.error_code !== 0) {
