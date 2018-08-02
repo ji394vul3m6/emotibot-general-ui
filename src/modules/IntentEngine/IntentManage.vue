@@ -311,10 +311,15 @@ export default {
 .content {
   padding: 20px;
   .content-tool {
+    flex: 0 0 auto;
     margin-bottom: 20px;
     display: flex;
+    justify-content: space-between;
     .text-button {
       margin-right: 10px;
+      &:last-child {
+        margin-right: 0px;
+      }
     }
   }
 }

@@ -687,6 +687,7 @@ export default {
       choose_file: '请选择档案',
       success: '意图导入成功',
       fail: '意图导入失败',
+      download_template: '下载意图范本',
       support_format: '支援格式 .xlsx',
       upload_file: '上传档案',
       upload_file_undefined: '档案无法辨识',
