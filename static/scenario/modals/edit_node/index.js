@@ -820,7 +820,7 @@
   }
 
   function insertGlobalConnectionsIntoJSON(nodeId, node){
-    var elems = $('#moreconditions_module0 > div');
+    var elems = $('#moreconditions_module_gc > div');
     for (var idx=0; idx<elems.length; idx++) {
       var rules = [];
       var global_vars = [];
@@ -1183,6 +1183,8 @@
   }
 
   function addMoreConditions(id) {
+    console.log(id);
+    console.log("#moreconditions_module"+id);
     var moreConditionsHTML = $("#moreConditionsTemplate").val();
     $("#moreconditions_module"+id).attr("lastcondition", parseInt($("#moreconditions_module"+id).attr("lastcondition"))+1);
     $("#moreconditions_module"+id).append(moreConditionsHTML);

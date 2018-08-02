@@ -1520,12 +1520,12 @@
         if(window.moduleData == null){
             return;
         }
-        $('#moreconditions_module0').html("");
+        $('#moreconditions_module_gc').html("");
         const gConn = window.moduleData.global_connections || [];
         for (var index = 0; index < gConn.length; index++){
             var edge = gConn[index];
-            addMoreConditions(0);
-            var eltEdge = $('#moreconditions_module0 > div:last');
+            addMoreConditions('_gc');
+            var eltEdge = $('#moreconditions_module_gc > div:last');
             if ('edge_type' in edge && edge.edge_type == 'qq'){
                 //qq edges
                 insertQQEdgesIntoUIFromJSON(eltEdge, edge);
