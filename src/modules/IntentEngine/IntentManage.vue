@@ -126,7 +126,7 @@ export default {
   },
   methods: {
     downloadTemplate() {
-      // window.open(, '_blank');
+      window.open('/Files/intent_template.xlsx', '_blank');
     },
     addIntent() {
       this.isAddIntent = true;
