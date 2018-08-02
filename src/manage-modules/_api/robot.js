@@ -27,33 +27,29 @@ function addRobot(enterpriseID, app, user) {
       userid: user,
       name: app.name,
     };
-    return this.$reqPost(BF2_ROBOT_URL, qs.stringify(option), {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    });
+    return this.$reqPostForm(BF2_ROBOT_URL, option);
   })
   .then(() => {
     const option = {
       appid,
     };
-    return this.$reqPost(BF2_SSM_URL, qs.stringify(option), {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    });
+    return this.$reqPostForm(BF2_SSM_URL, option);
   })
   .then(() => {
     const option = {
       appid,
     };
-    return this.$reqPost(ROBOT_URL, qs.stringify(option), {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    });
+    return this.$reqPostForm(ROBOT_URL, option);
   });
 }
 function updateRobot(enterpriseID, appID, app) {
-  return this.$reqPut(`${baseURL}/${enterpriseID}/app/${appID}`, qs.stringify(app), {
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-  }).then(rsp => rsp.data);
+  let rspData;
+  return this.$reqPutForm(`${baseURL}/${enterpriseID}/app/${appID}`, app)
+  .then((rsp) => {
+    rspData = rsp.data;
+    return this.$reqPatchForm(`${BF2_ROBOT_URL}/${appID}`, app);
+  })
+  .then(() => rspData);
 }
 function deleteRobot(enterpriseID, appID) {
   return this.$reqDelete(`${baseURL}/${enterpriseID}/app/${appID}`).then(rsp => this.$reqDelete(`${BF2_ROBOT_URL}/${appID}`)
