@@ -72,7 +72,7 @@
 <script>
 import api from './_api/intent';
 import IntentTestList from './_components/IntentTestList';
-import ImportIntentPop from './_components/ImportIntentPop';
+import ImportIntentTestPop from './_components/ImportIntentTestPop';
 
 export default {
   path: 'intent-test',
@@ -229,16 +229,17 @@ export default {
       // if (!that.allowImport) return;
 
       const popOption = {
-        title: that.$t('intent_engine.import.title'),
-        component: ImportIntentPop,
+        title: that.$t('intent_engine.import.title_test'),
+        component: ImportIntentTestPop,
         disable_ok: true,
         validate: true,
         callback: {
           ok(file) {
             that.$emit('startLoading');
+            // TODO: call api to import intent test
             that.$api.importIntents(file)
             .then((res) => {
-              that.currentVersion = res.version;
+              that.currentVersion = res.version;  // version should be tests version
               clearInterval(that.statusTimer);
               that.statusTimer = undefined;
               that.pollTrainingStatus(that.currentVersion);
