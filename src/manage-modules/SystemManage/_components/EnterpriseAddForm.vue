@@ -280,6 +280,7 @@ export default {
             account: that.adminUserName,
             name: that.adminDisplayName,
             password: that.adminPassword,
+            email: that.adminEmail,
           },
         });
       }
