@@ -1,9 +1,9 @@
 <template>
   <div>
     <div class="card h-fill w-fill">
-      <nav-bar class='nav-bar' :options=pageOption></nav-bar>
+      <nav-bar class='nav-bar' :options=pageOption @search="doSearch" showSearch></nav-bar>
       <div class="page">
-        <command-row class="commands" @search="doSearch">
+        <command-row class="commands">
             <template v-if="isAdmin">
             <text-button button-type="primary" @click="createRobot">{{ $t('management.create_robot') }}</text-button>
             <text-button @click="goGroupList">{{ $t('management.group_manage') }}</text-button>
@@ -239,13 +239,13 @@ export default {
 .page {
   display: flex;
   flex-direction: column;
+  @include auto-overflow();
+  @include customScrollbar();
 
   .robot-list {
     flex: 1;
     padding: 20px;
     padding-bottom: 0px;
-    @include auto-overflow();
-    @include customScrollbar();
     
     display: flex;
     flex-wrap: wrap;

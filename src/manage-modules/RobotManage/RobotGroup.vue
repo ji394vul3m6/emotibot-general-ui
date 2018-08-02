@@ -1,12 +1,14 @@
 <template>
   <div>
     <div class="card w-fill h-fill">
-      <nav-bar :options="pageOption"></nav-bar>
-      <div class="back-button">
-        <text-button @click="goRobotList">{{ $t('management.go_back') }}</text-button>
+      <div class="header">
+        <nav-bar :options="pageOption" @search="keywordChange" showSearch></nav-bar>
+        <div class="back-button">
+          <text-button @click="goRobotList">{{ $t('management.go_back') }}</text-button>
+        </div>
       </div>
       <div class="page">
-        <command-row class="commands" @search="keywordChange">
+        <command-row class="commands">
           <text-button button-type="primary" @click="popGroupEditor()">{{ $t('management.create_group') }}</text-button>
         </command-row>
         <div class="group-list">
@@ -181,14 +183,19 @@ export default {
   display: flex;
   flex-direction: column;
   position: relative;
-  .back-button {
-    position: absolute;
-    right: 20px;
-    top: 20px;
-  }
 
-  .nav-bar {
+  .header{
     flex: 0 0 60px;
+    display: flex;
+    .nav-bar {
+      flex: 1;
+    }
+    .back-button {
+      flex: 0 90px;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid $color-borderline;
+    }
   }
   .page {
     flex: 1;
@@ -197,15 +204,15 @@ export default {
 .page {
   display: flex;
   flex-direction: column;
+  @include auto-overflow();
+  @include customScrollbar();
   .commands {
     flex: 0 0 auto;
   }
   .group-list {
     flex: 1;
     padding: 20px;
-    padding-bottom: 0;
-    @include auto-overflow();
-    @include customScrollbar();
+    padding-bottom: 0; 
 
     display: flex;
     flex-wrap: wrap;

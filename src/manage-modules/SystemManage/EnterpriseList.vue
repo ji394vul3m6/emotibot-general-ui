@@ -1,9 +1,9 @@
 <template>
   <div>
     <div class="card h-fill w-fill">
-      <nav-bar class='nav-bar' :options=pageOption v-model="currentPage"></nav-bar>
+      <nav-bar class='nav-bar' :options=pageOption v-model="currentPage"  @search="doSearch" showSearch></nav-bar>
       <div class="page">
-        <command-row class="commands" @search="doSearch">
+        <command-row class="commands">
             <text-button button-type="primary"
             @click="popAddEnterprise">{{ $t('management.create_enterprise') }}</text-button>
         </command-row>
@@ -237,13 +237,13 @@ export default {
 .page {
   display: flex;
   flex-direction: column;
+  @include auto-overflow();
+  @include customScrollbar();
 
   .enterprise-list {
     flex: 1;
     padding: 20px;
     padding-bottom: 0px;
-    @include auto-overflow();
-    @include customScrollbar();
     
     display: flex;
     flex-wrap: wrap;

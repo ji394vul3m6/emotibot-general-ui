@@ -5,64 +5,66 @@
       <div class="back-button">
         <text-button @click="goUserList">{{ $t('management.go_back') }}</text-button>
       </div>
-      <command-row class="commands" :show-search=false>
-        <text-button button-type="primary" @click="addRole">{{ $t('management.add_role') }}</text-button>
-      </command-row>
-      <div class="role-list">
-        <div class="role-list-inside">
-          <div v-for="role in roles" :key="`${role.uuid}-${role.editMode}`" class="role-card" :class="{'edit-mode': role.editMode}">
-            <div class="card-title">
-            <template v-if="role.editMode">
-              <div class="title-text">
-                <input v-model="editName" v-tooltip="nameTooltip" ref='nameInput' maxlength=50 :placeholder="$t('management.role_name_placeholder')">
-              </div>
-              <div class="title-action">
-                <div class="action" @click="closeEditRole(role, false)">{{ $t('general.cancel') }}</div>
-                <div class="action" @click="closeEditRole(role, true)"
-                  v-if="showSave" >{{ $t('general.save') }}</div>
-              </div>
-            </template>
-            <template v-else>
-              <div class="title-text">{{ role.name }}</div>
-              <div class="title-action" v-if="!oneInEdit">
-                <div class="action" @click="editRole(role)">{{ $t('general.edit') }}</div>
-                <div class="action delete" @click="deleteRolePop(role)">{{ $t('general.delete') }}</div>
-              </div>
-            </template>
-            </div>
-            <div class="card-content">
-              <div v-for="(val, key) in showPrivilegeMap" :key="key" class="priv-col">
-                <div class="priv-title">
-                  {{ $t(`pages.${key}.module_name`) }}
+      <div class="page">
+        <command-row class="commands">
+          <text-button button-type="primary" @click="addRole">{{ $t('management.add_role') }}</text-button>
+        </command-row>
+        <div class="role-list">
+          <div class="role-list-inside">
+            <div v-for="role in roles" :key="`${role.uuid}-${role.editMode}`" class="role-card" :class="{'edit-mode': role.editMode}">
+              <div class="card-title">
+              <template v-if="role.editMode">
+                <div class="title-text">
+                  <input v-model="editName" v-tooltip="nameTooltip" ref='nameInput' maxlength=50 :placeholder="$t('management.role_name_placeholder')">
                 </div>
-                <div class="priv-list">
-                  <template v-if="role.editMode">
-                    <template v-for="(cmds, mod) in val">
-                      <div v-for="(check, cmd) in cmds" :key="`${mod}-${cmd}`" class="priv-item">
-                        <input type="checkbox" :id="`${mod}.${cmd}`" v-model="cmds[cmd]" @change="checkCmdDependency(cmds, cmd)">
-                        <label class="item-text" :for="`${mod}.${cmd}`">
-                          {{ $t(`management.privilege.${mod}.${cmd}`) }}
-                        </label>
-                      </div>
+                <div class="title-action">
+                  <div class="action" @click="closeEditRole(role, false)">{{ $t('general.cancel') }}</div>
+                  <div class="action" @click="closeEditRole(role, true)"
+                    v-if="showSave" >{{ $t('general.save') }}</div>
+                </div>
+              </template>
+              <template v-else>
+                <div class="title-text">{{ role.name }}</div>
+                <div class="title-action" v-if="!oneInEdit">
+                  <div class="action" @click="editRole(role)">{{ $t('general.edit') }}</div>
+                  <div class="action delete" @click="deleteRolePop(role)">{{ $t('general.delete') }}</div>
+                </div>
+              </template>
+              </div>
+              <div class="card-content">
+                <div v-for="(val, key) in showPrivilegeMap" :key="key" class="priv-col">
+                  <div class="priv-title">
+                    {{ $t(`pages.${key}.module_name`) }}
+                  </div>
+                  <div class="priv-list">
+                    <template v-if="role.editMode">
+                      <template v-for="(cmds, mod) in val">
+                        <div v-for="(check, cmd) in cmds" :key="`${mod}-${cmd}`" class="priv-item">
+                          <input type="checkbox" :id="`${mod}.${cmd}`" v-model="cmds[cmd]" @change="checkCmdDependency(cmds, cmd)">
+                          <label class="item-text" :for="`${mod}.${cmd}`">
+                            {{ $t(`management.privilege.${mod}.${cmd}`) }}
+                          </label>
+                        </div>
+                      </template>
                     </template>
-                  </template>
-                  <template v-else>
-                    <template v-for="(cmds, mod) in val">
-                      <div v-for="(check, cmd) in cmds" :key="`${mod}-${cmd}`" class="priv-item"
-                        v-if="role.privileges[mod] && role.privileges[mod].indexOf(cmd) >= 0">
-                        <icon icon-type="check" :size=8 />
-                        <label class="item-text" :for="`${mod}.${cmd}`">
-                          {{ $t(`management.privilege.${mod}.${cmd}`) }}
-                        </label>
-                      </div>
+                    <template v-else>
+                      <template v-for="(cmds, mod) in val">
+                        <div v-for="(check, cmd) in cmds" :key="`${mod}-${cmd}`" class="priv-item"
+                          v-if="role.privileges[mod] && role.privileges[mod].indexOf(cmd) >= 0">
+                          <icon icon-type="check" :size=8 />
+                          <label class="item-text" :for="`${mod}.${cmd}`">
+                            {{ $t(`management.privilege.${mod}.${cmd}`) }}
+                          </label>
+                        </div>
+                      </template>
                     </template>
-                  </template>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div> <!-- end of role-card-->
-        </div> <!-- end of role-list-inside-->
-      </div> <!-- end of role-list-->
+            </div> <!-- end of role-card-->
+          </div> <!-- end of role-list-inside-->
+        </div> <!-- end of role-list-->
+      </div>
     </div>
   </div>
 </template>
@@ -343,7 +345,8 @@ export default {
 .card {
   overflow: hidden;
   position: relative;
-
+  display: flex;
+  flex-direction: column;
   .back-button {
     position: absolute;
     right: 20px;
@@ -351,18 +354,27 @@ export default {
   }
 
   .nav-bar {
+    flex: 0 0 60px;
   }
-  .commands {
-  }
-  .role-list {
-    height: calc(100% - 128px);
-    @include auto-overflow();
-    @include customScrollbar();
-
+  
+  .page {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    padding: 0 20px;
-    padding-top: 20px;
+    @include auto-overflow();
+    @include customScrollbar();
+    .commands {
+      flex: 0 0 auto;
+    }
+    .role-list {
+      flex: 1;
+      height: calc(100% - 128px);
+
+      display: flex;
+      flex-direction: column;
+      padding: 0 20px;
+      padding-top: 20px;
+    }
   }
 }
 

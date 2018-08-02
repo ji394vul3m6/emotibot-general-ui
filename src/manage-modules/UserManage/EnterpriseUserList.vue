@@ -1,9 +1,9 @@
 <template>
   <div>
     <div class="card h-fill w-fill">
-      <nav-bar class='nav-bar' :options=pageOption></nav-bar>
+      <nav-bar class='nav-bar' :options=pageOption @search="changeKeyword" showSearch></nav-bar>
       <div class="page">
-        <command-row class="commands" @search="changeKeyword">
+        <command-row class="commands">
           <text-button button-type="primary" @click="popAddUser(2)">{{ $t('management.add_account') }}</text-button>
           <text-button @click="goRoleList">{{ $t('management.privilege_setting') }}</text-button>
         </command-row>
@@ -333,6 +333,8 @@ export default {
   }
   .page {
     flex: 1;
+    @include auto-overflow();
+    @include customScrollbar();
 
     display: flex;
     flex-direction: column;

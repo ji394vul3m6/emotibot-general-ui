@@ -1,9 +1,9 @@
 <template>
   <div>
     <div class="card h-fill w-fill">
-      <nav-bar class='nav-bar' :options=pageOption v-model='currentPage'></nav-bar>
+      <nav-bar class='nav-bar' :options=pageOption v-model='currentPage' @search="changeKeyword" showSearch></nav-bar>
       <div class="page">
-        <command-row class="commands" @search="changeKeyword">
+        <command-row class="commands">
           <text-button button-type="primary" @click="popEditUser()">{{ $t('management.add_account') }}</text-button>
         </command-row>
         <div class="table-container">
@@ -250,9 +250,10 @@ export default {
   }
   .page {
     flex: 1;
-
     display: flex;
     flex-direction: column;
+    @include auto-overflow();
+    @include customScrollbar();
     .commands {
       flex: 0 0 auto;
     }
