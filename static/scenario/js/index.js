@@ -1357,6 +1357,9 @@
                         newModuleData(entryNodeId, "entry");
                         saveModulePosition(entryNodeId, {left:mouseX, top:mouseY});
                     }
+                    if (typeof window.moduleData.global_edges === 'undefined') {
+                        window.moduleData.global_edges = [];
+                    }
 
                     initScenario(window.moduleData);
                     toastr.options = {"positionClass": "toast-bottom-right"};
@@ -1521,7 +1524,7 @@
             return;
         }
         $('#moreconditions_module_gc').html("");
-        const gConn = window.moduleData.global_connections || [];
+        const gConn = window.moduleData.global_edges || [];
         for (var index = 0; index < gConn.length; index++){
             var edge = gConn[index];
             addMoreConditions('_gc');

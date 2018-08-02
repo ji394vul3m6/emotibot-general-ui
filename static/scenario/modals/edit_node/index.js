@@ -983,16 +983,16 @@
   }
 
   function saveGlobalConnections() {
-    const nodeId = 'global_connections'
+    const nodeId = 'global_edges'
     const pseudoNode = {
       "node_id": nodeId,
       "description": "通用连线",
-      "node_type": 'global_connections',
+      "node_type": 'global_edges',
       "edges": [],
       "global_vars": [],
     }
     insertGlobalConnectionsIntoJSON(nodeId, pseudoNode);
-    window.moduleData.global_connections = pseudoNode.edges
+    window.moduleData.global_edges = pseudoNode.edges
     uploadScenarioJson();
   }
 
@@ -1207,8 +1207,6 @@
   }
 
   function addMoreConditions(id) {
-    console.log(id);
-    console.log("#moreconditions_module"+id);
     var moreConditionsHTML = $("#moreConditionsTemplate").val();
     $("#moreconditions_module"+id).attr("lastcondition", parseInt($("#moreconditions_module"+id).attr("lastcondition"))+1);
     $("#moreconditions_module"+id).append(moreConditionsHTML);
