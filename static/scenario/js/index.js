@@ -1535,9 +1535,9 @@
             }else{
                 //normal edges
                 if(edge.to_node_id == null){
-                    eltEdge.find("div.thenGoto > select").val("null");
+                    eltEdge.find("div.thenGoto > select").multiselect('select', 'null');
                 }else{
-                    eltEdge.find("div.thenGoto > select").val(edge.to_node_id);
+                    eltEdge.find("div.thenGoto > select").multiselect('select', edge.to_node_id);
                 }
                 var rules = edge.condition_rules[0];
                 insertConditionsIntoUIFromJSON(rules, eltEdge, '.if-content');
