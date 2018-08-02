@@ -77,3 +77,12 @@ a { cursor:pointer; }
   -khtml-user-drag: element;
   cursor: move;
 }
+
+#config .tab-content{
+  overflow: visible !important;
+  width: 675px;
+}
+
+#config .nav-tabs-vertical{
+  display: flex;
+}

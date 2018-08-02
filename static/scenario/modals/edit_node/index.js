@@ -204,8 +204,8 @@
     addElseOptions(failedSelectUI, node);
     addElseOptions(succeedSelectUI, node);
 
-    $("#restful_connections").find(".failedThenGoto").val(node.edges[0].to_node_id);
-    $("#restful_connections").find(".succeedThenGoto").val(node.edges[1].to_node_id);
+    $("#restful_connections").find(".failedThenGoto").multiselect('select', node.edges[0].to_node_id);
+    $("#restful_connections").find(".succeedThenGoto").multiselect('select', node.edges[1].to_node_id);
   }
 
   function insertEdgesIntoJSONFromRestfulConnectionsTab(node){
@@ -518,9 +518,21 @@
     addElseOptions(failSelectUI, node);
 
     $("#polarity_connections").find(".failLimit").val(node.edges[0].actions[1].val);
-    $("#polarity_connections").find(".yesThenGoto").val(node.edges[4].to_node_id);
-    $("#polarity_connections").find(".noThenGoto").val(node.edges[5].to_node_id);
-    $("#polarity_connections").find(".failThenGoto").val(node.edges[6].to_node_id);
+    if(node.edges[4].to_node_id === null){ // init
+      $("#polarity_connections").find(".yesThenGoto").multiselect('select', '0');
+    }else{
+      $("#polarity_connections").find(".yesThenGoto").multiselect('select', node.edges[4].to_node_id);
+    }
+    if(node.edges[5].to_node_id === null){ // init
+      $("#polarity_connections").find(".noThenGoto").multiselect('select', '0');
+    }else{
+      $("#polarity_connections").find(".noThenGoto").multiselect('select', node.edges[5].to_node_id);
+    }
+    if(node.edges[6].to_node_id === null){ // init
+      $("#polarity_connections").find(".failThenGoto").multiselect('select', '0');
+    }else{
+      $("#polarity_connections").find(".failThenGoto").multiselect('select', node.edges[6].to_node_id);
+    }
   }
 
   function insertEdgesIntoParamsConnectionsTabUIFromJSON(node){
@@ -535,9 +547,17 @@
     for (var index = 0; index < node.edges.length; index++){
       var edge = node.edges[index];
       if (index == 0 && node.edges.length >= 3){
-        $("#params_connections").find(".successThenGoto").val(node.edges[0].to_node_id);
+        if(node.edges[0].to_node_id === null){ // init
+          $("#params_connections").find(".successThenGoto").multiselect('select', '0');
+        }else{
+          $("#params_connections").find(".successThenGoto").multiselect('select', node.edges[0].to_node_id);
+        }
         $("#params_connections").find(".failLimit").val(node.edges[1].actions[0].val);
-        $("#params_connections").find(".failThenGoto").val(node.edges[2].to_node_id);
+        if(node.edges[2].to_node_id === null){ // init
+          $("#params_connections").find(".failThenGoto").multiselect('select', '0');
+        }else{
+          $("#params_connections").find(".failThenGoto").multiselect('select', node.edges[2].to_node_id);
+        }
         index+=2;
       }else{
         addMoreConditions(1);
@@ -547,10 +567,10 @@
           insertQQEdgesIntoUIFromJSON(eltEdge, edge);
         }else{
           //general edges
-          if(edge.to_node_id == null){
-            eltEdge.find("div.thenGoto > select").val("null");
+          if(edge.to_node_id == null){ // init
+            eltEdge.find("div.thenGoto > select").multiselect('select', 'null');
           }else{
-            eltEdge.find("div.thenGoto > select").val(edge.to_node_id);
+            eltEdge.find("div.thenGoto > select").multiselect('select', edge.to_node_id);
           }
           var rules = edge.condition_rules[0];
           insertConditionsIntoUIFromJSON(rules, eltEdge, '.if-content');
@@ -579,7 +599,11 @@
         index+=2;
       }else if ('edge_type' in edge && edge.edge_type == 'exceedThenGoTo'){
         // insert exceedThenGoTo edge value to UI from JSON
-        $("#connections").find(".exceedThenGoTo").val(edge.to_node_id);
+        if (edge.to_node_id === null){ // init
+          $("#connections").find(".exceedThenGoTo").multiselect('select', '0');
+        }else{
+          $("#connections").find(".exceedThenGoTo").multiselect('select', edge.to_node_id);
+        }
       }else if ('edge_type' in edge && edge.edge_type == 'hidden'){
         continue;
       }else{
@@ -591,9 +615,9 @@
         }else{
           //normal edges
           if(edge.to_node_id == null){
-            eltEdge.find("div.thenGoto > select").val("null");
+            eltEdge.find("div.thenGoto > select").multiselect('select', 'null');
           }else{
-            eltEdge.find("div.thenGoto > select").val(edge.to_node_id);
+            eltEdge.find("div.thenGoto > select").multiselect('select', edge.to_node_id);
           }
           var rules = edge.condition_rules[0];
           insertConditionsIntoUIFromJSON(rules, eltEdge, '.if-content');
@@ -1209,6 +1233,12 @@
       qq_select.append('<option value="' + node.node_id + '">'+ he.encode(node.description) + ' (ID: ' + node.node_id + ')</option>');
     }
     $("#moreconditions_module"+id).sortable();
+    select.val('').multiselect({
+      enableCaseInsensitiveFiltering: true
+    });
+    qq_select.val('').multiselect({
+      enableCaseInsensitiveFiltering: true
+    });
   }
 
   function addMoreTriggers(id) {
@@ -1235,6 +1265,9 @@
         qq_select.append('<option value="' + node.node_id + '">'+ he.encode(node.description) + ' (ID: ' + node.node_id + ')</option>');
       }
     }
+    qq_select.val('').multiselect({
+      enableCaseInsensitiveFiltering: true
+    });
   }
 
   function addMoreNLUParameter(id) {
@@ -1288,13 +1321,14 @@
     if (node.edges.length > 0){
       var id = node.edges[node.edges.length-1].to_node_id;
       if(id == node.node_id){
-        connectionsElseUI.val("null");
-      }
-      else{
-        connectionsElseUI.val(id);
+        connectionsElseUI.multiselect('select', "null");
+      }else if(id === null){
+        connectionsElseUI.multiselect('select', "null");
+      }else{
+        connectionsElseUI.multiselect('select', id);
       }
     }else{
-      connectionsElseUI.val("null");
+      connectionsElseUI.multiselect('select', "null");
     }
   }
 
@@ -1315,6 +1349,10 @@
         connectionsElseUI.append('<option value="' + object.node_id + '">'+ he.encode(object.description) + ' (ID: ' + object.node_id + ')</option>');
       }
     }
+    connectionsElseUI.val('').multiselect({
+      enableCaseInsensitiveFiltering: true,
+      buttonWidth: '150px'
+    });
   }
 
   function insertQQEdgesIntoUIFromJSON(eltEdge, edge){
@@ -1331,7 +1369,7 @@
       }
       var qqs_element = content.children("div.qq_sentences:last");
       qqs_element.children("input").val(edge.candidate_edges[idx].tar_text);
-      qqs_element.children("select").val(edge.candidate_edges[idx].to_node_id);
+      qqs_element.children("select").multiselect('select', edge.candidate_edges[idx].to_node_id);
     }
   }
 
@@ -1356,16 +1394,14 @@
     }
     var contentSelect = settingsUI.find('[name=parserTypeContent]').children('.multiselect').multiselect({
       includeSelectAllOption: true,
-      enableFiltering: true,
-      maxHeight: 100
+      enableCaseInsensitiveFiltering: true,
     });
     for(var idx in contextList){
       contentSelect.multiselect('select', contextList[idx]);
     }
     var requiredSelect = settingsUI.find('[name=requiredData]').children('.multiselect').multiselect({
       includeSelectAllOption: true,
-      enableFiltering: true,
-      maxHeight: 100
+      enableCaseInsensitiveFiltering: true,
     });
     for(var idx in skipKeyList){
       requiredSelect.multiselect('select', skipKeyList[idx]['key'].replace("_"+node.node_id,''));
@@ -2184,8 +2220,7 @@
     }
     $(obj).parent().find("span.name0").children('.multiselect').multiselect({
       includeSelectAllOption: true,
-      enableFiltering: true,
-      maxHeight: 100
+      enableCaseInsensitiveFiltering: true
     });
   }
 
@@ -2450,8 +2485,7 @@
           '</select>');
         triggers0.children('.multiselect').multiselect({
           includeSelectAllOption: true,
-          enableFiltering: true,
-          maxHeight: 100
+          enableCaseInsensitiveFiltering: true,
         });
         $(obj).parent().children("div.triggers1").hide();
         $(obj).parent().children("div.triggers2").hide();
@@ -2474,8 +2508,7 @@
           '</select>');
         triggers0.children('.multiselect').multiselect({
           includeSelectAllOption: true,
-          enableFiltering: true,
-          maxHeight: 100
+          enableCaseInsensitiveFiltering: true,
         });
         $(obj).parent().children("div.triggers1").hide();
         $(obj).parent().children("div.triggers2").hide();
@@ -2498,8 +2531,7 @@
           '</select>');
         triggers0.children('.multiselect').multiselect({
           includeSelectAllOption: true,
-          enableFiltering: true,
-          maxHeight: 100
+          enableCaseInsensitiveFiltering: true,
         });
         $(obj).parent().children("div.triggers1").hide();
         $(obj).parent().children("div.triggers2").hide();

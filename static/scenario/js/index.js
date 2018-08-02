@@ -1562,7 +1562,7 @@
                 toastr.success('场景已更新');
             },
             error: function(err) {
-                console.log('场景更新失败: ' + err);
+                console.log('场景更新失败: ' + JSON.stringify(err));
             }
         });
         return false;
