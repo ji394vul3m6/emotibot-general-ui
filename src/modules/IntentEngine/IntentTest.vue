@@ -21,7 +21,7 @@
             {{ $t('intent_engine.manage.train_status_msg.last_train', {timestr: lastTrainedTime}) }}
           </div>
           <text-button id="train-button" :button-type="canTrain ? 'default' : 'disable'" :icon-type="canTrain ? 'info_warning' : 'info_warning_gray'" width="100px" @click="startTraining" v-tooltip="trainButtonTooltip">{{ $t('intent_engine.train') }}</text-button>
-          <search-input v-model="testKeyword"></search-input>
+          <search-input v-model="testKeyword" @focus="setSearchTest"></search-input>
         </div>
       </div>
       <div class="content">
@@ -61,9 +61,11 @@
           :canEditTest="canEdit"
           :canDeleteTest="canEdit"
           :addTestMode="isAddTest"
+          :searchTestMode="isSearchTest"
           :keyword="testKeyword"
           @addTestDone="finishAddTest($event)"
-          @deleteTestDone="refreshTestingPage()">
+          @deleteTestDone="refreshTestingPage()"
+          @cancelSearch="setSearchTest(false)">
         </intent-test-list>
       </div>
     </div>
@@ -94,6 +96,7 @@ export default {
 
       isTesting: false,
       isAddTest: false,
+      isSearchTest: false,
 
       intentList: [
         // {
@@ -214,6 +217,9 @@ export default {
       if (done) {
         this.refreshTestingPage();
       }
+    },
+    setSearchTest(bool) {
+      this.isSearchTest = bool;
     },
     exportIntentList(version) {
       if (!this.allowExport) return;

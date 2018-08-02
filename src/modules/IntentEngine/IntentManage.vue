@@ -17,7 +17,7 @@
             {{ $t('intent_engine.manage.train_status_msg.last_train', {timestr: lastTrainedTime}) }}
           </div>
           <text-button id="train-button" :button-type="canTrain ? 'default' : 'disable'" :icon-type="canTrain ? 'info_warning' : 'info_warning_gray'" width="100px" @click="startTraining" v-tooltip="trainButtonTooltip">{{ $t('intent_engine.train') }}</text-button>
-          <search-input v-model="intentKeyword"></search-input>
+          <search-input v-model="intentKeyword" @focus="setSearchIntent"></search-input>
         </div>
       </div>
       <div class="content">
@@ -41,9 +41,11 @@
           :canEditIntent="canEdit && allowEdit"
           :canDeleteIntent="canEdit && allowEdit"
           :addIntentMode="isAddIntent"
+          :searchIntentMode="isSearchIntent"
           :keyword="intentKeyword"
           @addIntentDone="finishAddIntent($event)"
-          @deleteIntentDone="refreshIntentPage()">
+          @deleteIntentDone="refreshIntentPage()"
+          @cancelSearch="setSearchIntent(false)">
         </intent-list>
       </div>
     </div>
@@ -73,6 +75,7 @@ export default {
       keywordDelay: 500, // ms
 
       isAddIntent: false,
+      isSearchIntent: false,
 
       intentList: [
         // {
@@ -178,6 +181,9 @@ export default {
       if (done) {
         this.refreshIntentPage();
       }
+    },
+    setSearchIntent(bool) {
+      this.isSearchIntent = bool;
     },
     exportIntentList(version) {
       if (!this.allowExport) return;

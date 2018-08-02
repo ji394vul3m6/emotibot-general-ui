@@ -178,6 +178,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    searchIntentMode: {
+      type: Boolean,
+      default: false,
+    },
     canEditIntent: {
       type: Boolean,
       default: true,
@@ -293,6 +297,11 @@ export default {
         this.beforeAddIntent();
       } else {
         this.isAddIntent = false;
+      }
+    },
+    searchIntentMode() {
+      if (this.searchIntentMode) {
+        this.beforeSearchIntent();
       }
     },
     editIntentName() {
@@ -478,14 +487,14 @@ export default {
       intent.hasCorpusEditing = false;
       intent.corpus = that.corpusBackup;
       intent.viewCorpusType = POSITIVE_CORPUS;
-      if (nextAction !== undefined) {
+      if (nextAction) {
         nextAction();
       }
     },
-    cancelEditIntentPop(intent, nextAction) {
+    cancelEditIntentPop(intent, nextActionOnOk, nextActionOnCancel) {
       const that = this;
       if (!that.alreadyEdit) {
-        that.confirmCancelEditIntent(intent, nextAction);
+        that.confirmCancelEditIntent(intent, nextActionOnOk);
         return;
       }
       const option = {
@@ -494,7 +503,12 @@ export default {
         },
         callback: {
           ok: () => {
-            that.confirmCancelEditIntent(intent, nextAction);
+            that.confirmCancelEditIntent(intent, nextActionOnOk);
+          },
+          cancel: () => {
+            if (nextActionOnCancel) {
+              nextActionOnCancel();
+            }
           },
         },
       };
@@ -548,7 +562,16 @@ export default {
       }
       return true;
     },
-
+    beforeSearchIntent() {
+      const that = this;
+      const intentInEditMode = that.intentInEditMode();
+      if (intentInEditMode !== undefined) {
+        that.cancelEditIntentPop(intentInEditMode, null, that.cancelSearch);
+      }
+    },
+    cancelSearch() {
+      this.$emit('cancelSearch');
+    },
     /** Handle Add Intent */
     beforeAddIntent() {
       const that = this;

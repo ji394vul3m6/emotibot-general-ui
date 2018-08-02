@@ -120,7 +120,7 @@
         </div>
       </div>
       <div class="intent-block-content">
-        <div v-if="intent.isEditMode" class="corpus-tools">
+        <div class="corpus-tools">
           <div v-if="newIntent.hasCorpusSelected" class="corpus-delete-btn">
             <text-button button-type="error" @click="deleteMultiCorpus(newIntent)">{{ $t('general.delete') }}</text-button>
           </div>
@@ -176,6 +176,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    searchTestMode: {
+      type: Boolean,
+      default: false,
+    },
     canEditTest: {
       type: Boolean,
       default: true,
@@ -202,10 +206,7 @@ export default {
       LIST_PAGE_SIZE: 10,
       newIntent: {
         name: '',
-        corpus: {
-          pos: [],
-          neg: [],
-        },
+        corpus: [],
         curPage: 1,
         expand: true,
         isHover: false,
@@ -286,6 +287,11 @@ export default {
         this.beforeAddTest();
       } else {
         this.isAddTest = false;
+      }
+    },
+    searchTestMode() {
+      if (this.searchTestMode) {
+        this.beforeSearchTest();
       }
     },
     editTestName() {
@@ -510,14 +516,14 @@ export default {
       intent.isEditMode = false;
       intent.hasCorpusSelected = false;
       intent.corpus = that.corpusBackup;
-      if (nextAction !== undefined) {
+      if (nextAction) {
         nextAction();
       }
     },
-    cancelEditTestPop(intent, nextAction) {
+    cancelEditTestPop(intent, nextActionOnOk, nextActionOnCancel) {
       const that = this;
       if (!that.alreadyEdit) {
-        that.confirmCancelEditTest(intent, nextAction);
+        that.confirmCancelEditTest(intent, nextActionOnOk);
         return;
       }
       const option = {
@@ -526,7 +532,12 @@ export default {
         },
         callback: {
           ok: () => {
-            that.confirmCancelEditTest(intent, nextAction);
+            that.confirmCancelEditTest(intent, nextActionOnOk);
+          },
+          cancel: () => {
+            if (nextActionOnCancel) {
+              nextActionOnCancel();
+            }
           },
         },
       };
@@ -577,7 +588,16 @@ export default {
       }
       return true;
     },
-
+    beforeSearchTest() {
+      const that = this;
+      const intentInEditMode = that.intentInEditMode();
+      if (intentInEditMode !== undefined) {
+        that.cancelEditTestPop(intentInEditMode, null, that.cancelSearch);
+      }
+    },
+    cancelSearch() {
+      this.$emit('cancelSearch');
+    },
     /** Handle Add Intent */
     beforeAddTest() {
       const that = this;
@@ -593,10 +613,7 @@ export default {
       that.closeAllIntent();
       that.newIntent = {
         name: '',
-        corpus: {
-          pos: [],
-          neg: [],
-        },
+        corpus: [],
         curPage: 1,
         expand: true,
         isEditMode: true,
