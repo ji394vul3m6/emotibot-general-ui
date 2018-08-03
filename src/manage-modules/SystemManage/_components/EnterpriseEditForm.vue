@@ -155,6 +155,12 @@ export default {
       width: 14px;
       height: 14px;
       cursor: pointer;
+      &:disabled{
+        cursor: default;
+        +label {
+          cursor: default;
+        }
+      }
     }
   }
 }
