@@ -45,6 +45,7 @@
           :canDeleteIntent="canEdit && allowEdit"
           :addIntentMode="isAddIntent"
           :searchIntentMode="isSearchIntent"
+          :searchIntentWithKeyword="isSearchKeyword"
           :keyword="intentKeyword"
           @addIntentDone="finishAddIntent($event)"
           @deleteIntentDone="refreshIntentPage()"
@@ -78,7 +79,8 @@ export default {
       keywordDelay: 500, // ms
 
       isAddIntent: false,
-      isSearchIntent: false,
+      isSearchIntent: false,  // on focus search input
+      isSearchKeyword: false,    // call search api with keyword or not
 
       intentList: [
         // {
@@ -148,14 +150,11 @@ export default {
     isTraining() {
       return this.trainStatus === 'TRAINING';
     },
-    isSearchMode() {
-      return this.intentKeyword !== '';
-    },
   },
   watch: {
     intentList() {
       const that = this;
-      if (!that.isSearchMode) {
+      if (!that.isSearchIntent) {
         that.corpusCounts = that.intentList.reduce((acc, intent) => acc + intent.total
       , 0);
       }
@@ -306,6 +305,8 @@ export default {
       // that.$api.getIntents()
       that.$api.getIntentsDetail(that.intentKeyword)
       .then((intents) => {
+        that.isSearchKeyword = that.intentKeyword !== '';
+
         that.intentList = [];
         intents.forEach((intent) => {
           that.intentList.push({

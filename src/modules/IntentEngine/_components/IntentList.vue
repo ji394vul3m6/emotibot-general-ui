@@ -7,7 +7,7 @@
         </div>
         <div class="intent-title">
           <input v-if="intent.isEditMode" type="text" ref="intentName" v-model="editIntentName" v-tooltip="intentNameTooltip" :placeholder="$t('intent_engine.manage.placeholder.intent_title')" />
-          <span v-else-if="isSearchMode">
+          <span v-else-if="searchIntentWithKeyword">
             {{intent.name}}
             {{$t('intent_engine.manage.corpus_search_num', { pos: intent.positiveCount, neg: intent.negativeCount })}}
           </span>
@@ -182,6 +182,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    searchIntentWithKeyword: {
+      type: Boolean,
+      default: false,
+    },
     canEditIntent: {
       type: Boolean,
       default: true,
@@ -265,9 +269,6 @@ export default {
   computed: {
     hasIntentAction() {
       return (this.canEditIntent || this.canDeleteIntent || this.canRemoveIntent);
-    },
-    isSearchMode() {
-      return this.keyword !== '';
     },
     alreadyEdit() {
       return this.deletedCorpusIds.length !== 0 || this.updatedCorpus.length !== 0 ||
