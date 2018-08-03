@@ -22,9 +22,7 @@
               </div>
             </div>
             <div class="card-content">
-              <div v-for="app in group.apps" :key="app.id" class="robot-name">
-                {{ app.name }}
-              </div>
+              <tag class="tags" v-for="app in group.apps" :key="app.id">{{ app.name }}</tag>
             </div>
           </div>
         </div>
@@ -36,6 +34,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import NavBar from '@/components/NavigationBar';
+import Tag from '@/components/basic/Tag';
 import CommandRow from '../_components/CommandRow';
 import GroupAddForm from './_components/GroupAddForm';
 import GroupDeleteForm from './_components/GroupDeleteForm';
@@ -58,6 +57,7 @@ export default {
   components: {
     NavBar,
     CommandRow,
+    Tag,
   },
   computed: {
     ...mapGetters([
@@ -216,6 +216,7 @@ export default {
 
     display: flex;
     flex-wrap: wrap;
+    align-content: flex-start;
     .group-card {
       flex: 0 0 274px;
       max-width: 274px;
@@ -238,7 +239,7 @@ export default {
       flex-direction: column;
       .card-title {
         flex: 0 0 auto;
-
+        color: $color-font-active;
         border-top-left-radius: 4px;
         border-top-right-radius: 4px;
         background-color: #ffffff;
@@ -272,20 +273,23 @@ export default {
       }
       .card-content {
         flex: 1;
-        padding: 20px 10px;
+        padding: 10px;
         @include auto-overflow();
         @include customScrollbar();
 
         display: flex;
         flex-wrap: wrap;
         align-content: flex-start;
-        & > div {
+        .tags {
           flex: 0 0 auto;
-          margin-right: 20px;
-          max-width: 150px;
+          max-width: 230px;
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
+          height: 26px;
+          &.tag {
+            margin: 3px 5px;
+          }
         }
       }
     }
