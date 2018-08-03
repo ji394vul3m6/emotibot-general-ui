@@ -419,11 +419,11 @@ export default {
     expandIntent(intent) {
       const that = this;
       that.closeAllIntent();
-      that.callGetCorpus(intent);
+      return that.callGetCorpus(intent);
     },
     callGetCorpus(intent) {
       const that = this;
-      that.$api.getCorpus(intent.id, that.keyword)
+      return that.$api.getCorpus(intent.id, that.keyword)
       .then((res) => {
         const corpus = {
           pos: [],
@@ -472,11 +472,12 @@ export default {
     },
     editIntent(intent) {
       const that = this;
-      that.expandIntent(intent);
-      intent.isEditMode = true;
-      that.editIntentName = intent.name;
-      that.$nextTick(() => {
-        that.$refs.intentName[0].focus();
+      that.expandIntent(intent).then(() => {
+        intent.isEditMode = true;
+        that.editIntentName = intent.name;
+        that.$nextTick(() => {
+          that.$refs.intentName[0].focus();
+        });
       });
     },
     confirmCancelEditIntent(intent, nextAction) {
