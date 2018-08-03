@@ -1349,7 +1349,7 @@
     }
     connectionsElseUI.val('').multiselect({
       enableCaseInsensitiveFiltering: true,
-      buttonWidth: '150px'
+      buttonWidth: 'auto'
     });
   }
 
