@@ -25,8 +25,10 @@
     </div>
     <div class="row multi-line">
       <div v-for="(mod, idx) in modules" :key="idx" class="module">
-        <input :id="`module-${idx}`" type="checkbox" v-model="mod.checked" @change="closeModuleTooltip">
-        <label :for="`module-${idx}`" class="module-name">{{ $t(`privileges.modules.${mod.code}`) }}</label>
+        <!-- <input :id="`module-${idx}`" type="checkbox" v-model="mod.checked" @change="closeModuleTooltip">
+        <label :for="`module-${idx}`" class="module-name">{{ $t(`privileges.modules.${mod.code}`) }}</label> -->
+        <input type="checkbox" v-model="mod.checked" disabled>
+        <label class="module-name">{{ $t(`privileges.modules.${mod.code}`) }}</label>
         <icon icon-type="help" :size=15 v-if="mod.description && mod.description !== ''"
          v-tooltip="{msg: mod.description}" />
       </div>

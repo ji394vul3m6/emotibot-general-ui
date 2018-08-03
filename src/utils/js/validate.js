@@ -25,7 +25,6 @@ function isValidDisplayName(input) {
 }
 
 function isValidLabel(input) {
-  console.log('test label:', input);
   if (input.trim().length === 0) return false;
   const validRegex = /^[A-Za-z0-9\u4E00-\u9FA5 ]{1,10}$/g;
   return validRegex.test(input);

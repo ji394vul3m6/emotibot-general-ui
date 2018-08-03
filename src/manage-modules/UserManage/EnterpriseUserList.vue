@@ -178,7 +178,7 @@ export default {
               that.popEditUser(tempUser);
             })
             .catch((err) => {
-              that.popEditPassword(tempUser);
+              that.popEditPassword(origUser, tempUser);
               if (err.response.status === 403) {
                 that.$notifyFail(that.$t('management.err_manager_password'));
               } else {

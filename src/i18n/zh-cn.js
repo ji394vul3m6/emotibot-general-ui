@@ -694,6 +694,7 @@ export default {
       choose_file: '请选择档案',
       success: '意图导入成功',
       fail: '意图导入失败',
+      download_template: '下载意图范本',
       support_format: '支援格式 .xlsx',
       download_template: '下载意图范本',
       upload_file: '上传档案',
@@ -993,6 +994,9 @@ export default {
     err_group_duplicate: '群组名称已存在',
     err_pick_no_modules: '功能列表至少需勾选一个',
     err_reason_empty: '删除原因不可为空',
+    err_enterprise_admin_duplicate: '企业管理员帐号名已存在',
+    err_enterprise_email_duplicate: '企业管理员信箱已存在',
+    err_unkown: '发生未知错误',
 
     go_back: '返回',
 
@@ -1061,5 +1065,8 @@ export default {
     enterprise_privilege_list: '企业权限管理',
     back_to_system_manage: '返回系统管理',
     logout: '登出',
+  },
+  format: {
+    tag_format: '僅限10字长内的中文、半形英文与数字',
   },
 };

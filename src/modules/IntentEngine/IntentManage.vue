@@ -9,7 +9,10 @@
           {{ $t('intent_engine.manage.intent_num', {inum: intentList.length}) }}
         </div>
         <div class="header-tool">
-          <text-button id="train-button" :button-type="canTrain ? 'default' : 'disable'" :icon-type="canTrain ? 'info_warning' : 'info_warning_gray'" width="100px" @click="startTraining" v-tooltip="trainButtonTooltip">{{ $t('intent_engine.train') }}</text-button>
+          <text-button id="train-button"
+            :button-type="canTrain ? 'default' : 'disable'"
+            :icon-type="canTrain ? 'info_warning' : 'info_warning_gray'" width="100px"
+            @click="startTraining" v-tooltip="trainButtonTooltip">{{ $t('intent_engine.train') }}</text-button>
           <search-input v-model="intentKeyword"></search-input>
         </div>
       </div>
@@ -180,6 +183,7 @@ export default {
       if (!that.canTrain) return;
       that.$api.startTraining()
       .then(() => {
+        that.trainStatus = 'TRAINING';
         that.trainBtnClicked = true;
         that.$emit('startLoading', that.$t('intent_engine.is_training'));
       });

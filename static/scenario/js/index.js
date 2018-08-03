@@ -1326,6 +1326,16 @@
         updateConnectionLines();
     }
 
+    function audit(action, msg) {
+        return $.ajax('/api/v1/task/audit', {
+            type: 'POST',
+            data: {
+                action: action,
+                msg: msg,
+            },
+        })
+    }
+
     function loadScenario(id) {
         $.ajax(BASE_URL+'task_engine_scenario.php', {
             type: 'POST',
@@ -1357,6 +1367,7 @@
                         newModuleData(entryNodeId, "entry");
                         saveModulePosition(entryNodeId, {left:mouseX, top:mouseY});
                     }
+                    audit('edit', '開始編輯場景：'+ window.moduleData.metadata.scenario_name)
 
                     initScenario(window.moduleData);
                     toastr.options = {"positionClass": "toast-bottom-right"};

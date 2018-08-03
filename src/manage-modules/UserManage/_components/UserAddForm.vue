@@ -6,7 +6,8 @@
         {{ $t('management.user_name') }}
       </div>
       <div v-if="editMode">{{ userName }}</div>
-      <info-input v-else
+      <div class="row-input-col" v-else>
+      <info-input
         v-model="userName"
         :placeholder="$t('management.input_placeholder')"
         :msg="$t('management.username_format')"
@@ -16,6 +17,7 @@
         :errorMsg="userNameErrorMsg"
       >
       </info-input>
+      </div>
     </div>
 
     <div class="row">
@@ -35,7 +37,8 @@
         <div>********</div>
         <text-button class="modify" @click="startEditPassword">{{ $t('management.modify_password') }}</text-button>
       </div>
-      <info-input v-else
+      <div class="row-input-col" v-else>
+      <info-input 
         type="password"
         v-model="password"
         :placeholder="$t('management.set_passowrd_placeholder')"
@@ -47,6 +50,7 @@
         :errorMsg="passwordErrorMsg"
       >
       </info-input>
+      </div>
     </div>
 
     <div class="row" v-if="!editMode || passwordEdit">
@@ -54,8 +58,10 @@
         <span class="required">＊ </span>
         {{ $t('management.check_password') }}
       </div>
-      <input class="row-input" ref="checkPassword" v-model="checkPassword" type="password" :placeholder="$t('management.check_password_placeholder')" v-tooltip="passwordCheckTooltip" :maxlength="passwordMaxlength"
-      :class="{'error': isPasswordCheckTooltipShown}">
+      <div class="row-input-col">
+        <input class="row-input" ref="checkPassword" v-model="checkPassword" type="password" :placeholder="$t('management.check_password_placeholder')" v-tooltip="passwordCheckTooltip" :maxlength="passwordMaxlength"
+        :class="{'error': isPasswordCheckTooltipShown}">
+      </div>
     </div>
 
     <div class="row">
@@ -63,8 +69,10 @@
         <span class="required">＊ </span>
         {{ $t('management.user_display_name') }}
       </div>
-      <input class="row-input" ref="displayName" v-model="displayName" :placeholder="$t('management.input_placeholder')" v-tooltip="displayNameTooltip"
-      :class="{'error': isDisplayNameTooltipShown}">
+      <div class="row-input-col">
+        <input class="row-input" ref="displayName" v-model="displayName" :placeholder="$t('management.input_placeholder')" v-tooltip="displayNameTooltip"
+        :class="{'error': isDisplayNameTooltipShown}">
+      </div>
     </div>
     
     <div class="row">
@@ -72,16 +80,20 @@
         <span class="required"></span>
         {{ $t('management.phone') }}
       </div>
-      <input class="row-input" ref="phone" v-model="phone" :placeholder="$t('management.input_placeholder')" v-tooltip="phoneTooltip"
-      :class="{'error': isPhoneTooltipShown}">
+      <div class="row-input-col">
+        <input class="row-input" ref="phone" v-model="phone" :placeholder="$t('management.input_placeholder')" v-tooltip="phoneTooltip"
+        :class="{'error': isPhoneTooltipShown}">
+      </div>
     </div>
     <div class="row">
       <div class="row-title">
         <span class="required">＊ </span>
         {{ $t('management.email') }}
       </div>
-      <input class="row-input" ref="email" v-model="email" :placeholder="$t('management.input_placeholder')" v-tooltip="emailTooltip"
-      :class="{'error': isEmailTooltipShown}">
+      <div class="row-input-col">
+        <input class="row-input" ref="email" v-model="email" :placeholder="$t('management.input_placeholder')" v-tooltip="emailTooltip"
+        :class="{'error': isEmailTooltipShown}">
+      </div>
     </div>
     <template v-if="!isAdmin">
     <div class="row" v-for="(privilege, idx) in privilegeSet" :key="idx">
@@ -92,7 +104,7 @@
       <div class="row-text">{{ $t('management.privilege_is') }}</div>
       <dropdown-selector class="selector" :options="privilegeOptions" v-model="privilege.role"/>
       <div class="row-button">
-        <text-button button-type="error" v-if="privilegeSet.length > 1" @click="removePrivilege(idx)">
+        <text-button width="60px" button-type="error" v-if="privilegeSet.length > 1" @click="removePrivilege(idx)">
           {{ $t('general.delete') }}
         </text-button>
       </div>
@@ -471,14 +483,14 @@ export default {
       justify-content: space-between;
     }
     .row-text {
-      margin: 0 9px 0 10px;
+      margin: 0 8px 0 10px;
     }
     .row-button {
       margin-left: 10px;
     }
     .selector {
-      flex: 0 0 165px;
-      max-width: 165px;
+      flex: 0 0 140px;
+      max-width: 140px;
     }
   }
 }

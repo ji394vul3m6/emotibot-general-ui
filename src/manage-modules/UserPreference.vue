@@ -37,6 +37,7 @@ import { mapGetters, mapMutations } from 'vuex';
 import NavBar from '@/components/NavigationBar';
 import DropdownSelector from '@/components/DropdownSelect';
 import api from './_api/user';
+import adminAPI from './SystemManage/_api/system';
 import UserForm from './_components/NormalUserEditForm';
 import PasswordForm from './_components/NormalUserPasswordForm';
 
@@ -46,7 +47,7 @@ export default {
     NavBar,
     'dropdown-select': DropdownSelector,
   },
-  api,
+  api: [api, adminAPI],
   data() {
     return {
       user: {},
@@ -103,8 +104,16 @@ export default {
     ]),
     loadUser() {
       const that = this;
+      let promise;
       that.$emit('startLoading');
-      return that.$api.getEnterpriseUser(that.enterpriseID, that.userInfo.id)
+
+      if (that.userInfo.type >= 1) {
+        promise = that.$api.getEnterpriseUser(that.enterpriseID, that.userInfo.id);
+      } else {
+        promise = that.$api.getAdmin(that.userInfo.id);
+      }
+
+      return promise
       .then((data) => {
         data.password = '********';
         that.user = data;
@@ -139,9 +148,16 @@ export default {
               return;
             }
 
+            let promise;
             that.$emit('startLoading');
-            that.$api.updateEnterpriseUser(that.enterpriseID, that.userInfo.id, updatedUser)
-            .then(() => {
+
+            if (that.userInfo.type >= 1) {
+              promise = that.$api.updateEnterpriseUser(
+                that.enterpriseID, that.userInfo.id, updatedUser);
+            } else {
+              promise = that.$api.updateAdmin(that.userInfo.id, updatedUser);
+            }
+            promise.then(() => {
               that.$notify({ text: that.$t('error_msg.save_success') });
               return that.loadUser();
             })
@@ -172,9 +188,18 @@ export default {
               apps: that.getUserPrivilegeStr(),
             };
 
+            let promise;
             that.$emit('startLoading');
-            that.$api.updateEnterpriseUser(that.enterpriseID, that.userInfo.id, updatedUser)
-            .then(() => {
+
+            if (that.userInfo.type >= 1) {
+              promise = that.$api.updateEnterpriseUser(
+                that.enterpriseID, that.userInfo.id, updatedUser);
+            } else {
+              promise = that.$api.updateAdmin(that.userInfo.id, updatedUser);
+            }
+
+            that.$emit('startLoading');
+            promise.then(() => {
               that.$notify({ text: that.$t('management.update_password_success') });
             })
             .catch((err) => {

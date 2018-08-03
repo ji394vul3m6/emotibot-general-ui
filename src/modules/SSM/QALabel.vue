@@ -13,15 +13,15 @@
         </div>
         <div class="row row-tbody" v-for="(item, index) in tableData" :key="index">
           <div class="col tagname">
-              <input class="tag-input" v-show="item.ifedit" v-model.trim="item.name" v-focus="true" maxlength="10" :placeholder="$t('qa_label.length')" key="tag-input" />
-              <span v-show="!item.ifedit" class="tagname grey3" key="tagname">{{item.name}}</span>
+              <input class="tag-input" v-if="item.editing" v-model.trim="item.name" v-focus="true" maxlength="10" :placeholder="$t('qa_label.length')" key="tag-input" />
+              <span v-else class="tagname grey3" key="tagname">{{item.name}}</span>
           </div>
-          <div class="col opts" v-if="canEdit">
-            <div class="tag-opts bluecolor" v-if='item.ifedit'>
+          <div class="col opts" v-if="canEdit && item.type !== 'system'">
+            <div class="tag-opts bluecolor" v-if='item.editing'>
               <a class="save-sqtag" @click="saveLabel(item)" href="javascript:void(0);" key="save-sqtag">{{$t('general.save')}}</a>
-              <a class="cancel-sqtag" @click="cancelLabel(false,item)" href="javascript:void(0);" key="cancel-sqtag">{{$t('general.cancel')}}</a>
+              <a class="cancel-sqtag" @click="cancelLabel(item)" href="javascript:void(0);" key="cancel-sqtag">{{$t('general.cancel')}}</a>
             </div>
-            <div class="tag-opts bluecolor" v-if='!item.ifedit'>
+            <div class="tag-opts bluecolor" v-if='!item.editing'>
               <a class="edit-sqtag" @click="editLabel(item)" href="javascript:void(0);" key="edit-sqtag">{{$t('general.edit')}}</a>
               <a class="remove-sqtag" @click="removeLabel(item,index)" href="javascript:void(0);" key="remove-sqtag">{{$t('general.delete')}}</a>
             </div>
@@ -39,6 +39,7 @@
 import { mapGetters } from 'vuex';
 import FlexTable from '@/components/FlexTable';
 import apiBF from '@/api/BF';
+import validate from '@/utils/js/validate';
 import api from './_api/qalabel';
 
 export default {
@@ -53,15 +54,13 @@ export default {
   api: [api, apiBF],
   data() {
     return {
-      appid: this.getAppID('appid'),
       keyword: '',
       labels: [],
       labelsbak: [],
-      ifedit: false,
       labelsCount: 0,
       tagblank: {
         name: '',
-        ifedit: true,
+        editing: true,
         isadd: true,
       },
     };
@@ -92,12 +91,23 @@ export default {
     },
   },
   methods: {
+    isEditing() {
+      return this.labels.reduce((val, label) => val || label.editing, false);
+    },
+    resetEditing() {
+      this.labels.forEach((label) => {
+        if (label.editing) {
+          this.cancelLabel(label);
+        }
+      });
+    },
     editLabel(item) {
-      if (!this.ifedit) {
-        this.$set(this, 'ifedit', true);
-        this.$set(item, 'ifedit', true);
-        this.$set(item, 'namebak', JSON.parse(JSON.stringify(item.name)));
+      if (this.isEditing()) {
+        this.resetEditing();
       }
+      item.editing = true;
+      item.namebak = item.name;
+      this.$forceUpdate();
     },
     removeLabel(item) {
       const that = this;
@@ -110,7 +120,7 @@ export default {
           ok() {
             that.$emit('startLoading');
             const params = {
-              appid: that.appid,
+              appid: that.robotID,
               tagid: item.id,
             };
             that.$api.deleteLabel(params).then((res) => {
@@ -131,10 +141,14 @@ export default {
       });
     },
     addLabel() {
-      this.labels.forEach((l) => {
-        l.ifedit = false;
-      });
-      this.labels.push(this.tagblank);
+      if (this.isEditing()) {
+        this.resetEditing();
+      }
+      if (this.labels.indexOf(this.tagblank) < 0) {
+        this.tagblank.name = '';
+        this.tagblank.editing = true;
+        this.labels.push(this.tagblank);
+      }
     },
     saveLabel(item) {
       const that = this;
@@ -142,21 +156,25 @@ export default {
         that.$popError(that.$t('error_msg.input_empty'));
         return;
       }
+      if (!validate.isValidLabel(item.name)) {
+        that.$popError(that.$t('format.tag_format'));
+        return;
+      }
 
-      const existedIdx = that.labels.findIndex(l => l.name === item.name && !item.ifedit);
+      const existedIdx = that.labels.findIndex(l => l.name === item.name && !item.editing);
       if (existedIdx >= 0) {
         that.$popError(that.$t('qa_label.err_existed_label'));
         return;
       }
       const params = {
-        appid: that.appid,
+        appid: that.robotID,
         name: item.name,
         type: 'userdefine',
         category: 'sq',
       };
       if (item.name === item.namebak) {
-        this.$set(this, 'ifedit', false);
-        this.$set(item, 'ifedit', false);
+        this.$set(this, 'editing', false);
+        this.$set(item, 'editing', false);
         return;
       }
       let promise;
@@ -184,21 +202,34 @@ export default {
         that.$emit('endLoading');
       });
     },
-    cancelLabel() {
-      this.labels = JSON.parse(JSON.stringify(this.labelsbak));
-      this.$set(this.tagblank, 'name', '');
-      this.ifedit = false;
+    cancelLabel(item) {
+      const that = this;
+      item.name = item.namebak;
+      item.editing = false;
+      that.$forceUpdate();
+
+      if (item === that.tagblank) {
+        that.tagblank.name = '';
+        if (that.labels.indexOf(that.tagblank) >= 0) {
+          that.labels.pop();
+        }
+      }
     },
     loadLabels() {
       const that = this;
       that.$emit('startLoading');
-      that.$api.loadLabels(that.appid).then((labels) => {
-        if (labels.error_code === 0) {
-          that.labels = labels.data.tag;
-          that.labelsbak = JSON.parse(JSON.stringify(that.labels));
-          that.labelsCount = that.labels.length;
+      that.$api.loadLabels(that.robotID).then((rsp) => {
+        if (rsp.error_code === 0) {
+          const labels = rsp.data.tag;
+          that.labelsbak = JSON.parse(JSON.stringify(labels));
+          that.labelsCount = labels.length;
+          labels.forEach((label) => {
+            label.editing = false;
+          });
+          labels.reverse();
+          that.labels = labels;
         } else {
-          that.$popError(labels.error_message);
+          that.$popError(rsp.error_message);
         }
       }, () => {
         // TODO: handle error if status code is not 500,
@@ -206,26 +237,6 @@ export default {
       .then(() => {
         that.$emit('endLoading');
       });
-    },
-    getAppID(name) {
-      const label = `${name}=`;
-      const ca = document.cookie.split(';');
-      let appId = '';
-      ca.forEach((val) => {
-        let c = val;
-        if (c.charAt(0) === ' ') {
-          c = c.substring(1);
-        }
-
-        if (c.indexOf(label) !== -1) {
-          appId = c.substring(label.length, c.length);
-          return true;
-        }
-
-        return true;
-      });
-
-      return appId;
     },
   },
   mounted() {

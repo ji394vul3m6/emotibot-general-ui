@@ -193,6 +193,7 @@
                 document.body.appendChild(link);
                 link.click();
             }
+            audit('export', '导出场景：' + scenario_name);
         })
     }
 
@@ -201,6 +202,7 @@
         $('.badge').each(function () {
             requests.push(loadScenario($(this).text()));
         });
+        audit('export', '导出全部场景');
         $.when.apply(undefined, requests).done(function () {
             if (arguments.length == 0){
                 return;
@@ -234,6 +236,16 @@
             "taskLayouts": JSON.parse(json_object.result.editingLayout)
         }
         scenarios.push(scenario);
+    }
+
+    function audit(action, msg) {
+        return $.ajax('/api/v1/task/audit', {
+            type: 'POST',
+            data: {
+                action: action,
+                msg: msg,
+            },
+        })
     }
 
     function loadScenario(id) {

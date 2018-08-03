@@ -62,8 +62,14 @@ function updateEnterprise(id, data) {
   const params = {
     ...data,
   };
+  let rspData;
   params.modules = JSON.stringify(data.modules);
-  return this.$reqPutForm(`${ENTERPRISE_URL}/${id}`, params);
+  return this.$reqPutForm(`${ENTERPRISE_URL}/${id}`, params)
+  .then((rsp) => {
+    rspData = rsp;
+  })
+  .then(() => this.$reqPatchForm(`${BF2_ENTERPRISE_URL}/${id}`, params))
+  .then(() => rspData);
 }
 
 export default {

@@ -280,6 +280,7 @@ export default {
             account: that.adminUserName,
             name: that.adminDisplayName,
             password: that.adminPassword,
+            email: that.adminEmail,
           },
         });
       }
@@ -288,8 +289,6 @@ export default {
   mounted() {
     const that = this;
 
-    that.name = that.extData.name || '';
-    that.description = that.extData.description || '';
     that.modules = that.extData.modules || [];
     that.existedEnterprises = that.extData.existedEnterprises || [];
     that.$on('validate', that.validate);
@@ -297,6 +296,23 @@ export default {
     that.modules.forEach((mod) => {
       mod.checked = true;
     });
+
+    if (that.extData.initData) {
+      const initData = that.extData.initData;
+      that.name = initData.name || '';
+      that.description = initData.description || '';
+      that.modules.forEach((mod) => {
+        if (initData.modules.indexOf(mod.code) >= 0) {
+          mod.checked = true;
+        } else {
+          mod.checked = false;
+        }
+      });
+      that.adminUserName = initData.admin.account;
+      that.adminDisplayName = initData.admin.name;
+      that.adminPassword = initData.admin.password;
+      that.adminEmail = initData.admin.email;
+    }
   },
 };
 </script>
