@@ -7,9 +7,9 @@ const STATS_VISIT2_URI = '/api/v1/stats/visit';
 const STATS_QUESTION2_URI = '/api/v1/stats/question';
 
 const STATS_AUDIT_PATH = '/api/v1/statistic/audit';
-const STATS_RECORD_LIST = '/stats/record';
+// const STATS_RECORD_LIST = '/stats/record';
 
-// const STATS_RECORD_LIST = '/api/v1/stats/record';
+const STATS_RECORD_LIST = '/api/v1/stats/record';
 
 const STATS_DETAIL_RECORD_LIST = '/stats/detail_record';
 

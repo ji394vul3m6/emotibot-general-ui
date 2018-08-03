@@ -114,6 +114,16 @@ function patch(url, data, config) {
   return this.$reqCustom(url, 'patch', data, config);
 }
 
+function patchForm(url, data, config) {
+  const localConfig = { ...config };
+  if (localConfig.headers === undefined) {
+    localConfig.headers = {};
+  }
+  localConfig.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+  const localData = qs.stringify(data);
+  return this.$reqCustom(url, 'patch', localData, localConfig);
+}
+
 function deleteReq(url, config) {
   return this.$reqCustom(url, 'delete', {}, config);
 }
@@ -128,6 +138,7 @@ const MyPlugin = {
     Vue.prototype.$reqPutForm = putForm;
     Vue.prototype.$reqDelete = deleteReq;
     Vue.prototype.$reqPatch = patch;
+    Vue.prototype.$reqPatchForm = patchForm;
     Vue.prototype.$reqAjax = ajax;
 
     Vue.prototype.$setReqToken = function setUpToken(t) {

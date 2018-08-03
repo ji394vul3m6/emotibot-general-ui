@@ -112,7 +112,7 @@ export default {
 @import "styles/variable";
 
 $btn-dft-height: 28px;
-$btn-dft-width: 68px;
+$btn-dft-width: 60px;
 $btn-radius: 2px;
 
 $btn-dft-bg-color: $color-white;

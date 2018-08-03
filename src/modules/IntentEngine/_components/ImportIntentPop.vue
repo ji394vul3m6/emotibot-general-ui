@@ -1,25 +1,22 @@
 <template>
   <div class="import-block">
-  <!--  <div class="method-chooser-block">
-      <div class="method-chooser">
-        <span class="method-option">
-          <input type="radio" id="byUpdate" name="method" checked/>
-          <label for="byUpdate">{{ $t('intent_engine.import.by_update') }}</label>
-        </span>
-        <span class="method-option">
-          <input type="radio" id="byReplace" name="method"/>
-          <label for="byReplace">{{ $t('intent_engine.import.by_replace') }}</label>
-          <div class="icon-container"
-            @mouseover="toggleIconHover(true)"
-            @mouseout="toggleIconHover(false)"
-            v-tooltip="infoTooltip"
-            >
-            <icon v-if="iconHover" iconType="info_hover" :size=16></icon>
-            <icon v-else iconType="info" :size=16></icon>
-          </div>
-          
-        </span>
-      </div>
+    <!-- <div class="method-chooser-block">
+      <span class="method-option">
+        <input type="radio" id="byUpdate" name="method" checked/>
+        <label for="byUpdate">{{ $t('intent_engine.import.by_update') }}</label>
+      </span>
+      <span class="method-option">
+        <input type="radio" id="byReplace" name="method"/>
+        <label for="byReplace">{{ $t('intent_engine.import.by_replace') }}</label>
+        <div class="icon-container"
+          @mouseover="toggleIconHover(true)"
+          @mouseout="toggleIconHover(false)"
+          v-tooltip="infoTooltip"
+          >
+          <icon v-if="iconHover" iconType="info_hover" :size=16></icon>
+          <icon v-else iconType="info" :size=16></icon>
+        </div>
+      </span>
     </div> -->
     
     <div class="file-chooser">
@@ -38,6 +35,9 @@
     </div>
     <div class="support-format">
       {{ $t('intent_engine.import.support_format')}}      
+    </div>
+    <div class="download-template">
+      <span @click="downloadTemplate">{{ $t('intent_engine.import.download_template')}}</span>      
     </div>
   </div>
 </template>
@@ -67,6 +67,9 @@ export default {
     },
   },
   methods: {
+    downloadTemplate() {
+      window.open('/Files/intent_template.xlsx', '_blank');
+    },
     toggleIconHover(bool) {
       this.iconHover = bool;
     },
@@ -147,31 +150,36 @@ export default {
   }
   .support-format {
     margin-top: 5px;
+    margin-bottom: 20px;
     @include font-12px();
     color: $color-font-mark;
+  }
+  .download-template {
+    @include font-12px();
+    color: $color-primary;
+    span {
+      cursor: pointer;
+    }
   }
   .method-chooser-block {
     margin-bottom: 32px;
     display: flex;
-    .method-chooser {
+    .method-option {
+      margin: 0 5px;
       display: flex;
-      .method-option {
-        margin: 0 5px;
+      align-items: center;
+      input[type=radio] {
+        cursor: pointer;
+      }
+      label{
+        cursor: pointer;
+        margin-left: 6px;
+      }
+      .icon-container{
+        margin-left: 8px;
         display: flex;
         align-items: center;
-        input[type=radio] {
-          cursor: pointer;
-        }
-        label{
-          cursor: pointer;
-          margin-left: 6px;
-        }
-        .icon-container{
-          margin-left: 8px;
-          display: flex;
-          align-items: center;
-          cursor: pointer;
-        }
+        cursor: pointer;
       }
     }
   }

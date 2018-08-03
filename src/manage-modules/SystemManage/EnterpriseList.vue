@@ -5,7 +5,7 @@
       <div class="page">
         <command-row class="commands" @search="doSearch">
             <text-button button-type="primary"
-            @click="popAddEnterprise">{{ $t('management.create_enterprise') }}</text-button>
+            @click="popAddEnterprise()">{{ $t('management.create_enterprise') }}</text-button>
         </command-row>
         <div class="enterprise-list">
           <div class="enterprise-card" 
@@ -139,7 +139,7 @@ export default {
       return Promise.all(promises).then((datas) => {
         const [enterprises, modules, enterpriseModules] = datas;
         that.$pop({
-          title: that.$t('management.create_enterprise'),
+          title: that.$t('management.edit_enterprise'),
           component: EnterpriseEditForm,
           extData: {
             existedEnterprises: enterprises.map(e => e.name),
@@ -165,7 +165,7 @@ export default {
         });
       });
     },
-    popAddEnterprise() {
+    popAddEnterprise(initData) {
       const that = this;
       const promises = [
         that.$api.getEnterprises(),
@@ -180,6 +180,7 @@ export default {
           extData: {
             existedEnterprises: enterprises.map(enterprise => enterprise.name),
             modules,
+            initData,
           },
           validate: true,
           callback: {
@@ -196,7 +197,15 @@ export default {
       that.$api.addEnterprise(data)
       .then(() => that.reloadEnterprise())
       .catch((err) => {
-        console.log(err);
+        window.logerr = err;
+        if (err.response.data.ret_msg === 'Column input error: admin username') {
+          that.$notifyFail(that.$t('management.err_enterprise_admin_duplicate'));
+        } else if (err.response.data.ret_msg === 'Column input error: admin email') {
+          that.$notifyFail(that.$t('management.err_enterprise_email_duplicate'));
+        } else {
+          that.$notifyFail(that.$t('management.err_unkown'));
+        }
+        that.popAddEnterprise(data);
       })
       .finally(() => {
         that.$emit('endLoading');

@@ -9,15 +9,23 @@
           {{ $t('intent_engine.manage.intent_num', {inum: intentList.length}) }}
         </div>
         <div class="header-tool">
-          <text-button id="train-button" :button-type="canTrain ? 'default' : 'disable'" :icon-type="canTrain ? 'info_warning' : 'info_warning_gray'" width="100px" @click="startTraining" v-tooltip="trainButtonTooltip">{{ $t('intent_engine.train') }}</text-button>
+          <text-button id="train-button"
+            :button-type="canTrain ? 'default' : 'disable'"
+            :icon-type="canTrain ? 'info_warning' : 'info_warning_gray'" width="100px"
+            @click="startTraining" v-tooltip="trainButtonTooltip">{{ $t('intent_engine.train') }}</text-button>
           <search-input v-model="intentKeyword"></search-input>
         </div>
       </div>
       <div class="content">
         <div class="content-tool">
-          <!-- <text-button v-if="canEdit" button-type="primary" @click="addIntent">{{ $t('intent_engine.manage.add_intent') }}</text-button> -->
-          <text-button v-if="canImport" @click="importIntentList">{{ $t('general.import') }}</text-button>
-          <text-button v-if="canExport" @click="exportIntentList(currentVersion)">{{ $t('general.export') }}</text-button>
+          <div class="content-tool-left">
+            <!-- <text-button v-if="canAdd" button-type="primary" @click="addIntent">{{ $t('intent_engine.manage.add_intent') }}</text-button> -->
+            <text-button v-if="canImport" @click="importIntentList">{{ $t('general.import') }}</text-button>
+            <text-button v-if="canExport" @click="exportIntentList(currentVersion)">{{ $t('general.export') }}</text-button>
+          </div>
+          <div v-if="!hasIntents" class="content-tool-right">
+            <text-button @click="downloadTemplate">{{ $t('intent_engine.import.download_template') }}</text-button>
+          </div>
         </div>
         <intent-list 
           :intentList="intentListToShow"
@@ -109,6 +117,9 @@ export default {
     },
   },
   methods: {
+    downloadTemplate() {
+      window.open('/Files/intent_template.xlsx', '_blank');
+    },
     addIntent() {
       this.isAddIntent = true;
       this.intentKeyword = '';
@@ -157,8 +168,10 @@ export default {
     },
     startTraining() {
       const that = this;
+      if (!that.canTrain) return;
       that.$api.startTraining()
       .then(() => {
+        that.trainStatus = 'TRAINING';
         that.trainBtnClicked = true;
         that.$emit('startLoading', that.$t('intent_engine.is_training'));
       });
@@ -302,10 +315,15 @@ export default {
 .content {
   padding: 20px;
   .content-tool {
+    flex: 0 0 auto;
     margin-bottom: 20px;
     display: flex;
+    justify-content: space-between;
     .text-button {
       margin-right: 10px;
+      &:last-child {
+        margin-right: 0px;
+      }
     }
   }
 }

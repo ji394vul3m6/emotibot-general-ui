@@ -107,7 +107,7 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'allWordbanks',
+      'currentCategory',
     ]),
     curPage() {
       const startIdx = (this.curPageIdx - 1) * this.pageLimit;
@@ -141,7 +141,8 @@ export default {
       if (this.wordbankName === this.wordbank.name) { // same, don't check
         return false;
       }
-      return this.allWordbanks.findIndex(bank => bank.name === this.wordbankName) !== -1;
+      return this.currentCategory.wordbanks
+        .findIndex(bank => bank.name === this.wordbankName) !== -1;
     },
     isNewSynonymValid() {
       return !this.isNewSynonymEmpty && !this.isNewSynonymTooLong;
