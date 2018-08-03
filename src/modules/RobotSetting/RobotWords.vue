@@ -204,7 +204,8 @@ $words-list-delete-color: #f76260;
   display: flex;
   flex-direction: column;
 
-  overflow-y: auto;
+  @include auto-overflow();
+  @include customScrollbar();
   max-height: calc(100% - 60px);
   .words {
     padding: 20px 0;

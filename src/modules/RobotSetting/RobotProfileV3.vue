@@ -491,7 +491,6 @@ $header-color: #333333;
 .card {
   height: 100%;
   overflow-y: auto;
-  padding-bottom: 10px;
   box-sizing: border-box;
   line-height: $default-line-height;
 
@@ -578,7 +577,11 @@ $header-color: #333333;
     }
   }
   .footer {
-    flex: 0 0 auto;
+    flex: 0 0 50px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    border-top: 1px solid $color-borderline;
   }
 }
 </style>

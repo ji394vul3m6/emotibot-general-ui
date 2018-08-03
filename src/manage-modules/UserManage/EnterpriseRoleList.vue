@@ -393,7 +393,7 @@ export default {
     flex: 0 0 auto;
     padding: 8px 10px;
     background-color: #f8f8f8;
-    border: solid 1px #e9e9e9;
+    border-bottom: solid 1px $color-borderline;
     border-top: 0px;
 
     display: flex;

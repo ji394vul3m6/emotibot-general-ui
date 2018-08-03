@@ -478,7 +478,8 @@ $category-item-height: 32px;
   }
   #card-category-content {
     flex: 1 1 auto;
-    overflow-y: auto;
+    @include auto-overflow();
+    @include customScrollbar();
     #no-category-search-result {
       height: $category-item-height;
       line-height: $category-item-height;

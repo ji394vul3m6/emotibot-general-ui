@@ -241,6 +241,8 @@ export default {
   .card {
     position: relative;
     @include card();
+    display: flex;
+    flex-direction: column;
   }
 
   .header {
@@ -268,11 +270,11 @@ export default {
   
   .content {
     width: 100%;
-    display: flex;
-    flex-direction: column;
+    flex: 1;
     padding: 30px 20px;
     @include font-14px();
-
+    @include auto-overflow();
+    @include customScrollbar();
     .row {
       margin-bottom: 20px;
 

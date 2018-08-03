@@ -84,6 +84,7 @@ export default {
   width: 700px;
   margin: 0 30px;
   border: 1px solid $color-borderline;
-  overflow: scroll;
+  @include auto-overflow();
+  @include customScrollbar();
 }
 </style>

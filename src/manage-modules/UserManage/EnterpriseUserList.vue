@@ -333,8 +333,6 @@ export default {
   }
   .page {
     flex: 1;
-    @include auto-overflow();
-    @include customScrollbar();
 
     display: flex;
     flex-direction: column;
@@ -344,10 +342,12 @@ export default {
     .table-container {
       flex: 1;
       margin-top: 20px;
+      @include auto-overflow();
+      @include customScrollbar();
     }
     .table-paginator {
       flex: 0 0 50px;
-
+      border-top: 1px solid $color-borderline;
       display: flex;
       align-items: center;
       justify-content: flex-end;
