@@ -45,13 +45,13 @@
           <div class="content-tool-left">
             <text-button v-if="canAdd" button-type="primary" @click="addTest">{{ $t('general.add') }}</text-button>
             <text-button v-if="canImport" @click="importIntentList">{{ $t('general.import') }}</text-button>
-            <text-button v-if="canExport" :button-type="allowExport ? 'default' : 'disable'" @click="exportIntentList(currentVersion)">{{ $t('general.export') }}</text-button>
+            <text-button v-if="canExport" :button-type="allowExport ? 'default' : 'disable'" @click="exportIntentTestList(currentTestVersion)">{{ $t('general.export') }}</text-button>
           </div>
-          <div v-if="!hasIntents" class="content-tool-right">
+          <div v-if="!hasTests" class="content-tool-right">
             <text-button @click="downloadTemplate">{{ $t('intent_engine.import.download_test_template') }}</text-button>
           </div>
         </div>
-        <div v-if="!hasIntents && !isAddTest" class="init_page">
+        <div v-if="!hasTests && !isAddTest" class="init_page">
           {{ $t('intent_engine.test.no_data.title') }}<br>
           {{ $t('intent_engine.test.no_data.hint_left') }}<br>
           {{ $t('intent_engine.test.no_data.hint_right') }}
@@ -118,7 +118,8 @@ export default {
       ],
       intentTestList: [],
       corpusCounts: 0,
-      currentVersion: '',
+      currentTestVersion: '',
+      currentIntentVersion: '',
       trainButtonTooltip: {
         msg: this.$t('intent_engine.manage.train_button_tooltip'),
         alignLeft: true,
@@ -141,8 +142,11 @@ export default {
     hasTests() {
       return this.intentTestList.length > 0;
     },
-    versionNotAvailable() {
-      return !this.hasIntents && this.currentVersion === '';
+    intentVersionNotAvailable() {
+      return !this.hasIntents && this.currentIntentVersion === '';
+    },
+    testVersionNotAvailable() {
+      return !this.hasTests && this.currentTestVersion === '';
     },
     canImport() {
       return this.$hasRight('import');
@@ -154,11 +158,10 @@ export default {
     //   return !this.isTraining;
     // },
     allowExport() {
-      return !this.versionNotAvailable && this.hasTests;
-      // TODO: should change to test's version not available?
+      return this.testVersionNotAvailable && this.hasTests;
     },
     canEdit() {
-      return this.$hasRight('edit') && !this.versionNotAvailable;
+      return this.$hasRight('edit') && !this.testVersionNotAvailable;
     },
     canAdd() {
       return this.$hasRight('edit');
@@ -170,10 +173,11 @@ export default {
     //   return !this.isTraining;
     // },
     canTrain() {
-      return !this.versionNotAvailable && (this.hasIntents && this.shouldTrain);
+      return !this.intentVersionNotAvailable && (this.hasIntents && this.shouldTrain);
     },
     canTest() {
-      return !this.versionNotAvailable && (this.hasIntents && this.hasTests);
+      return !this.intentVersionNotAvailable && !this.testVersionNotAvailable &&
+         this.hasIntents && this.hasTests;
     },
     shouldTrain() {
       return this.trainStatus === 'NOT_TRAINED' || this.trainStatus === 'TRAIN_FAILED';
@@ -181,17 +185,12 @@ export default {
     isTraining() {
       return this.trainStatus === 'TRAINING';
     },
-    isSearchMode() {
-      return this.testKeyword !== '';
-    },
   },
   watch: {
     intentList() {
       const that = this;
-      if (!that.isSearchMode) {
-        that.corpusCounts = that.intentList.reduce((acc, intent) => acc + intent.total
+      that.corpusCounts = that.intentList.reduce((acc, intent) => acc + intent.total
       , 0);
-      }
     },
     testKeyword() {
       const that = this;
@@ -221,13 +220,13 @@ export default {
     setSearchTest(bool) {
       this.isSearchTest = bool;
     },
-    exportIntentList(version) {
+    exportIntentTestList(version) {
       if (!this.allowExport) return;
-      const EXPORT_INTENT_URL = 'api/v1/intents/download';
+      const EXPORT_INTENT_TEST_URL = '';
       if (version) {
-        window.open(`${EXPORT_INTENT_URL}?version=${version}`, '_blank');
+        window.open(`${EXPORT_INTENT_TEST_URL}?version=${version}`, '_blank');
       } else {
-        window.open(EXPORT_INTENT_URL, '_blank');
+        window.open(EXPORT_INTENT_TEST_URL, '_blank');
       }
     },
     importIntentList() {
@@ -245,10 +244,10 @@ export default {
             // TODO: call api to import intent test
             that.$api.importIntents(file)
             .then((res) => {
-              that.currentVersion = res.version;  // version should be tests version
+              that.currentIntentVersion = res.version;  // version should be tests version
               clearInterval(that.statusTimer);
               that.statusTimer = undefined;
-              that.pollTrainingStatus(that.currentVersion);
+              that.pollTrainingStatus(that.currentIntentVersion);
               that.refreshTestingPage();
               that.$notify({ text: that.$t('intent_engine.import.success') });
             })
@@ -282,6 +281,7 @@ export default {
       if (!that.canTrain) return;
       that.$api.startTraining()
       .then(() => {
+        that.trainStatus = 'TRAINING';
         that.trainBtnClicked = true;
         that.$emit('startLoading', that.$t('intent_engine.is_training'));
       });
@@ -332,7 +332,7 @@ export default {
           that.$notifyFail(that.$t('http_status.401'));
         } else if (err.response.status === 404) {  // version not exist
           that.$notifyFail(that.$t('intent_engine.version_not_exist'));
-          this.currentVersion = '';
+          this.currentIntentVersion = '';
           clearInterval(this.statusTimer);
           this.statusTimer = undefined;
         } else if (err.response.status !== 500) {
