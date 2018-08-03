@@ -756,6 +756,7 @@ export default {
       corpus_search_num: '(搜寻结果: {pos}笔正例/{neg}笔反例)',
       cancel_edit_msg: '尚未保存编辑，确定要取消编辑吗？',
       cancel_add_msg: '尚未保存意图，确定要取消新增吗？',
+      delete_intent_msg: '确定要删除意图 {name} 吗？',
       addin: '加入',
       positive: '正例',
       negative: '反例',

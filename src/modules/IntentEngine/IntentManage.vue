@@ -39,7 +39,8 @@
           {{ $t('intent_engine.manage.no_data.hint_left') }}<br>
           {{ $t('intent_engine.manage.no_data.hint_right') }}
         </div>
-        <intent-list v-else-if="hasIntents"
+        <div v-else-if="hasIntents">
+        <intent-list 
           :intentList="intentList"
           :canEditIntent="canEdit && allowEdit"
           :canDeleteIntent="canEdit && allowEdit"
@@ -51,6 +52,7 @@
           @deleteIntentDone="refreshIntentPage()"
           @cancelSearch="setSearchIntent(false)">
         </intent-list>
+        </div>
       </div>
     </div>
   </div>

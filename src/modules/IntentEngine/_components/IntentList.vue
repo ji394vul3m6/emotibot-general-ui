@@ -277,21 +277,7 @@ export default {
   },
   watch: {
     intentList() {
-      this.intentListShown = this.intentList.map(intent => ({
-        id: intent.id,
-        name: intent.name,
-        total: intent.total,
-        positiveCount: intent.positiveCount,
-        negativeCount: intent.negativeCount,
-        curPage: 1,
-        corpus: {},
-        expand: false,
-        isHover: false,
-        isEditMode: false,
-        viewCorpusType: POSITIVE_CORPUS,
-        hasCorpusSelected: false,
-        hasCorpusEditing: false,
-      }));
+      this.parseIntentListShown();
     },
     addIntentMode() {
       if (this.addIntentMode) {
@@ -367,14 +353,7 @@ export default {
         that.intentActionDropdown.options.push({
           text: that.$t('general.delete'),
           onclick: () => {
-            that.$api.deleteIntent(intent.id)
-            .then(() => {
-              that.$emit('deleteIntentDone');
-            })
-            .catch((err) => {
-              console.log(err);
-              that.$notifyFail(that.$t('intent_engine.manage.notify.delete_intent_fail'));
-            });
+            that.deleteIntentPop(intent);
           },
         });
       }
@@ -388,6 +367,31 @@ export default {
       }
       const refName = `${idx}_intentAction`;
       that.$refs[refName][0].dispatchEvent(event.createEvent('dropdown-reload'));
+    },
+    deleteIntentPop(intent) {
+      const that = this;
+      const option = {
+        data: {
+          msg: that.$t('intent_engine.manage.delete_intent_msg', { name: intent.name }),
+        },
+        callback: {
+          ok: () => {
+            that.deleteIntent(intent);
+          },
+        },
+      };
+      that.$popCheck(option);
+    },
+    deleteIntent(intent) {
+      const that = this;
+      that.$api.deleteIntent(intent.id)
+      .then(() => {
+        that.$emit('deleteIntentDone');
+      })
+      .catch((err) => {
+        console.log(err);
+        that.$notifyFail(that.$t('intent_engine.manage.notify.delete_intent_fail'));
+      });
     },
     closeExpandIntent(intent) {
       intent.expand = false;
@@ -813,6 +817,26 @@ export default {
         that.toFirstPage(intent);
       }
     },
+    parseIntentListShown() {
+      this.intentListShown = this.intentList.map(intent => ({
+        id: intent.id,
+        name: intent.name,
+        total: intent.total,
+        positiveCount: intent.positiveCount,
+        negativeCount: intent.negativeCount,
+        curPage: 1,
+        corpus: {},
+        expand: false,
+        isHover: false,
+        isEditMode: false,
+        viewCorpusType: POSITIVE_CORPUS,
+        hasCorpusSelected: false,
+        hasCorpusEditing: false,
+      }));
+    },
+  },
+  mounted() {
+    this.parseIntentListShown();
   },
 };
 </script>
