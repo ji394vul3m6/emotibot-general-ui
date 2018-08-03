@@ -933,6 +933,9 @@ export default {
     err_group_name_empty: '群組名稱不可爲空',
     err_group_duplicate: '群組名稱已存在',
     err_pick_no_modules: '功能列表至少需勾選一個',
+    err_enterprise_admin_duplicate: '企業管理員帳號名已存在',
+    err_enterprise_email_duplicate: '企業管理員信箱已存在',
+    err_unkown: '發生未知錯誤',
 
     go_back: '返回',
 

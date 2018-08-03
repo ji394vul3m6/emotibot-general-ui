@@ -987,6 +987,9 @@ export default {
     err_group_duplicate: '群组名称已存在',
     err_pick_no_modules: '功能列表至少需勾选一个',
     err_reason_empty: '删除原因不可为空',
+    err_enterprise_admin_duplicate: '企业管理员帐号名已存在',
+    err_enterprise_email_duplicate: '企业管理员信箱已存在',
+    err_unkown: '发生未知错误',
 
     go_back: '返回',
 
