@@ -39,7 +39,7 @@
           {{ $t('intent_engine.manage.no_data.hint_left') }}<br>
           {{ $t('intent_engine.manage.no_data.hint_right') }}
         </div>
-        <intent-list
+        <intent-list v-else-if="hasIntents"
           :intentList="intentList"
           :canEditIntent="canEdit && allowEdit"
           :canDeleteIntent="canEdit && allowEdit"
@@ -72,6 +72,7 @@ export default {
   data() {
     return {
       statusTimer: null,
+      fetchStatusError: false,
       trainStatus: undefined,  // 'TRAINED', 'NOT_TRAINED', 'TRAINING'
       trainBtnClicked: false,
       intentKeyword: '',
@@ -124,10 +125,11 @@ export default {
       return this.$hasRight('export');
     },
     allowImport() {
-      return !this.isTraining;
+      return !this.isTraining && !this.fetchStatusError;
     },
     allowExport() {
-      return !this.versionNotAvailable && this.hasIntents && !this.isTraining;
+      return !this.versionNotAvailable && this.hasIntents &&
+        !this.isTraining && !this.fetchStatusError;
     },
     canEdit() {
       return this.$hasRight('edit') && !this.versionNotAvailable;
@@ -139,7 +141,10 @@ export default {
       return !this.isTraining;
     },
     allowAdd() {
-      return !this.isTraining;
+      return !this.isTraining && !this.fetchStatusError;
+    },
+    allowLoadPage() {
+      return !this.fetchStatusError;
     },
     canTrain() {
       return !this.versionNotAvailable && (this.hasIntents && this.shouldTrain);
@@ -244,6 +249,7 @@ export default {
       const prevStatus = that.trainStatus;
       that.$api.getTrainingStatus(version)
       .then((status) => {
+        that.fetchStatusError = false;
         if (status === 'TRAINING') {
           // that.$emit('startLoading', that.$t('intent_engine.is_training'));
           that.trainStatus = status;
@@ -277,6 +283,7 @@ export default {
         }
       })
       .catch((err) => {
+        that.fetchStatusError = true;
         that.trainBtnClicked = false;
         console.log(err);
         if (err.response.status === 400) {
@@ -301,6 +308,7 @@ export default {
     },
     refreshIntentPage() {
       const that = this;
+      if (!this.allowLoadPage) return;
       this.$emit('startLoading');
       // that.$api.getIntents()
       that.$api.getIntentsDetail(that.intentKeyword)
