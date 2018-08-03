@@ -86,3 +86,8 @@ a { cursor:pointer; }
 #config .nav-tabs-vertical{
   display: flex;
 }
+
+button.multiselect{
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
