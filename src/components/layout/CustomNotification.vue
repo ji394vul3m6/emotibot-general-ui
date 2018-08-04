@@ -111,17 +111,24 @@ $animate-delay: 0.5s;
   }
   &.fade-leave-active {
     transition:
-      height $animate-time cubic-bezier(0, 1, 0, 1) $animate-delay,
-      padding $animate-time cubic-bezier(0, 1, 0, 1) $animate-delay,
-      margin-top $animate-time linear $animate-delay;
+      opacity $animate-time cubic-bezier(0, 1, 0, 1) $animate-delay,
+      // height $animate-time cubic-bezier(0.8, 0.2, 0.8, 0.2) $animate-delay,
+      // padding $animate-time cubic-bezier(0, 1, 0, 1) $animate-delay,
+      // margin-top $animate-time linear $animate-delay;
+  }
+  &.fade-leave {
+    opacity: 1
+  }
+  &.fade-enteer-to {
+    opacity: 1
   }
   &.fade-enter {
     opacity: 0;
   }
   &.fade-leave-to {
-    height: 0;
-    padding: 0 10px;
-    margin-top: 0;
+    opacity: 0;
+    // padding: 0 10px;
+    // margin-top: 0;
   }
 }
 </style>
