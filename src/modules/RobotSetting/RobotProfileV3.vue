@@ -44,10 +44,11 @@
               <div class="title">{{ $t('robot_setting.similar_question') }}</div>
               <div class="list">
                 <div class="list-row" v-for="relate in robotQA.relate_questions" :key="relate.id"
-                  :class="[relate.editMode ? 'edit-row' : '']">
+                  :class="[relate.editMode ? 'edit-row' : '']" @mouseover="setHover(relate, true)"
+                  @mouseout="setHover(relate, false)">
                   <template v-if="relate.editMode !== true">
                   <div class="list-content">{{ relate.content }}</div>
-                  <div class="command" v-if="canEdit">
+                  <div class="command" v-if="canEdit && relate.isHover">
                     <div class="clickable edit"
                     @click="startEdit(relate)">{{ $t('general.edit') }}</div>
                     <div class="clickable delete"
@@ -75,10 +76,12 @@
               <div class="title">{{ $t('robot_setting.extend_answer') }}</div>
               <div class="list">
                 <div class="list-row" v-for="answer in robotQA.answers.slice(1)" :key="answer.id"
-                  :class="[answer.editMode ? 'edit-row' : '']">
+                  :class="[answer.editMode ? 'edit-row' : '']"
+                  @mouseover="setHover(answer, true)"
+                  @mouseout="setHover(answer, false)">
                   <template v-if="answer.editMode !== true">
                   <div class="list-content">{{ answer.content }}</div>
-                  <div class="command" v-if="canEdit">
+                  <div class="command" v-if="canEdit && answer.isHover">
                     <div class="clickable edit"
                     @click="startEdit(answer)">{{ $t('general.edit') }}</div>
                     <div class="clickable delete"
@@ -159,6 +162,11 @@ export default {
     },
     compositionend() {
       this.inComposition = false;
+    },
+    setHover(elem, bool) {
+      const that = this;
+      elem.isHover = bool;
+      that.$forceUpdate();
     },
     cancelEdit(obj) {
       obj.editMode = false;
@@ -281,7 +289,6 @@ export default {
         if (robotQA.answers.length === 1) {
           robotQA.show_answer = data.content;
         }
-        document.activeElement.blur();
       });
       that.newQuestion = '';
     },
@@ -361,9 +368,11 @@ export default {
 
           qa.relate_questions.forEach((q) => {
             q.editMode = false;
+            q.isHover = false;
           });
           qa.answers.forEach((answer) => {
             answer.editMode = false;
+            answer.isHover = false;
           });
 
           qa.expand = false;
