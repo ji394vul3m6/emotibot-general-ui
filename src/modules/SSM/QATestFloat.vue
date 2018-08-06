@@ -25,8 +25,13 @@
         </div>
         <div class="chat-item">
           <template v-if="data.content.type === 'text' && data.content.subType === 'text'">
-            <div class="chat-content" v-html="data.content.value">
-            </div>
+            <template v-if="data.html">
+              <div class="chat-content" v-html="data.content.value">
+              </div>
+            </template>
+            <template v-else>
+              <div class="chat-content">{{data.content.value}}</div>
+            </template>
           </template>
           <template v-if="data.content.type === 'text' && (data.content.subType === 'guslist' || data.content.subType === 'relatelist')">
             <div class="chat-content">{{ data.content.value }}
@@ -36,7 +41,7 @@
             </div>
           </template>
           <template v-if="data.content.type === 'cmd'">
-            <div class="chat-content">
+            <div class="chat-content"> 
             [{{ $t('qatest.cmd') }}]：
             {{ $t(`qatest.cmdlist.${data.content.subType}`) !== `qatest.cmdlist.${data.content.subType}`
             ? $t(`qatest.cmdlist.${data.content.subType}`) : data.content.subType }}
@@ -262,6 +267,7 @@ export default {
         role: role || 'user',
         content: answerObj,
         time: moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
+        html: role === 'robot',
       };
       that.chatData.push(chatNode);
       that.$nextTick(that.scrollToBottom);
