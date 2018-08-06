@@ -604,10 +604,6 @@ $main-color: black;
     &.dimension {
       @include daily-dimension();
     }
-
-    input {
-      padding: 5px;
-    }
   }
 
   .button-container {

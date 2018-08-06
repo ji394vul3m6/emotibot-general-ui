@@ -589,7 +589,7 @@ $header-color: #333333;
   .footer {
     flex: 0 0 50px;
     display: flex;
-    padding-left: 12px;
+    padding-right: 12px;
     justify-content: flex-end;
     align-items: center;
     border-top: 1px solid $color-borderline;
