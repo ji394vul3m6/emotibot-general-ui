@@ -1,21 +1,14 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="10px" height="6px" viewBox="0 0 10 6" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 49.3 (51167) - http://www.bohemiancoding.com/sketch -->
-    <title>展开</title>
-    <desc>Created with Sketch.</desc>
-    <defs></defs>
-    <g id="用戶管理" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="用戶管理--編輯" transform="translate(-130.000000, -67.000000)" fill="#FFFFFF">
-            <g id="sideBar" transform="translate(0.000000, 50.000000)">
-                <g id="Group">
-                    <g id="menu_l1">
-                        <g id="展开" transform="translate(129.000000, 14.000000)">
-                            <g transform="translate(6.000000, 6.000000) scale(-1, -1) rotate(-270.000000) translate(-6.000000, -6.000000) " id="Path">
-                                <path d="M7.80439333,1.95381728 L3.65942198,5.64127906 C3.55868294,5.73105886 3.5,5.86626939 3.5,6.01013341 C3.5,6.15291573 3.55868294,6.28920796 3.65942198,6.37790607 L7.78678844,10.0458975 C7.97066164,10.2092319 8.2396251,10.1767813 8.38731049,9.97342468 C8.53499587,9.77006804 8.50565441,9.47260485 8.32178121,9.30927052 L4.60910748,6.01013341 L8.34036414,2.69044429 C8.52423734,2.52710996 8.5535788,2.22964678 8.40589342,2.02629013 C8.32080316,1.91054991 8.19756899,1.84997559 8.07237873,1.84997559 C7.97848603,1.84997559 7.88361529,1.88458948 7.80439333,1.95381728 Z" transform="translate(6.000000, 5.999976) rotate(-180.000000) translate(-6.000000, -5.999976) "></path>
-                            </g>
-                        </g>
-                    </g>
-                </g>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="18" height="18" viewBox="0 0 18 18">
+    <defs>
+        <path id="a" d="M13.046 10.804c.07.08.104.174.104.268 0 .126-.06.249-.176.334a.507.507 0 0 1-.664-.066L8.99 7.61l-3.3 3.712a.507.507 0 0 1-.663.065.4.4 0 0 1-.073-.6l3.668-4.128c.089-.1.225-.159.368-.159.144 0 .279.059.369.16l3.687 4.144z"/>
+    </defs>
+    <g fill="none" fill-rule="evenodd">
+        <g>
+            <mask id="b" fill="#fff">
+                <use xlink:href="#a"/>
+            </mask>
+            <g fill="#FFF" mask="url(#b)">
+                <rect width="18" height="18" rx="4"/>
             </g>
         </g>
     </g>
