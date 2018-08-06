@@ -17,7 +17,7 @@
               <div class="card-title-image">
                 <icon :size=18 icon-type="robot"></icon>
               </div>
-              <div class="card-title-text">
+              <div :ref="robot.id" class="card-title-text" v-tooltip="robotNameTooltip" @mouseover="showFullRobotName($event, robot.name, robot.id)" @mouseout="hideFullRobotName($event, robot.id)">
                 {{ robot.name }}
               </div>
               <div class="card-title-edit" @click.stop="editName(robot)" v-if="isAdmin">
@@ -79,6 +79,13 @@ export default {
       },
       keyword: '',
       robots: [],
+      robotNameTooltip: {
+        msg: '',
+        eventOnly: true,
+        alignLeft: true,
+        top: -10,
+        left: 80,
+      },
     };
   },
   methods: {
@@ -87,6 +94,21 @@ export default {
       'setRobotList',
       'setUserRole',
     ]),
+    isEllipsisActive(elem) {
+      return elem.offsetWidth < elem.scrollWidth;
+    },
+    showFullRobotName(e, name, robotId) {
+      const that = this;
+      if (!that.isEllipsisActive(e.target)) return;
+      that.robotNameTooltip.msg = name;
+      that.$refs[robotId][0].dispatchEvent(new Event('tooltip-reload'));
+      that.$refs[robotId][0].dispatchEvent(new Event('tooltip-show'));
+    },
+    hideFullRobotName(e, robotId) {
+      const that = this;
+      if (!that.isEllipsisActive(e.target)) return;
+      that.$refs[robotId][0].dispatchEvent(new Event('tooltip-hide'));
+    },
     doSearch(word) {
       this.keyword = word;
     },

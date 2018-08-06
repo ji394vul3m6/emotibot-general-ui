@@ -143,6 +143,7 @@ export default {
   z-index: 2;
   visibility: hidden;
   word-break: break-all;
+  white-space: normal;  // explicitly set normal to avoid being rewritten by parent
 
   & > .tooltip-text {
     max-width: 300px;

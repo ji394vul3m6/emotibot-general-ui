@@ -15,7 +15,7 @@
     <div class="icon-container">
       <icon :size=22 icon-type="robot"/>
     </div>
-    <div>{{ robotName }}</div>
+    <div ref="robotName" class="column-text" v-tooltip="robotNameTooltip" @mouseover="showFullRobotName($event, robotName)" @mouseout="hideFullRobotName($event)">{{ robotName }}</div>
   </div>
   <div class="chat-test column" @click="showChatTest" v-if="!showUserInfoPage">
     <div class="icon-container">
@@ -56,6 +56,12 @@ export default {
     showUserMenu: false,
     clickHandler: undefined,
     blurHandler: undefined,
+    robotNameTooltip: {
+      msg: '',
+      eventOnly: true,
+      top: 90,
+      left: -250,
+    },
   }),
   computed: {
     ...mapGetters([
@@ -82,6 +88,21 @@ export default {
       'showUserPreference',
       'hideUserPreference',
     ]),
+    isEllipsisActive(elem) {
+      return elem.offsetWidth < elem.scrollWidth;
+    },
+    showFullRobotName(e, name) {
+      const that = this;
+      if (!that.isEllipsisActive(e.target)) return;
+      that.robotNameTooltip.msg = name;
+      that.$refs.robotName.dispatchEvent(new Event('tooltip-reload'));
+      that.$refs.robotName.dispatchEvent(new Event('tooltip-show'));
+    },
+    hideFullRobotName(e) {
+      const that = this;
+      if (!that.isEllipsisActive(e.target)) return;
+      that.$refs.robotName.dispatchEvent(new Event('tooltip-hide'));
+    },
     clickShowUserPreference() {
       this.showUserMenu = false;
       this.showUserPreference();
@@ -164,6 +185,11 @@ export default {
     flex: 0 0 auto;
     &:not(.empty) {
       max-width: 300px;
+      .column-text {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
     }
     display: flex;
     align-items: center;
