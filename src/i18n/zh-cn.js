@@ -696,7 +696,6 @@ export default {
       fail: '意图导入失败',
       download_template: '下载意图范本',
       support_format: '支援格式 .xlsx',
-      download_template: '下载意图范本',
       upload_file: '上传档案',
       upload_file_undefined: '档案无法辨识',
       upload_file_size_error: '档案大小需介于 0 ~ 2M',
