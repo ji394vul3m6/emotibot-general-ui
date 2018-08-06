@@ -12,7 +12,9 @@ FROM docker-reg.emotibot.com.cn:55688/token-auth:20180803-8d8c536 AS authenticat
 FROM docker-reg.emotibot.com.cn:55688/admin-api:20180804-72d0a02 AS api-server
 
 FROM nginx:1.13-alpine
-
+RUN echo http://mirrors.ustc.edu.cn/alpine/v3.7/main > /etc/apk/repositories; \
+echo http://mirrors.ustc.edu.cn/alpine/v3.7/community >> /etc/apk/repositories
+RUN apk add --no-cache tzdata
 COPY docker/conf/nginx.conf.template /etc/nginx/nginx.conf.template
 
 COPY --from=api-server /usr/local/bin /api
