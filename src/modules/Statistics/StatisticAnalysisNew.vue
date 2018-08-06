@@ -23,7 +23,7 @@
             ref="start"
             :disabled="{to: earliestDate, from: latestDate}"
           ></date-picker>
-          ～
+          &nbsp;～&nbsp; 
           <date-picker
             v-model="endDate"
             :readonly="false"
@@ -47,7 +47,6 @@
       <div class="table-container">
         <general-table
           class="statistic-table"
-          font-class="font-12"
           auto-height show-empty
           :table-data="tableData" :table-header="tableHeader" />
       </div>
@@ -458,6 +457,7 @@ export default {
     display: flex;
     align-items: center;
     .title {
+      @include font-14px();
       margin-right: 10px;
     }
     .switch {

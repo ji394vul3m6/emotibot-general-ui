@@ -95,13 +95,16 @@ $selected-color: #1875F0;
 $row-height: 50px;
 
 .dimension-selector {
-  min-width: 500px;
-  padding: 0 20px;
+  @include font-14px();
+  min-width: 510px;
+  padding: 0 24px;
   .category-row {
     display: flex;
     line-height: $row-height;
     .category-title {
       min-width: 80px;
+      color: $color-font-active;
+      font-weight: 500;
     }
     .category-all-check {
       margin-right: 10px;

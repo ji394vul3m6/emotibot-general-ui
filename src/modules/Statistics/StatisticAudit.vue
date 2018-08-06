@@ -57,7 +57,7 @@
         </div>
       </div>
       <div class="table-container" v-if="showTable">
-        <general-table auto-height show-empty :tableData="tableData" :tableHeader="headerInfo" font-class="font-12"></general-table>
+        <general-table auto-height show-empty :tableData="tableData" :tableHeader="headerInfo" ></general-table>
       </div>
       <div class="row paginator">
         <v-pagination size="small" v-if="showPagination" :pageIndex="pageIndex" v-on:page-change="doSearch" :total="totalCount" :page-size="20" :layout="['prev', 'pager', 'next', 'jumper']"></v-pagination>
@@ -408,7 +408,8 @@ $title-color: #666666;
     align-items: center;
 
     .row-title {
-      width: 48px;
+      @include font-14px();
+      width: 60px;
       margin-right: 20px;
       color: $title-color;
       &.inline {

@@ -13,7 +13,6 @@
             :table-data="showUsers"
             :action="actions"
             autoHeight
-            font-class="font-12"
           />
         </div>
         <div class="table-paginator">
@@ -336,14 +335,14 @@ export default {
 
     display: flex;
     flex-direction: column;
+    @include auto-overflow();
+    @include customScrollbar();
     .commands {
       flex: 0 0 auto;
     }
     .table-container {
       flex: 1;
       margin-top: 20px;
-      @include auto-overflow();
-      @include customScrollbar();
     }
     .table-paginator {
       flex: 0 0 50px;

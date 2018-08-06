@@ -91,7 +91,7 @@
       <div class="table-container">
         <general-table auto-height show-empty
           :tableData="tableData" :tableHeader="headerInfo"
-          font-class="font-12"></general-table>
+          ></general-table>
       </div>
       <div class="paginator">
         <v-pagination v-if="showPagination"
@@ -577,7 +577,8 @@ $main-color: black;
     align-items: center;
 
     .row-title {
-      flex: 0 0 60px;
+      @include font-14px();
+      flex: 0 0 70px;
       margin-right: 10px;
       margin-left: 20px;
     }
