@@ -346,6 +346,7 @@ export default {
     }
     .table-paginator {
       flex: 0 0 50px;
+      padding-right: 12px;
       border-top: 1px solid $color-borderline;
       display: flex;
       align-items: center;

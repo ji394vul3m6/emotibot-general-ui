@@ -143,7 +143,7 @@ $function-header-font-size: 16px;
 $function-header-bg: #fcfcfc;
 
 $card-name-font-size: 14px;
-$card-name-color: #666666;
+$card-name-color: $color-font-active;
 $card-remark-font-size: 12px;
 $card-remark-color: #999999;
 
@@ -174,8 +174,12 @@ $card-remark-color: #999999;
     .row {
       flex: 0 0 auto;
       margin: 20px;
-      margin-top: 10px;
-      margin-bottom: 0;
+      .text-button {
+        margin: 0 5px;
+        &:first-child {
+          margin-left: 0px;
+        }
+      }
     }
     .skill-card-container {
       flex: 1;
@@ -188,15 +192,16 @@ $card-remark-color: #999999;
       justify-content: flex-start;
       align-content: flex-start;
       padding: 20px;
+      padding-top: 0px;
   
       .skill-card {
         flex: 0 0 calc(50% - 10px);
         flex-basis: calc(50% - 10px);
         min-width: 300px;
         height: 80px;
-        border-radius: 2px;
+        border-radius: 4px;
         border: solid 1px #e9e9e9;
-        margin-bottom: 10px;
+        margin-bottom: 20px;
         margin-right: 20px;
         &:nth-child(2n) {
           margin-right: 0px;

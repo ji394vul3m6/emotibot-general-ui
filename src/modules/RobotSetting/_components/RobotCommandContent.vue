@@ -524,7 +524,7 @@ export default {
     flex-direction: column;
     #toolbar {
       flex: 0 0 auto;
-      margin: 10px 20px;
+      margin: 20px;
       display: flex;
       .text-button {
         margin: 0 5px;
@@ -541,6 +541,7 @@ export default {
   #card-content-footer {
     border-top: 1px solid $color-borderline;
     flex: 0 0 50px;
+    padding-right: 12px;
     display: flex;
     align-items: center;
     justify-content: flex-end;

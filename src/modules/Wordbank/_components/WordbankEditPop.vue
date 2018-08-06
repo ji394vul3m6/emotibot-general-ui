@@ -354,6 +354,7 @@ export default {
   #edit-footer {
     border-top: 1px solid $color-borderline;
     flex: 0 0 50px;
+    padding-right: 12px;
     display: flex;
     align-items: center;
     justify-content: flex-end;

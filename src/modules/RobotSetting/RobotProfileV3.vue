@@ -524,10 +524,11 @@ $header-color: #333333;
       flex: 0 0 calc(50% - 20px);
       flex-basis: calc(50% - 20px);
       margin-bottom: 20px;
-      padding: 20px;
+      padding: 15px 16px;
       margin-right: 20px;
       transition: all .5s ease-in-out;
       height: 90px;
+      border-radius: 4px;
 
       // expand will set width to 100% and use animate
       &.expand {
@@ -579,6 +580,7 @@ $header-color: #333333;
   .footer {
     flex: 0 0 50px;
     display: flex;
+    padding-left: 12px;
     justify-content: flex-end;
     align-items: center;
     border-top: 1px solid $color-borderline;

@@ -95,6 +95,7 @@
       </div>
       <div class="paginator">
         <v-pagination v-if="showPagination"
+          size="small"
           :pageIndex="pageIndex"
           v-on:page-change="doSearch"
           :total="totalCount"
@@ -615,7 +616,7 @@ $main-color: black;
     line-height: $default-line-height;
     display: flex;
     align-items: center;
-    padding: 10px 20px;
+    padding: 20px;
     box-shadow: inset 0 -1px 0 0 #e9e9e9;
     .total-show:not(:first-child) {
       margin-left: 10px;
@@ -631,11 +632,12 @@ $main-color: black;
   }
   .paginator {
     box-shadow: inset 0 1px 0 0 #e9e9e9;
-    padding:20px 15px;
+    padding-right: 12px;
 
     display: flex;
+    align-items: center;
     justify-content: flex-end;
-    flex: 0 0 auto;
+    flex: 0 0 50px;
   }
 }
 </style>
