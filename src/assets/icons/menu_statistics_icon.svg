@@ -1,22 +1,15 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="17px" height="16px" viewBox="0 0 17 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 49.3 (51167) - http://www.bohemiancoding.com/sketch -->
-    <title>数据优化off</title>
-    <desc>Created with Sketch.</desc>
-    <defs></defs>
-    <g id="用戶管理" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="用戶管理--編輯" transform="translate(-14.000000, -62.000000)">
-            <g id="sideBar" transform="translate(0.000000, 50.000000)">
-                <g id="Group">
-                    <g id="menu_l1">
-                        <g id="优化" transform="translate(15.000000, 12.000000)">
-                            <g id="数据优化off" transform="translate(0.000000, 0.500000)">
-                                <path d="M0.4,9.7 L3.43398794,7.42450905 C3.77317414,7.17011939 4.23591315,7.15727543 4.58868813,7.39245875 L6.43667453,8.62444968 C6.77690371,8.85126914 7.22094902,8.84809755 7.55790354,8.61644131 L14.2167356,4.03849428 C14.4442885,3.88205167 14.7555783,3.93969794 14.912021,4.16725083 C14.9693235,4.25060002 15,4.34936847 15,4.45051524 L15,15 L0,15 L6.66133815e-16,10.5 C6.27587162e-16,10.1852427 0.148194157,9.88885438 0.4,9.7 Z" id="Rectangle-7" fill="#BABABA"></path>
-                                <polyline id="Line-2" stroke="#BABABA" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" points="0.5 6.5 4 4 7 6 14.5 0.5"></polyline>
-                            </g>
-                        </g>
-                    </g>
-                </g>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="18" height="18" viewBox="0 0 18 18">
+    <defs>
+        <path id="a" d="M1.9 10.95l3.034-2.275a1 1 0 0 1 1.155-.032l1.848 1.232a1 1 0 0 0 1.12-.009l6.66-4.577a.5.5 0 0 1 .783.412v10.55h-15v-4.5a1 1 0 0 1 .4-.8zm.536-2.59a.75.75 0 1 1-.872-1.22l3.5-2.5a.75.75 0 0 1 .852-.014L8.48 6.335l7.076-5.19a.75.75 0 1 1 .888 1.21l-7.5 5.5a.75.75 0 0 1-.86.02L5.514 6.16l-3.078 2.2z"/>
+    </defs>
+    <g fill="none" fill-rule="evenodd">
+        <g>
+            <mask id="b" fill="#fff">
+                <use xlink:href="#a"/>
+            </mask>
+            <use fill="#BABABA" xlink:href="#a"/>
+            <g fill="#CCC" mask="url(#b)">
+                <rect width="18" height="18" rx="4"/>
             </g>
         </g>
     </g>
