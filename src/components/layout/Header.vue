@@ -213,7 +213,7 @@ export default {
         background-color: #505050;
       }
     }
-    .user-menu-container {
+    .user-menu-container { 
       z-index: 1;
       flex: 0 0 auto;
       color: #666666;
@@ -228,21 +228,32 @@ export default {
       .user-menu {
         flex: 0 0 auto;
         background: white;
+        color: $color-font-normal;
         box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2);
         border-radius: 2px;
         display: flex;
         flex-direction: column;
         .menu-item {
+          @include font-14px;
+          height: 32px;
           flex: 0 0 32px;
-          padding: 6px 20px;
-
+          padding: 7px 15px;
+          font-weight: normal;
           display: flex;
           align-items: center;
           @include click-button();
 
           &:hover {
-            background-color: #9393a2;
+            background-color: $color-select-hover;
             color: white;
+          }
+          &:first-child {
+            border-top-left-radius: 2px;
+            border-top-right-radius: 2px;
+          }
+          &:last-child {
+            border-bottom-left-radius: 2px;
+            border-bottom-right-radius: 2px;
           }
         }
       }
