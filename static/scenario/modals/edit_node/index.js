@@ -1437,6 +1437,10 @@
         content.children("div.triggers2").children("input").val(fun.content[0]['key1']);
         content.children("div.triggers3").children("input").val(fun.content[0]['key2']);
       }
+      else if (type == "assign_value") {
+        content.children("div.triggers2").children("input").val(fun.content[0]['key']);
+        content.children("div.triggers3").children("input").val(fun.content[0]['val']);
+      }
       else if (type == "regular_exp") {
         content.children("div.triggers0").children("input").val(fun.content['pattern']);
         for(var oid=0; oid<fun.content['operations'].length; oid++){
@@ -1681,6 +1685,18 @@
               "key1": $(triggers2).val().trim(),
               "key2": $(triggers3).val().trim(),
               "compare": $(triggers0).val()
+            }
+          ]
+        }
+      }
+      else if (type == "assign_value") {
+        fun = {
+          "function_name": type,
+          "content": [
+            {
+              "key": $(triggers2).val().trim(),
+              "val": $(triggers3).val().trim(),
+              "operation": "set_to_global_info"
             }
           ]
         }
@@ -2272,6 +2288,7 @@
       searchType.append('<option value="counter_check">轮次检查</option>');
       searchType.append('<option value="user_custom_transform">转换数据</option>');
       searchType.append('<option value="regular_exp_from_var">正则表示式</option>');
+      searchType.append('<option value="assign_value">赋值</option>');
     }else if (obj.value=="cu") {
       searchType.append('<option value="cu_parser">语句解析数据提取</option>');
       searchType.append('<option value="custom_cu_parser">自定义语句解析数据提取</option>');
@@ -2357,7 +2374,22 @@
         $(obj).parent().find("span.name3").html(CONSTANT.KEY);
         insertGlobalVarsTypeahead($(obj).parent().children("div.triggers2").find("input"));
         insertGlobalVarsTypeahead($(obj).parent().children("div.triggers3").find("input"));
-    }else if(obj.value == "list_length_match"){
+    }else if(obj.value=="assign_value"){
+      $(obj).parent().children("div.triggers0").hide();
+      $(obj).parent().children("div.triggers1").hide();
+      $(obj).parent().children("div.triggers2").show();
+      $(obj).parent().children("div.triggers3").show();
+      $(obj).parent().children("div.qq_threshold").hide();
+      $(obj).parent().children("div.qq_sentences").hide();
+      $(obj).parent().children("div.reg_exp").hide();
+      $(obj).parent().children("a.andIf").show();
+      $(obj).parent().parent().parent().children("div.thenGoto").show();
+
+      $(obj).parent().find("span.name2").html(CONSTANT.KEY);
+      $(obj).parent().find("span.name3").html(CONSTANT.VALUE);
+      insertGlobalVarsTypeahead($(obj).parent().children("div.triggers2").find("input"));
+      insertGlobalVarsTypeahead($(obj).parent().children("div.triggers3").find("input"));
+  } else if(obj.value == "list_length_match"){
         var triggers0 = $(obj).parent().children("div.triggers0");
         triggers0.show();
         triggers0.children(".btn-group").remove();
