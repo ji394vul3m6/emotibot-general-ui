@@ -376,6 +376,7 @@
     float: left;
     display: inline-block;
     margin: 0 4px;
+    color: #666666;
 }
 
 .v-page-goto-input{

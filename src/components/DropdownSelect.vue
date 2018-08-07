@@ -298,6 +298,9 @@ $border-color: $color-borderline;
       }
       &.is-button {
         color: $color-primary;
+        &:hover {
+          color: $color-white;
+        }
       }
     }
     &.group {
