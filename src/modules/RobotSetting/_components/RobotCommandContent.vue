@@ -407,7 +407,7 @@ export default {
           },
         },
       };
-      this.$popCheck(option);
+      this.$popWarn(option);
     },
     confirmDeleteCommand(id) {
       // api call
@@ -440,7 +440,7 @@ export default {
           },
         },
       };
-      this.$popCheck(option);
+      this.$popWarn(option);
     },
     handleCheckedChange(checked) {
       this.checkedCommand = checked;

@@ -125,8 +125,7 @@ export default {
     },
     popDeleteWordsContent(words, contentObj) {
       const that = this;
-      that.$popCheck({
-        title: `${that.$t('general.delete')}${words.name}`,
+      that.$popWarn({
         data: {
           msg: that.$t('chat_skill.delete_check_msg', { item: contentObj.content }),
         },

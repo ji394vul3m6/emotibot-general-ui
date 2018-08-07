@@ -423,7 +423,7 @@ export default {
           },
         },
       };
-      this.$popCheck(option);
+      this.$popWarn(option);
     },
     confirmDeleteWordbank(wid) {
       this.$api.deleteWordbank(wid)
@@ -453,7 +453,7 @@ export default {
           },
         },
       };
-      this.$popCheck(option);
+      this.$popWarn(option);
     },
     handleCheckedChange(checked) {
       this.checkedWordbank = checked;

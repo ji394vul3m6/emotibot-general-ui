@@ -151,7 +151,7 @@ export default {
     },
     deleteScenario(scenario) {
       const that = this;
-      that.$popCheck({
+      that.$popWarn({
         data: {
           msg: that.$t(
             'task_engine_v3.scenario_list_page.ask_delete_confirm',

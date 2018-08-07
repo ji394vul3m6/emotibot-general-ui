@@ -361,7 +361,7 @@ export default {
           },
         },
       };
-      this.$popCheck(option);
+      this.$popWarn(option);
     },
     confirmDeleteCategory() {
       this.$emit('deleteCategory', this.currentActiveItem);

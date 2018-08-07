@@ -173,7 +173,7 @@ export default {
     },
     deleteRolePop(role) {
       const that = this;
-      that.$popCheck({
+      that.$popWarn({
         data: {
           msg: that.$t('privileges.check_delete', { role: role.name }),
         },

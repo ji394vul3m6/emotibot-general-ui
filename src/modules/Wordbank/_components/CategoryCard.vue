@@ -230,7 +230,7 @@ export default {
           },
         },
       };
-      this.$popCheck(option);
+      this.$popWarn(option);
     },
     confirmDeleteCategory() {
       const cid = this.currentCategory.cid;
