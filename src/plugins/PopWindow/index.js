@@ -1,6 +1,7 @@
 
 import ErrorForm from '@/components/pop/ErrorAlert';
 import CheckPop from '@/components/pop/CheckPop';
+import WarnPop from '@/components/pop/WarnPop';
 import PopWindows from './PopWindows';
 
 function popWindow(option) {
@@ -10,6 +11,13 @@ function popWindow(option) {
 function popCheck(option) {
   const that = this;
   option.component = CheckPop;
+  that.$root.$emit('pop-window', option);
+}
+
+function popWarn(option) {
+  const that = this;
+  option.component = WarnPop;
+  option.popWarn = true;
   that.$root.$emit('pop-window', option);
 }
 
@@ -46,6 +54,7 @@ const MyPlugin = {
     Vue.prototype.$pop = popWindow;
     Vue.prototype.$popError = popError;
     Vue.prototype.$popCheck = popCheck;
+    Vue.prototype.$popWarn = popWarn;
     Vue.prototype.$isPopOpen = () => popCount > 0;
     Vue.prototype.$setPopCount = (c) => { popCount = c; };
   },

@@ -17,7 +17,7 @@
           @cancel="close"
           :is="currentView" :origData="data" :extData="extData" ref="content"></component>
       </div>
-      <div class="pop-button">
+      <div class="pop-button" :class="{'center-align': popWarn}">
         <div class="left-part">
           <text-button v-if="left_button !== undefined"
             :button-type="left_button.type ? left_button.type : 'default'"
@@ -33,7 +33,7 @@
           ref="cancelBtn"
           v-if="buttons.indexOf('cancel') != -1">{{ cancel_msg }}</text-button>
         <text-button
-          :button-type="disable_ok ? 'disable' : 'fill'"
+          :button-type="okBtnType"
           v-on:click="click(true)"
           ref="okBtn"
           v-if="buttons.indexOf('ok') != -1">{{ ok_msg }}</text-button>
@@ -51,6 +51,12 @@ export default {
   name: 'pop-window',
   components: {
     TextButton,
+  },
+  computed: {
+    okBtnType() {
+      if (this.disable_ok) return 'disable';
+      return this.popWarn ? 'primary' : 'fill';
+    },
   },
   methods: {
     close() {
@@ -123,6 +129,7 @@ export default {
       that.left_button = option.left_button || undefined;
       that.clickOutsideClose = option.clickOutsideClose === true;
       that.bindValue = option.bindValue !== false;
+      that.popWarn = option.popWarn === true;
       if (option.callback) {
         that.callOk = option.callback.ok;
         that.callCancel = option.callback.cancel;
@@ -166,6 +173,7 @@ export default {
       clickOutsideClose: true,
       bindValue: true,
       left_button: undefined,
+      popWarn: false,
     };
   },
 };
@@ -287,8 +295,15 @@ $pop-spacing: 24px;
       justify-content: space-between;
 
       .text-button {
+        width: 60px;
         &:not(:last-child) {
           margin-right: 10px;
+        }
+      }
+      &.center-align {
+        justify-content: center;
+        .text-button {
+          width: 68px;
         }
       }
     }
