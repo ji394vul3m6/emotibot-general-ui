@@ -4,9 +4,9 @@ $bullet-point-color: #9b9b9b;
   .content {
     display: flex;
     flex-direction: column;
-    .row {
-      flex: 0 0 auto;
-      padding-left: 20px;
+    .header {
+      flex: 0 0 60px;
+      padding: 0 20px;
       &.title {
         @include font-16px();
         color: $color-font-active;
@@ -15,7 +15,6 @@ $bullet-point-color: #9b9b9b;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-right: 20px;
         .breadcrumb{
           display: flex;
           align-items: center;
@@ -36,6 +35,7 @@ $bullet-point-color: #9b9b9b;
               line-height: 1.5;
               color: $color-font-active;
               border: none;
+              box-shadow: none;
             }
             .blank{
               padding: 0px;
@@ -49,6 +49,9 @@ $bullet-point-color: #9b9b9b;
               height: 2px;
               border: none;
               border-bottom: solid 1px #dbdbdb;
+              &.input-focus {
+                border-bottom: solid 1px $color-primary;
+              }
             }
           }
           .button-switch-enable{
@@ -76,12 +79,14 @@ $bullet-point-color: #9b9b9b;
     }
 
     .main-content {
+      flex: 1;
       display: flex;
       flex-direction: row;
-      .sidebar{
-        width: 196px;
+      .sidebar {
+        flex: 0 0 196px;
         padding: 20px;
         padding-right: 0px;
+        // height: calc(100% - 100px);
         .sidebar-content{
           height: 100%;
           border-right: 1px solid $color-borderline;
@@ -152,6 +157,11 @@ $bullet-point-color: #9b9b9b;
             display: none;
           }
         }
+      }
+      .page-container {
+        flex: 1;
+        @include auto-overflow();
+        @include customScrollbar();
       }
     }
   }

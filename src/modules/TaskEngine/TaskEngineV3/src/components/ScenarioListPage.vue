@@ -1,10 +1,10 @@
 <template lang="html">
 <div id="scenario-list-page">
   <div class="content card h-fill w-fill">
-    <div class="row title">
+    <div class="header title">
       {{$t("task_engine_v3.scenario_list_page.scenario_list")}}
     </div>
-    <div class="row">
+    <div class="page">
       <div id="toolbar">
         <div id="left-buttons">
           <text-button button-type='primary' width='68px' height='28px' @click="createNewScenario">
@@ -20,7 +20,6 @@
           <search-input v-model="filteredKeyWord" ></search-input>
         </div>
       </div>
-    </div>
     <template v-for="(scenario, index) in filteredScenarioList">
       <div class="row" @mouseover="scenario.show = true" @mouseleave="scenario.show = false">
         <div id="scenario-grid">
@@ -40,6 +39,7 @@
         </div>
       </div>
     </template>
+    </div>
   </div>
 </div>
 </template>
@@ -276,10 +276,9 @@ $row-height: $default-line-height;
   .content {
     display: flex;
     flex-direction: column;
-    .row {
-      flex: 0 0 auto;
-      padding-left: 20px;
-
+    .header {
+      flex: 0 0 60px;
+      padding: 0 20px;
       &.title {
         @include font-16px();
         color: $color-font-active;
@@ -288,32 +287,47 @@ $row-height: $default-line-height;
         display: flex;
         align-items: center;
       }
-      &:not(.title) {
-        margin-top: 20px;
-      }
+    }
+    .page {
+      flex: 1;
+      @include auto-overflow();
+      @include customScrollbar();
 
-      .text-button {
-        margin-right: 10px;
+      #toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px;
+        #left-buttons {
+          flex: 1;
+          .text-button {
+            margin-right: 10px;
+          }
+        }
+        #right-buttons {
+          flex: 0 0 auto;
+        }
+        #left-buttons, #right-buttons {
+          display: flex;
+          align-items: center;
+        }
       }
       input[type=file] {
         visibility: hidden;
+        width: 30px;
       }
       .file-selector {
         & ~ input {
           display: none;
         }
       }
-
-      #toolbar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-right: 20px;
-      }
-
+    }
+    .row {
+      flex: 0 0 auto;
+      padding: 20px;
+      padding-top: 0px;
       #scenario-grid {
         display: flex;
-        margin-right: 20px;
         height: 82px;
         border-radius: 4px;
         border: solid 1px $color-borderline;

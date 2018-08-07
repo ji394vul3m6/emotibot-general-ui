@@ -821,6 +821,7 @@ export default {
     .intent-block-content {
       padding: 10px 20px;
       border-top: 1px solid $color-borderline;
+      color: $color-font-normal;
       .corpus-tools{
         display: flex;
         align-items: center;

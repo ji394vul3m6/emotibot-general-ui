@@ -136,7 +136,7 @@ export default {
   .add-action-container{
     flex: 0 0 auto;
     margin: 20px 20px 0px 20px;
-    padding: 10px;
+    padding: 10px 20px;
     height: 86px;
     background: #f8f8f8;
     border-radius: 4px;

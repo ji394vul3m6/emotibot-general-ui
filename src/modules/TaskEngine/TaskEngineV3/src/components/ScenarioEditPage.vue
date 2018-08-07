@@ -1,7 +1,7 @@
 <template>
 <div id="scenario_edit_page">
   <div class="content card h-fill w-fill">
-    <div class="row title">
+    <div class="header title">
       <div class="breadcrumb">
         <div class="back-to-list" @click="$router.replace('/task-engine-scenario-v3');">{{$t("task_engine_v3.scenario_list_page.scenario_list")}}</div>
         <div>&gt;</div>
@@ -10,8 +10,10 @@
           <input
             class="input-scenario-name"
             v-model="scenarioName"
-            :placeholder="$t('task_engine_v3.scenario_edit_page.placeholder_name_the_scenario')">
-          <div class="bottom-border"/>
+            :placeholder="$t('task_engine_v3.scenario_edit_page.placeholder_name_the_scenario')"
+            @focus="setInputScenarioNameFocus(true)"
+            @blur="setInputScenarioNameFocus(false)">
+          <div class="bottom-border" :class="{'input-focus': inputScenarioNameFocus}"/>
         </div>
         <div class="label-switch-off label-switch">{{$t("task_engine_v3.scenario_edit_page.switch_off")}}</div>
         <toggle class="button-switch-enable" v-model="enable" @change="switchScenario()" :big="false"></toggle>
@@ -47,7 +49,8 @@
           </ul>
         </div>
       </div>
-      <skill-edit-page
+      <div class="page-container">
+        <skill-edit-page
           ref="skillEditPage"
           :currentPage="currentPage"
           :initialIdToNerMap="idToNerMap"
@@ -55,6 +58,7 @@
           @update="updateSkill"
           @updateIdToNerMap="updateIdToNerMap"
         ></skill-edit-page>
+      </div>
     </div>
   </div>
 </div>
@@ -96,6 +100,7 @@ export default {
       currentPage: 'triggerPage',
       idToNerMap: {},
       enable: false,
+      inputScenarioNameFocus: false,
     };
   },
   computed: {
@@ -153,6 +158,9 @@ export default {
   methods: {
     pageChange(key) {
       this.currentPage = key;
+    },
+    setInputScenarioNameFocus(bool) {
+      this.inputScenarioNameFocus = bool;
     },
     updateSkill(newSkill) {
       this.skills[this.currentSkillId] = newSkill;
