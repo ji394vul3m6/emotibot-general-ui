@@ -837,6 +837,9 @@ export default {
   },
   mounted() {
     this.parseIntentListShown();
+    if (this.addIntentMode) {
+      this.isAddIntent = true;
+    }
   },
 };
 </script>

@@ -56,17 +56,19 @@
           {{ $t('intent_engine.test.no_data.hint_left') }}<br>
           {{ $t('intent_engine.test.no_data.hint_right') }}
         </div>
-        <intent-test-list
-          :intentTestList="intentTestList"
-          :canEditTest="canEdit"
-          :canDeleteTest="canEdit"
-          :addTestMode="isAddTest"
-          :searchTestMode="isSearchTest"
-          :keyword="testKeyword"
-          @addTestDone="finishAddTest($event)"
-          @deleteTestDone="refreshTestingPage()"
-          @cancelSearch="setSearchTest(false)">
-        </intent-test-list>
+        <div v-if="hasTests || isAddTest">
+          <intent-test-list
+            :intentTestList="intentTestList"
+            :canEditTest="canEdit"
+            :canDeleteTest="canEdit"
+            :addTestMode="isAddTest"
+            :searchTestMode="isSearchTest"
+            :keyword="testKeyword"
+            @addTestDone="finishAddTest($event)"
+            @deleteTestDone="refreshTestingPage()"
+            @cancelSearch="setSearchTest(false)">
+          </intent-test-list>
+        </div>
       </div>
     </div>
   </div>
@@ -366,16 +368,16 @@ export default {
         });
 
         that.intentTestList = [];
-        that.intentTestList = [
-          {
-            id: 1,
-            name: '測試題1',
-          },
-          {
-            id: 2,
-            name: '測試題2',
-          },
-        ];
+        // that.intentTestList = [
+        //   {
+        //     id: 1,
+        //     name: '測試題1',
+        //   },
+        //   {
+        //     id: 2,
+        //     name: '測試題2',
+        //   },
+        // ];
       })
       .catch((err) => {
         console.log(err);

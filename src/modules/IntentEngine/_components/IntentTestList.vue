@@ -760,6 +760,11 @@ export default {
       }
     },
   },
+  mounted() {
+    if (this.addTestMode) {
+      this.isAddTest = true;
+    }
+  },
 };
 </script>
 <style lang="scss" scoped>

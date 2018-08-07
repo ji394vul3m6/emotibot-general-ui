@@ -39,7 +39,7 @@
           {{ $t('intent_engine.manage.no_data.hint_left') }}<br>
           {{ $t('intent_engine.manage.no_data.hint_right') }}
         </div>
-        <div v-else-if="hasIntents">
+        <div v-else-if="hasIntents || isAddIntent">
         <intent-list 
           :intentList="intentList"
           :canEditIntent="canEdit && allowEdit"
