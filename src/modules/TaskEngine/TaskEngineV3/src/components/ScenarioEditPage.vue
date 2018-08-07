@@ -19,7 +19,7 @@
         <toggle class="button-switch-enable" v-model="enable" @change="switchScenario()" :big="false"></toggle>
         <div class="label-switch-on label-switch">{{$t("task_engine_v3.scenario_edit_page.switch_on")}}</div>
       </div>
-      <div>
+      <div class="header-buttons">
         <text-button button-type='default' @click="$router.replace('/task-engine-scenario-v3');">{{$t("general.close")}}</text-button>
         <text-button button-type='primary' @click="toNextPage">{{saveButtonText}}</text-button>
       </div>

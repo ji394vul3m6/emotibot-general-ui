@@ -267,7 +267,6 @@ $pop-spacing: 24px;
       min-height: 30px;
       max-height: calc(#{$pop-max-height} - 140px);
       padding-top: $content-padding-top;
-      // padding: 20px;
       box-sizing: border-box;
       @include auto-overflow();
       @include customScrollbar();
@@ -288,7 +287,9 @@ $pop-spacing: 24px;
       justify-content: space-between;
 
       .text-button {
-        width: 80px;
+        &:not(:last-child) {
+          margin-right: 10px;
+        }
       }
     }
   }

@@ -73,6 +73,13 @@ $bullet-point-color: #9b9b9b;
           }
         }
       }
+      .header-buttons {
+        .text-button {
+          &:not(:last-child) {
+            margin-right: 10px;
+          }
+        }
+      }
       &:not(.title) {
         margin-top: 20px;
       }

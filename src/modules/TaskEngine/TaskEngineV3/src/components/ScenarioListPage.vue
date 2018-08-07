@@ -3,6 +3,7 @@
   <div class="content card h-fill w-fill">
     <div class="header title">
       {{$t("task_engine_v3.scenario_list_page.scenario_list")}}
+      <search-input v-model="filteredKeyWord" ></search-input>
     </div>
     <div class="page">
       <div id="toolbar">
@@ -15,9 +16,6 @@
           </text-button>
           <input type="file" ref="uploadInput" v-on:change="changeFile()" accept=".xlsx">
           <input type="file" ref="uploadScenarioJSONInput" @change="changeScenarioJSONFile()" accept=".json">
-        </div>
-        <div id="right-buttons">
-          <search-input v-model="filteredKeyWord" ></search-input>
         </div>
       </div>
     <template v-for="(scenario, index) in filteredScenarioList">
@@ -286,6 +284,7 @@ $row-height: $default-line-height;
         border-bottom: 1px solid $color-borderline;
         display: flex;
         align-items: center;
+        justify-content: space-between;
       }
     }
     .page {

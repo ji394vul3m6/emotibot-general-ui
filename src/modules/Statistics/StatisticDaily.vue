@@ -613,7 +613,6 @@ $main-color: black;
     display: flex;
     align-items: center;
     padding: 20px;
-    box-shadow: inset 0 -1px 0 0 #e9e9e9;
     .total-show:not(:first-child) {
       margin-left: 10px;
     }

@@ -4,7 +4,7 @@
     <div class="row">
       <div class="label-add-action">{{$t("task_engine_v3.action_page.label_add_action")}}</div>
       <div class="icon-container" v-tooltip="{ msg: $t('task_engine_v3.action_page.description')}">
-        <icon icon-type="info" :enableHover="true" :size=20 />
+        <icon icon-type="info" :enableHover="true" :size=18 />
       </div>
     </div>
     <div class="row row-margin-top">

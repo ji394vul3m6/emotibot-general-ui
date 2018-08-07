@@ -5,7 +5,7 @@
       <div class="title-container">
         <div class="title">{{$t("task_engine_v3.entity_collecting_page.title")}}</div>
         <div class="tooltip_container" v-tooltip="{ msg: $t('task_engine_v3.entity_collecting_page.title_description')}">
-          <icon icon-type="info" :enableHover="true" :size=20 />
+          <icon icon-type="info" :enableHover="true" :size=18 />
         </div>
       </div>
       <div class="advanced-config" v-dropdown="advancedConfigOptions">
@@ -25,37 +25,37 @@
       <div class="order_column">
         {{$t("task_engine_v3.entity_collecting_page.order")}}
         <div class="tooltip_container" v-tooltip="{ msg: $t('task_engine_v3.entity_collecting_page.order_description')}">
-          <icon icon-type="info" :enableHover="true" :size=20 />
+          <icon icon-type="info" :enableHover="true" :size=18 />
         </div>
       </div>
       <div class="required_column">
         {{$t("task_engine_v3.entity_collecting_page.required")}}
         <div class="tooltip_container" v-tooltip="{ msg: $t('task_engine_v3.entity_collecting_page.required_description')}">
-          <icon icon-type="info" :enableHover="true" :size=20 />
+          <icon icon-type="info" :enableHover="true" :size=18 />
         </div>
       </div>
       <div class="entity_name_column">
         {{$t("task_engine_v3.entity_collecting_page.entity_name")}}
         <div class="tooltip_container" v-tooltip="{ msg: $t('task_engine_v3.entity_collecting_page.entity_name_description')}">
-          <icon icon-type="info" :enableHover="true" :size=20 />
+          <icon icon-type="info" :enableHover="true" :size=18 />
         </div>
       </div>
       <div class="entity_type_column">
         {{$t("task_engine_v3.entity_collecting_page.entity_type")}}
         <div class="tooltip_container" v-tooltip="{ msg: $t('task_engine_v3.entity_collecting_page.entity_type_description')}">
-          <icon icon-type="info" :enableHover="true" :size=20 />
+          <icon icon-type="info" :enableHover="true" :size=18 />
         </div>
       </div>
       <div class="prompt_column">
         {{$t("task_engine_v3.entity_collecting_page.prompt")}}
         <div class="tooltip_container" v-tooltip="{ msg: $t('task_engine_v3.entity_collecting_page.prompt_description')}">
-          <icon icon-type="info" :enableHover="true" :size=20 />
+          <icon icon-type="info" :enableHover="true" :size=18 />
         </div>
       </div>
       <div class="retry_times_column">
         {{$t("task_engine_v3.entity_collecting_page.retry_times")}}
-        <div class="tooltip_container" v-tooltip="{ msg: $t('task_engine_v3.entity_collecting_page.retry_times_description')}">
-          <icon icon-type="info" :enableHover="true" :size=20 />
+        <div class="tooltip_container" v-tooltip="{ msg: $t('task_engine_v3.entity_collecting_page.retry_times_description'), alignLeft: true}">
+          <icon icon-type="info" :enableHover="true" :size=18 />
         </div>
       </div>
       <div class="more_setting_column"></div>

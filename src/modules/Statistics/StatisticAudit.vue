@@ -51,7 +51,7 @@
         <text-button v-if="canExport"
           v-on:click="doExport()"
           :disabled="!validFormInput"
-          :button-type="totalCount > 0 ? 'normal' : 'disable'">{{ $t('general.export') }}</text-button>
+          :button-type="totalCount > 0 ? 'default' : 'disable'">{{ $t('general.export') }}</text-button>
         <div v-if="totalCount > 0" class="total-show">
           {{ $t('statistics.total_records', {num: totalCount}) }}
         </div>
@@ -424,8 +424,7 @@ $title-color: #666666;
       .total-show:not(:first-child) {
         margin-left: 10px;
       }
-      border: 1px solid $color-borderline;
-      border-width: 1px 0px;
+      border-top: 1px solid $color-borderline;
     }
 
   }
