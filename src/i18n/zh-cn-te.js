@@ -1,4 +1,7 @@
 export default {
+  task_engine_v2: {
+
+  },
   task_engine_v3: {
     wizard_mode: {
       side_menu_tab: {

@@ -1,18 +1,24 @@
 <template lang="html">
-<div
-  id="node-block"
-  :style="style">
-  <!-- @mousedown.stop="onMouseDown"
-  @mousemove.stop="onMouseMove"
-  @mouseup.stop="onMouseUp"> -->
+<div id="node-block" :style="style">
   <div @click="deleteNode">
     X
   </div>
+  <div class="label-node-name">
+    {{node.description}}
+  </div>
+  <div class="button-row">
+    <text-button
+      class="button-edit-node"
+      button-type='primary'
+      @click="editNode">
+      {{$t("general.edit")}}
+    </text-button>
+  </div>
 </div>
-<!-- @mousemove.stop="onMouseMove" -->
 </template>
 
 <script>
+import NodeEditPage from './NodeEditPage';
 
 export default {
   name: 'node-block',
@@ -32,7 +38,7 @@ export default {
         return typeof val === 'number';
       },
     },
-    initialNodeBlock: {
+    initialNode: {
       type: Object,
       required: true,
       default: undefined,
@@ -52,9 +58,9 @@ export default {
         left: `${this.x}px`,
       };
     },
-    nodeBlock() {
-      if (this.initialNodeBlock) {
-        return JSON.parse(JSON.stringify(this.initialNodeBlock));
+    node() {
+      if (this.initialNode) {
+        return JSON.parse(JSON.stringify(this.initialNode));
       }
       return {};
     },
@@ -107,17 +113,40 @@ export default {
     deleteNode() {
       this.$emit('deleteNode');
     },
+    editNode() {
+      // const path = general.composeV2Path(`scenario/${scenarioId}`);
+      // this.$router.replace(path);
+      const that = this;
+      that.$pop({
+        title: '',
+        component: NodeEditPage,
+        validate: true,
+        data: {
+          node: this.node,
+        },
+        callback: {
+          ok: (ner) => {
+            that.$emit('addCustomNer', ner);
+            that.$nextTick(() => {
+              that.categoryToNerTypeMap =
+                JSON.parse(JSON.stringify(that.initialCategoryToNerTypeMap));
+            });
+            that.entityCollector.ner = ner;
+          },
+        },
+      });
+    },
   },
   beforeMount() {},
   mounted() {
-    document.documentElement.addEventListener('mousemove', this.onMouseMove, true);
-    document.documentElement.addEventListener('mousedown', this.onMouseDown, true);
-    document.documentElement.addEventListener('mouseup', this.onMouseUp, true);
+    document.documentElement.addEventListener('mousemove', this.onMouseMove, false);
+    document.documentElement.addEventListener('mousedown', this.onMouseDown, false);
+    document.documentElement.addEventListener('mouseup', this.onMouseUp, false);
   },
   beforeDestroy() {
-    document.documentElement.removeEventListener('mousemove', this.onMouseMove, true);
-    document.documentElement.removeEventListener('mousedown', this.onMouseDown, true);
-    document.documentElement.removeEventListener('mouseup', this.onMouseUp, true);
+    document.documentElement.removeEventListener('mousemove', this.onMouseMove, false);
+    document.documentElement.removeEventListener('mousedown', this.onMouseDown, false);
+    document.documentElement.removeEventListener('mouseup', this.onMouseUp, false);
   },
 };
 </script>
@@ -126,9 +155,11 @@ export default {
 @import 'styles/variable.scss';
 
 #node-block{
-  width: 200px;
-  height: 120px;
-  background: grey;
+  min-width: 230px;
+  min-height: 120px;
+  background: white;
   position: absolute;
+  border: 1px solid $color-borderline;
+  border-radius: 10px;
 }
 </style>

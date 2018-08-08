@@ -5,7 +5,7 @@
       <node-block
         :x="node.x"
         :y="node.y"
-        :initialNodeBlock="{}"
+        :initialNode="node.content"
         @updatePosition="updateNodePosition(index, $event)"
         @deleteNode="deleteNode(index)">
       </node-block>
@@ -24,7 +24,7 @@ export default {
   components: { 'node-block': NodeBlock },
   data() {
     return {
-      nodes: [{ x: 0, y: 0 }, { x: 300, y: 300 }],
+      nodes: [],
     };
   },
   computed: {
@@ -51,14 +51,15 @@ export default {
 
       this.nodes = moduleData.nodes.filter(node => node.node_id !== '0').map((node) => {
         const nodeId = node.node_id;
-        console.log(nodeId);
-        console.log(moduleDataLayouts[nodeId]);
+        console.log(node);
         return {
           x: moduleDataLayouts[nodeId].position.left,
           y: moduleDataLayouts[nodeId].position.top,
-          content: {},
+          content: node,
         };
       });
+      console.log('this.nodes.length');
+      console.log(this.nodes.length);
       // this.currentSkillId = 'mainSkill';
       // // propagate currentSkill
       // this.skills = moduleData.skills;
@@ -92,8 +93,13 @@ export default {
 #scenario-edit-page{
   position: relative;
   box-sizing: border-box;
+  width: 100%;
+  height: 100%;
   .graph-container{
     overflow: auto;
+    width: 100%;
+    height: 100%;
+    background: #F1F4F5;
   }
 }
 </style>
