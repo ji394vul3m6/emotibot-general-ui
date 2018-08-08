@@ -8,6 +8,7 @@
         <div class="scenario-name-container">
           <div class="blank"/>
           <input
+            ref="inputScenarioName"
             class="input-scenario-name"
             v-model="scenarioName"
             :placeholder="$t('task_engine_v3.scenario_edit_page.placeholder_name_the_scenario')"
@@ -288,8 +289,10 @@ export default {
       });
     },
     isValidScenario() {
+      this.scenarioName = this.scenarioName.trim();
       if (this.scenarioName === '') {
-        general.popErrorWindow(this, this.i18n.task_engine_v3.error_msg.please_enter_the_scenario_name, '');
+        this.$refs.inputScenarioName.focus();
+        this.$notifyFail(this.i18n.task_engine_v3.error_msg.please_enter_the_scenario_name);
         return false;
       }
       return true;
