@@ -6,23 +6,22 @@
         <command-row class="commands">
           <text-button button-type="primary" @click="popEditUser()">{{ $t('management.add_account') }}</text-button>
         </command-row>
-        <div class="table-container">
-          <general-table
-            :table-header="tableHeader"
-            :table-data="showUsers"
-            :action="actions"
-            autoHeight
-          />
-        </div>
-        <div class="table-paginator">
-          <v-pagination size="small"
-            :total="users.length"
-            :pageIndex="curPageIdx"
-            :pageSize="pageLimit"
-            :layout="['prev', 'pager', 'next', 'jumper']"
-            @page-change="handlePageChange"
-          />
-        </div>
+        <general-table
+          id="list-table"
+          :table-header="tableHeader"
+          :table-data="showUsers"
+          :action="actions"
+          autoHeight
+        />
+      </div>
+      <div class="table-paginator">
+        <v-pagination size="small"
+          :total="users.length"
+          :pageIndex="curPageIdx"
+          :pageSize="pageLimit"
+          :layout="['prev', 'pager', 'next', 'jumper']"
+          @page-change="handlePageChange"
+        />
       </div>
     </div>
   </div>
@@ -251,23 +250,21 @@ export default {
     flex: 1;
     display: flex;
     flex-direction: column;
-    @include auto-overflow();
-    @include customScrollbar();
     .commands {
       flex: 0 0 auto;
+      padding-bottom: 20px;
     }
-    .table-container {
-      flex: 1;
-      margin-top: 20px;
+    .list-table {
+      overflow: hidden;
     }
-    .table-paginator {
-      flex: 0 0 50px;
-      border-top: 1px solid $color-borderline;
-      padding-right: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-    }
+  }
+  .table-paginator {
+    flex: 0 0 50px;
+    border-top: 1px solid $color-borderline;
+    padding-right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
   }
 }
 </style>
