@@ -391,7 +391,7 @@
                         "to_node_id": null,
                         "condition_rules": []
                     },{
-                        "to_node_id": 0, //default go to exit node
+                        "to_node_id": "0", //default go to exit node
                         "condition_rules": []
                     }]
                 }
@@ -419,7 +419,7 @@
                         "to_node_id": null,
                         "condition_rules": []
                     },{
-                        "to_node_id": 0, //default go to exit node
+                        "to_node_id": "0", //default go to exit node
                         "condition_rules": []
                     }]
                 }
@@ -511,7 +511,7 @@
                           "actions": []
                         },
                         {
-                          "to_node_id": 0,
+                          "to_node_id": "0",
                           "edge_type": "normal",
                           "condition_rules": [
                             [
@@ -546,7 +546,7 @@
                           ]
                         },
                         {
-                          "to_node_id": 0,
+                          "to_node_id": "0",
                           "edge_type": "normal",
                           "condition_rules": [
                             [
@@ -582,7 +582,7 @@
                         },
                         {
                           "edge_type": "normal",
-                          "to_node_id": 0,
+                          "to_node_id": "0",
                           "condition_rules": [
                             [
                               {
