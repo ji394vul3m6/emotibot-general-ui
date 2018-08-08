@@ -534,6 +534,7 @@ export default {
     },
   },
   qa_label: {
+    title: '标签管理',
     label: '标签',
     label_id: 'ID',
     label_row: '个',
@@ -544,6 +545,11 @@ export default {
     delete_label_name: '确定要删除标签：{tag}',
     err_detele_label_has_rule: '无法删除有规则的标签',
     err_existed_label: '标签名已存在',
+    err_label_format: '不合法的标签格式',
+    add_label: '新增标签',
+    edit_label: '编辑标签',
+    label_placeholder: '输入标签名称',
+    label_format: '僅限10字长内的中文、半形英文与数字',
   },
   qa_rule: {
     rule: '规则',

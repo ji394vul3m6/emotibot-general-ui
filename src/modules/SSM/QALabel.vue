@@ -1,35 +1,26 @@
 <template>
   <div class='qa-label'>
     <div class="card w-fill h-fill">
-      <div class="actions row">
-        <h3>{{$t('qa_label.label')}}</h3>
-        <span class="grey9 label-count">{{$t('qalist.total')}} {{labelsCount}} {{$t('qa_label.label_row')}}{{$t('qa_label.label')}}</span>
+      <div class="header">
+        <div class="header-left">
+          <span class="title">{{$t('qa_label.title')}}</span>
+          <span class="subtitle">{{$t('qalist.total')}} {{labelsCount}} {{$t('qa_label.label_row')}}{{$t('qa_label.label')}}</span>
+        </div>
         <search-input v-model="keyword"></search-input>
       </div>
-      <div class="table-container table-box f12 grey6">
-        <div class="row row-title">
-          <div class="col tagname">{{$t('qa_label.label_name')}}</div>
-          <div class="col opts"></div>
+      <div class="content">
+        <div class="toolbar">
+          <text-button button-type="primary" @click="popAddLabel">{{ $t('qa_label.add_label') }}</text-button>
         </div>
-        <div class="row row-tbody" v-for="(item, index) in tableData" :key="index">
-          <div class="col tagname">
-              <input class="tag-input" v-if="item.editing" v-model.trim="item.name" v-focus="true" maxlength="10" :placeholder="$t('qa_label.length')" key="tag-input" />
-              <span v-else class="tagname grey3" key="tagname">{{item.name}}</span>
-          </div>
-          <div class="col opts" v-if="canEdit && item.type !== 'system'">
-            <div class="tag-opts bluecolor" v-if='item.editing'>
-              <a class="save-sqtag" @click="saveLabel(item)" href="javascript:void(0);" key="save-sqtag">{{$t('general.save')}}</a>
-              <a class="cancel-sqtag" @click="cancelLabel(item)" href="javascript:void(0);" key="cancel-sqtag">{{$t('general.cancel')}}</a>
-            </div>
-            <div class="tag-opts bluecolor" v-if='!item.editing'>
-              <a class="edit-sqtag" @click="editLabel(item)" href="javascript:void(0);" key="edit-sqtag">{{$t('general.edit')}}</a>
-              <a class="remove-sqtag" @click="removeLabel(item,index)" href="javascript:void(0);" key="remove-sqtag">{{$t('general.delete')}}</a>
-            </div>
-          </div>
-        </div>
-        <div class="row row-tbody add-newtag" v-if="canEdit">
-          <span @click="addLabel">+{{$t('general.add')}}{{$t('qa_label.label')}}</span>
-        </div>
+        <general-table id="label-table" 
+          :tableHeader="tableHeader"
+          :tableData="pageData"
+          :action="tableAction"
+          showEmpty></general-table>
+      </div>
+      <div class="footer">
+        <v-pagination size="small" :total="filterCount" :pageIndex="curPage" :pageSize="pageSize" :layout="['prev', 'pager', 'next', 'jumper']" @page-change="handlePageChange">
+        </v-pagination>
       </div>
     </div>
   </div>
@@ -37,10 +28,9 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import FlexTable from '@/components/FlexTable';
 import apiBF from '@/api/BF';
-import validate from '@/utils/js/validate';
 import api from './_api/qalabel';
+import EditLabelPop from './_components/EditLabelPop';
 
 export default {
   path: 'qa-label',
@@ -48,21 +38,32 @@ export default {
   displayNameKey: 'qa_label',
   icon: 'white_chat',
   name: 'qa-label',
-  components: {
-    'flex-table': FlexTable,
-  },
   api: [api, apiBF],
   data() {
     return {
       keyword: '',
       labels: [],
-      labelsbak: [],
       labelsCount: 0,
-      tagblank: {
-        name: '',
-        editing: true,
-        isadd: true,
-      },
+      tableHeader: [
+        {
+          key: 'name',
+          text: this.$t('qa_label.label_name'),
+        },
+      ],
+      tableAction: [
+        {
+          text: this.$t('general.edit'),
+          onclick: this.popEditLabel,
+          type: 'primary',
+        },
+        {
+          text: this.$t('general.delete'),
+          onclick: this.removeLabel,
+          type: 'error',
+        },
+      ],
+      curPage: 1,
+      pageSize: 20,
     };
   },
   computed: {
@@ -77,42 +78,130 @@ export default {
       const that = this;
       return that.labels.filter(tag => that.keyword === '' || tag.name.indexOf(that.keyword) >= 0);
     },
+    filterCount() {
+      return this.tableData.length;
+    },
+    pageData() {
+      const startIdx = (this.curPage - 1) * this.pageSize;
+      const endIdx = startIdx + this.pageSize;
+      return this.tableData.slice(startIdx, endIdx);
+    },
+    lastPage() {
+      return Math.ceil(this.filterCount / this.pageSize);
+    },
   },
-  directives: {
-    focus: {
-      inserted(el) {
-        el.focus();
-      },
-      update(el, value) {
-        if (value.value) {
-          el.focus();
-        }
-      },
+  watch: {
+    keyword() {
+      this.toFirstPage();
+    },
+    lastPage() {
+      if (this.lastPage !== 0 && this.lastPage < this.curPage) {
+        this.toPrevPage();
+      }
     },
   },
   methods: {
-    isEditing() {
-      return this.labels.reduce((val, label) => val || label.editing, false);
+    toFirstPage() {
+      this.curPage = 1;
     },
-    resetEditing() {
-      this.labels.forEach((label) => {
-        if (label.editing) {
-          this.cancelLabel(label);
+    toPrevPage() {
+      this.curPage -= 1;
+    },
+    handlePageChange(page) {
+      console.log(page);
+      this.curPage = page;
+    },
+    initKeyword() {
+      this.keyword = '';
+    },
+    popAddLabel() {
+      const option = {
+        title: this.$t('qa_label.add_label'),
+        component: EditLabelPop,
+        validate: true,
+        data: {
+          labelList: this.labels,
+        },
+        callback: {
+          ok: (label) => {
+            this.addLabel(label);
+          },
+        },
+      };
+      this.$pop(option);
+    },
+    addLabel(label) {
+      const that = this;
+      const params = {
+        appid: that.robotID,
+        name: label,
+        type: 'userdefine',
+        category: 'sq',
+      };
+      that.$api.addLabel(params)
+      .then((res) => {
+        if (res.error_code === 0) {
+          that.loadLabels();
+          that.initKeyword();
+          that.toFirstPage();
+        } else {
+          that.$notifyFail(res.error_message);
         }
+      })
+      .catch((err) => {
+        // TODO: handle add error
+        console.log(err);
+        // that.$notifyFail();
+      })
+      .finally(() => {
+        that.$emit('endLoading');
       });
     },
-    editLabel(item) {
-      if (this.isEditing()) {
-        this.resetEditing();
-      }
-      item.editing = true;
-      item.namebak = item.name;
-      this.$forceUpdate();
+    popEditLabel(labelItem) {
+      const option = {
+        title: this.$t('qa_label.edit_label'),
+        component: EditLabelPop,
+        validate: true,
+        data: {
+          label: labelItem.name,
+          labelList: this.labels,
+        },
+        callback: {
+          ok: (editedlabel) => {
+            this.editLabel(editedlabel, labelItem.id);
+          },
+        },
+      };
+      this.$pop(option);
+    },
+    editLabel(label, id) {
+      const that = this;
+      const params = {
+        appid: that.robotID,
+        name: label,
+        type: 'userdefine',
+        category: 'sq',
+        id,
+      };
+      that.$api.updateLabel(params)
+      .then((res) => {
+        if (res.error_code === 0) {
+          that.loadLabels();
+        } else {
+          that.$notifyFail(res.error_message);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        // that.$notifyFail();
+      })
+      .finally(() => {
+        that.$emit('endLoading');
+      });
     },
     removeLabel(item) {
       const that = this;
-      that.$popCheck({
-        title: `${that.$t('general.delete')}${that.$t('qa_label.label')}`,
+      that.$popWarn({
         data: {
           msg: that.$t('qa_label.delete_label_name', { tag: item.name }),
         },
@@ -123,7 +212,8 @@ export default {
               appid: that.robotID,
               tagid: item.id,
             };
-            that.$api.deleteLabel(params).then((res) => {
+            that.$api.deleteLabel(params)
+            .then((res) => {
               if (res.error_code === 0) {
                 that.loadLabels();
               } else {
@@ -133,108 +223,35 @@ export default {
               // TODO: handle delete error
               that.$notifyFail(that.$t('qa_label.err_detele_label_has_rule'));
             })
-              .then(() => {
-                that.$emit('endLoading');
-              });
+            .finally(() => {
+              that.$emit('endLoading');
+            });
           },
         },
       });
     },
-    addLabel() {
-      if (this.isEditing()) {
-        this.resetEditing();
-      }
-      if (this.labels.indexOf(this.tagblank) < 0) {
-        this.tagblank.name = '';
-        this.tagblank.editing = true;
-        this.labels.push(this.tagblank);
-      }
-    },
-    saveLabel(item) {
-      const that = this;
-      if (item.name.length <= 0) {
-        that.$popError(that.$t('error_msg.input_empty'));
-        return;
-      }
-      if (!validate.isValidLabel(item.name)) {
-        that.$popError(that.$t('format.tag_format'));
-        return;
-      }
-
-      const existedIdx = that.labels.findIndex(l => l.name === item.name && !item.editing);
-      if (existedIdx >= 0) {
-        that.$popError(that.$t('qa_label.err_existed_label'));
-        return;
-      }
-      const params = {
-        appid: that.robotID,
-        name: item.name,
-        type: 'userdefine',
-        category: 'sq',
-      };
-      if (item.name === item.namebak) {
-        this.$set(this, 'editing', false);
-        this.$set(item, 'editing', false);
-        return;
-      }
-      let promise;
-      if (item.isadd) {
-        promise = that.$api.addLabel(params);
-      } else {
-        params.id = item.id;
-        promise = that.$api.updateLabel(params);
-        that.$api.updateLabel(params);
-      }
-      promise.then((res) => {
-        if (res.error_code === 0) {
-          that.$set(this.tagblank, 'name', '');
-          that.loadLabels();
-        } else {
-          that.$popError(res.error_message);
-        }
-      })
-      .catch((err) => {
-        // TODO: handle add error
-        that.$set(this.tagblank, 'name', '');
-        console.log(err);
-      })
-      .finally(() => {
-        that.$emit('endLoading');
-      });
-    },
-    cancelLabel(item) {
-      const that = this;
-      item.name = item.namebak;
-      item.editing = false;
-      that.$forceUpdate();
-
-      if (item === that.tagblank) {
-        that.tagblank.name = '';
-        if (that.labels.indexOf(that.tagblank) >= 0) {
-          that.labels.pop();
-        }
-      }
-    },
     loadLabels() {
       const that = this;
       that.$emit('startLoading');
-      that.$api.loadLabels(that.robotID).then((rsp) => {
+      that.$api.loadLabels(that.robotID)
+      .then((rsp) => {
         if (rsp.error_code === 0) {
           const labels = rsp.data.tag;
-          that.labelsbak = JSON.parse(JSON.stringify(labels));
           that.labelsCount = labels.length;
-          labels.forEach((label) => {
-            label.editing = false;
-          });
-          labels.reverse();
           that.labels = labels;
+          that.labels.forEach((label) => {
+            if (label.type === 'system') {
+              label.action_enable = false;
+            }
+          });
         } else {
           that.$popError(rsp.error_message);
         }
-      }, () => {
-        // TODO: handle error if status code is not 500,
       })
-      .then(() => {
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
         that.$emit('endLoading');
       });
     },
@@ -249,102 +266,47 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'styles/variable.scss';
-.regy6{
-  color: #666;
-}
-.grey9{
-  color: #999;
-}
-.f12{
-  font-size: 12px;
-}
-a {
-  text-decoration: none;
-  color: #108EE9;
-}
-.bluecolor{
-  color: #108EE9;
-}
-.qa-label {
+.card {
   display: flex;
-  overflow: auto;
   flex-direction: column;
-  .row {
-    padding: 20px;
-    h3{
-      color: #666;
-      font-size: 18px;
-    }
-    .label-count{
-      margin-left: 10px;
-    }
-    .search-input{
-      margin-left: 86px;
-    }
-    @include flex-row();
-  }
-  .table-container {
-    flex: 1;
-  }
-}
-.table-box {
-  width: 100%;
-  .row {
+  .header {
+    flex: 0 0 60px;
+    padding: 0 20px;
     display: flex;
-    width: 100%;
-    .col {
-      flex-wrap: wrap;
-      -webkit-box-sizing: border-box;
-      -moz-box-sizing: border-box;
-      box-sizing: border-box;
-      overflow-wrap: break-word;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid $color-borderline;
+    .header-left {
+      .title {
+        @include font-16px();
+        color: $color-font-active;
+      }
+      .subtitle {
+        margin-left: 20px;
+        @include font-16px();
+        color: $color-font-mark;
+      }
     }
   }
-}
-.table-container{
-  .row{
-    border-bottom: 1px solid #eee;
-    line-height: 30px;
-    padding: 5px;
-    min-height: initial;
-    &.row-title{
-      border-top: 1px solid #eee;
-      background-color: #efefef;
+  .content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    .toolbar {
+      flex: 0;
+      padding: 20px;
     }
-    .col.tagname{
-      padding-left: 20px;
-      width: 210px;
-      .tag-input{
-        padding: 0 5px;
-        width: calc(100% - 15px);
-        height: 28px;
-        line-height: 28px;
-        border: 1px solid #d9d9d9;
-        -webkit-border-radius: 4px;
-        -moz-border-radius: 4px;
-        border-radius: 4px;
-        outline: none;
-        &:hover,
-        &:focus{
-          border-color: #4B4B64;
-        }
-        &:focus{
-          -webkit-box-shadow: 0 0 0 2px rgba(75, 75, 75, 0.2);
-          -moz-box-shadow: 0 0 0 2px rgba(75, 75, 75, 0.2);
-          box-shadow: 0 0 0 2px rgba(75, 75, 75, 0.2);
-        }
-      }
+    #label-table {
+      flex: 1;
+      overflow: hidden;
     }
-    .col.opts{
-      a{
-        margin-right: 20px;
-      }
-    }
-    &.add-newtag{
-      cursor: pointer;
-      padding-left: 25px;
-    }
+  }
+  .footer {
+    flex: 0 0 50px;
+    border-top: 1px solid $color-borderline;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
   }
 }
 </style>
