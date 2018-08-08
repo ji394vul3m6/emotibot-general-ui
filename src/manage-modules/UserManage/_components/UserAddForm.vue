@@ -70,7 +70,7 @@
         {{ $t('management.user_display_name') }}
       </div>
       <div class="row-input-col">
-        <input class="row-input" ref="displayName" v-model="displayName" :placeholder="$t('management.input_placeholder')" v-tooltip="displayNameTooltip"
+        <input class="row-input" ref="displayName" v-model="displayName" :placeholder="$t('management.input_placeholder')" :maxlength="displayNameMaxlength" v-tooltip="displayNameTooltip"
         :class="{'error': isDisplayNameTooltipShown}">
       </div>
     </div>
@@ -186,6 +186,7 @@ export default {
       passwordMaxlength: 16,
       passwordMinlength: 6,
       userNameMaxlength: 64,
+      displayNameMaxlength: validate.displayNameMaxlength,
 
       privilegeSet: [{
         machine: [],

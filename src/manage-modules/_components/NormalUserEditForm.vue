@@ -2,14 +2,16 @@
   <div class="user-edit-form">
     <div class="row">
       <div class="row-title">
+        <div class="required">＊</div>
         {{ $t('management.user_display_name') }}
       </div>
       <div class="row-input">
-        <input ref="name" v-tooltip="nameTooltip" v-model="name" :class="{'error': isNameTooltipShown}">
+        <input ref="name" v-tooltip="nameTooltip" v-model="name" :maxlength="displayNameMaxlength" :class="{'error': isNameTooltipShown}">
       </div>
     </div>
     <div class="row">
       <div class="row-title">
+        <div class="required"></div>
         {{ $t('management.phone') }}
       </div>
       <div class="row-input">
@@ -18,6 +20,7 @@
     </div>
     <div class="row">
       <div class="row-title">
+        <div class="required">＊</div>
         {{ $t('management.email') }}
       </div>
       <div class="row-input">
@@ -63,6 +66,7 @@ export default {
       isNameTooltipShown: false,
       isEmailTooltipShown: false,
       isPhoneTooltipShown: false,
+      displayNameMaxlength: validate.displayNameMaxlength,
     };
   },
   watch: {
@@ -138,7 +142,7 @@ export default {
 <style lang="scss" scoped>
 .user-edit-form {
   width: 465px;
-  padding: 0 30px;
+  padding: 0 24px;
   @include font-14px();
   display: flex;
   flex-direction: column;
@@ -148,8 +152,13 @@ export default {
     align-items: center;
     margin-bottom: 10px;
     .row-title {
-      flex: 0 0 80px;
+      flex: 0 0 100px;
       overflow: hidden;
+      .required {
+        display: inline-block;
+        width: 14px;
+        color: $color-primary;
+      }
     }
     .row-input {
       flex: 1;

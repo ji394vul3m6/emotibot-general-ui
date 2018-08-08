@@ -61,6 +61,7 @@
       <input class="row-input"
         :placeholder="$t('management.input_placeholder')"
         :class="{'error': isDisplayNameTooltipShown}"
+        :maxlength="displayNameMaxlength"
         v-model="adminDisplayName"
         v-tooltip="displayNameTooltip"
         ref="displayName">
@@ -153,6 +154,7 @@ export default {
       userNameMaxlength: 64,
       passwordMinlength: 6,
       passwordMaxlength: 16,
+      displayNameMaxlength: validate.displayNameMaxlength,
     };
   },
   watch: {
