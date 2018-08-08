@@ -74,6 +74,7 @@ export default {
     },
     setAll(val) {
       const that = this;
+      if ((val && this.allActive) || (!val && this.allDeactive)) return;
       that.moduleList.forEach((skill) => {
         skill.checked = val;
       });
