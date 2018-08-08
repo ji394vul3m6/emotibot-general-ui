@@ -115,8 +115,6 @@
   .entity-collector-list-container{
     display: flex;
     flex-direction: column;
-    @include auto-overflow();
-    @include customScrollbar();
     flex: 0 1 auto;
     padding: 0px 20px 0px 20px;
     .entity-collector-row{

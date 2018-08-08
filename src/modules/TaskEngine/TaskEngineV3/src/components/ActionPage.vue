@@ -164,8 +164,6 @@ export default {
   }
   .action-group-list-container{
     flex: 1 1 auto;
-    @include auto-overflow();
-    @include customScrollbar();
     margin: 10px 0px 20px 0px;
     padding: 0px 20px 0px 20px;
     .action-group-container{

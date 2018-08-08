@@ -141,9 +141,6 @@ export default {
 
       const inputBox = that.$refs.input.getBoundingClientRect();
       that.listStyle = {
-        position: 'fixed',
-        top: `${inputBox.top + inputBox.height + 3}px`,
-        left: `${inputBox.left}px`,
         width: `${inputBox.width}px`,
       };
 
@@ -217,7 +214,9 @@ export default {
 @import 'styles/variable.scss';
 
 $border-color: $color-borderline;
-
+.dropdown-select {
+  position: relative;
+}
 .input-bar {
   display: flex;
   height: 28px;
@@ -265,6 +264,9 @@ $border-color: $color-borderline;
   }
 }
 .select-list {
+  position: absolute;
+  top: 35px; // input height + 5px padding
+  left: 0;
   @include font-14px();
   z-index: 10;
   box-sizing: border-box;
