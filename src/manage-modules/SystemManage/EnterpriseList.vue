@@ -267,9 +267,9 @@ export default {
       margin-bottom: 20px;
       padding: 20px;
       @include click-button();
-
+      transition: all .2s ease-in-out;
       &:hover {
-        box-shadow: 0 0 14px 0 rgba(0, 0, 0, 0.2);
+        box-shadow: 0 4px 9px 0 rgba(115, 115, 115, 0.2), 0 5px 8px 0 rgba(228, 228, 228, 0.5);
         .card-title {
           .card-title-edit {
             visibility: visible;

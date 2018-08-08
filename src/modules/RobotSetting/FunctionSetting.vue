@@ -203,10 +203,13 @@ $card-remark-color: #999999;
         border: solid 1px #e9e9e9;
         margin-bottom: 20px;
         margin-right: 20px;
+        transition: all .2s ease-in-out;
         &:nth-child(2n) {
           margin-right: 0px;
         }
-  
+        &:hover{
+          box-shadow: 0 4px 9px 0 rgba(115, 115, 115, 0.2), 0 5px 8px 0 rgba(228, 228, 228, 0.5);
+        }
         display: flex;
         align-items: center;
         .skill-text {

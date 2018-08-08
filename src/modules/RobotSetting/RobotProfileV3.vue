@@ -538,7 +538,7 @@ $header-color: #333333;
       transition: all .5s ease-in-out;
       height: 90px;
       border-radius: 4px;
-
+      transition: all .2s ease-in-out;
       // expand will set width to 100% and use animate
       &.expand {
         flex: 0 0 calc(100% - 20px);

@@ -114,7 +114,7 @@ export default {
   }
   .pattern_text_header{
     flex: 0 0 auto;
-    margin-top: 20px;
+    margin: 20px 0px 10px 0px;
     padding: 0 20px 0 20px;
     @include font-14px();
   }
@@ -135,6 +135,7 @@ export default {
       flex-direction: column;
       flex: 0 0 auto;
       justify-content: center;
+      transition: all .2s ease-in-out;
       &:not(:first-child){
         margin-top: 12px;
       }

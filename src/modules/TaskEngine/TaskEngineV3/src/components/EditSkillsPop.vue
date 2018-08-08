@@ -85,7 +85,7 @@ export default {
           msg: `${this.$t('task_engine_v3.edit_skill_pop.warn_delete_skill')}`,
         },
       };
-      this.$popCheck(options);
+      this.$popWarn(options);
     },
     validateDate() {
       let success = true;
@@ -148,6 +148,7 @@ export default {
       align-items: center;
       padding: 10px;
       margin-bottom: 12px;
+      transition: all .2s ease-in-out;
       &:hover{
         box-shadow: 0 4px 9px 0 rgba(115, 115, 115, 0.2), 0 5px 8px 0 rgba(228, 228, 228, 0.5);
       }
