@@ -13,6 +13,7 @@ input {
   border: solid 1px $color-borderline;
   border-radius: 2px;
   color: $color-font-normal;
+  font-family: $app-dft-font-family;
   &::placeholder {
     color: $color-font-disabled;
   }
@@ -90,6 +91,7 @@ textarea {
   padding: 5px 8px;
   border: solid 1px $color-borderline;
   border-radius: 2px;
+  font-family: $app-dft-font-family;
   &::placeholder {
     color: $color-font-disabled;
   }
