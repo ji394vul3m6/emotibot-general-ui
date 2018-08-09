@@ -546,6 +546,7 @@ export default {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.55);
+    border-radius: 4px;
   }
 }
 </style>
