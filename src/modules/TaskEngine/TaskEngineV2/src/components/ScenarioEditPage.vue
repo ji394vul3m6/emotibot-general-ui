@@ -52,6 +52,7 @@ export default {
       nodeOptions: this.getNodeOptions(),
       canvasWidth: 2000,
       canvasHeight: 2000,
+      rainbowColors: this.getRainbowColors(),
     };
   },
   computed: {
@@ -85,13 +86,13 @@ export default {
         edge.from_id !== '0' &&
         edge.to_id !== '0' &&
         edge.from_id !== edge.to_id,
-      ).map(edge => ({
+      ).map((edge, index) => ({
         x1: this.idToNode[edge.from_id].x + 115,
         y1: this.idToNode[edge.from_id].y + 60,
         x2: this.idToNode[edge.to_id].x + 115,
         y2: this.idToNode[edge.to_id].y + 60,
         style: {
-          stroke: 'red',
+          stroke: this.rainbowColors[index % this.rainbowColors.length],
           strokeWidth: 4,
           fill: 'none',
         },
@@ -164,6 +165,26 @@ export default {
         },
       });
     },
+    onPageWheel() {
+      // expand canvas width and height
+      const scrollLeft = this.$refs.window.scrollLeft;
+      const windowWidth = this.$refs.window.clientWidth;
+      const pageWidth = this.$refs.page.clientWidth;
+
+      const scrollTop = this.$refs.window.scrollTop;
+      const windowHeight = this.$refs.window.clientHeight;
+      const pageHeight = this.$refs.page.clientHeight;
+
+      const scrollPercentX = (scrollLeft / (pageWidth - windowWidth)) * 100;
+      const scrollPercentY = (scrollTop / (pageHeight - windowHeight)) * 100;
+
+      if (scrollPercentX >= 95) {
+        this.canvasWidth *= 1.1;
+      }
+      if (scrollPercentY >= 95) {
+        this.canvasHeight *= 1.1;
+      }
+    },
     getPanelTabOptions() {
       const tabs = [
         this.$t('task_engine_v2.scenario_edit_page.tabs.node'),
@@ -198,25 +219,11 @@ export default {
       ];
       return nodeOptions;
     },
-    onPageWheel() {
-      // expand canvas width and height
-      const scrollLeft = this.$refs.window.scrollLeft;
-      const windowWidth = this.$refs.window.clientWidth;
-      const pageWidth = this.$refs.page.clientWidth;
-
-      const scrollTop = this.$refs.window.scrollTop;
-      const windowHeight = this.$refs.window.clientHeight;
-      const pageHeight = this.$refs.page.clientHeight;
-
-      const scrollPercentX = (scrollLeft / (pageWidth - windowWidth)) * 100;
-      const scrollPercentY = (scrollTop / (pageHeight - windowHeight)) * 100;
-
-      if (scrollPercentX >= 95) {
-        this.canvasWidth *= 1.1;
-      }
-      if (scrollPercentY >= 95) {
-        this.canvasHeight *= 1.1;
-      }
+    getRainbowColors() {
+      return [
+        '#db6b6c', '#5a9bd3', '#42a198', '#f8c954', '#7e47ae',
+        '#dc7598', '#5a99d2', '#db6b6c', '#eaa355', '#8a7168',
+      ];
     },
   },
   beforeMount() {
@@ -242,7 +249,7 @@ export default {
     width: 100%;
     height: 100%;
     @include auto-overflow();
-    @include customScrollbar();
+    @include customScrollbar();  
     .canvas-page{
       background: #F1F4F5;
       background-size: 20px 20px;
@@ -256,11 +263,12 @@ export default {
     right: 0;
     top: 0;
     width: 500px;
-    height: 100%;
+    height: calc(100% - 8px);
     background: white;
     border: 1px solid $color-borderline;
     border-radius: 5px;
     padding: 24px;
+    margin-right: 8px;
     @include auto-overflow();
     @include customScrollbar();
     .node-option{
