@@ -1,6 +1,20 @@
 export default {
   task_engine_v2: {
+    scenario_edit_page: {
+      tabs: {
+        node: '节点',
+      },
+      node_type: {
+        dialogue: '对话节点',
+        restful: 'RESTful数据调用节点',
+        nlu_pc_node: 'nlu参数收集节点',
+        parameter_collecting: '参数收集节点',
+        router: '转发',
+      },
+    },
+    noce_block: {
 
+    },
   },
   task_engine_v3: {
     wizard_mode: {

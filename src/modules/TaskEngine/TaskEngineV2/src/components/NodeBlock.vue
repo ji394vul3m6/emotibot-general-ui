@@ -161,5 +161,6 @@ export default {
   position: absolute;
   border: 1px solid $color-borderline;
   border-radius: 10px;
+  cursor: move;
 }
 </style>
