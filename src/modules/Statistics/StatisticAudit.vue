@@ -61,7 +61,7 @@
         <general-table auto-height show-empty :tableData="tableData" :tableHeader="headerInfo" ></general-table>
       </div>
       <div class="paginator">
-        <v-pagination size="small" v-if="showPagination" :pageIndex="pageIndex" v-on:page-change="doSearch" :total="totalCount" :page-size="20" :layout="['prev', 'pager', 'next', 'jumper']"></v-pagination>
+        <v-pagination size="small" v-if="showPagination" :pageIndex="pageIndex" :pageSizeOption="[25, 50, 100, 200, 500, 1000]" v-on:page-change="doSearch" @page-size-change="handlePageSizeChange" :total="totalCount" :page-size="pageLimit" :layout="['prev', 'pager', 'next', 'sizer', 'jumper']"></v-pagination>
       </div>
       </template>
     </div>
@@ -117,6 +117,11 @@ export default {
       this.startDisableDate = {
         from: this.end.dateObj,
       };
+    },
+    handlePageSizeChange(pageSize) {
+      const that = this;
+      that.pageLimit = pageSize;
+      that.doSearch(1);
     },
     doExport() {
       const that = this;
@@ -177,6 +182,7 @@ export default {
           operation: '-1',
         },
         page,
+        limit: that.pageLimit,
       };
       // only in export mode, filter with module and action
       if (that.expertMode) {
@@ -316,6 +322,7 @@ export default {
       startValidity: true,
       endValidity: true,
       pageIndex: 1,
+      pageLimit: 25,
       startDisableDate: undefined,
       endDisableDate: undefined,
 

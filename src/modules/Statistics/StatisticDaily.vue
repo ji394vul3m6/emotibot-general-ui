@@ -97,10 +97,12 @@
         <v-pagination v-if="showPagination"
           size="small"
           :pageIndex="pageIndex"
+          :pageSizeOption="[25, 50, 100, 200, 500, 1000]"
           v-on:page-change="doSearch"
+          @page-size-change="handlePageSizeChange" 
           :total="totalCount"
-          :page-size="20"
-          :layout="['total', 'prev', 'pager', 'next', 'jumper']">
+          :page-size="pageLimit"
+          :layout="['prev', 'pager', 'next', 'jumper']">
         </v-pagination>
       </div>
       </template>
@@ -154,6 +156,7 @@ export default {
       startValidity: true,
       endValidity: true,
       pageIndex: 1,
+      pageLimit: 25,
       startDisableDate: undefined,
       endDisableDate: undefined,
       // keywordOption: [
@@ -180,6 +183,11 @@ export default {
   methods: {
     escapeRegExp(str) {
       return str.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
+    },
+    handlePageSizeChange(pageSize) {
+      const that = this;
+      that.pageLimit = pageSize;
+      that.doSearch(1);
     },
     selectDimension() {
       const that = this;
@@ -322,6 +330,7 @@ export default {
       const that = this;
 
       params.page = page;
+      params.limit = that.pageLimit;
       that.$emit('startLoading');
       that.$api.getRecords(params).then((data) => {
         const res = data.data;

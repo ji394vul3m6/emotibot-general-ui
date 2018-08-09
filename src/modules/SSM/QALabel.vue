@@ -19,7 +19,7 @@
           showEmpty></general-table>
       </div>
       <div class="footer">
-        <v-pagination size="small" :total="filterCount" :pageIndex="curPage" :pageSize="pageSize" :layout="['prev', 'pager', 'next', 'jumper']" @page-change="handlePageChange">
+        <v-pagination size="small" :total="filterCount" :pageIndex="curPage" :pageSize="pageSize" :pageSizeOption="[25, 50, 100, 200, 500, 1000]"  :layout="['prev', 'pager', 'next', 'sizer', 'jumper']" @page-change="handlePageChange" @page-size-change="handlePageSizeChange">
         </v-pagination>
       </div>
     </div>
@@ -63,7 +63,7 @@ export default {
         },
       ],
       curPage: 1,
-      pageSize: 20,
+      pageSize: 25,
     };
   },
   computed: {
@@ -108,8 +108,11 @@ export default {
       this.curPage -= 1;
     },
     handlePageChange(page) {
-      console.log(page);
       this.curPage = page;
+    },
+    handlePageSizeChange(pageSize) {
+      this.pageSize = pageSize;
+      this.toFirstPage();
     },
     initKeyword() {
       this.keyword = '';

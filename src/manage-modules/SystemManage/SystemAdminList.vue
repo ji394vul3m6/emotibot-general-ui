@@ -16,11 +16,13 @@
       </div>
       <div class="table-paginator">
         <v-pagination size="small"
-          :total="users.length"
+          :total="filteredUsers.length"
           :pageIndex="curPageIdx"
           :pageSize="pageLimit"
-          :layout="['prev', 'pager', 'next', 'jumper']"
+          :pageSizeOption="[25, 50, 100, 200, 500, 1000]"
+          :layout="['prev', 'pager', 'next', 'sizer', 'jumper']"
           @page-change="handlePageChange"
+          @page-size-change="handlePageSizeChange"
         />
       </div>
     </div>
@@ -55,11 +57,19 @@ export default {
       const end = start + this.pageLimit;
       return this.filteredUsers.slice(start, end);
     },
+    lastPageIdx() {
+      return Math.ceil(this.filteredUsers.length / this.pageLimit);
+    },
   },
   watch: {
     currentPage(val) {
       if (val === 'enterpriseList') {
         this.$router.push(enterpriseListPage);
+      }
+    },
+    lastPageIdx() {
+      if (this.lastPageIdx < this.curPageIdx) {
+        this.curPageIdx = this.lastPageIdx;
       }
     },
   },
@@ -73,7 +83,7 @@ export default {
       keyword: '',
       users: [],
       curPageIdx: 1,
-      pageLimit: 20,
+      pageLimit: 25,
       tableHeader: [
         {
           key: 'user_name',
@@ -116,8 +126,15 @@ export default {
     goRoleList() {
       this.$router.push('/manage/enterprise-role-list');
     },
+    toFirstPage() {
+      this.curPageIdx = 1;
+    },
     handlePageChange(page) {
       this.curPageIdx = page;
+    },
+    handlePageSizeChange(pageSize) {
+      this.pageLimit = pageSize;
+      this.toFirstPage();
     },
     loadUsers() {
       const that = this;

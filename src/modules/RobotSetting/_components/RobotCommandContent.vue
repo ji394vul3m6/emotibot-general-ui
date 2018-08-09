@@ -32,7 +32,7 @@
         showEmpty></general-table>
     </div>
     <div id="card-content-footer">
-      <v-pagination size="small" :total="curTotal" :pageIndex="curPageIdx" :pageSize="pageLimit" :layout="['prev', 'pager', 'next', 'jumper']" @page-change="handlePageChange"></v-pagination>
+      <v-pagination size="small" :total="curTotal" :pageIndex="curPageIdx" :pageSize="pageLimit" :pageSizeOption="[25, 50, 100, 200, 500, 1000]" :layout="['prev', 'pager', 'next', 'sizer', 'jumper']" @page-change="handlePageChange" @page-size-change="handlePageSizeChange"></v-pagination>
     </div>
 
     <div id="content-blocker" v-if="isEditMode"></div>
@@ -117,7 +117,7 @@ export default {
       checkedCommand: [],
 
       curPageIdx: 1,
-      pageLimit: 20,
+      pageLimit: 25,
     };
   },
   computed: {
@@ -229,6 +229,12 @@ export default {
       } else {
         this.toCurPage(page);
       }
+      this.checkedCommand = [];
+    },
+    handlePageSizeChange(pageSize) {
+      this.pageLimit = pageSize;
+      this.toFirstPage();
+      this.checkedCommand = [];
     },
     toggleCommandStatus(data) {
       const command = this.currentCommands.find(cmd => cmd.id === data.id);

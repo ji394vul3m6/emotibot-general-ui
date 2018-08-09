@@ -19,7 +19,11 @@
                 <template v-else>
                     <span class="v-select-selected-span">{{showSelectInfo()}}</span>
                 </template>
-                <i class="v-select-selected-i v-icon-down-dir"></i>
+                <!-- <i class="v-select-selected-i v-icon-down-dir"></i> -->
+                <div class="v-select-selected-i" >
+                    <icon iconType="drop_down" :size="12"></icon>
+                </div>
+                
             </span>
     </v-dropdown>
 </template>
