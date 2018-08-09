@@ -15,7 +15,7 @@
         {{ $t('management.phone') }}
       </div>
       <div class="row-input">
-        <input ref="phone" v-tooltip="phoneTooltip" v-model="phone" :class="{'error': isPhoneTooltipShown}">
+        <input ref="phone" v-tooltip="phoneTooltip" v-model="phone" :maxlength="phoneMaxlength" :class="{'error': isPhoneTooltipShown}">
       </div>
     </div>
     <div class="row">
@@ -67,6 +67,7 @@ export default {
       isEmailTooltipShown: false,
       isPhoneTooltipShown: false,
       displayNameMaxlength: validate.displayNameMaxlength,
+      phoneMaxlength: validate.phoneMaxlength,
     };
   },
   watch: {

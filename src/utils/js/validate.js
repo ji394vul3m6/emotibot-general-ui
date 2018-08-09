@@ -1,5 +1,6 @@
 const displayNameMinlength = 2;
 const displayNameMaxlength = 50;
+const phoneMaxlength = 20;
 
 function isValidPassword(input) {
   const validRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9~@!#$%^&*()[\]{}:;"',./?<>+\-=|_ ]{6,16}$/g;
@@ -39,4 +40,5 @@ export default {
   isValidDisplayName,
   isValidLabel,
   displayNameMaxlength,
+  phoneMaxlength,
 };

@@ -82,6 +82,7 @@
       </div>
       <div class="row-input-col">
         <input class="row-input" ref="phone" v-model="phone" :placeholder="$t('management.input_placeholder')" v-tooltip="phoneTooltip"
+        :maxlength="phoneMaxlength"
         :class="{'error': isPhoneTooltipShown}">
       </div>
     </div>
@@ -187,6 +188,7 @@ export default {
       passwordMinlength: 6,
       userNameMaxlength: 64,
       displayNameMaxlength: validate.displayNameMaxlength,
+      phoneMaxlength: validate.phoneMaxlength,
 
       privilegeSet: [{
         machine: [],

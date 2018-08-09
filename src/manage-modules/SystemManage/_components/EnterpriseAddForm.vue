@@ -98,6 +98,18 @@
     </div>
     <div class="row">
       <div class="row-title">
+        <div class="required"></div>
+        {{ $t('management.phone') }}
+      </div>
+      <input class="row-input" ref="phone"
+        v-model="phone"
+        :placeholder="$t('management.input_placeholder')" 
+        v-tooltip="phoneTooltip"
+        :maxlength="phoneMaxlength"
+        :class="{'error': isPhoneTooltipShown}">
+    </div>
+    <div class="row">
+      <div class="row-title">
         <div class="required">＊</div>
         {{ $t('management.email') }}
       </div>
@@ -134,12 +146,14 @@ export default {
       checkPasswordTooltip: this.genErrTooltip(),
       emailTooltip: this.genErrTooltip(),
       moduleTooltip: this.genErrTooltip(),
+      phoneTooltip: this.genErrTooltip(),
 
       adminUserName: '',
       adminDisplayName: '',
       adminEmail: '',
       adminPassword: '',
       adminCheckPassword: '',
+      phone: '',
 
       isNameTooltipShown: false,
       isUserNameTooltipShown: false,
@@ -155,6 +169,7 @@ export default {
       passwordMinlength: 6,
       passwordMaxlength: 16,
       displayNameMaxlength: validate.displayNameMaxlength,
+      phoneMaxlength: validate.phoneMaxlength,
     };
   },
   watch: {
@@ -180,6 +195,10 @@ export default {
         this.isEmailTooltipShown = false;
         this.$refs.email.dispatchEvent(new Event('tooltip-hide'));
       }
+    },
+    phone() {
+      this.isPhoneTooltipShown = false;
+      this.$refs.phone.dispatchEvent(new Event('tooltip-hide'));
     },
     adminPassword() {
       if (this.adminPassword.trim() !== '') {
@@ -244,6 +263,11 @@ export default {
         that.isDisplayNameTooltipShown = true;
         that.showUpdatedTooltip(that.$refs.displayName, that.displayNameTooltip, that.$t('management.err_display_name_length'));
       }
+      if (that.phone !== '' && !validate.isValidPhone(that.phone)) {
+        isValid = false;
+        that.isPhoneTooltipShown = true;
+        that.showUpdatedTooltip(that.$refs.phone, that.phoneTooltip, that.$t('management.err_invalid_phone'));
+      }
       if (that.adminEmail === '') {
         isValid = false;
         that.isEmailTooltipShown = true;
@@ -283,6 +307,7 @@ export default {
             name: that.adminDisplayName,
             password: that.adminPassword,
             email: that.adminEmail,
+            phone: that.phone,
           },
         });
       }
