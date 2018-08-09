@@ -244,9 +244,9 @@ export default {
     @include auto-overflow();
     @include customScrollbar();
     .canvas-page{
-      // width:2000px;
-      // height:2000px;
       background: #F1F4F5;
+      background-size: 20px 20px;
+      background-image: linear-gradient(to right, #DDDDDD 1px, transparent 1px), linear-gradient(to bottom, #DDDDDD 1px, transparent 1px);
     }
   }
   .side-panel {
