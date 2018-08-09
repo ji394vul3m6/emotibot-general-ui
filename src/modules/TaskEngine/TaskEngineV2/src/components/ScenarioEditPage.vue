@@ -1,11 +1,12 @@
 <template lang="html">
 <div id="scenario-edit-page">
   <div class="graph-container">
+    <edges :edges="filteredEdges"></edges>
     <template v-for="(node, index) in nodes">
       <node-block
         :x="node.x"
         :y="node.y"
-        :initialNode="node.content"
+        :initialNode="node.data"
         @updatePosition="updateNodePosition(index, $event)"
         @deleteNode="deleteNode(index)">
       </node-block>
@@ -18,20 +19,63 @@
 import taskEngineApi from '@/modules/TaskEngine/_api/taskEngine';
 import general from '@/modules/TaskEngine/_utils/general';
 import NodeBlock from './NodeBlock';
+import Edges from './Edges';
 
 export default {
   name: 'scenario-edit-page',
-  components: { 'node-block': NodeBlock },
+  components: {
+    'node-block': NodeBlock,
+    edges: Edges,
+  },
   data() {
     return {
       nodes: [],
+      edges: [],
     };
   },
   computed: {
-    // filteredScenarioList() {
-    //   return this.scenarioList.filter(
-    //     scenario => scenario.scenarioName.indexOf(this.filteredKeyWord) !== -1);
-    // },
+    idToNode() {
+      const map = {};
+      this.nodes.forEach((node) => {
+        map[node.data.node_id] = node;
+      });
+      return map;
+    },
+    allEdges() {
+      const edgeList = [];
+      Object.keys(this.idToNode).forEach((key) => {
+        const node = this.idToNode[key];
+        node.data.edges.forEach((edge) => {
+          if (!edge.to_node_id) return;
+          if (!this.idToNode[edge.to_node_id]) return;
+
+          edgeList.push({
+            from_id: node.data.node_id,
+            to_id: edge.to_node_id,
+            edge_type: edge.edge_type,
+          });
+        });
+      });
+      return edgeList;
+    },
+    filteredEdges() {
+      return this.allEdges.filter(edge =>
+        edge.edge_type !== 'hidden' &&
+        edge.from_id !== '0' &&
+        edge.to_id !== '0' &&
+        edge.from_id !== edge.to_id,
+      ).map(edge => ({
+        x1: this.idToNode[edge.from_id].x + 115,
+        y1: this.idToNode[edge.from_id].y + 60,
+        x2: this.idToNode[edge.to_id].x + 115,
+        y2: this.idToNode[edge.to_id].y + 60,
+        style: {
+          stroke: 'red',
+          strokeWidth: 4,
+          fill: 'none',
+        },
+      }));
+    },
   },
   watch: {},
   methods: {
@@ -51,15 +95,12 @@ export default {
 
       this.nodes = moduleData.nodes.filter(node => node.node_id !== '0').map((node) => {
         const nodeId = node.node_id;
-        console.log(node);
         return {
           x: moduleDataLayouts[nodeId].position.left,
           y: moduleDataLayouts[nodeId].position.top,
-          content: node,
+          data: node,
         };
       });
-      console.log('this.nodes.length');
-      console.log(this.nodes.length);
       // this.currentSkillId = 'mainSkill';
       // // propagate currentSkill
       // this.skills = moduleData.skills;
@@ -69,7 +110,6 @@ export default {
       // this.idToNerMap = Array.isArray(moduleData.idToNerMap) ? {} : moduleData.idToNerMap;
     },
     updateNodePosition(index, position) {
-      console.log(position);
       this.nodes[index].x = position.left;
       this.nodes[index].y = position.top;
     },
