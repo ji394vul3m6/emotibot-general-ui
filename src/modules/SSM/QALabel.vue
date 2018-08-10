@@ -296,7 +296,7 @@ export default {
     display: flex;
     flex-direction: column;
     .toolbar {
-      flex: 0;
+      flex: 0 0 auto;
       padding: 20px;
     }
     #label-table {

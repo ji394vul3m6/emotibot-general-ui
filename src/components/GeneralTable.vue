@@ -357,8 +357,10 @@ table {
       }
       .table-col-action {
         flex: 0 0 60px;
+        max-width: 60px;  // IE11 Hack: Apply max-width on flex children so box-sizing would work
         &.multi-action {
           flex: 0 0 110px;
+          max-width: 110px;  // IE11 Hack: Apply max-width on flex children so box-sizing would work
           display: flex;
           justify-content: space-between;
         }

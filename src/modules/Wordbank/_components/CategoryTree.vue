@@ -22,7 +22,7 @@
             @blur="confirmEditItemNameOnMethod('click')"
             @keydown.enter="detectCompositionState"
             @keyup.enter="confirmEditItemNameOnMethod('enter')"/>
-          <span v-else class="tree-item-name">{{ treeItem.name }}</span>
+          <div v-else class="tree-item-name">{{ treeItem.name }}</div>
         </div>
         <icon class="item-icon" icon-type="edit_blue" :size=8 
           v-if="treeItem.editable && canEdit && !treeItem.isActive"
@@ -271,14 +271,19 @@ export default {
         position: relative;
         display:flex;
         align-items: center;
-
+        
         .tree-item-name {
           display: inline-block;
-          position: absolute;
+          position: absolute; 
           width: 100%;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
+
+          // IE11 Hack: absolutely positioned component cannot be align centered by flex parent
+          @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+            position: relative;
+          }
         }
       }
       .item-icon {

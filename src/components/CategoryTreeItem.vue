@@ -281,6 +281,11 @@ export default {
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
+          
+          // IE11 Hack: absolutely positioned component cannot be align centered by flex parent
+          @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+            position: relative;
+          }
         }
       }
       .item-icon {
