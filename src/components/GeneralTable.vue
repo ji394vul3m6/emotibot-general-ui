@@ -35,6 +35,7 @@
           <td v-for="header in tableHeader" :key="uniqueId(header.key)"
             :style="{width: header.width}"
             :class="{'fixed': header.width}"
+             class="table-body-item"
             @click="handleOnclickRow(onclickRow, data, idx)">
             <template v-if="header.type === 'tag'">
               <tag class="tags" v-for="(tag, tagIdx) in data[header.key]" :key="`${tagIdx}-${tag}`" :fontClass="fontClass">{{ tag }}</tag>
@@ -258,6 +259,10 @@ $table-row-height: 50px;
     @include auto-overflow-Y();
     @include customScrollbar();
     overflow-x: hidden;
+    .table-body-item {
+      display: flex;
+      align-items: center;
+    }
     tr {
       &:hover{
       background-color: #F6F9FF;
@@ -319,8 +324,10 @@ table {
       }
       .table-col-action {
         flex: 0 0 60px;
+        max-width: 60px;  // IE11 Hack: Apply max-width on flex children so box-sizing would work
         &.multi-action {
           flex: 0 0 110px;
+          max-width: 110px;  // IE11 Hack: Apply max-width on flex children so box-sizing would work
         }
       }
     }
@@ -342,6 +349,7 @@ table {
         &.fixed {
           flex: 0 0 auto;
         }
+
         text-overflow: ellipsis;
         overflow: hidden;
         white-space: nowrap;

@@ -374,7 +374,8 @@
 
 .v-page-goto {
     float: left;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
     margin: 0 4px;
     margin-left: 16px;
     color: #666666;
@@ -382,7 +383,7 @@
 
 .v-page-goto-input{
 
-    padding: 1px 7px;
+    padding: 0 7px;
     display: inline-block;
     border: 1px solid #c8cdd4;
     background-color: #fff;

@@ -141,6 +141,7 @@ div {
   box-sizing: border-box;
 }
 .login-page {
+  font-family: PingFangHK-Regular, PingFangSC, 'Microsoft YaHei', 'Microsoft JhengHei';
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -178,7 +179,11 @@ div {
       justify-content: stretch;
       margin-bottom: 26px;
       input {
-        padding: 10px;
+        font-size: 14px;
+        line-height: 16px;
+        box-sizing: border-box;
+        display: inline-block;
+        padding: 0 8px;
         width: 100%;
         outline: none;
         border: none;
