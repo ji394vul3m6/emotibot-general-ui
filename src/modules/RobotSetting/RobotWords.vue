@@ -9,7 +9,7 @@
           <div class="words-title">
             <div class="title-text">{{ words.name }}</div>
             <div class="icon-container" v-tooltip="words.tooltip">
-              <icon icon-type="help" :size="13"></icon>
+              <icon icon-type="info" :size="18" enableHover></icon>
             </div>
           </div>
           <div class="button-container">
@@ -221,6 +221,8 @@ $words-list-delete-color: #f76260;
       }
       .icon-container {
         position: relative;
+        display: flex;
+        align-items: center;
       }
     }
     .button-container {
