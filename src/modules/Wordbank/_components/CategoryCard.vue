@@ -19,9 +19,9 @@
           maxlength="20"
           @compositionstart="setCompositionState(true)"
           @compositionend="setCompositionState(false)"
-          @blur="confirmRootName"
+          @blur="confirmRootNameOnMethod('click')"
           @keydown.enter="detectCompositionState"
-          @keyup.enter="confirmRootName">
+          @keyup.enter="confirmRootNameOnMethod('enter')">
         <div v-else id="add-root-btn">
           <div class="icon-block">
             <icon icon-type="category_add" :size=16></icon>
@@ -179,10 +179,17 @@ export default {
     detectCompositionState() {
       this.wasCompositioning = this.compositionState;
     },
-    confirmRootName() {
+    confirmRootNameOnMethod(method) {
       if (this.wasCompositioning) {
-        return;
+        if (method === 'click') {
+          this.detectCompositionState();
+        } else if (method === 'enter') {
+          return;
+        }
       }
+      this.confirmRootName();
+    },
+    confirmRootName() {
       this.rootName = this.rootName.trim();
       // cancel add root
       if (this.rootName === '') {
@@ -241,12 +248,13 @@ export default {
         this.setCurrentCategory(this.wordbank.children[0]);
       })
       .catch(() => {
-        this.$notifyFail(this.$t('wordbank.delete_category_fail'));
+        this.$notifyFail(this.$t('wordbank.error.delete_category_fail'));
       });
     },
     triggerEditMode() {
       this.toggleEditMode();
       if (!this.isEditMode) {
+        this.rootName = '';
         this.loadWordbanks();
       }
     },

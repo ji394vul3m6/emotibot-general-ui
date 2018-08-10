@@ -19,9 +19,9 @@
             :placeholder="$t('wordbank.placeholder_category_name')"
             @compositionstart="setCompositionState(true)"
             @compositionend="setCompositionState(false)"
-            @blur="confirmEditItemName"
+            @blur="confirmEditItemNameOnMethod('click')"
             @keydown.enter="detectCompositionState"
-            @keyup.enter="confirmEditItemName"/>
+            @keyup.enter="confirmEditItemNameOnMethod('enter')"/>
           <span v-else class="tree-item-name">{{ treeItem.name }}</span>
         </div>
         <icon class="item-icon" icon-type="edit_blue" :size=8 
@@ -116,16 +116,22 @@ export default {
         this.$refs.itemName.focus();
       });
     },
-    confirmEditItemName() {
+    confirmEditItemNameOnMethod(method) {
       if (this.wasCompositioning) {
-        return;
+        if (method === 'click') {
+          this.detectCompositionState();
+        } else if (method === 'enter') {
+          return;
+        }
       }
-      this.itemName = this.itemName.trim();
       if (this.isNewCategory) {
-        this.confirmAddSubCategory();
+        this.confirmAddSubCategory(method);
         return;
       }
-      // cancel edit
+      this.confirmEditItemName();
+    },
+    confirmEditItemName() {
+      this.itemName = this.itemName.trim();
       if (this.itemName === '') {
         this.itemName = this.treeItem.name;
       }
@@ -151,13 +157,17 @@ export default {
         this.isNameEditing = false;
       });
     },
-    confirmAddSubCategory() {
+    confirmAddSubCategory(method) {
+      if (method === 'enter') {
+        this.isNameEditing = false;
+        return; // avoid trigger by both enter and blur;
+      }
+      this.itemName = this.itemName.trim();
       if (this.itemName === '') {
         this.$emit('cancelAddSubCategory');
         this.isNameEditing = false;
         return;
       }
-      if (this.itemName === this.treeItem.name) return;  // avoid trigger by both enter and focus;
 
       if (this.isItemNameDuplicate()) {
         const itemNameElem = this.$refs.itemName;

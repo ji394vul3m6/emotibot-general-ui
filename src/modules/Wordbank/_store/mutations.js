@@ -161,6 +161,9 @@ export const mutations = {
     state.isEditMode = !state.isEditMode;
     if (!state.isEditMode) {
       resetActive(state.wordbank);
+      if (state.hasNewCategory) {
+        state.hasNewCategory = false;
+      }
       state.currentCategory = state.wordbank.children[0];
       state.currentCategory.isActive = true;
     }
