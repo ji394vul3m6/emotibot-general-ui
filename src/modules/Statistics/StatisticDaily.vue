@@ -102,7 +102,7 @@
           @page-size-change="handlePageSizeChange" 
           :total="totalCount"
           :page-size="pageLimit"
-          :layout="['prev', 'pager', 'next', 'jumper']">
+          :layout="['prev', 'pager', 'next', 'sizer', 'jumper']">
         </v-pagination>
       </div>
       </template>
