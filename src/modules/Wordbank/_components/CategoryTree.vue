@@ -92,7 +92,10 @@ export default {
       'setHasNewCategory',
     ]),
     setActive() {
-      this.setCurrentCategory(this.treeItem);
+      // If set current category to a new one which is not yet added, we can't splice it out on cancel add category
+      if (!this.isNewCategory) {
+        this.setCurrentCategory(this.treeItem);
+      }
       this.resetActiveCategory();
       this.treeItem.isActive = true;
     },
@@ -165,6 +168,7 @@ export default {
       this.itemName = this.itemName.trim();
       if (this.itemName === '') {
         this.$emit('cancelAddSubCategory');
+        console.log('cancel add?');
         this.isNameEditing = false;
         return;
       }
