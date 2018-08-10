@@ -117,7 +117,7 @@ export default {
       // console.log(this.initialNode);
       const that = this;
       that.$pop({
-        title: '对话节点',
+        title: `${this.initialNode.description}（${this.initialNode.node_id}）`,
         component: NodeEditPage,
         validate: true,
         // customContentClasses: {

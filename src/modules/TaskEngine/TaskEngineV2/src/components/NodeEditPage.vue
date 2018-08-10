@@ -18,6 +18,7 @@
       ></trigger-edit-tab>
       <setting-edit-tab ref="settingTab"
         v-if="currentTab === 'settingTab'"
+        :initialNode="node"
       ></setting-edit-tab>
       <edge-edit-tab ref="edgeTab"
         v-if="currentTab === 'edgeTab'"
@@ -76,7 +77,7 @@ export default {
     },
     getNodeData() {
       if (this.extData.node) {
-        return this.extData.node;
+        return JSON.parse(JSON.stringify(this.extData.node));
       }
       return {};
     },
@@ -114,9 +115,9 @@ export default {
 
 #node-edit-page{
   width: 80vh;
-  height: 80vh;
+  height: 70vh;
   min-width: 80vh;
-  min-height: 80vh;
+  min-height: 70vh;
   display: flex;
   flex-direction: row;
   .nav-bar{

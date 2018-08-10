@@ -1,15 +1,21 @@
 export default {
   task_engine_v2: {
+    node_type: {
+      dialogue: '对话节点',
+      restful: 'RESTful数据调用节点',
+      nlu_pc_node: 'nlu参数收集节点',
+      parameter_collecting: '参数收集节点',
+      router: '转发',
+    },
+    parser: {
+      none: '无',
+      common_parser: '通用语句解析器',
+      task_parser: '场景语句解析器',
+      hotel_parser: '酒店预定语句解析器',
+    },
     scenario_edit_page: {
       tabs: {
         node: '节点',
-      },
-      node_type: {
-        dialogue: '对话节点',
-        restful: 'RESTful数据调用节点',
-        nlu_pc_node: 'nlu参数收集节点',
-        parameter_collecting: '参数收集节点',
-        router: '转发',
       },
     },
     node_edit_page: {
@@ -18,6 +24,17 @@ export default {
         setting: '基本设置',
         edge: '连线',
       },
+    },
+    setting_edit_tab: {
+      node_type: '节点类型',
+      node_name: '节点名称',
+      default_q: '预设文本',
+      parse_text: '语句解析',
+      parse_fail_q: '解析失败文本',
+      parser: '解析器：',
+      target_data: '提取数据 (可多选)：',
+      skip_if_exist: '若已提取以下任一数据则跳过出话和数据提取：',
+      parse_from_this_node: '限定由此节点提取：',
     },
   },
   task_engine_v3: {

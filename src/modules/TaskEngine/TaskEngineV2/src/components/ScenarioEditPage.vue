@@ -195,23 +195,23 @@ export default {
       const nodeOptions = [
         {
           type: 'dialogue',
-          name: this.$t('task_engine_v2.scenario_edit_page.node_type.dialogue'),
+          name: this.$t('task_engine_v2.node_type.dialogue'),
         },
         {
           type: 'restful',
-          name: this.$t('task_engine_v2.scenario_edit_page.node_type.restful'),
+          name: this.$t('task_engine_v2.node_type.restful'),
         },
         {
           type: 'nlu_pc_node',
-          name: this.$t('task_engine_v2.scenario_edit_page.node_type.nlu_pc_node'),
+          name: this.$t('task_engine_v2.node_type.nlu_pc_node'),
         },
         {
           type: 'parameter_collecting',
-          name: this.$t('task_engine_v2.scenario_edit_page.node_type.parameter_collecting'),
+          name: this.$t('task_engine_v2.node_type.parameter_collecting'),
         },
         {
           type: 'router',
-          name: this.$t('task_engine_v2.scenario_edit_page.node_type.router'),
+          name: this.$t('task_engine_v2.node_type.router'),
         },
       ];
       return nodeOptions;
