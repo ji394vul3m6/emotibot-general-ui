@@ -114,15 +114,19 @@ export default {
       this.$emit('deleteNode');
     },
     editNode() {
-      // const path = general.composeV2Path(`scenario/${scenarioId}`);
-      // this.$router.replace(path);
       const that = this;
       that.$pop({
-        title: '',
+        title: '对话节点',
         component: NodeEditPage,
         validate: true,
+        // customContentClasses: {
+        //   width: '80vh;',
+        //   height: '80vh;',
+        //   'min-width': '80vh;',
+        //   'min-height': '80vh;',
+        // },
         data: {
-          node: this.node,
+          node: this.initialNode,
         },
         callback: {
           ok: (ner) => {
@@ -136,17 +140,23 @@ export default {
         },
       });
     },
+    addListeners() {
+      document.documentElement.addEventListener('mousemove', this.onMouseMove, false);
+      document.documentElement.addEventListener('mousedown', this.onMouseDown, false);
+      document.documentElement.addEventListener('mouseup', this.onMouseUp, false);
+    },
+    removeListeners() {
+      document.documentElement.removeEventListener('mousemove', this.onMouseMove, false);
+      document.documentElement.removeEventListener('mousedown', this.onMouseDown, false);
+      document.documentElement.removeEventListener('mouseup', this.onMouseUp, false);
+    },
   },
   beforeMount() {},
   mounted() {
-    document.documentElement.addEventListener('mousemove', this.onMouseMove, false);
-    document.documentElement.addEventListener('mousedown', this.onMouseDown, false);
-    document.documentElement.addEventListener('mouseup', this.onMouseUp, false);
+    this.addListeners();
   },
   beforeDestroy() {
-    document.documentElement.removeEventListener('mousemove', this.onMouseMove, false);
-    document.documentElement.removeEventListener('mousedown', this.onMouseDown, false);
-    document.documentElement.removeEventListener('mouseup', this.onMouseUp, false);
+    this.removeListeners();
   },
 };
 </script>

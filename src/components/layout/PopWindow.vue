@@ -226,7 +226,7 @@ $pop-spacing: 24px;
     }
   }
 
-  $pop-max-height: 70vh;
+  $pop-max-height: 90vh;
   .pop-content {
     // animation-name: showup;
     // animation-duration: 0.5s;

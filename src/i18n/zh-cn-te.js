@@ -12,8 +12,12 @@ export default {
         router: '转发',
       },
     },
-    noce_block: {
-
+    node_edit_page: {
+      tabs: {
+        trigger: '触发',
+        setting: '基本设置',
+        edge: '连线',
+      },
     },
   },
   task_engine_v3: {
