@@ -76,9 +76,9 @@ export default {
       placeholder_import_intent_first: '请先导入意图',
     },
     create_scenario_pop: {
-      label_create_new_scenario: '创建新场景',
-      label_name_the_scenario: '给场景取个名字：',
-      placeholder_enter_scenario_name: '输入场景名称...',
+      label_create_new_scenario: '创建场景',
+      label_name_the_scenario: '场景名称：',
+      placeholder_enter_scenario_name: '输入场景名称',
     },
     create_skill_pop: {
       label_title: '创建新任务',
@@ -144,7 +144,7 @@ export default {
       title: '在此场景中，您需要收集使用者的哪些信息？',
       title_description: '设定此对话场景需要收集的信息，以及各信息的对应问句',
       advanced_config: '进阶设定',
-      add_new_entity_collector: '+新增抽取信息',
+      add_new_entity_collector: '新增抽取信息',
       edit_entity_relation: '设置实体关联性',
       edit_sentence_replacement: '设置语句替换',
       edit_tde_setting: '设置TDE属性',

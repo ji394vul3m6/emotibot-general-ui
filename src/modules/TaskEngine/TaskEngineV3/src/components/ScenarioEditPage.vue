@@ -4,7 +4,7 @@
     <div class="header title">
       <div class="breadcrumb">
         <div class="back-to-list" @click="$router.replace('/task-engine-scenario-v3');">{{$t("task_engine_v3.scenario_list_page.scenario_list")}}</div>
-        <div>&gt;</div>
+        <icon iconType="month_right" :size="20"></icon>
         <div class="scenario-name-container">
           <div class="blank"/>
           <input
