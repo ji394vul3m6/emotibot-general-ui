@@ -69,7 +69,7 @@ export default {
   },
   methods: {
     onMouseDown(e) {
-      console.log('onMouseDown');
+      // console.log('onMouseDown');
       // console.log(e.target);
       // console.log(e.currentTarget);
       // console.log(this.$el);
@@ -90,7 +90,7 @@ export default {
       if (!this.moving) {
         return;
       }
-      console.log('onMouseMove');
+      // console.log('onMouseMove');
 
       const mouseX = e.pageX;
       const mouseY = e.pageY;
@@ -107,13 +107,14 @@ export default {
       this.$emit('updatePosition', { left, top });
     },
     onMouseUp() {
-      console.log('onMouseUp');
+      // console.log('onMouseUp');
       this.moving = false;
     },
     deleteNode() {
       this.$emit('deleteNode');
     },
     editNode() {
+      // console.log(this.initialNode);
       const that = this;
       that.$pop({
         title: '对话节点',
@@ -125,8 +126,8 @@ export default {
         //   'min-width': '80vh;',
         //   'min-height': '80vh;',
         // },
-        data: {
-          node: this.initialNode,
+        extData: {
+          node: that.initialNode,
         },
         callback: {
           ok: (ner) => {

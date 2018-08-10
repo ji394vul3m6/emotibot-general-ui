@@ -118,9 +118,8 @@ export default {
       });
     },
     renderData(moduleData, moduleDataLayouts) {
-      console.log(moduleData);
-      console.log(moduleDataLayouts);
-
+      // console.log(moduleData);
+      // console.log(moduleDataLayouts);
       this.nodes = moduleData.nodes.filter(node => node.node_id !== '0').map((node) => {
         const nodeId = node.node_id;
         return {
@@ -145,7 +144,6 @@ export default {
       this.nodes.splice(index, 1);
     },
     nodeOptionDragStart(nodeType, e) {
-      console.log(e);
       e.dataTransfer.setData('text', nodeType);
     },
     nodeOptionDragOver(e) {
@@ -153,7 +151,6 @@ export default {
       e.dataTransfer.dropEffect = 'copy';
     },
     nodeOptionDrop(e) {
-      console.log('onDrop');
       const nodeType = e.dataTransfer.getData('text');
       this.nodes.push({
         x: e.offsetX,

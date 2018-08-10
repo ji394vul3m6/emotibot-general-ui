@@ -40,7 +40,7 @@ export default {
     'edge-edit-tab': EdgeEditTab,
   },
   props: {
-    value: {
+    extData: {
       type: Object,
       required: true,
     },
@@ -48,48 +48,63 @@ export default {
   data() {
     return {
       currentTab: 'settingTab',
-      node: {},
-      tabs: [],
+      node: this.getNodeData(),
+      allTabs: this.getAllTabs(),
     };
   },
   computed: {
+    tabs() {
+      const nodeType2Tabs = {
+        entry: ['triggerTab', 'settingTab', 'edgeTab'],
+        dialogue: ['settingTab', 'edgeTab'],
+      };
+      const nodeType = this.node.node_type;
+      if (nodeType in nodeType2Tabs) {
+        const nodeTabs = nodeType2Tabs[this.node.node_type];
+        this.currentTab = nodeTabs[0];
+        return nodeTabs.map(tab => this.allTabs[tab]);
+      }
+      this.currentTab = 'settingTab';
+      return ['settingTab', 'edgeTab'].map(tab => this.allTabs[tab]);
+    },
   },
   watch: {
-    value() {
-      const data = JSON.parse(JSON.stringify(this.value));
-      if (data.currentTab) {
-        this.currentTab = data.currentTab;
-      }
-      if (data.node) {
-        this.node = data.node;
-      }
-    },
   },
   methods: {
     changeTab(tab) {
       this.currentTab = tab;
     },
+    getNodeData() {
+      if (this.extData.node) {
+        return this.extData.node;
+      }
+      return {};
+    },
+    getAllTabs() {
+      return {
+        triggerTab: {
+          type: 'triggerTab',
+          name: this.$t('task_engine_v2.node_edit_page.tabs.trigger'),
+          icon: 'setting',
+        },
+        settingTab: {
+          type: 'settingTab',
+          name: this.$t('task_engine_v2.node_edit_page.tabs.setting'),
+          icon: 'setting',
+        },
+        edgeTab: {
+          type: 'edgeTab',
+          name: this.$t('task_engine_v2.node_edit_page.tabs.edge'),
+          icon: 'setting',
+        },
+      };
+    },
   },
-  beforeMount() {},
+  beforeMount() {
+  },
   mounted() {
-    this.tabs = [
-      {
-        type: 'triggerTab',
-        name: this.$t('task_engine_v2.node_edit_page.tabs.trigger'),
-        icon: 'setting',
-      },
-      {
-        type: 'settingTab',
-        name: this.$t('task_engine_v2.node_edit_page.tabs.setting'),
-        icon: 'setting',
-      },
-      {
-        type: 'edgeTab',
-        name: this.$t('task_engine_v2.node_edit_page.tabs.edge'),
-        icon: 'setting',
-      },
-    ];
-    console.log(this.tabs);
+    console.log('mounted');
+    console.log(this.node);
   },
 };
 </script>
