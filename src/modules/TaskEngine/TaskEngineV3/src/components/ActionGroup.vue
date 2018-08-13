@@ -16,6 +16,7 @@
     </div>
     <template v-for="(condition, index) in actionGroup.conditionList">
       <condition-card class="condition-card"
+        :key="randIndex('condition')"
         :initialCondition="condition"
         :index="index"
         :initialEntityCollectorList="initialEntityCollectorList"
@@ -25,6 +26,7 @@
     </template>
     <template v-for="(action, index) in actionGroup.actionList">
       <action-card
+        :key="randIndex('action')"
         :initialAction="action"
         :initialSkillNameList="initialSkillNameList"
         @update="updateAction(index, $event)"
@@ -88,6 +90,10 @@ export default {
   },
   watch: {},
   methods: {
+    randIndex(name) {
+      const rand = Math.floor(Math.random() * 1000);
+      return `${name}-${rand}`;
+    },
     updateCondition(index, newCondition) {
       this.actionGroup.conditionList[index] = newCondition;
       this.$emit('update', this.actionGroup);
