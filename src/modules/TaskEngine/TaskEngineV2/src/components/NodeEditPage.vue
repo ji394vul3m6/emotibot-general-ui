@@ -77,6 +77,7 @@ export default {
     },
     getNodeData() {
       if (this.extData.node) {
+        console.log(this.extData.node);
         return JSON.parse(JSON.stringify(this.extData.node));
       }
       return {};
