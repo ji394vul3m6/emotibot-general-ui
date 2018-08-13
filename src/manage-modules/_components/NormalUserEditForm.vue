@@ -31,6 +31,7 @@
 </template>
 
 <script>
+import event from '@/utils/js/event';
 import validate from '@/utils/js/validate';
 
 export default {
@@ -74,18 +75,18 @@ export default {
     name() {
       if (this.name.trim() !== '') {
         this.isNameTooltipShown = false;
-        this.$refs.name.dispatchEvent(new Event('tooltip-hide'));
+        this.$refs.name.dispatchEvent(event.createEvent('tooltip-hide'));
       }
     },
     email() {
       if (this.email.trim() !== '') {
-        this.$refs.email.dispatchEvent(new Event('tooltip-hide'));
+        this.$refs.email.dispatchEvent(event.createEvent('tooltip-hide'));
         this.isEmailTooltipShown = false;
       }
     },
     phone() {
       this.isPhoneTooltipShown = false;
-      this.$refs.phone.dispatchEvent(new Event('tooltip-hide'));
+      this.$refs.phone.dispatchEvent(event.createEvent('tooltip-hide'));
     },
   },
   methods: {
@@ -94,29 +95,29 @@ export default {
       let isValid = true;
       if (that.name.trim() === '') {
         isValid = false;
-        that.$refs.name.dispatchEvent(new Event('tooltip-show'));
+        that.$refs.name.dispatchEvent(event.createEvent('tooltip-show'));
         that.isNameTooltipShown = true;
       } else if (!validate.isValidDisplayName(that.name.trim())) {
         isValid = false;
-        that.$refs.name.dispatchEvent(new Event('tooltip-show'));
+        that.$refs.name.dispatchEvent(event.createEvent('tooltip-show'));
         that.isNameTooltipShown = true;
       }
       if (that.email.trim() === '') {
         isValid = false;
         that.emailTooltip.msg = that.$t('management.err_empty_email');
-        that.$refs.email.dispatchEvent(new Event('tooltip-reload'));
-        that.$refs.email.dispatchEvent(new Event('tooltip-show'));
+        that.$refs.email.dispatchEvent(event.createEvent('tooltip-reload'));
+        that.$refs.email.dispatchEvent(event.createEvent('tooltip-show'));
         that.isEmailTooltipShown = true;
       } else if (!validate.isValidEmail(that.email)) {
         isValid = false;
         that.emailTooltip.msg = that.$t('management.err_invalid_email');
-        that.$refs.email.dispatchEvent(new Event('tooltip-reload'));
-        that.$refs.email.dispatchEvent(new Event('tooltip-show'));
+        that.$refs.email.dispatchEvent(event.createEvent('tooltip-reload'));
+        that.$refs.email.dispatchEvent(event.createEvent('tooltip-show'));
         that.isEmailTooltipShown = true;
       }
       if (that.phone !== '' && !validate.isValidPhone(that.phone)) {
         isValid = false;
-        that.$refs.phone.dispatchEvent(new Event('tooltip-show'));
+        that.$refs.phone.dispatchEvent(event.createEvent('tooltip-show'));
         that.isPhoneTooltipShown = true;
       }
 

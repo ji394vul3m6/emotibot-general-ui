@@ -46,6 +46,7 @@
 
 <script>
 import md5 from 'md5';
+import event from '@/utils/js/event';
 import validate from '@/utils/js/validate';
 
 export default {
@@ -98,7 +99,7 @@ export default {
     origPassword() {
       if (this.origPassword !== '') {
         this.isOrigPasswordTooltipShown = false;
-        this.$refs.origPassword.dispatchEvent(new Event('tooltip-hide'));
+        this.$refs.origPassword.dispatchEvent(event.createEvent('tooltip-hide'));
       }
     },
     password() {
@@ -109,7 +110,7 @@ export default {
     newPassword() {
       if (this.newPassword !== '') {
         this.isNewPasswordTooltipShown = false;
-        this.$refs.newPassword.dispatchEvent(new Event('tooltip-hide'));
+        this.$refs.newPassword.dispatchEvent(event.createEvent('tooltip-hide'));
       }
     },
   },
@@ -120,8 +121,8 @@ export default {
       if ((that.origPassword.length < that.passwordMinlength ||
                   that.origPassword.length > that.passwordMaxlength)) {
         that.origPasswordTooltip.msg = that.$t('management.err_password_length');
-        that.$refs.origPassword.dispatchEvent(new Event('tooltip-reload'));
-        that.$refs.origPassword.dispatchEvent(new Event('tooltip-show'));
+        that.$refs.origPassword.dispatchEvent(event.createEvent('tooltip-reload'));
+        that.$refs.origPassword.dispatchEvent(event.createEvent('tooltip-show'));
         that.$refs.origPassword.focus();
         that.isOrigPasswordTooltipShown = true;
       } else if ((that.password.length < that.passwordMinlength ||
@@ -134,7 +135,7 @@ export default {
         that.$refs.password.focus();
         that.isPasswordTooltipShown = true;
       } else if (that.newPassword !== that.password) {
-        that.$refs.newPassword.dispatchEvent(new Event('tooltip-show'));
+        that.$refs.newPassword.dispatchEvent(event.createEvent('tooltip-show'));
         that.$refs.newPassword.focus();
         that.isNewPasswordTooltipShown = true;
       } else {

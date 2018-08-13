@@ -17,6 +17,8 @@
 </template>
 
 <script>
+import event from '@/utils/js/event';
+
 export default {
   name: 'robot-add-form',
   props: {
@@ -41,7 +43,7 @@ export default {
   watch: {
     name() {
       if (this.name.trim() !== '') {
-        this.$refs.name.dispatchEvent(new Event('tooltip-hide'));
+        this.$refs.name.dispatchEvent(event.createEvent('tooltip-hide'));
       }
     },
   },
@@ -51,14 +53,14 @@ export default {
       that.name = that.name.trim();
       if (that.name === '') {
         that.nameTooltip.msg = that.$t('management.err_robot_name_empty');
-        that.$refs.name.dispatchEvent(new Event('tooltip-reload'));
-        that.$refs.name.dispatchEvent(new Event('tooltip-show'));
+        that.$refs.name.dispatchEvent(event.createEvent('tooltip-reload'));
+        that.$refs.name.dispatchEvent(event.createEvent('tooltip-show'));
         that.$refs.name.focus();
         return;
       } else if (that.name !== that.extData.name && that.existedRobots.indexOf(that.name) >= 0) {
         that.nameTooltip.msg = that.$t('management.err_robot_duplicate');
-        that.$refs.name.dispatchEvent(new Event('tooltip-reload'));
-        that.$refs.name.dispatchEvent(new Event('tooltip-show'));
+        that.$refs.name.dispatchEvent(event.createEvent('tooltip-reload'));
+        that.$refs.name.dispatchEvent(event.createEvent('tooltip-show'));
         that.$refs.name.focus();
         return;
       }

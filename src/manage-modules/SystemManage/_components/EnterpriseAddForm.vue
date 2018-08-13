@@ -125,6 +125,7 @@
 
 <script>
 import validate from '@/utils/js/validate';
+import event from '@/utils/js/event';
 
 export default {
   name: 'enterprise-add-form',
@@ -176,7 +177,7 @@ export default {
     name() {
       if (this.name.trim() !== '') {
         this.isNameTooltipShown = false;
-        this.$refs.name.dispatchEvent(new Event('tooltip-hide'));
+        this.$refs.name.dispatchEvent(event.createEvent('tooltip-hide'));
       }
     },
     adminUserName() {
@@ -187,18 +188,18 @@ export default {
     adminDisplayName() {
       if (this.adminDisplayName.trim() !== '') {
         this.isDisplayNameTooltipShown = false;
-        this.$refs.displayName.dispatchEvent(new Event('tooltip-hide'));
+        this.$refs.displayName.dispatchEvent(event.createEvent('tooltip-hide'));
       }
     },
     adminEmail() {
       if (this.adminEmail.trim() !== '') {
         this.isEmailTooltipShown = false;
-        this.$refs.email.dispatchEvent(new Event('tooltip-hide'));
+        this.$refs.email.dispatchEvent(event.createEvent('tooltip-hide'));
       }
     },
     phone() {
       this.isPhoneTooltipShown = false;
-      this.$refs.phone.dispatchEvent(new Event('tooltip-hide'));
+      this.$refs.phone.dispatchEvent(event.createEvent('tooltip-hide'));
     },
     adminPassword() {
       if (this.adminPassword.trim() !== '') {
@@ -207,7 +208,7 @@ export default {
     },
     adminCheckPassword() {
       this.isCheckPasswordTooltipShown = false;
-      this.$refs.checkPassword.dispatchEvent(new Event('tooltip-hide'));
+      this.$refs.checkPassword.dispatchEvent(event.createEvent('tooltip-hide'));
     },
   },
   methods: {
@@ -223,12 +224,12 @@ export default {
       tooltip.msg = msg;
       const triggerObj = context.$el ? context.$el : context;
       this.$nextTick(() => {
-        triggerObj.dispatchEvent(new Event('tooltip-reload'));
-        triggerObj.dispatchEvent(new Event('tooltip-show'));
+        triggerObj.dispatchEvent(event.createEvent('tooltip-reload'));
+        triggerObj.dispatchEvent(event.createEvent('tooltip-show'));
       });
     },
     closeModuleTooltip() {
-      this.$refs.moduleTitle.dispatchEvent(new Event('tooltip-hide'));
+      this.$refs.moduleTitle.dispatchEvent(event.createEvent('tooltip-hide'));
     },
     validate() {
       const that = this;

@@ -29,6 +29,7 @@
 </template>
 
 <script>
+import event from '@/utils/js/event';
 
 export default {
   name: 'edit-skills-pop',
@@ -93,8 +94,8 @@ export default {
         if (this.skills[skillId].skillName === '') {
           this.nameTooltipMap[skillId].msg = this.$t('task_engine_v3.edit_skill_pop.tooltip_empty_name');
           const refName = `inputName_${skillId}`;
-          this.$refs[refName][0].dispatchEvent(new Event('tooltip-reload'));
-          this.$refs[refName][0].dispatchEvent(new Event('tooltip-show'));
+          this.$refs[refName][0].dispatchEvent(event.createEvent('tooltip-reload'));
+          this.$refs[refName][0].dispatchEvent(event.createEvent('tooltip-show'));
           this.$refs[refName][0].focus();
           success = false;
         }// TODO: check duplicate skill names;

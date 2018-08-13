@@ -8,6 +8,7 @@
 </template>
 
 <script>
+import event from '@/utils/js/event';
 
 export default {
   name: 'scenario-editor-pop',
@@ -36,7 +37,7 @@ export default {
   watch: {
     scenarioName() {
       if (this.scenarioName.trim() !== '') {
-        this.$refs.scenarioName.dispatchEvent(new Event('tooltip-hide'));
+        this.$refs.scenarioName.dispatchEvent(event.createEvent('tooltip-hide'));
         this.isNoNameTooltipShown = false;
       }
     },
@@ -45,8 +46,8 @@ export default {
     validate() {
       this.scenarioName = this.scenarioName.trim();
       if (this.scenarioName === '') {
-        this.$refs.scenarioName.dispatchEvent(new Event('tooltip-reload'));
-        this.$refs.scenarioName.dispatchEvent(new Event('tooltip-show'));
+        this.$refs.scenarioName.dispatchEvent(event.createEvent('tooltip-reload'));
+        this.$refs.scenarioName.dispatchEvent(event.createEvent('tooltip-show'));
         this.$refs.scenarioName.focus();
         this.isNoNameTooltipShown = true;
       } else {

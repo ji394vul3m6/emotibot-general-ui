@@ -73,6 +73,7 @@
 import { mapGetters } from 'vuex';
 import NavBar from '@/components/NavigationBar';
 import modules from '@/modules';
+import event from '@/utils/js/event';
 import CommandRow from '../_components/CommandRow';
 import roleAPI from '../_api/role';
 
@@ -116,11 +117,9 @@ export default {
       if (input) {
         const idx = this.roles.findIndex(role => role.editMode);
         if (val !== -1 && val !== idx) {
-          const event = new Event('tooltip-show');
-          input[0].dispatchEvent(event);
+          input[0].dispatchEvent(event.createEvent('tooltip-show'));
         } else {
-          const event = new Event('tooltip-hide');
-          input[0].dispatchEvent(event);
+          input[0].dispatchEvent(event.createEvent('tooltip-hide'));
         }
       }
     },
@@ -270,8 +269,7 @@ export default {
           promise = that.$api.updateEnterpriseRole(that.enterpriseID, role.uuid, options);
         } else {
           if (that.roles.map(r => r.name).indexOf(that.editName) >= 0) {
-            const event = new Event('tooltip-show');
-            that.$refs.nameInput[0].dispatchEvent(event);
+            that.$refs.nameInput[0].dispatchEvent(event.createEvent('tooltip-show'));
             that.$emit('endLoading');
             return;
           }

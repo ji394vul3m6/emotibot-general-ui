@@ -49,6 +49,7 @@
 
 <script>
 import { mapGetters, mapMutations } from 'vuex';
+import event from '@/utils/js/event';
 
 export default {
   data: () => ({
@@ -95,13 +96,13 @@ export default {
       const that = this;
       if (!that.isEllipsisActive(e.target)) return;
       that.robotNameTooltip.msg = name;
-      that.$refs.robotName.dispatchEvent(new Event('tooltip-reload'));
-      that.$refs.robotName.dispatchEvent(new Event('tooltip-show'));
+      that.$refs.robotName.dispatchEvent(event.createEvent('tooltip-reload'));
+      that.$refs.robotName.dispatchEvent(event.createEvent('tooltip-show'));
     },
     hideFullRobotName(e) {
       const that = this;
       if (!that.isEllipsisActive(e.target)) return;
-      that.$refs.robotName.dispatchEvent(new Event('tooltip-hide'));
+      that.$refs.robotName.dispatchEvent(event.createEvent('tooltip-hide'));
     },
     clickShowUserPreference() {
       this.showUserMenu = false;

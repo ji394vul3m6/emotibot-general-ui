@@ -25,6 +25,8 @@
 </template>
 
 <script>
+import event from '@/utils/js/event';
+
 export default {
   name: 'group-add-form',
   props: {
@@ -51,7 +53,7 @@ export default {
   watch: {
     name() {
       if (this.name.trim() !== '') {
-        this.$refs.name.dispatchEvent(new Event('tooltip-hide'));
+        this.$refs.name.dispatchEvent(event.createEvent('tooltip-hide'));
       }
     },
   },
@@ -86,16 +88,16 @@ export default {
 
       if (that.name === '') {
         that.nameTooltip.msg = that.$t('management.err_group_name_empty');
-        that.$refs.name.dispatchEvent(new Event('tooltip-reload'));
-        that.$refs.name.dispatchEvent(new Event('tooltip-show'));
+        that.$refs.name.dispatchEvent(event.createEvent('tooltip-reload'));
+        that.$refs.name.dispatchEvent(event.createEvent('tooltip-show'));
         that.$refs.name.focus();
         return;
       }
       if (that.extData.groups && that.extData.groups.indexOf(that.name) >= 0) {
         if (!that.extData.group || that.name !== that.extData.group.name) {
           that.nameTooltip.msg = that.$t('management.err_group_duplicate');
-          that.$refs.name.dispatchEvent(new Event('tooltip-reload'));
-          that.$refs.name.dispatchEvent(new Event('tooltip-show'));
+          that.$refs.name.dispatchEvent(event.createEvent('tooltip-reload'));
+          that.$refs.name.dispatchEvent(event.createEvent('tooltip-show'));
           that.$refs.name.focus();
           return;
         }

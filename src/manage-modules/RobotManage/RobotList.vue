@@ -36,6 +36,7 @@
 
 <script>
 import { mapGetters, mapMutations } from 'vuex';
+import event from '@/utils/js/event';
 import NavBar from '@/components/NavigationBar';
 import RobotForm from './_components/RobotAddForm';
 import CommandRow from '../_components/CommandRow';
@@ -101,13 +102,13 @@ export default {
       const that = this;
       if (!that.isEllipsisActive(e.target)) return;
       that.robotNameTooltip.msg = name;
-      that.$refs[robotId][0].dispatchEvent(new Event('tooltip-reload'));
-      that.$refs[robotId][0].dispatchEvent(new Event('tooltip-show'));
+      that.$refs[robotId][0].dispatchEvent(event.createEvent('tooltip-reload'));
+      that.$refs[robotId][0].dispatchEvent(event.createEvent('tooltip-show'));
     },
     hideFullRobotName(e, robotId) {
       const that = this;
       if (!that.isEllipsisActive(e.target)) return;
-      that.$refs[robotId][0].dispatchEvent(new Event('tooltip-hide'));
+      that.$refs[robotId][0].dispatchEvent(event.createEvent('tooltip-hide'));
     },
     doSearch(word) {
       this.keyword = word;

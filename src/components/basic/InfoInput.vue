@@ -20,6 +20,8 @@
 
 
 <script>
+import event from '@/utils/js/event';
+
 export default {
   props: {
     value: {
@@ -105,22 +107,22 @@ export default {
     errorMsg() {
       const that = this;
       that.errorTooltip.msg = that.errorMsg;
-      that.$refs.infoInput.dispatchEvent(new Event('tooltip-reload'));
+      that.$refs.infoInput.dispatchEvent(event.createEvent('tooltip-reload'));
     },
     error() {
       const that = this;
       if (that.error) {
-        that.$refs.infoInput.dispatchEvent(new Event('tooltip-show'));
+        that.$refs.infoInput.dispatchEvent(event.createEvent('tooltip-show'));
         // reposition info tooltip
         const extralines = Math.ceil(that.msg.length / 25) - 1;  // each line can fit about 25 words
         that.infoTooltip.top = 30 + 30 + (extralines * 18) + 8;
         // inputHeight + tooltipHeight + extralines * lineheight + padding
-        that.$refs.infoIcon.dispatchEvent(new Event('tooltip-reload'));
+        that.$refs.infoIcon.dispatchEvent(event.createEvent('tooltip-reload'));
       } else {
-        that.$refs.infoInput.dispatchEvent(new Event('tooltip-hide'));
+        that.$refs.infoInput.dispatchEvent(event.createEvent('tooltip-hide'));
          // reposition info tooltip
         that.infoTooltip.top = 0;
-        that.$refs.infoIcon.dispatchEvent(new Event('tooltip-reload'));
+        that.$refs.infoIcon.dispatchEvent(event.createEvent('tooltip-reload'));
       }
     },
   },

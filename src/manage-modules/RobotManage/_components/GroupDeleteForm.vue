@@ -18,6 +18,7 @@
 
 <script>
 import md5 from 'md5';
+import event from '@/utils/js/event';
 
 export default {
   name: 'group-delete-form',
@@ -41,7 +42,7 @@ export default {
   },
   watch: {
     password() {
-      this.$refs.password.dispatchEvent(new Event('tooltip-hide'));
+      this.$refs.password.dispatchEvent(event.createEvent('tooltip-hide'));
     },
   },
   methods: {
@@ -50,7 +51,7 @@ export default {
       if (that.$cookie.get('verify') === md5(that.password)) {
         that.$emit('validateSuccess', that.reason);
       } else {
-        that.$refs.password.dispatchEvent(new Event('tooltip-show'));
+        that.$refs.password.dispatchEvent(event.createEvent('tooltip-show'));
       }
     },
   },

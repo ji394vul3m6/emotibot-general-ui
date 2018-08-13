@@ -1,3 +1,4 @@
+import event from '@/utils/js/event';
 import Tooltip from '../components/basic/Tooltip';
 
 function getPosition(el) {
@@ -46,10 +47,10 @@ const MyPlugin = {
               const pos = el.getBoundingClientRect();
               const inRange = parentPos.top <= pos.top && parentPos.bottom >= pos.bottom;
               if (!inRange && vm.show) {
-                el.dispatchEvent(new Event('tooltip-hide'));
+                el.dispatchEvent(event.createEvent('tooltip-hide'));
                 vm.hideWithScroll = true;
               } else if (inRange && (vm.show || vm.hideWithScroll)) {
-                el.dispatchEvent(new Event('tooltip-show'));
+                el.dispatchEvent(event.createEvent('tooltip-show'));
                 vm.hideWithScroll = false;
               }
             });

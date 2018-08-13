@@ -51,6 +51,7 @@
 </template>
 <script>
 import { mapGetters } from 'vuex';
+import event from '@/utils/js/event';
 
 export default {
   props: {
@@ -187,8 +188,7 @@ export default {
     },
     isDuplicate() {
       if (!this.isDuplicate) {
-        const event = new Event('tooltip-hide');
-        this.$refs.synonymInput.dispatchEvent(event);
+        this.$refs.synonymInput.dispatchEvent(event.createEvent('tooltip-hide'));
       }
     },
     isWordbankNameEmpty() {
@@ -252,8 +252,7 @@ export default {
         return;
       }
       if (this.isDuplicate) {
-        const event = new Event('tooltip-show');
-        this.$refs.synonymInput.dispatchEvent(event);
+        this.$refs.synonymInput.dispatchEvent(event.createEvent('tooltip-show'));
         return;
       }
       if (this.isNewSynonymValid) {
@@ -274,14 +273,11 @@ export default {
         } else if (this.isWordbankNameDuplicate) {
           this.wordbankNameTooltip.msg = this.$t('wordbank.error.wordbank_name_duplicate');
         } // TODO: else if wordbank name too long
-        const reload = new Event('tooltip-reload');
-        this.$refs.wordbankName.dispatchEvent(reload);
-        const event = new Event('tooltip-show');
-        this.$refs.wordbankName.dispatchEvent(event);
+        this.$refs.wordbankName.dispatchEvent(event.createEvent('tooltip-reload'));
+        this.$refs.wordbankName.dispatchEvent(event.createEvent('tooltip-show'));
       } else {
         this.$emit('enableOK');
-        const event = new Event('tooltip-hide');
-        this.$refs.wordbankName.dispatchEvent(event);
+        this.$refs.wordbankName.dispatchEvent(event.createEvent('tooltip-hide'));
       }
     },
     setReadonly() {
@@ -311,8 +307,7 @@ export default {
       }
       if (this.isWordbankNameDuplicate) {
         wordbankNameElem.focus();
-        const event = new Event('tooltip-show');
-        this.$refs.wordbankName.dispatchEvent(event);
+        this.$refs.wordbankName.dispatchEvent(event.createEvent('tooltip-show'));
         return;
       }
       const editedWordbank = {

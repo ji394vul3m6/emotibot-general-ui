@@ -144,6 +144,7 @@ import DatePicker from '@/components/DateTimePicker/DatePicker';
 import TagInput from '@/components/basic/TagInput';
 import labelAPI from '@/modules/SSM/_api/qalabel';
 import validate from '@/utils/js/validate';
+import event from '@/utils/js/event';
 
 export default {
   api: [labelAPI],
@@ -269,11 +270,9 @@ export default {
     isTimeValid() {
       if (this.dateFormat === 'custom') {
         if (!this.isTimeValid) {
-          const event = new Event('tooltip-show');
-          this.$refs.datePicker.dispatchEvent(event);
+          this.$refs.datePicker.dispatchEvent(event.createEvent('tooltip-show'));
         } else {
-          const event = new Event('tooltip-hide');
-          this.$refs.datePicker.dispatchEvent(event);
+          this.$refs.datePicker.dispatchEvent(event.createEvent('tooltip-hide'));
         }
       }
     },
@@ -298,8 +297,7 @@ export default {
 
         if (!this.isTimeValid) {
           if (this.dateFormat === 'custom') {
-            const event = new Event('tooltip-show');
-            this.$refs.datePicker.dispatchEvent(event);
+            this.$refs.datePicker.dispatchEvent(event.createEvent('tooltip-show'));
           }
         }
         return;
@@ -351,8 +349,7 @@ export default {
         } catch (err) {
           console.log(err);
           this.isReplyJsonWarning = true;
-          const event = new Event('tooltip-show');
-          this.$refs.replyFormatJSON.dispatchEvent(event);
+          this.$refs.replyFormatJSON.dispatchEvent(event.createEvent('tooltip-show'));
           return false;
         }
       }
@@ -360,8 +357,7 @@ export default {
     },
     closeJSONTooltip() {
       this.isReplyJsonWarning = false;
-      const event = new Event('tooltip-hide');
-      this.$refs.replyFormatJSON.dispatchEvent(event);
+      this.$refs.replyFormatJSON.dispatchEvent(event.createEvent('tooltip-hide'));
     },
     updateNameTooltip() {
       if (!this.isNameValid) {
@@ -371,13 +367,10 @@ export default {
         } else if (this.isNameDuplicate) {
           this.commandNameTooltip.msg = this.$t('robot_command.error.name_input_duplicate');
         }
-        const reload = new Event('tooltip-reload');
-        this.$refs.commandName.dispatchEvent(reload);
-        const event = new Event('tooltip-show');
-        this.$refs.commandName.dispatchEvent(event);
+        this.$refs.commandName.dispatchEvent(event.createEvent('tooltip-reload'));
+        this.$refs.commandName.dispatchEvent(event.createEvent('tooltip-show'));
       } else {
-        const event = new Event('tooltip-hide');
-        this.$refs.commandName.dispatchEvent(event);
+        this.$refs.commandName.dispatchEvent(event.createEvent('tooltip-hide'));
       }
     },
     parseCommandDetail() {

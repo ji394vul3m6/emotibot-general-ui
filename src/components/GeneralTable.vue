@@ -67,6 +67,7 @@
 </template>
 
 <script>
+import event from '@/utils/js/event';
 import Tag from '@/components/basic/Tag';
 import Toggle from '@/components/basic/Toggle';
 
@@ -210,7 +211,7 @@ export default {
         this.headerInfoTooltip.alignLeft = false;
       }
       this.headerInfoTooltip.msg = header.info;
-      infoIconBlockDom.dispatchEvent(new Event('tooltip-reload'));
+      infoIconBlockDom.dispatchEvent(event.createEvent('tooltip-reload'));
     },
     toggleIconStyle(header, icon) {
       header.infoicon = icon;

@@ -15,7 +15,7 @@
   </div>
 </template>
 <script>
-
+import event from '@/utils/js/event';
 import CategoryCard from '@/components/CategoryCard';
 
 export default {
@@ -52,15 +52,13 @@ export default {
   methods: {
     handleActiveItemChange(activeItem) {
       this.activeItemId = activeItem.cid;
-      const event = new Event('tooltip-hide');
-      this.$refs.moveToContainer.dispatchEvent(event);
+      this.$refs.moveToContainer.dispatchEvent(event.createEvent('tooltip-hide'));
     },
     validate() {
       if (this.activeItemId !== undefined) {
         this.$emit('validateSuccess', this.activeItemId);
       } else {
-        const event = new Event('tooltip-show');
-        this.$refs.moveToContainer.dispatchEvent(event);
+        this.$refs.moveToContainer.dispatchEvent(event.createEvent('tooltip-show'));
       }
     },
   },

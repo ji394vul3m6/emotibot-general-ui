@@ -120,6 +120,7 @@
 
 <script>
 import md5 from 'md5';
+import event from '@/utils/js/event';
 import validate from '@/utils/js/validate';
 import DropdownSelector from '@/components/DropdownSelect';
 
@@ -145,7 +146,7 @@ export default {
     displayName() {
       if (this.displayName.trim() !== '') {
         this.isDisplayNameTooltipShown = false;
-        this.$refs.displayName.dispatchEvent(new Event('tooltip-hide'));
+        this.$refs.displayName.dispatchEvent(event.createEvent('tooltip-hide'));
       }
     },
     userName() {
@@ -156,12 +157,12 @@ export default {
     email() {
       if (this.email.trim() !== '') {
         this.isEmailTooltipShown = false;
-        this.$refs.email.dispatchEvent(new Event('tooltip-hide'));
+        this.$refs.email.dispatchEvent(event.createEvent('tooltip-hide'));
       }
     },
     phone() {
       this.isPhoneTooltipShown = false;
-      this.$refs.phone.dispatchEvent(new Event('tooltip-hide'));
+      this.$refs.phone.dispatchEvent(event.createEvent('tooltip-hide'));
     },
     password() {
       if (this.password.trim() !== '') {
@@ -170,7 +171,7 @@ export default {
     },
     checkPassword() {
       this.isPasswordCheckTooltipShown = false;
-      this.$refs.checkPassword.dispatchEvent(new Event('tooltip-hide'));
+      this.$refs.checkPassword.dispatchEvent(event.createEvent('tooltip-hide'));
     },
   },
   data() {
@@ -263,7 +264,6 @@ export default {
       if (!isValid) {
         return;
       }
-
       const ret = {
         username: that.userName.trim(),
         name: that.displayName.trim(),
@@ -321,30 +321,30 @@ export default {
       if (that.email.trim() === '') {
         isValid = false;
         that.emailTooltip.msg = that.$t('management.err_empty_email');
-        that.$refs.email.dispatchEvent(new Event('tooltip-reload'));
-        that.$refs.email.dispatchEvent(new Event('tooltip-show'));
+        that.$refs.email.dispatchEvent(event.createEvent('tooltip-reload'));
+        that.$refs.email.dispatchEvent(event.createEvent('tooltip-show'));
         that.isEmailTooltipShown = true;
       } else if (!validate.isValidEmail(that.email)) {
         isValid = false;
         that.emailTooltip.msg = that.$t('management.err_invalid_email');
-        that.$refs.email.dispatchEvent(new Event('tooltip-reload'));
-        that.$refs.email.dispatchEvent(new Event('tooltip-show'));
+        that.$refs.email.dispatchEvent(event.createEvent('tooltip-reload'));
+        that.$refs.email.dispatchEvent(event.createEvent('tooltip-show'));
         that.isEmailTooltipShown = true;
       }
 
       if (that.phone !== '' && !validate.isValidPhone(that.phone)) {
         isValid = false;
-        that.$refs.phone.dispatchEvent(new Event('tooltip-show'));
+        that.$refs.phone.dispatchEvent(event.createEvent('tooltip-show'));
         that.isPhoneTooltipShown = true;
       }
 
       if (that.displayName.trim() === '') {
         isValid = false;
-        that.$refs.displayName.dispatchEvent(new Event('tooltip-show'));
+        that.$refs.displayName.dispatchEvent(event.createEvent('tooltip-show'));
         that.isDisplayNameTooltipShown = true;
       } else if (!validate.isValidDisplayName(that.displayName.trim())) {
         isValid = false;
-        that.$refs.displayName.dispatchEvent(new Event('tooltip-show'));
+        that.$refs.displayName.dispatchEvent(event.createEvent('tooltip-show'));
         that.isDisplayNameTooltipShown = true;
       }
       if (!that.editMode) {
@@ -359,7 +359,7 @@ export default {
           that.isPasswordTooltipShown = true;
         } else if (that.checkPassword !== that.password) {
           isValid = false;
-          that.$refs.checkPassword.dispatchEvent(new Event('tooltip-show'));
+          that.$refs.checkPassword.dispatchEvent(event.createEvent('tooltip-show'));
           that.isPasswordCheckTooltipShown = true;
         }
       }

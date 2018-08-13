@@ -145,6 +145,7 @@
   </div>
 </template>
 <script>
+import event from '@/utils/js/event';
 
 const POSITIVE_CORPUS = 'pos';
 const NEGATIVE_CORPUS = 'neg';
@@ -257,12 +258,12 @@ export default {
     },
     editIntentName() {
       if (this.$refs.intentName !== undefined && this.$refs.intentName[0] !== undefined) {
-        this.$refs.intentName[0].dispatchEvent(new Event('tooltip-hide'));
+        this.$refs.intentName[0].dispatchEvent(event.createEvent('tooltip-hide'));
       }
     },
     newIntentName() {
       if (this.$refs.intentAddName !== undefined) {
-        this.$refs.intentAddName.dispatchEvent(new Event('tooltip-hide'));
+        this.$refs.intentAddName.dispatchEvent(event.createEvent('tooltip-hide'));
       }
     },
   },
@@ -317,7 +318,7 @@ export default {
         });
       }
       const refName = `${idx}_intentAction`;
-      that.$refs[refName][0].dispatchEvent(new Event('dropdown-reload'));
+      that.$refs[refName][0].dispatchEvent(event.createEvent('dropdown-reload'));
     },
     closeExpandIntent(intent) {
       intent.expand = false;
@@ -495,7 +496,7 @@ export default {
         },
         callback: {
           ok: () => {
-            that.$refs.intentName[0].dispatchEvent(new Event('tooltip-hide'));
+            that.$refs.intentName[0].dispatchEvent(event.createEvent('tooltip-hide'));
             intent.isEditMode = false;
             intent.hasCorpusSelected = false;
             intent.hasCorpusEditing = false;
@@ -531,8 +532,8 @@ export default {
         that.initEditStorage();
       } else {
         that.$refs.intentName[0].focus();
-        that.$refs.intentName[0].dispatchEvent(new Event('tooltip-reload'));
-        that.$refs.intentName[0].dispatchEvent(new Event('tooltip-show'));
+        that.$refs.intentName[0].dispatchEvent(event.createEvent('tooltip-reload'));
+        that.$refs.intentName[0].dispatchEvent(event.createEvent('tooltip-show'));
       }
     },
     validateIntentName(name, oldname) {
@@ -593,8 +594,8 @@ export default {
         that.initEditStorage();
       } else {
         that.$refs.intentAddName.focus();
-        that.$refs.intentAddName.dispatchEvent(new Event('tooltip-reload'));
-        that.$refs.intentAddName.dispatchEvent(new Event('tooltip-show'));
+        that.$refs.intentAddName.dispatchEvent(event.createEvent('tooltip-reload'));
+        that.$refs.intentAddName.dispatchEvent(event.createEvent('tooltip-show'));
       }
     },
     cancelAddNewIntent(nextAction) {
