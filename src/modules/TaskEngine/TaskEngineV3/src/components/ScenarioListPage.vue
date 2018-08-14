@@ -8,10 +8,10 @@
     <div class="page">
       <div id="toolbar">
         <div id="left-buttons">
-          <text-button button-type='primary' width='68px' height='28px' @click="createNewScenario">
+          <text-button button-type='primary' @click="createNewScenario">
             {{$t("task_engine_v3.scenario_list_page.button_create_new_scenario")}}
           </text-button>
-          <text-button button-type='default' width='68px' height='28px' @click="showImportPop">
+          <text-button button-type='default' @click="showImportPop">
             {{$t("task_engine_v3.scenario_list_page.button_import_scenario")}}
           </text-button>
           <input type="file" ref="uploadInput" v-on:change="changeFile()" accept=".xlsx">
@@ -29,7 +29,7 @@
               {{scenario.scenarioName}}
             </div>
             <div class="delete-button">
-              <div class="icon_container" v-show="scenario.show" v-dropdown="moreOptions(scenario)">
+              <div class="icon_container" v-if="scenario.show" v-dropdown="moreOptions(scenario)">
                 <icon :size=25 icon-type="more"/>
               </div>
             </div>
