@@ -6,7 +6,7 @@
         <input ref="commandName" id="edit-command-input" type="text"
           v-model="commandName"
           v-tooltip="commandNameTooltip"
-          :class="{'error': isAddNewCommand ? false : !isNameValid}"
+          :class="{'error': isCommandNameTooltipShown}"
           :disabled="readonly">
         <!-- <info-input
           v-model="commandName"
@@ -207,6 +207,7 @@ export default {
         alignLeft: true,
       },
       isReplyJsonWarning: false,
+      isCommandNameTooltipShown: false,
 
       isAddNewCommand: false,
     };
@@ -259,13 +260,19 @@ export default {
         this.replyContentText = '';
       }
     },
+    commandName() {
+      if (this.commandName !== '') {
+        this.isCommandNameTooltipShown = false;
+        this.$refs.commandName.dispatchEvent(event.createEvent('tooltip-hide'));
+      }
+    },
     isNameEmpty() {
       this.isAddNewCommand = false;
-      this.updateNameTooltip();
+      // this.updateNameTooltip();
     },
-    isNameDuplicate() {
-      this.updateNameTooltip();
-    },
+    // isNameDuplicate() {
+    //   this.updateNameTooltip();
+    // },
     isTimeValid() {
       if (this.dateFormat === 'custom') {
         if (!this.isTimeValid) {
@@ -292,7 +299,7 @@ export default {
     validate() {
       // build return obj and return
       if (!this.isReturnDataValid()) {
-        this.updateNameTooltip();
+        // this.updateNameTooltip();
 
         if (!this.isTimeValid) {
           if (this.dateFormat === 'custom') {
@@ -338,6 +345,7 @@ export default {
       return returnObj;
     },
     isReturnDataValid() {
+      this.updateNameTooltip();
       return this.isNameValid && this.isTimeValid && this.isReplyValid();
     },
     isReplyValid() {
@@ -366,9 +374,11 @@ export default {
         } else if (this.isNameDuplicate) {
           this.commandNameTooltip.msg = this.$t('robot_command.error.name_input_duplicate');
         }
+        this.isCommandNameTooltipShown = true;
         this.$refs.commandName.dispatchEvent(event.createEvent('tooltip-reload'));
         this.$refs.commandName.dispatchEvent(event.createEvent('tooltip-show'));
       } else {
+        this.isCommandNameTooltipShown = false;
         this.$refs.commandName.dispatchEvent(event.createEvent('tooltip-hide'));
       }
     },

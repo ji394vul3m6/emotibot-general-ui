@@ -167,6 +167,7 @@ export default {
     value() {
       this.loadCurrentCommands();
       this.currentCommands = this.commands;
+      this.checkedCommand = [];
     },
     commands() {
       this.commandKeyword = '';
