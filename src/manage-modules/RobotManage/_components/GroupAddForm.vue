@@ -4,6 +4,7 @@
       <div class="row-title">{{ $t('management.group_name') }}</div>
       <input class="row-input" v-model="name" ref="name"
         maxlength=50
+        :class="{'error': isNameTooltipShown}"
         :placeholder="$t('management.length_50_placeholder')"
         v-tooltip="nameTooltip">
     </div>
@@ -48,11 +49,13 @@ export default {
         errorType: true,
         alignLeft: true,
       },
+      isNameTooltipShown: false,
     };
   },
   watch: {
     name() {
       if (this.name.trim() !== '') {
+        this.isNameTooltipShown = false;
         this.$refs.name.dispatchEvent(event.createEvent('tooltip-hide'));
       }
     },
@@ -91,6 +94,7 @@ export default {
         that.$refs.name.dispatchEvent(event.createEvent('tooltip-reload'));
         that.$refs.name.dispatchEvent(event.createEvent('tooltip-show'));
         that.$refs.name.focus();
+        that.isNameTooltipShown = true;
         return;
       }
       if (that.extData.groups && that.extData.groups.indexOf(that.name) >= 0) {
@@ -99,6 +103,7 @@ export default {
           that.$refs.name.dispatchEvent(event.createEvent('tooltip-reload'));
           that.$refs.name.dispatchEvent(event.createEvent('tooltip-show'));
           that.$refs.name.focus();
+          this.isNameTooltipShown = true;
           return;
         }
       }

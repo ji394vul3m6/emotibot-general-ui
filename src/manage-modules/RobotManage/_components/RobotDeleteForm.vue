@@ -5,6 +5,7 @@
       <input class="row-input" v-model="password" type="password" autocomplete="new-password"
         :placeholder="$t('management.manager_password')"
         v-tooltip="passwordTooltip"
+        :class="{'error': isPasswordTooltipShown}"
         ref="password">
     </div>
     <div class="row">
@@ -38,11 +39,13 @@ export default {
         errorType: true,
         alignLeft: true,
       },
+      isPasswordTooltipShown: false,
     };
   },
   watch: {
     password() {
       this.$refs.password.dispatchEvent(event.createEvent('tooltip-hide'));
+      this.isPasswordTooltipShown = false;
     },
   },
   methods: {
@@ -52,6 +55,7 @@ export default {
         that.$emit('validateSuccess', that.reason);
       } else {
         that.$refs.password.dispatchEvent(event.createEvent('tooltip-show'));
+        this.isPasswordTooltipShown = true;
       }
     },
   },
