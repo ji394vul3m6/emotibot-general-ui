@@ -1,5 +1,16 @@
 export default {
   task_engine_v2: {
+    scenario_list_page: {
+      button_create_new_scenario: '创建场景',
+      button_import_scenario: '导入',
+      button_export_all_scenarios: '导出全部场景',
+      scenario_list: '2.0版场景列表',
+      ask_delete_confirm: '确认要删除场景：{scenario}',
+      publish: '发布',
+      publish_succeed: '场景发布成功',
+      publish_failed: '场景发布失败',
+      create_new_scenario_failed: '场景建立失败',
+    },
     node_type: {
       dialogue: '对话节点',
       restful: 'RESTful数据调用节点',

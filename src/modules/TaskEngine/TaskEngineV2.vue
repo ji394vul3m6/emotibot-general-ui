@@ -24,7 +24,6 @@ export default {
     'scenario-edit-page': ScenarioEditPage,
     'scenario-list-page': ScenarioListPage,
   },
-  isIFrame: true,
   data() {
     return {
     };

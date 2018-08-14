@@ -56,12 +56,42 @@ export default {
       config: { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
     }).then(resp => resp.data);
   },
+  exportAllScenarios(appId) {
+    const that = this;
+    that.listScenarios(appId).then(((data) => {
+      const scenarioList = data.msg.filter(scenario => scenario.version !== '2.0');
+      const scenarioRequestList = [];
+      scenarioList.forEach((scenario) => {
+        scenarioRequestList.push(that.loadScenario(scenario.scenarioID));
+      });
+      Promise.all(scenarioRequestList).then((allScenarioJSONs) => {
+        const result = [];
+        allScenarioJSONs.forEach((scenarioJSON) => {
+          result.push(this.collectScenario(scenarioJSON));
+        });
+        const jsonString = JSON.stringify(result, null, 4);
+        const blobdata = new Blob([jsonString], { type: 'text/json' });
+        if (navigator.appVersion.toString().indexOf('.NET') > 0) { // for IE browser
+          window.navigator.msSaveBlob(blobdata, 'all_scenarios.json');
+        } else {
+          const link = document.createElement('a');
+          link.setAttribute('href', window.URL.createObjectURL(blobdata));
+          link.setAttribute('download', 'all_scenarios.json');
+          document.body.appendChild(link);
+          link.click();
+        }
+      });
+    }));
+  },
+  collectScenario(scenarioObj) {
+    return {
+      taskScenario: JSON.parse(scenarioObj.result.editingContent),
+      taskLayouts: JSON.parse(scenarioObj.result.editingLayout),
+    };
+  },
   exportScenario(scenarioId) {
     this.loadScenario(scenarioId).then((scenarioObj) => {
-      const scenario = {
-        taskScenario: JSON.parse(scenarioObj.result.editingContent),
-        taskLayouts: JSON.parse(scenarioObj.result.editingLayout),
-      };
+      const scenario = this.collectScenario(scenarioObj);
       const scenarioName = scenario.taskScenario.metadata.scenario_name;
       const jsonString = JSON.stringify(scenario, null, 4);
       const blobdata = new Blob([jsonString], { type: 'text/json' });
