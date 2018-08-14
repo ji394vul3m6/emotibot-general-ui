@@ -329,6 +329,7 @@ table {
         &.multi-action {
           flex: 0 0 110px;
           max-width: 110px;  // IE11 Hack: Apply max-width on flex children so box-sizing would work
+          display: flex;  // IE11 need flex to grow the width
         }
       }
     }

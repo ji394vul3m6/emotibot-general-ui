@@ -417,8 +417,8 @@ $header-color: #333333;
     }
   }
   .close-button {
-    position: absolute;
-    right: 16px;
+    display: flex;
+    align-items: center;
   }
 }
 
