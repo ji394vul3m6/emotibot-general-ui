@@ -62,6 +62,16 @@ export default {
   components: {
     'dropdown-select': DropdownSelect,
   },
+  props: {
+    initialEdge: {
+      type: Object,
+      required: true,
+    },
+    toNodeOptions: {
+      type: Array,
+      required: true,
+    },
+  },
   data() {
     return {
       source: [],

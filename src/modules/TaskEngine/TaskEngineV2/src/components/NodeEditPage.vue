@@ -22,6 +22,8 @@
       ></setting-edit-tab>
       <edge-edit-tab ref="edgeTab"
         v-if="currentTab === 'edgeTab'"
+        :initialNode="node"
+        :initialToNodeOptions="toNodeOptions"
       ></edge-edit-tab>
     </keep-alive>
   </div>
@@ -50,6 +52,7 @@ export default {
     return {
       currentTab: 'settingTab',
       node: this.getNodeData(),
+      toNodeOptions: this.getToNodeOptions(),
       allTabs: this.getAllTabs(),
     };
   },
@@ -77,8 +80,14 @@ export default {
     },
     getNodeData() {
       if (this.extData.node) {
-        console.log(this.extData.node);
         return JSON.parse(JSON.stringify(this.extData.node));
+      }
+      return {};
+    },
+    getToNodeOptions() {
+      if (this.extData.toNodeOptions) {
+        // return JSON.parse(JSON.stringify(this.extData.toNodeOptions));
+        return this.extData.toNodeOptions;
       }
       return {};
     },
@@ -105,7 +114,6 @@ export default {
   beforeMount() {
   },
   mounted() {
-    console.log('mounted');
     console.log(this.node);
   },
 };

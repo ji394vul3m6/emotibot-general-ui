@@ -43,6 +43,11 @@ export default {
       required: true,
       default: undefined,
     },
+    toNodeOptions: {
+      type: Array,
+      required: true,
+      default: undefined,
+    },
   },
   data() {
     return {
@@ -128,6 +133,7 @@ export default {
         // },
         extData: {
           node: that.initialNode,
+          toNodeOptions: that.toNodeOptions,
         },
         callback: {
           ok: (ner) => {

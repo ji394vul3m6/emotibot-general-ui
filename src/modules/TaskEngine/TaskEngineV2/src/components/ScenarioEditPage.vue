@@ -12,6 +12,7 @@
           :x="node.x"
           :y="node.y"
           :initialNode="node.data"
+          :toNodeOptions="toNodeOptions"
           @updatePosition="updateNodePosition(index, $event)"
           @deleteNode="deleteNode(index)">
         </node-block>
@@ -62,6 +63,31 @@ export default {
         map[node.data.node_id] = node;
       });
       return map;
+    },
+    toNodeOptions() {
+      // const options = [
+      //   {
+      //     text: 'do nothing',
+      //     value: null,
+      //   },
+      //   {
+      //     text: 'Exit (ID: 0)',
+      //     value: '0',
+      //   },
+      // ];
+      const options = [];
+      Object.keys(this.idToNode).forEach((key) => {
+        const node = this.idToNode[key];
+        const nodeName = node.data.description;
+        const nodeType = node.data.node_type || '';
+        if (nodeType !== 'entry') {
+          options.push({
+            text: `${nodeName} (ID: ${key})`,
+            value: key,
+          });
+        }
+      });
+      return options;
     },
     allEdges() {
       const edgeList = [];

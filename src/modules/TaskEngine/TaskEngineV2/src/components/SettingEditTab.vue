@@ -30,6 +30,7 @@
         :options="parserOptions"
         :showCheckedIcon="true"
         width="200px"
+        :inputBarStyle="selectStyle"
       />
     </div>
     <div class="row">
@@ -43,6 +44,7 @@
         :options="entityModuleOptions"
         :showCheckedIcon="true"
         width="200px"
+        :inputBarStyle="selectStyle"
       />
     </div>
     <div class="row">
@@ -56,6 +58,7 @@
         :options="entityKeyNameOptions"
         :showCheckedIcon="true"
         width="200px"
+        :inputBarStyle="selectStyle"
       />
     </div>
     <div class="row">
@@ -96,6 +99,10 @@ export default {
       initialResponse: '',
       failureResponse: '',
       parseFromThisNode: false,
+      selectStyle: {
+        height: '36px',
+        'border-radius': '5px',
+      },
     };
   },
   computed: {
@@ -141,9 +148,7 @@ export default {
     },
     entityModuleOptions: {
       handler() {
-        console.log(this.parser[0]);
-        console.log(this.entityModuleOptions);
-        if (this.parser[0] !== 'none') {
+        if (this.parser[0] !== 'none' && this.$refs.selectTargetEntity) {
           this.$refs.selectTargetEntity.$emit('updateOptions', this.entityModuleOptions);
           this.$refs.selectTargetEntity.$emit('select', this.targetEntities);
         }
@@ -152,9 +157,7 @@ export default {
     },
     entityKeyNameOptions: {
       handler() {
-        console.log(this.parser[0]);
-        console.log(this.entityKeyNameOptions);
-        if (this.parser[0] !== 'none') {
+        if (this.parser[0] !== 'none' && this.$refs.selectSkipIfKeyExist) {
           this.$refs.selectSkipIfKeyExist.$emit('updateOptions', this.entityKeyNameOptions);
           this.$refs.selectSkipIfKeyExist.$emit('select', this.skipIfKeyExist);
         }

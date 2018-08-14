@@ -24,25 +24,21 @@ instruction_default_goto: '当所有规则都无法符合时', -->
   <div class="instruction block">
     {{$t("task_engine_v2.edge_edit_tab.instruction")}}
   </div>
-  <condition-block>
-  </condition-block>
-  <!-- <draggable v-model="actionGroupList" :options="{ghostClass:'ghost'}" @start="drag=true" @end="drag=false">
-    <div class="action-group-container" v-for="(actionGroup, index) in actionGroupList">
-      <action-group :key="actionGroup.actionGroupId"
-        :initialActionGroup="actionGroup"
-        :initialEntityCollectorList="initialEntityCollectorList"
-        :initialSkillNameList="initialSkillNameList"
-        @update="updateActionGroup(index, $event)"
-        @deleteActionGroupButtonClick="deleteActionGroup(index)"
-      ></action-group>
-    </div>
-  </draggable> -->
+  <draggable v-model="normalEdges" :options="{ghostClass:'ghost'}" @start="drag=true" @end="drag=false">
+    <condition-block
+      class="condition-block"
+      v-for="(edge, index) in normalEdges"
+      :key="index"
+      :initialEdge="edge"
+      :toNodeOptions="toNodeOptions">
+    </condition-block>
+  </draggable>
   <button
     class="button-add-edge"
     @click="">
     {{$t("task_engine_v2.edge_edit_tab.button_add_edge")}}
   </button>
-  <div class="exceed_limit block">
+  <div class="exceed_limit block" v-if="nodeType !== 'entry'">
     <div class="condition-row">
       <div class="label label-bold">
         {{$t("task_engine_v2.edge_edit_tab.label_exceed_limit")}}
@@ -50,7 +46,7 @@ instruction_default_goto: '当所有规则都无法符合时', -->
       <div class="label label-margin-left">
         {{$t("task_engine_v2.edge_edit_tab.instruction_exeed_limit")}}
       </div>
-      <input class="input-limit"></input>
+      <input class="input-limit" v-model="dialogueLimit"></input>
       <div class="label">
         {{$t("task_engine_v2.edge_edit_tab.label_time")}}
       </div>
@@ -61,7 +57,7 @@ instruction_default_goto: '当所有规则都无法符合时', -->
         class="select select-goto"
         ref="selectExceedThenGoto"
         v-model="exceedThenGoto"
-        :options="nodeOptions"
+        :options="exceedThenGotoOptions"
         :showCheckedIcon="false"
         width="200px"
         :inputBarStyle="selectStyle"
@@ -82,8 +78,8 @@ instruction_default_goto: '当所有规则都无法符合时', -->
       <dropdown-select
         class="select select-goto"
         ref="selectExceedThenGoto"
-        v-model="exceedThenGoto"
-        :options="nodeOptions"
+        v-model="elseInto"
+        :options="elseIntoOptions"
         :showCheckedIcon="false"
         width="200px"
         :inputBarStyle="selectStyle"
@@ -94,19 +90,39 @@ instruction_default_goto: '当所有规则都无法符合时', -->
 </template>
 
 <script>
+import draggable from 'vuedraggable';
 import DropdownSelect from '@/components/DropdownSelect';
 import ConditionBlock from './ConditionBlock';
 
 export default {
   name: 'edge-edit-tab',
   components: {
+    draggable,
     'dropdown-select': DropdownSelect,
     'condition-block': ConditionBlock,
   },
+  props: {
+    initialNode: {
+      type: Object,
+      required: true,
+    },
+    initialToNodeOptions: {
+      type: Array,
+      required: true,
+    },
+  },
   data() {
     return {
+      node: JSON.parse(JSON.stringify(this.initialNode)),
+      nodeType: '',
+      edges: [],
+      normalEdges: [],
+      dialogueLimit: null,
+      toNodeOptions: [],
       exceedThenGoto: [],
-      nodeOptions: [],
+      exceedThenGotoOptions: [],
+      elseInto: [],
+      elseIntoOptions: [],
       selectStyle: {
         height: '36px',
         'border-radius': '5px',
@@ -114,17 +130,74 @@ export default {
     };
   },
   computed: {
-    // filteredScenarioList() {
-    //   return this.scenarioList.filter(
-    //     scenario => scenario.scenarioName.indexOf(this.filteredKeyWord) !== -1);
-    // },
+    edgeTab() {
+      const result = {
+        dialogueLimit: parseInt(this.dialogueLimit, 10) || null,
+        exceedThenGoto: this.exceedThenGoto[0] || null,
+        elseInto: this.elseInto[0] || null,
+      };
+      console.log(result);
+      return result;
+    },
   },
-  watch: {},
+  watch: {
+    edgeTab: {
+      handler() {
+        this.$emit('update', this.edgeTab);
+      },
+      deep: true,
+    },
+  },
   methods: {
-    // moreOptions(scenario) {
-    // },
+    renderTabContent() {
+      // render nodeType
+      this.nodeType = this.node.node_type || '';
+
+      // render edges, normalEdges
+      this.edges = this.node.edges;
+      this.normalEdges = this.edges.filter(edge => edge.edge_type === 'normal');
+
+      // render exceedThenGoto, elseInto
+      if (this.nodeType !== 'entry') {
+        const exceedGotoEdge = this.edges.find(edge => edge.edge_type === 'exceedThenGoTo');
+        this.exceedThenGoto = [exceedGotoEdge.to_node_id];
+      }
+      const elseIntoEdge = this.edges.find(edge => edge.edge_type === 'else_into');
+      this.elseInto = [elseIntoEdge.to_node_id];
+
+      // render dialogueLimit
+      const dialogueLimitEdge = this.edges.find(edge =>
+        edge.edge_type === 'hidden' &&
+        edge.actions &&
+        edge.actions.length >= 1 &&
+        edge.actions[0].key === 'sys_node_dialogue_cnt_limit',
+      );
+      if (dialogueLimitEdge) {
+        this.dialogueLimit = dialogueLimitEdge.actions[0].val;
+      }
+
+      // render toNodeOptions, exceedThenGotoOptions, elseIntoOptions
+      let options = JSON.parse(JSON.stringify(this.initialToNodeOptions));
+      options = options.filter(option => option.value !== this.node.node_id);
+      if (this.nodeType !== 'entry') {
+        this.exceedThenGotoOptions = [{ text: 'Exit (ID: 0)', value: '0' }].concat(options);
+        this.toNodeOptions = [{ text: 'do nothing', value: null }].concat(this.exceedThenGotoOptions);
+        this.elseIntoOptions = [
+          {
+            text: `${this.$t('task_engine_v2.to_node_option.parse_fail')} (ID: ${this.node.node_id})`,
+            value: this.node.node_id,
+          },
+        ].concat(this.exceedThenGotoOptions);
+      } else {
+        this.toNodeOptions = [{ text: 'do nothing', value: null }].concat(options);
+        this.exceedThenGotoOptions = [];
+        this.elseIntoOptions = options;
+      }
+    },
   },
-  beforeMount() {},
+  beforeMount() {
+    this.renderTabContent();
+  },
   mounted() {
   },
 };

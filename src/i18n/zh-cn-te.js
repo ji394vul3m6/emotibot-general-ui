@@ -24,6 +24,9 @@ export default {
       task_parser: '场景语句解析器',
       hotel_parser: '酒店预定语句解析器',
     },
+    to_node_option: {
+      parse_fail: '解析失败处理',
+    },
     scenario_edit_page: {
       tabs: {
         node: '节点',
