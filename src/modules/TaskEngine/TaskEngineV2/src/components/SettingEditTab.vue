@@ -311,6 +311,9 @@ export default {
       display: flex;
       flex-direction: row;
       align-items: center;
+      &:not(:first-child){
+        margin: 5px 0px 0px 0px;
+      }
       .label-text{
         height: 36px;
         font-size: 14px;

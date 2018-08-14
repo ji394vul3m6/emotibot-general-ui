@@ -1,6 +1,6 @@
 <template>
   <div class="dropdown-select" :style="styleObj">
-    <div class="input-bar" :class="{'is-focus': show}" ref="input" @click="showSelection">
+    <div class="input-bar" :class="{'is-focus': show}" :style="inputBarStyle" ref="input" @click="showSelection">
       <div class="input-block">
         <template v-if="multi">
         <tag class="input-tag" v-for="value in checkedValues" :key="value.value" font-class="font-12">
@@ -83,6 +83,12 @@ export default {
     showCheckedIcon: {
       type: Boolean,
       default: true,
+    },
+    inputBarStyle: {
+      type: Object,
+      default() {
+        return {};
+      },
     },
   },
   computed: {
