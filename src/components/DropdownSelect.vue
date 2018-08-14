@@ -239,7 +239,6 @@ $border-color: $color-borderline;
     text-overflow: ellipsis;
     white-space: nowrap;
     border: none;
-    border-right: 1px solid $border-color;
     display: flex;
     align-items: center;
     padding: 5px 8px;
@@ -261,6 +260,8 @@ $border-color: $color-borderline;
     display: flex;
     align-items: center;
     justify-content: center;
+    margin: 3px 0;
+    border-left: 1px solid $border-color;
   }
 }
 .select-list {
