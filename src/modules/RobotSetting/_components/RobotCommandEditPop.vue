@@ -31,7 +31,6 @@
       <div class="edit-title">{{ $t('robot_command.editpop.tag.title') }}</div>
       <div id="edit-tag-content" class="edit-content">
         <tag-input
-          :allowTagErrorTooltip="false"
           :origTags="origTags"
           :tagsList="tagsList"
           :readonly="readonly"

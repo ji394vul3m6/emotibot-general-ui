@@ -18,7 +18,6 @@
       <div class="row">
         <tag-input
           :maxlength=maxTagLength
-          :allowTagErrorTooltip=false
           :origTags=origData.text
           @selectedTagsChanged=updateSynonyms
           area
