@@ -262,7 +262,7 @@ export default {
       max-width: 380px;
       height: 150px;
       border-radius: 4px;
-      box-shadow: 0 0 3px 0 rgba(102, 102, 102, 0.5);
+      border: 1px solid $color-borderline;
       margin-right: 30px;
       margin-bottom: 20px;
       padding: 20px;
