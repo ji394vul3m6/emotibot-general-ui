@@ -59,7 +59,7 @@ export default {
   computed: {
     tabs() {
       const nodeType2Tabs = {
-        entry: ['triggerTab', 'settingTab', 'edgeTab'],
+        entry: ['triggerTab', 'edgeTab'],
         dialogue: ['settingTab', 'edgeTab'],
       };
       const nodeType = this.node.node_type;

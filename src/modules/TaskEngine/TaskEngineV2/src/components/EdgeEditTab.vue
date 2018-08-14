@@ -155,7 +155,7 @@ export default {
 
       // render edges, normalEdges
       this.edges = this.node.edges;
-      this.normalEdges = this.edges.filter(edge => edge.edge_type === 'normal');
+      this.normalEdges = this.edges.filter(edge => edge.edge_type === 'normal' || edge.edge_type === 'qq');
 
       // render exceedThenGoto, elseInto
       if (this.nodeType !== 'entry') {

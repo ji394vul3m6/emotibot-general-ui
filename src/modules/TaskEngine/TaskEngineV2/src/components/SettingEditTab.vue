@@ -150,6 +150,7 @@ export default {
       handler() {
         if (this.parser[0] !== 'none' && this.$refs.selectTargetEntity) {
           this.$refs.selectTargetEntity.$emit('updateOptions', this.entityModuleOptions);
+          this.targetEntities = [];
           this.$refs.selectTargetEntity.$emit('select', this.targetEntities);
         }
       },
@@ -159,6 +160,7 @@ export default {
       handler() {
         if (this.parser[0] !== 'none' && this.$refs.selectSkipIfKeyExist) {
           this.$refs.selectSkipIfKeyExist.$emit('updateOptions', this.entityKeyNameOptions);
+          this.skipIfKeyExist = [];
           this.$refs.selectSkipIfKeyExist.$emit('select', this.skipIfKeyExist);
         }
       },
