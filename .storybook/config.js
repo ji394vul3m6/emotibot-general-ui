@@ -1,4 +1,5 @@
 import { configure } from '@storybook/vue';
+import { setOptions } from '@storybook/addon-options';
 
 import Vue from 'vue';
 import Vuex from 'vuex'; // Vue plugins
@@ -21,6 +22,12 @@ Vue.use(dropdown);
 Vue.component('icon', Icon);
 Vue.component('tag', Tag);
 Vue.component('text-button', Textbutton);
+
+setOptions({
+  name: 'BFOP General Components',
+  url: '#',
+  addonPanelInRight: true,
+});
 
 function loadStories() {
   // You can require as many stories as you need.
