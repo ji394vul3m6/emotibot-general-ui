@@ -24,11 +24,11 @@
               </template>
             </div>
             <template v-if="words.contents.length === 0">
-              <div class="row">
+              <div class="row body">
                 <div class="empty-row">{{ $t('chat_skill.add_new_msg', {item: words.name}) }}</div>
               </div>
             </template>
-            <div v-for="content in words.contents" :key="content.id" class="row">
+            <div v-for="content in words.contents" :key="content.id" class="row body">
               <div class="content">{{content.content}}</div>
               <template v-if="canEdit">
               <div class="command edit" @click="popEditWordsContent(words, content)">
@@ -250,6 +250,11 @@ $words-list-delete-color: #f76260;
         &:not(.header) {
           .command {
             @include click-button();
+          }
+        }
+        &.body {
+          &:hover {
+            background-color: #F6F9FF;
           }
         }
         .command {
