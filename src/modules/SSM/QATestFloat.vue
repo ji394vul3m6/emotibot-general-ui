@@ -121,10 +121,11 @@ export default {
     },
     selectDimension() {
       const that = this;
+      const value = JSON.parse(JSON.stringify(this.tagTypes));
       that.$pop({
         title: that.$t('qatest.filter_dimension'),
         component: DimensionSelector,
-        data: this.tagTypes,
+        data: value,
         extData: {
           type: 'radio',
         },
@@ -132,6 +133,11 @@ export default {
           msg: that.$t('general.reset'),
           event: 'reset',
         }],
+        callback: {
+          ok: () => {
+            this.tagTypes = value;
+          },
+        },
       });
     },
     checkKey(e) {
