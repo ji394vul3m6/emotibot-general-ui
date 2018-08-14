@@ -1802,7 +1802,7 @@
           "content": $(triggers0).val() == null ? '' : $(triggers0).val().toString().trim(),
           "content_text_array": keyArray,
         }
-        global_vars = keyArray;
+        global_vars = global_vars.concat(keyArray);
       }else {
         fun = {
           "function_name": type,
