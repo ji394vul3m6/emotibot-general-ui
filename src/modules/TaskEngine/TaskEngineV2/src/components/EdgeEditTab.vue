@@ -1,25 +1,4 @@
 <template lang="html">
-<!-- instruction: '使用连线连接此节点与其他节点',
-button_add: '＋增加',
-button_add_edge: '＋增加连线',
-label_content: '内容',
-label_then_goto: '则前往',
-label_pattern: '模式',
-label_nth_match: '第几符合词',
-label_mapping_table: '转换数据',
-label_source_key: '来源键',
-label_target_key: '目的键',
-label_link: '连结',
-label_similarity_threshold: '相日度门槛',
-label_sentence: '句子',
-label_compare_operator: '比较方式',
-label_key: '键',
-lable_value: '值',
-label_exceed_limit: '超过轮次',
-instruction_exeed_limit: '当此节点出话超过',
-label_time: '次',
-label_default_goto: '预设前往',
-instruction_default_goto: '当所有规则都无法符合时', -->
 <div id="edge-edit-tab">
   <div class="instruction block">
     {{$t("task_engine_v2.edge_edit_tab.instruction")}}
@@ -29,6 +8,7 @@ instruction_default_goto: '当所有规则都无法符合时', -->
       class="condition-block"
       v-for="(edge, index) in normalEdges"
       :key="index"
+      :nodeId="node.node_id"
       :initialEdge="edge"
       :toNodeOptions="toNodeOptions">
     </condition-block>

@@ -3,63 +3,186 @@
   <div class="button-delete-condition">
     <icon icon-type="delete" :enableHover="true" :size=24 @click=""/>
   </div>
-  <div class="row row-function">
-    <div class="label label-start">
-      if
-    </div>
-    <dropdown-select
-      class="select select-source"
-      ref="selectSource"
-      v-model="source"
-      :options="getSourceOptions()"
-      :showCheckedIcon="false"
-      width="250px"
-      :inputBarStyle="selectStyle"
-    />
-    <dropdown-select
-      class="select select-function"
-      ref="selectFunction"
-      v-model="func"
-      :options="funcOptions"
-      :showCheckedIcon="false"
-      width="160px"
-      :inputBarStyle="selectStyle"
-    />
-    <button
-      class="button button-add-if"
-      @click="">
-      ＋and if
-    </button>
-  </div>
-  <!-- 完全相符 / 包含文本 -->
-  <div class="content-contain" v-if="funcName === 'match' || funcName == 'contains'">
-    <div class="row row-content">
-      <div class="label label-start">
-        {{$t("task_engine_v2.condition_block.label_content")}}
+  <div class="normal-edge" v-if="edgeType==='normal'">
+    <template v-for="(rule, index) in andRules">
+      <div class="rule-block">
+        <div class="row row-function" v-bind:class="{'not-first': index !== 0}">
+          <div class="label label-start" v-if="index === 0">
+            if
+          </div>
+          <div class="label label-start" v-if="index !== 0">
+            and if
+          </div>
+          <dropdown-select
+            class="select select-source"
+            :ref="`selectSource_${index}`"
+            :value="[rule.source]"
+            @input="onSelectSourceInput(index, $event)"
+            :options="getSourceOptions()"
+            :showCheckedIcon="false"
+            width="250px"
+            :inputBarStyle="selectStyle"
+          />
+          <dropdown-select
+            class="select select-function"
+            :ref="`selectFunction_${index}`"
+            :value="[rule.funcName]"
+            @input="onSelectFunctionInput(index, $event)"
+            :options="getFuncOptions(rule.source)"
+            :showCheckedIcon="false"
+            width="160px"
+            :inputBarStyle="selectStyle"
+          />
+          <button
+            class="button button-add-if"
+            @click="">
+            ＋and if
+          </button>
+        </div>
+        <!-- 完全相符 / 包含文本 -->
+        <div class="content-contain" v-if="rule.funcName === 'match' || rule.funcName == 'contains'">
+          <div class="row row-content">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_block.label_content")}}
+            </div>
+            <input class="input-content" v-model="rule.content"></input>
+          </div>
+        </div>
+        <!-- 正则表示式 -->
+        <div class="content-regular-exp" v-if="rule.funcName === 'regular_exp'">
+          <div class="row">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_block.label_pattern")}}
+            </div>
+            <input class="input-content" v-model="rule.content.pattern"></input>
+          </div>
+          <template v-for="(operation, index) in rule.content.operations">
+            <div class="row">
+              <div class="label label-start">
+                {{$t("task_engine_v2.condition_block.label_nth_match")}}
+              </div>
+              <input class="input-content" v-model="operation.index"></input>
+              <button
+                v-if="index === 0"
+                class="button"
+                style="width: 60px;"
+                @click="">
+                {{$t("task_engine_v2.condition_block.button_add")}}
+              </button>
+              <button
+                v-if="index !== 0"
+                class="button"
+                style="width: 60px;"
+                @click="">
+                {{$t("task_engine_v2.condition_block.button_remove")}}
+              </button>
+            </div>
+            <div class="row">
+              <div class="label label-start">
+                {{$t("task_engine_v2.condition_block.label_target_key")}}
+              </div>
+              <input class="input-content" v-model="operation.key"></input>
+            </div>
+          </template>
+        </div>
+        <!-- 酒店预定语句解析器 / 通用语句解析器 / 场景语句解析器 -->
+        <div class="content-parser"
+          v-if="rule.funcName === 'hotel_parser' ||
+                rule.funcName === 'common_parser' ||
+                rule.funcName === 'task_parser'">
+          <div class="row">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_block.label_content")}}
+            </div>
+            <dropdown-select
+              class="select select-target-entity"
+              :ref="`selectTargetEntity_${index}`"
+              :multi="true"
+              :value="rule.content.tags.split(',')"
+              @input="onSelectTargetEntity(index, $event)"
+              :options="entityModuleOptions(rule.funcName)"
+              :showCheckedIcon="true"
+              width="200px"
+              :inputBarStyle="selectStyle"
+            />
+          </div>
+        </div>
+        <!-- 转换数据解析器 -->
+        <div class="content-map-table" v-if="rule.funcName === 'user_custom_parser'">
+          <div class="row">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_block.label_mapping_table")}}
+            </div>
+            <dropdown-select
+              class="select"
+              :ref="`selectMapTable_${index}`"
+              :value="[rule.content.trans]"
+              @input="onSelectMapTableInput(index, $event)"
+              :options="[]"
+              :showCheckedIcon="false"
+              width="420px"
+              :inputBarStyle="selectStyle"
+            />
+          </div>
+          <div class="row">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_block.label_target_key")}}
+            </div>
+            <input class="input-content" v-model="rule.content.to_key"></input>
+          </div>
+        </div>
+        <!-- 是否判断解析器 -->
+        <div class="content-polarity-parser" v-if="rule.funcName === 'polarity_parser'">
+          <div class="row">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_block.label_target_key")}}
+            </div>
+            <input class="input-content" v-model="rule.content.key"></input>
+          </div>
+        </div>
+        <!-- Web API 调用 -->
+        <div class="content-api-parser" v-if="rule.funcName === 'api_parser'">
+          <div class="row">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_block.label_link")}}
+            </div>
+            <input class="input-content" v-model="rule.content"></input>
+          </div>
+        </div>
       </div>
-      <input class="input-content" v-model="content"></input>
+    </template>
+    <div class="row row-then-goto">
+      <div class="label label-start">
+        {{$t("task_engine_v2.edge_edit_tab.label_then_goto")}}
+      </div>
+      <dropdown-select
+        class="select select-goto"
+        ref="selectGoto"
+        :value="[toNode]"
+        @input="toNode = $event[0]"
+        :options="toNodeOptions"
+        :showCheckedIcon="false"
+        width="200px"
+        :inputBarStyle="selectStyle"
+      />
     </div>
-  </div>  
-  
-  <div class="row row-then-goto">
-    <div class="label label-start">
-      {{$t("task_engine_v2.edge_edit_tab.label_then_goto")}}
+  </div>
+  <div class="qq-edge" v-if="edgeType==='qq'">
+    <div class="rule-block">
+      <div class="row row-function">
+        <div class="label label-start">
+          if
+        </div>
+      </div>
     </div>
-    <dropdown-select
-      class="select select-goto"
-      ref="selectGoto"
-      v-model="toNode"
-      :options="toNodeOptions"
-      :showCheckedIcon="false"
-      width="200px"
-      :inputBarStyle="selectStyle"
-    />
   </div>
 </div>
 </template>
 
 <script>
 import DropdownSelect from '@/components/DropdownSelect';
+import scenarioConvertor from '../_utils/scenarioConvertor';
+import selectOptions from '../_utils/selectOptions';
 
 export default {
   name: 'condition-block',
@@ -67,6 +190,10 @@ export default {
     'dropdown-select': DropdownSelect,
   },
   props: {
+    nodeId: {
+      type: String,
+      required: true,
+    },
     initialEdge: {
       type: Object,
       required: true,
@@ -79,10 +206,8 @@ export default {
   data() {
     return {
       edge: {},
-      source: ['text'],
-      sourceOptions: [],
-      funcName: null,
-      content: {},
+      edgeType: 'normal',
+      andRules: [],
       toNode: [],
       selectStyle: {
         height: '36px',
@@ -91,25 +216,30 @@ export default {
     };
   },
   computed: {
-    func() {
-      return [this.funcName];
-    },
-    funcOptions() {
-      const funcOptionMap = this.getFuncOptionMap();
-      const options = funcOptionMap[this.source[0]];
-      return options;
+    conditionBlock() {
+      const result = {
+        edge_type: this.edgeType,
+        to_node_id: this.toNode,
+        actions: [],
+        condition_rules: [this.andRules.map((rule) => {
+          console.log(rule);
+          return {
+            source: rule.source,
+            functions: [{
+              function_name: rule.funcName,
+              content: rule.content,
+            }],
+          };
+        })],
+      };
+      console.log(result);
+      return result;
     },
   },
   watch: {
-    funcOptions: {
+    conditionBlock: {
       handler() {
-        if (this.$refs.selectFunction) {
-          this.$refs.selectFunction.$emit('updateOptions', this.funcOptions);
-          if (!this.funcOptions.find(opt => opt.value === this.funcName)) {
-            this.funcName = this.funcOptions[0].value;
-          }
-          this.$refs.selectFunction.$emit('select', this.funcName);
-        }
+        this.$emit('update', this.conditionBlock);
       },
       deep: true,
     },
@@ -117,27 +247,92 @@ export default {
   methods: {
     renderConditionContent() {
       this.edge = JSON.parse(JSON.stringify(this.initialEdge));
-      const rules = this.edge.condition_rules || [];
-      let rule;
-      if (rules.length > 0 && rules[0].length > 0) {
-        rule = rules[0][0];
-      }
-      // render source, func, content
-      if (this.edge.edge_type === 'qq') {
-        this.source = ['text'];
-        this.funcName = 'qq';
-      } else if (rule && rule.source && rule.functions && rule.functions.length > 0) {
-        this.source = [rule.source];
-        this.funcName = rule.functions[0].function_name;
-        this.content = rule.functions[0].content;
+      this.edgeType = this.edge.edge_type || 'normal';
+      if (this.edgeType === 'qq') {
+        this.renderQQEdge();
       } else {
-        this.source = ['text'];
-        this.funcName = null;
-        this.content = {};
+        this.renderNormalEdge();
+      }
+    },
+    renderQQEdge() {
+
+    },
+    renderNormalEdge() {
+      // render andRules
+      const rules = this.edge.condition_rules || [];
+      if (rules.length > 0) {
+        this.andRules = rules[0].map((rule) => {
+          if (rule.source && rule.functions && rule.functions.length > 0) {
+            return {
+              source: rule.source,
+              funcName: rule.functions[0].function_name,
+              content: rule.functions[0].content,
+            };
+          }
+          return {
+            source: ['text'],
+            funcName: null,
+            content: {},
+          };
+        });
+      }
+      // render toNode
+      this.toNode = this.edge.to_node_id;
+    },
+    onSelectSourceInput(index, newValue) {
+      const newSource = newValue[0];
+      if (this.andRules[index].source === newSource) return;
+      this.andRules[index].source = newSource;
+      const funcOptionMap = this.getFuncOptionMap();
+      const options = funcOptionMap[newSource];
+      const selectFunctionRef = `selectFunction_${index}`;
+      if (this.$refs[selectFunctionRef]) {
+        this.$refs[selectFunctionRef][0].$emit('updateOptions', options);
+        this.andRules[index].funcName = options[0].value;
+        this.$refs[selectFunctionRef][0].$emit('select', this.andRules[index].funcName);
+      }
+    },
+    onSelectFunctionInput(index, newValue) {
+      const newFuncName = newValue[0];
+      if (this.andRules[index].funcName === newFuncName) return;
+      this.andRules[index].funcName = newFuncName;
+
+      // render edgeType
+      if (newFuncName === 'qq') {
+        this.edgeType = 'qq';
+      } else {
+        this.edgeType = 'normal';
       }
 
-      // render toNode
-      this.toNode = [this.edge.to_node_id];
+      // initial content
+      const content = scenarioConvertor.initialFunctionContent(newFuncName, this.nodeId);
+
+      // update parser options
+      this.andRules[index].content = content;
+      if (newFuncName === 'common_parser' ||
+          newFuncName === 'task_parser' ||
+          newFuncName === 'hotel_parser') {
+        const options = this.entityModuleOptions(newFuncName);
+        const selectRef = `selectTargetEntity_${index}`;
+        if (this.$refs[selectRef] && this.$refs[selectRef].length > 0) {
+          this.$refs[selectRef][0].$emit('updateOptions', options);
+          content.tags.split(',').forEach((target) => {
+            this.$refs[selectRef][0].$emit('select', target);
+          });
+        }
+      }
+    },
+    onSelectTargetEntity(index, newValue) {
+      this.andRules[index].content.tags = newValue.join(',');
+    },
+    onSelectMapTableInput(index, newValue) {
+      const newMapTable = newValue[0];
+      if (this.andRules[index].content.trans === newMapTable) return;
+      this.andRules[index].content.trans = newMapTable;
+    },
+    entityModuleOptions(parser) {
+      const entityModuleOptions = selectOptions.getEntityModuleOptions();
+      return entityModuleOptions[parser];
     },
     getSourceOptions() {
       return [
@@ -155,10 +350,14 @@ export default {
         },
       ];
     },
+    getFuncOptions(source) {
+      const funcOptionMap = this.getFuncOptionMap();
+      return funcOptionMap[source];
+    },
     getFuncOptionMap() {
       const textFuncs = [
-        'match', 'contains', 'regular_exp', 'hotel_parser', 'common_parser',
-        'task_parser', 'user_custom_parser', 'polarity_parser', 'api_parser', 'qq',
+        'match', 'contains', 'regular_exp', 'common_parser', 'task_parser',
+        'hotel_parser', 'user_custom_parser', 'polarity_parser', 'api_parser', 'qq',
       ];
       const globalIngoFuncs = [
         'key_val_match', 'key_key_match', 'contain_key', 'not_contain_key', 'list_length_match',
@@ -215,6 +414,11 @@ export default {
     position: absolute;
     top: 10px;
     right: 10px;
+  }
+  .rule-block{
+    &:not(:first-child){
+      margin: 30px 0px 0px 0px;
+    }
   }
   .row{
     display: flex;

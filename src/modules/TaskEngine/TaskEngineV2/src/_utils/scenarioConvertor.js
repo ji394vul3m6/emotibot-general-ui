@@ -32,4 +32,43 @@ export default {
     };
     return scenario;
   },
+  initialFunctionContent(funcName, nodeId) {
+    const map = {
+      match: '',
+      contains: '',
+      regular_exp: {
+        pattern: '',
+        operations: [
+          {
+            operation: 'set_to_global_info',
+            index: 0,
+            key: '',
+          },
+        ],
+      },
+      common_parser: {
+        tags: '',
+        key_suffix: `_${nodeId}`,
+      },
+      task_parser: {
+        tags: '',
+        key_suffix: `_${nodeId}`,
+      },
+      hotel_parser: {
+        tags: '',
+        key_suffix: `_${nodeId}`,
+      },
+      user_custom_parser: {
+        trans: '',
+        to_key: '',
+      },
+      polarity_parser: {
+        key: '',
+        key_suffix: `_${nodeId}`,
+      },
+      api_parser: '',
+      // qq: 'qq',
+    };
+    return map[funcName];
+  },
 };

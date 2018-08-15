@@ -63,6 +63,7 @@ export default {
     condition_block: {
       label_content: '内容',
       button_add: '＋增加',
+      button_remove: '移除',
       label_pattern: '模式',
       label_nth_match: '第几符合词',
       label_mapping_table: '转换数据',
