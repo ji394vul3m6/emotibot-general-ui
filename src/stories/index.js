@@ -19,6 +19,8 @@ import InputStory from './Input';
 import ToggleStory from './Toggle';
 import DropdownMenuStory from './DropdownMenu';
 import LoadingStory from './Loading';
+import NotifyStory from './Notify';
+import PopStory from './PopWindow';
 
 import './storybook.scss';
 
@@ -90,4 +92,14 @@ TooltipStory.forEach((story) => {
 const dropdownMenuStory = storiesOf('Plugin|DropdownMenu', module).addDecorator(withKnobs);
 DropdownMenuStory.forEach((story) => {
   dropdownMenuStory.add(story.name, story.func);
+});
+
+/** Extensions */
+const notifyStory = storiesOf('Extensions|Notify', module).addDecorator(withKnobs);
+NotifyStory.forEach((story) => {
+  notifyStory.add(story.name, story.func);
+});
+const popStory = storiesOf('Extensions|PopWindow', module).addDecorator(withKnobs);
+PopStory.forEach((story) => {
+  popStory.add(story.name, story.func);
 });

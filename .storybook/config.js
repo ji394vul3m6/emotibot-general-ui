@@ -13,10 +13,18 @@ import Textbutton from '../src/components/basic/TextButton';
 import tooltip from '../src/plugins/tooltip';
 import dropdown from '../src/plugins/dropdown';
 
+// Import self extensions.
+import CustomNotification from '../src/plugins/CustomNotification';
+import PopWindow from '../src/plugins/PopWindow';
+
 // Install Vue plugins.
 Vue.use(Vuex);
 Vue.use(tooltip);
 Vue.use(dropdown);
+Vue.use(PopWindow);
+Vue.use(CustomNotification, {
+  delay: 4000,
+});
 
 // Install self component
 Vue.component('icon', Icon);

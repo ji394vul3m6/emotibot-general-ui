@@ -27,7 +27,6 @@ export default {
         }
       }
       this.popWindows.push(option);
-
       const idx = this.popWindows.length - 1;
       const that = this;
       Vue.nextTick(() => {

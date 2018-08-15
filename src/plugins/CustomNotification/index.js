@@ -29,7 +29,6 @@ const MyPlugin = {
   install(Vue, option) {
     // user can use notifications as tag to use notification in web
     Vue.component(CustomNotification.name, CustomNotification);
-
     // setup global option
     globalOption = option;
     Vue.prototype.$notificationSetting = option;

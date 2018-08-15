@@ -23,15 +23,19 @@ export default [{
     const fixedListWidth = boolean('fixedListWidth', true);
 
     const template = `
-      <dropdown-select
-        :options=option
-        :multi=multiChoice
-        :showCheck=showCheck
-        :width=width
-        :fixedListWidth="fixedListWidth"
-        v-model="checkValues"
-        @input="input"
-      />`;
+      <div>
+        <div style="height:500px">
+          <dropdown-select
+            :options=option
+            :multi=multiChoice
+            :showCheck=showCheck
+            :width=width
+            :fixedListWidth="fixedListWidth"
+            v-model="checkValues"
+            @input="input"
+          />
+        </div>
+      </div>`;
 
     return {
       components: {

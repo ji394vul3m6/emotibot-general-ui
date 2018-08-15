@@ -102,6 +102,26 @@
   @include customXScrollbar();
 ```
 
+## VPagination 分頁組件
+---
+使用 vue-easytable 的 VPagination，參考文件 [vue-easytable](http://doc.huangsw.com/vue-easytable/app.html#/pagination)
+
+使用 `<v-pagination>` 引用分頁組件
+系統內的分頁組件參考以下方式設定
+```
+  <v-pagination
+    size="small"      // 組件大小，系統內統一為 small
+    :pageIndex="pageIndex"    // 當前分頁頁碼
+    :total="totalCount"       // 共有幾筆資料
+    :page-size="pageLimit"    // 每頁顯示幾筆
+    :pageSizeOption="[25, 50, 100, 200, 500, 1000]"   // 下拉選擇每頁顯示幾筆，系統內統一為此設定
+    :layout="['prev', 'pager', 'next', 'sizer', 'jumper']" // 組建佈局設置，系統內統一為此設定
+    @page-change="handlePageChange"  // 切換分頁時觸發，回傳前往頁碼
+    @page-size-change="handlePageSizeChange" > // 每頁顯示幾筆改變時觸發，回傳每頁顯示筆數
+  </v-pagination>
+```
+
+
 ## 代補文件
 ---
 ### Basic Components
@@ -115,7 +135,7 @@
 
 ### Vue Prototype Extensions
 * $popWindow
-* $notify
+* <s>$notify</s>
 
 ### Plugins
 * <s>Tooltip</s>
