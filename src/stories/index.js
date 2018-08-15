@@ -21,6 +21,7 @@ import DropdownMenuStory from './DropdownMenu';
 import LoadingStory from './Loading';
 import NotifyStory from './Notify';
 import PopStory from './PopWindow';
+import DateTimePickerStory from './DateTimePicker';
 
 import './storybook.scss';
 
@@ -82,6 +83,10 @@ GeneralTableStory.forEach((story) => {
   generalTableStory.add(story.name, story.func.bind(null, i18n));
 });
 
+const dateTimePickerStory = storiesOf('Basic|DateTimePicker', module).addDecorator(withKnobs);
+DateTimePickerStory.forEach((story) => {
+  dateTimePickerStory.add(story.name, story.func.bind(null, i18n));
+});
 
 /** Plugins */
 const tooltipStory = storiesOf('Plugin|Tooltip', module).addDecorator(withKnobs);
