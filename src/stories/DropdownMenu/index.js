@@ -1,10 +1,12 @@
-import { object, text } from '@storybook/addon-knobs';
+import { object } from '@storybook/addon-knobs';
 import { action } from '@storybook/addon-actions';
+import { withMarkdownNotes } from '@storybook/addon-notes';
 import DropdownMenu from '../../components/basic/DropdownMenu';
+import README from './README.md';
 
 export default [{
   name: 'DropdownMenu',
-  func: () => {
+  func: withMarkdownNotes(README)(() => {
     const dropdown1 = {
       options: [{
         text: '選項1',
@@ -39,18 +41,21 @@ export default [{
     };
     const option1 = object('dropdown options', dropdown1);
     const option2 = object('alignLeft options', dropdown2);
-    const width = text('width', '160px');
-    const template = `
-      <div style="height:300px">
-        <p><pre>
-使用 v-dropdown 可以讓元件出現 dropdown menu
-！！！目前綁定dropdown的元件 position 要設成 <span style="color:red; fontWeight: bold">relative</span>
 
-預設 Dropdown 出現在下方 並 切齊綁定 dropdown 的元件左邊(dropdown 往右長)
-可以用 alignLeft: true ，將 dropdown 改為切齊右邊 (dropdown 往左長)
-        </pre></p>
-        <text-button v-dropdown="option1" style="position:relative; margin-left: 80px;">點我</text-button>
-        <text-button v-dropdown="option2" style="position:relative; margin-left: 80px;">alignLeft:true</text-button>
+    const template = `
+      <div style="height: 500px">
+        <div :style="divBlockStyle">
+          <div style="font-size: 18px">Dropdown Menu 自訂寬度</div> 
+          <div :style="menuBlockStyle">
+            <text-button v-dropdown="option1" style="position:relative;">點我</text-button>
+          </div>
+        </div>
+        <div :style="divBlockStyle">
+          <div style="font-size: 18px">Dropdown Menu 往左延伸</div> 
+          <div :style="menuBlockStyle">
+            <text-button v-dropdown="option2" style="position:relative;">點我</text-button>
+          </div>
+        </div>
       </div>`;
     return {
       components: {
@@ -60,10 +65,18 @@ export default [{
         return {
           option1,
           option2,
-          width,
+          menuBlockStyle: {
+            margin: '20px 0px 0px 80px',
+          },
+          divBlockStyle: {
+            backgroundColor: '#eeeeee',
+            borderRadius: '4px',
+            padding: '10px',
+            margin: '20px 0px',
+          },
         };
       },
       template,
     };
-  },
+  }),
 }];

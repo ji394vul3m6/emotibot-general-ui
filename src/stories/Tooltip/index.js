@@ -1,171 +1,86 @@
 import { object } from '@storybook/addon-knobs';
-import { action } from '@storybook/addon-actions';
+import { withMarkdownNotes } from '@storybook/addon-notes';
+import README from './README.md';
 
 export default [
   {
-    name: 'hover 顯示',
-    func: () => {
-      const option = object('setting', {
-        msg: 'test',
+    name: 'Tooltip',
+    func: withMarkdownNotes(README)(() => {
+      const option1 = object('Tooltip#1', {
+        msg: '我是 Hover 顯示的 Tooltip',
         alignLeft: false,
       });
-      const template = `
-      <div>
-        <div :style="divStyle">只需要寫 option 到 v-tooltip 即可使用的 tooltip<br>Tooltip 預設顯示原點在右上角，往右顯示，使用 alignLeft 可指定往左顯示</div>
-        <span v-tooltip="option" style="display: inline-block;" :style="divStyle"> 移入顯示 </span>
-      </div>`;
-      return {
-        data() {
-          return {
-            option,
-            divStyle: {
-              margin: '20px 50px',
-            },
-          };
-        },
-        template,
-      };
-    },
-  },
-  {
-    name: 'click 顯示',
-    func: () => {
-      const option = object('setting', {
-        msg: 'test',
+      const option2 = object('Tooltip#2', {
+        msg: '我是 點擊 顯示的 Tooltip',
         clickShow: true,
       });
-      const template = `
-      <div>
-        <div :style="divStyle">只需要寫 option 到 v-tooltip 即可使用的 tooltip</div>
-        <div v-tooltip="option" style="display: inline-block;" :style="divStyle">點擊</div>
-      </div>`;
-      return {
-        data() {
-          return {
-            option,
-            divStyle: {
-              margin: '20px 50px',
-            },
-          };
-        },
-        template,
-      };
-    },
-  },
-  {
-    name: 'click 顯示並附有按鈕關閉',
-    func: () => {
-      const retData = { test: 1 };
-      const doSomething = (data) => {
-        action('ok callback')(data);
-      };
-      const option = object(';setting', {
-        msg: 'test',
-        clickShow: true,
-        data: retData,
-        buttons: [
-          {
-            msg: 'cancel',
-            closeAfterClick: true,
-          },
-          {
-            msg: 'ok',
-            callback: doSomething,
-            closeAfterClick: true,
-            buttonType: 'fill',
-          },
-        ],
-      });
-      const template = `
-      <div>
-        <div :style="divStyle">
-          當使用的屬性中包含 buttons 的時候即可顯示按鈕</br>
-          每個按鈕各自可設定點擊後，是否關閉 tooltip</br>
-          設定 callback，也可以設置按鈕的類型
-        </div>
-        <span v-tooltip="option" style="display: inline-block; margin-left: 200px">點擊</span>
-      </div>`;
-      return {
-        data() {
-          return {
-            option,
-            divStyle: {
-              margin: '20px 50px',
-            },
-          };
-        },
-        template,
-      };
-    },
-  },
-  {
-    name: '觸發後自動消失',
-    func: () => {
-      const option = object('setting', {
-        msg: 'test',
+      const option3 = object('Tooltip#3', {
+        msg: '我過一陣子後就會消失了',
         animateShow: true,
         animateTime: 1000,
       });
-      const template = `
-      <div>
-        <div :style="divStyle">
-          也可透過對 DOM 觸發一個 'tooltip-show' 的事件 <br>
-          便可使 tooltip 顯示，並於一定時間後自動消失 <br>
-          animateTime 可以設定消失的時間長短 (ms) 預設為 3000 ms
-        </div>
-        <input v-tooltip="option" ref='input'>
-        <button @click='show'>顯示</button>
-      </div>`;
-      return {
-        data() {
-          return {
-            option,
-            divStyle: {
-              margin: '20px 0px',
-            },
-          };
-        },
-        methods: {
-          show() {
-            this.$refs.input.dispatchEvent(new Event('tooltip-show'));
-          },
-        },
-        template,
-      };
-    },
-  },
-  {
-    name: '錯誤提示 Error Style',
-    func: () => {
-      const option = object('setting', {
-        msg: '這是一個錯誤提示',
+      const option4 = object('setting', {
+        msg: '我是一個錯誤提示',
         errorType: true,
         alignLeft: true,
+        eventOnly: true,
       });
       const template = `
       <div>
-        <div :style="divStyle">
-          option 使用 'errorType: true' 讓 Tooltip 顯示 Error style
+        <div :style="divBlockStyle">
+          <div style="font-size: 18px">Hover 顯示 Tooltip</div> 
+          <div style="margin-top: 10px;">alignLeft: true 讓 tooltip 往左延伸</div>
+          <span v-tooltip="option1" style="display: inline-block; font-size: 14px;" :style="tipBlockStyle"> Hover 我顯示 Tooltip </span>
         </div>
-        <input v-tooltip="option" ref='input'>
-        <button @click='show'>顯示</button>
+        <div :style="divBlockStyle">
+          <div style="font-size: 18px">點擊 顯示 Tooltip</div> 
+          <span v-tooltip="option2" style="display: inline-block; font-size: 14px;" :style="tipBlockStyle"> 點我 顯示 Tooltip </span>
+        </div>
+        <div :style="divBlockStyle">
+          <div style="font-size: 18px">會自動消失的 Tooltip</div> 
+          <div style="margin-top: 10px;">對 DOM 元素觸發 tooltip-show 事件，在一定時間後會自動消失</div>
+          <div :style="tipBlockStyle">
+            <input v-tooltip="option3" ref='input3'>
+            <button @click='showOption3'>顯示</button>
+          </div>
+        </div>
+        <div :style="divBlockStyle">
+          <div style="font-size: 18px">錯誤樣式 Tooltip</div> 
+          <div :style="tipBlockStyle">
+            <input v-tooltip="option4" ref='input4'>
+            <button @click='showOption4'>顯示</button>
+          </div>
+        </div>
       </div>`;
+
       return {
         data() {
           return {
-            option,
-            divStyle: {
+            option1,
+            option2,
+            option3,
+            option4,
+            tipBlockStyle: {
+              margin: '20px 0px 0px 50px',
+            },
+            divBlockStyle: {
+              backgroundColor: '#eeeeee',
+              borderRadius: '4px',
+              padding: '10px',
               margin: '20px 0px',
             },
           };
         },
         methods: {
-          show() {
-            this.$refs.input.dispatchEvent(new Event('tooltip-show'));
+          showOption3() {
+            this.$refs.input3.dispatchEvent(new Event('tooltip-show'));
+          },
+          showOption4() {
+            this.$refs.input4.dispatchEvent(new Event('tooltip-show'));
           },
         },
         template,
       };
-    },
+    }),
   },
 ];

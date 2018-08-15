@@ -1,10 +1,12 @@
 import { object, boolean, array, text } from '@storybook/addon-knobs';
 import { action } from '@storybook/addon-actions';
+import { withMarkdownNotes } from '@storybook/addon-notes';
 import DropdownSelect from '../../components/DropdownSelect';
+import README from './README.md';
 
 export default [{
   name: 'DropdownSelect',
-  func: () => {
+  func: withMarkdownNotes(README)(() => {
     const options = [{
       value: 'opt1',
       text: '選項1',
@@ -52,5 +54,5 @@ export default [{
       },
       template,
     };
-  },
+  }),
 }];

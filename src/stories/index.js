@@ -7,6 +7,7 @@ import Vue from 'vue';
 import VueI18n from 'vue-i18n';
 import messages from '@/i18n';
 
+import WelcomeStory from './Welcome';
 import TextButtonStory from './TextButton';
 import LabelSwitchStory from './LabelSwitch';
 import GeneralTableStory from './GeneralTable';
@@ -29,6 +30,11 @@ const i18n = new VueI18n({
 });
 
 /** Basic Components */
+const welcomeStory = storiesOf('Welcome', module).addDecorator(withKnobs);
+WelcomeStory.forEach((story) => {
+  welcomeStory.add(story.name, story.func);
+});
+
 let textButtonStory = storiesOf('Basic|TextButton', module).addDecorator(withKnobs);
 TextButtonStory.forEach((story) => {
   textButtonStory = textButtonStory.add(story.name, story.func);
