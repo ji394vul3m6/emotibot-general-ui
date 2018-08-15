@@ -27,6 +27,8 @@ setOptions({
   name: 'BFOP General Components',
   url: '#',
   addonPanelInRight: true,
+  hierarchySeparator: /\//,
+  hierarchyRootSeparator: /\|/,
 });
 
 function loadStories() {

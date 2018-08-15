@@ -28,57 +28,60 @@ const i18n = new VueI18n({
   messages,
 });
 
-let textButtonStory = storiesOf('Textbutton', module).addDecorator(withKnobs);
+/** Basic Components */
+let textButtonStory = storiesOf('Basic|TextButton', module).addDecorator(withKnobs);
 TextButtonStory.forEach((story) => {
   textButtonStory = textButtonStory.add(story.name, story.func);
 });
 
-let labelStory = storiesOf('LabelSwitch', module).addDecorator(withKnobs);
-LabelSwitchStory.forEach((story) => {
-  labelStory = labelStory.add(story.name, story.func);
-});
-
-const generalTableStory = storiesOf('GeneralTable', module).addDecorator(withKnobs);
-GeneralTableStory.forEach((story) => {
-  generalTableStory.add(story.name, story.func.bind(null, i18n));
-});
-
-const NavigationBarStory = storiesOf('NavigationBar', module).addDecorator(withKnobs);
-NavBarStory.forEach((story) => {
-  NavigationBarStory.add(story.name, story.func);
-});
-
-const dropdownSelectStory = storiesOf('DropdownSelect', module).addDecorator(withKnobs);
-DropdownSelectStory.forEach((story) => {
-  dropdownSelectStory.add(story.name, story.func);
-});
-
-const tooltipStory = storiesOf('Tooltip', module).addDecorator(withKnobs);
-TooltipStory.forEach((story) => {
-  tooltipStory.add(story.name, story.func);
-});
-
-const tagInputStory = storiesOf('TagInput', module).addDecorator(withKnobs);
-TagInputStory.forEach((story) => {
-  tagInputStory.add(story.name, story.func);
-});
-
-const inputStory = storiesOf('Input', module).addDecorator(withKnobs);
-InputStory.forEach((story) => {
-  inputStory.add(story.name, story.func.bind(null, i18n));
-});
-
-const toggleStory = storiesOf('Toggle', module).addDecorator(withKnobs);
+const toggleStory = storiesOf('Basic|Toggle', module).addDecorator(withKnobs);
 ToggleStory.forEach((story) => {
   toggleStory.add(story.name, story.func);
 });
 
-const dropdownMenuStory = storiesOf('DropdownMenu', module).addDecorator(withKnobs);
-DropdownMenuStory.forEach((story) => {
-  dropdownMenuStory.add(story.name, story.func);
-});
-
-const loadingStory = storiesOf('Loading', module).addDecorator(withKnobs);
+const loadingStory = storiesOf('Basic|Loading', module).addDecorator(withKnobs);
 LoadingStory.forEach((story) => {
   loadingStory.add(story.name, story.func);
+});
+
+const inputStory = storiesOf('Basic|Input', module).addDecorator(withKnobs);
+InputStory.forEach((story) => {
+  inputStory.add(story.name, story.func.bind(null, i18n));
+});
+
+const tagInputStory = storiesOf('Basic|TagInput', module).addDecorator(withKnobs);
+TagInputStory.forEach((story) => {
+  tagInputStory.add(story.name, story.func);
+});
+
+const dropdownSelectStory = storiesOf('Basic|DropdownSelect', module).addDecorator(withKnobs);
+DropdownSelectStory.forEach((story) => {
+  dropdownSelectStory.add(story.name, story.func);
+});
+
+let labelStory = storiesOf('Basic|LabelSwitch', module).addDecorator(withKnobs);
+LabelSwitchStory.forEach((story) => {
+  labelStory = labelStory.add(story.name, story.func);
+});
+
+const NavigationBarStory = storiesOf('Basic|NavigationBar', module).addDecorator(withKnobs);
+NavBarStory.forEach((story) => {
+  NavigationBarStory.add(story.name, story.func);
+});
+
+const generalTableStory = storiesOf('Basic|GeneralTable', module).addDecorator(withKnobs);
+GeneralTableStory.forEach((story) => {
+  generalTableStory.add(story.name, story.func.bind(null, i18n));
+});
+
+
+/** Plugins */
+const tooltipStory = storiesOf('Plugin|Tooltip', module).addDecorator(withKnobs);
+TooltipStory.forEach((story) => {
+  tooltipStory.add(story.name, story.func);
+});
+
+const dropdownMenuStory = storiesOf('Plugin|DropdownMenu', module).addDecorator(withKnobs);
+DropdownMenuStory.forEach((story) => {
+  dropdownMenuStory.add(story.name, story.func);
 });

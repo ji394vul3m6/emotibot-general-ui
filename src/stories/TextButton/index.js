@@ -1,11 +1,13 @@
 import { text, select, number } from '@storybook/addon-knobs';
 import { action } from '@storybook/addon-actions';
+import { withMarkdownNotes } from '@storybook/addon-notes';
 import TextButton from '../../components/basic/TextButton';
+import README from './README.md';
 
 export default [
   {
-    name: '參數使用',
-    func: () => {
+    name: 'TextButton',
+    func: withMarkdownNotes(README)(() => {
       const width = text('寬度', '200px');
       const height = text('高度', '40px');
       const buttonTxt = text('文字', 'TextButton');
@@ -30,17 +32,12 @@ export default [
           height='${height}'
           button-type='${buttonType}'
           iconType="${iconType}"
-          iconSize="${iconSize}"
+          :iconSize="${iconSize}"
           iconAlign="${iconAlign}"
           @click="test">
           ${buttonTxt}
         </text-button>`;
-      const escape = () => {
-        const div = document.createElement('div');
-        div.innerText = template;
-        return div.innerHTML;
-      };
-      const templateStr = escape(template);
+
       return {
         components: { TextButton },
         methods: {
@@ -48,12 +45,8 @@ export default [
         },
         template: `<div>
         ${template}
-        <br>
-        <pre>
-        ${templateStr}
-        </pre>
         </div>`,
       };
-    },
+    }),
   },
 ];

@@ -1,18 +1,31 @@
 import { text, boolean, number } from '@storybook/addon-knobs';
 import { action } from '@storybook/addon-actions';
+import { withMarkdownNotes } from '@storybook/addon-notes';
 import InfoInput from '../../components/basic/InfoInput';
 import SearchInput from '../../components/basic/SearchInput';
-
-const escape = (template) => {
-  const div = document.createElement('div');
-  div.innerText = template;
-  return div.innerHTML;
-};
+import READMEInput from './README_Input.md';
+import READMEInfoInput from './README_InfoInput.md';
+import READMESearchInput from './README_SearchInput.md';
 
 export default [
   {
+    name: 'Input',
+    func: withMarkdownNotes(READMEInput)(() => {
+      const basicInput = '<input></input>';
+      const errorInput = '<input class="error"></input>';
+      return {
+        template: `
+          <div>
+            <div style="margin-bottom: 10px;">Input<br><br>${basicInput}</div>
+            <div>Error Input<br><br>${errorInput}</div>
+          </div>
+        `,
+      };
+    }),
+  },
+  {
     name: 'Info Input',
-    func: (i18n) => {
+    func: withMarkdownNotes(READMEInfoInput)((i18n) => {
       const type = text('type', 'password');
       const inputText = text('input text (v-model)', 'I am Input Text');
       const placeholder = text('placeholder', 'I am placeholder');
@@ -37,7 +50,6 @@ export default [
           :autocomplete="autocomplete"
           @input="handleInput">
         </info-input>`;
-      const templateStr = escape(template);
 
       return {
         components: {
@@ -65,25 +77,14 @@ export default [
         template: `
         <div>
           ${template}
-          <br>
-          <p><pre>
-
-          NOTE:
-          1. prop: error 和 errorMsg 需要同時存在，error = true 時會觸發顯示error tooltip
-          2. error = false 時，hover tooltip 顯示在 input 上方; 反之顯示在下方
-          3. type: 'text', 'password'
-          4. 可以對 info-input 綁 ref，"$refs.[refName].focus()" 觸發input focus style.
-          5. 'autocomplete' option 用來和 'password' type 搭配
-          </pre></p>
-          <pre>${templateStr}</pre>
         </div>`,
         i18n,
       };
-    },
+    }),
   },
   {
     name: 'Search Input',
-    func: (i18n) => {
+    func: withMarkdownNotes(READMESearchInput)((i18n) => {
       const inputText = text('keyword (v-model)', 'keyword');
       const fill = boolean('fill', false);
       const template = `
@@ -112,6 +113,6 @@ export default [
         template,
         i18n,
       };
-    },
+    }),
   },
 ];

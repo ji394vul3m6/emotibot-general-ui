@@ -30,12 +30,14 @@ renderer.heading = (text, level) => {
     return `<h${level} style="color: #6d6c6c;">${text}</h${level}>`;
   }
   return `<h${level}>${text}</h${level}>`
-
 };
 renderer.code = (code, language, escaped) => {
-  let escapedCode = code.replace(/</g, '&lt;');
-  escapedCode = escapedCode.replace(/>/g, '&gt;');
-  return `<div style="background-color: #eeeeee;"><pre style="padding: 10px;">${escapedCode}</pre></div>`;
+  let escapedCode = code.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return `<div style="background-color: #eeeeee; border-radius: 2px;"><pre style="padding: 10px;">${escapedCode}</pre></div>`;
+};
+renderer.codespan = (code) => {
+  let escapedCode = code.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return `<code style="background-color: #eeeeee; padding:3px 5px; border-radius: 2px;">${code}</code>`
 };
 renderer.table = (header, body) => {
   return `<table style="border-collapse: collapse"><thead style="font-weight:bold; background-color:#f7f7f7; padding: 10px;">${header}</thead><tbody>${body}</tbody></table>`
@@ -43,6 +45,7 @@ renderer.table = (header, body) => {
 renderer.tablecell = (content, flags) => {
   return `<td style="padding: 5px; font-size: 16px; border: 1px solid lightgray;">${content}</td>`;
 };
+
 
 module.exports = (baseConfig, env) => {
   const config = genDefaultConfig(baseConfig, env);
