@@ -38,7 +38,7 @@
     "vue-select": "~2.4.0",
     "vue-uuid": "~1.0.0",
     "vuex": "~2.4.0",
-    "vuedraggable": "~2.16.0"
+    "vuedraggable": "~2.16.0" 
   },
   "devDependencies": {
     "@storybook/addon-actions": "^3.3.14",
@@ -89,6 +89,7 @@
     "karma-spec-reporter": "0.0.31",
     "karma-webpack": "~2.0.2",
     "markdown-loader": "^3.0.0",
+    "marked": "^0.4.0",
     "mocha": "~3.2.0",
     "nightwatch": "~0.9.12",
     "node-notifier": "~5.1.2",
