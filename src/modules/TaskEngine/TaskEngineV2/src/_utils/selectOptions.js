@@ -18,7 +18,7 @@ export default {
       hotel_parser: hotelEntityOptions,
     };
   },
-  getEntityModuleOptions() {
+  getEntityModuleOptionsMap() {
     const entityListMap = this.getEntityListMap();
     return {
       none: [],

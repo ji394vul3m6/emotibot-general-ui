@@ -19,11 +19,13 @@
       <setting-edit-tab ref="settingTab"
         v-if="currentTab === 'settingTab'"
         :initialNode="node"
+        @update="updateSettingEditTab($event)"
       ></setting-edit-tab>
       <edge-edit-tab ref="edgeTab"
         v-if="currentTab === 'edgeTab'"
         :initialNode="node"
         :initialToNodeOptions="toNodeOptions"
+        @update="updateEdgeEditTab($event)"
       ></edge-edit-tab>
     </keep-alive>
   </div>
@@ -34,6 +36,7 @@
 import TriggerEditTab from './TriggerEditTab';
 import SettingEditTab from './SettingEditTab';
 import EdgeEditTab from './EdgeEditTab';
+import scenarioConvertor from '../_utils/scenarioConvertor';
 
 export default {
   name: 'node-edit-page',
@@ -54,6 +57,8 @@ export default {
       node: this.getNodeData(),
       toNodeOptions: this.getToNodeOptions(),
       allTabs: this.getAllTabs(),
+      settingTab: {},
+      edgeTab: {},
     };
   },
   computed: {
@@ -110,11 +115,41 @@ export default {
         },
       };
     },
+    updateSettingEditTab(tab) {
+      this.settingTab = tab;
+    },
+    updateEdgeEditTab(tab) {
+      this.edgeTab = tab;
+    },
+    validTabResult(tabResult) {
+      // TODO: add node validation logics
+      if ('nodeType' in tabResult) {
+        return true;
+      }
+      return false;
+    },
+    validate() {
+      const tabResult = {
+        nodeType: this.node.node_type,
+        settingTab: this.settingTab,
+        edgeTab: this.edgeTab,
+      };
+      if (this.validTabResult(tabResult)) {
+        console.log(JSON.stringify(this.node));
+        const nodeResult = scenarioConvertor.convertTabDataToNode(tabResult);
+        console.log(JSON.stringify(nodeResult));
+        this.$emit(
+          'validateSuccess',
+          nodeResult,
+        );
+      }
+    },
   },
   beforeMount() {
   },
   mounted() {
     console.log(this.node);
+    this.$on('validate', this.validate);
   },
 };
 </script>

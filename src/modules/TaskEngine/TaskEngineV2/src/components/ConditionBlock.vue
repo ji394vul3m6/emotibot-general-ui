@@ -1,7 +1,7 @@
 <template lang="html">
 <div id="condition-block">
   <div class="button-delete-condition">
-    <icon icon-type="delete" :enableHover="true" :size=24 @click=""/>
+    <icon icon-type="delete" :enableHover="true" :size=24 @click="deleteEdge()"/>
   </div>
   <div class="normal-edge" v-if="edgeType==='normal'">
     <template v-for="(rule, index) in andRules">
@@ -35,8 +35,16 @@
           />
           <button
             class="button button-add-if"
-            @click="">
+            v-if="index === 0"
+            @click="addRule()">
             ＋and if
+          </button>
+          <button
+            class="button"
+            style="width: 60px;"
+            v-if="index !== 0"
+            @click="deleteRule(index)">
+            {{$t("task_engine_v2.condition_block.button_remove")}}
           </button>
         </div>
         <!-- 完全相符 / 包含文本 -->
@@ -56,24 +64,24 @@
             </div>
             <input class="input-content" v-model="rule.content.pattern"></input>
           </div>
-          <template v-for="(operation, index) in rule.content.operations">
+          <template v-for="(operation, idx) in rule.content.operations">
             <div class="row">
               <div class="label label-start">
                 {{$t("task_engine_v2.condition_block.label_nth_match")}}
               </div>
               <input class="input-content" v-model="operation.index"></input>
               <button
-                v-if="index === 0"
+                v-if="idx === 0"
                 class="button"
-                style="width: 60px;"
-                @click="">
+                style="width: 70px;"
+                @click="addRegTargetKey(index)">
                 {{$t("task_engine_v2.condition_block.button_add")}}
               </button>
               <button
-                v-if="index !== 0"
+                v-if="idx !== 0"
                 class="button"
                 style="width: 60px;"
-                @click="">
+                @click="deleteRegTargetKey(index, idx)">
                 {{$t("task_engine_v2.condition_block.button_remove")}}
               </button>
             </div>
@@ -221,18 +229,15 @@ export default {
         edge_type: this.edgeType,
         to_node_id: this.toNode,
         actions: [],
-        condition_rules: [this.andRules.map((rule) => {
-          console.log(rule);
-          return {
-            source: rule.source,
-            functions: [{
-              function_name: rule.funcName,
-              content: rule.content,
-            }],
-          };
-        })],
+        condition_rules: [this.andRules.map(rule => ({
+          source: rule.source,
+          functions: [{
+            function_name: rule.funcName,
+            content: rule.content,
+          }],
+        }))],
       };
-      console.log(result);
+      // console.log(result);
       return result;
     },
   },
@@ -278,6 +283,27 @@ export default {
       }
       // render toNode
       this.toNode = this.edge.to_node_id;
+    },
+    deleteEdge() {
+      this.$emit('deleteEdge');
+    },
+    addRule() {
+      const rule = scenarioConvertor.initialRule();
+      this.andRules.push({
+        source: rule.source,
+        funcName: rule.functions[0].function_name,
+        content: rule.functions[0].content,
+      });
+    },
+    deleteRule(index) {
+      this.andRules.splice(index, 1);
+    },
+    addRegTargetKey(index) {
+      const operation = scenarioConvertor.initialRegularOperation();
+      this.andRules[index].content.operations.push(operation);
+    },
+    deleteRegTargetKey(index, idx) {
+      this.andRules[index].content.operations.splice(idx, 1);
     },
     onSelectSourceInput(index, newValue) {
       const newSource = newValue[0];
@@ -331,7 +357,7 @@ export default {
       this.andRules[index].content.trans = newMapTable;
     },
     entityModuleOptions(parser) {
-      const entityModuleOptions = selectOptions.getEntityModuleOptions();
+      const entityModuleOptions = selectOptions.getEntityModuleOptionsMap();
       return entityModuleOptions[parser];
     },
     getSourceOptions() {
@@ -435,7 +461,7 @@ export default {
       font-size: 16px;
     }
     .label-start{
-      width: 80px;
+      width: 84px;
     }
     .select{
       background: white;

@@ -4,18 +4,21 @@
     {{$t("task_engine_v2.edge_edit_tab.instruction")}}
   </div>
   <draggable v-model="normalEdges" :options="{ghostClass:'ghost'}" @start="drag=true" @end="drag=false">
-    <condition-block
-      class="condition-block"
-      v-for="(edge, index) in normalEdges"
-      :key="index"
-      :nodeId="node.node_id"
-      :initialEdge="edge"
-      :toNodeOptions="toNodeOptions">
-    </condition-block>
+    <template v-for="(edge, index) in normalEdges">
+      <condition-block
+        class="condition-block"
+        :key="edge.id"
+        :nodeId="node.node_id"
+        :initialEdge="edge"
+        :toNodeOptions="toNodeOptions"
+        @update="updateNormalEdge(index, $event)"
+        @deleteEdge="deleteEdge(index)">
+      </condition-block>
+    </template>
   </draggable>
   <button
     class="button-add-edge"
-    @click="">
+    @click="addEdge()">
     {{$t("task_engine_v2.edge_edit_tab.button_add_edge")}}
   </button>
   <div class="exceed_limit block" v-if="nodeType !== 'entry'">
@@ -73,6 +76,7 @@
 import draggable from 'vuedraggable';
 import DropdownSelect from '@/components/DropdownSelect';
 import ConditionBlock from './ConditionBlock';
+import scenarioConvertor from '../_utils/scenarioConvertor';
 
 export default {
   name: 'edge-edit-tab',
@@ -115,8 +119,9 @@ export default {
         dialogueLimit: parseInt(this.dialogueLimit, 10) || null,
         exceedThenGoto: this.exceedThenGoto[0] || null,
         elseInto: this.elseInto[0] || null,
+        normalEdges: this.normalEdges || [],
       };
-      console.log(result);
+      // console.log(result);
       return result;
     },
   },
@@ -136,6 +141,10 @@ export default {
       // render edges, normalEdges
       this.edges = this.node.edges;
       this.normalEdges = this.edges.filter(edge => edge.edge_type === 'normal' || edge.edge_type === 'qq');
+      this.normalEdges = this.normalEdges.map((edge) => {
+        edge.id = this.$uuid.v1();
+        return edge;
+      });
 
       // render exceedThenGoto, elseInto
       if (this.nodeType !== 'entry') {
@@ -173,6 +182,17 @@ export default {
         this.exceedThenGotoOptions = [];
         this.elseIntoOptions = options;
       }
+    },
+    updateNormalEdge(index, $event) {
+      this.normalEdges[index] = $event;
+    },
+    addEdge() {
+      const edge = scenarioConvertor.initialEdge();
+      edge.id = this.$uuid.v1();
+      this.normalEdges.push(edge);
+    },
+    deleteEdge(index) {
+      this.normalEdges.splice(index, 1);
     },
   },
   beforeMount() {

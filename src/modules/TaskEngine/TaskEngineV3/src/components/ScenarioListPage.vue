@@ -90,6 +90,7 @@ export default {
     },
     listAllScenarios() {
       taskEngineApi.listScenarios(this.appId).then((data) => {
+        console.log(data);
         if (typeof (data) === 'object' && 'msg' in data) {
           this.scenarioList = data.msg.filter(scenario => scenario.version === '2.0')
                                       .map((scenario) => {

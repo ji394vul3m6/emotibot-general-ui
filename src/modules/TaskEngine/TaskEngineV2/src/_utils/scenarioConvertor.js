@@ -1,6 +1,10 @@
 export default {
   s4_sort() { return Math.floor((1 + Math.random()) * 0x10000).toString(10).substring(1); },
   guid_sort() { return this.s4_sort() + this.s4_sort() + this.s4_sort(); },
+  convertTabDataToNode(tabData) {
+    console.log(JSON.stringify(tabData));
+    return tabData;
+  },
   initialScenario(metadata) {
     const entryNodeId = this.guid_sort();
     const scenario = {
@@ -70,5 +74,43 @@ export default {
       // qq: 'qq',
     };
     return map[funcName];
+  },
+  initialEdge() {
+    return {
+      edge_type: 'normal',
+      to_node_id: null,
+      actions: [],
+      condition_rules: [
+        [
+          {
+            source: 'text',
+            functions: [
+              {
+                function_name: 'match',
+                content: '',
+              },
+            ],
+          },
+        ],
+      ],
+    };
+  },
+  initialRule() {
+    return {
+      source: 'text',
+      functions: [
+        {
+          function_name: 'match',
+          content: '',
+        },
+      ],
+    };
+  },
+  initialRegularOperation() {
+    return {
+      operation: 'set_to_global_info',
+      index: 0,
+      key: '',
+    };
   },
 };

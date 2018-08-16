@@ -14,7 +14,9 @@
           :initialNode="node.data"
           :toNodeOptions="toNodeOptions"
           @updatePosition="updateNodePosition(index, $event)"
-          @deleteNode="deleteNode(index)">
+          @savePosition="saveNodePosition(index)"
+          @deleteNode="deleteNode(index)"
+          @saveNode="saveNode(index, $event)">
         </node-block>
       </template>
     </div>
@@ -47,6 +49,8 @@ export default {
   },
   data() {
     return {
+      moduleData: {},
+      moduleDataLayout: {},
       nodes: [],
       edges: [],
       panelTabOptions: this.getPanelTabOptions(),
@@ -65,16 +69,6 @@ export default {
       return map;
     },
     toNodeOptions() {
-      // const options = [
-      //   {
-      //     text: 'do nothing',
-      //     value: null,
-      //   },
-      //   {
-      //     text: 'Exit (ID: 0)',
-      //     value: '0',
-      //   },
-      // ];
       const options = [];
       Object.keys(this.idToNode).forEach((key) => {
         const node = this.idToNode[key];
@@ -135,10 +129,12 @@ export default {
   methods: {
     loadScenario(scenarioId) {
       return taskEngineApi.loadScenario(scenarioId).then((data) => {
-        window.moduleData = JSON.parse(data.result.editingContent);
-        window.moduleDataLayouts = JSON.parse(data.result.editingLayout);
-        this.scenarioName = window.moduleData.metadata.scenario_name;
-        this.renderData(window.moduleData, window.moduleDataLayouts);
+        this.moduleData = JSON.parse(data.result.editingContent);
+        this.moduleDataLayouts = JSON.parse(data.result.editingLayout);
+        window.moduleData = this.moduleData;
+        window.moduleDataLayouts = this.moduleDataLayouts;
+        this.scenarioName = this.moduleData.metadata.scenario_name;
+        this.renderData(this.moduleData, this.moduleDataLayouts);
       }, (err) => {
         general.popErrorWindow(this, 'loadScenario error', err.message);
       });
@@ -154,17 +150,48 @@ export default {
           data: node,
         };
       });
-      // this.currentSkillId = 'mainSkill';
-      // // propagate currentSkill
-      // this.skills = moduleData.skills;
-      // const currentSkill = this.skills[this.currentSkillId];
-      // this.$refs.skillEditPage.$emit('propSkill', currentSkill);
-      // // propagate ner map (entity map)
-      // this.idToNerMap = Array.isArray(moduleData.idToNerMap) ? {} : moduleData.idToNerMap;
+    },
+    saveNode(index, node) {
+      // this.nodes[index].data = node;
+      this.moduleData = {
+        version: '1.0',
+        metadata: this.moduleData.metadata,
+        global_edges: this.moduleData.global_edges || [],
+        setting: this.moduleData.setting,
+        msg_confirm: this.moduleData.msg_confirm,
+        nodes: this.moduleData.nodes,
+        // nodes: this.nodes,
+        // TODO add back Exit node to nodes
+      };
+      console.log('saveNode');
+      console.log(this.moduleData);
+      // this.saveScenario(this.moduleData, this.moduleDataLayouts);
     },
     updateNodePosition(index, position) {
       this.nodes[index].x = position.left;
       this.nodes[index].y = position.top;
+    },
+    saveNodePosition(index) {
+      const nodeId = this.nodes[index].data.node_id;
+      this.moduleDataLayouts[nodeId].position.left = this.nodes[index].x;
+      this.moduleDataLayouts[nodeId].position.top = this.nodes[index].y;
+      console.log('saveNodePosition');
+      // console.log(this.moduleDataLayouts);
+      // this.saveScenario(this.moduleData, this.moduleDataLayouts);
+    },
+    saveScenario(data, layout) {
+      return taskEngineApi.saveScenario(
+        this.appId,
+        this.scenarioId,
+        JSON.stringify(data),
+        JSON.stringify(layout),
+      ).then(() => {
+        window.moduleData = data;
+        window.moduleDataLayouts = layout;
+        this.$notify({ text: this.$t('error_msg.save_success') });
+      }, (err) => {
+        general.popErrorWindow(this, 'saveScenario error', err.message);
+      });
     },
     deleteNode(index) {
       this.nodes.splice(index, 1);

@@ -26,7 +26,8 @@
       <dropdown-select
         class="select select-parser"
         ref="selectParser"
-        v-model="parser"
+        :value="[parser]"
+        @input="onSelectParserInput($event)"
         :options="parserOptions"
         :showCheckedIcon="true"
         width="200px"
@@ -37,7 +38,7 @@
       <div class="label-text">{{$t("task_engine_v2.setting_edit_tab.target_data")}}</div>
       <dropdown-select
         class="select select-target-entity"
-        v-if="parser[0] !== 'none'"
+        v-if="parser !== 'none'"
         ref="selectTargetEntity"
         :multi="true"
         v-model="targetEntities"
@@ -51,7 +52,7 @@
       <div class="label-text">{{$t("task_engine_v2.setting_edit_tab.skip_if_exist")}}</div>
       <dropdown-select
         class="select select-skip-if-key-exist"
-        v-if="parser[0] !== 'none'"
+        v-if="parser !== 'none'"
         ref="selectSkipIfKeyExist"
         :multi="true"
         v-model="skipIfKeyExist"
@@ -63,7 +64,7 @@
     </div>
     <div class="row">
       <div class="label-text">{{$t("task_engine_v2.setting_edit_tab.parse_from_this_node")}}</div>
-      <input class="checkbox" type="checkbox" v-model="parseFromThisNode">
+      <input class="checkbox" type="checkbox" v-if="parser !== 'none'" v-model="parseFromThisNode">
     </div>
   </div>
   <div class="block">
@@ -93,13 +94,15 @@ export default {
   data() {
     return {
       node: JSON.parse(JSON.stringify(this.initialNode)),
-      parser: ['none'],
+      parser: undefined,
       parserOptions: this.getParserOptions(),
       targetEntities: [],
       skipIfKeyExist: [],
       initialResponse: '',
       failureResponse: '',
       parseFromThisNode: false,
+      entityModuleOptions: [],
+      entityKeyNameOptions: [],
       selectStyle: {
         height: '36px',
         'border-radius': '5px',
@@ -109,7 +112,7 @@ export default {
   computed: {
     settingTab() {
       const result = {
-        parser: this.parser[0],
+        parser: this.parser,
         targetEntities: this.targetEntities,
         skipIfKeyExist: this.skipIfKeyExist,
         initialResponse: this.initialResponse,
@@ -119,39 +122,11 @@ export default {
       console.log(result);
       return result;
     },
-    entityModuleOptions() {
-      const entityModuleOptions = selectOptions.getEntityModuleOptions();
-      return entityModuleOptions[this.parser[0]];
-    },
-    entityKeyNameOptions() {
-      const entityKeyNameOptions = this.getEntityKeyNameOptions();
-      return entityKeyNameOptions[this.parser[0]];
-    },
   },
   watch: {
     settingTab: {
       handler() {
         this.$emit('update', this.settingTab);
-      },
-      deep: true,
-    },
-    entityModuleOptions: {
-      handler() {
-        if (this.parser[0] !== 'none' && this.$refs.selectTargetEntity) {
-          this.$refs.selectTargetEntity.$emit('updateOptions', this.entityModuleOptions);
-          this.targetEntities = [];
-          this.$refs.selectTargetEntity.$emit('select', this.targetEntities);
-        }
-      },
-      deep: true,
-    },
-    entityKeyNameOptions: {
-      handler() {
-        if (this.parser[0] !== 'none' && this.$refs.selectSkipIfKeyExist) {
-          this.$refs.selectSkipIfKeyExist.$emit('updateOptions', this.entityKeyNameOptions);
-          this.skipIfKeyExist = [];
-          this.$refs.selectSkipIfKeyExist.$emit('select', this.skipIfKeyExist);
-        }
       },
       deep: true,
     },
@@ -161,14 +136,20 @@ export default {
       // render parser, targetEntities, skipIfKeyExist
       const c = this.node.edges[1].condition_rules;
       if (c.length > 0 && c[0].length > 1) {
-        this.parser = [c[0][1].functions[0].function_name];
+        this.parser = c[0][1].functions[0].function_name;
         this.targetEntities = c[0][1].functions[0].content.tags.split(',');
-        this.skipIfKeyExist = c[0][0].functions[0].content.map(obj => obj.key);
+        this.skipIfKeyExist = c[0][0].functions[0].content.map(obj => obj.key.split('_')[0]);
       } else {
-        this.parser = ['none'];
+        this.parser = 'none';
         this.targetEntities = [];
         this.skipIfKeyExist = [];
       }
+
+      // render entityModuleOptions, entityKeyNameOptions
+      const entityModuleOptionsMap = selectOptions.getEntityModuleOptionsMap();
+      this.entityModuleOptions = entityModuleOptionsMap[this.parser];
+      const entityKeyNameOptionsMap = this.getEntityKeyNameOptionsMap();
+      this.entityKeyNameOptions = entityKeyNameOptionsMap[this.parser];
 
       // render responses
       this.initialResponse = this.node.content.questions.find(
@@ -180,6 +161,31 @@ export default {
 
       // render parseFromThisNode
       this.parseFromThisNode = this.node.default_parser_with_suffix;
+    },
+    onSelectParserInput(newValue) {
+      const newParser = newValue[0];
+      const originParser = this.parser;
+      if (originParser === newParser) return;
+      this.parser = newParser;
+      if (originParser !== undefined) {
+        this.targetEntities = [];
+        this.skipIfKeyExist = [];
+      }
+      if (this.parser === 'none') return;
+
+      const entityModuleOptionsMap = selectOptions.getEntityModuleOptionsMap();
+      this.entityModuleOptions = entityModuleOptionsMap[this.parser];
+      const entityKeyNameOptionsMap = this.getEntityKeyNameOptionsMap();
+      this.entityKeyNameOptions = entityKeyNameOptionsMap[this.parser];
+
+      if (this.$refs.selectTargetEntity) {
+        this.$refs.selectTargetEntity.$emit('updateOptions', this.entityModuleOptions);
+        this.$refs.selectTargetEntity.$emit('select', this.targetEntities);
+      }
+      if (this.$refs.selectSkipIfKeyExist) {
+        this.$refs.selectSkipIfKeyExist.$emit('updateOptions', this.entityKeyNameOptions);
+        this.$refs.selectSkipIfKeyExist.$emit('select', this.skipIfKeyExist);
+      }
     },
     getParserOptions() {
       return [
@@ -201,7 +207,7 @@ export default {
         },
       ];
     },
-    getEntityKeyNameOptions() {
+    getEntityKeyNameOptionsMap() {
       const entityListMap = selectOptions.getEntityListMap();
       return {
         none: [],

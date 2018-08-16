@@ -226,7 +226,9 @@ export default {
       });
     },
   },
-  beforeMount() {},
+  beforeMount() {
+    this.appId = this.$cookie.get('appid');
+  },
   mounted() {
     this.listAllScenarios();
   },

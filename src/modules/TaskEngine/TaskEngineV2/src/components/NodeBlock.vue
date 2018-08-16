@@ -113,6 +113,9 @@ export default {
     },
     onMouseUp() {
       // console.log('onMouseUp');
+      if (this.moving) {
+        this.$emit('savePosition');
+      }
       this.moving = false;
     },
     deleteNode() {
@@ -125,24 +128,14 @@ export default {
         title: `${this.initialNode.description}（${this.initialNode.node_id}）`,
         component: NodeEditPage,
         validate: true,
-        // customContentClasses: {
-        //   width: '80vh;',
-        //   height: '80vh;',
-        //   'min-width': '80vh;',
-        //   'min-height': '80vh;',
-        // },
         extData: {
           node: that.initialNode,
           toNodeOptions: that.toNodeOptions,
         },
         callback: {
-          ok: (ner) => {
-            that.$emit('addCustomNer', ner);
-            that.$nextTick(() => {
-              that.categoryToNerTypeMap =
-                JSON.parse(JSON.stringify(that.initialCategoryToNerTypeMap));
-            });
-            that.entityCollector.ner = ner;
+          ok: (nodeResult) => {
+            console.log(nodeResult);
+            this.$emit('saveNode', nodeResult);
           },
         },
       });
