@@ -18,14 +18,14 @@
       ></trigger-edit-tab>
       <setting-edit-tab ref="settingTab"
         v-if="currentTab === 'settingTab'"
-        :initialNode="node"
-        @update="updateSettingEditTab($event)"
+        :initialSettingTab="initialSettingTab"
+        @update="settingTab = $event"
       ></setting-edit-tab>
       <edge-edit-tab ref="edgeTab"
         v-if="currentTab === 'edgeTab'"
-        :initialNode="node"
+        :initialEdgeTab="initialEdgeTab"
         :initialToNodeOptions="toNodeOptions"
-        @update="updateEdgeEditTab($event)"
+        @update="edgeTab = $event"
       ></edge-edit-tab>
     </keep-alive>
   </div>
@@ -54,22 +54,25 @@ export default {
   data() {
     return {
       currentTab: 'settingTab',
-      node: this.getNodeData(),
+      node: {},
+      nodeType: '',
       toNodeOptions: this.getToNodeOptions(),
       allTabs: this.getAllTabs(),
+      initialSettingTab: {},
       settingTab: {},
+      initialEdgeTab: {},
       edgeTab: {},
+      nodeType2Tabs: {
+        entry: ['triggerTab', 'edgeTab'],
+        dialogue: ['settingTab', 'edgeTab'],
+      },
     };
   },
   computed: {
     tabs() {
-      const nodeType2Tabs = {
-        entry: ['triggerTab', 'edgeTab'],
-        dialogue: ['settingTab', 'edgeTab'],
-      };
       const nodeType = this.node.node_type;
-      if (nodeType in nodeType2Tabs) {
-        const nodeTabs = nodeType2Tabs[this.node.node_type];
+      if (nodeType in this.nodeType2Tabs) {
+        const nodeTabs = this.nodeType2Tabs[this.node.node_type];
         this.currentTab = nodeTabs[0];
         return nodeTabs.map(tab => this.allTabs[tab]);
       }
@@ -80,6 +83,100 @@ export default {
   watch: {
   },
   methods: {
+    renderData() {
+      this.node = JSON.parse(JSON.stringify(this.extData.node));
+      this.nodeType = this.node.node_type;
+      let tabs = [];
+      if (this.nodeType in this.nodeType2Tabs) {
+        tabs = this.nodeType2Tabs[this.nodeType];
+      }
+      tabs.forEach((tab) => {
+        if (tab === 'settingTab') {
+          this.initialSettingTab = this.renderSettingTab();
+        } else if (tab === 'edgeTab') {
+          this.initialEdgeTab = this.renderEdgeTab();
+        }
+      });
+    },
+    renderSettingTab() {
+      const tab = {};
+      // render parser, targetEntities, skipIfKeyExist
+      const c = this.node.edges[1].condition_rules;
+      if (c.length > 0 && c[0].length > 1) {
+        tab.parser = c[0][1].functions[0].function_name;
+        tab.targetEntities = c[0][1].functions[0].content.tags.split(',');
+        tab.skipIfKeyExist = c[0][0].functions[0].content.map(obj => obj.key.split('_')[0]);
+      } else {
+        tab.parser = 'none';
+        tab.targetEntities = [];
+        tab.skipIfKeyExist = [];
+      }
+
+      // render responses
+      tab.initialResponse = this.node.content.questions.find(
+        q => q.question_type === 'initial_response',
+      ).msg;
+      tab.failureResponse = this.node.content.questions.find(
+        q => q.question_type === 'failure_response',
+      ).msg;
+
+      // render parseFromThisNode
+      tab.parseFromThisNode = this.node.default_parser_with_suffix;
+
+      // render nodeType, nodeName
+      tab.nodeType = this.node.node_type || '';
+      tab.nodeName = this.node.description || '';
+
+      // initialize settingTab
+      this.settingTab = {
+        nodeName: tab.nodeName,
+        parser: tab.parser,
+        targetEntities: tab.targetEntities,
+        skipIfKeyExist: tab.skipIfKeyExist,
+        initialResponse: tab.initialResponse,
+        failureResponse: tab.failureResponse,
+        parseFromThisNode: tab.parseFromThisNode,
+      };
+      return tab;
+    },
+    renderEdgeTab() {
+      const tab = {};
+      // render nodeType
+      tab.nodeId = this.node.node_id || '';
+      tab.nodeType = this.node.node_type || '';
+
+      // render edges, normalEdges
+      tab.edges = this.node.edges;
+      tab.normalEdges = tab.edges.filter(edge => edge.edge_type === 'normal' || edge.edge_type === 'qq');
+
+      // render exceedThenGoto, elseInto
+      if (tab.nodeType !== 'entry') {
+        const exceedGotoEdge = tab.edges.find(edge => edge.edge_type === 'exceedThenGoTo');
+        tab.exceedThenGoto = exceedGotoEdge.to_node_id;
+      }
+      const elseIntoEdge = tab.edges.find(edge => edge.edge_type === 'else_into');
+      tab.elseInto = elseIntoEdge.to_node_id;
+
+      // render dialogueLimit
+      const dialogueLimitEdge = tab.edges.find(edge =>
+        edge.edge_type === 'hidden' &&
+        edge.actions &&
+        edge.actions.length >= 1 &&
+        edge.actions[0].key === 'sys_node_dialogue_cnt_limit',
+      );
+      if (dialogueLimitEdge) {
+        tab.dialogueLimit = dialogueLimitEdge.actions[0].val;
+      }
+
+      // initialize edgeTab
+      this.edgeTab = {
+        dialogueLimit: tab.dialogueLimit,
+        exceedThenGoto: tab.exceedThenGoto,
+        elseInto: tab.elseInto,
+        normalEdges: tab.normalEdges,
+      };
+      return tab;
+    },
     changeTab(tab) {
       this.currentTab = tab;
     },
@@ -115,29 +212,25 @@ export default {
         },
       };
     },
-    updateSettingEditTab(tab) {
-      this.settingTab = tab;
-    },
-    updateEdgeEditTab(tab) {
-      this.edgeTab = tab;
-    },
     validTabResult(tabResult) {
       // TODO: add node validation logics
-      if ('nodeType' in tabResult) {
+      if ('edgeTab' in tabResult) {
         return true;
       }
       return false;
     },
     validate() {
+      console.log('validate');
       const tabResult = {
-        nodeType: this.node.node_type,
         settingTab: this.settingTab,
         edgeTab: this.edgeTab,
       };
+      console.log(tabResult);
       if (this.validTabResult(tabResult)) {
-        console.log(JSON.stringify(this.node));
-        const nodeResult = scenarioConvertor.convertTabDataToNode(tabResult);
-        console.log(JSON.stringify(nodeResult));
+        // console.log(JSON.stringify(this.node));
+        const edges = scenarioConvertor.convertTabDataToEdges(this.node.node_type, tabResult);
+        console.log(JSON.stringify(edges));
+        const nodeResult = {};
         this.$emit(
           'validateSuccess',
           nodeResult,
@@ -146,6 +239,7 @@ export default {
     },
   },
   beforeMount() {
+    this.renderData();
   },
   mounted() {
     console.log(this.node);

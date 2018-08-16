@@ -8,7 +8,7 @@
       <condition-block
         class="condition-block"
         :key="edge.id"
-        :nodeId="node.node_id"
+        :nodeId="nodeId"
         :initialEdge="edge"
         :toNodeOptions="toNodeOptions"
         @update="updateNormalEdge(index, $event)"
@@ -39,7 +39,8 @@
       <dropdown-select
         class="select select-goto"
         ref="selectExceedThenGoto"
-        v-model="exceedThenGoto"
+        :value="[exceedThenGoto]"
+        @input="exceedThenGoto = $event[0]"
         :options="exceedThenGotoOptions"
         :showCheckedIcon="false"
         width="200px"
@@ -61,7 +62,8 @@
       <dropdown-select
         class="select select-goto"
         ref="selectExceedThenGoto"
-        v-model="elseInto"
+        :value="[elseInto]"
+        @input="elseInto = $event[0]"
         :options="elseIntoOptions"
         :showCheckedIcon="false"
         width="200px"
@@ -86,7 +88,7 @@ export default {
     'condition-block': ConditionBlock,
   },
   props: {
-    initialNode: {
+    initialEdgeTab: {
       type: Object,
       required: true,
     },
@@ -97,15 +99,15 @@ export default {
   },
   data() {
     return {
-      node: JSON.parse(JSON.stringify(this.initialNode)),
+      nodeId: '',
       nodeType: '',
       edges: [],
       normalEdges: [],
       dialogueLimit: null,
       toNodeOptions: [],
-      exceedThenGoto: [],
+      exceedThenGoto: null,
       exceedThenGotoOptions: [],
-      elseInto: [],
+      elseInto: null,
       elseIntoOptions: [],
       selectStyle: {
         height: '36px',
@@ -117,11 +119,15 @@ export default {
     edgeTab() {
       const result = {
         dialogueLimit: parseInt(this.dialogueLimit, 10) || null,
-        exceedThenGoto: this.exceedThenGoto[0] || null,
-        elseInto: this.elseInto[0] || null,
-        normalEdges: this.normalEdges || [],
+        exceedThenGoto: this.exceedThenGoto || null,
+        elseInto: this.elseInto || null,
+        normalEdges: this.normalEdges.map((edge) => {
+          const e = JSON.parse(JSON.stringify(edge));
+          delete e.id;
+          return e;
+        }),
       };
-      // console.log(result);
+      console.log(result);
       return result;
     },
   },
@@ -135,46 +141,31 @@ export default {
   },
   methods: {
     renderTabContent() {
-      // render nodeType
-      this.nodeType = this.node.node_type || '';
+      const edgeTab = JSON.parse(JSON.stringify(this.initialEdgeTab));
+      this.nodeId = edgeTab.nodeId;
+      this.nodeType = edgeTab.nodeType;
+      this.edges = edgeTab.edges;
+      this.normalEdges = edgeTab.normalEdges;
+      this.exceedThenGoto = edgeTab.exceedThenGoto;
+      this.elseInto = edgeTab.elseInto;
+      this.dialogueLimit = edgeTab.dialogueLimit;
 
-      // render edges, normalEdges
-      this.edges = this.node.edges;
-      this.normalEdges = this.edges.filter(edge => edge.edge_type === 'normal' || edge.edge_type === 'qq');
+      // add tmp id for edges
       this.normalEdges = this.normalEdges.map((edge) => {
         edge.id = this.$uuid.v1();
         return edge;
       });
 
-      // render exceedThenGoto, elseInto
-      if (this.nodeType !== 'entry') {
-        const exceedGotoEdge = this.edges.find(edge => edge.edge_type === 'exceedThenGoTo');
-        this.exceedThenGoto = [exceedGotoEdge.to_node_id];
-      }
-      const elseIntoEdge = this.edges.find(edge => edge.edge_type === 'else_into');
-      this.elseInto = [elseIntoEdge.to_node_id];
-
-      // render dialogueLimit
-      const dialogueLimitEdge = this.edges.find(edge =>
-        edge.edge_type === 'hidden' &&
-        edge.actions &&
-        edge.actions.length >= 1 &&
-        edge.actions[0].key === 'sys_node_dialogue_cnt_limit',
-      );
-      if (dialogueLimitEdge) {
-        this.dialogueLimit = dialogueLimitEdge.actions[0].val;
-      }
-
       // render toNodeOptions, exceedThenGotoOptions, elseIntoOptions
       let options = JSON.parse(JSON.stringify(this.initialToNodeOptions));
-      options = options.filter(option => option.value !== this.node.node_id);
+      options = options.filter(option => option.value !== this.nodeId);
       if (this.nodeType !== 'entry') {
         this.exceedThenGotoOptions = [{ text: 'Exit (ID: 0)', value: '0' }].concat(options);
         this.toNodeOptions = [{ text: 'do nothing', value: null }].concat(this.exceedThenGotoOptions);
         this.elseIntoOptions = [
           {
-            text: `${this.$t('task_engine_v2.to_node_option.parse_fail')} (ID: ${this.node.node_id})`,
-            value: this.node.node_id,
+            text: `${this.$t('task_engine_v2.to_node_option.parse_fail')} (ID: ${this.nodeId})`,
+            value: this.nodeId,
           },
         ].concat(this.exceedThenGotoOptions);
       } else {

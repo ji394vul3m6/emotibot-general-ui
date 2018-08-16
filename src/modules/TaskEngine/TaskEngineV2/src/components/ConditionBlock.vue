@@ -226,6 +226,7 @@ export default {
   computed: {
     conditionBlock() {
       const result = {
+        id: this.edge.id,
         edge_type: this.edgeType,
         to_node_id: this.toNode,
         actions: [],

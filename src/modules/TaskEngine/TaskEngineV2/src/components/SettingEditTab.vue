@@ -4,13 +4,13 @@
     <div class="label-header">{{$t("task_engine_v2.setting_edit_tab.node_type")}}</div>
     <input class="input-rounded input-readonly"
       disabled
-      :value="$t(`task_engine_v2.node_type.${node.node_type}`)">
+      :value="$t(`task_engine_v2.node_type.${nodeType}`)">
     </input>
   </div>
   <div class="block">
     <div class="label-header">{{$t("task_engine_v2.setting_edit_tab.node_name")}}</div>
     <input class="input-rounded"
-      v-model="node.description">
+      v-model="nodeName">
     </input>
   </div>
   <div class="block">
@@ -86,14 +86,15 @@ export default {
     'dropdown-select': DropdownSelect,
   },
   props: {
-    initialNode: {
+    initialSettingTab: {
       type: Object,
       required: true,
     },
   },
   data() {
     return {
-      node: JSON.parse(JSON.stringify(this.initialNode)),
+      nodeType: '',
+      nodeName: '',
       parser: undefined,
       parserOptions: this.getParserOptions(),
       targetEntities: [],
@@ -112,6 +113,7 @@ export default {
   computed: {
     settingTab() {
       const result = {
+        nodeName: this.nodeName,
         parser: this.parser,
         targetEntities: this.targetEntities,
         skipIfKeyExist: this.skipIfKeyExist,
@@ -133,34 +135,21 @@ export default {
   },
   methods: {
     renderTabContent() {
-      // render parser, targetEntities, skipIfKeyExist
-      const c = this.node.edges[1].condition_rules;
-      if (c.length > 0 && c[0].length > 1) {
-        this.parser = c[0][1].functions[0].function_name;
-        this.targetEntities = c[0][1].functions[0].content.tags.split(',');
-        this.skipIfKeyExist = c[0][0].functions[0].content.map(obj => obj.key.split('_')[0]);
-      } else {
-        this.parser = 'none';
-        this.targetEntities = [];
-        this.skipIfKeyExist = [];
-      }
+      const settingTab = JSON.parse(JSON.stringify(this.initialSettingTab));
+      this.nodeType = settingTab.nodeType;
+      this.nodeName = settingTab.nodeName;
+      this.parser = settingTab.parser;
+      this.targetEntities = settingTab.targetEntities;
+      this.skipIfKeyExist = settingTab.skipIfKeyExist;
+      this.initialResponse = settingTab.initialResponse;
+      this.failureResponse = settingTab.failureResponse;
+      this.parseFromThisNode = settingTab.parseFromThisNode;
 
       // render entityModuleOptions, entityKeyNameOptions
       const entityModuleOptionsMap = selectOptions.getEntityModuleOptionsMap();
       this.entityModuleOptions = entityModuleOptionsMap[this.parser];
       const entityKeyNameOptionsMap = this.getEntityKeyNameOptionsMap();
       this.entityKeyNameOptions = entityKeyNameOptionsMap[this.parser];
-
-      // render responses
-      this.initialResponse = this.node.content.questions.find(
-        q => q.question_type === 'initial_response',
-      ).msg;
-      this.failureResponse = this.node.content.questions.find(
-        q => q.question_type === 'failure_response',
-      ).msg;
-
-      // render parseFromThisNode
-      this.parseFromThisNode = this.node.default_parser_with_suffix;
     },
     onSelectParserInput(newValue) {
       const newParser = newValue[0];

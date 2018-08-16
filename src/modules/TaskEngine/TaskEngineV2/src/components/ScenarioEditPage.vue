@@ -152,6 +152,7 @@ export default {
       });
     },
     saveNode(index, node) {
+      console.log(node);
       // this.nodes[index].data = node;
       this.moduleData = {
         version: '1.0',
