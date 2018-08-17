@@ -99,6 +99,7 @@ export default {
   },
   mounted() {
     this.$on('validate', this.validate);
+    this.$refs.scenarioName.focus();
   },
 };
 </script>
