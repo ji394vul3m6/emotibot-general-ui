@@ -128,16 +128,22 @@ export default {
           scenarioName: '',
         },
         callback: {
-          ok: (scenarioName) => {
-            taskEngineApi.createScenario(that.appId, scenarioName).then((data) => {
+          ok: (obj) => {
+            taskEngineApi.createScenarioWithTemplate(that.appId, obj.scenarioName, obj.templateID)
+            .then((data) => {
               if ('template' in data && 'metadata' in data.template) {
                 const metadata = data.template.metadata;
                 const scenarioId = metadata.scenario_id;
-                const scenario = scenarioConvertor.initialScenario(metadata);
-                that.saveScenario(scenarioId, scenario).then(() => {
+                if (obj.templateID === '') {
+                  const scenario = scenarioConvertor.initialScenario(metadata);
+                  that.saveScenario(scenarioId, scenario).then(() => {
+                    const path = general.composeV2Path(`scenario/${scenarioId}`);
+                    that.$router.replace(path);
+                  });
+                } else {
                   const path = general.composeV2Path(`scenario/${scenarioId}`);
                   that.$router.replace(path);
-                });
+                }
               } else {
                 that.$notifyFail(`${that.$t('task_engine_v2.scenario_list_page.create_new_scenario_failed')}`);
               }

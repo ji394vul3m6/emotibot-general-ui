@@ -31,6 +31,20 @@ export default {
       config: { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
     }).then(resp => resp.data);
   },
+  createScenarioWithTemplate(appId, scenarioName, templateId) {
+    const data = {
+      method: 'POST',
+      scenarioName,
+      template: templateId,
+      appid: appId,
+    };
+    return axios({
+      method: 'POST',
+      url: TASK_ENGINE_SCENARIO_PATH,
+      data: QS.stringify(data),
+      config: { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
+    }).then(resp => resp.data);
+  },
   deleteScenario(scenarioId) {
     const data = {
       method: 'PUT',
@@ -48,6 +62,19 @@ export default {
     const data = {
       method: 'GET',
       scenarioid: scenarioId,
+    };
+    return axios({
+      method: 'POST',
+      url: TASK_ENGINE_SCENARIO_PATH,
+      data: QS.stringify(data),
+      config: { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
+    }).then(resp => resp.data);
+  },
+  loadTemplateScenario() {
+    const data = {
+      method: 'GET',
+      scenarioid: 'all',
+      public: 1,
     };
     return axios({
       method: 'POST',
