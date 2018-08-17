@@ -1,176 +1,6 @@
 export default {
   s4_sort() { return Math.floor((1 + Math.random()) * 0x10000).toString(10).substring(1); },
   guid_sort() { return this.s4_sort() + this.s4_sort() + this.s4_sort(); },
-  convertTabDataToEdges(nodeType, tabData) {
-    console.log(JSON.stringify(tabData));
-    let hiddenEdges = [];
-    if (nodeType === 'dialogue') {
-      hiddenEdges = this.composeDialogueNodeHiddenEdges(tabData);
-    }
-    const node = {
-      edges: hiddenEdges,
-    };
-    return node;
-  },
-  composeDialogueNodeHiddenEdges(tabData) {
-    console.log(tabData);
-    const hidden1 = this.getHiddenEdgeTemplate();
-    hidden1.actions = [
-      this.getActionSetParseFailed(true),
-      this.getActionUpdateConfirmStatus(),
-      this.getActionSetNodeCntLimit(3),
-    ];
-    const hiddenEdges = [hidden1];
-    return hiddenEdges;
-  },
-  getHiddenEdgeTemplate() {
-    return {
-      to_node_id: null,
-      edge_type: 'hidden',
-      condition_rules: [],
-      actions: [],
-    };
-  },
-  getActionSetParseFailed(parseFailed) {
-    return {
-      operation: 'set_to_global_info',
-      key: 'parsing_failed',
-      val: parseFailed,
-    };
-  },
-  getActionUpdateConfirmStatus() {
-    return {
-      operation: 'update_confirm_status',
-    };
-  },
-  getActionSetNodeCntLimit(cnt) {
-    return {
-      operation: 'set_to_global_info',
-      key: 'sys_node_dialogue_cnt_limit',
-      val: cnt,
-    };
-  },
-
-  // {
-  //   "to_node_id": null,
-  //   "edge_type": "hidden",
-  //   "condition_rules": [
-  //     [
-  //       {
-  //         "source": "global_info",
-  //         "functions": [
-  //           {
-  //             "content": [
-  //               {
-  //                 "key": "time_0904278079939"
-  //               },
-  //               {
-  //                 "key": "city_0904278079939"
-  //               }
-  //             ],
-  //             "function_name": "not_contain_key"
-  //           }
-  //         ]
-  //       }
-  //     ]
-  //   ],
-  //   "actions": [
-  //     {
-  //       "operation": "set_to_global_info",
-  //       "key": "parsing_failed",
-  //       "val": true
-  //     },
-  //     {
-  //       "operation": "update_confirm_status"
-  //     },
-  //     {
-  //       "operation": "set_to_global_info",
-  //       "key": "sys_node_dialogue_cnt_limit",
-  //       "val": 3
-  //     }
-  //   ]
-  // },
-  // {
-  //   "to_node_id": null,
-  //   "edge_type": "hidden",
-  //   "condition_rules": [
-  //     [
-  //       {
-  //         "source": "global_info",
-  //         "functions": [
-  //           {
-  //             "content": [
-  //               {
-  //                 "key": "time_0904278079939"
-  //               },
-  //               {
-  //                 "key": "city_0904278079939"
-  //               }
-  //             ],
-  //             "function_name": "not_contain_key"
-  //           }
-  //         ]
-  //       },
-  //       {
-  //         "source": "text",
-  //         "functions": [
-  //           {
-  //             "content": {
-  //               "key_suffix": "_0904278079939",
-  //               "tags": "time_module,city_module"
-  //             },
-  //             "function_name": "common_parser"
-  //           }
-  //         ]
-  //       }
-  //     ]
-  //   ],
-  //   "actions": [
-  //     {
-  //       "operation": "set_to_global_info",
-  //       "key": "parsing_failed",
-  //       "val": false
-  //     }
-  //   ]
-  // },
-  // {
-  //   "to_node_id": "0904278079939",
-  //   "edge_type": "hidden",
-  //   "condition_rules": [
-  //     [
-  //       {
-  //         "source": "global_info",
-  //         "functions": [
-  //           {
-  //             "content": [
-  //               {
-  //                 "compare": "<",
-  //                 "key": "sys_node_dialogue_cnt",
-  //                 "val": 3
-  //               }
-  //             ],
-  //             "function_name": "key_val_match"
-  //           },
-  //           {
-  //             "content": "scenario_counter_rev",
-  //             "function_name": "counter_check"
-  //           },
-  //           {
-  //             "content": [
-  //               {
-  //                 "key": "time_0904278079939"
-  //               },
-  //               {
-  //                 "key": "city_0904278079939"
-  //               }
-  //             ],
-  //             "function_name": "not_contain_key"
-  //           }
-  //         ]
-  //       }
-  //     ]
-  //   ]
-  // }
   initialScenario(metadata) {
     const entryNodeId = this.guid_sort();
     const scenario = {
@@ -277,6 +107,208 @@ export default {
       operation: 'set_to_global_info',
       index: 0,
       key: '',
+    };
+  },
+  convertTabDataToNode(tabResult) {
+    const node = {
+      node_id: tabResult.nodeId,
+      node_type: tabResult.nodeType,
+      description: tabResult.description,
+      edges: this.convertTabDataToEdges(tabResult),
+    };
+    return node;
+  },
+  // convert to edges
+  convertTabDataToEdges(tabData) {
+    // console.log(JSON.stringify(tabData));
+    let edges = [];
+    if (tabData.nodeType === 'dialogue') {
+      const hiddenEdges = this.composeDialogueNodeHiddenEdges(tabData);
+      const hiddenSetCntLimit = this.edgeHiddenSetNodeDialogueCntLimit(
+        tabData.edgeTab.dialogueLimit,
+      );
+      const exceedThenGoto = this.edgeExceedThenGoTo(tabData.edgeTab.exceedThenGoto);
+      const elseInto = this.edgeElseInto(tabData.nodeId, tabData.edgeTab.elseInto);
+      edges = [
+        ...hiddenEdges,
+        ...tabData.edgeTab.normalEdges,
+        hiddenSetCntLimit,
+        exceedThenGoto,
+        elseInto,
+      ];
+    }
+    return edges;
+  },
+  composeDialogueNodeHiddenEdges(tabData) {
+    console.log(tabData);
+    const nodeId = tabData.nodeId;
+    const dialogueLimit = tabData.edgeTab.dialogueLimit;
+    const targetEntities = tabData.settingTab.targetEntities;
+    let skipIfKeyExist = tabData.settingTab.skipIfKeyExist;
+    const parseFromThisNode = tabData.settingTab.parseFromThisNode;
+
+    const hidden1 = this.hiddenEdgeTemplate();
+    if (parseFromThisNode) {
+      skipIfKeyExist = skipIfKeyExist.map(key => `${key}_${nodeId}`);
+    }
+    hidden1.condition_rules = [[
+      this.conditionNotContainKey(skipIfKeyExist),
+    ]];
+    hidden1.actions = [
+      this.actionSetParseFailed(true),
+      this.actionUpdateConfirmStatus(),
+      this.actionSetNodeDialogueCntLimit(dialogueLimit),
+    ];
+
+    const hidden2 = this.hiddenEdgeTemplate();
+    hidden2.condition_rules = [[
+      this.conditionNotContainKey(skipIfKeyExist),
+      this.conditionCommonParser(targetEntities, nodeId),
+    ]];
+    hidden2.actions = [
+      this.actionSetParseFailed(false),
+    ];
+
+    const hidden3 = this.hiddenEdgeTemplate();
+    hidden3.to_node_id = nodeId;
+    hidden3.condition_rules = [[
+      this.conditionDialogueCntLessThan(dialogueLimit),
+      this.conditionCounterCheck('scenario_counter_rev'),
+      this.conditionNotContainKey(skipIfKeyExist),
+    ]];
+    const hiddenEdges = [hidden1, hidden2, hidden3];
+    return hiddenEdges;
+  },
+  edgeHiddenSetNodeDialogueCntLimit(cnt) {
+    const edge = this.hiddenEdgeTemplate();
+    edge.actions = [
+      this.actionSetNodeDialogueCntLimit(cnt),
+    ];
+    return edge;
+  },
+  edgeExceedThenGoTo(toNode) {
+    return {
+      to_node_id: toNode,
+      edge_type: 'exceedThenGoTo',
+      condition_rules: [
+        [
+          this.conditionCounterCheck('node_counter'),
+        ],
+      ],
+      actions: [
+        this.actionSetParseFailed(false),
+        this.actionSetNodeDialogueCnt(0),
+      ],
+    };
+  },
+  edgeElseInto(nodeId, toNode) {
+    const edge = {
+      to_node_id: toNode,
+      edge_type: 'else_into',
+      condition_rules: [],
+      actions: [
+        this.actionSetParseFailed(true),
+      ],
+    };
+    if (nodeId === toNode) {
+      // 解析失败处理
+      edge.actions = [
+        this.actionSetParseFailed(true),
+      ];
+    } else {
+      edge.actions = [
+        this.actionSetParseFailed(false),
+        this.actionSetNodeDialogueCnt(0),
+      ];
+    }
+    return edge;
+  },
+  conditionDialogueCntLessThan(val) {
+    return this.conditionKeyValMatch('<', 'sys_node_dialogue_cnt', val);
+  },
+  conditionKeyValMatch(compare, key, val) {
+    return {
+      source: 'global_info',
+      functions: [
+        {
+          content: [
+            {
+              compare,
+              key,
+              val,
+            },
+          ],
+          function_name: 'key_val_match',
+        },
+      ],
+    };
+  },
+  conditionCounterCheck(content) {
+    return {
+      source: 'global_info',
+      functions: [
+        {
+          content,
+          function_name: 'counter_check',
+        },
+      ],
+    };
+  },
+  conditionCommonParser(tags, nodeId) {
+    const tagsString = tags.join(',');
+    const keySuffix = `_${nodeId}`;
+    return {
+      source: 'text',
+      functions: [
+        {
+          content: {
+            key_suffix: keySuffix,
+            tags: tagsString,
+          },
+          function_name: 'common_parser',
+        },
+      ],
+    };
+  },
+  conditionNotContainKey(keys) {
+    const content = keys.map(key => ({ key }));
+    return {
+      source: 'global_info',
+      functions: [
+        {
+          content,
+          function_name: 'not_contain_key',
+        },
+      ],
+    };
+  },
+  hiddenEdgeTemplate() {
+    return {
+      to_node_id: null,
+      edge_type: 'hidden',
+      condition_rules: [],
+      actions: [],
+    };
+  },
+  actionSetParseFailed(parseFailed) {
+    return this.actionSetToGlobalInfo('parsing_failed', parseFailed);
+  },
+  actionUpdateConfirmStatus() {
+    return {
+      operation: 'update_confirm_status',
+    };
+  },
+  actionSetNodeDialogueCnt(cnt) {
+    return this.actionSetToGlobalInfo('sys_node_dialogue_cnt', cnt);
+  },
+  actionSetNodeDialogueCntLimit(cnt) {
+    return this.actionSetToGlobalInfo('sys_node_dialogue_cnt_limit', cnt);
+  },
+  actionSetToGlobalInfo(key, val) {
+    return {
+      operation: 'set_to_global_info',
+      key,
+      val,
     };
   },
 };

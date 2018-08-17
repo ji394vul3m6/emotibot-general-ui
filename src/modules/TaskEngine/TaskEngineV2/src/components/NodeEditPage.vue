@@ -59,9 +59,9 @@ export default {
       toNodeOptions: this.getToNodeOptions(),
       allTabs: this.getAllTabs(),
       initialSettingTab: {},
-      settingTab: {},
       initialEdgeTab: {},
-      edgeTab: {},
+      settingTab: undefined,
+      edgeTab: undefined,
       nodeType2Tabs: {
         entry: ['triggerTab', 'edgeTab'],
         dialogue: ['settingTab', 'edgeTab'],
@@ -222,15 +222,16 @@ export default {
     validate() {
       console.log('validate');
       const tabResult = {
+        nodeId: this.node.node_id,
+        nodeType: this.node.node_type,
         settingTab: this.settingTab,
         edgeTab: this.edgeTab,
       };
-      console.log(tabResult);
       if (this.validTabResult(tabResult)) {
         // console.log(JSON.stringify(this.node));
-        const edges = scenarioConvertor.convertTabDataToEdges(this.node.node_type, tabResult);
-        console.log(JSON.stringify(edges));
-        const nodeResult = {};
+        const nodeResult = scenarioConvertor.convertTabDataToNode(tabResult);
+        // console.log(nodeResult);
+        console.log(JSON.stringify(nodeResult));
         this.$emit(
           'validateSuccess',
           nodeResult,
@@ -252,9 +253,9 @@ export default {
 @import 'styles/variable.scss';
 
 #node-edit-page{
-  width: 80vh;
+  width: 880px;
   height: 70vh;
-  min-width: 80vh;
+  min-width: 880px;
   min-height: 70vh;
   display: flex;
   flex-direction: row;

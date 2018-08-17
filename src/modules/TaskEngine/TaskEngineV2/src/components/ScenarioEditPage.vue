@@ -150,6 +150,7 @@ export default {
           data: node,
         };
       });
+      // this.jsonVersion =
     },
     saveNode(index, node) {
       console.log(node);
@@ -164,8 +165,8 @@ export default {
         // nodes: this.nodes,
         // TODO add back Exit node to nodes
       };
-      console.log('saveNode');
-      console.log(this.moduleData);
+      // console.log('saveNode');
+      // console.log(this.moduleData);
       // this.saveScenario(this.moduleData, this.moduleDataLayouts);
     },
     updateNodePosition(index, position) {

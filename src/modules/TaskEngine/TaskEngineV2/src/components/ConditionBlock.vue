@@ -5,7 +5,7 @@
   </div>
   <div class="normal-edge" v-if="edgeType==='normal'">
     <template v-for="(rule, index) in andRules">
-      <div class="rule-block">
+      <div class="rule-block" :key="rule.id">
         <div class="row row-function" v-bind:class="{'not-first': index !== 0}">
           <div class="label label-start" v-if="index === 0">
             if
@@ -270,12 +270,14 @@ export default {
         this.andRules = rules[0].map((rule) => {
           if (rule.source && rule.functions && rule.functions.length > 0) {
             return {
+              id: this.$uuid.v1(),
               source: rule.source,
               funcName: rule.functions[0].function_name,
               content: rule.functions[0].content,
             };
           }
           return {
+            id: this.$uuid.v1(),
             source: ['text'],
             funcName: null,
             content: {},
@@ -291,6 +293,7 @@ export default {
     addRule() {
       const rule = scenarioConvertor.initialRule();
       this.andRules.push({
+        id: this.$uuid.v1(),
         source: rule.source,
         funcName: rule.functions[0].function_name,
         content: rule.functions[0].content,
