@@ -55,7 +55,8 @@ export default {
     return {
       currentTab: 'settingTab',
       node: {},
-      nodeType: '',
+      nodeType: undefined,
+      jsonVersion: undefined,
       toNodeOptions: this.getToNodeOptions(),
       allTabs: this.getAllTabs(),
       initialSettingTab: {},
@@ -86,6 +87,8 @@ export default {
     renderData() {
       this.node = JSON.parse(JSON.stringify(this.extData.node));
       this.nodeType = this.node.node_type;
+      this.jsonVersion = this.extData.jsonVersion;
+      // render tab data
       let tabs = [];
       if (this.nodeType in this.nodeType2Tabs) {
         tabs = this.nodeType2Tabs[this.nodeType];
@@ -158,14 +161,20 @@ export default {
       tab.elseInto = elseIntoEdge.to_node_id;
 
       // render dialogueLimit
-      const dialogueLimitEdge = tab.edges.find(edge =>
-        edge.edge_type === 'hidden' &&
-        edge.actions &&
-        edge.actions.length >= 1 &&
-        edge.actions[0].key === 'sys_node_dialogue_cnt_limit',
-      );
-      if (dialogueLimitEdge) {
-        tab.dialogueLimit = dialogueLimitEdge.actions[0].val;
+      if (this.node.node_dialogue_cnt_limit) {
+        tab.dialogueLimit = this.node.node_dialogue_cnt_limit;
+      } else {
+        const dialogueLimitEdge = tab.edges.find(edge =>
+          edge.edge_type === 'hidden' &&
+          edge.actions &&
+          edge.actions.length >= 1 &&
+          edge.actions[0].key === 'sys_node_dialogue_cnt_limit',
+        );
+        if (dialogueLimitEdge) {
+          tab.dialogueLimit = dialogueLimitEdge.actions[0].val;
+        } else {
+          tab.dialogueLimit = 3;
+        }
       }
 
       // initialize edgeTab
@@ -220,18 +229,17 @@ export default {
       return false;
     },
     validate() {
-      console.log('validate');
-      const tabResult = {
+      const tabData = {
         nodeId: this.node.node_id,
         nodeType: this.node.node_type,
         settingTab: this.settingTab,
         edgeTab: this.edgeTab,
       };
-      if (this.validTabResult(tabResult)) {
-        // console.log(JSON.stringify(this.node));
-        const nodeResult = scenarioConvertor.convertTabDataToNode(tabResult);
+      if (this.validTabResult(tabData)) {
+        // console.log(tabData);
+        const nodeResult = scenarioConvertor.convertTabDataToNode(tabData, this.jsonVersion);
         // console.log(nodeResult);
-        console.log(JSON.stringify(nodeResult));
+        // console.log(JSON.stringify(nodeResult));
         this.$emit(
           'validateSuccess',
           nodeResult,

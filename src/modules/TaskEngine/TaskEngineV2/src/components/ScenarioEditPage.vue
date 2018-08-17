@@ -7,12 +7,14 @@
       @drop="nodeOptionDrop($event)"
       @dragover="nodeOptionDragOver($event)">
       <edges :edges="filteredEdges"></edges>
-      <template v-for="(node, index) in nodes">
+      <template v-for="(nodeBlock, index) in nodeBlocks">
         <node-block
-          :x="node.x"
-          :y="node.y"
-          :initialNode="node.data"
+          :key="nodeBlock.data.node_id"
+          :x="nodeBlock.x"
+          :y="nodeBlock.y"
+          :initialNode="nodeBlock.data"
           :toNodeOptions="toNodeOptions"
+          :jsonVersion="jsonVersion"
           @updatePosition="updateNodePosition(index, $event)"
           @savePosition="saveNodePosition(index)"
           @deleteNode="deleteNode(index)"
@@ -40,6 +42,7 @@ import taskEngineApi from '@/modules/TaskEngine/_api/taskEngine';
 import general from '@/modules/TaskEngine/_utils/general';
 import NodeBlock from './NodeBlock';
 import Edges from './Edges';
+import scenarioConvertor from '../_utils/scenarioConvertor';
 
 export default {
   name: 'scenario-edit-page',
@@ -51,8 +54,9 @@ export default {
     return {
       moduleData: {},
       moduleDataLayout: {},
-      nodes: [],
+      nodeBlocks: [],
       edges: [],
+      jsonVersion: undefined,
       panelTabOptions: this.getPanelTabOptions(),
       nodeOptions: this.getNodeOptions(),
       canvasWidth: 2000,
@@ -61,19 +65,19 @@ export default {
     };
   },
   computed: {
-    idToNode() {
+    idToNodeBlock() {
       const map = {};
-      this.nodes.forEach((node) => {
-        map[node.data.node_id] = node;
+      this.nodeBlocks.forEach((nodeBlock) => {
+        map[nodeBlock.data.node_id] = nodeBlock;
       });
       return map;
     },
     toNodeOptions() {
       const options = [];
-      Object.keys(this.idToNode).forEach((key) => {
-        const node = this.idToNode[key];
-        const nodeName = node.data.description;
-        const nodeType = node.data.node_type || '';
+      Object.keys(this.idToNodeBlock).forEach((key) => {
+        const nodeBlock = this.idToNodeBlock[key];
+        const nodeName = nodeBlock.data.description;
+        const nodeType = nodeBlock.data.node_type || '';
         if (nodeType !== 'entry') {
           options.push({
             text: `${nodeName} (ID: ${key})`,
@@ -85,14 +89,14 @@ export default {
     },
     allEdges() {
       const edgeList = [];
-      Object.keys(this.idToNode).forEach((key) => {
-        const node = this.idToNode[key];
-        node.data.edges.forEach((edge) => {
+      Object.keys(this.idToNodeBlock).forEach((key) => {
+        const nodeBlock = this.idToNodeBlock[key];
+        nodeBlock.data.edges.forEach((edge) => {
           if (!edge.to_node_id) return;
-          if (!this.idToNode[edge.to_node_id]) return;
+          if (!this.idToNodeBlock[edge.to_node_id]) return;
 
           edgeList.push({
-            from_id: node.data.node_id,
+            from_id: nodeBlock.data.node_id,
             to_id: edge.to_node_id,
             edge_type: edge.edge_type,
           });
@@ -107,10 +111,10 @@ export default {
         edge.to_id !== '0' &&
         edge.from_id !== edge.to_id,
       ).map((edge, index) => ({
-        x1: this.idToNode[edge.from_id].x + 115,
-        y1: this.idToNode[edge.from_id].y + 60,
-        x2: this.idToNode[edge.to_id].x + 115,
-        y2: this.idToNode[edge.to_id].y + 60,
+        x1: this.idToNodeBlock[edge.from_id].x + 115,
+        y1: this.idToNodeBlock[edge.from_id].y + 60,
+        x2: this.idToNodeBlock[edge.to_id].x + 115,
+        y2: this.idToNodeBlock[edge.to_id].y + 60,
         style: {
           stroke: this.rainbowColors[index % this.rainbowColors.length],
           strokeWidth: 4,
@@ -142,7 +146,7 @@ export default {
     renderData(moduleData, moduleDataLayouts) {
       // console.log(moduleData);
       // console.log(moduleDataLayouts);
-      this.nodes = moduleData.nodes.filter(node => node.node_id !== '0').map((node) => {
+      this.nodeBlocks = moduleData.nodes.filter(node => node.node_id !== '0').map((node) => {
         const nodeId = node.node_id;
         return {
           x: moduleDataLayouts[nodeId].position.left,
@@ -150,33 +154,36 @@ export default {
           data: node,
         };
       });
-      // this.jsonVersion =
+      if ('version' in this.moduleData) {
+        this.jsonVersion = this.moduleData.version;
+      } else {
+        this.jsonVersion = '1.0';
+      }
     },
     saveNode(index, node) {
-      console.log(node);
-      // this.nodes[index].data = node;
+      this.nodeBlocks[index].data = node;
+      const nodes = Object.keys(this.nodeBlocks).map(key => this.nodeBlocks[key].data);
+      const allNodes = [scenarioConvertor.initialExitNode(), ...nodes];
       this.moduleData = {
-        version: '1.0',
+        version: '1.1',
         metadata: this.moduleData.metadata,
         global_edges: this.moduleData.global_edges || [],
         setting: this.moduleData.setting,
         msg_confirm: this.moduleData.msg_confirm,
-        nodes: this.moduleData.nodes,
-        // nodes: this.nodes,
-        // TODO add back Exit node to nodes
+        nodes: allNodes,
       };
       // console.log('saveNode');
       // console.log(this.moduleData);
       // this.saveScenario(this.moduleData, this.moduleDataLayouts);
     },
     updateNodePosition(index, position) {
-      this.nodes[index].x = position.left;
-      this.nodes[index].y = position.top;
+      this.nodeBlocks[index].x = position.left;
+      this.nodeBlocks[index].y = position.top;
     },
     saveNodePosition(index) {
-      const nodeId = this.nodes[index].data.node_id;
-      this.moduleDataLayouts[nodeId].position.left = this.nodes[index].x;
-      this.moduleDataLayouts[nodeId].position.top = this.nodes[index].y;
+      const nodeId = this.nodeBlocks[index].data.node_id;
+      this.moduleDataLayouts[nodeId].position.left = this.nodeBlocks[index].x;
+      this.moduleDataLayouts[nodeId].position.top = this.nodeBlocks[index].y;
       console.log('saveNodePosition');
       // console.log(this.moduleDataLayouts);
       // this.saveScenario(this.moduleData, this.moduleDataLayouts);
@@ -196,7 +203,7 @@ export default {
       });
     },
     deleteNode(index) {
-      this.nodes.splice(index, 1);
+      this.nodeBlocks.splice(index, 1);
     },
     nodeOptionDragStart(nodeType, e) {
       e.dataTransfer.setData('text', nodeType);
@@ -207,7 +214,7 @@ export default {
     },
     nodeOptionDrop(e) {
       const nodeType = e.dataTransfer.getData('text');
-      this.nodes.push({
+      this.nodeBlocks.push({
         x: e.offsetX,
         y: e.offsetY,
         data: {

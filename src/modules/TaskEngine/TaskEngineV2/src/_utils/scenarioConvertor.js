@@ -32,6 +32,13 @@ export default {
     };
     return scenario;
   },
+  initialExitNode() {
+    return {
+      node_id: '0',
+      description: 'Exit',
+      node_type: 'exit',
+    };
+  },
   initialFunctionContent(funcName, nodeId) {
     const map = {
       match: '',
@@ -109,16 +116,73 @@ export default {
       key: '',
     };
   },
-  convertTabDataToNode(tabResult) {
+  // convert tab data to node
+  convertTabDataToNode(tabData, jsonVersion) {
+    console.log(jsonVersion);
     const node = {
-      node_id: tabResult.nodeId,
-      node_type: tabResult.nodeType,
-      description: tabResult.description,
-      edges: this.convertTabDataToEdges(tabResult),
+      node_id: tabData.nodeId,
+      node_type: tabData.nodeType,
+      description: tabData.settingTab.nodeName,
+      edges: this.convertTabDataToEdges(tabData),
+      global_vars: [],
+      warnings: [],
+      content: {},
+      default_parser_with_suffix: tabData.settingTab.parseFromThisNode,
+      node_dialogue_cnt_limit: tabData.edgeTab.dialogueLimit,
     };
+    if (tabData.nodeType === 'dialogue') {
+      node.content = this.componseDialogueContent(tabData);
+    }
     return node;
   },
-  // convert to edges
+  // convert tab data to content
+  convertTabDataToContent(tabData) {
+    let content = {};
+    if (tabData.nodeType === 'dialogue') {
+      content = {};
+    }
+    return content;
+  },
+  componseDialogueContent(tabData) {
+    const questions = [];
+    if (tabData.settingTab.parser !== 'none' &&
+        tabData.settingTab.targetEntities.length > 0) {
+        // a default parser had been selected
+        // insert skip_response
+      let skipIfKeyExist = tabData.settingTab.skipIfKeyExist;
+      const parseFromThisNode = tabData.settingTab.parseFromThisNode;
+      if (parseFromThisNode) {
+        const nodeId = tabData.nodeId;
+        skipIfKeyExist = skipIfKeyExist.map(key => `${key}_${nodeId}`);
+      }
+      const skipQ = this.questionTemplste('skip_response');
+      skipQ.condition_rules = skipIfKeyExist.map(key => [
+        this.conditionContainKey([key]),
+      ]);
+      questions.push(skipQ);
+    }
+    // insert failure_response
+    const failureQ = this.questionTemplste('failure_response');
+    failureQ.msg = tabData.settingTab.failureResponse;
+    failureQ.condition_rules = this.conditionParsingFailedIs(true);
+    questions.push(failureQ);
+
+    // insert initial_response
+    const initialQ = this.questionTemplste('initial_response');
+    initialQ.msg = tabData.settingTab.initialResponse;
+    questions.push(initialQ);
+    return {
+      questions,
+    };
+  },
+  questionTemplste(type) {
+    return {
+      question_type: type,
+      msg: null,
+      condition_rules: [],
+    };
+  },
+  // convert tab data to edges
   convertTabDataToEdges(tabData) {
     // console.log(JSON.stringify(tabData));
     let edges = [];
@@ -140,7 +204,6 @@ export default {
     return edges;
   },
   composeDialogueNodeHiddenEdges(tabData) {
-    console.log(tabData);
     const nodeId = tabData.nodeId;
     const dialogueLimit = tabData.edgeTab.dialogueLimit;
     const targetEntities = tabData.settingTab.targetEntities;
@@ -223,6 +286,9 @@ export default {
     }
     return edge;
   },
+  conditionParsingFailedIs(val) {
+    return this.conditionKeyValMatch('==', 'parsing_failed', val);
+  },
   conditionDialogueCntLessThan(val) {
     return this.conditionKeyValMatch('<', 'sys_node_dialogue_cnt', val);
   },
@@ -266,6 +332,18 @@ export default {
             tags: tagsString,
           },
           function_name: 'common_parser',
+        },
+      ],
+    };
+  },
+  conditionContainKey(keys) {
+    const content = keys.map(key => ({ key }));
+    return {
+      source: 'global_info',
+      functions: [
+        {
+          content,
+          function_name: 'contain_key',
         },
       ],
     };

@@ -48,9 +48,15 @@ export default {
       required: true,
       default: undefined,
     },
+    jsonVersion: {
+      type: String,
+      required: true,
+      default: undefined,
+    },
   },
   data() {
     return {
+      node: JSON.parse(JSON.stringify(this.initialNode)),
       lastMouseX: 0,
       lastMouseY: 0,
       moving: false,
@@ -62,12 +68,6 @@ export default {
         top: `${this.y}px`,
         left: `${this.x}px`,
       };
-    },
-    node() {
-      if (this.initialNode) {
-        return JSON.parse(JSON.stringify(this.initialNode));
-      }
-      return {};
     },
   },
   watch: {
@@ -122,19 +122,20 @@ export default {
       this.$emit('deleteNode');
     },
     editNode() {
-      // console.log(this.initialNode);
       const that = this;
       that.$pop({
-        title: `${this.initialNode.description}（${this.initialNode.node_id}）`,
+        title: `${this.node.description}（${this.node.node_id}）`,
         component: NodeEditPage,
         validate: true,
         extData: {
-          node: that.initialNode,
+          node: that.node,
           toNodeOptions: that.toNodeOptions,
+          jsonVersion: that.jsonVersion,
         },
         callback: {
           ok: (nodeResult) => {
             console.log(nodeResult);
+            this.node = nodeResult;
             this.$emit('saveNode', nodeResult);
           },
         },
