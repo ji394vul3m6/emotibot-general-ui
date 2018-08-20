@@ -28,7 +28,7 @@
             :ref="`selectFunction_${index}`"
             :value="[rule.funcName]"
             @input="onSelectFunctionInput(index, $event)"
-            :options="getFuncOptions(rule.source)"
+            :options="getFuncOptions(rule.source, index)"
             :showCheckedIcon="false"
             width="160px"
             :inputBarStyle="selectStyle"
@@ -181,7 +181,70 @@
         <div class="label label-start">
           if
         </div>
+        <dropdown-select
+          class="select select-source"
+          ref="selectSource_0"
+          :value="['text']"
+          @input="onSelectSourceInput(0, $event)"
+          :options="getSourceOptions()"
+          :showCheckedIcon="false"
+          width="250px"
+          :inputBarStyle="selectStyle"
+        />
+        <dropdown-select
+          class="select select-function"
+          ref="selectFunction_0"
+          :value="['qq']"
+          @input="onSelectFunctionInput(0, $event)"
+          :options="getFuncOptions('text', 0)"
+          :showCheckedIcon="false"
+          width="160px"
+          :inputBarStyle="selectStyle"
+        />
       </div>
+      <div class="row">
+        <div class="label label-start">
+          {{$t("task_engine_v2.condition_block.label_similarity_threshold")}}
+        </div>
+        <input class="input-content" v-model="threshold"></input>
+      </div>
+      <template v-for="(edge, index) in candidateEdges">
+        <div class="row">
+          <div class="label label-start">
+            {{$t("task_engine_v2.condition_block.label_sentence")}}
+          </div>
+          <input class="input-content" v-model="edge.tar_text"></input>
+          <button
+            v-if="index===0"
+            class="button"
+            style="width: 100px;"
+            @click="addQQCandidateEdge()">
+            {{`${$t("task_engine_v2.condition_block.button_add")}${$t("task_engine_v2.condition_block.label_sentence")}`}}
+          </button>
+          <button
+            v-if="index!==0"
+            class="button"
+            style="width: 60px;"
+            @click="deleteQQCandidateEdge(index)">
+            {{$t("task_engine_v2.condition_block.button_remove")}}
+          </button>
+        </div>
+        <div class="row">
+          <div class="label label-start">
+            {{$t("task_engine_v2.edge_edit_tab.label_then_goto")}}
+          </div>
+          <dropdown-select
+            class="select select-goto"
+            ref="selectGoto"
+            :value="[edge.to_node_id]"
+            @input="edge.to_node_id = $event[0]"
+            :options="toNodeOptions"
+            :showCheckedIcon="false"
+            width="200px"
+            :inputBarStyle="selectStyle"
+          />
+        </div>
+      </template>
     </div>
   </div>
 </div>
@@ -221,23 +284,35 @@ export default {
         height: '36px',
         'border-radius': '5px',
       },
+      threshold: '0',
+      candidateEdges: [],
     };
   },
   computed: {
     conditionBlock() {
-      const result = {
-        id: this.edge.id,
-        edge_type: this.edgeType,
-        to_node_id: this.toNode,
-        actions: [],
-        condition_rules: [this.andRules.map(rule => ({
-          source: rule.source,
-          functions: [{
-            function_name: rule.funcName,
-            content: rule.content,
-          }],
-        }))],
-      };
+      let result = {};
+      if (this.edgeType === 'qq') {
+        result = {
+          id: this.edge.id,
+          edge_type: this.edgeType,
+          threshold: this.threshold,
+          candidate_edges: this.candidateEdges,
+        };
+      } else {
+        result = {
+          id: this.edge.id,
+          edge_type: this.edgeType,
+          to_node_id: this.toNode,
+          actions: [],
+          condition_rules: [this.andRules.map(rule => ({
+            source: rule.source,
+            functions: [{
+              function_name: rule.funcName,
+              content: rule.content,
+            }],
+          }))],
+        };
+      }
       // console.log(result);
       return result;
     },
@@ -245,6 +320,7 @@ export default {
   watch: {
     conditionBlock: {
       handler() {
+        // console.log(this.conditionBlock);
         this.$emit('update', this.conditionBlock);
       },
       deep: true,
@@ -261,7 +337,17 @@ export default {
       }
     },
     renderQQEdge() {
-
+      this.threshold = this.edge.threshold;
+      this.candidateEdges = this.edge.candidate_edges.map((edge) => {
+        let toNodeId = edge.to_node_id;
+        if (toNodeId === 'null') {
+          toNodeId = null;
+        }
+        return {
+          to_node_id: toNodeId,
+          tar_text: edge.tar_text,
+        };
+      });
     },
     renderNormalEdge() {
       // render andRules
@@ -278,7 +364,7 @@ export default {
           }
           return {
             id: this.$uuid.v1(),
-            source: ['text'],
+            source: 'text',
             funcName: null,
             content: {},
           };
@@ -309,36 +395,72 @@ export default {
     deleteRegTargetKey(index, idx) {
       this.andRules[index].content.operations.splice(idx, 1);
     },
+    addQQCandidateEdge() {
+      this.candidateEdges.push(scenarioConvertor.initialCandidateEdge());
+    },
+    deleteQQCandidateEdge(index) {
+      this.candidateEdges.splice(index, 1);
+    },
     onSelectSourceInput(index, newValue) {
       const newSource = newValue[0];
-      if (this.andRules[index].source === newSource) return;
-      this.andRules[index].source = newSource;
       const funcOptionMap = this.getFuncOptionMap();
       const options = funcOptionMap[newSource];
-      const selectFunctionRef = `selectFunction_${index}`;
-      if (this.$refs[selectFunctionRef]) {
-        this.$refs[selectFunctionRef][0].$emit('updateOptions', options);
-        this.andRules[index].funcName = options[0].value;
-        this.$refs[selectFunctionRef][0].$emit('select', this.andRules[index].funcName);
+      if (this.edgeType === 'qq') {
+        this.edgeType = 'normal';
+        this.toNode = null;
+        this.andRules = [{
+          id: this.$uuid.v1(),
+          source: newSource,
+          funcName: options[0].value,
+          content: scenarioConvertor.initialFunctionContent(options[0].value, this.nodeId),
+        }];
+      } else {
+        if (this.andRules[index].source === newSource) return;
+        this.andRules[index].source = newSource;
+        const selectFunctionRef = `selectFunction_${index}`;
+        if (this.$refs[selectFunctionRef]) {
+          this.$refs[selectFunctionRef][0].$emit('updateOptions', options);
+          this.andRules[index].funcName = options[0].value;
+          this.$refs[selectFunctionRef][0].$emit('select', this.andRules[index].funcName);
+        }
       }
     },
     onSelectFunctionInput(index, newValue) {
       const newFuncName = newValue[0];
-      if (this.andRules[index].funcName === newFuncName) return;
-      this.andRules[index].funcName = newFuncName;
-
-      // render edgeType
+      const originalEdgeType = this.edgeType;
       if (newFuncName === 'qq') {
-        this.edgeType = 'qq';
+        this.changeToQQEdge(originalEdgeType);
       } else {
-        this.edgeType = 'normal';
+        this.changeToNormalEdge(originalEdgeType, index, newFuncName);
       }
-
+    },
+    changeToQQEdge(originalEdgeType) {
+      if (originalEdgeType === 'qq') {
+        return;
+      }
+      this.edgeType = 'qq';
+      this.threshold = '0';
+      this.candidateEdges = [scenarioConvertor.initialCandidateEdge()];
+    },
+    changeToNormalEdge(originalEdgeType, index, newFuncName) {
+      if (originalEdgeType === 'qq') {
+        this.edgeType = 'normal';
+        this.toNode = null;
+        this.andRules = [{
+          id: this.$uuid.v1(),
+          source: 'text',
+          funcName: newFuncName,
+          content: {},
+        }];
+      } else {  // originalEdgeType === 'normal'
+        if (this.andRules[index].funcName === newFuncName) return;
+        this.andRules[index].funcName = newFuncName;
+      }
       // initial content
       const content = scenarioConvertor.initialFunctionContent(newFuncName, this.nodeId);
+      this.andRules[index].content = content;
 
       // update parser options
-      this.andRules[index].content = content;
       if (newFuncName === 'common_parser' ||
           newFuncName === 'task_parser' ||
           newFuncName === 'hotel_parser') {
@@ -380,8 +502,12 @@ export default {
         },
       ];
     },
-    getFuncOptions(source) {
+    getFuncOptions(source, ruleIndex) {
       const funcOptionMap = this.getFuncOptionMap();
+      // hide qq option when it is not the first rule
+      if (source === 'text' && ruleIndex !== 0) {
+        return funcOptionMap[source].filter((option => option.value !== 'qq'));
+      }
       return funcOptionMap[source];
     },
     getFuncOptionMap() {

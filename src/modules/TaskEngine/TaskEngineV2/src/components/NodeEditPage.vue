@@ -299,6 +299,8 @@ export default {
   }
   .content{
     flex: 1 1 auto;
+    @include auto-overflow();
+    @include customScrollbar();  
   }
 }
 </style>

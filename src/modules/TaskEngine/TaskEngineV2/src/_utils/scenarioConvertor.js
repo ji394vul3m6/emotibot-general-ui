@@ -116,6 +116,12 @@ export default {
       key: '',
     };
   },
+  initialCandidateEdge() {
+    return {
+      to_node_id: null,
+      tar_text: '',
+    };
+  },
   // convert tab data to node
   convertTabDataToNode(tabData, jsonVersion) {
     console.log(jsonVersion);
