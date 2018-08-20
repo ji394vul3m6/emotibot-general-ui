@@ -20,6 +20,7 @@ export default [{
           ＊ General CSS Style<br>
           ＊ Page Layout<br>
           ＊ Scrollbar<br>
+          ＊ VPagination 分頁器 <br>
         </p>
       </div>
       </div>

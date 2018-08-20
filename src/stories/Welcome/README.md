@@ -125,16 +125,16 @@
 ## 代補文件
 ---
 ### Basic Components
-* Icon
-* DateTimePicker
+* <s>Icon</s>
+* <s>DateTimePicker</s>
 * TagInput
-* V-Pagination
+* <s>V-Pagination</s>
 
 ### Other Components
 * CategoryCard & CategoryTreeItem
 
 ### Vue Prototype Extensions
-* $popWindow
+* <s>$popWindow README</s> $popWindow Demo效果待修
 * <s>$notify</s>
 
 ### Plugins
