@@ -8,9 +8,9 @@ function getPosition(el) {
     y: boundedBox.top,
   };
 }
-
 const MyPlugin = {
   install(Vue) {
+    let VM;
     Vue.directive('tooltip', {
       inserted(el, binding, vnode) {
         const parent = el.parentElement;
@@ -31,6 +31,7 @@ const MyPlugin = {
               alignLeft: binding.value.alignLeft || false,
             },
           });
+          VM = vm;
           vm.$mount();
           parent.appendChild(vm.$el);
           vm.$forceUpdate();
@@ -57,7 +58,7 @@ const MyPlugin = {
           }
 
           el.addEventListener('tooltip-reload', () => {
-            parent.removeChild(vm.$el);
+            vm.$el.remove();
             vm.$destroy();
             boundedBox = el.getBoundingClientRect();
             vm = new TooltipGenerator({
@@ -73,6 +74,7 @@ const MyPlugin = {
                 alignLeft: binding.value.alignLeft || false,
               },
             });
+            VM = vm;
             vm.$mount();
             parent.appendChild(vm.$el);
             vm.$forceUpdate();
@@ -125,6 +127,9 @@ const MyPlugin = {
             });
           }
         });
+      },
+      unbind() {
+        VM.$el.remove();
       },
     });
   },
