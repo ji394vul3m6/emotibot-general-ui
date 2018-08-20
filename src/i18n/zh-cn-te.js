@@ -12,6 +12,7 @@ export default {
       create_new_scenario_failed: '场景建立失败',
     },
     node_type: {
+      entry: '入口节点',
       dialogue: '对话节点',
       restful: 'RESTful数据调用节点',
       nlu_pc_node: 'nlu参数收集节点',

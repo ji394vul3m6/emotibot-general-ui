@@ -235,6 +235,11 @@ export default {
         settingTab: this.settingTab,
         edgeTab: this.edgeTab,
       };
+      if (this.node.node_type === 'entry') {
+        tabData.nodeName = this.$t('task_engine_v2.node_type.entry');
+      } else {
+        tabData.nodeName = this.settingTab.nodeName;
+      }
       if (this.validTabResult(tabData)) {
         // console.log(tabData);
         const nodeResult = scenarioConvertor.convertTabDataToNode(tabData, this.jsonVersion);

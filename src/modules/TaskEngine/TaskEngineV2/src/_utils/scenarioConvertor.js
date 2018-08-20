@@ -128,16 +128,16 @@ export default {
     const node = {
       node_id: tabData.nodeId,
       node_type: tabData.nodeType,
-      description: tabData.settingTab.nodeName,
+      description: tabData.nodeName,
       edges: this.convertTabDataToEdges(tabData),
       global_vars: [],
       warnings: [],
       content: {},
-      default_parser_with_suffix: tabData.settingTab.parseFromThisNode,
-      node_dialogue_cnt_limit: tabData.edgeTab.dialogueLimit,
     };
     if (tabData.nodeType === 'dialogue') {
       node.content = this.componseDialogueContent(tabData);
+      node.default_parser_with_suffix = tabData.settingTab.parseFromThisNode;
+      node.node_dialogue_cnt_limit = tabData.edgeTab.dialogueLimit;
     }
     return node;
   },
