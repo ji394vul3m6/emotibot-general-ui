@@ -37,6 +37,57 @@
       </div>
     </template>
   </div>
+  <div class="top-panel">
+    <div class="button-block"
+      @mouseover="showTopPanelButtonLabel.setting=true"
+      @mouseleave="showTopPanelButtonLabel.setting=false">
+      <!-- <i class="icon wb-link-intact"></i> -->
+      <icon class="icon-panel" icon-type="setting" :enableHover="false" :size=18 @click=""/>
+      <transition name="label">
+        <div
+          v-if="showTopPanelButtonLabel.setting"
+          class="label-button-block">
+          设置
+        </div>
+      </transition>
+    </div>
+    <div class="button-block"
+      @mouseover="showTopPanelButtonLabel.globalEdge=true"
+      @mouseleave="showTopPanelButtonLabel.globalEdge=false">
+      <icon class="icon-panel" icon-type="canlendar" :enableHover="false" :size=18 @click=""/>
+      <transition name="label">
+        <div
+          v-if="showTopPanelButtonLabel.globalEdge"
+          class="label-button-block">
+          通用连线
+        </div>
+      </transition>
+    </div>
+    <div class="button-block"
+      @mouseover="showTopPanelButtonLabel.export=true"
+      @mouseleave="showTopPanelButtonLabel.export=false">
+      <icon class="icon-panel" icon-type="save" :enableHover="false" :size=18 @click=""/>
+      <transition name="label">
+        <div
+          v-if="showTopPanelButtonLabel.export"
+          class="label-button-block">
+          导出
+        </div>
+      </transition>
+    </div>
+    <div class="button-block"
+      @mouseover="showTopPanelButtonLabel.publish=true"
+      @mouseleave="showTopPanelButtonLabel.publish=false">
+      <icon class="icon-panel" icon-type="upload" :enableHover="false" :size=18 @click=""/>
+      <transition name="label">
+        <div
+          v-if="showTopPanelButtonLabel.publish"
+          class="label-button-block">
+          发布
+        </div>
+      </transition>
+    </div>
+  </div>
 </div>
 </template>
 
@@ -66,6 +117,12 @@ export default {
       canvasWidth: 2000,
       canvasHeight: 2000,
       rainbowColors: this.getRainbowColors(),
+      showTopPanelButtonLabel: {
+        setting: false,
+        globalEdge: false,
+        export: false,
+        publish: false,
+      },
     };
   },
   computed: {
@@ -325,10 +382,8 @@ export default {
       return nodeTypes;
     },
     getNodeTypeName(type) {
-      console.log(type);
       const nodeTypes = this.getNodeTypes();
       const nodeType = nodeTypes.find(t => t.type === type);
-      console.log(nodeType);
       return nodeType.name;
     },
     getRainbowColors() {
@@ -397,6 +452,49 @@ export default {
       }
       .node-name{
         font-size: 20px;
+      }
+    }
+  }
+  .top-panel{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    width: 400px;
+    height: 66px;
+    background: white;
+    padding: 0px 16px 0px 32px;
+    .button-block{
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      height: 36px;
+      border: 1px solid $color-borderline;
+      padding: 0px 16px 0px 16px;
+      &:first-child{
+        border-radius: 6px 0px 0px 6px;
+      }
+      &:last-child{
+        border-radius: 0px 6px 6px 0px;
+      }
+      .icon-panel{
+        margin: 0px 4px 0px 0px;
+      }
+      .label-button-block{
+        font-size: 16px;
+      }
+      .label-enter-active, .label-leave-active{
+        transition: font-size 0.2s;
+      }
+      .label-enter, .label-leave-to {
+        font-size: 0px;
+      }
+      .label-enter-to, .label-leave {
+        font-size: 16px;
       }
     }
   }
