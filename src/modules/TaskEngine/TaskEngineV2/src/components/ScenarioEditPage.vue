@@ -15,6 +15,7 @@
           :key="nodeBlock.data.nodeId"
           :x="nodeBlock.x"
           :y="nodeBlock.y"
+          :nodeTypeName="getNodeTypeName(nodeBlock.data.nodeType)"
           :initialNode="nodeBlock.data"
           :toNodeOptions="toNodeOptions"
           @updatePosition="updateNodePosition(index, $event)"
@@ -259,6 +260,7 @@ export default {
         y: e.offsetY,
         data: node,
       });
+      // TODO: save scenario
     },
     onPageWheel() {
       // expand canvas width and height
@@ -290,7 +292,15 @@ export default {
       }));
     },
     getNodeOptions() {
-      const nodeOptions = [
+      const nodeTypes = this.getNodeTypes();
+      return nodeTypes.filter(nodeType => nodeType.type !== 'entry');
+    },
+    getNodeTypes() {
+      const nodeTypes = [
+        {
+          type: 'entry',
+          name: this.$t('task_engine_v2.node_type.entry'),
+        },
         {
           type: 'dialogue',
           name: this.$t('task_engine_v2.node_type.dialogue'),
@@ -300,7 +310,7 @@ export default {
           name: this.$t('task_engine_v2.node_type.restful'),
         },
         {
-          type: 'nlu_pc_node',
+          type: 'nlu_pc',
           name: this.$t('task_engine_v2.node_type.nlu_pc_node'),
         },
         {
@@ -312,7 +322,14 @@ export default {
           name: this.$t('task_engine_v2.node_type.router'),
         },
       ];
-      return nodeOptions;
+      return nodeTypes;
+    },
+    getNodeTypeName(type) {
+      console.log(type);
+      const nodeTypes = this.getNodeTypes();
+      const nodeType = nodeTypes.find(t => t.type === type);
+      console.log(nodeType);
+      return nodeType.name;
     },
     getRainbowColors() {
       return [

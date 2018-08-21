@@ -1,7 +1,12 @@
 <template lang="html">
 <div id="node-block" :style="style">
-  <div @click="deleteNode">
-    X
+  <div v-if="node.nodeType !== 'entry'" class="button-delete-node">
+    <icon icon-type="delete" :enableHover="true" :size=24 @click="deleteNode()"/>
+  </div>
+  <div class="node-type-row">
+    <div class="label-node-type">
+      {{nodeTypeName}}
+    </div>
   </div>
   <div class="label-node-name">
     {{node.nodeName}}
@@ -37,6 +42,10 @@ export default {
       validator(val) {
         return typeof val === 'number';
       },
+    },
+    nodeTypeName: {
+      type: String,
+      required: true,
     },
     initialNode: {
       type: Object,
@@ -160,6 +169,9 @@ export default {
 @import 'styles/variable.scss';
 
 #node-block{
+  position: relative;
+  display: flex;
+  flex-direction: column;
   min-width: 230px;
   min-height: 120px;
   background: white;
@@ -167,5 +179,46 @@ export default {
   border: 1px solid $color-borderline;
   border-radius: 10px;
   cursor: move;
+  .button-delete-node{
+    position: absolute;
+    top: 5px;
+    right: 5px;
+  }
+  .node-type-row{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin: 12px 0px 0px 0px;
+    .label-node-type{
+      height: 24px;
+      border: 1px solid $color-borderline;
+      border-radius: 2px;
+      color: #888888;
+      background: #F3F7F9;
+      font-size: 14px;
+      line-height: 24px;
+      padding: 0px 4px 0px 4px;
+    }
+  }
+  .label-node-name{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    height: 36px;
+    line-height: 36px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333333;
+  }
+  .button-row{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: 36px;
+    .button-edit-node{
+      height: 32px;
+    }
+  }
 }
 </style>
