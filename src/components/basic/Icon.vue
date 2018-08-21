@@ -196,6 +196,7 @@ export default {
   @include iconType("header_dialog");
   @include iconType("header_dropdown");
   @include iconType("header_dropdown_gray");
+  @include iconType("header_dropdown_white");
 
   @include iconType("intent");
   @include iconType("info_warning_gray");
