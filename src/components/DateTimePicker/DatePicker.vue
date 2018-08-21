@@ -215,9 +215,9 @@ export default {
     };
   },
   watch: {
-    // value(value) {
-    //   this.setValue(value);
-    // },
+    value(value) {
+      this.setValue(value);
+    },
     openDate() {
       this.setPageDate();
     },

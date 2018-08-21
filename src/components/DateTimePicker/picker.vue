@@ -54,11 +54,6 @@ export default {
     },
   },
   watch: {
-    value() {
-      this.updateTime();
-      this.value.dateObj.setHours = parseInt(this.value.timeObj.HH, 10);
-      this.value.dataObj.setMinutes = parseInt(this.value.timeObj.mm, 10);
-    },
     validity() {
       this.$emit('validityChange', this.validity);
     },
