@@ -126,6 +126,25 @@ export default {
       ],
     };
   },
+  initialTriggerRule() {
+    return {
+      edge_type: 'trigger',
+      to_node_id: null,
+      condition_rules: [
+        [
+          {
+            source: 'text',
+            functions: [
+              {
+                function_name: 'match',
+                content: '',
+              },
+            ],
+          },
+        ],
+      ],
+    };
+  },
   initialRule() {
     return {
       source: 'text',

@@ -15,6 +15,7 @@
     <keep-alive>
       <trigger-edit-tab ref="triggerTab"
         v-if="currentTab === 'triggerTab'"
+        :initialTriggerTab="initialTriggerTab"
       ></trigger-edit-tab>
       <setting-edit-tab ref="settingTab"
         v-if="currentTab === 'settingTab'"
@@ -81,8 +82,10 @@ export default {
       nodeType: undefined,
       toNodeOptions: {},
       allTabs: this.getAllTabs(),
+      initialTriggerTab: {},
       initialSettingTab: {},
       initialEdgeTab: {},
+      triggerTab: undefined,
       settingTab: undefined,
       nluPCSettingTab: undefined,
       entityCollectingTab: undefined,
@@ -116,7 +119,11 @@ export default {
         tabs = nodeType2TabsMap[this.nodeType];
       }
       tabs.forEach((tab) => {
-        if (tab === 'settingTab') {
+        if (tab === 'triggerTab') {
+          this.triggerTab = this.node.triggerTab;
+          this.initialTriggerTab = JSON.parse(JSON.stringify(this.triggerTab));
+          this.initialTriggerTab.nodeId = this.node.nodeId;
+        } else if (tab === 'settingTab') {
           this.settingTab = this.node.settingTab;
           this.initialSettingTab = JSON.parse(JSON.stringify(this.settingTab));
           this.initialSettingTab.nodeType = this.nodeType;

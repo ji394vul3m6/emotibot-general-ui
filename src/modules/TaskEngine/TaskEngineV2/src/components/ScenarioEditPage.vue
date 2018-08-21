@@ -47,7 +47,7 @@
         <div
           v-if="showTopPanelButtonLabel.setting"
           class="label-button-block">
-          设置
+          {{$t("task_engine_v2.scenario_edit_page.setting")}}
         </div>
       </transition>
     </div>
@@ -59,7 +59,7 @@
         <div
           v-if="showTopPanelButtonLabel.globalEdge"
           class="label-button-block">
-          通用连线
+          {{$t("task_engine_v2.scenario_edit_page.global_edge")}}
         </div>
       </transition>
     </div>
@@ -71,7 +71,7 @@
         <div
           v-if="showTopPanelButtonLabel.export"
           class="label-button-block">
-          导出
+          {{$t("task_engine_v2.scenario_edit_page.export")}}
         </div>
       </transition>
     </div>
@@ -83,7 +83,7 @@
         <div
           v-if="showTopPanelButtonLabel.publish"
           class="label-button-block">
-          发布
+          {{$t("task_engine_v2.scenario_edit_page.publish")}}
         </div>
       </transition>
     </div>
@@ -297,7 +297,22 @@ export default {
       });
     },
     deleteNode(index) {
-      this.nodeBlocks.splice(index, 1);
+      const nodeName = this.nodeBlocks[index].data.nodeName;
+      const that = this;
+      that.$popCheck({
+        data: {
+          msg: that.$t(
+            'task_engine_v2.scenario_edit_page.ask_delete_node_confirm',
+            { node: nodeName },
+          ),
+        },
+        callback: {
+          ok() {
+            that.nodeBlocks.splice(index, 1);
+            // TODO: save scenario;
+          },
+        },
+      });
     },
     nodeOptionDragStart(nodeType, name, e) {
       e.dataTransfer.setData('type', nodeType);

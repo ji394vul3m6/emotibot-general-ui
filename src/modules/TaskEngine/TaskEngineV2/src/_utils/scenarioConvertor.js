@@ -40,7 +40,9 @@ export default {
     }
     const tabData = {};
     tabs.forEach((tab) => {
-      if (tab === 'settingTab') {
+      if (tab === 'triggerTab') {
+        tabData.triggerTab = this.parserTriggerTab(node);
+      } else if (tab === 'settingTab') {
         tabData.settingTab = this.parserSettingTab(node);
       } else if (tab === 'edgeTab') {
         tabData.edgeTab = this.parseEdgeTab(node);
@@ -54,10 +56,18 @@ export default {
       nodeId: node.node_id,
       nodeName: node.description || '',
       nodeType,
+      triggerTab: tabData.triggerTab,
       settingTab: tabData.settingTab,
       edgeTab: tabData.edgeTab,
       nluPCSettingTab: tabData.nluPCSettingTab,
       entityCollectingTab: tabData.entityCollectingTab,
+    };
+  },
+  parserTriggerTab(node) {
+    if (!node.entry_condition_rules) return undefined;
+    const rules = node.entry_condition_rules;
+    return {
+      rules,
     };
   },
   parseNLUPCSettingTab(node) {
@@ -102,7 +112,7 @@ export default {
     const nodeType = node.node_type || '';
 
     // render edges, normalEdges
-    const edges = node.edges;
+    const edges = node.edges || [];
     tab.normalEdges = edges.filter(edge => edge.edge_type === 'normal' || edge.edge_type === 'qq');
 
     // render exceedThenGoto, elseInto

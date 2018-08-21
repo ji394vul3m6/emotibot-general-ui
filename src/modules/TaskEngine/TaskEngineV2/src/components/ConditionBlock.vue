@@ -3,7 +3,7 @@
   <div class="button-delete-condition">
     <icon icon-type="delete" :enableHover="true" :size=24 @click="deleteEdge()"/>
   </div>
-  <div class="normal-edge" v-if="edgeType==='normal'">
+  <div class="normal-edge" v-if="edgeType==='normal' || edgeType==='trigger'">
     <template v-for="(rule, index) in andRules">
       <div class="rule-block" :key="rule.id">
         <div class="row row-function" v-bind:class="{'not-first': index !== 0}">
@@ -159,7 +159,7 @@
         </div>
       </div>
     </template>
-    <div class="row row-then-goto">
+    <div class="row row-then-goto" v-if="edgeType!=='trigger'">
       <div class="label label-start">
         {{$t("task_engine_v2.edge_edit_tab.label_then_goto")}}
       </div>

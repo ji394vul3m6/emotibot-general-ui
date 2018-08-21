@@ -32,6 +32,12 @@ export default {
       tabs: {
         node: '节点',
       },
+      ask_delete_node_confirm: '确认要删除节点：{node}',
+      setting: '设置',
+      global_confirm_msg: '系统变量模版',
+      global_edge: '通用连线',
+      export: '导出',
+      publish: '发布',
     },
     node_edit_page: {
       tabs: {
@@ -39,6 +45,10 @@ export default {
         setting: '基本设置',
         edge: '连线',
       },
+    },
+    trigger_edit_tab: {
+      instruction: '设置触发此场景的条件',
+      button_add_rule: '＋增加规则',
     },
     setting_edit_tab: {
       node_type: '节点类型',
