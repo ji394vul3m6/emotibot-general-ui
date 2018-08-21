@@ -39,6 +39,34 @@ export default {
       node_type: 'exit',
     };
   },
+  initialNode(nodeType, nodeName, nodeDialogueCntLimit) {
+    if (nodeType === 'dialogue') {
+      return this.initialDialogueNode(nodeName, nodeDialogueCntLimit);
+    }
+    return {};
+  },
+  initialDialogueNode(nodeName, nodeDialogueCntLimit) {
+    return {
+      nodeId: this.guid_sort(),
+      nodeName,
+      nodeType: 'dialogue',
+      settingTab: {
+        nodeName,
+        parser: 'none',
+        targetEntities: [],
+        skipIfKeyExist: [],
+        initialResponse: '',
+        failureResponse: '',
+        parseFromThisNode: false,
+      },
+      edgeTab: {
+        normalEdges: [],
+        exceedThenGoto: '0',
+        elseInto: '0',
+        dialogueLimit: nodeDialogueCntLimit,
+      },
+    };
+  },
   initialFunctionContent(funcName, nodeId) {
     const map = {
       match: '',

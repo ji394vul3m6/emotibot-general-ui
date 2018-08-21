@@ -136,7 +136,6 @@ export default {
   methods: {
     renderTabContent() {
       const settingTab = JSON.parse(JSON.stringify(this.initialSettingTab));
-      console.log(settingTab);
       this.nodeType = settingTab.nodeType;
       this.nodeName = settingTab.nodeName;
       this.parser = settingTab.parser;
@@ -149,8 +148,6 @@ export default {
       // render entityModuleOptions, entityKeyNameOptions
       const entityModuleOptionsMap = optionConfig.getEntityModuleOptionsMap();
       this.entityModuleOptions = entityModuleOptionsMap[this.parser];
-      console.log(this.parser);
-      console.log(this.entityModuleOptions);
       const entityKeyNameOptionsMap = this.getEntityKeyNameOptionsMap();
       this.entityKeyNameOptions = entityKeyNameOptionsMap[this.parser];
     },

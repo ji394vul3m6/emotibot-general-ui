@@ -36,7 +36,7 @@
 import TriggerEditTab from './TriggerEditTab';
 import SettingEditTab from './SettingEditTab';
 import EdgeEditTab from './EdgeEditTab';
-import scenarioConvertor from '../_utils/scenarioConvertor';
+// import scenarioConvertor from '../_utils/scenarioConvertor';
 import optionConfig from '../_utils/optionConfig';
 
 export default {
@@ -57,7 +57,7 @@ export default {
       currentTab: 'settingTab',
       node: {},
       nodeType: undefined,
-      toNodeOptions: this.getToNodeOptions(),
+      toNodeOptions: {},
       allTabs: this.getAllTabs(),
       initialSettingTab: {},
       initialEdgeTab: {},
@@ -83,6 +83,7 @@ export default {
   methods: {
     renderData() {
       this.node = JSON.parse(JSON.stringify(this.extData.node));
+      this.toNodeOptions = JSON.parse(JSON.stringify(this.extData.toNodeOptions));
       this.nodeType = this.node.nodeType;
       // render tab data
       let tabs = [];
@@ -106,19 +107,6 @@ export default {
     changeTab(tab) {
       this.currentTab = tab;
     },
-    getNodeData() {
-      if (this.extData.node) {
-        return JSON.parse(JSON.stringify(this.extData.node));
-      }
-      return {};
-    },
-    getToNodeOptions() {
-      if (this.extData.toNodeOptions) {
-        // return JSON.parse(JSON.stringify(this.extData.toNodeOptions));
-        return this.extData.toNodeOptions;
-      }
-      return {};
-    },
     getAllTabs() {
       return {
         triggerTab: {
@@ -138,28 +126,29 @@ export default {
         },
       };
     },
-    validTabResult(tabResult) {
+    validResult(nodeResult) {
       // TODO: add node validation logics
-      if ('edgeTab' in tabResult) {
+      if ('edgeTab' in nodeResult) {
         return true;
       }
-      return false;
+      return true;
     },
     validate() {
-      const tabData = {
+      const nodeResult = {
         nodeId: this.node.nodeId,
+        nodeName: '',
         nodeType: this.node.nodeType,
         settingTab: this.settingTab,
         edgeTab: this.edgeTab,
       };
       if (this.node.nodeType === 'entry') {
-        tabData.nodeName = this.$t('task_engine_v2.node_type.entry');
+        nodeResult.nodeName = this.$t('task_engine_v2.node_type.entry');
       } else {
-        tabData.nodeName = this.settingTab.nodeName;
+        nodeResult.nodeName = this.settingTab.nodeName;
       }
-      if (this.validTabResult(tabData)) {
+      if (this.validResult(nodeResult)) {
         // console.log(tabData);
-        const nodeResult = scenarioConvertor.convertTabDataToNode(tabData);
+        // const nodeResult = scenarioConvertor.convertTabDataToNode(tabData);
         // console.log(nodeResult);
         // console.log(JSON.stringify(nodeResult));
         this.$emit(
@@ -173,7 +162,6 @@ export default {
     this.renderData();
   },
   mounted() {
-    console.log(this.node);
     this.$on('validate', this.validate);
   },
 };

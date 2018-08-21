@@ -6,7 +6,10 @@
       :style="canvasStyle"
       @drop="nodeOptionDrop($event)"
       @dragover="nodeOptionDragOver($event)">
-      <edges :edges="filteredEdges"></edges>
+      <edges
+        ref="edges"
+        :edges="filteredEdges"
+      ></edges>
       <template v-for="(nodeBlock, index) in nodeBlocks">
         <node-block
           :key="nodeBlock.data.nodeId"
@@ -15,7 +18,7 @@
           :initialNode="nodeBlock.data"
           :toNodeOptions="toNodeOptions"
           @updatePosition="updateNodePosition(index, $event)"
-          @savePosition="saveNodePosition(index)"
+          @savePosition="saveNodePosition()"
           @deleteNode="deleteNode(index)"
           @saveNode="saveNode(index, $event)">
         </node-block>
@@ -28,7 +31,7 @@
       <div class="node-option"
         :class="{ 'odd-option': index % 2 === 0 }"
         draggable="true"
-        @dragstart="nodeOptionDragStart(nodeOption.type, $event);">
+        @dragstart="nodeOptionDragStart(nodeOption.type, nodeOption.name, $event);">
         <div class="node-name">{{nodeOption.name}}</div>
       </div>
     </template>
@@ -54,6 +57,7 @@ export default {
     return {
       moduleData: {},
       moduleDataLayout: {},
+      setting: {},
       nodeBlocks: [],
       edges: [],
       panelTabOptions: this.getPanelTabOptions(),
@@ -114,7 +118,7 @@ export default {
         if (nodeBlock.data.edgeTab && nodeBlock.data.edgeTab.elseInto) {
           edgeList.push({
             from_id: nodeBlock.data.nodeId,
-            to_id: nodeBlock.data.edgeTab.exceedThenGoto,
+            to_id: nodeBlock.data.edgeTab.elseInto,
             edge_type: 'else_into',
           });
         }
@@ -151,7 +155,8 @@ export default {
       };
     },
   },
-  watch: {},
+  watch: {
+  },
   methods: {
     loadScenario(scenarioId) {
       return taskEngineApi.loadScenario(scenarioId).then((data) => {
@@ -164,15 +169,14 @@ export default {
         this.moduleDataLayouts = newJsonData.moduleDataLayouts;
         window.moduleData = this.moduleData;
         window.moduleDataLayouts = this.moduleDataLayouts;
-        this.scenarioName = this.moduleData.metadata.scenario_name;
         this.renderData(this.moduleData, this.moduleDataLayouts);
       }, (err) => {
         general.popErrorWindow(this, 'loadScenario error', err.message);
       });
     },
     renderData(moduleData, moduleDataLayouts) {
-      // console.log(moduleData);
-      // console.log(moduleDataLayouts);
+      this.scenarioName = this.moduleData.metadata.scenario_name;
+      this.setting = this.moduleData.setting;
       this.nodeBlocks = moduleData.ui_data.nodes.map((node) => {
         const nodeId = node.nodeId;
         return {
@@ -184,15 +188,18 @@ export default {
     },
     saveNode(index, node) {
       this.nodeBlocks[index].data = node;
-      const nodes = Object.keys(this.nodeBlocks).map(key => this.nodeBlocks[key].data);
-      const allNodes = [scenarioInitializer.initialExitNode(), ...nodes];
+      const uiNodes = Object.keys(this.nodeBlocks).map(key => this.nodeBlocks[key].data);
+      // const allNodes = [scenarioInitializer.initialExitNode(), ...nodes];
       this.moduleData = {
         version: '1.1',
         metadata: this.moduleData.metadata,
         global_edges: this.moduleData.global_edges || [],
-        setting: this.moduleData.setting,
+        setting: this.setting,
         msg_confirm: this.moduleData.msg_confirm,
-        nodes: allNodes,
+        nodes: this.moduleData.nodes,
+        ui_data: {
+          nodes: uiNodes,
+        },
       };
       // console.log('saveNode');
       // console.log(this.moduleData);
@@ -202,11 +209,18 @@ export default {
       this.nodeBlocks[index].x = position.left;
       this.nodeBlocks[index].y = position.top;
     },
-    saveNodePosition(index) {
-      const nodeId = this.nodeBlocks[index].data.nodeId;
-      this.moduleDataLayouts[nodeId].position.left = this.nodeBlocks[index].x;
-      this.moduleDataLayouts[nodeId].position.top = this.nodeBlocks[index].y;
-      console.log('saveNodePosition');
+    saveNodePosition() {
+      this.moduleDataLayouts = {};
+      this.nodeBlocks.forEach((nodeBlock) => {
+        const nodeId = nodeBlock.data.nodeId;
+        this.moduleDataLayouts[nodeId] = {
+          position: {
+            left: nodeBlock.x,
+            top: nodeBlock.y,
+          },
+        };
+      });
+      // console.log('saveNodePosition');
       // console.log(this.moduleDataLayouts);
       // this.saveScenario(this.moduleData, this.moduleDataLayouts);
     },
@@ -227,23 +241,23 @@ export default {
     deleteNode(index) {
       this.nodeBlocks.splice(index, 1);
     },
-    nodeOptionDragStart(nodeType, e) {
-      e.dataTransfer.setData('text', nodeType);
+    nodeOptionDragStart(nodeType, name, e) {
+      e.dataTransfer.setData('type', nodeType);
+      e.dataTransfer.setData('name', name);
     },
     nodeOptionDragOver(e) {
       e.preventDefault();
       e.dataTransfer.dropEffect = 'copy';
     },
     nodeOptionDrop(e) {
-      const nodeType = e.dataTransfer.getData('text');
+      const nodeType = e.dataTransfer.getData('type');
+      const nodeName = e.dataTransfer.getData('name');
+      const nodeDialogueCntLimit = this.setting.sys_node_dialogue_cnt_limit;
+      const node = scenarioInitializer.initialNode(nodeType, nodeName, nodeDialogueCntLimit);
       this.nodeBlocks.push({
         x: e.offsetX,
         y: e.offsetY,
-        data: {
-          description: nodeType,
-          node_id: 'tmp_id',
-          edges: [],
-        },
+        data: node,
       });
     },
     onPageWheel() {

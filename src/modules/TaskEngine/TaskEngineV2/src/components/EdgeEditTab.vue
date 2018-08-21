@@ -162,7 +162,7 @@ export default {
         this.toNodeOptions = [{ text: 'do nothing', value: null }].concat(this.exceedThenGotoOptions);
         this.elseIntoOptions = [
           {
-            text: `${this.$t('task_engine_v2.to_node_option.parse_fail')} (ID: ${this.nodeId})`,
+            text: this.$t('task_engine_v2.to_node_option.parse_fail'),
             value: this.nodeId,
           },
         ].concat(this.exceedThenGotoOptions);
