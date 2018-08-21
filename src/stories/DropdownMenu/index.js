@@ -17,15 +17,18 @@ export default [{
       }, {
         text: '選項3',
         onclick: action('click option 3'),
+        disabled: true,
       }, {
         text: '選項4',
         onclick: action('click option 4'),
       }, {
         text: '選項5',
         onclick: action('click option 5'),
+        disabled: true,
       }, {
         text: '選項6',
         onclick: action('click option 6'),
+        disabled: true,
       }],
       width: '300px',
     };

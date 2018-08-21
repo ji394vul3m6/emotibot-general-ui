@@ -1,7 +1,7 @@
 <template>
   <div v-if="show" class="dropdown-menu-container" :style="style">
     <div class="dropdown-menu">
-      <div v-for="(option, idx) in options" :key="idx" class="menu-option" @click.stop="clickOption($event, option.onclick)">
+      <div v-for="(option, idx) in options" :key="idx" class="menu-option" :class="{'disabled': option.disabled === true}" @click.stop="clickOption($event, option.onclick)">
         {{ option.text }}
       </div>
     </div>
@@ -111,6 +111,13 @@ $option-height: 32px;
     display: flex;
     align-items: center;
     cursor: pointer;
+
+    &.disabled {
+      color: $color-font-disabled;
+      background-color: $color-white;
+      cursor: default;
+      pointer-events: none;
+    }
     &:hover {
       background-color: $color-select-hover;
       color: $color-white;
