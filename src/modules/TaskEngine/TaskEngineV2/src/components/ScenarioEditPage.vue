@@ -259,6 +259,7 @@ export default {
           nodes: uiNodes,
         },
       };
+      scenarioConvertor.registerNluTdeScenario(this.scenarioId, this.moduleData.ui_data.nodes);
       // console.log('saveNode');
       // console.log(this.moduleData);
       // this.saveScenario(this.moduleData, this.moduleDataLayouts);

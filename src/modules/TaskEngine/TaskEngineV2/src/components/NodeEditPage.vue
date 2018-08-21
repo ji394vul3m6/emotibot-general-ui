@@ -134,6 +134,7 @@ export default {
           this.initialEdgeTab.nodeId = this.node.nodeId;
         } else if (tab === 'entityCollectingTab') {
           this.entityCollectingTab = this.node.entityCollectingTab;
+          this.entityCollectingTab.nodeId = this.node.nodeId;
         } else if (tab === 'nluPCSettingTab') {
           this.nluPCSettingTab = this.node.nluPCSettingTab;
         }

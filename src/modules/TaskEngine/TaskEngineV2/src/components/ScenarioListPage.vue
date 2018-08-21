@@ -51,6 +51,7 @@ import taskEngineApi from '@/modules/TaskEngine/_api/taskEngine';
 import general from '@/modules/TaskEngine/_utils/general';
 import CreateScenarioPop from './CreateScenarioPop';
 import scenarioInitializer from '../_utils/scenarioInitializer';
+import scenarioConvertor from '../_utils/scenarioConvertor';
 
 export default {
   name: 'scenario-list-page',
@@ -80,6 +81,17 @@ export default {
               that.$notify({ text: that.$t('task_engine_v2.scenario_list_page.publish_succeed') });
             }, (err) => {
               that.$notifyFail(`${that.$t('task_engine_v2.scenario_list_page.publish_failed')}:${err.message}`);
+            });
+            taskEngineApi.loadScenario(scenario.scenarioID).then((data) => {
+              const jsonData = {
+                moduleData: JSON.parse(data.result.editingContent),
+                moduleDataLayouts: JSON.parse(data.result.editingLayout),
+              };
+              const newJsonData = scenarioConvertor.convertJsonToVersion('1.1', jsonData);
+              scenarioConvertor.registerNluTdeScenario(
+                scenario.scenarioID, newJsonData.moduleData.ui_data.nodes);
+            }, (err) => {
+              general.popErrorWindow(this, 'loadScenario error', err.message);
             });
             scenario.enable = true;
             that.switchScenario(scenario);

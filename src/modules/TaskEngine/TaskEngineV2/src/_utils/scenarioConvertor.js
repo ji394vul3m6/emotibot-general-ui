@@ -1,4 +1,5 @@
 import optionConfig from './optionConfig';
+import api from '../../../_api/taskEngine';
 
 export default {
   convertJsonToVersion(toVersion, jsonData) {
@@ -49,7 +50,13 @@ export default {
       } else if (tab === 'nluPCSettingTab') {
         tabData.nluPCSettingTab = this.parseNLUPCSettingTab(node);
       } else if (tab === 'entityCollectingTab') {
-        tabData.entityCollectingTab = {};
+        tabData.entityCollectingTab = {
+          relatedEntities: {
+            relatedEntityCollectorList: [],
+            relatedEntityMatrix: [],
+          },
+          tde_setting: {},
+        };
       }
     });
     return {
@@ -455,5 +462,91 @@ export default {
       key,
       val,
     };
+  },
+  convertToTDERegistryData(scenarioId, entityCollectingTab, nodeId) {
+    if (entityCollectingTab.register_json) { // manually give register JSON
+      const registerJson = JSON.parse(JSON.stringify(entityCollectingTab.register_json));
+      registerJson.taskId = `${nodeId}_${scenarioId}`;
+      return registerJson;
+    }
+    const entityList = entityCollectingTab.entityCollectorList.map((item) => {
+      if (item.ner.sourceType === 'custom') {
+        return {
+          slotName: item.entityName,
+          slotType: item.ner.slotType,
+          slotBizType: 'OrderProperty',
+          slotValueOptions: item.ner.entitySynonymsList.map(elt => elt.entity),
+        };
+      }
+      return {
+        slotName: item.entityName,
+        slotType: item.ner.slotType,
+        slotBizType: 'OrderProperty',
+        hidden: item.ner.hidden,
+        needRecogize: item.ner.needRecogize,
+        slotFinder: item.ner.slotFinder,
+      };
+    });
+    const indices = [];
+    entityCollectingTab.relatedEntities.relatedEntityMatrix.forEach((row) => {
+      for (let i = 1; i < row.length; i += 1) {
+        indices.push({
+          product: row[0].entity,
+          slotName: entityCollectingTab.relatedEntities.relatedEntityCollectorList[i].entityName,
+          slotValue: row[i].entity,
+        });
+      }
+    });
+    let products = [];
+    if (entityCollectingTab.relatedEntities.relatedEntityCollectorList.length > 0) {
+      products = entityCollectingTab.relatedEntities
+      .relatedEntityCollectorList[0].ner.entitySynonymsList.map((item) => {
+        const tmpObj = {};
+        tmpObj[entityCollectingTab.relatedEntities.relatedEntityCollectorList[0].entityName]
+            = item.entity;
+        return tmpObj;
+      });
+    }
+    if (entityList.length > 0) {
+      if (entityCollectingTab.relatedEntities.relatedEntityCollectorList.length > 0) {
+        const productIndex = this.getEntityListIndex(entityList,
+            entityCollectingTab.relatedEntities.relatedEntityCollectorList[0].entityName);
+        entityList[productIndex].slotBizType = 'Product';
+        for (let i = 1;
+          i < entityCollectingTab.relatedEntities.relatedEntityCollectorList.length; i += 1) {
+          const tmpIndex = this.getEntityListIndex(entityList,
+              entityCollectingTab.relatedEntities.relatedEntityCollectorList[i].entityName);
+          entityList[tmpIndex].slotBizType = 'ProductPropertySearchable';
+        }
+      }
+    }
+    const data = {
+      taskId: `${nodeId}_${scenarioId}`,
+      nlgTemplate: entityCollectingTab.tde_setting.nlgTemplate,
+      service: entityCollectingTab.tde_setting.service,
+      jumpOutTimes: isNaN(parseInt(entityCollectingTab.tde_setting.jumpOutTimes, 10)) ?
+          undefined : parseInt(entityCollectingTab.tde_setting.jumpOutTimes, 10),
+      slotDefs: entityList,
+      intent: {
+        operate: '订',
+        target: '餐厅',
+      },
+      products,
+      indices,
+    };
+    return data;
+  },
+  registerNluTdeScenario(scenarioId, nodes) {
+    const that = this;
+    nodes.filter(node => node.nodeType === 'nlu_pc').forEach((node) => {
+      const entityCollectingTab = node.entityCollectingTab;
+      if ((entityCollectingTab.entityCollectorList &&
+           entityCollectingTab.entityCollectorList.length > 0)
+          || entityCollectingTab.register_json) {
+        const data = that.convertToTDERegistryData(
+          scenarioId, entityCollectingTab, entityCollectingTab.nodeId);
+        api.registerNluTdeScenario(data);
+      }
+    });
   },
 };
