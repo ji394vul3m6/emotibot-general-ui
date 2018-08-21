@@ -3,6 +3,7 @@ export default {
     return {
       entry: ['triggerTab', 'edgeTab'],
       dialogue: ['settingTab', 'edgeTab'],
+      nlu_pc: ['nluPCSettingTab', 'entityCollectingTab', 'edgeTab'],
     };
   },
   getEntityListMap() {

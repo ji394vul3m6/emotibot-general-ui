@@ -21,6 +21,24 @@
         :initialSettingTab="initialSettingTab"
         @update="settingTab = $event"
       ></setting-edit-tab>
+      <nlu-pc-setting-tab ref="nluPCSettingTab"
+        v-if="currentTab === 'nluPCSettingTab'"
+        :initialNLUPCSettingTab="nluPCSettingTab"
+        @update="nluPCSettingTab = $event"
+      ></nlu-pc-setting-tab>
+      <entity-collecting-tab ref="entityCollectingTab"
+        v-if="currentTab === 'entityCollectingTab'"
+        :initialEntityCollectorList="entityCollectingTab.entityCollectorList || []"
+        :initialIdToNerMap="{}"
+        :initialRelatedEntities="entityCollectingTab.relatedEntities || {}"
+        :initialREParsers="entityCollectingTab.re_parsers || []"
+        :initialTDESetting="entityCollectingTab.tde_setting || {}"
+        :initialRegisterJSON="entityCollectingTab.register_json || {}"
+        @update="entityCollectingTab.entityCollectorList = $event"
+        @updateREParsers="entityCollectingTab.re_parsers = $event"
+        @updateTDESetting="entityCollectingTab.tde_setting = $event"
+        @updateRegisterJSON="entityCollectingTab.register_json = $event"
+      ></entity-collecting-tab>
       <edge-edit-tab ref="edgeTab"
         v-if="currentTab === 'edgeTab'"
         :initialEdgeTab="initialEdgeTab"
@@ -33,10 +51,12 @@
 </template>
 
 <script>
+import EntityCollectingTab from '@/modules/TaskEngine/TaskEngineV3/src/components/EntityCollectingPage';
 import TriggerEditTab from './TriggerEditTab';
 import SettingEditTab from './SettingEditTab';
 import EdgeEditTab from './EdgeEditTab';
 // import scenarioConvertor from '../_utils/scenarioConvertor';
+import NLUPCSettingEditTab from './NLUPCSettingEditTab';
 import optionConfig from '../_utils/optionConfig';
 
 export default {
@@ -45,6 +65,8 @@ export default {
     'trigger-edit-tab': TriggerEditTab,
     'setting-edit-tab': SettingEditTab,
     'edge-edit-tab': EdgeEditTab,
+    'entity-collecting-tab': EntityCollectingTab,
+    'nlu-pc-setting-tab': NLUPCSettingEditTab,
   },
   props: {
     extData: {
@@ -62,6 +84,8 @@ export default {
       initialSettingTab: {},
       initialEdgeTab: {},
       settingTab: undefined,
+      nluPCSettingTab: undefined,
+      entityCollectingTab: undefined,
       edgeTab: undefined,
     };
   },
@@ -94,13 +118,17 @@ export default {
       tabs.forEach((tab) => {
         if (tab === 'settingTab') {
           this.settingTab = this.node.settingTab;
-          this.initialSettingTab = this.settingTab;
+          this.initialSettingTab = JSON.parse(JSON.stringify(this.settingTab));
           this.initialSettingTab.nodeType = this.nodeType;
         } else if (tab === 'edgeTab') {
           this.edgeTab = this.node.edgeTab;
-          this.initialEdgeTab = this.edgeTab;
+          this.initialEdgeTab = JSON.parse(JSON.stringify(this.edgeTab));
           this.initialEdgeTab.nodeType = this.nodeType;
           this.initialEdgeTab.nodeId = this.node.nodeId;
+        } else if (tab === 'entityCollectingTab') {
+          this.entityCollectingTab = this.node.entityCollectingTab;
+        } else if (tab === 'nluPCSettingTab') {
+          this.nluPCSettingTab = this.node.nluPCSettingTab;
         }
       });
     },
@@ -124,6 +152,16 @@ export default {
           name: this.$t('task_engine_v2.node_edit_page.tabs.edge'),
           icon: 'setting',
         },
+        entityCollectingTab: {
+          type: 'entityCollectingTab',
+          name: this.$t('task_engine_v3.scenario_edit_page.tab.entity_collecting'),
+          icon: 'setting',
+        },
+        nluPCSettingTab: {
+          type: 'nluPCSettingTab',
+          name: this.$t('task_engine_v2.node_edit_page.tabs.setting'),
+          icon: 'setting',
+        },
       };
     },
     validResult(nodeResult) {
@@ -140,9 +178,13 @@ export default {
         nodeType: this.node.nodeType,
         settingTab: this.settingTab,
         edgeTab: this.edgeTab,
+        entityCollectingTab: this.entityCollectingTab,
+        nluPCSettingTab: this.nluPCSettingTab,
       };
       if (this.node.nodeType === 'entry') {
         nodeResult.nodeName = this.$t('task_engine_v2.node_type.entry');
+      } else if (this.node.nodeType === 'nlu_pc') {
+        nodeResult.nodeName = this.nluPCSettingTab.nodeName;
       } else {
         nodeResult.nodeName = this.settingTab.nodeName;
       }
@@ -171,16 +213,14 @@ export default {
 @import 'styles/variable.scss';
 
 #node-edit-page{
-  width: 880px;
+  width: 1060px;
   height: 70vh;
-  min-width: 880px;
-  min-height: 70vh;
   display: flex;
   flex-direction: row;
   .nav-bar{
     display: flex;
     flex-direction: column;
-    width: 160px;
+    flex: 0 0 160px;
     border-right: 1px solid $color-borderline;
     .tab-button{
       display: flex;
@@ -189,7 +229,7 @@ export default {
       line-height: 44px;
       font-size: 14px;
       color: $color-font-normal;
-      padding: 0px 0px 0px 60px;
+      padding: 0px 0px 0px 30px;
       margin: 0px 0px 4px 0px;
       align-items: center;
       cursor: pointer;

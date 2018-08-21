@@ -44,6 +44,10 @@ export default {
         tabData.settingTab = this.parserSettingTab(node);
       } else if (tab === 'edgeTab') {
         tabData.edgeTab = this.parseEdgeTab(node);
+      } else if (tab === 'nluPCSettingTab') {
+        tabData.nluPCSettingTab = this.parseNLUPCSettingTab(node);
+      } else if (tab === 'entityCollectingTab') {
+        tabData.entityCollectingTab = {};
       }
     });
     return {
@@ -52,7 +56,17 @@ export default {
       nodeType,
       settingTab: tabData.settingTab,
       edgeTab: tabData.edgeTab,
+      nluPCSettingTab: tabData.nluPCSettingTab,
+      entityCollectingTab: tabData.entityCollectingTab,
     };
+  },
+  parseNLUPCSettingTab(node) {
+    const tab = {};
+    // render nodeType, nodeName
+    tab.nodeType = node.node_type || '';
+    tab.nodeName = node.description || '';
+    tab.msg = node.content.msg;
+    return tab;
   },
   parserSettingTab(node) {
     const tab = {};
@@ -154,6 +168,14 @@ export default {
       node.default_parser_with_suffix = tabData.settingTab.parseFromThisNode;
       node.node_dialogue_cnt_limit = tabData.edgeTab.dialogueLimit;
     }
+    if (tabData.nodeType === 'nlu_pc') {
+      node.content = this.composeNLUPCContent(
+        tabData.entityCollectingTab.entityCollectorList,
+        tabData.entityCollectingTab.re_parsers,
+        tabData.entityCollectingTab.register_json,
+        tabData.nluPCSettingTab.msg,
+      );
+    }
     return node;
   },
   // convert tab data to content
@@ -163,6 +185,20 @@ export default {
       content = {};
     }
     return content;
+  },
+  composeNLUPCContent(entityCollectorList, reParsers, registerJson, msg) {
+    let entities;
+    console.log(entityCollectorList);
+    if (registerJson && registerJson.slotDefs) {
+      entities = registerJson.slotDefs.map(slot => ({ entityName: slot.slotName, prompt: null }));
+    } else {
+      entities = entityCollectorList;
+    }
+    return {
+      entities,
+      reParsers,
+      msg,
+    };
   },
   componseDialogueContent(tabData) {
     const questions = [];

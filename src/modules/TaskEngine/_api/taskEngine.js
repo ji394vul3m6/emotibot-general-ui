@@ -91,7 +91,7 @@ export default {
       scenarioList.forEach((scenario) => {
         scenarioRequestList.push(that.loadScenario(scenario.scenarioID));
       });
-      Promise.all(scenarioRequestList).then((allScenarioJSONs) => {
+      axios.all(scenarioRequestList).then((allScenarioJSONs) => {
         const result = [];
         allScenarioJSONs.forEach((scenarioJSON) => {
           result.push(this.collectScenario(scenarioJSON));
