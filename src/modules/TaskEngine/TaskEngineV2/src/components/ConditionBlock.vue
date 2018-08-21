@@ -252,8 +252,8 @@
 
 <script>
 import DropdownSelect from '@/components/DropdownSelect';
-import scenarioConvertor from '../_utils/scenarioConvertor';
-import selectOptions from '../_utils/selectOptions';
+import scenarioInitializer from '../_utils/scenarioInitializer';
+import optionConfig from '../_utils/optionConfig';
 
 export default {
   name: 'condition-block',
@@ -377,7 +377,7 @@ export default {
       this.$emit('deleteEdge');
     },
     addRule() {
-      const rule = scenarioConvertor.initialRule();
+      const rule = scenarioInitializer.initialRule();
       this.andRules.push({
         id: this.$uuid.v1(),
         source: rule.source,
@@ -389,14 +389,14 @@ export default {
       this.andRules.splice(index, 1);
     },
     addRegTargetKey(index) {
-      const operation = scenarioConvertor.initialRegularOperation();
+      const operation = scenarioInitializer.initialRegularOperation();
       this.andRules[index].content.operations.push(operation);
     },
     deleteRegTargetKey(index, idx) {
       this.andRules[index].content.operations.splice(idx, 1);
     },
     addQQCandidateEdge() {
-      this.candidateEdges.push(scenarioConvertor.initialCandidateEdge());
+      this.candidateEdges.push(scenarioInitializer.initialCandidateEdge());
     },
     deleteQQCandidateEdge(index) {
       this.candidateEdges.splice(index, 1);
@@ -412,7 +412,7 @@ export default {
           id: this.$uuid.v1(),
           source: newSource,
           funcName: options[0].value,
-          content: scenarioConvertor.initialFunctionContent(options[0].value, this.nodeId),
+          content: scenarioInitializer.initialFunctionContent(options[0].value, this.nodeId),
         }];
       } else {
         if (this.andRules[index].source === newSource) return;
@@ -440,7 +440,7 @@ export default {
       }
       this.edgeType = 'qq';
       this.threshold = '0';
-      this.candidateEdges = [scenarioConvertor.initialCandidateEdge()];
+      this.candidateEdges = [scenarioInitializer.initialCandidateEdge()];
     },
     changeToNormalEdge(originalEdgeType, index, newFuncName) {
       if (originalEdgeType === 'qq') {
@@ -457,7 +457,7 @@ export default {
         this.andRules[index].funcName = newFuncName;
       }
       // initial content
-      const content = scenarioConvertor.initialFunctionContent(newFuncName, this.nodeId);
+      const content = scenarioInitializer.initialFunctionContent(newFuncName, this.nodeId);
       this.andRules[index].content = content;
 
       // update parser options
@@ -483,7 +483,7 @@ export default {
       this.andRules[index].content.trans = newMapTable;
     },
     entityModuleOptions(parser) {
-      const entityModuleOptions = selectOptions.getEntityModuleOptionsMap();
+      const entityModuleOptions = optionConfig.getEntityModuleOptionsMap();
       return entityModuleOptions[parser];
     },
     getSourceOptions() {

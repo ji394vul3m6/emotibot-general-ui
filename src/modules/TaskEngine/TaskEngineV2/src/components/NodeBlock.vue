@@ -4,7 +4,7 @@
     X
   </div>
   <div class="label-node-name">
-    {{node.description}}
+    {{node.nodeName}}
   </div>
   <div class="button-row">
     <text-button
@@ -45,11 +45,6 @@ export default {
     },
     toNodeOptions: {
       type: Array,
-      required: true,
-      default: undefined,
-    },
-    jsonVersion: {
-      type: String,
       required: true,
       default: undefined,
     },
@@ -124,13 +119,12 @@ export default {
     editNode() {
       const that = this;
       that.$pop({
-        title: `${this.node.description}（${this.node.node_id}）`,
+        title: `${that.node.nodeName}（${that.node.nodeId}）`,
         component: NodeEditPage,
         validate: true,
         extData: {
           node: that.node,
           toNodeOptions: that.toNodeOptions,
-          jsonVersion: that.jsonVersion,
         },
         callback: {
           ok: (nodeResult) => {

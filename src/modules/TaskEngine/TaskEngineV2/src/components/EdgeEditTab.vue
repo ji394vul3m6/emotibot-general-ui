@@ -78,7 +78,7 @@
 import draggable from 'vuedraggable';
 import DropdownSelect from '@/components/DropdownSelect';
 import ConditionBlock from './ConditionBlock';
-import scenarioConvertor from '../_utils/scenarioConvertor';
+import scenarioInitializer from '../_utils/scenarioInitializer';
 
 export default {
   name: 'edge-edit-tab',
@@ -101,7 +101,6 @@ export default {
     return {
       nodeId: '',
       nodeType: '',
-      edges: [],
       normalEdges: [],
       dialogueLimit: null,
       toNodeOptions: [],
@@ -144,7 +143,6 @@ export default {
       const edgeTab = JSON.parse(JSON.stringify(this.initialEdgeTab));
       this.nodeId = edgeTab.nodeId;
       this.nodeType = edgeTab.nodeType;
-      this.edges = edgeTab.edges;
       this.normalEdges = edgeTab.normalEdges;
       this.exceedThenGoto = edgeTab.exceedThenGoto;
       this.elseInto = edgeTab.elseInto;
@@ -178,7 +176,7 @@ export default {
       this.normalEdges[index] = $event;
     },
     addEdge() {
-      const edge = scenarioConvertor.initialEdge();
+      const edge = scenarioInitializer.initialEdge();
       edge.id = this.$uuid.v1();
       this.normalEdges.push(edge);
     },

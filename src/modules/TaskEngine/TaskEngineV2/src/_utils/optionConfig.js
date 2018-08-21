@@ -1,4 +1,10 @@
 export default {
+  nodeType2Tabs() {
+    return {
+      entry: ['triggerTab', 'edgeTab'],
+      dialogue: ['settingTab', 'edgeTab'],
+    };
+  },
   getEntityListMap() {
     const commonEntityOptions = [
       'time', 'city', 'landmark', 'money', 'time_period',

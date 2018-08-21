@@ -50,7 +50,7 @@
 import taskEngineApi from '@/modules/TaskEngine/_api/taskEngine';
 import general from '@/modules/TaskEngine/_utils/general';
 import CreateScenarioPop from './CreateScenarioPop';
-import scenarioConvertor from '../_utils/scenarioConvertor';
+import scenarioInitializer from '../_utils/scenarioInitializer';
 
 export default {
   name: 'scenario-list-page',
@@ -135,7 +135,7 @@ export default {
                 const metadata = data.template.metadata;
                 const scenarioId = metadata.scenario_id;
                 if (obj.templateID === '') {
-                  const scenario = scenarioConvertor.initialScenario(metadata);
+                  const scenario = scenarioInitializer.initialScenario(metadata);
                   that.saveScenario(scenarioId, scenario).then(() => {
                     const path = general.composeV2Path(`scenario/${scenarioId}`);
                     that.$router.replace(path);

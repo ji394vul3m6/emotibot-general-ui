@@ -9,12 +9,11 @@
       <edges :edges="filteredEdges"></edges>
       <template v-for="(nodeBlock, index) in nodeBlocks">
         <node-block
-          :key="nodeBlock.data.node_id"
+          :key="nodeBlock.data.nodeId"
           :x="nodeBlock.x"
           :y="nodeBlock.y"
           :initialNode="nodeBlock.data"
           :toNodeOptions="toNodeOptions"
-          :jsonVersion="jsonVersion"
           @updatePosition="updateNodePosition(index, $event)"
           @savePosition="saveNodePosition(index)"
           @deleteNode="deleteNode(index)"
@@ -43,6 +42,7 @@ import general from '@/modules/TaskEngine/_utils/general';
 import NodeBlock from './NodeBlock';
 import Edges from './Edges';
 import scenarioConvertor from '../_utils/scenarioConvertor';
+import scenarioInitializer from '../_utils/scenarioInitializer';
 
 export default {
   name: 'scenario-edit-page',
@@ -56,7 +56,6 @@ export default {
       moduleDataLayout: {},
       nodeBlocks: [],
       edges: [],
-      jsonVersion: undefined,
       panelTabOptions: this.getPanelTabOptions(),
       nodeOptions: this.getNodeOptions(),
       canvasWidth: 2000,
@@ -68,7 +67,7 @@ export default {
     idToNodeBlock() {
       const map = {};
       this.nodeBlocks.forEach((nodeBlock) => {
-        map[nodeBlock.data.node_id] = nodeBlock;
+        map[nodeBlock.data.nodeId] = nodeBlock;
       });
       return map;
     },
@@ -76,8 +75,8 @@ export default {
       const options = [];
       Object.keys(this.idToNodeBlock).forEach((key) => {
         const nodeBlock = this.idToNodeBlock[key];
-        const nodeName = nodeBlock.data.description;
-        const nodeType = nodeBlock.data.node_type || '';
+        const nodeName = nodeBlock.data.nodeName;
+        const nodeType = nodeBlock.data.nodeType || '';
         if (nodeType !== 'entry') {
           options.push({
             text: `${nodeName} (ID: ${key})`,
@@ -88,19 +87,37 @@ export default {
       return options;
     },
     allEdges() {
+      // allEdges include normal, qq, else_into and exceedThenGoTo edges, not include hidden edges.
       const edgeList = [];
       Object.keys(this.idToNodeBlock).forEach((key) => {
         const nodeBlock = this.idToNodeBlock[key];
-        nodeBlock.data.edges.forEach((edge) => {
-          if (!edge.to_node_id) return;
-          if (!this.idToNodeBlock[edge.to_node_id]) return;
+        if (nodeBlock.data.edgeTab && nodeBlock.data.edgeTab.normalEdges) {
+          nodeBlock.data.edgeTab.normalEdges.forEach((edge) => {
+            // TODO: handle qq edge
+            if (!edge.to_node_id) return;
+            if (!this.idToNodeBlock[edge.to_node_id]) return;
 
-          edgeList.push({
-            from_id: nodeBlock.data.node_id,
-            to_id: edge.to_node_id,
-            edge_type: edge.edge_type,
+            edgeList.push({
+              from_id: nodeBlock.data.nodeId,
+              to_id: edge.to_node_id,
+              edge_type: edge.edge_type,
+            });
           });
-        });
+        }
+        if (nodeBlock.data.edgeTab && nodeBlock.data.edgeTab.exceedThenGoto) {
+          edgeList.push({
+            from_id: nodeBlock.data.nodeId,
+            to_id: nodeBlock.data.edgeTab.exceedThenGoto,
+            edge_type: 'exceedThenGoTo',
+          });
+        }
+        if (nodeBlock.data.edgeTab && nodeBlock.data.edgeTab.elseInto) {
+          edgeList.push({
+            from_id: nodeBlock.data.nodeId,
+            to_id: nodeBlock.data.edgeTab.exceedThenGoto,
+            edge_type: 'else_into',
+          });
+        }
       });
       return edgeList;
     },
@@ -109,18 +126,23 @@ export default {
         edge.edge_type !== 'hidden' &&
         edge.from_id !== '0' &&
         edge.to_id !== '0' &&
+        edge.to_id !== null &&
+        edge.to_id !== undefined &&
         edge.from_id !== edge.to_id,
-      ).map((edge, index) => ({
-        x1: this.idToNodeBlock[edge.from_id].x + 115,
-        y1: this.idToNodeBlock[edge.from_id].y + 60,
-        x2: this.idToNodeBlock[edge.to_id].x + 115,
-        y2: this.idToNodeBlock[edge.to_id].y + 60,
-        style: {
-          stroke: this.rainbowColors[index % this.rainbowColors.length],
-          strokeWidth: 4,
-          fill: 'none',
-        },
-      }));
+      ).map((edge, index) => {
+        const nodeBlockMap = this.idToNodeBlock;
+        return {
+          x1: nodeBlockMap[edge.from_id].x + 115,
+          y1: nodeBlockMap[edge.from_id].y + 60,
+          x2: nodeBlockMap[edge.to_id].x + 115,
+          y2: nodeBlockMap[edge.to_id].y + 60,
+          style: {
+            stroke: this.rainbowColors[index % this.rainbowColors.length],
+            strokeWidth: 4,
+            fill: 'none',
+          },
+        };
+      });
     },
     canvasStyle() {
       return {
@@ -133,8 +155,13 @@ export default {
   methods: {
     loadScenario(scenarioId) {
       return taskEngineApi.loadScenario(scenarioId).then((data) => {
-        this.moduleData = JSON.parse(data.result.editingContent);
-        this.moduleDataLayouts = JSON.parse(data.result.editingLayout);
+        const jsonData = {
+          moduleData: JSON.parse(data.result.editingContent),
+          moduleDataLayouts: JSON.parse(data.result.editingLayout),
+        };
+        const newJsonData = scenarioConvertor.convertJsonToVersion('1.1', jsonData);
+        this.moduleData = newJsonData.moduleData;
+        this.moduleDataLayouts = newJsonData.moduleDataLayouts;
         window.moduleData = this.moduleData;
         window.moduleDataLayouts = this.moduleDataLayouts;
         this.scenarioName = this.moduleData.metadata.scenario_name;
@@ -146,24 +173,19 @@ export default {
     renderData(moduleData, moduleDataLayouts) {
       // console.log(moduleData);
       // console.log(moduleDataLayouts);
-      this.nodeBlocks = moduleData.nodes.filter(node => node.node_id !== '0').map((node) => {
-        const nodeId = node.node_id;
+      this.nodeBlocks = moduleData.ui_data.nodes.map((node) => {
+        const nodeId = node.nodeId;
         return {
           x: moduleDataLayouts[nodeId].position.left,
           y: moduleDataLayouts[nodeId].position.top,
           data: node,
         };
       });
-      if ('version' in this.moduleData) {
-        this.jsonVersion = this.moduleData.version;
-      } else {
-        this.jsonVersion = '1.0';
-      }
     },
     saveNode(index, node) {
       this.nodeBlocks[index].data = node;
       const nodes = Object.keys(this.nodeBlocks).map(key => this.nodeBlocks[key].data);
-      const allNodes = [scenarioConvertor.initialExitNode(), ...nodes];
+      const allNodes = [scenarioInitializer.initialExitNode(), ...nodes];
       this.moduleData = {
         version: '1.1',
         metadata: this.moduleData.metadata,
@@ -181,7 +203,7 @@ export default {
       this.nodeBlocks[index].y = position.top;
     },
     saveNodePosition(index) {
-      const nodeId = this.nodeBlocks[index].data.node_id;
+      const nodeId = this.nodeBlocks[index].data.nodeId;
       this.moduleDataLayouts[nodeId].position.left = this.nodeBlocks[index].x;
       this.moduleDataLayouts[nodeId].position.top = this.nodeBlocks[index].y;
       console.log('saveNodePosition');

@@ -1,130 +1,145 @@
+import optionConfig from './optionConfig';
+
 export default {
-  s4_sort() { return Math.floor((1 + Math.random()) * 0x10000).toString(10).substring(1); },
-  guid_sort() { return this.s4_sort() + this.s4_sort() + this.s4_sort(); },
-  initialScenario(metadata) {
-    const entryNodeId = this.guid_sort();
-    const scenario = {
-      editingContent: {
-        metadata: JSON.parse(JSON.stringify(metadata)),
-        setting: {
-          sys_scenario_dialogue_cnt_limit: 30,
-          sys_node_dialogue_cnt_limit: 3,
-        },
-        nodes: [
-          {
-            node_id: '0',
-            description: 'Exit',
-            node_type: 'exit',
-          },
-          {
-            node_id: entryNodeId,
-            description: '入口节点',
-            node_type: 'entry',
-            entry_condition_rules: [],
-            warnings: [],
-            edges: [],
-          },
-        ],
-        msg_confirm: [],
-        global_edges: [],
-      },
-      editingLayout: { [entryNodeId]: { position: { left: 300, top: 200 } } },
-    };
-    return scenario;
+  convertJsonToVersion(toVersion, jsonData) {
+    let jsonVersion;
+    if ('version' in jsonData.moduleData) {
+      jsonVersion = jsonData.moduleData.version;
+    } else {
+      jsonVersion = '1.0';
+    }
+
+    let newJsonData = {};
+    if (jsonVersion === '1.0') {
+      newJsonData = this.convertJson_1_0_to_1_1(jsonData);
+    } else {
+      newJsonData = jsonData;
+    }
+    return newJsonData;
   },
-  initialExitNode() {
+  convertJson_1_0_to_1_1(initialJsonData) {
+    const jsonData = JSON.parse(JSON.stringify(initialJsonData));
+    const nodes = jsonData.moduleData.nodes.filter(
+      node => node.node_id !== '0',
+    ).map(
+      node => this.convertNode(node),
+    );
+    jsonData.moduleData.ui_data = {
+      nodes,
+    };
+    return jsonData;
+  },
+  convertNode(initialNode) {
+    const node = JSON.parse(JSON.stringify(initialNode));
+    const nodeType = node.node_type;
+    // render tab data
+    let tabs = [];
+    const nodeType2TabsMap = optionConfig.nodeType2Tabs();
+    if (nodeType in nodeType2TabsMap) {
+      tabs = nodeType2TabsMap[nodeType];
+    }
+    const tabData = {};
+    tabs.forEach((tab) => {
+      if (tab === 'settingTab') {
+        tabData.settingTab = this.parserSettingTab(node);
+      } else if (tab === 'edgeTab') {
+        tabData.edgeTab = this.parseEdgeTab(node);
+      }
+    });
     return {
-      node_id: '0',
-      description: 'Exit',
-      node_type: 'exit',
+      nodeId: node.node_id,
+      nodeName: node.description || '',
+      nodeType,
+      settingTab: tabData.settingTab,
+      edgeTab: tabData.edgeTab,
     };
   },
-  initialFunctionContent(funcName, nodeId) {
-    const map = {
-      match: '',
-      contains: '',
-      regular_exp: {
-        pattern: '',
-        operations: [
-          {
-            operation: 'set_to_global_info',
-            index: 0,
-            key: '',
-          },
-        ],
-      },
-      common_parser: {
-        tags: '',
-        key_suffix: `_${nodeId}`,
-      },
-      task_parser: {
-        tags: '',
-        key_suffix: `_${nodeId}`,
-      },
-      hotel_parser: {
-        tags: '',
-        key_suffix: `_${nodeId}`,
-      },
-      user_custom_parser: {
-        trans: '',
-        to_key: '',
-      },
-      polarity_parser: {
-        key: '',
-        key_suffix: `_${nodeId}`,
-      },
-      api_parser: '',
-      // qq: 'qq',
-    };
-    return map[funcName];
+  parserSettingTab(node) {
+    const tab = {};
+    // parse nodeName
+    tab.nodeName = node.description || '';
+
+    // parse parser, targetEntities, skipIfKeyExist
+    const c = node.edges[1].condition_rules;
+    if (c.length > 0 && c[0].length > 1) {
+      tab.parser = c[0][1].functions[0].function_name;
+      tab.targetEntities = c[0][1].functions[0].content.tags.split(',');
+      tab.skipIfKeyExist = c[0][0].functions[0].content.map(obj => obj.key.split('_')[0]);
+    } else {
+      tab.parser = 'none';
+      tab.targetEntities = [];
+      tab.skipIfKeyExist = [];
+    }
+
+    // parse responses
+    tab.initialResponse = node.content.questions.find(
+      q => q.question_type === 'initial_response',
+    ).msg;
+    tab.failureResponse = node.content.questions.find(
+      q => q.question_type === 'failure_response',
+    ).msg;
+
+    // parse parseFromThisNode
+    tab.parseFromThisNode = node.default_parser_with_suffix;
+    return tab;
   },
-  initialEdge() {
-    return {
-      edge_type: 'normal',
-      to_node_id: null,
-      actions: [],
-      condition_rules: [
-        [
-          {
-            source: 'text',
-            functions: [
-              {
-                function_name: 'match',
-                content: '',
-              },
-            ],
-          },
-        ],
-      ],
-    };
-  },
-  initialRule() {
-    return {
-      source: 'text',
-      functions: [
-        {
-          function_name: 'match',
-          content: '',
-        },
-      ],
-    };
-  },
-  initialRegularOperation() {
-    return {
-      operation: 'set_to_global_info',
-      index: 0,
-      key: '',
-    };
-  },
-  initialCandidateEdge() {
-    return {
-      to_node_id: null,
-      tar_text: '',
-    };
+  parseEdgeTab(node) {
+    const tab = {};
+    const nodeType = node.node_type || '';
+
+    // render edges, normalEdges
+    const edges = node.edges;
+    tab.normalEdges = edges.filter(edge => edge.edge_type === 'normal' || edge.edge_type === 'qq');
+
+    // render exceedThenGoto, elseInto
+    if (nodeType !== 'entry') {
+      let exceedGotoEdge = edges.find(edge => edge.edge_type === 'exceedThenGoTo');
+      if (!exceedGotoEdge) {
+        exceedGotoEdge = edges.find((edge) => {
+          if (edge.condition_rules &&
+             edge.condition_rules.length > 0 &&
+             edge.condition_rules[0].length > 0 &&
+             edge.condition_rules[0][0].functions &&
+             edge.condition_rules[0][0].functions.length > 0 &&
+             edge.condition_rules[0][0].functions[0].content_text_array &&
+             edge.condition_rules[0][0].functions[0].content_text_array.length > 0 &&
+             edge.condition_rules[0][0].functions[0].content_text_array[0] === '若超过节点对话轮数限制'
+            ) {
+            edge.edge_type = 'exceedThenGoTo';
+            return true;
+          }
+          return false;
+        });
+      }
+      if (exceedGotoEdge) {
+        tab.exceedThenGoto = exceedGotoEdge.to_node_id;
+      } else {
+        tab.exceedThenGoto = null;
+      }
+    }
+    const elseIntoEdge = edges.find(edge => edge.edge_type === 'else_into');
+    tab.elseInto = elseIntoEdge.to_node_id;
+
+    // render dialogueLimit
+    if (node.node_dialogue_cnt_limit) {
+      tab.dialogueLimit = node.node_dialogue_cnt_limit;
+    } else {
+      const dialogueLimitEdge = edges.find(edge =>
+        edge.edge_type === 'hidden' &&
+        edge.actions &&
+        edge.actions.length >= 1 &&
+        edge.actions[0].key === 'sys_node_dialogue_cnt_limit',
+      );
+      if (dialogueLimitEdge) {
+        tab.dialogueLimit = dialogueLimitEdge.actions[0].val;
+      } else {
+        tab.dialogueLimit = 3;
+      }
+    }
+    return tab;
   },
   // convert tab data to node
-  convertTabDataToNode(tabData, jsonVersion) {
-    console.log(jsonVersion);
+  convertTabDataToNode(tabData) {
     const node = {
       node_id: tabData.nodeId,
       node_type: tabData.nodeType,

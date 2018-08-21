@@ -78,7 +78,7 @@
 
 <script>
 import DropdownSelect from '@/components/DropdownSelect';
-import selectOptions from '../_utils/selectOptions';
+import optionConfig from '../_utils/optionConfig';
 
 export default {
   name: 'setting-edit-tab',
@@ -136,6 +136,7 @@ export default {
   methods: {
     renderTabContent() {
       const settingTab = JSON.parse(JSON.stringify(this.initialSettingTab));
+      console.log(settingTab);
       this.nodeType = settingTab.nodeType;
       this.nodeName = settingTab.nodeName;
       this.parser = settingTab.parser;
@@ -146,8 +147,10 @@ export default {
       this.parseFromThisNode = settingTab.parseFromThisNode;
 
       // render entityModuleOptions, entityKeyNameOptions
-      const entityModuleOptionsMap = selectOptions.getEntityModuleOptionsMap();
+      const entityModuleOptionsMap = optionConfig.getEntityModuleOptionsMap();
       this.entityModuleOptions = entityModuleOptionsMap[this.parser];
+      console.log(this.parser);
+      console.log(this.entityModuleOptions);
       const entityKeyNameOptionsMap = this.getEntityKeyNameOptionsMap();
       this.entityKeyNameOptions = entityKeyNameOptionsMap[this.parser];
     },
@@ -162,7 +165,7 @@ export default {
       }
       if (this.parser === 'none') return;
 
-      const entityModuleOptionsMap = selectOptions.getEntityModuleOptionsMap();
+      const entityModuleOptionsMap = optionConfig.getEntityModuleOptionsMap();
       this.entityModuleOptions = entityModuleOptionsMap[this.parser];
       const entityKeyNameOptionsMap = this.getEntityKeyNameOptionsMap();
       this.entityKeyNameOptions = entityKeyNameOptionsMap[this.parser];
@@ -197,7 +200,7 @@ export default {
       ];
     },
     getEntityKeyNameOptionsMap() {
-      const entityListMap = selectOptions.getEntityListMap();
+      const entityListMap = optionConfig.getEntityListMap();
       return {
         none: [],
         common_parser: entityListMap.common_parser.map(option => ({
