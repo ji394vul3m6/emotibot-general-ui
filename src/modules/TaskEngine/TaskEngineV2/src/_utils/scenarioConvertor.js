@@ -42,9 +42,9 @@ export default {
     const tabData = {};
     tabs.forEach((tab) => {
       if (tab === 'triggerTab') {
-        tabData.triggerTab = this.parserTriggerTab(node);
+        tabData.triggerTab = this.parseTriggerTab(node);
       } else if (tab === 'settingTab') {
-        tabData.settingTab = this.parserSettingTab(node);
+        tabData.settingTab = this.parseSettingTab(node);
       } else if (tab === 'edgeTab') {
         tabData.edgeTab = this.parseEdgeTab(node);
       } else if (tab === 'nluPCSettingTab') {
@@ -70,7 +70,7 @@ export default {
       entityCollectingTab: tabData.entityCollectingTab,
     };
   },
-  parserTriggerTab(node) {
+  parseTriggerTab(node) {
     if (!node.entry_condition_rules) return undefined;
     const rules = node.entry_condition_rules;
     return {
@@ -85,7 +85,7 @@ export default {
     tab.msg = node.content.msg;
     return tab;
   },
-  parserSettingTab(node) {
+  parseSettingTab(node) {
     const tab = {};
     // parse nodeName
     tab.nodeName = node.description || '';

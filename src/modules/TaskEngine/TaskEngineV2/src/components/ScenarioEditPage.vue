@@ -40,8 +40,8 @@
   <div class="top-panel">
     <div class="button-block"
       @mouseover="showTopPanelButtonLabel.setting=true"
-      @mouseleave="showTopPanelButtonLabel.setting=false">
-      <!-- <i class="icon wb-link-intact"></i> -->
+      @mouseleave="showTopPanelButtonLabel.setting=false"
+      @click="editScenarioSettings()">
       <icon class="icon-panel" icon-type="setting" :enableHover="false" :size=18 @click=""/>
       <transition name="label">
         <div
@@ -53,7 +53,8 @@
     </div>
     <div class="button-block"
       @mouseover="showTopPanelButtonLabel.globalEdge=true"
-      @mouseleave="showTopPanelButtonLabel.globalEdge=false">
+      @mouseleave="showTopPanelButtonLabel.globalEdge=false"
+      @click="editGlobalEdge()">
       <icon class="icon-panel" icon-type="canlendar" :enableHover="false" :size=18 @click=""/>
       <transition name="label">
         <div
@@ -98,6 +99,8 @@ import taskEngineApi from '@/modules/TaskEngine/_api/taskEngine';
 import general from '@/modules/TaskEngine/_utils/general';
 import NodeBlock from './NodeBlock';
 import Edges from './Edges';
+import GlobalEdgeEditPop from './GlobalEdgeEditPop';
+import ScenarioSettingsEditPop from './ScenarioSettingsEditPop';
 import scenarioConvertor from '../_utils/scenarioConvertor';
 import scenarioInitializer from '../_utils/scenarioInitializer';
 
@@ -112,6 +115,7 @@ export default {
       moduleData: {},
       moduleDataLayout: {},
       setting: {},
+      globalEdges: [],
       nodeBlocks: [],
       edges: [],
       panelTabOptions: [],
@@ -237,7 +241,12 @@ export default {
     },
     renderData(moduleData, moduleDataLayouts) {
       this.scenarioName = this.moduleData.metadata.scenario_name;
-      this.setting = this.moduleData.setting;
+      this.globalEdges = this.moduleData.global_edges;
+      this.setting = {
+        scenarioName: this.moduleData.metadata.scenario_name,
+        scenarioDialogueCntLimit: this.moduleData.setting.sys_scenario_dialogue_cnt_limit,
+        nodeDialogueCntLimit: this.moduleData.setting.sys_node_dialogue_cnt_limit,
+      };
       this.nodeBlocks = moduleData.ui_data.nodes.map((node) => {
         const nodeId = node.nodeId;
         return {
@@ -357,6 +366,41 @@ export default {
       if (scrollPercentY >= 95) {
         this.canvasHeight *= 1.1;
       }
+    },
+    editScenarioSettings() {
+      const that = this;
+      that.$pop({
+        title: '',
+        component: ScenarioSettingsEditPop,
+        validate: true,
+        extData: {
+          setting: this.setting,
+        },
+        callback: {
+          ok: (setting) => {
+            this.setting = setting;
+            // TODO: save scenario
+          },
+        },
+      });
+    },
+    editGlobalEdge() {
+      const that = this;
+      that.$pop({
+        title: '',
+        component: GlobalEdgeEditPop,
+        validate: true,
+        extData: {
+          globalEdges: this.globalEdges,
+          toNodeOptions: this.toNodeOptions,
+        },
+        callback: {
+          ok: (edges) => {
+            this.globalEdges = edges;
+            // TODO: save scenario
+          },
+        },
+      });
     },
     exportScenario() {
       taskEngineApi.exportScenario(this.scenarioId);
@@ -512,6 +556,7 @@ export default {
       height: 36px;
       border: 1px solid $color-borderline;
       padding: 0px 16px 0px 16px;
+      cursor: pointer;
       &:first-child{
         border-radius: 6px 0px 0px 6px;
       }

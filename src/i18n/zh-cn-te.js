@@ -46,6 +46,15 @@ export default {
         edge: '连线',
       },
     },
+    scenario_settings_edit_pop: {
+      scenario_name: '场景名称',
+      scenario_dialogue_cnt_limit: '全场景对话数',
+      default_node_dialogue_cnt_limit: '预设节点对话数',
+    },
+    global_edge_edit_pop: {
+      instruction: '为每个节点增加通用的连线',
+      button_add_edge: '＋增加连线',
+    },
     trigger_edit_tab: {
       instruction: '设置触发此场景的条件',
       button_add_rule: '＋增加规则',

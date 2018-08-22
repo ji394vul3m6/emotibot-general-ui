@@ -81,7 +81,7 @@ export default {
       currentTab: 'settingTab',
       node: {},
       nodeType: undefined,
-      toNodeOptions: {},
+      toNodeOptions: [],
       allTabs: this.getAllTabs(),
       initialTriggerTab: {},
       initialSettingTab: {},
