@@ -104,6 +104,20 @@ export default {
     delete_category_msg: '确定要删除分类 {name} 及其子分类吗？',
   },
   statistics: {
+    cluster: {
+      title: '辅助分类',
+      condition: '筛选条件',
+      type: {
+        by_search: '筛选结果',
+        by_check: '列表勾选',
+      },
+      result_count: '根据 {type} 共 {total} 笔用户问题，排除已忽略句子 {ignore} 笔、已标注句子 {marked} 笔',
+      cluster_count: '为您生成 {num} 组分类',
+      cluster_info: '「{title}」分类，已勾选 {num} 笔',
+      cluster_tag: '分类名称',
+      cluster_q_count: '用户问题笔数',
+      others: '其他',
+    },
     answer: '回答',
     score: '匹配分数',
     chat_num: '聊天数',
@@ -111,9 +125,7 @@ export default {
     session_num: '会话数',
     unique_user: '独立用户',
     time: '时间',
-    platform: '平台',
     brand: '渠道',
-    sex: '性别',
     age: '年龄段',
     hobbies: '购买爱好',
     day: '天',
@@ -121,7 +133,7 @@ export default {
     visit_record: '访问数据统计',
     dimension: '维度',
     qa_record: '问答类别统计',
-    user_question: '用户问句',
+    user_question: '用户问题',
     count: '提问次数',
     hot_question: '热点问题',
     failed_question: '未匹配问题',
@@ -132,17 +144,39 @@ export default {
     question_last_time: '末次提问时间',
     audit_record_filename: '操作日志',
 
-    keyword_search: '关键词查询',
-    time_range: '时间段',
+    keyword_search: '关键词',
+    time_range: '访问时间',
     user_id: '用户ID',
     user_nick: '用户昵称',
     module: '模组',
-    action: '动作',
+    action: '操作',
 
     filter: '筛选条件',
     export_mode: '高级筛选',
-    total_records: '共有 {num} 条日志',
+    total_records: '共有 {num} 笔日志，已勾选 {count} 笔',
 
+    recommend_question: '推荐标准问题',
+    recommend_empty_msg_1: '目前无推荐标准问题',
+    recommend_empty_msg_2: '可在右上角搜寻标准问题',
+    cluster_info: '通过特有的算法将相似问的句子进行聚类方便统一标注，建议勾选100条以上的用户问题，数量越大分类越准确',
+    action_info: '「忽略功能」：可以将已正确回复的用户问句忽略，方便对其它问句标注。「标注功能」：可以将用户问句标注到正确的标准问上，训练完成后增强机器人理解能力',
+    clustering_msg: '{num} 笔用户问题进行辅助分类中，请勿离开此页面',
+    cluster_dropdown: {
+      by_search: '依据筛选结果 (共 {num} 笔)',
+      by_search_more: '依据筛选结果 (共 {num} 笔，少於 {size} 筆))',
+      by_checked: '依据列表勾选 (共 {num} 笔)',
+      by_checked_more: '依据列表勾选 (共 {num} 笔，少於 {size} 筆)',
+    },
+    success: {
+      ignore_ok: '更新忽略状态成功',
+      cluster_ok: '辅助分类完成，请继续其他操作',
+    },
+    error: {
+      ignore_fail: '更新忽略状态失败',
+      try_cluster_later: '辅助分类工具正在占用，请稍后操作',
+      got_it: '知道了',
+      cluster_fail: '辅助分类失败',
+    },
     categories: {
       title: '维度',
       platform: '平台',
@@ -170,7 +204,6 @@ export default {
         1: '准新客',
       },
     },
-
     emotions: {
       title: '情感',
       angry: '愤怒',
@@ -178,7 +211,6 @@ export default {
       satisfied: '满意',
       neutral: '中性',
     },
-
     qtypes: {
       title: '问答类别',
       business: '业务',
@@ -186,7 +218,38 @@ export default {
       other: '其他',
       all: '全部',
     },
-
+    platform: {
+      title: '平台',
+      wechat: '微信',
+      app: 'android',
+      web: 'web',
+      ios: 'ios',
+    },
+    sex: {
+      title: '性别',
+      all: '全部',
+      male: '男',
+      female: '女',
+    },
+    ignore: {
+      title: '忽略状态',
+      all: '全部',
+      ignore: '忽略',
+      not_ignore: '未忽略',
+      batch_ignore: '批量忽略',
+      cancel_ignore: '取消忽略',
+    },
+    mark: {
+      title: '标注状态',
+      all: '全部',
+      marked: '已标注',
+      not_marked: '未标注',
+      mark: '标注',
+      batch_mark: '批量标注',
+      as: '标注为',
+      multi: '多笔标注纪录',
+      re_marked: '重新标注',
+    },
     audit: {
       op_module: '操作模块',
       op_type: '操作类型',
@@ -790,6 +853,7 @@ export default {
     custom: '自订',
     yes: '是',
     no: '否',
+    empty: '无',
     operation: '操作',
     search: '搜寻',
     all: '全部',
@@ -827,6 +891,7 @@ export default {
     test: '测试',
     modify: '修改',
     save_change: '储存变更',
+    go_back: '返回',
   },
   dimension: {
     categories: {
