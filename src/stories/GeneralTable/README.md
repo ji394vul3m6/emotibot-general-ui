@@ -23,7 +23,7 @@
     :table-header="tableHeader"
     :table-data="tableData
     :action="tableAction"
-    @checked-change="handleCheckedChange"
+    @checkedChange="handleCheckedChange"
     checkbox
     showEmpty>
   </general-table>
