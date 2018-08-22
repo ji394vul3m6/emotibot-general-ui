@@ -65,7 +65,8 @@
     </div>
     <div class="button-block"
       @mouseover="showTopPanelButtonLabel.export=true"
-      @mouseleave="showTopPanelButtonLabel.export=false">
+      @mouseleave="showTopPanelButtonLabel.export=false"
+      @click="exportScenario()">
       <icon class="icon-panel" icon-type="save" :enableHover="false" :size=18 @click=""/>
       <transition name="label">
         <div
@@ -77,7 +78,8 @@
     </div>
     <div class="button-block"
       @mouseover="showTopPanelButtonLabel.publish=true"
-      @mouseleave="showTopPanelButtonLabel.publish=false">
+      @mouseleave="showTopPanelButtonLabel.publish=false"
+      @click="publishScenario()">
       <icon class="icon-panel" icon-type="upload" :enableHover="false" :size=18 @click=""/>
       <transition name="label">
         <div
@@ -112,17 +114,18 @@ export default {
       setting: {},
       nodeBlocks: [],
       edges: [],
-      panelTabOptions: this.getPanelTabOptions(),
-      nodeOptions: this.getNodeOptions(),
+      panelTabOptions: [],
+      nodeOptions: [],
       canvasWidth: 2000,
       canvasHeight: 2000,
-      rainbowColors: this.getRainbowColors(),
+      rainbowColors: [],
       showTopPanelButtonLabel: {
         setting: false,
         globalEdge: false,
         export: false,
         publish: false,
       },
+      nodeTypes: [],
     };
   },
   computed: {
@@ -355,6 +358,22 @@ export default {
         this.canvasHeight *= 1.1;
       }
     },
+    exportScenario() {
+      taskEngineApi.exportScenario(this.scenarioId);
+    },
+    publishScenario() {
+      const that = this;
+      taskEngineApi.publishScenario(this.appId, this.scenarioId).then(() => {
+        that.$notify({ text: that.$t('task_engine_v2.scenario_list_page.publish_succeed') });
+        // enable scenario after published
+        taskEngineApi.switchScenario(this.appId, this.scenarioId, true).then(() => {
+        }, (err) => {
+          this.$notifyFail(`enable scenario error:${err.message}`);
+        });
+      }, (err) => {
+        that.$notifyFail(`${that.$t('task_engine_v2.scenario_list_page.publish_failed')}:${err.message}`);
+      });
+    },
     getPanelTabOptions() {
       const tabs = [
         this.$t('task_engine_v2.scenario_edit_page.tabs.node'),
@@ -365,8 +384,11 @@ export default {
       }));
     },
     getNodeOptions() {
-      const nodeTypes = this.getNodeTypes();
-      return nodeTypes.filter(nodeType => nodeType.type !== 'entry');
+      return this.nodeTypes.filter(nodeType => nodeType.type !== 'entry');
+    },
+    getNodeTypeName(type) {
+      const nodeType = this.nodeTypes.find(t => t.type === type);
+      return nodeType.name;
     },
     getNodeTypes() {
       const nodeTypes = [
@@ -397,11 +419,6 @@ export default {
       ];
       return nodeTypes;
     },
-    getNodeTypeName(type) {
-      const nodeTypes = this.getNodeTypes();
-      const nodeType = nodeTypes.find(t => t.type === type);
-      return nodeType.name;
-    },
     getRainbowColors() {
       return [
         '#db6b6c', '#5a9bd3', '#42a198', '#f8c954', '#7e47ae',
@@ -412,6 +429,10 @@ export default {
   beforeMount() {
     this.appId = this.$cookie.get('appid');
     this.scenarioId = this.$route.params.id;
+    this.panelTabOptions = this.getPanelTabOptions();
+    this.nodeTypes = this.getNodeTypes();
+    this.nodeOptions = this.getNodeOptions();
+    this.rainbowColors = this.getRainbowColors();
     this.loadScenario(this.scenarioId);
   },
   mounted() {

@@ -16,6 +16,7 @@
       <trigger-edit-tab ref="triggerTab"
         v-if="currentTab === 'triggerTab'"
         :initialTriggerTab="initialTriggerTab"
+        @update="triggerTab = $event"
       ></trigger-edit-tab>
       <setting-edit-tab ref="settingTab"
         v-if="currentTab === 'settingTab'"
@@ -184,6 +185,7 @@ export default {
         nodeId: this.node.nodeId,
         nodeName: '',
         nodeType: this.node.nodeType,
+        triggerTab: this.triggerTab,
         settingTab: this.settingTab,
         edgeTab: this.edgeTab,
         entityCollectingTab: this.entityCollectingTab,
