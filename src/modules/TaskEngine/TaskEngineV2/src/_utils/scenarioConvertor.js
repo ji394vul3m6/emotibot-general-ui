@@ -53,8 +53,8 @@ export default {
         tabData.settingTab = this.parseSettingTab(node);
       } else if (tab === 'edgeTab') {
         tabData.edgeTab = this.parseEdgeTab(node);
-      } else if (tab === 'nluPCSettingTab') {
-        tabData.nluPCSettingTab = this.parseNLUPCSettingTab(node);
+      } else if (tab === 'settingBasicTab') {
+        tabData.settingBasicTab = this.parseSettingBasicTab(node);
       } else if (tab === 'entityCollectingTab') {
         tabData.entityCollectingTab = {
           relatedEntities: {
@@ -72,7 +72,7 @@ export default {
       triggerTab: tabData.triggerTab,
       settingTab: tabData.settingTab,
       edgeTab: tabData.edgeTab,
-      nluPCSettingTab: tabData.nluPCSettingTab,
+      settingBasicTab: tabData.settingBasicTab,
       entityCollectingTab: tabData.entityCollectingTab,
     };
   },
@@ -83,12 +83,11 @@ export default {
       rules,
     };
   },
-  parseNLUPCSettingTab(node) {
+  parseSettingBasicTab(node) {
     const tab = {};
     // render nodeType, nodeName
     tab.nodeType = node.node_type || '';
     tab.nodeName = node.description || '';
-    tab.msg = node.content.msg;
     return tab;
   },
   parseSettingTab(node) {

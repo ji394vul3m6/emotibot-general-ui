@@ -15,7 +15,7 @@ export default {
       entry: '入口节点',
       dialogue: '对话节点',
       restful: 'RESTful数据调用节点',
-      nlu_pc_node: 'TDE参数收集节点',
+      nlu_pc: 'TDE参数收集节点',
       parameter_collecting: '参数收集节点',
       router: '转发',
       dialogue_description: '与使用者进行交互的节点',

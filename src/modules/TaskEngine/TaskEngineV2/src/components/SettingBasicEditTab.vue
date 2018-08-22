@@ -13,12 +13,6 @@
       v-model="nodeName">
     </input>
   </div>
-  <div class="block">
-    <div class="label-header">{{$t("task_engine_v2.setting_edit_tab.default_q")}}</div>
-    <textarea class="text-response"
-      v-model="msg">
-    </textarea>
-  </div>
 </div>
 </template>
 
@@ -27,7 +21,7 @@ export default {
   name: 'nlu-pc-setting-tab',
   components: {},
   props: {
-    initialNLUPCSettingTab: {
+    initialSettingBasicTab: {
       type: Object,
       required: true,
     },
@@ -36,14 +30,13 @@ export default {
     return {
       nodeType: '',
       nodeName: '',
-      msg: '',
     };
   },
   computed: {
     settingTab() {
       const result = {
         nodeName: this.nodeName,
-        msg: this.msg,
+        nodeType: this.nodeType,
       };
       console.log(result);
       return result;
@@ -59,10 +52,9 @@ export default {
   },
   methods: {
     renderTabContent() {
-      const settingTab = JSON.parse(JSON.stringify(this.initialNLUPCSettingTab));
+      const settingTab = JSON.parse(JSON.stringify(this.initialSettingBasicTab));
       this.nodeType = settingTab.nodeType;
       this.nodeName = settingTab.nodeName;
-      this.msg = settingTab.msg;
     },
   },
   beforeMount() {

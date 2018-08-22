@@ -52,10 +52,9 @@ export default {
       nodeId: this.guid_sort(),
       nodeName,
       nodeType: 'nlu_pc',
-      nluPCSettingTab: {
+      settingBasicTab: {
         nodeName,
         nodeType: 'nlu_pc',
-        msg: '',
       },
       entityCollectingTab: {
         entityCollectorList: [],
