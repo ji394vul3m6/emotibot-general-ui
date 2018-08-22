@@ -207,6 +207,8 @@ $pop-spacing: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
+  @include auto-overflow();
+  @include customScrollbar();
   &.slide-in-enter-active, &.slide-in-leave-active {
     transition: all 0.25s ease-in;
     .pop-content {
@@ -233,7 +235,7 @@ $pop-spacing: 24px;
 
     background: white;
     // min-width: 300px;
-    max-width: 90%;
+    // max-width: 90%;
     max-height: $pop-max-height;
 
     display: flex;

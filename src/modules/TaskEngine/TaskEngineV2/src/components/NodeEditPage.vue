@@ -1,5 +1,5 @@
 <template lang="html">
-<div id="node-edit-page">
+<div id="node-edit-page" :style="pageStyle">
   <div class="nav-bar">
     <template v-for="(tab, idx) in tabs">
       <div class="tab-button"
@@ -91,6 +91,9 @@ export default {
       nluPCSettingTab: undefined,
       entityCollectingTab: undefined,
       edgeTab: undefined,
+      pageStyle: {
+        width: '880px',
+      },
     };
   },
   computed: {
@@ -107,6 +110,13 @@ export default {
     },
   },
   watch: {
+    nodeType() {
+      if (this.nodeType && this.nodeType === 'nlu_pc') {
+        this.pageStyle = {
+          width: '1060px',
+        };
+      }
+    },
   },
   methods: {
     renderData() {
@@ -223,7 +233,6 @@ export default {
 @import 'styles/variable.scss';
 
 #node-edit-page{
-  width: 1060px;
   height: 70vh;
   display: flex;
   flex-direction: row;
@@ -260,7 +269,7 @@ export default {
   .content{
     flex: 1 1 auto;
     @include auto-overflow();
-    @include customScrollbar();  
+    @include customScrollbar();
   }
 }
 </style>
