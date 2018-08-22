@@ -21,7 +21,7 @@
     @click="addEdge()">
     {{$t("task_engine_v2.edge_edit_tab.button_add_edge")}}
   </button>
-  <div class="exceed_limit block" v-if="nodeType !== 'entry'">
+  <div class="exceed_limit block" v-if="nodeType !== 'entry' && nodeType !== 'nlu_pc'">
     <div class="condition-row">
       <div class="label label-bold">
         {{$t("task_engine_v2.edge_edit_tab.label_exceed_limit")}}
@@ -157,7 +157,7 @@ export default {
       // render toNodeOptions, exceedThenGotoOptions, elseIntoOptions
       let options = JSON.parse(JSON.stringify(this.initialToNodeOptions));
       options = options.filter(option => option.value !== this.nodeId);
-      if (this.nodeType !== 'entry') {
+      if (this.nodeType !== 'entry' && this.nodeType !== 'nlu_pc') {
         this.exceedThenGotoOptions = [{ text: 'Exit (ID: 0)', value: '0' }].concat(options);
         this.toNodeOptions = [{ text: 'do nothing', value: null }].concat(this.exceedThenGotoOptions);
         this.elseIntoOptions = [

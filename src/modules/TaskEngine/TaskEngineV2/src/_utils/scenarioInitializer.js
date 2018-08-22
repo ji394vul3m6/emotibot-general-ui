@@ -42,8 +42,40 @@ export default {
   initialNode(nodeType, nodeName, nodeDialogueCntLimit) {
     if (nodeType === 'dialogue') {
       return this.initialDialogueNode(nodeName, nodeDialogueCntLimit);
+    } else if (nodeType === 'nlu_pc') {
+      return this.initialNLUPCNode(nodeName, nodeDialogueCntLimit);
     }
     return {};
+  },
+  initialNLUPCNode(nodeName, nodeDialogueCntLimit) {
+    return {
+      nodeId: this.guid_sort(),
+      nodeName,
+      nodeType: 'nlu_pc',
+      nluPCSettingTab: {
+        nodeName,
+        nodeType: 'nlu_pc',
+        msg: '',
+      },
+      entityCollectingTab: {
+        entityCollectorList: [],
+        relatedEntities: {
+          relatedEntityCollectorList: [],
+          relatedEntityMatrix: [],
+        },
+        re_parsers: [],
+        tde_setting: {
+          jumpOutTimes: nodeDialogueCntLimit,
+        },
+        register_json: {},
+      },
+      edgeTab: {
+        normalEdges: [],
+        exceedThenGoto: '0',
+        elseInto: '0',
+        dialogueLimit: nodeDialogueCntLimit,
+      },
+    };
   },
   initialDialogueNode(nodeName, nodeDialogueCntLimit) {
     return {
