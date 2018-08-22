@@ -19,7 +19,7 @@
           :initialNode="nodeBlock.data"
           :toNodeOptions="toNodeOptions"
           @updatePosition="updateNodePosition(index, $event)"
-          @savePosition="saveNodePosition()"
+          @savePosition="saveScenario()"
           @deleteNode="deleteNode(index)"
           @saveNode="saveNode(index, $event)">
         </node-block>
@@ -232,14 +232,17 @@ export default {
         const newJsonData = scenarioConvertor.convertJsonToVersion('1.1', jsonData);
         this.moduleData = newJsonData.moduleData;
         this.moduleDataLayouts = newJsonData.moduleDataLayouts;
-        window.moduleData = this.moduleData;
-        window.moduleDataLayouts = this.moduleDataLayouts;
-        this.renderData(this.moduleData, this.moduleDataLayouts);
+        this.updateWindowModuleData();
+        this.renderData();
       }, (err) => {
         general.popErrorWindow(this, 'loadScenario error', err.message);
       });
     },
-    renderData(moduleData, moduleDataLayouts) {
+    updateWindowModuleData() {
+      window.moduleData = JSON.parse(JSON.stringify(this.moduleData));
+      window.moduleDataLayouts = JSON.parse(JSON.stringify(this.moduleDataLayouts));
+    },
+    renderData() {
       this.scenarioName = this.moduleData.metadata.scenario_name;
       this.globalEdges = this.moduleData.global_edges;
       this.setting = {
@@ -247,67 +250,71 @@ export default {
         scenarioDialogueCntLimit: this.moduleData.setting.sys_scenario_dialogue_cnt_limit,
         nodeDialogueCntLimit: this.moduleData.setting.sys_node_dialogue_cnt_limit,
       };
-      this.nodeBlocks = moduleData.ui_data.nodes.map((node) => {
+      this.nodeBlocks = this.moduleData.ui_data.nodes.map((node) => {
         const nodeId = node.nodeId;
         return {
-          x: moduleDataLayouts[nodeId].position.left,
-          y: moduleDataLayouts[nodeId].position.top,
+          x: this.moduleDataLayouts[nodeId].position.left,
+          y: this.moduleDataLayouts[nodeId].position.top,
           data: node,
         };
       });
     },
-    saveNode(index, node) {
-      this.nodeBlocks[index].data = node;
-      const uiNodes = Object.keys(this.nodeBlocks).map(key => this.nodeBlocks[key].data);
-      // const allNodes = [scenarioInitializer.initialExitNode(), ...nodes];
-      this.moduleData = {
+    saveScenario() {
+      // update data
+      const data = {
         version: '1.1',
-        metadata: this.moduleData.metadata,
-        global_edges: this.moduleData.global_edges || [],
-        setting: this.setting,
+        metadata: {
+          scenario_name: this.setting.scenarioName,
+          update_time: this.moduleData.metadata.update_time,
+          update_user: this.moduleData.metadata.update_user,
+          scenario_id: this.moduleData.metadata.scenario_id,
+        },
+        setting: {
+          sys_scenario_dialogue_cnt_limit: this.setting.scenarioDialogueCntLimit,
+          sys_node_dialogue_cnt_limit: this.setting.nodeDialogueCntLimit,
+        },
+        global_edges: this.globalEdges,
         msg_confirm: this.moduleData.msg_confirm,
         nodes: this.moduleData.nodes,
         ui_data: {
-          nodes: uiNodes,
+          nodes: this.nodeBlocks.map(nodeBlock => nodeBlock.data),
         },
       };
-      scenarioConvertor.registerNluTdeScenario(this.scenarioId, this.moduleData.ui_data.nodes);
-      // console.log('saveNode');
-      // console.log(this.moduleData);
-      // this.saveScenario(this.moduleData, this.moduleDataLayouts);
-    },
-    updateNodePosition(index, position) {
-      this.nodeBlocks[index].x = position.left;
-      this.nodeBlocks[index].y = position.top;
-    },
-    saveNodePosition() {
-      this.moduleDataLayouts = {};
+      // update layout
+      const layout = {};
       this.nodeBlocks.forEach((nodeBlock) => {
         const nodeId = nodeBlock.data.nodeId;
-        this.moduleDataLayouts[nodeId] = {
+        layout[nodeId] = {
           position: {
             left: nodeBlock.x,
             top: nodeBlock.y,
           },
         };
       });
-      // console.log('saveNodePosition');
-      // console.log(this.moduleDataLayouts);
-      // this.saveScenario(this.moduleData, this.moduleDataLayouts);
+      console.log('saveScenario===');
+      console.log(data);
+      console.log(layout);
+      // return taskEngineApi.saveScenario(
+      //   this.appId,
+      //   this.scenarioId,
+      //   JSON.stringify(data),
+      //   JSON.stringify(layout),
+      // ).then(() => {
+      //   this.moduleData = data;
+      //   this.moduleDataLayouts = layout;
+      //   this.updateWindowModuleData();
+      //   this.$notify({ text: this.$t('error_msg.save_success') });
+      // }, (err) => {
+      //   this.$notifyFail(`saveScenario failed, error:${err.message}`);
+      // });
     },
-    saveScenario(data, layout) {
-      return taskEngineApi.saveScenario(
-        this.appId,
-        this.scenarioId,
-        JSON.stringify(data),
-        JSON.stringify(layout),
-      ).then(() => {
-        window.moduleData = data;
-        window.moduleDataLayouts = layout;
-        this.$notify({ text: this.$t('error_msg.save_success') });
-      }, (err) => {
-        general.popErrorWindow(this, 'saveScenario error', err.message);
-      });
+    saveNode(index, node) {
+      this.nodeBlocks[index].data = node;
+      this.saveScenario();
+    },
+    updateNodePosition(index, position) {
+      this.nodeBlocks[index].x = position.left;
+      this.nodeBlocks[index].y = position.top;
     },
     deleteNode(index) {
       const nodeName = this.nodeBlocks[index].data.nodeName;
@@ -322,7 +329,7 @@ export default {
         callback: {
           ok() {
             that.nodeBlocks.splice(index, 1);
-            // TODO: save scenario;
+            that.saveScenario();
           },
         },
       });
@@ -338,14 +345,14 @@ export default {
     nodeOptionDrop(e) {
       const nodeType = e.dataTransfer.getData('type');
       const nodeName = e.dataTransfer.getData('name');
-      const nodeDialogueCntLimit = this.setting.sys_node_dialogue_cnt_limit;
+      const nodeDialogueCntLimit = this.setting.nodeDialogueCntLimit;
       const node = scenarioInitializer.initialNode(nodeType, nodeName, nodeDialogueCntLimit);
       this.nodeBlocks.push({
         x: e.offsetX,
         y: e.offsetY,
         data: node,
       });
-      // TODO: save scenario
+      this.saveScenario();
     },
     onPageWheel() {
       // expand canvas width and height
@@ -379,7 +386,7 @@ export default {
         callback: {
           ok: (setting) => {
             this.setting = setting;
-            // TODO: save scenario
+            this.saveScenario();
           },
         },
       });
@@ -397,7 +404,7 @@ export default {
         callback: {
           ok: (edges) => {
             this.globalEdges = edges;
-            // TODO: save scenario
+            this.saveScenario();
           },
         },
       });
@@ -406,6 +413,10 @@ export default {
       taskEngineApi.exportScenario(this.scenarioId);
     },
     publishScenario() {
+      // register TDE tasks
+      scenarioConvertor.registerNluTdeScenario(this.scenarioId, this.moduleData.ui_data.nodes);
+
+      // publish scenario
       const that = this;
       taskEngineApi.publishScenario(this.appId, this.scenarioId).then(() => {
         that.$notify({ text: that.$t('task_engine_v2.scenario_list_page.publish_succeed') });

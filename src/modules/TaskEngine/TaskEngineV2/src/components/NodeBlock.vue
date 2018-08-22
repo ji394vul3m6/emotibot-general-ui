@@ -63,7 +63,8 @@ export default {
       node: JSON.parse(JSON.stringify(this.initialNode)),
       lastMouseX: 0,
       lastMouseY: 0,
-      moving: false,
+      canMove: false,
+      hasMoved: false,
     };
   },
   computed: {
@@ -91,16 +92,14 @@ export default {
 
       const target = e.target || e.srcElement;
       if (this.$el.contains(target) && e.which === 1) {
-        this.moving = true;
+        this.canMove = true;
         if (e.preventDefault) e.preventDefault();
       }
     },
     onMouseMove(e) {
-      if (!this.moving) {
+      if (!this.canMove) {
         return;
       }
-      // console.log('onMouseMove');
-
       const mouseX = e.pageX;
       const mouseY = e.pageY;
 
@@ -112,15 +111,15 @@ export default {
 
       const left = this.x + diffX;
       const top = this.y + diffY;
-
+      this.hasMoved = true;
       this.$emit('updatePosition', { left, top });
     },
     onMouseUp() {
-      // console.log('onMouseUp');
-      if (this.moving) {
+      if (this.canMove && this.hasMoved) {
         this.$emit('savePosition');
       }
-      this.moving = false;
+      this.canMove = false;
+      this.hasMoved = false;
     },
     deleteNode() {
       this.$emit('deleteNode');
