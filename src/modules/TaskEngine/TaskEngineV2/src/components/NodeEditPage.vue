@@ -209,10 +209,6 @@ export default {
         nodeResult.nodeName = this.settingTab.nodeName;
       }
       if (this.validResult(nodeResult)) {
-        // console.log(tabData);
-        // const nodeResult = scenarioConvertor.convertTabDataToNode(tabData);
-        // console.log(nodeResult);
-        // console.log(JSON.stringify(nodeResult));
         this.$emit(
           'validateSuccess',
           nodeResult,

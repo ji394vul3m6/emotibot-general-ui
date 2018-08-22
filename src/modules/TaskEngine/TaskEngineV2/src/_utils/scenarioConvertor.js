@@ -1,4 +1,5 @@
 import optionConfig from './optionConfig';
+import scenarioInitializer from './scenarioInitializer';
 import api from '../../../_api/taskEngine';
 
 export default {
@@ -9,7 +10,12 @@ export default {
     } else {
       jsonVersion = '1.0';
     }
-
+    if (toVersion === '1.1') {
+      return this.convertJsonToVersion_1_1(jsonVersion, jsonData);
+    }
+    return {};
+  },
+  convertJsonToVersion_1_1(jsonVersion, jsonData) {
     let newJsonData = {};
     if (jsonVersion === '1.0') {
       newJsonData = this.convertJson_1_0_to_1_1(jsonData);
@@ -169,28 +175,33 @@ export default {
     }
     return tab;
   },
-  // convert tab data to node
-  convertTabDataToNode(tabData) {
+  convertUiNodesToNodes(uiNodes) {
+    const nodes = uiNodes.map(uiNode => this.convertUiNodeToNode(uiNode));
+    const exitNode = scenarioInitializer.initialExitNode();
+    return [exitNode].concat(nodes);
+  },
+  // convert uiNode to node
+  convertUiNodeToNode(uiNode) {
     const node = {
-      node_id: tabData.nodeId,
-      node_type: tabData.nodeType,
-      description: tabData.nodeName,
-      edges: this.convertTabDataToEdges(tabData),
+      node_id: uiNode.nodeId,
+      node_type: uiNode.nodeType,
+      description: uiNode.nodeName,
+      edges: this.convertUiNodeToEdges(uiNode),
       global_vars: [],
       warnings: [],
       content: {},
     };
-    if (tabData.nodeType === 'dialogue') {
-      node.content = this.componseDialogueContent(tabData);
-      node.default_parser_with_suffix = tabData.settingTab.parseFromThisNode;
-      node.node_dialogue_cnt_limit = tabData.edgeTab.dialogueLimit;
+    if (uiNode.nodeType === 'dialogue') {
+      node.content = this.componseDialogueContent(uiNode);
+      node.default_parser_with_suffix = uiNode.settingTab.parseFromThisNode;
+      node.node_dialogue_cnt_limit = uiNode.edgeTab.dialogueLimit;
     }
-    if (tabData.nodeType === 'nlu_pc') {
+    if (uiNode.nodeType === 'nlu_pc') {
       node.content = this.composeNLUPCContent(
-        tabData.entityCollectingTab.entityCollectorList,
-        tabData.entityCollectingTab.re_parsers,
-        tabData.entityCollectingTab.register_json,
-        tabData.nluPCSettingTab.msg,
+        uiNode.entityCollectingTab.entityCollectorList,
+        uiNode.entityCollectingTab.re_parsers,
+        uiNode.entityCollectingTab.register_json,
+        uiNode.nluPCSettingTab.msg,
       );
     }
     return node;
@@ -217,16 +228,16 @@ export default {
       msg,
     };
   },
-  componseDialogueContent(tabData) {
+  componseDialogueContent(uiNode) {
     const questions = [];
-    if (tabData.settingTab.parser !== 'none' &&
-        tabData.settingTab.targetEntities.length > 0) {
+    if (uiNode.settingTab.parser !== 'none' &&
+        uiNode.settingTab.targetEntities.length > 0) {
         // a default parser had been selected
         // insert skip_response
-      let skipIfKeyExist = tabData.settingTab.skipIfKeyExist;
-      const parseFromThisNode = tabData.settingTab.parseFromThisNode;
+      let skipIfKeyExist = uiNode.settingTab.skipIfKeyExist;
+      const parseFromThisNode = uiNode.settingTab.parseFromThisNode;
       if (parseFromThisNode) {
-        const nodeId = tabData.nodeId;
+        const nodeId = uiNode.nodeId;
         skipIfKeyExist = skipIfKeyExist.map(key => `${key}_${nodeId}`);
       }
       const skipQ = this.questionTemplste('skip_response');
@@ -237,13 +248,13 @@ export default {
     }
     // insert failure_response
     const failureQ = this.questionTemplste('failure_response');
-    failureQ.msg = tabData.settingTab.failureResponse;
-    failureQ.condition_rules = this.conditionParsingFailedIs(true);
+    failureQ.msg = uiNode.settingTab.failureResponse;
+    failureQ.condition_rules = [[this.conditionParsingFailedIs(true)]];
     questions.push(failureQ);
 
     // insert initial_response
     const initialQ = this.questionTemplste('initial_response');
-    initialQ.msg = tabData.settingTab.initialResponse;
+    initialQ.msg = uiNode.settingTab.initialResponse;
     questions.push(initialQ);
     return {
       questions,
@@ -257,19 +268,18 @@ export default {
     };
   },
   // convert tab data to edges
-  convertTabDataToEdges(tabData) {
-    // console.log(JSON.stringify(tabData));
+  convertUiNodeToEdges(uiNode) {
     let edges = [];
-    if (tabData.nodeType === 'dialogue') {
-      const hiddenEdges = this.composeDialogueNodeHiddenEdges(tabData);
+    if (uiNode.nodeType === 'dialogue') {
+      const hiddenEdges = this.composeDialogueNodeHiddenEdges(uiNode);
       const hiddenSetCntLimit = this.edgeHiddenSetNodeDialogueCntLimit(
-        tabData.edgeTab.dialogueLimit,
+        uiNode.edgeTab.dialogueLimit,
       );
-      const exceedThenGoto = this.edgeExceedThenGoTo(tabData.edgeTab.exceedThenGoto);
-      const elseInto = this.edgeElseInto(tabData.nodeId, tabData.edgeTab.elseInto);
+      const exceedThenGoto = this.edgeExceedThenGoTo(uiNode.edgeTab.exceedThenGoto);
+      const elseInto = this.edgeElseInto(uiNode.nodeId, uiNode.edgeTab.elseInto);
       edges = [
         ...hiddenEdges,
-        ...tabData.edgeTab.normalEdges,
+        ...uiNode.edgeTab.normalEdges,
         hiddenSetCntLimit,
         exceedThenGoto,
         elseInto,
@@ -277,12 +287,12 @@ export default {
     }
     return edges;
   },
-  composeDialogueNodeHiddenEdges(tabData) {
-    const nodeId = tabData.nodeId;
-    const dialogueLimit = tabData.edgeTab.dialogueLimit;
-    const targetEntities = tabData.settingTab.targetEntities;
-    let skipIfKeyExist = tabData.settingTab.skipIfKeyExist;
-    const parseFromThisNode = tabData.settingTab.parseFromThisNode;
+  composeDialogueNodeHiddenEdges(uiNode) {
+    const nodeId = uiNode.nodeId;
+    const dialogueLimit = uiNode.edgeTab.dialogueLimit;
+    const targetEntities = uiNode.settingTab.targetEntities;
+    let skipIfKeyExist = uiNode.settingTab.skipIfKeyExist;
+    const parseFromThisNode = uiNode.settingTab.parseFromThisNode;
 
     const hidden1 = this.hiddenEdgeTemplate();
     if (parseFromThisNode) {

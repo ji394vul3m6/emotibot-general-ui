@@ -260,6 +260,8 @@ export default {
       });
     },
     saveScenario() {
+      const uiNodes = this.nodeBlocks.map(nodeBlock => nodeBlock.data);
+      const nodes = scenarioConvertor.convertUiNodesToNodes(uiNodes);
       // update data
       const data = {
         version: '1.1',
@@ -275,9 +277,9 @@ export default {
         },
         global_edges: this.globalEdges,
         msg_confirm: this.moduleData.msg_confirm,
-        nodes: this.moduleData.nodes,
+        nodes,
         ui_data: {
-          nodes: this.nodeBlocks.map(nodeBlock => nodeBlock.data),
+          nodes: uiNodes,
         },
       };
       // update layout
@@ -291,6 +293,14 @@ export default {
           },
         };
       });
+      const replacer = function x(key, value) {
+        return ((value instanceof Object) && !(value instanceof Array)) ?
+          Object.keys(value).sort().reduce((sorted, k) => {
+            sorted[k] = value[k];
+            return sorted;
+          }, {}) : value;
+      };
+      console.log(JSON.stringify(data, replacer));
       console.log('saveScenario===');
       console.log(data);
       console.log(layout);
