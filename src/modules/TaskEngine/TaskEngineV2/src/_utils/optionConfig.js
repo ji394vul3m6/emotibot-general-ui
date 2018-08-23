@@ -49,4 +49,120 @@ export default {
       })),
     };
   },
+
+  getBasicCompareOptions(context) {
+    return [
+      {
+        text: context.$t('task_engine_v2.condition_block.operator.equal_to'),
+        value: '==',
+      },
+      {
+        text: context.$t('task_engine_v2.condition_block.operator.not_equal_to'),
+        value: '!=',
+      },
+      {
+        text: context.$t('task_engine_v2.condition_block.operator.greater_than'),
+        value: '>',
+      },
+      {
+        text: context.$t('task_engine_v2.condition_block.operator.greater_or_equal_to'),
+        value: '>=',
+      },
+      {
+        text: context.$t('task_engine_v2.condition_block.operator.less_than'),
+        value: '<',
+      },
+      {
+        text: context.$t('task_engine_v2.condition_block.operator.less_or_equal_to'),
+        value: '<=',
+      },
+    ];
+  },
+  getKeyValMatchCompareOptions(context) {
+    const options = this.getBasicCompareOptions(context);
+    return [
+      ...options,
+      {
+        text: context.$t('task_engine_v2.condition_block.operator.ignore_case_compare'),
+        value: 'ignore_case_compare',
+      },
+      {
+        text: context.$t('task_engine_v2.condition_block.operator.reg_exp'),
+        value: 'reg_exp',
+      },
+    ];
+  },
+  getKeyKeyMatchCompareOptions(context) {
+    const options = this.getBasicCompareOptions(context);
+    return [
+      ...options,
+      {
+        text: context.$t('task_engine_v2.condition_block.operator.ignore_case_compare'),
+        value: 'ignore_case_compare',
+      },
+      {
+        text: context.$t('task_engine_v2.condition_block.operator.in'),
+        value: 'in',
+      },
+    ];
+  },
+  getListLengthMatchCompareOptions(context) {
+    return this.getBasicCompareOptions(context);
+  },
+  getCounterCheckOptions(context) {
+    return [
+      {
+        text: context.$t('task_engine_v2.condition_block.node_counter'),
+        value: 'node_counter',
+      },
+      {
+        text: context.$t('task_engine_v2.condition_block.scenario_counter'),
+        value: 'scenario_counter',
+      },
+    ];
+  },
+  getCuParserOptions() {
+    return [
+      {
+        text: 'Intent',
+        value: 'Intent',
+      },
+      {
+        text: 'Intent_Rewrite',
+        value: 'Intent_Rewrite',
+      },
+      {
+        text: 'SentenceType',
+        value: 'SentenceType',
+      },
+      {
+        text: 'UserID',
+        value: 'UserID',
+      },
+      {
+        text: 'SpeechAct',
+        value: 'SpeechAct',
+      },
+      {
+        text: 'personStandard',
+        value: 'personStandard',
+      },
+      {
+        text: 'polarity',
+        value: 'polarity',
+      },
+      {
+        text: 'NE',
+        value: 'NE',
+      },
+      {
+        text: 'NE_MT',
+        value: 'NE_MT',
+      },
+      {
+        text: 'memory',
+        value: 'memory',
+      },
+    ];
+  },
 };

@@ -134,7 +134,63 @@ export default {
         key_suffix: `_${nodeId}`,
       },
       api_parser: '',
-      // qq: 'qq',
+      key_val_match: [
+        {
+          compare: '==',
+          key: '',
+          val: '',
+        },
+      ],
+      key_key_match: [
+        {
+          key2: '',
+          key1: '',
+          compare: '==',
+        },
+      ],
+      contain_key: [
+        {
+          key: '',
+        },
+      ],
+      not_contain_key: [
+        {
+          key: '',
+        },
+      ],
+      list_length_match: [
+        {
+          compare: '==',
+          key: '',
+          val: '',
+        },
+      ],
+      counter_check: 'node_counter',
+      user_custom_transform: {
+        trans: '',
+        from_key: '',
+        to_key: '',
+      },
+      regular_exp_from_var: {
+        operations: [
+          {
+            index: 0,
+            operation: 'set_to_global_info',
+            key: '',
+          },
+        ],
+        pattern: '',
+        from_key: '',
+      },
+      assign_value: [
+        {
+          operation: 'set_to_global_info',
+          key: '',
+          val: '',
+        },
+      ],
+      cu_parser: 'Intent',
+      custom_cu_parser: '',
     };
     return map[funcName];
   },

@@ -157,6 +157,241 @@
             <input class="input-content" v-model="rule.content"></input>
           </div>
         </div>
+        <!-- 键值匹配 -->
+        <div class="content-api-parser" v-if="rule.funcName === 'key_val_match'">
+          <div class="row">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_block.label_compare_operator")}}
+            </div>
+            <dropdown-select
+              class="select"
+              :value="[rule.content[0].compare]"
+              @input="rule.content[0].compare = $event[0]"
+              :options="keyValMatchCompareOptions"
+              :showCheckedIcon="false"
+              width="420px"
+              :inputBarStyle="selectStyle"
+            />
+          </div>
+          <div class="row">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_block.label_key")}}
+            </div>
+            <input class="input-content" v-model="rule.content[0].key"></input>
+          </div>
+          <div class="row">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_block.label_value")}}
+            </div>
+            <input class="input-content" v-model="rule.content[0].val"></input>
+          </div>
+        </div>
+        <!-- 键键匹配 -->
+        <div class="content-api-parser" v-if="rule.funcName === 'key_key_match'">
+          <div class="row">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_block.label_compare_operator")}}
+            </div>
+            <dropdown-select
+              class="select"
+              :value="[rule.content[0].compare]"
+              @input="rule.content[0].compare = $event[0]"
+              :options="keyKeyMatchCompareOptions"
+              :showCheckedIcon="false"
+              width="420px"
+              :inputBarStyle="selectStyle"
+            />
+          </div>
+          <div class="row">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_block.label_key")}}
+            </div>
+            <input class="input-content" v-model="rule.content[0].key1"></input>
+          </div>
+          <div class="row">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_block.label_key")}}
+            </div>
+            <input class="input-content" v-model="rule.content[0].key2"></input>
+          </div>
+        </div>
+        <!-- 包含键 -->
+        <div class="content-api-parser" v-if="rule.funcName === 'contain_key'">
+          <div class="row">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_block.label_content")}}
+            </div>
+            <input class="input-content" v-model="rule.content[0].key"></input>
+          </div>
+        </div>
+        <!-- 不包含键 -->
+        <div class="content-api-parser" v-if="rule.funcName === 'not_contain_key'">
+          <div class="row">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_block.label_content")}}
+            </div>
+            <input class="input-content" v-model="rule.content[0].key"></input>
+          </div>
+        </div>
+        <!-- 序列长度匹配 -->
+        <div class="content-api-parser" v-if="rule.funcName === 'list_length_match'">
+          <div class="row">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_block.label_compare_operator")}}
+            </div>
+            <dropdown-select
+              class="select"
+              :value="[rule.content[0].compare]"
+              @input="rule.content[0].compare = $event[0]"
+              :options="listLengthMatchCompareOptions"
+              :showCheckedIcon="false"
+              width="420px"
+              :inputBarStyle="selectStyle"
+            />
+          </div>
+          <div class="row">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_block.label_key")}}
+            </div>
+            <input class="input-content" v-model="rule.content[0].key"></input>
+          </div>
+          <div class="row">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_block.label_value")}}
+            </div>
+            <input class="input-content" v-model="rule.content[0].val"></input>
+          </div>
+        </div>
+        <!-- 轮次检查 -->
+        <div class="content-api-parser" v-if="rule.funcName === 'counter_check'">
+          <div class="row">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_block.label_content")}}
+            </div>
+            <dropdown-select
+              class="select"
+              :value="[rule.content]"
+              @input="rule.content = $event[0]"
+              :options="counterCheckOptions"
+              :showCheckedIcon="false"
+              width="420px"
+              :inputBarStyle="selectStyle"
+            />
+          </div>
+        </div>
+        <!-- 转换数据 -->
+        <div class="content-api-parser" v-if="rule.funcName === 'user_custom_transform'">
+          <div class="row">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_block.label_mapping_table")}}
+            </div>
+            <dropdown-select
+              class="select"
+              :value="[rule.content.trans]"
+              @input="rule.content.trans = $event[0]"
+              :options="[]"
+              :showCheckedIcon="false"
+              width="420px"
+              :inputBarStyle="selectStyle"
+            />
+          </div>
+          <div class="row">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_block.label_source_key")}}
+            </div>
+            <input class="input-content" v-model="rule.content.from_key"></input>
+          </div>
+          <div class="row">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_block.label_target_key")}}
+            </div>
+            <input class="input-content" v-model="rule.content.to_key"></input>
+          </div>
+        </div>
+        <!-- 正则表示式 -->
+        <div class="content-api-parser" v-if="rule.funcName === 'regular_exp_from_var'">
+          <div class="row">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_block.label_pattern")}}
+            </div>
+            <input class="input-content" v-model="rule.content.pattern"></input>
+          </div>
+          <div class="row">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_block.label_source_key")}}
+            </div>
+            <input class="input-content" v-model="rule.content.from_key"></input>
+          </div>
+          <template v-for="(operation, idx) in rule.content.operations">
+            <div class="row">
+              <div class="label label-start">
+                {{$t("task_engine_v2.condition_block.label_nth_match")}}
+              </div>
+              <input class="input-content" v-model="operation.index"></input>
+              <button
+                v-if="idx === 0"
+                class="button"
+                style="width: 70px;"
+                @click="addRegTargetKey(index)">
+                {{$t("task_engine_v2.condition_block.button_add")}}
+              </button>
+              <button
+                v-if="idx !== 0"
+                class="button"
+                style="width: 60px;"
+                @click="deleteRegTargetKey(index, idx)">
+                {{$t("task_engine_v2.condition_block.button_remove")}}
+              </button>
+            </div>
+            <div class="row">
+              <div class="label label-start">
+                {{$t("task_engine_v2.condition_block.label_target_key")}}
+              </div>
+              <input class="input-content" v-model="operation.key"></input>
+            </div>
+          </template>
+        </div>
+        <!-- 赋值 -->
+        <div class="content-api-parser" v-if="rule.funcName === 'assign_value'">
+          <div class="row">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_block.label_key")}}
+            </div>
+            <input class="input-content" v-model="rule.content[0].key"></input>
+          </div>
+          <div class="row">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_block.label_value")}}
+            </div>
+            <input class="input-content" v-model="rule.content[0].val"></input>
+          </div>
+        </div>
+        <!-- 语句解析数据提取 -->
+        <div class="content-api-parser" v-if="rule.funcName === 'cu_parser'">
+          <div class="row">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_block.label_content")}}
+            </div>
+            <dropdown-select
+              class="select"
+              :value="[rule.content]"
+              @input="rule.content = $event[0]"
+              :options="cuParserOptions"
+              :showCheckedIcon="false"
+              width="420px"
+              :inputBarStyle="selectStyle"
+            />
+          </div>
+        </div>
+        <!-- 自定义语句解析数据提取 -->
+        <div class="content-api-parser" v-if="rule.funcName === 'custom_cu_parser'">
+          <div class="row">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_block.label_content")}}
+            </div>
+            <input class="input-content" v-model="rule.content"></input>
+          </div>
+        </div>
       </div>
     </template>
     <div class="row row-then-goto" v-if="edgeType!=='trigger'">
@@ -287,6 +522,11 @@ export default {
       },
       threshold: '0',
       candidateEdges: [],
+      keyValMatchCompareOptions: [],
+      keyKeyMatchCompareOptions: [],
+      listLengthMatchCompareOptions: [],
+      counterCheckOptions: [],
+      cuParserOptions: [],
     };
   },
   computed: {},
@@ -319,6 +559,11 @@ export default {
     renderConditionContent() {
       this.edge = JSON.parse(JSON.stringify(this.initialEdge));
       this.edgeType = this.edge.edge_type || 'normal';
+      this.keyValMatchCompareOptions = optionConfig.getKeyValMatchCompareOptions(this);
+      this.keyKeyMatchCompareOptions = optionConfig.getKeyKeyMatchCompareOptions(this);
+      this.listLengthMatchCompareOptions = optionConfig.getListLengthMatchCompareOptions(this);
+      this.counterCheckOptions = optionConfig.getCounterCheckOptions(this);
+      this.cuParserOptions = optionConfig.getCuParserOptions(this);
       if (this.edgeType === 'qq') {
         this.renderQQEdge();
       } else {
@@ -495,6 +740,7 @@ export default {
             }],
           }))],
         };
+        // console.log(conditionBlock.condition_rules[0][0].functions[0].content);
       }
       // console.log(conditionBlock);
       this.$emit('update', conditionBlock);
