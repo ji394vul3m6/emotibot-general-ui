@@ -58,6 +58,7 @@
 | menu_intent | <img src="../../assets/icons/menu_intent_icon.svg"/>
 | add | <img src="../../assets/icons/add_icon.svg"/>
 | check | <img src="../../assets/icons/check_icon.svg"/>
+| check_green | <img src="../../assets/icons/check_green_icon.svg"/>
 | checked | <div style="background:black"><img src="../../assets/icons/checked_icon.svg"/></div>
 | close | <img src="../../assets/icons/close_icon.svg"/>
 | delete | <img src="../../assets/icons/delete_icon.svg"/>

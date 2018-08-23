@@ -146,6 +146,7 @@ export default {
   @include iconType("add");
   @include iconType("check");
   @include iconType("checked");
+  @include iconType("check_green");
   @include iconType("close");
   @include iconType("delete");
   @include iconType("delete_hover");
