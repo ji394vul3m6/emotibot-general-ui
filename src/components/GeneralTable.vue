@@ -69,7 +69,14 @@
     </table>
     </div>
     <div class="empty-display" v-if="showEmpty && tableData.length <= 0">
-      {{ $t('general.no_data') }}
+      <template v-if="showEmptyMsg">
+        <div class="empty-msg" v-for="msg in showEmptyMsg" :key="msg">
+          {{ msg }}
+        </div>
+      </template>
+      <template v-else>
+        {{ $t('general.no_data') }}
+      </template>
     </div>
   </div>
 </template>
@@ -135,6 +142,11 @@ export default {
       type: Boolean,
       required: false,
       default: false,
+    },
+    showEmptyMsg: {
+      type: Array,
+      required: false,
+      default: undefined,
     },
   },
   data() {
@@ -292,8 +304,14 @@ $table-row-height: 50px;
   .empty-display {
     flex: 1;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    color: $color-font-mark;
+    @include font-14px();
+    .empty-msg {
+      margin: 3px 0;
+    }
   }
 }
 table {

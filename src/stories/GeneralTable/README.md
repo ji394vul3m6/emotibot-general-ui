@@ -38,6 +38,7 @@
 | tableHeader | true | Array | 見下方 tableHeader 格式說明 | - | 表格標題列 |
 | tableData | true | Array | 見下方 tableData格式說明 | - | 表格內容 |
 | showEmpty | false | Boolean | true / false | false | 在無資料列時，是否顯示「暫無數據」
+| showEmptyMsg | false | Array | [ 'msg1', 'msg2' ] | - | 在無資料時，顯示自訂的無數據訊息，預設顯示「暫無數據」
 | checkbox | false | Boolean | true / false | false | 是否顯示 checkbox
 | action | false | Array | - | - | 若傳入 action，會顯示「操作」欄位
 | autoHeight | false | Boolean | true / false | false | 欄位內容溢出寬度時是否換行
