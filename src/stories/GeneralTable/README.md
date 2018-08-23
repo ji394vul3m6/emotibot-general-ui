@@ -52,7 +52,7 @@ Type: Array of Objects
 |---|---|---|---|---|---|
 | key | true | String | - | - | 欄位 Header key 值，對應 TableData的 Object key 
 | text | true | String | - | - | 欄位 Header 顯示名稱
-| type | false | String | 'tag' / 'toggle' | undefined | 欄位 body 類型<br> **'tag'** : 標籤樣式欄位，對應的tableData 欄位須為Array，Array 中的每個 text 會顯示成標籤樣式，見tableData格式<br> **'toggle'**：toggle樣式欄位，對應的tableData欄位需指定toggle初始狀態，見tableData格式
+| type | false | String | 'tag' / 'toggle' / 'action' / 'icon' | undefined | 欄位 body 類型<br> **'tag'** : 標籤樣式欄位，對應的tableData 欄位須為Array，Array 中的每個 text 會顯示成標籤樣式，見tableData格式<br> **'toggle'**：toggle樣式欄位，對應的tableData欄位需指定toggle初始狀態，見tableData格式<br> **'action'**：action樣式欄位，與prop action大致相同，但可每筆資料有不同的action按鈕，見tableData格式<br> **'icon'**：icon樣式欄位，欄位內顯示icon，見tableData格式
 | info | false | String | - | - | 欄位 Header 的 說明資訊，給定 info 會在 Header 旁出現info Icon，滑到 info Icon 上方，可以看到欄位說明
 | width | false | String | - | - | 欄位寬度，如 '200px', '20%'
 
@@ -76,6 +76,16 @@ Type: Array of Objects
       text: '狀態欄位',
       type: 'toggle',
     },
+    {
+      key: 'attr-action',
+      text: '操作欄位',
+      type: 'action',
+    },
+    {
+      key: 'attr-icon',
+      text: 'icon欄位',
+      type: 'icon',
+    },
   ]
 ```
 
@@ -89,8 +99,11 @@ Object key 值應與唯一的 tableHeader 的 key 相對應，代表某個標題
 | tableHeader.type 為.. | Type | Example | 說明 |
 |---|---|---|---|
 | 'tag' | Array of tag texts | ['這是標籤一', '這是標籤二'] | Array 中每個 text 各自會以標籤樣式呈現
-| 'toggle' | Object | { "val" : true } | 只有唯一的 key 值val 用來設置 toggle 開關狀態
+| 'toggle' | Object | { "val" : true } | 只有唯一的 key 值 val 用來設置 toggle 開關狀態
+| 'action' | Array of actions Objecs | [<br>&nbsp;&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;text: '',<br>&nbsp;&nbsp;&nbsp;&nbsp;type: 'primary',<br>&nbsp;&nbsp;&nbsp;&nbsp;onclick: function<br>&nbsp;&nbsp;},<br>] | 與prop: action類似，但可對每筆資料自訂不同action，若每筆資料操作相同，建議使用prop: action
+| 'icon' | Object | {<br>&nbsp;&nbsp;iconType: 'check', <br>&nbsp;&nbsp;iconSize: 20, <br>} | 欄位內顯示 icon
 | 有傳入action時可使用<br>action_enable | Object | {"edit": true, "delete": true} | 非必要，可控制「操作」欄位定義的操作是否可以點擊<br>key值須對應到 action 的 key
+
 
 
 ```
@@ -102,6 +115,15 @@ Object key 值應與唯一的 tableHeader 的 key 相對應，代表某個標題
       attr-tag: ['這是標籤一', '這是標籤二'],
       attr-toggle: {
         "val" : true
+      },
+      attr-action: {
+        text: '編輯',         // 操作顯示文字
+        type: 'primary',     // 'primary', 沒設置為黑色
+        onclick: handleEdit, // 點擊操作觸發
+      },
+      attr-icon: {
+        iconType: 'check',   // 任一可使用的 icon-type，見 Icon
+        iconSize: 20,        // number, 控制icon大小
       },
       action_enable: {  // 假設有傳入下方 action 範例，可設置action_enable
         "edit" : true,

@@ -9,7 +9,7 @@
           </td>
           <td v-for="header in tableHeader" :key="header.key" 
             :style="{width: header.width}"
-            :class="{'fixed': header.width, 'custom-action': header.type === 'action', 'multi-action': hasMultiCustomAction}"
+            :class="{'fixed': header.width, 'custom-action': header.type === 'action', 'multi-action': hasMultiCustomAction, 'icon-column': header.type === 'icon'}"
             class="table-header-item">
             {{ header.text }}
             <div v-if="header.info && header.info !== ''" :ref="`${header.key}-info`"
@@ -36,7 +36,7 @@
           </td>
           <td v-for="header in tableHeader" :key="uniqueId(header.key)"
             :style="{width: header.width}"
-            :class="{'fixed': header.width, 'custom-action': header.type === 'action', 'multi-action': hasMultiCustomAction}"
+            :class="{'fixed': header.width, 'custom-action': header.type === 'action', 'multi-action': hasMultiCustomAction, 'icon-column': header.type === 'icon'}"
              class="table-body-item"
             @click="handleOnclickRow(onclickRow, data, idx)">
             <template v-if="header.type === 'tag'">
@@ -54,6 +54,9 @@
                 :key="act.text" :class="act.type" @click="act.onclick(data, idx)">
                 {{act.text}}
               </span>
+            </template>
+            <template v-else-if="header.type === 'icon'">
+              <icon v-if="data[header.key]" :icon-type="data[header.key].iconType" :size="data[header.key].iconSize"></icon>
             </template>
             <template v-else>{{ data[header.key] }}</template>
           </td>
@@ -353,6 +356,9 @@ table {
         flex: 0 0 50px;
       }
       .table-header-item {
+        &.icon-column {
+          flex: 0 0 50px;
+        }
         &.custom-action {
           flex: 0 0 88px;
           max-width: 88px;
@@ -407,6 +413,9 @@ table {
         flex: 0 0 50px;
       }
       .table-body-item {
+        &.icon-column {
+          flex: 0 0 50px;
+        }
         &.custom-action {
           flex: 0 0 88px;
           max-width: 88px;
