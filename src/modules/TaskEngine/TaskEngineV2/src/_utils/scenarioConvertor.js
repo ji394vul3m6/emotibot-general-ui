@@ -175,22 +175,26 @@ export default {
     }
     return tab;
   },
-  convertUiNodesToNodes(uiNodes) {
-    const nodes = uiNodes.map(uiNode => this.convertUiNodeToNode(uiNode));
+  convertUiNodesToNodes(uiNodes, setting) {
+    const nodes = uiNodes.map(uiNode => this.convertUiNodeToNode(uiNode, setting));
     const exitNode = scenarioInitializer.initialExitNode();
     return [exitNode].concat(nodes);
   },
   // convert uiNode to node
-  convertUiNodeToNode(uiNode) {
+  convertUiNodeToNode(uiNode, setting) {
+    console.log(uiNode);
     const node = {
       node_id: uiNode.nodeId,
       node_type: uiNode.nodeType,
       description: uiNode.nodeName,
-      edges: this.convertUiNodeToEdges(uiNode),
+      edges: this.convertUiNodeToEdges(uiNode, setting),
       global_vars: [],
       warnings: [],
       content: {},
     };
+    if (uiNode.nodeType === 'entry') {
+      node.entry_condition_rules = uiNode.triggerTab.rules;
+    }
     if (uiNode.nodeType === 'dialogue') {
       node.content = this.componseDialogueContent(uiNode);
       node.default_parser_with_suffix = uiNode.settingTab.parseFromThisNode;
@@ -205,14 +209,6 @@ export default {
       );
     }
     return node;
-  },
-  // convert tab data to content
-  convertTabDataToContent(tabData) {
-    let content = {};
-    if (tabData.nodeType === 'dialogue') {
-      content = {};
-    }
-    return content;
   },
   composeNLUPCContent(entityCollectorList, reParsers, registerJson, msg) {
     let entities;
@@ -231,7 +227,7 @@ export default {
   componseDialogueContent(uiNode) {
     const questions = [];
     if (uiNode.settingTab.parser !== 'none' &&
-        uiNode.settingTab.targetEntities.length > 0) {
+        uiNode.settingTab.skipIfKeyExist.length > 0) {
         // a default parser had been selected
         // insert skip_response
       let skipIfKeyExist = uiNode.settingTab.skipIfKeyExist;
@@ -268,9 +264,17 @@ export default {
     };
   },
   // convert tab data to edges
-  convertUiNodeToEdges(uiNode) {
+  convertUiNodeToEdges(uiNode, setting) {
     let edges = [];
-    if (uiNode.nodeType === 'dialogue') {
+    if (uiNode.nodeType === 'entry') {
+      const hiddenEdges = this.composeEntryNodeHiddenEdges(uiNode, setting);
+      const elseInto = this.edgeElseInto(uiNode.nodeId, uiNode.edgeTab.elseInto);
+      edges = [
+        ...hiddenEdges,
+        ...uiNode.edgeTab.normalEdges,
+        elseInto,
+      ];
+    } else if (uiNode.nodeType === 'dialogue') {
       const hiddenEdges = this.composeDialogueNodeHiddenEdges(uiNode);
       const hiddenSetCntLimit = this.edgeHiddenSetNodeDialogueCntLimit(
         uiNode.edgeTab.dialogueLimit,
@@ -287,8 +291,43 @@ export default {
     }
     return edges;
   },
+  composeEntryNodeHiddenEdges(uiNode, setting) {
+    const hidden1 = this.hiddenEdgeTemplate();
+    hidden1.actions = [
+      this.actionSetNodeDialogueCnt(0),
+      this.actionSetScenarioDialogueCnt(0),
+      this.actionSetScenarioDialogueCntLimit(setting.scenarioDialogueCntLimit),
+      this.actionSetNodeDialogueCntLimit(setting.nodeDialogueCntLimit),
+    ];
+    return [
+      hidden1,
+      this.hiddenEdgeTemplate(),
+      this.hiddenEdgeTemplate(),
+    ];
+  },
   composeDialogueNodeHiddenEdges(uiNode) {
+    const parser = uiNode.settingTab.parser;
+    if (parser === 'none') {
+      return this.composeNoParserHiddenEdges(uiNode);
+    }
+    return this.composeWithParserHiddenEdges(uiNode);
+  },
+  composeNoParserHiddenEdges(uiNode) {
+    const dialogueLimit = uiNode.edgeTab.dialogueLimit;
+    const hidden1 = this.hiddenEdgeTemplate();
+    hidden1.actions = [
+      this.actionUpdateConfirmStatus(),
+      this.actionSetNodeDialogueCntLimit(dialogueLimit),
+    ];
+    return [
+      hidden1,
+      this.hiddenEdgeTemplate(),
+      this.hiddenEdgeTemplate(),
+    ];
+  },
+  composeWithParserHiddenEdges(uiNode) {
     const nodeId = uiNode.nodeId;
+    const parser = uiNode.settingTab.parser;
     const dialogueLimit = uiNode.edgeTab.dialogueLimit;
     const targetEntities = uiNode.settingTab.targetEntities;
     let skipIfKeyExist = uiNode.settingTab.skipIfKeyExist;
@@ -310,19 +349,21 @@ export default {
     const hidden2 = this.hiddenEdgeTemplate();
     hidden2.condition_rules = [[
       this.conditionNotContainKey(skipIfKeyExist),
-      this.conditionCommonParser(targetEntities, nodeId),
+      this.conditionParser(parser, targetEntities, nodeId),
     ]];
     hidden2.actions = [
       this.actionSetParseFailed(false),
     ];
 
     const hidden3 = this.hiddenEdgeTemplate();
-    hidden3.to_node_id = nodeId;
-    hidden3.condition_rules = [[
-      this.conditionDialogueCntLessThan(dialogueLimit),
-      this.conditionCounterCheck('scenario_counter_rev'),
-      this.conditionNotContainKey(skipIfKeyExist),
-    ]];
+    if (skipIfKeyExist.length > 0) {
+      hidden3.to_node_id = nodeId;
+      hidden3.condition_rules = [[
+        this.conditionDialogueCntLessThan(dialogueLimit),
+        this.conditionCounterCheck('scenario_counter_rev'),
+        this.conditionNotContainKey(skipIfKeyExist),
+      ]];
+    }
     const hiddenEdges = [hidden1, hidden2, hidden3];
     return hiddenEdges;
   },
@@ -353,9 +394,7 @@ export default {
       to_node_id: toNode,
       edge_type: 'else_into',
       condition_rules: [],
-      actions: [
-        this.actionSetParseFailed(true),
-      ],
+      actions: [],
     };
     if (nodeId === toNode) {
       // 解析失败处理
@@ -404,7 +443,7 @@ export default {
       ],
     };
   },
-  conditionCommonParser(tags, nodeId) {
+  conditionParser(parser, tags, nodeId) {
     const tagsString = tags.join(',');
     const keySuffix = `_${nodeId}`;
     return {
@@ -415,7 +454,7 @@ export default {
             key_suffix: keySuffix,
             tags: tagsString,
           },
-          function_name: 'common_parser',
+          function_name: parser,
         },
       ],
     };
@@ -465,6 +504,12 @@ export default {
   },
   actionSetNodeDialogueCntLimit(cnt) {
     return this.actionSetToGlobalInfo('sys_node_dialogue_cnt_limit', cnt);
+  },
+  actionSetScenarioDialogueCnt(cnt) {
+    return this.actionSetToGlobalInfo('sys_scenario_dialogue_cnt', cnt);
+  },
+  actionSetScenarioDialogueCntLimit(cnt) {
+    return this.actionSetToGlobalInfo('sys_scenario_dialogue_cnt_limit', cnt);
   },
   actionSetToGlobalInfo(key, val) {
     return {

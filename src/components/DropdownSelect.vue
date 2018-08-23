@@ -189,6 +189,7 @@ export default {
         }
       });
       that.checkedValues = this.localOptions.filter(opt => opt.checked);
+      that.updateValue();
     },
     toggleHover(option, bool) {
       option.hovered = bool;

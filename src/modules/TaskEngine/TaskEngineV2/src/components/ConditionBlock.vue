@@ -175,6 +175,7 @@
       />
     </div>
   </div>
+  <!-- 语句相似度 -->
   <div class="qq-edge" v-if="edgeType==='qq'">
     <div class="rule-block">
       <div class="row row-function">
@@ -288,42 +289,30 @@ export default {
       candidateEdges: [],
     };
   },
-  computed: {
-    conditionBlock() {
-      let result = {};
-      if (this.edgeType === 'qq') {
-        result = {
-          id: this.edge.id,
-          edge_type: this.edgeType,
-          threshold: this.threshold,
-          candidate_edges: this.candidateEdges,
-        };
-      } else {
-        result = {
-          id: this.edge.id,
-          edge_type: this.edgeType,
-          to_node_id: this.toNode,
-          actions: [],
-          condition_rules: [this.andRules.map(rule => ({
-            source: rule.source,
-            functions: [{
-              function_name: rule.funcName,
-              content: rule.content,
-            }],
-          }))],
-        };
-      }
-      // console.log(result);
-      return result;
-    },
-  },
+  computed: {},
   watch: {
-    conditionBlock: {
+    andRules: {
       handler() {
-        // console.log(this.conditionBlock);
-        this.$emit('update', this.conditionBlock);
+        this.emitUpdate();
       },
       deep: true,
+    },
+    candidateEdges: {
+      handler() {
+        this.emitUpdate();
+      },
+      deep: true,
+    },
+    toNode: {
+      handler() {
+        this.emitUpdate();
+      },
+      deep: true,
+    },
+    threshold: {
+      handler() {
+        this.emitUpdate();
+      },
     },
   },
   methods: {
@@ -420,8 +409,7 @@ export default {
         const selectFunctionRef = `selectFunction_${index}`;
         if (this.$refs[selectFunctionRef]) {
           this.$refs[selectFunctionRef][0].$emit('updateOptions', options);
-          this.andRules[index].funcName = options[0].value;
-          this.$refs[selectFunctionRef][0].$emit('select', this.andRules[index].funcName);
+          this.$refs[selectFunctionRef][0].$emit('select', options[0].value);
         }
       }
     },
@@ -476,11 +464,40 @@ export default {
     },
     onSelectTargetEntity(index, newValue) {
       this.andRules[index].content.tags = newValue.join(',');
+      // this.emitUpdate();
     },
     onSelectMapTableInput(index, newValue) {
       const newMapTable = newValue[0];
       if (this.andRules[index].content.trans === newMapTable) return;
       this.andRules[index].content.trans = newMapTable;
+      // this.emitUpdate();
+    },
+    emitUpdate() {
+      let conditionBlock = {};
+      if (this.edgeType === 'qq') {
+        conditionBlock = {
+          id: this.edge.id,
+          edge_type: this.edgeType,
+          threshold: this.threshold,
+          candidate_edges: this.candidateEdges,
+        };
+      } else {
+        conditionBlock = {
+          id: this.edge.id,
+          edge_type: this.edgeType,
+          to_node_id: this.toNode,
+          actions: [],
+          condition_rules: [this.andRules.map(rule => ({
+            source: rule.source,
+            functions: [{
+              function_name: rule.funcName,
+              content: rule.content,
+            }],
+          }))],
+        };
+      }
+      // console.log(conditionBlock);
+      this.$emit('update', conditionBlock);
     },
     entityModuleOptions(parser) {
       const entityModuleOptions = optionConfig.getEntityModuleOptionsMap();

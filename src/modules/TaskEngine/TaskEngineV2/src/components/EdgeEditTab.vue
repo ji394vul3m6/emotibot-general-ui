@@ -114,28 +114,22 @@ export default {
       },
     };
   },
-  computed: {
-    edgeTab() {
-      const result = {
-        dialogueLimit: parseInt(this.dialogueLimit, 10) || null,
-        exceedThenGoto: this.exceedThenGoto || null,
-        elseInto: this.elseInto || null,
-        normalEdges: this.normalEdges.map((edge) => {
-          const e = JSON.parse(JSON.stringify(edge));
-          delete e.id;
-          return e;
-        }),
-      };
-      console.log(result);
-      return result;
-    },
-  },
+  computed: {},
   watch: {
-    edgeTab: {
+    dialogueLimit: {
       handler() {
-        this.$emit('update', this.edgeTab);
+        this.emitUpdate();
       },
-      deep: true,
+    },
+    exceedThenGoto: {
+      handler() {
+        this.emitUpdate();
+      },
+    },
+    elseInto: {
+      handler() {
+        this.emitUpdate();
+      },
     },
   },
   methods: {
@@ -143,13 +137,12 @@ export default {
       const edgeTab = JSON.parse(JSON.stringify(this.initialEdgeTab));
       this.nodeId = edgeTab.nodeId;
       this.nodeType = edgeTab.nodeType;
-      this.normalEdges = edgeTab.normalEdges;
       this.exceedThenGoto = edgeTab.exceedThenGoto;
       this.elseInto = edgeTab.elseInto;
       this.dialogueLimit = edgeTab.dialogueLimit;
 
       // add tmp id for edges
-      this.normalEdges = this.normalEdges.map((edge) => {
+      this.normalEdges = edgeTab.normalEdges.map((edge) => {
         edge.id = this.$uuid.v1();
         return edge;
       });
@@ -174,14 +167,31 @@ export default {
     },
     updateNormalEdge(index, $event) {
       this.normalEdges[index] = $event;
+      this.emitUpdate();
     },
     addEdge() {
       const edge = scenarioInitializer.initialEdge();
       edge.id = this.$uuid.v1();
       this.normalEdges.push(edge);
+      this.emitUpdate();
     },
     deleteEdge(index) {
       this.normalEdges.splice(index, 1);
+      this.emitUpdate();
+    },
+    emitUpdate() {
+      const edgeTab = {
+        dialogueLimit: parseInt(this.dialogueLimit, 10) || null,
+        exceedThenGoto: this.exceedThenGoto || null,
+        elseInto: this.elseInto || null,
+        normalEdges: this.normalEdges.map((edge) => {
+          const e = JSON.parse(JSON.stringify(edge));
+          delete e.id;
+          return e;
+        }),
+      };
+      // console.log(edgeTab);
+      this.$emit('update', edgeTab);
     },
   },
   beforeMount() {

@@ -65,6 +65,7 @@ export default {
       const rule = scenarioInitializer.initialTriggerRule();
       rule.id = this.$uuid.v1();
       this.rules.push(rule);
+      this.emitUpdate();
     },
     deleteRule(index) {
       this.rules.splice(index, 1);

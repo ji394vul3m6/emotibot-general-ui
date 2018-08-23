@@ -261,7 +261,7 @@ export default {
     },
     saveScenario() {
       const uiNodes = this.nodeBlocks.map(nodeBlock => nodeBlock.data);
-      const nodes = scenarioConvertor.convertUiNodesToNodes(uiNodes);
+      const nodes = scenarioConvertor.convertUiNodesToNodes(uiNodes, this.setting);
       // update data
       const data = {
         version: '1.1',
