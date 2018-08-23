@@ -15,9 +15,14 @@ export default {
       entry: '入口节点',
       dialogue: '对话节点',
       restful: 'RESTful数据调用节点',
-      nlu_pc_node: 'nlu参数收集节点',
+      nlu_pc_node: 'TDE参数收集节点',
       parameter_collecting: '参数收集节点',
       router: '转发',
+      dialogue_description: '与使用者进行交互的节点',
+      restful_description: '使用RESTful接口调用数据',
+      nlu_pc_node_description: '利用TDE接口收集所需参数的节点',
+      parameter_collecting_description: '收集所需参数的节点',
+      router_description: '制定规则专发给其他的节点',
     },
     parser: {
       none: '无',
@@ -38,6 +43,8 @@ export default {
       global_edge: '通用连线',
       export: '导出',
       publish: '发布',
+      add_node: '新增节点',
+      add_node_instruction: '拖拉下方的节点至场景中',
     },
     node_edit_page: {
       tabs: {

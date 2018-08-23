@@ -27,15 +27,26 @@
     </div>
   </div>
   <div class="side-panel">
-    <label-switch class="panel-tabs" :options="panelTabOptions" @change=""/>
-    <template v-for="(nodeOption, index) in nodeOptions">
-      <div class="node-option"
-        :class="{ 'odd-option': index % 2 === 0 }"
-        draggable="true"
-        @dragstart="nodeOptionDragStart(nodeOption.type, nodeOption.name, $event);">
-        <div class="node-name">{{nodeOption.name}}</div>
-      </div>
-    </template>
+    <!-- <label-switch class="panel-tabs" :options="panelTabOptions" @change=""/> -->
+    <div class="node-option-nav-bar">
+      <div class="node-option-title">{{$t("task_engine_v2.scenario_edit_page.add_node")}}</div>
+      <div class="node-option-instruction">{{$t("task_engine_v2.scenario_edit_page.add_node_instruction")}}</div>
+      <div class="side-panel-toggle" @click="toggleSidePanel()">{{sidePanelTogleIcon}}</div>
+    </div>
+    <div class="node-options" v-if="showNodeOptions">
+      <template v-for="(nodeOption, index) in nodeOptions">
+        <div class="node-option"
+          :class="{ 'odd-option': index % 2 === 0 }"
+          draggable="true"
+          @dragstart="nodeOptionDragStart(nodeOption.type, nodeOption.name, $event);">
+          <img class="node-icon" :src="`/static/images/${nodeOption.image}`" alt="...">
+          <div class="node-label">
+            <div class="node-name">{{nodeOption.name}}</div>
+            <div class="node-description">{{nodeOption.description}}</div>
+          </div>
+        </div>
+      </template>
+    </div>
   </div>
   <div class="top-panel">
     <div class="button-block"
@@ -103,6 +114,7 @@ import GlobalEdgeEditPop from './GlobalEdgeEditPop';
 import ScenarioSettingsEditPop from './ScenarioSettingsEditPop';
 import scenarioConvertor from '../_utils/scenarioConvertor';
 import scenarioInitializer from '../_utils/scenarioInitializer';
+import optionConfig from '../_utils/optionConfig';
 
 export default {
   name: 'scenario-edit-page',
@@ -130,6 +142,8 @@ export default {
         publish: false,
       },
       nodeTypes: [],
+      sidePanelTogleIcon: '-',
+      showNodeOptions: true,
     };
   },
   computed: {
@@ -439,6 +453,14 @@ export default {
         that.$notifyFail(`${that.$t('task_engine_v2.scenario_list_page.publish_failed')}:${err.message}`);
       });
     },
+    toggleSidePanel() {
+      this.showNodeOptions = !this.showNodeOptions;
+      if (this.showNodeOptions) {
+        this.sidePanelTogleIcon = '-';
+      } else {
+        this.sidePanelTogleIcon = '+';
+      }
+    },
     getPanelTabOptions() {
       const tabs = [
         this.$t('task_engine_v2.scenario_edit_page.tabs.node'),
@@ -455,49 +477,14 @@ export default {
       const nodeType = this.nodeTypes.find(t => t.type === type);
       return nodeType.name;
     },
-    getNodeTypes() {
-      const nodeTypes = [
-        {
-          type: 'entry',
-          name: this.$t('task_engine_v2.node_type.entry'),
-        },
-        {
-          type: 'dialogue',
-          name: this.$t('task_engine_v2.node_type.dialogue'),
-        },
-        {
-          type: 'restful',
-          name: this.$t('task_engine_v2.node_type.restful'),
-        },
-        {
-          type: 'nlu_pc',
-          name: this.$t('task_engine_v2.node_type.nlu_pc_node'),
-        },
-        {
-          type: 'parameter_collecting',
-          name: this.$t('task_engine_v2.node_type.parameter_collecting'),
-        },
-        {
-          type: 'router',
-          name: this.$t('task_engine_v2.node_type.router'),
-        },
-      ];
-      return nodeTypes;
-    },
-    getRainbowColors() {
-      return [
-        '#db6b6c', '#5a9bd3', '#42a198', '#f8c954', '#7e47ae',
-        '#dc7598', '#5a99d2', '#db6b6c', '#eaa355', '#8a7168',
-      ];
-    },
   },
   beforeMount() {
     this.appId = this.$cookie.get('appid');
     this.scenarioId = this.$route.params.id;
     this.panelTabOptions = this.getPanelTabOptions();
-    this.nodeTypes = this.getNodeTypes();
+    this.nodeTypes = optionConfig.getNodeTypes(this);
     this.nodeOptions = this.getNodeOptions();
-    this.rainbowColors = this.getRainbowColors();
+    this.rainbowColors = optionConfig.getRainbowColors();
     this.loadScenario(this.scenarioId);
   },
   mounted() {
@@ -531,8 +518,10 @@ export default {
     position: absolute;
     right: 0;
     top: 0;
-    width: 500px;
-    height: calc(100% - 8px);
+    z-index: 100;
+    width: 420px;
+    // height: calc(100% - 8px);
+    max-height: calc(100% - 8px);
     background: white;
     border: 1px solid $color-borderline;
     border-radius: 5px;
@@ -540,20 +529,66 @@ export default {
     margin-right: 8px;
     @include auto-overflow();
     @include customScrollbar();
-    .node-option{
+    .node-option-nav-bar{
+      position: relative;
       display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 150px;
-      cursor: move;
-      &.odd-option{
-        background: darken(#F7FBFC, 2%)
-      }
-      &:hover{
-        background: darken(#F7FBFC, 5%);
-      }
-      .node-name{
+      flex-direction: column;
+      height: 70px;
+      border-bottom: 2px solid $color-borderline;
+      .node-option-title{
         font-size: 20px;
+        font-weight: 600;
+        line-height: 24px;
+      }
+      .node-option-instruction{
+        font-size: 16px;
+        line-height: 16px;
+        margin: 10px 0px 0px 0px;
+      }
+      .side-panel-toggle{
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        font-size: 36px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+    }
+    .node-options{
+      display: flex;
+      flex-direction: column;
+      margin: 20px 0px 0px 0px;
+      .node-option{
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        height: 150px;
+        padding: 20px 40px 20px 40px;
+        cursor: move;
+        &.odd-option{
+          background: darken(#F7FBFC, 2%)
+        }
+        &:hover{
+          background: darken(#F7FBFC, 5%);
+        }
+        img{
+          width: 80px;
+          height: 80px;
+        }
+        .node-label{
+          display: flex;
+          flex-direction: column;
+          margin: 0px 0px 0px 20px;
+          .node-name{
+            font-size: 16px;
+            font-weight: 600;
+            color: #333333;
+          }
+          .node-description{
+            font-size: 12px;
+            margin: 10px 0px 0px 0px;
+          }
+        }
       }
     }
   }

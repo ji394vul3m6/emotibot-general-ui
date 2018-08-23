@@ -49,7 +49,53 @@ export default {
       })),
     };
   },
-
+  getNodeTypes(context) {
+    const nodeTypes = [
+      {
+        type: 'entry',
+        name: context.$t('task_engine_v2.node_type.entry'),
+        image: 'te_dialoague.png',
+        description: '',
+      },
+      {
+        type: 'dialogue',
+        name: context.$t('task_engine_v2.node_type.dialogue'),
+        image: 'te_dialoague.png',
+        description: context.$t('task_engine_v2.node_type.dialogue_description'),
+      },
+      {
+        type: 'restful',
+        name: context.$t('task_engine_v2.node_type.restful'),
+        image: 'te_dialoague.png',
+        description: context.$t('task_engine_v2.node_type.restful_description'),
+      },
+      {
+        type: 'nlu_pc',
+        name: context.$t('task_engine_v2.node_type.nlu_pc_node'),
+        image: 'te_dialoague.png',
+        description: context.$t('task_engine_v2.node_type.nlu_pc_node_description'),
+      },
+      {
+        type: 'parameter_collecting',
+        name: context.$t('task_engine_v2.node_type.parameter_collecting'),
+        image: 'te_dialoague.png',
+        description: context.$t('task_engine_v2.node_type.parameter_collecting_description'),
+      },
+      {
+        type: 'router',
+        name: context.$t('task_engine_v2.node_type.router'),
+        image: 'te_dialoague.png',
+        description: context.$t('task_engine_v2.node_type.router_description'),
+      },
+    ];
+    return nodeTypes;
+  },
+  getRainbowColors() {
+    return [
+      '#db6b6c', '#5a9bd3', '#42a198', '#f8c954', '#7e47ae',
+      '#dc7598', '#5a99d2', '#db6b6c', '#eaa355', '#8a7168',
+    ];
+  },
   getBasicCompareOptions(context) {
     return [
       {
