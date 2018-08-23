@@ -44,6 +44,7 @@
         v-model="targetEntities"
         :options="entityModuleOptions"
         :showCheckedIcon="true"
+        :showSearchBar="true"
         width="200px"
         :inputBarStyle="selectStyle"
       />
@@ -58,6 +59,7 @@
         v-model="skipIfKeyExist"
         :options="entityKeyNameOptions"
         :showCheckedIcon="true"
+        :showSearchBar="true"
         width="200px"
         :inputBarStyle="selectStyle"
       />

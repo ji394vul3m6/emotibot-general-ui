@@ -43,6 +43,7 @@
         @input="exceedThenGoto = $event[0]"
         :options="exceedThenGotoOptions"
         :showCheckedIcon="false"
+        :showSearchBar="true"
         width="200px"
         :inputBarStyle="selectStyle"
       />
@@ -66,6 +67,7 @@
         @input="elseInto = $event[0]"
         :options="elseIntoOptions"
         :showCheckedIcon="false"
+        :showSearchBar="true"
         width="200px"
         :inputBarStyle="selectStyle"
       />

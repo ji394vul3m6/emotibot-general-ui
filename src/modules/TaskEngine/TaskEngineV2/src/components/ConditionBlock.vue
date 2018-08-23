@@ -110,6 +110,7 @@
               @input="onSelectTargetEntity(index, $event)"
               :options="entityModuleOptions(rule.funcName)"
               :showCheckedIcon="true"
+              :showSearchBar="true"
               width="200px"
               :inputBarStyle="selectStyle"
             />
@@ -128,6 +129,7 @@
               @input="onSelectMapTableInput(index, $event)"
               :options="[]"
               :showCheckedIcon="false"
+              :showSearchBar="true"
               width="420px"
               :inputBarStyle="selectStyle"
             />
@@ -291,6 +293,7 @@
               @input="rule.content.trans = $event[0]"
               :options="[]"
               :showCheckedIcon="false"
+              :showSearchBar="true"
               width="420px"
               :inputBarStyle="selectStyle"
             />
@@ -405,6 +408,7 @@
         @input="toNode = $event[0]"
         :options="toNodeOptions"
         :showCheckedIcon="false"
+        :showSearchBar="true"
         width="200px"
         :inputBarStyle="selectStyle"
       />
@@ -476,6 +480,7 @@
             @input="edge.to_node_id = $event[0]"
             :options="toNodeOptions"
             :showCheckedIcon="false"
+            :showSearchBar="true"
             width="200px"
             :inputBarStyle="selectStyle"
           />

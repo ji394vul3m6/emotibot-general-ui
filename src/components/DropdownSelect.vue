@@ -17,7 +17,10 @@
       </div>
     </div>
     <div ref="list" v-if="show" class="select-list" :style="listStyle">
-      <template v-for="(option, idx) in localOptions">
+      <div class="select-item search" v-if="showSearchBar">
+        <input class="search-input" v-model="searchKeyWord" placeholder="Search"></input>
+      </div>
+      <template v-for="(option, idx) in filteredLocalOptions">
       <div class="select-item item" :key="idx" v-if="!option.isGroup"
         :class="{
           checked: option.checked && showCheckedIcon,
@@ -90,6 +93,10 @@ export default {
         return {};
       },
     },
+    showSearchBar: {
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {
     styleObj() {
@@ -102,6 +109,12 @@ export default {
         width: this.width,
       };
     },
+    filteredLocalOptions() {
+      if (this.searchKeyWord === '') {
+        return this.localOptions;
+      }
+      return this.localOptions.filter(option => option.text.indexOf(this.searchKeyWord) !== -1);
+    },
   },
   data() {
     return {
@@ -111,6 +124,7 @@ export default {
       selectTextStyle: {},
       checkedValues: [],
       detectClickListener: undefined,
+      searchKeyWord: '',
     };
   },
   methods: {
@@ -119,15 +133,18 @@ export default {
       this.updateValue();
     },
     selectOption(idx) {
+      const value = this.filteredLocalOptions[idx].value;
       const that = this;
       if (that.multi) {
-        that.localOptions[idx].checked = !that.localOptions[idx].checked;
-        that.toggleHover(that.localOptions[idx], false);
+        const option = that.localOptions.find(o => o.value === value);
+        option.checked = !option.checked;
+        that.toggleHover(option, false);
       } else {
         that.localOptions.forEach((option) => {
           option.checked = false;
         });
-        that.localOptions[idx].checked = true;
+        const option = that.localOptions.find(o => o.value === value);
+        option.checked = true;
         that.show = false;
         window.removeEventListener('click', that.detectClickListener);
       }
@@ -327,6 +344,9 @@ $border-color: $color-borderline;
         display: flex;
         align-items: center;
       }
+    }
+    .search-input{
+      margin-left: 10px;
     }
   }
 }
