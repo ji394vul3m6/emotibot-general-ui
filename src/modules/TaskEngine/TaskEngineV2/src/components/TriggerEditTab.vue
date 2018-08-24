@@ -79,7 +79,7 @@ export default {
       const triggerTab = {
         rules: this.rules.map(r => r.condition_rules[0]),
       };
-      console.log(triggerTab);
+      // console.log(triggerTab);
       this.$emit('update', triggerTab);
     },
   },

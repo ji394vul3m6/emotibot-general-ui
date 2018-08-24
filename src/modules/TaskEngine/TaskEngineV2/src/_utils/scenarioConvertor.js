@@ -183,12 +183,14 @@ export default {
   // convert uiNode to node
   convertUiNodeToNode(uiNode, setting) {
     console.log(uiNode);
+    const edges = this.convertUiNodeToEdges(uiNode, setting);
+    const globalVars = this.getGlobalVars(edges);
     const node = {
       node_id: uiNode.nodeId,
       node_type: uiNode.nodeType,
       description: uiNode.nodeName,
-      edges: this.convertUiNodeToEdges(uiNode, setting),
-      global_vars: [],
+      edges,
+      global_vars: globalVars,
       warnings: [],
       content: {},
     };
@@ -208,6 +210,9 @@ export default {
         uiNode.nluPCSettingTab.msg,
       );
     }
+    // TODO
+    // if (uiNode.nodeType === 'parameter_collecting')
+    // node.global_vars.push(...parametersInParsers)
     return node;
   },
   composeNLUPCContent(entityCollectorList, reParsers, registerJson, msg) {
@@ -366,6 +371,87 @@ export default {
     }
     const hiddenEdges = [hidden1, hidden2, hidden3];
     return hiddenEdges;
+  },
+  getGlobalVars(edges) {
+    const globalVars = [];
+    edges.forEach((edge) => {
+      let andRules = [];
+      if (edge.condition_rules &&
+          edge.condition_rules instanceof Array &&
+          edge.condition_rules.length > 0) {
+        andRules = edge.condition_rules[0];
+      }
+      andRules.forEach((rule) => {
+        let functions = [];
+        if (rule.functions && rule.functions instanceof Array) {
+          functions = rule.functions;
+        }
+        functions.forEach((func) => {
+          const vars = this.getGlobalVarsFromFunction(func);
+          globalVars.push(...vars);
+        });
+      });
+    });
+    return globalVars;
+  },
+  getGlobalVarsFromFunction(func) {
+    const funcName = func.function_name;
+    let vars = [];
+    if (funcName === 'regular_exp') {
+      if (func.content && func.content.operations && func.content.operations instanceof Array) {
+        vars = func.content.operations.map(o => o.key);
+      }
+    } else if (funcName === 'hotel_parser') {
+      if (func.content && func.content.tags && func.content.key_suffix) {
+        vars = func.content.tags.split(',').filter(
+          tag => tag !== 'multiselect-all',
+        ).map(
+          tag => tag + func.content.key_suffix,
+        );
+      }
+    } else if (funcName === 'common_parser') {
+      if (func.content && func.content.tags && func.content.key_suffix) {
+        vars = func.content.tags.split(',').filter(
+          tag => tag !== 'multiselect-all',
+        ).map((tag) => {
+          // remove '_module'
+          const key = tag.replace('_module', '');
+          return key + func.content.key_suffix;
+        });
+      }
+    } else if (funcName === 'task_parser') {
+      if (func.content && func.content.tags && func.content.key_suffix) {
+        vars = func.content.tags.split(',').filter(
+          tag => tag !== 'multiselect-all',
+        ).map((tag) => {
+          // snake_case to CamelCase
+          const key = tag.replace(/_([\w])/g, m => m[1].toUpperCase());
+          return key + func.content.key_suffix;
+        });
+      }
+    } else if (funcName === 'user_custom_parser') {
+      if (func.content && func.content.to_key) {
+        vars = [func.content.to_key];
+      }
+    } else if (funcName === 'polarity_parser') {
+      if (func.content && func.content.key && func.content.key_suffix) {
+        // vars = [func.content.key + func.content.key_suffix];
+        vars = [func.content.key];
+      }
+    } else if (funcName === 'user_custom_transform') {
+      if (func.content && func.content.to_key) {
+        vars = [func.content.to_key];
+      }
+    } else if (funcName === 'regular_exp_from_var') {
+      if (func.content && func.content.operations && func.content.operations instanceof Array) {
+        vars = func.content.operations.map(o => o.key);
+      }
+    } else if (funcName === 'assign_value') {
+      if (func.content && func.content.key) {
+        vars = [func.content.key];
+      }
+    }
+    return vars;
   },
   edgeHiddenSetNodeDialogueCntLimit(cnt) {
     const edge = this.hiddenEdgeTemplate();
