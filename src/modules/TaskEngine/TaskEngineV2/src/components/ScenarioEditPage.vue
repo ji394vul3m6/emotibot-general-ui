@@ -346,6 +346,8 @@ export default {
       // }, (err) => {
       //   this.$notifyFail(`saveScenario failed, error:${err.message}`);
       // });
+      this.moduleData = data;
+      this.moduleDataLayouts = layout;
       this.renderData();
     },
     saveNode(index, node) {
@@ -488,37 +490,7 @@ export default {
       }));
     },
     getNodeOptions() {
-      const nodeTypes = this.getNodeTypes();
-      return nodeTypes.filter(nodeType => nodeType.type !== 'entry');
-    },
-    getNodeTypes() {
-      const nodeTypes = [
-        {
-          type: 'entry',
-          name: this.$t('task_engine_v2.node_type.entry'),
-        },
-        {
-          type: 'dialogue',
-          name: this.$t('task_engine_v2.node_type.dialogue'),
-        },
-        {
-          type: 'restful',
-          name: this.$t('task_engine_v2.node_type.restful'),
-        },
-        {
-          type: 'nlu_pc',
-          name: this.$t('task_engine_v2.node_type.nlu_pc'),
-        },
-        {
-          type: 'parameter_collecting',
-          name: this.$t('task_engine_v2.node_type.parameter_collecting'),
-        },
-        {
-          type: 'router',
-          name: this.$t('task_engine_v2.node_type.router'),
-        },
-      ];
-      return nodeTypes;
+      return this.nodeTypes.filter(nodeType => nodeType.type !== 'entry');
     },
     getNodeTypeName(type) {
       const nodeType = this.nodeTypes.find(t => t.type === type);

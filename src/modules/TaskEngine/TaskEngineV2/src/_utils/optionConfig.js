@@ -1,7 +1,7 @@
 export default {
   nodeType2Tabs() {
     return {
-      entry: ['triggerTab', 'edgeTab'],
+      entry: ['settingBasicTab', 'triggerTab', 'edgeTab'],
       dialogue: ['settingTab', 'edgeTab'],
       nlu_pc: ['settingBasicTab', 'entityCollectingTab', 'edgeTab'],
     };
@@ -72,9 +72,9 @@ export default {
       },
       {
         type: 'nlu_pc',
-        name: context.$t('task_engine_v2.node_type.nlu_pc_node'),
+        name: context.$t('task_engine_v2.node_type.nlu_pc'),
         image: 'te_dialoague.png',
-        description: context.$t('task_engine_v2.node_type.nlu_pc_node_description'),
+        description: context.$t('task_engine_v2.node_type.nlu_pc_description'),
       },
       {
         type: 'parameter_collecting',

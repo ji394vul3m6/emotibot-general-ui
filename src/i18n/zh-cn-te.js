@@ -20,7 +20,7 @@ export default {
       router: '转发',
       dialogue_description: '与使用者进行交互的节点',
       restful_description: '使用RESTful接口调用数据',
-      nlu_pc_node_description: '利用TDE接口收集所需参数的节点',
+      nlu_pc_description: '利用TDE接口收集所需参数的节点',
       parameter_collecting_description: '收集所需参数的节点',
       router_description: '制定规则专发给其他的节点',
     },
