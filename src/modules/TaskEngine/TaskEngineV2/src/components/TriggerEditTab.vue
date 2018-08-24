@@ -12,6 +12,7 @@
         :initialEdge="rule"
         :toNodeOptions="[]"
         :globalVarOptions="globalVarOptions"
+        :mapTableOptions="mapTableOptions"
         @update="updateRule(index, $event)"
         @deleteEdge="deleteRule(index)">
       </condition-block>
@@ -43,6 +44,10 @@ export default {
       required: true,
     },
     globalVarOptions: {
+      type: Array,
+      required: true,
+    },
+    mapTableOptions: {
       type: Array,
       required: true,
     },

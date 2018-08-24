@@ -36,6 +36,7 @@ export default {
       })),
       task_parser: entityListMap.task_parser.map((option) => {
         // from_place,to_place,depart_date,arrive_date,return_date
+        // CamelCase to snake_case
         const snakeCase = option.replace(/[\w]([A-Z])/g, m => `${m[0]}_${m[1]}`).toLowerCase();
         return {
           text: option,
@@ -89,6 +90,56 @@ export default {
       },
     ];
     return nodeTypes;
+  },
+  getSourceOptions(context) {
+    return [
+      {
+        text: context.$t('task_engine_v2.condition_block.source.text'),
+        value: 'text',
+      },
+      {
+        text: context.$t('task_engine_v2.condition_block.source.global_info'),
+        value: 'global_info',
+      },
+      {
+        text: context.$t('task_engine_v2.condition_block.source.cu'),
+        value: 'cu',
+      },
+    ];
+  },
+  getFuncOptionMap(context) {
+    const textFuncs = [
+      'match', 'contains', 'regular_exp', 'common_parser', 'task_parser',
+      'hotel_parser', 'user_custom_parser', 'polarity_parser', 'api_parser', 'qq',
+    ];
+    const globalIngoFuncs = [
+      'key_val_match', 'key_key_match', 'contain_key', 'not_contain_key', 'list_length_match',
+      'counter_check', 'user_custom_transform', 'regular_exp_from_var', 'assign_value',
+    ];
+    const cuFuncs = ['cu_parser', 'custom_cu_parser'];
+    return {
+      text: textFuncs.map((func) => {
+        const key = `task_engine_v2.condition_block.func.${func}`;
+        return {
+          text: context.$t(key),
+          value: func,
+        };
+      }),
+      global_info: globalIngoFuncs.map((func) => {
+        const key = `task_engine_v2.condition_block.func.${func}`;
+        return {
+          text: context.$t(key),
+          value: func,
+        };
+      }),
+      cu: cuFuncs.map((func) => {
+        const key = `task_engine_v2.condition_block.func.${func}`;
+        return {
+          text: context.$t(key),
+          value: func,
+        };
+      }),
+    };
   },
   getRainbowColors() {
     return [

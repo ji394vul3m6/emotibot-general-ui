@@ -12,6 +12,7 @@
         :initialEdge="edge"
         :toNodeOptions="toNodeOptions"
         :globalVarOptions="globalVarOptions"
+        :mapTableOptions="mapTableOptions"
         @update="updateEdge(index, edge)"
         @deleteEdge="deleteEdge(index)">
       </condition-block>
@@ -26,6 +27,7 @@
 </template>
 
 <script>
+import mappingtable from '@/modules/TaskEngine/_api/taskEngine_mappingtable';
 import draggable from 'vuedraggable';
 import ConditionBlock from './ConditionBlock';
 import scenarioInitializer from '../_utils/scenarioInitializer';
@@ -48,6 +50,7 @@ export default {
       globalEdges: [],
       toNodeOptions: [],
       globalVarOptions: [],
+      mapTableOptions: [],
     };
   },
   computed: {},
@@ -82,6 +85,19 @@ export default {
     updateEdge(index, edge) {
       this.globalEdges[index] = edge;
     },
+    loadMappingTableOptions() {
+      const mapTables = [];
+      mappingtable.getTemplateMappingList().then((templateData) => {
+        mapTables.push(...templateData.data);
+        mappingtable.getMappingList().then((data) => {
+          mapTables.push(...data.data);
+          this.mapTableOptions = mapTables.map(table => ({
+            text: table,
+            value: table,
+          }));
+        });
+      });
+    },
     validate() {
       const edges = this.globalEdges.map(edge => ({
         edge_type: edge.edge_type,
@@ -97,6 +113,7 @@ export default {
     },
   },
   beforeMount() {
+    this.loadMappingTableOptions();
     this.renderData();
   },
   mounted() {

@@ -346,6 +346,7 @@ export default {
       // }, (err) => {
       //   this.$notifyFail(`saveScenario failed, error:${err.message}`);
       // });
+      this.renderData();
     },
     saveNode(index, node) {
       this.nodeBlocks[index].data = node;

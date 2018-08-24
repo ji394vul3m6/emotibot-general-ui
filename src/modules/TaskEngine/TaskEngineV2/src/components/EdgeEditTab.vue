@@ -11,6 +11,7 @@
         :nodeId="nodeId"
         :initialEdge="edge"
         :toNodeOptions="toNodeOptions"
+        :mapTableOptions="mapTableOptions"
         :globalVarOptions="globalVarOptions"
         @update="updateNormalEdge(index, $event)"
         @deleteEdge="deleteEdge(index)">
@@ -100,6 +101,10 @@ export default {
       required: true,
     },
     globalVarOptions: {
+      type: Array,
+      required: true,
+    },
+    mapTableOptions: {
       type: Array,
       required: true,
     },

@@ -17,6 +17,7 @@
         v-if="currentTab === 'triggerTab'"
         :initialTriggerTab="initialTriggerTab"
         :globalVarOptions="globalVarOptions"
+        :mapTableOptions="mapTableOptions"
         @update="triggerTab = $event"
       ></trigger-edit-tab>
       <setting-edit-tab ref="settingTab"
@@ -47,6 +48,7 @@
         :initialEdgeTab="initialEdgeTab"
         :initialToNodeOptions="toNodeOptions"
         :globalVarOptions="globalVarOptions"
+        :mapTableOptions="mapTableOptions"
         @update="edgeTab = $event"
       ></edge-edit-tab>
     </keep-alive>
@@ -55,6 +57,7 @@
 </template>
 
 <script>
+import mappingtable from '@/modules/TaskEngine/_api/taskEngine_mappingtable';
 import EntityCollectingTab from '@/modules/TaskEngine/TaskEngineV3/src/components/EntityCollectingPage';
 import TriggerEditTab from './TriggerEditTab';
 import SettingEditTab from './SettingEditTab';
@@ -85,6 +88,7 @@ export default {
       nodeType: undefined,
       toNodeOptions: [],
       globalVarOptions: [],
+      mapTableOptions: [],
       allTabs: this.getAllTabs(),
       initialTriggerTab: {},
       initialSettingTab: {},
@@ -187,6 +191,19 @@ export default {
         },
       };
     },
+    loadMappingTableOptions() {
+      const mapTables = [];
+      mappingtable.getTemplateMappingList().then((templateData) => {
+        mapTables.push(...templateData.data);
+        mappingtable.getMappingList().then((data) => {
+          mapTables.push(...data.data);
+          this.mapTableOptions = mapTables.map(table => ({
+            text: table,
+            value: table,
+          }));
+        });
+      });
+    },
     validResult(nodeResult) {
       // TODO: add node validation logics
       if ('edgeTab' in nodeResult) {
@@ -221,6 +238,7 @@ export default {
     },
   },
   beforeMount() {
+    this.loadMappingTableOptions();
     this.renderData();
   },
   mounted() {

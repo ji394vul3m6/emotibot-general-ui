@@ -18,7 +18,7 @@
             :ref="`selectSource_${index}`"
             :value="[rule.source]"
             @input="onSelectSourceInput(index, $event)"
-            :options="getSourceOptions()"
+            :options="sourceOptions"
             :showCheckedIcon="false"
             width="250px"
             :inputBarStyle="selectStyle"
@@ -127,7 +127,7 @@
               :ref="`selectMapTable_${index}`"
               :value="[rule.content.trans]"
               @input="onSelectMapTableInput(index, $event)"
-              :options="[]"
+              :options="mapTableOptions"
               :showCheckedIcon="false"
               :showSearchBar="true"
               width="420px"
@@ -311,7 +311,7 @@
               class="select"
               :value="[rule.content.trans]"
               @input="rule.content.trans = $event[0]"
-              :options="[]"
+              :options="mapTableOptions"
               :showCheckedIcon="false"
               :showSearchBar="true"
               width="420px"
@@ -458,7 +458,7 @@
           ref="selectSource_0"
           :value="['text']"
           @input="onSelectSourceInput(0, $event)"
-          :options="getSourceOptions()"
+          :options="sourceOptions"
           :showCheckedIcon="false"
           width="250px"
           :inputBarStyle="selectStyle"
@@ -555,6 +555,10 @@ export default {
       type: Array,
       required: true,
     },
+    mapTableOptions: {
+      type: Array,
+      required: true,
+    },
   },
   data() {
     return {
@@ -573,6 +577,8 @@ export default {
       listLengthMatchCompareOptions: [],
       counterCheckOptions: [],
       cuParserOptions: [],
+      sourceOptions: [],
+      funcOptionMap: [],
     };
   },
   computed: {},
@@ -605,6 +611,8 @@ export default {
     renderConditionContent() {
       this.edge = JSON.parse(JSON.stringify(this.initialEdge));
       this.edgeType = this.edge.edge_type || 'normal';
+      this.sourceOptions = optionConfig.getSourceOptions(this);
+      this.funcOptionMap = optionConfig.getFuncOptionMap(this);
       this.keyValMatchCompareOptions = optionConfig.getKeyValMatchCompareOptions(this);
       this.keyKeyMatchCompareOptions = optionConfig.getKeyKeyMatchCompareOptions(this);
       this.listLengthMatchCompareOptions = optionConfig.getListLengthMatchCompareOptions(this);
@@ -683,8 +691,7 @@ export default {
     },
     onSelectSourceInput(index, newValue) {
       const newSource = newValue[0];
-      const funcOptionMap = this.getFuncOptionMap();
-      const options = funcOptionMap[newSource];
+      const options = this.funcOptionMap[newSource];
       if (this.edgeType === 'qq') {
         this.edgeType = 'normal';
         this.toNode = null;
@@ -795,63 +802,12 @@ export default {
       const entityModuleOptions = optionConfig.getEntityModuleOptionsMap();
       return entityModuleOptions[parser];
     },
-    getSourceOptions() {
-      return [
-        {
-          text: this.$t('task_engine_v2.condition_block.source.text'),
-          value: 'text',
-        },
-        {
-          text: this.$t('task_engine_v2.condition_block.source.global_info'),
-          value: 'global_info',
-        },
-        {
-          text: this.$t('task_engine_v2.condition_block.source.cu'),
-          value: 'cu',
-        },
-      ];
-    },
     getFuncOptions(source, ruleIndex) {
-      const funcOptionMap = this.getFuncOptionMap();
       // hide qq option when it is not the first rule
       if (source === 'text' && ruleIndex !== 0) {
-        return funcOptionMap[source].filter((option => option.value !== 'qq'));
+        return this.funcOptionMap[source].filter((option => option.value !== 'qq'));
       }
-      return funcOptionMap[source];
-    },
-    getFuncOptionMap() {
-      const textFuncs = [
-        'match', 'contains', 'regular_exp', 'common_parser', 'task_parser',
-        'hotel_parser', 'user_custom_parser', 'polarity_parser', 'api_parser', 'qq',
-      ];
-      const globalIngoFuncs = [
-        'key_val_match', 'key_key_match', 'contain_key', 'not_contain_key', 'list_length_match',
-        'counter_check', 'user_custom_transform', 'regular_exp_from_var', 'assign_value',
-      ];
-      const cuFuncs = ['cu_parser', 'custom_cu_parser'];
-      return {
-        text: textFuncs.map((func) => {
-          const key = `task_engine_v2.condition_block.func.${func}`;
-          return {
-            text: this.$t(key),
-            value: func,
-          };
-        }),
-        global_info: globalIngoFuncs.map((func) => {
-          const key = `task_engine_v2.condition_block.func.${func}`;
-          return {
-            text: this.$t(key),
-            value: func,
-          };
-        }),
-        cu: cuFuncs.map((func) => {
-          const key = `task_engine_v2.condition_block.func.${func}`;
-          return {
-            text: this.$t(key),
-            value: func,
-          };
-        }),
-      };
+      return this.funcOptionMap[source];
     },
   },
   beforeMount() {
