@@ -158,6 +158,7 @@ export default {
     recommend_question: '推荐标准问题',
     recommend_empty_msg_1: '目前无推荐标准问题',
     recommend_empty_msg_2: '可在右上角搜寻标准问题',
+    search_empty_msg: '无搜寻结果',
     cluster_info: '通过特有的算法将相似问的句子进行聚类方便统一标注，建议勾选100条以上的用户问题，数量越大分类越准确',
     action_info: '「忽略功能」：可以将已正确回复的用户问句忽略，方便对其它问句标注。「标注功能」：可以将用户问句标注到正确的标准问上，训练完成后增强机器人理解能力',
     clustering_msg: '{num} 笔用户问题进行辅助分类中，请勿离开此页面',

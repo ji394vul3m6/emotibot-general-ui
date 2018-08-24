@@ -40,11 +40,12 @@
           <div class="cluster-header">
             <span>{{ $t('statistics.cluster.cluster_info', { title: currentClusterTitle, num: checkedDataRowCount }) }}</span>
             <text-button
-              :button-type="dataRowCount > 0 && hasCheckedDataRow ? 'primary' : 'disable'">
+              :button-type="dataRowCount > 0 && hasCheckedDataRow ? 'primary' : 'disable'"
+              @click="doIgnore(checkedDataRow)">
               {{ $t('statistics.ignore.batch_ignore') }}</text-button>
             <text-button
               :button-type="dataRowCount > 0 && hasCheckedDataRow ? 'primary' : 'disable'"
-              >
+              @click="popSelfLearnMark(checkedDataRow)">
               {{ $t('statistics.mark.batch_mark') }}</text-button>
           </div>
           <general-table class="content-table cluster-content"
@@ -73,6 +74,7 @@
 <script>
 import { mapGetters, mapMutations } from 'vuex';
 import moment from 'moment';
+import SelfLearnMarkPop from './_components/SelfLearnMarkPop';
 import VIEW from './_data/dailyView';
 import api from './_api/selflearn';
 
@@ -107,7 +109,7 @@ export default {
       clusterGroupData: [],
       clusterRecordHeader: [
         {
-          key: 'value',
+          key: 'user_question',
           text: this.$t('statistics.user_question'),
         },
         {
@@ -170,6 +172,86 @@ export default {
     handleCheckedChange(checked) {
       this.checkedDataRow = checked;
     },
+    popSelfLearnMark(datarows) {
+      // Datarows is an..
+      //    object, when click mark button on general-table
+      //    array, when click batch mark button
+      // only send array to SelfLearnMarkPop
+      const propData = Array.isArray(datarows) ? datarows : [datarows];
+      const that = this;
+      const options = {
+        title: that.$t('statistics.mark.mark'),
+        component: SelfLearnMarkPop,
+        data: {
+          qa: propData,
+          markedQuestion: '', // receive marked question
+        },
+        callback: {
+          ok: (data) => {
+            const markedQuestion = data.markedQuestion;
+            const record = propData.map(prop => prop.record_id);
+            if (markedQuestion === '') {
+              that.$api.setUnmark(record)
+              .then((unmarkedRecord) => {
+                that.clusterRecordData =
+                  that.updateMarkedTableData(that.clusterRecordData, unmarkedRecord, false);
+              });
+            } else {
+              that.$api.setMark(markedQuestion, record)
+              .then((markedRecord) => {
+                that.clusterRecordData =
+                  that.updateMarkedTableData(that.clusterRecordData, markedRecord, true);
+              });
+            }
+          },
+        },
+        validate: true,
+      };
+      that.$pop(options);
+    },
+    updateMarkedTableData(tableData, markedRecord, marked) {
+      const that = this;
+      tableData.forEach((data) => {
+        if (markedRecord.indexOf(data.record_id) !== -1) {
+          data.marked = marked;
+        }
+      });
+      return that.appendTableDataAction(tableData);
+    },
+    doIgnore(datarows) {
+      const that = this;
+      const rows = Array.isArray(datarows) ? datarows : [datarows];
+      const toIgnore = rows.map(r => r.record_id);
+      that.setIgnore(toIgnore, true);
+    },
+    doCancelIgnore(datarow) {
+      const that = this;
+      const toCancelIgnore = [datarow.record_id];
+      that.setIgnore(toCancelIgnore, false);
+    },
+    setIgnore(records, ignore) {
+      const that = this;
+      that.$api.setIgnore(records, ignore)
+      .then((ignoredRecord) => {
+        // TODO: update ignore state on table
+        that.clusterRecordData =
+          that.updateIgnoredTableData(that.clusterRecordData, ignoredRecord, ignore);
+        that.$notify({ text: that.$t('statistics.success.ignore_ok') });
+      })
+      .catch((err) => {
+        console.log(err);
+        that.$notifyFail(that.$t('statistics.error.ignore_fail'));
+      });
+    },
+    updateIgnoredTableData(tableData, ignoredRecord, ignored) {
+      const that = this;
+      tableData.forEach((data) => {
+        if (ignoredRecord.indexOf(data.record_id) !== -1) {
+          data.ignored = ignored;
+        }
+      });
+      return that.appendTableDataAction(tableData);
+    },
     setClusterRecordData(cluster) {
       const that = this;
       that.currentClusterTitle = cluster.tag;
@@ -198,24 +280,35 @@ export default {
     },
     receiveAPIData(datas) {
       const that = this;
-      const tableData = datas.map((d) => {
+      let tableData = datas.map((d) => {
         const data = {
-          value: d.user_question,
+          user_question: d.user_question,
+          record_id: d.record_id,
+          ignored: d.ignored,
+          marked: d.marked,
         };
+        return data;
+      });
+      tableData = that.appendTableDataAction(tableData);
+      return tableData;
+    },
+    appendTableDataAction(datas) {
+      // check status of marked and ignored, give different action
+      const that = this;
+      datas.forEach((data) => {
         data.action = [];
         data.action.push({
-          text: d.ignored ? that.$t('statistics.ignore.cancel_ignore') : that.$t('statistics.ignore.ignore'),
+          text: data.ignored ? that.$t('statistics.ignore.cancel_ignore') : that.$t('statistics.ignore.ignore'),
           type: 'primary',
-          onclick: d.ignored ? that.doCancelIgnore : that.doIgnore,
+          onclick: data.ignored ? that.doCancelIgnore : that.doIgnore,
         });
         data.action.push({
-          text: d.marked ? that.$t('statistics.mark.re_marked') : that.$t('statistics.mark.mark'),
+          text: data.marked ? that.$t('statistics.mark.re_marked') : that.$t('statistics.mark.mark'),
           type: 'primary',
           onclick: that.popSelfLearnMark,
         });
-        return data;
       });
-      return tableData;
+      return datas;
     },
     parseSearchCondition(searchQuery) {
       const that = this;
@@ -386,6 +479,9 @@ export default {
       .cluster-header {
         .text-button {
           margin-left: 10px;
+          &.disabled {
+            pointer-events: none;
+          }
         }
       }
     }

@@ -25,14 +25,18 @@
               </div>
             </template>
             <template v-else-if="markedQuestion !== ''">
-              <div class="marked-q">
-                {{ markedQuestion }}
+              <div class="marked-q" ref="markedQ" v-tooltip="markedQuestionTooltip"
+                >
+                <div class="marked-tag" @mouseover="showFullMarkedQuestion" @mouseout="hideFullMarkedQuestion">
+                  {{ markedQuestion }}
+                </div>
                 <icon icon-type="close" :size="8" id="delete-tag" @click="cancelMarkedQuestion" button></icon>
               </div>
             </template>
             <template v-else>
               {{ $t('general.empty') }}
             </template>
+            <div class="toolbar-middle"><!--fill empty space--></div>
           </div>
         </div>
         <div class="toolbar-right">
@@ -53,6 +57,8 @@
 </template>
 
 <script>
+import misc from '@/utils/js/misc';
+import event from '@/utils/js/event';
 import api from '../_api/selflearn';
 
 export default {
@@ -68,7 +74,7 @@ export default {
   data() {
     return {
       appId: this.$cookie.get('appid'),
-      qa: undefined,  // prop value.qa
+      qa: [],  // prop value.qa
       keyword: '',
       markedQuestion: '',
       hasMultiOriginMarks: false,
@@ -129,10 +135,19 @@ export default {
           question: '六句標準問',
         },
       ],
-      emptyMsg: [
+      noRecommendMsg: [
         this.$t('statistics.recommend_empty_msg_1'),
         this.$t('statistics.recommend_empty_msg_2'),
       ],
+      noSearchResultMsg: [
+        this.$t('statistics.search_empty_msg'),
+      ],
+      emptyMsg: this.noRecommendMsg,
+      markedQuestionTooltip: {
+        msg: '',
+        eventOnly: true,
+        alignLeft: true,
+      },
     };
   },
   watch: {
@@ -146,12 +161,25 @@ export default {
         // TODO: tableData 恢復成原本的推薦
         that.tableData = that.recommendQuestion;
         that.updateMarkedIcon(that.markedQuestion);
+        that.updateTableEmptyMsg(that.noRecommendMsg);
       } else {
         that.keywordTimer = setTimeout(that.searchKeyword, 300);
       }
     },
   },
   methods: {
+    showFullMarkedQuestion(e) {
+      const that = this;
+      if (!misc.isEllipsisActive(e.target)) return;
+      that.markedQuestionTooltip.msg = that.markedQuestion;
+      that.$refs.markedQ.dispatchEvent(event.createEvent('tooltip-reload'));
+      that.$refs.markedQ.dispatchEvent(event.createEvent('tooltip-show'));
+    },
+    hideFullMarkedQuestion(e) {
+      const that = this;
+      if (!misc.isEllipsisActive(e.target)) return;
+      that.$refs.markedQ.dispatchEvent(event.createEvent('tooltip-hide'));
+    },
     toggleHasMultiOriginMarks() {
       this.hasMultiOriginMarks = false;
     },
@@ -164,8 +192,14 @@ export default {
       const chosenQuestion = datarow.question;
       that.updateMarkedIcon(chosenQuestion);
     },
+    updateTableEmptyMsg(msg) {
+      this.emptyMsg = msg;
+    },
     updateMarkedIcon(chosenQ) {
       const that = this;
+      if (that.hasMultiOriginMarks) {
+        that.toggleHasMultiOriginMarks();
+      }
       const oldMarkedQIdx = that.tableData.findIndex(data => data.question === that.markedQuestion);
       if (oldMarkedQIdx !== -1) {
         that.tableData.splice(oldMarkedQIdx, 1, {
@@ -189,6 +223,7 @@ export default {
         console.log(stdQuestion);
         // set the questions to tableData;
         that.updateMarkedIcon(that.markedQuestion);
+        that.updateTableEmptyMsg(that.noSearchResultMsg);
       })
       .catch((err) => {
         console.log(err);
@@ -196,6 +231,11 @@ export default {
       .finally(() => {
         that.keywordTimer = undefined;
       });
+    },
+    validate() {
+      const that = this;
+      that.value.markedQuestion = that.markedQuestion;
+      that.$emit('validateSuccess', that.value);
     },
     getOriginMark() {
       const that = this;
@@ -216,10 +256,14 @@ export default {
       }
     },
   },
+  beforeMount() {
+    const that = this;
+    that.qa = that.value.qa;
+    that.markedQuestion = that.value.markedQuestion;
+  },
   mounted() {
     // TODO: get Recommend
     const that = this;
-    that.qa = that.value.qa;
 
     const sentences = that.qa.map(q => q.user_question);
     that.$api.getRecommend(that.appId, sentences)
@@ -233,6 +277,8 @@ export default {
     .finally(() => {
       that.getOriginMark();
     });
+
+    that.$on('validate', that.validate);
   },
 };
 </script>
@@ -257,19 +303,34 @@ export default {
       flex: 1;
       display: flex;
       align-items: center;
+      overflow: hidden;
       .row-title {
-        width: 80px;
+        flex: 0 0 80px;
       }
       .row-content {
+        overflow: hidden;
         .marked-q {
           background-color: #eeeeee; 
           padding: 3px 6px;
           border-radius: 2px;
+          display: flex;
+          align-items: center;
+          overflow: hidden;
+          .marked-tag {
+            flex: 0 1 500px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
           #delete-tag {
             margin-left: 5px;
           }
         }
       }
+    }
+    .toolbar-right {
+      flex: 0 0 160px;
+      margin-left: 10px;
     }
   }
   

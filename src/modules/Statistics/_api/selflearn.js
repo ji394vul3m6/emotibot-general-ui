@@ -44,9 +44,14 @@ function setIgnore(records) {
   const params = {
     records,
   };
-  return this.$reqPost(url, params).then((response) => {
-    console.log(response);
-  });
+  // return this.$reqPost(url, params).then((response) => {
+  //   console.log(response);
+  // });
+
+  const mockData = {
+    records: [3, 5, 6, 7],
+  };
+  return Promise.resolve(mockData.records);
 }
 
 function setMark(question, records) {
@@ -55,9 +60,31 @@ function setMark(question, records) {
     content: question,
     records,
   };
-  return this.$reqPost(url, params).then((response) => {
-    console.log(response);
-  });
+  // return this.$reqPost(url, params).then((response) => {
+  //   console.log(response);
+  // });
+
+  const mockData = {
+    records: [3, 5, 6, 7],
+  };
+
+  return Promise.resolve(mockData.records);
+}
+
+function setUnmark(records) {
+  const url = `${RECORD_URL}/mark`;
+  const params = {
+    records,
+  };
+  // return this.$reqPost(url, params).then((response) => {
+  //   console.log(response);
+  // });
+
+  const mockData = {
+    records: [3, 5, 6, 7],
+  };
+
+  return Promise.resolve(mockData.records);
 }
 
 function getMarkedQuestion(recordId) {
@@ -68,7 +95,7 @@ function getMarkedQuestion(recordId) {
   //   return response.data.marked_content;
   // });
 
-  return Promise.resolve('標註的句子');
+  return Promise.resolve('標註的句子ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ');
 }
 
 function startCluster(params) {
@@ -202,6 +229,7 @@ export default {
   getRecords,
   setIgnore,
   setMark,
+  setUnmark,
   getMarkedQuestion,
   startCluster,
   pollClusterReport,

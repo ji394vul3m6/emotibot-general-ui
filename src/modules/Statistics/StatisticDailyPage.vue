@@ -183,6 +183,7 @@ export default {
       end: pickerUtil.createDateObj(),
 
       headerInfo: [],
+      tableData: [],
       tableAction: [],
       actionInfo: this.$t('statistics.action_info'),
       checkedDataRow: [],
@@ -191,10 +192,9 @@ export default {
       totalCount: 0,
       markedCount: 0,
       ignoredCount: 0,
-      enableClusterSize: 10, // const, only allow cluster if data is more than this num
+      enableClusterSize: 100, // const, only allow cluster if data is more than this num
 
       searchParams: undefined,
-      keywordType: 'question',
       keyword: '',
       userID: '',
       startValidity: true,
@@ -403,14 +403,37 @@ export default {
         component: SelfLearnMarkPop,
         data: {
           qa: propData,
+          markedQuestion: '', // receive marked question
         },
         callback: {
-          ok: () => {
-            // callAPI to mark
+          ok: (data) => {
+            const markedQuestion = data.markedQuestion;
+            const record = propData.map(prop => prop.record_id);
+            if (markedQuestion === '') {
+              that.$api.setUnmark(record)
+              .then((unmarkedRecord) => {
+                that.tableData = that.updateMarkedTableData(that.tableData, unmarkedRecord, false);
+              });
+            } else {
+              that.$api.setMark(markedQuestion, record)
+              .then((markedRecord) => {
+                that.tableData = that.updateMarkedTableData(that.tableData, markedRecord, true);
+              });
+            }
           },
         },
+        validate: true,
       };
       that.$pop(options);
+    },
+    updateMarkedTableData(tableData, markedRecord, marked) {
+      const that = this;
+      tableData.forEach((data) => {
+        if (markedRecord.indexOf(data.record_id) !== -1) {
+          data.marked = marked;
+        }
+      });
+      return that.appendTableDataAction(tableData);
     },
     doIgnore(datarows) {
       const that = this;
@@ -426,16 +449,25 @@ export default {
     setIgnore(records, ignore) {
       const that = this;
       that.$api.setIgnore(records, ignore)
-      .then(() => {
-        that.$notify({ text: that.$t('statistics.success.ignore_success') });
+      .then((ignoredRecord) => {
         // TODO: update ignore state on table
+        that.tableData = that.updateIgnoredTableData(that.tableData, ignoredRecord, ignore);
+        that.$notify({ text: that.$t('statistics.success.ignore_ok') });
       })
       .catch((err) => {
         console.log(err);
         that.$notifyFail(that.$t('statistics.error.ignore_fail'));
       });
     },
-
+    updateIgnoredTableData(tableData, ignoredRecord, ignored) {
+      const that = this;
+      tableData.forEach((data) => {
+        if (ignoredRecord.indexOf(data.record_id) !== -1) {
+          data.ignored = ignored;
+        }
+      });
+      return that.appendTableDataAction(tableData);
+    },
     getSearchParam() {
       const params = {
         start_time: this.start.getTimestamp(),
@@ -530,7 +562,7 @@ export default {
       that.$emit('startLoading');
       that.$api.getRecords(that.searchParams, page, this.pageLimit).then((data) => {
         const res = data;
-        that.tableData = that.receiveAPIData(res.data);
+        that.tableData = that.appendTableDataAction(res.data);
         that.headerInfo = that.receiveAPIHeader(res.table_header);
         that.totalCount = res.total_size;
         that.markedCount = res.marked_size;
@@ -543,7 +575,7 @@ export default {
         that.$emit('endLoading');
       });
     },
-    receiveAPIData(datas) {
+    appendTableDataAction(datas) {
       // check status of marked and ignored, give different action
       const that = this;
       datas.forEach((data) => {
@@ -594,6 +626,9 @@ export default {
       that.startDisableDate = {
         from: that.end.dateObj,
       };
+      that.$nextTick(() => {
+        that.dayRange = day;  // update lable switch after datepicker is updated
+      });
     },
     setStartDateObj(d) {
       const startDateObj = pickerUtil.createDateObj();
@@ -608,6 +643,7 @@ export default {
       return endDateObj;
     },
     handleStartDateChanged(d) {
+      this.dayRange = -1;
       this.start.dateObj = d;
       pickerUtil.initTimeObj(this.start);
       this.endDisableDate = {
@@ -615,11 +651,14 @@ export default {
       };
     },
     handleEndDateChanged(d) {
+      this.dayRange = -1;
       this.end.dateObj = d;
       pickerUtil.initTimeObj(this.end);
       this.startDisableDate = {
         from: this.end.dateObj,
       };
+    },
+    setLabelSwitch() {
     },
   },
   computed: {
@@ -664,13 +703,14 @@ export default {
     };
   },
   activated() {
-    pickerUtil.initTime(this);
     this.showTable = false;
-    this.totalCount = 0;
-    this.$emit('endLoading');
-    this.keywordType = 'all';
+    // Refill keyword
+    const lastKeyword = this.keyword;
     this.keyword = '';
-    this.userID = '';
+    this.$nextTick(() => {
+      this.keyword = lastKeyword;
+    });
+    this.doSearch(1);
   },
 };
 </script>
@@ -756,6 +796,10 @@ export default {
     align-items: center;
     .label-switch {
       flex: 0 0 auto;
+      margin-right: 5px;
+    }
+    .datetimepicker{
+      margin: 0 5px;
     }
     .input {
       // padding-left: 10px;
