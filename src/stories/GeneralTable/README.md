@@ -103,6 +103,7 @@ Object key 值應與唯一的 tableHeader 的 key 相對應，代表某個標題
 | 'action' | Array of actions Objecs | [<br>&nbsp;&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;text: '',<br>&nbsp;&nbsp;&nbsp;&nbsp;type: 'primary',<br>&nbsp;&nbsp;&nbsp;&nbsp;onclick: function<br>&nbsp;&nbsp;},<br>] | 與prop: action類似，但可對每筆資料自訂不同action，若每筆資料操作相同，建議使用prop: action
 | 'icon' | Object | {<br>&nbsp;&nbsp;iconType: 'check', <br>&nbsp;&nbsp;iconSize: 20, <br>} | 欄位內顯示 icon
 | 有傳入action時可使用<br>action_enable | Object | {"edit": true, "delete": true} | 非必要，可控制「操作」欄位定義的操作是否可以點擊<br>key值須對應到 action 的 key
+| hightlight | Boolean | true / false | 資料行是否 highlight 底色為深灰色
 
 
 
@@ -129,6 +130,7 @@ Object key 值應與唯一的 tableHeader 的 key 相對應，代表某個標題
         "edit" : true,
         "delete" : true, 
       },
+      hightlight: true,      // 是否 highlight 底色為深灰色
     },
     ...
   ]

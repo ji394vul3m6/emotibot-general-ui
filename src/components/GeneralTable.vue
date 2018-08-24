@@ -30,7 +30,7 @@
     <div class="general-table-body">
     <table class="general-table" :class="[autoHeight ? 'auto-height' : '', fontClass]" v-if="tableData && tableData.length > 0">
       <tbody :class="[onclickRow ? 'clickable-row' : '']">
-        <tr v-for="(data, idx) in tableData" :key="idx">
+        <tr v-for="(data, idx) in tableData" :key="idx" :class="{'highlight': data.highlight}">
           <td v-if="checkbox" class="table-col-checkbox">
             <input type="checkbox" @click="checkSelf(data, idx)" :checked="data.isChecked">
           </td>
@@ -378,6 +378,7 @@ table {
       height: $table-row-height;
       display: flex;
       border-bottom: 1px solid $table-color-borderline;
+
       td {
         flex: 1 0 0;
         box-sizing: border-box;
@@ -430,6 +431,9 @@ table {
       width: inherit;
       overflow: hidden;
       border-bottom: 1px solid $table-color-borderline;
+      &.highlight {
+        background-color: #e6e6e6;
+      }
       td {
         flex: 1 0 0px;
         // min-width: 100px;
