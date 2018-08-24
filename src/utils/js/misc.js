@@ -6,6 +6,11 @@ function useIE() {
     navigator.userAgent.match(/Edge/)));
 }
 
+function isEllipsisActive(elem) {
+  // Check whether text ellipsis is active
+  return elem.offsetWidth < elem.scrollWidth;
+}
+
 function downloadRawFile(blobData, filename) {
   if (blobData != null && navigator.msSaveBlob) {
     navigator.msSaveBlob(blobData, filename);
@@ -41,6 +46,7 @@ function controlKeyOnly(e) {
 
 export default {
   useIE,
+  isEllipsisActive,
   downloadRawFile,
   controlKeyOnly,
 };
