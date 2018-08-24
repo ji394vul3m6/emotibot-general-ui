@@ -11,6 +11,7 @@
         :nodeId="nodeId"
         :initialEdge="edge"
         :toNodeOptions="toNodeOptions"
+        :globalVarOptions="globalVarOptions"
         @update="updateNormalEdge(index, $event)"
         @deleteEdge="deleteEdge(index)">
       </condition-block>
@@ -95,6 +96,10 @@ export default {
       required: true,
     },
     initialToNodeOptions: {
+      type: Array,
+      required: true,
+    },
+    globalVarOptions: {
       type: Array,
       required: true,
     },

@@ -18,6 +18,7 @@
           :nodeTypeName="getNodeTypeName(nodeBlock.data.nodeType)"
           :initialNode="nodeBlock.data"
           :toNodeOptions="toNodeOptions"
+          :globalVarOptions="globalVarOptions"
           @updatePosition="updateNodePosition(index, $event)"
           @savePosition="saveScenario()"
           @deleteNode="deleteNode(index)"
@@ -128,6 +129,7 @@ export default {
       moduleDataLayout: {},
       setting: {},
       globalEdges: [],
+      globalVars: [],
       nodeBlocks: [],
       edges: [],
       panelTabOptions: [],
@@ -272,6 +274,19 @@ export default {
           data: node,
         };
       });
+      this.renderGlobalVarOptions();
+    },
+    renderGlobalVarOptions() {
+      this.globalVarOptions = [];
+      this.moduleData.nodes.forEach(((node) => {
+        if (node.global_vars) {
+          const vars = node.global_vars.map(v => ({
+            text: node.description,
+            value: v,
+          }));
+          this.globalVarOptions.push(...vars);
+        }
+      }));
     },
     saveScenario() {
       const uiNodes = this.nodeBlocks.map(nodeBlock => nodeBlock.data);
@@ -424,6 +439,7 @@ export default {
         extData: {
           globalEdges: this.globalEdges,
           toNodeOptions: this.toNodeOptions,
+          globalVarOptions: this.globalVarOptions,
         },
         callback: {
           ok: (edges) => {

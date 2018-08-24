@@ -179,7 +179,11 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_key")}}
             </div>
-            <input class="input-content" v-model="rule.content[0].key"></input>
+            <input class="input-content" list="globalVars" v-model="rule.content[0].key"
+              onmouseover="old=value;" 
+              onmousedown="value='';" 
+              onmouseup="value=old;">
+            </input>
           </div>
           <div class="row">
             <div class="label label-start">
@@ -208,7 +212,11 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_key")}}
             </div>
-            <input class="input-content" v-model="rule.content[0].key1"></input>
+            <input class="input-content" list="globalVars" v-model="rule.content[0].key1"
+              onmouseover="old=value;" 
+              onmousedown="value='';" 
+              onmouseup="value=old;">
+            </input>
           </div>
           <div class="row">
             <div class="label label-start">
@@ -223,7 +231,11 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_content")}}
             </div>
-            <input class="input-content" v-model="rule.content[0].key"></input>
+            <input class="input-content" list="globalVars" v-model="rule.content[0].key"
+              onmouseover="old=value;" 
+              onmousedown="value='';" 
+              onmouseup="value=old;">
+            </input>
           </div>
         </div>
         <!-- 不包含键 -->
@@ -232,7 +244,11 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_content")}}
             </div>
-            <input class="input-content" v-model="rule.content[0].key"></input>
+            <input class="input-content" list="globalVars" v-model="rule.content[0].key"
+              onmouseover="old=value;" 
+              onmousedown="value='';" 
+              onmouseup="value=old;">
+            </input>
           </div>
         </div>
         <!-- 序列长度匹配 -->
@@ -255,7 +271,11 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_key")}}
             </div>
-            <input class="input-content" v-model="rule.content[0].key"></input>
+            <input class="input-content" list="globalVars" v-model="rule.content[0].key"
+              onmouseover="old=value;" 
+              onmousedown="value='';" 
+              onmouseup="value=old;">
+            </input>
           </div>
           <div class="row">
             <div class="label label-start">
@@ -302,7 +322,11 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_source_key")}}
             </div>
-            <input class="input-content" v-model="rule.content.from_key"></input>
+            <input class="input-content" list="globalVars" v-model="rule.content.from_key"
+              onmouseover="old=value;" 
+              onmousedown="value='';" 
+              onmouseup="value=old;">
+            </input>
           </div>
           <div class="row">
             <div class="label label-start">
@@ -323,7 +347,11 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_source_key")}}
             </div>
-            <input class="input-content" v-model="rule.content.from_key"></input>
+            <input class="input-content" list="globalVars" v-model="rule.content.from_key"
+              onmouseover="old=value;" 
+              onmousedown="value='';" 
+              onmouseup="value=old;">
+            </input>
           </div>
           <template v-for="(operation, idx) in rule.content.operations">
             <div class="row">
@@ -360,7 +388,11 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_key")}}
             </div>
-            <input class="input-content" v-model="rule.content[0].key"></input>
+            <input class="input-content" list="globalVars" v-model="rule.content[0].key"
+              onmouseover="old=value;" 
+              onmousedown="value='';" 
+              onmouseup="value=old;">
+            </input>
           </div>
           <div class="row">
             <div class="label label-start">
@@ -488,6 +520,11 @@
       </template>
     </div>
   </div>
+  <datalist id="globalVars">
+    <template v-for="(option, index) in globalVarOptions">
+      <option :value="option.value">{{option.text}}</option>
+    </template>
+  </datalist>
 </div>
 </template>
 
@@ -511,6 +548,10 @@ export default {
       required: true,
     },
     toNodeOptions: {
+      type: Array,
+      required: true,
+    },
+    globalVarOptions: {
       type: Array,
       required: true,
     },

@@ -16,6 +16,7 @@
       <trigger-edit-tab ref="triggerTab"
         v-if="currentTab === 'triggerTab'"
         :initialTriggerTab="initialTriggerTab"
+        :globalVarOptions="globalVarOptions"
         @update="triggerTab = $event"
       ></trigger-edit-tab>
       <setting-edit-tab ref="settingTab"
@@ -45,6 +46,7 @@
         v-if="currentTab === 'edgeTab'"
         :initialEdgeTab="initialEdgeTab"
         :initialToNodeOptions="toNodeOptions"
+        :globalVarOptions="globalVarOptions"
         @update="edgeTab = $event"
       ></edge-edit-tab>
     </keep-alive>
@@ -82,6 +84,7 @@ export default {
       node: {},
       nodeType: undefined,
       toNodeOptions: [],
+      globalVarOptions: [],
       allTabs: this.getAllTabs(),
       initialTriggerTab: {},
       initialSettingTab: {},
@@ -122,6 +125,7 @@ export default {
     renderData() {
       this.node = JSON.parse(JSON.stringify(this.extData.node));
       this.toNodeOptions = JSON.parse(JSON.stringify(this.extData.toNodeOptions));
+      this.globalVarOptions = JSON.parse(JSON.stringify(this.extData.globalVarOptions));
       this.nodeType = this.node.nodeType;
       // render tab data
       let tabs = [];

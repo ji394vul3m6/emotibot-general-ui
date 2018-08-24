@@ -11,6 +11,7 @@
         :nodeId="nodeId"
         :initialEdge="edge"
         :toNodeOptions="toNodeOptions"
+        :globalVarOptions="globalVarOptions"
         @update="updateEdge(index, edge)"
         @deleteEdge="deleteEdge(index)">
       </condition-block>
@@ -46,6 +47,7 @@ export default {
       nodeId: '',
       globalEdges: [],
       toNodeOptions: [],
+      globalVarOptions: [],
     };
   },
   computed: {},
@@ -65,6 +67,9 @@ export default {
         { text: 'do nothing', value: null },
         { text: 'Exit (ID: 0)', value: '0' },
       ].concat(options);
+
+      // render globalVarOptions
+      this.globalVarOptions = JSON.parse(JSON.stringify(this.extData.globalVarOptions));
     },
     addEdge() {
       const edge = scenarioInitializer.initialEdge();

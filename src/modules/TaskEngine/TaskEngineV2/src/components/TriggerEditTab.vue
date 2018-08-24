@@ -11,6 +11,7 @@
         :nodeId="nodeId"
         :initialEdge="rule"
         :toNodeOptions="[]"
+        :globalVarOptions="globalVarOptions"
         @update="updateRule(index, $event)"
         @deleteEdge="deleteRule(index)">
       </condition-block>
@@ -39,6 +40,10 @@ export default {
   props: {
     initialTriggerTab: {
       type: Object,
+      required: true,
+    },
+    globalVarOptions: {
+      type: Array,
       required: true,
     },
   },

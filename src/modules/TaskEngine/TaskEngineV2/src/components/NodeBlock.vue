@@ -57,6 +57,11 @@ export default {
       required: true,
       default: undefined,
     },
+    globalVarOptions: {
+      type: Array,
+      required: true,
+      default: undefined,
+    },
   },
   data() {
     return {
@@ -133,6 +138,7 @@ export default {
         extData: {
           node: that.node,
           toNodeOptions: that.toNodeOptions,
+          globalVarOptions: that.globalVarOptions,
         },
         callback: {
           ok: (nodeResult) => {
