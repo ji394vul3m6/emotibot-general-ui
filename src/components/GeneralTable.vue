@@ -39,9 +39,9 @@
             :class="{'fixed': header.width, 'custom-action': header.type === 'action', 'multi-action': hasMultiCustomAction, 'icon-column': header.type === 'icon'}"
              class="table-body-item"
             @click="handleOnclickRow(onclickRow, data, idx)">
-            <template v-if="header.type === 'tag'">
+            <div v-if="header.type === 'tag'">
               <tag class="tags" v-for="(tag, tagIdx) in data[header.key]" :key="`${tagIdx}-${tag}`" :fontClass="fontClass">{{ tag }}</tag>
-            </template>
+            </div>
             <!-- type toggle need to have a readonly mode -->
             <template v-else-if="header.type === 'toggle'">
               <toggle class="toggles"
@@ -58,7 +58,7 @@
             <template v-else-if="header.type === 'icon'">
               <icon v-if="data[header.key]" :icon-type="data[header.key].iconType" :size="data[header.key].iconSize"></icon>
             </template>
-            <template v-else>{{ data[header.key] }}</template>
+            <div v-else>{{ data[header.key] }}</div>
           </td>
           <td v-if="hasAction" class="table-col-action" :class="{'multi-action': action.length > 1}">
             <span class="actions" v-for="act in action" 
@@ -289,6 +289,11 @@ $table-row-height: 50px;
     .table-body-item {
       display: flex;
       align-items: center;
+      div {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
     }
     tr {
       &:hover{
@@ -300,6 +305,40 @@ $table-row-height: 50px;
         cursor: pointer;
         .table-col-action, .table-col-checkbox {
           cursor: default;
+        }
+      }
+    }
+
+    .auto-height {
+      thead {
+        tr {
+          height: auto;
+        }
+      }
+      tbody {
+        tr {
+          height: auto;
+          td {
+            text-overflow: unset;
+            overflow: unset;
+            white-space: unset;
+            word-break: break-all;
+
+            &.table-body-item {
+              div {
+                text-overflow: unset;
+                overflow: unset;
+                white-space: unset;
+                word-break: break-all;
+
+                // IE11 do not has unset css property
+                @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+                  overflow: visible;
+                  white-space: normal;
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -391,14 +430,13 @@ table {
       overflow: hidden;
       border-bottom: 1px solid $table-color-borderline;
       td {
-        flex: 1 0 0;
+        flex: 1 0 0px;
         // min-width: 100px;
         box-sizing: border-box;
         padding: 15px 10px;
         &.fixed {
           flex: 0 0 auto;
         }
-
         text-overflow: ellipsis;
         overflow: hidden;
         white-space: nowrap;
@@ -455,25 +493,6 @@ table {
           &:hover {
             cursor:pointer;
           }
-        }
-      }
-    }
-  }
-
-  &.auto-height {
-    thead {
-      tr {
-        height: auto;
-      }
-    }
-    tbody {
-      tr {
-        height: auto;
-        td {
-          text-overflow: unset;
-          overflow: unset;
-          white-space: unset;
-          word-break: break-all;
         }
       }
     }
