@@ -204,6 +204,7 @@ export default {
     robot_say: '机器人回答',
   },
   robot_setting: {
+    tooltip: '机器人拥有的技能包括计算、时间查询、笑话、汇率、股票、讲故事和查天气等，用户可根据业务需要自行设定',
     model_rebuild: '重新建模',
     rebuild_msg: '点击“重新建模”，您的所有配置将于10分钟左右生效，在此期间将不能再次点击按钮，建议将所有修改都完成后再点“重新建模”，避免您的等待时间。如果忘记点击也没关系，自动重新建模是一小时一次。',
     chat_info_desc: '我的名字叫 {name}，你可以在下面设置我的形象喔',
@@ -313,6 +314,7 @@ export default {
     add_wordbank: '新增词库',
     edit_wordbank: '编辑词库',
     moveto_wordbank: '移动项目至...',
+    category_card_tooltip: '词库包含专用词库、敏感词库和任务引擎词库，词库的创建与维护帮助提升自然语言理解的覆盖率和准确率',
     add_rootcategory: '新增第一层分类',
     add_subcategory: '新增子分类',
     delete_category: '删除分类',

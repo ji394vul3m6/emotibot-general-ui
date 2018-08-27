@@ -3,6 +3,7 @@
   <div class="card h-fill w-fill">
     <div class="header">
       <div class="header-text">{{ $t('pages.robot_setting.robot_function') }}</div>
+      <icon iconType="info" :size="16" enableHover v-tooltip="pageInfoTooltip"></icon>
     </div>
     <div class="page">
       <div class="row">
@@ -113,6 +114,9 @@ export default {
       showLoading: false,
       moduleList: [],
       i18n: undefined,
+      pageInfoTooltip: {
+        msg: this.$t('robot_setting.tooltip'),
+      },
     };
   },
   activated() {
@@ -162,8 +166,10 @@ $card-remark-color: #999999;
     box-shadow: inset 0 -1px 0 0 #e9e9e9;
     .header-text {
       color: $color-font-active;
-      flex: 0 0 80px;
     }
+    .icon {
+       margin-left: 6px;
+     }
     .text-button {
       margin-right: 10px;
     }

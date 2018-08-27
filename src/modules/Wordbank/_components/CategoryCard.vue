@@ -4,7 +4,10 @@
     <div id="card-category-header">
       <div id="card-category-header-block">
         <div id="card-category-row">
-          <div class="card-category-title">{{ $t('pages.wordbank.wordbank_list') }}</div>
+          <div class="card-category-title">
+            {{ $t('pages.wordbank.wordbank_list') }}
+            <icon iconType="info" :size="16" enableHover v-tooltip="categoryCardTooltip"></icon>
+          </div>
           <div v-if="canSetting" class="card-category-setting" @click="triggerEditMode">
             <span v-if="isEditMode"> {{ $t('wordbank.leave_setting') }}</span>
             <span v-else> {{ $t('wordbank.setting') }} </span>
@@ -75,6 +78,9 @@ export default {
       wasCompositioning: false,
       hasSearchResult: true,
       MAX_LAYER: 4,
+      categoryCardTooltip: {
+        msg: this.$t('wordbank.category_card_tooltip'),
+      },
     };
   },
   computed: {
@@ -301,6 +307,11 @@ $category-item-height: 32px;
           @include font-16px();
           font-weight: 500;
           color: $color-font-active;
+          display: flex;
+          align-items: center;
+          .icon {
+            margin-left: 6px;
+          }
         }
         .card-category-setting {
           @include font-12px();
