@@ -203,6 +203,20 @@ export default {
             edge_type: 'else_into',
           });
         }
+
+        // push restful node edges
+        if (nodeBlock.data.restfulEdgeTab) {
+          edgeList.push({
+            from_id: nodeBlock.data.nodeId,
+            to_id: nodeBlock.data.restfulEdgeTab.restfulSucceedThenGoto,
+            edge_type: 'normal',
+          });
+          edgeList.push({
+            from_id: nodeBlock.data.nodeId,
+            to_id: nodeBlock.data.restfulEdgeTab.restfulFailedThenGoto,
+            edge_type: 'normal',
+          });
+        }
       });
       return edgeList;
     },

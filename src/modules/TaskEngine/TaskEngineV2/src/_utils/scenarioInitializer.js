@@ -44,6 +44,8 @@ export default {
       return this.initialDialogueNode(nodeName, nodeDialogueCntLimit);
     } else if (nodeType === 'nlu_pc') {
       return this.initialNLUPCNode(nodeName, nodeDialogueCntLimit);
+    } else if (nodeType === 'restful') {
+      return this.initialRestfulNode(nodeName);
     }
     return {};
   },
@@ -95,6 +97,26 @@ export default {
         exceedThenGoto: '0',
         elseInto: '0',
         dialogueLimit: nodeDialogueCntLimit,
+      },
+    };
+  },
+  initialRestfulNode(nodeName) {
+    return {
+      nodeId: this.guid_sort(),
+      nodeName,
+      nodeType: 'restful',
+      restfulSettingTab: {
+        nodeType: 'restful',
+        nodeName,
+        url: '',
+        method: 'GET',
+        contentType: 'application/json',
+        body: '',
+        rtnVarName: '',
+      },
+      restfulEdgeTab: {
+        restfulFailedThenGoto: '0',
+        restfulSucceedThenGoto: '0',
       },
     };
   },

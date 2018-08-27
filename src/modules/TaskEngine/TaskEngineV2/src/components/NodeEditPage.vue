@@ -58,6 +58,20 @@
         :mapTableOptions="mapTableOptions"
         @update="edgeTab = $event"
       ></edge-edit-tab>
+      <restful-setting-edit-tab ref="restfulSettingTab"
+        v-if="currentTab === 'restfulSettingTab'"
+        :initialRestfulSettingTab="restfulSettingTab"
+        :initialToNodeOptions="toNodeOptions"
+        @update="restfulSettingTab = $event"
+      ></restful-setting-edit-tab>
+      <restful-edge-edit-tab ref="restfulEdgeTab"
+        v-if="currentTab === 'restfulEdgeTab'"
+        :nodeId="node.nodeId"
+        :initialRestfulEdgeTab="restfulEdgeTab"
+        :initialToNodeOptions="toNodeOptions"
+        @update="restfulEdgeTab = $event"
+      ></restful-edge-edit-tab>
+    </keep-alive>
     </keep-alive>
   </div>
 </div>
@@ -69,8 +83,9 @@ import EntityCollectingEditTab from '@/modules/TaskEngine/TaskEngineV3/src/compo
 import TriggerEditTab from './TriggerEditTab';
 import SettingEditTab from './SettingEditTab';
 import EdgeEditTab from './EdgeEditTab';
-// import scenarioConvertor from '../_utils/scenarioConvertor';
 import SettingBasicEditTab from './SettingBasicEditTab';
+import RestfulSettingEditTab from './RestfulSettingEditTab';
+import RestfulEdgeEditTab from './RestfulEdgeEditTab';
 import optionConfig from '../_utils/optionConfig';
 
 export default {
@@ -81,6 +96,8 @@ export default {
     'setting-basic-edit-tab': SettingBasicEditTab,
     'edge-edit-tab': EdgeEditTab,
     'entity-collecting-edit-tab': EntityCollectingEditTab,
+    'restful-setting-edit-tab': RestfulSettingEditTab,
+    'restful-edge-edit-tab': RestfulEdgeEditTab,
   },
   props: {
     extData: {
@@ -105,6 +122,8 @@ export default {
       settingBasicTab: undefined,
       entityCollectingTab: undefined,
       edgeTab: undefined,
+      restfulSettingTab: undefined,
+      restfulEdgeTab: undefined,
       pageStyle: {
         width: '880px',
       },
@@ -168,6 +187,10 @@ export default {
           this.paramsCollectingTab.nodeId = this.node.nodeId;
         } else if (tab === 'paramsCollectingEdgeTab') {
           this.paramsCollectingEdgeTab = this.node.paramsCollectingEdgeTab;
+        } else if (tab === 'restfulSettingTab') {
+          this.restfulSettingTab = this.node.restfulSettingTab;
+        } else if (tab === 'restfulEdgeTab') {
+          this.restfulEdgeTab = this.node.restfulEdgeTab;
         }
       });
     },
@@ -199,6 +222,16 @@ export default {
         entityCollectingTab: {
           type: 'entityCollectingTab',
           name: this.$t('task_engine_v3.scenario_edit_page.tab.entity_collecting'),
+          icon: 'setting',
+        },
+        restfulSettingTab: {
+          type: 'restfulSettingTab',
+          name: this.$t('task_engine_v2.node_edit_page.tabs.setting'),
+          icon: 'setting',
+        },
+        restfulEdgeTab: {
+          type: 'restfulEdgeTab',
+          name: this.$t('task_engine_v2.node_edit_page.tabs.edge'),
           icon: 'setting',
         },
       };
@@ -233,11 +266,14 @@ export default {
         edgeTab: this.edgeTab,
         entityCollectingTab: this.entityCollectingTab,
         settingBasicTab: this.settingBasicTab,
+        restfulSettingTab: this.restfulSettingTab,
+        restfulEdgeTab: this.restfulEdgeTab,
       };
-      if (this.node.nodeType === 'entry') {
-        nodeResult.nodeName = this.$t('task_engine_v2.node_type.entry');
-      } else if (this.node.nodeType === 'nlu_pc') {
+      if (this.node.nodeType === 'entry' ||
+          this.node.nodeType === 'nlu_pc') {
         nodeResult.nodeName = this.settingBasicTab.nodeName;
+      } else if (this.node.nodeType === 'restful') {
+        nodeResult.nodeName = this.restfulSettingTab.nodeName;
       } else {
         nodeResult.nodeName = this.settingTab.nodeName;
       }

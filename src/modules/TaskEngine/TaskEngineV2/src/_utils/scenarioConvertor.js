@@ -63,6 +63,10 @@ export default {
           },
           tde_setting: {},
         };
+      } else if (tab === 'restfulSettingTab') {
+        tabData.restfulSettingTab = this.parseRestfulSettingTab(node);
+      } else if (tab === 'restfulEdgeTab') {
+        tabData.restfulEdgeTab = this.parseRestfulEdgeTab(node);
       }
     });
     return {
@@ -74,6 +78,8 @@ export default {
       edgeTab: tabData.edgeTab,
       settingBasicTab: tabData.settingBasicTab,
       entityCollectingTab: tabData.entityCollectingTab,
+      restfulSettingTab: tabData.restfulSettingTab,
+      restfulEdgeTab: tabData.restfulEdgeTab,
     };
   },
   parseTriggerTab(node) {
@@ -127,7 +133,7 @@ export default {
     const edges = node.edges || [];
     tab.normalEdges = edges.filter(edge => edge.edge_type === 'normal' || edge.edge_type === 'qq');
 
-    // render exceedThenGoto, elseInto
+    // render exceedThenGoto
     if (nodeType !== 'entry') {
       let exceedGotoEdge = edges.find(edge => edge.edge_type === 'exceedThenGoTo');
       if (!exceedGotoEdge) {
@@ -153,6 +159,7 @@ export default {
         tab.exceedThenGoto = null;
       }
     }
+    // render elseInto
     const elseIntoEdge = edges.find(edge => edge.edge_type === 'else_into');
     tab.elseInto = elseIntoEdge.to_node_id;
 
@@ -172,6 +179,55 @@ export default {
         tab.dialogueLimit = 3;
       }
     }
+    return tab;
+  },
+  parseRestfulSettingTab(node) {
+    let tab = {};
+    if (node.content && node.content.requests &&
+        node.content.requests.length > 0) {
+      const request = node.content.requests[0];
+      tab = {
+        nodeType: node.node_type || '',
+        nodeName: node.description || '',
+        url: request.url,
+        method: request.method,
+        contentType: request.headers['Content-Type'],
+        body: request.body.content,
+        rtnVarName: request.rtn_var_name,
+      };
+    }
+    return tab;
+  },
+  parseRestfulEdgeTab(node) {
+    const edges = node.edges || [];
+    const restfulFailedEdge = edges.find((edge) => {
+      if (edge.condition_rules && edge.condition_rules.length > 0 &&
+          edge.condition_rules[0].length > 0 &&
+          edge.condition_rules[0][0].functions &&
+          edge.condition_rules[0][0].functions.length > 0) {
+        const funcName = edge.condition_rules[0][0].functions[0].function_name;
+        if (funcName === 'restful_failed') {
+          return true;
+        }
+      }
+      return false;
+    });
+    const restfulSucceedEdge = edges.find((edge) => {
+      if (edge.condition_rules && edge.condition_rules.length > 0 &&
+          edge.condition_rules[0].length > 0 &&
+          edge.condition_rules[0][0].functions &&
+          edge.condition_rules[0][0].functions.length > 0) {
+        const funcName = edge.condition_rules[0][0].functions[0].function_name;
+        if (funcName === 'restful_succeed') {
+          return true;
+        }
+      }
+      return false;
+    });
+    const tab = {
+      restfulFailedThenGoto: restfulFailedEdge.to_node_id,
+      restfulSucceedThenGoto: restfulSucceedEdge.to_node_id,
+    };
     return tab;
   },
   convertUiNodesToNodes(uiNodes, setting) {
@@ -195,19 +251,20 @@ export default {
     };
     if (uiNode.nodeType === 'entry') {
       node.entry_condition_rules = uiNode.triggerTab.rules;
-    }
-    if (uiNode.nodeType === 'dialogue') {
+    } else if (uiNode.nodeType === 'dialogue') {
       node.content = this.componseDialogueContent(uiNode);
       node.default_parser_with_suffix = uiNode.settingTab.parseFromThisNode;
       node.node_dialogue_cnt_limit = uiNode.edgeTab.dialogueLimit;
-    }
-    if (uiNode.nodeType === 'nlu_pc') {
+    } else if (uiNode.nodeType === 'nlu_pc') {
       node.content = this.composeNLUPCContent(
         uiNode.entityCollectingTab.entityCollectorList,
         uiNode.entityCollectingTab.re_parsers,
         uiNode.entityCollectingTab.register_json,
         uiNode.nluPCSettingTab.msg,
       );
+    } else if (uiNode.nodeType === 'restful') {
+      node.content = this.composeRestfulContent(uiNode);
+      node.global_vars.push(uiNode.restfulSettingTab.rtnVarName);
     }
     if (uiNode.nodeType === 'parameter_collecting') {
       node.content = this.composePCContent(
@@ -294,6 +351,26 @@ export default {
       questions,
     };
   },
+  composeRestfulContent(uiNode) {
+    if (!uiNode.restfulSettingTab) return {};
+    const tab = uiNode.restfulSettingTab;
+    const content = {
+      requests: [
+        {
+          body: {
+            content: tab.body,
+          },
+          headers: {
+            'Content-Type': tab.contentType,
+          },
+          method: tab.method,
+          rtn_var_name: tab.rtnVarName,
+          url: tab.url,
+        },
+      ],
+    };
+    return content;
+  },
   questionTemplste(type) {
     return {
       question_type: type,
@@ -326,6 +403,11 @@ export default {
         exceedThenGoto,
         elseInto,
       ];
+    } else if (uiNode.nodeType === 'restful') {
+      const tab = uiNode.restfulEdgeTab;
+      const succeedEdge = this.edgeRestfulSucceed(tab.restfulSucceedThenGoto);
+      const failedEdge = this.edgeRestfulFailed(tab.restfulFailedThenGoto);
+      edges = [failedEdge, succeedEdge];
     }
     return edges;
   },
@@ -486,6 +568,26 @@ export default {
     }
     return vars;
   },
+  edgeRestfulSucceed(toNode) {
+    return {
+      actions: [this.actionSetNodeDialogueCnt(0)],
+      condition_rules: [[
+        this.conditionRestfulSucceed(),
+      ]],
+      edge_type: 'normal',
+      to_node_id: toNode,
+    };
+  },
+  edgeRestfulFailed(toNode) {
+    return {
+      actions: [this.actionSetNodeDialogueCnt(0)],
+      condition_rules: [[
+        this.conditionRestfulFailed(),
+      ]],
+      edge_type: 'normal',
+      to_node_id: toNode,
+    };
+  },
   edgeHiddenSetNodeDialogueCntLimit(cnt) {
     const edge = this.hiddenEdgeTemplate();
     edge.actions = [
@@ -600,6 +702,28 @@ export default {
           function_name: 'not_contain_key',
         },
       ],
+    };
+  },
+  conditionRestfulSucceed() {
+    return {
+      functions: [
+        {
+          content: '',
+          function_name: 'restful_succeed',
+        },
+      ],
+      source: 'global_info',
+    };
+  },
+  conditionRestfulFailed() {
+    return {
+      functions: [
+        {
+          content: '',
+          function_name: 'restful_failed',
+        },
+      ],
+      source: 'global_info',
     };
   },
   hiddenEdgeTemplate() {

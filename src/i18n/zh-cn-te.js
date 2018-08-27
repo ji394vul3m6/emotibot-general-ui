@@ -87,6 +87,17 @@ export default {
       label_default_goto: '预设前往',
       instruction_default_goto: '当所有规则都无法符合时',
     },
+    restful_setting_edit_tab: {
+      restful_data_retrieve: 'RESTful数据调用',
+      data_save_in_key: '数据存放变量（key）：',
+      method: '调用方法：',
+      url: '调用URL：',
+    },
+    restful_edge_edit_tab: {
+      success: '调用成功',
+      fail: '调用失败',
+      label_then_goto: '则前往',
+    },
     condition_block: {
       label_content: '内容',
       button_add: '＋增加',

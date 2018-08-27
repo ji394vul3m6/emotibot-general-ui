@@ -38,7 +38,7 @@ export default {
         nodeName: this.nodeName,
         nodeType: this.nodeType,
       };
-      console.log(result);
+      // console.log(result);
       return result;
     },
   },
@@ -91,28 +91,6 @@ export default {
         background: #F3F7F9;
       }
     }
-    .text-response{
-      height: 100px;
-      color: $color-font-normal;
-    }
-    .row{
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      &:not(:first-child){
-        margin: 5px 0px 0px 0px;
-      }
-      .label-text{
-        height: 36px;
-        font-size: 14px;
-        line-height: 36px;
-        color: $color-font-normal;
-        margin: 0px 10px 0px 0px;
-      }
-    }
-  }
-  input[type=checkbox]{
-    @include general-checkbox();
   }
 }
 </style>

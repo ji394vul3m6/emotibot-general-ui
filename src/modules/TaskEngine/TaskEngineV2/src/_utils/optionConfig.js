@@ -4,6 +4,7 @@ export default {
       entry: ['settingBasicTab', 'triggerTab', 'edgeTab'],
       dialogue: ['settingTab', 'edgeTab'],
       nlu_pc: ['settingBasicTab', 'entityCollectingTab', 'edgeTab'],
+      restful: ['restfulSettingTab', 'restfulEdgeTab'],
     };
   },
   getEntityListMap() {
