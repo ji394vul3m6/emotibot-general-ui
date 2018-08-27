@@ -30,7 +30,7 @@
         :initialSettingBasicTab="settingBasicTab"
         @update="settingBasicTab = $event"
       ></setting-basic-edit-tab>
-      <entity-collecting-tab ref="entityCollectingTab"
+      <entity-collecting-edit-tab ref="entityCollectingTab"
         v-if="currentTab === 'entityCollectingTab'"
         :initialEntityCollectorList="entityCollectingTab.entityCollectorList || []"
         :initialIdToNerMap="{}"
@@ -65,7 +65,7 @@
 
 <script>
 import mappingtable from '@/modules/TaskEngine/_api/taskEngine_mappingtable';
-import EntityCollectingTab from '@/modules/TaskEngine/TaskEngineV3/src/components/EntityCollectingPage';
+import EntityCollectingEditTab from '@/modules/TaskEngine/TaskEngineV3/src/components/EntityCollectingPage';
 import TriggerEditTab from './TriggerEditTab';
 import SettingEditTab from './SettingEditTab';
 import EdgeEditTab from './EdgeEditTab';
@@ -80,7 +80,7 @@ export default {
     'setting-edit-tab': SettingEditTab,
     'setting-basic-edit-tab': SettingBasicEditTab,
     'edge-edit-tab': EdgeEditTab,
-    'entity-collecting-tab': EntityCollectingTab,
+    'entity-collecting-edit-tab': EntityCollectingEditTab,
   },
   props: {
     extData: {
