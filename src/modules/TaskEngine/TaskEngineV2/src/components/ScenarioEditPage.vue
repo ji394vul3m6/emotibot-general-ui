@@ -237,7 +237,7 @@ export default {
           y2: nodeBlockMap[edge.to_id].y + 60,
           style: {
             stroke: this.rainbowColors[index % this.rainbowColors.length],
-            strokeWidth: 4,
+            strokeWidth: 5,
             fill: 'none',
           },
         };

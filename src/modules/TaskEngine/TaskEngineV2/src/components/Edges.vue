@@ -3,9 +3,6 @@
     <g v-for="p in paths" >
       <path :d="p.data" :style="p.style"></path>
     </g>
-    <!-- <g>
-      <path d="M 0 500 H 1000 500 V 1000 1000" style="stroke: yellow; strokeWidth: 4; fill: 'none';"></path>
-    </g> -->
   </svg>
 </template>
 
@@ -22,19 +19,20 @@ export default {
   },
   data() {
     return {
+      radius: 60,
+      halfWidth: 115,
+      halfHeight: 60,
     };
   },
   computed: {
     paths() {
       const pathList = [];
-      this.edges.forEach((l) => {
-        // const d = this.distance(l.x1, l.y1, l.x2, l.y2);
-        // const dx = l.x2 - l.x1;
-        // const dy = l.y2 - l.y1;
+      this.edges.forEach((edge) => {
+        const data = this.computeData(edge);
         pathList.push({
-          data: `M ${l.x1} ${l.y1} L ${l.x1} ${l.y2} L ${l.x2} ${l.y2}`,
-          style: l.style,
-          outlineStyle: l.outlineStyle,
+          data,
+          style: edge.style,
+          outlineStyle: edge.outlineStyle,
         });
       });
       return pathList;
@@ -42,6 +40,49 @@ export default {
   },
   watch: {},
   methods: {
+    // p
+    // |
+    // q
+    // |
+    // c -- r -- s
+    computeData(edge) {
+      let px = edge.x1;
+      let py = edge.y1;
+      let sx = edge.x2;
+      let sy = edge.y2;
+
+      if (Math.abs(sx - px) <= this.halfWidth) {
+        const meanX = (px + sx) / 2;
+        px = meanX;
+        sx = meanX;
+      }
+      if (Math.abs(sy - py) <= this.halfHeight) {
+        const meanY = (py + sy) / 2;
+        py = meanY;
+        sy = meanY;
+      }
+
+      const qx = px;
+      const cx = px;
+      let rx = px;
+
+      let qy = sy;
+      const cy = sy;
+      const ry = sy;
+
+      if (sx > px) {
+        rx += this.radius;
+      } else if (sx < px) {
+        rx -= this.radius;
+      }
+      if (sy > py) {
+        qy -= this.radius;
+      } else if (sy < py) {
+        qy += this.radius;
+      }
+      const data = `M ${px} ${py} L ${qx} ${qy} Q ${cx} ${cy}, ${rx} ${ry} L ${sx} ${sy}`;
+      return data;
+    },
     distance(x1, y1, x2, y2) {
       return Math.sqrt(((x2 - x1) * (x2 - x1)) + ((y2 - y1) * (y2 - y1)));
     },
