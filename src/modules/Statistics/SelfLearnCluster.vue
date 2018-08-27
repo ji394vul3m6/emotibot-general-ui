@@ -74,12 +74,13 @@
 <script>
 import { mapGetters, mapMutations } from 'vuex';
 import moment from 'moment';
-import SelfLearnMarkPop from './_components/SelfLearnMarkPop';
 import VIEW from './_data/dailyView';
 import api from './_api/selflearn';
+import dailyMixin from './_store/dailyMixin';
 
 export default {
   api,
+  mixins: [dailyMixin],
   data() {
     return {
       totalCount: 0,
@@ -172,91 +173,36 @@ export default {
     handleCheckedChange(checked) {
       this.checkedDataRow = checked;
     },
-    popSelfLearnMark(datarows) {
-      // Datarows is an..
-      //    object, when click mark button on general-table
-      //    array, when click batch mark button
-      // only send array to SelfLearnMarkPop
-      const propData = Array.isArray(datarows) ? datarows : [datarows];
+    setMark(markedQuestion, record, tomark) {
       const that = this;
-      const options = {
-        title: that.$t('statistics.mark.mark'),
-        component: SelfLearnMarkPop,
-        data: {
-          qa: propData,
-          markedQuestion: '', // receive marked question
-        },
-        callback: {
-          ok: (data) => {
-            const markedQuestion = data.markedQuestion;
-            const record = propData.map(prop => prop.record_id);
-            if (markedQuestion === '') {
-              that.$api.setUnmark(record)
-              .then((unmarkedRecord) => {
-                that.clusterRecordData =
-                  that.updateMarkedTableData(that.clusterRecordData, unmarkedRecord, false);
-              });
-            } else {
-              that.$api.setMark(markedQuestion, record)
-              .then((markedRecord) => {
-                that.clusterRecordData =
-                  that.updateMarkedTableData(that.clusterRecordData, markedRecord, true);
-              });
-            }
-          },
-        },
-        validate: true,
-      };
-      that.$pop(options);
-    },
-    updateMarkedTableData(tableData, markedRecord, marked) {
-      const that = this;
-      tableData.forEach((data) => {
-        if (markedRecord.indexOf(data.record_id) !== -1) {
-          data.marked = marked;
-        }
+      that.apiSetMark(that.clusterRecordData, markedQuestion, record, tomark)
+      .then((table) => {
+        that.clusterRecordData = table;
       });
-      return that.appendTableDataAction(tableData);
-    },
-    doIgnore(datarows) {
-      const that = this;
-      const rows = Array.isArray(datarows) ? datarows : [datarows];
-      const toIgnore = rows.map(r => r.record_id);
-      that.setIgnore(toIgnore, true);
-    },
-    doCancelIgnore(datarow) {
-      const that = this;
-      const toCancelIgnore = [datarow.record_id];
-      that.setIgnore(toCancelIgnore, false);
     },
     setIgnore(records, ignore) {
       const that = this;
-      that.$api.setIgnore(records, ignore)
-      .then((ignoredRecord) => {
-        // TODO: update ignore state on table
-        that.clusterRecordData =
-          that.updateIgnoredTableData(that.clusterRecordData, ignoredRecord, ignore);
-        that.$notify({ text: that.$t('statistics.success.ignore_ok') });
-      })
-      .catch((err) => {
-        console.log(err);
-        that.$notifyFail(that.$t('statistics.error.ignore_fail'));
+      that.apiSetIgnore(that.clusterRecordData, records, ignore)
+      .then((table) => {
+        that.tableData = table;
       });
     },
-    updateIgnoredTableData(tableData, ignoredRecord, ignored) {
-      const that = this;
-      tableData.forEach((data) => {
-        if (ignoredRecord.indexOf(data.record_id) !== -1) {
-          data.ignored = ignored;
-        }
-      });
-      return that.appendTableDataAction(tableData);
-    },
-    setClusterRecordData(cluster) {
+    setClusterRecordData(cluster, idx) {
       const that = this;
       that.currentClusterTitle = cluster.tag;
       that.currentClusterRecord = cluster.records.map(r => r.id);
+      that.clusterGroupData = that.updateHighlightTableData(that.clusterGroupData, idx);
       that.doSearch(1);
+    },
+    updateHighlightTableData(tabledata, idx) {
+      const updatedTable = tabledata.map((data, index) => {
+        data.highlight = false;
+        if (index === idx) {
+          data.highlight = true;
+        }
+        return data;
+      });
+      return updatedTable;
     },
     doSearch(page) {
       const that = this;
@@ -267,7 +213,6 @@ export default {
         const res = data;
         that.checkedDataRow = []; // clear all checked
         that.clusterRecordData = that.receiveAPIData(res.data);
-        // that.headerInfo = that.receiveAPIHeader(res.table_header);
         that.$emit('endLoading');
       }, () => {
         that.$emit('endLoading');
@@ -283,7 +228,7 @@ export default {
       let tableData = datas.map((d) => {
         const data = {
           user_question: d.user_question,
-          record_id: d.record_id,
+          id: d.id,
           ignored: d.ignored,
           marked: d.marked,
         };
@@ -291,24 +236,6 @@ export default {
       });
       tableData = that.appendTableDataAction(tableData);
       return tableData;
-    },
-    appendTableDataAction(datas) {
-      // check status of marked and ignored, give different action
-      const that = this;
-      datas.forEach((data) => {
-        data.action = [];
-        data.action.push({
-          text: data.ignored ? that.$t('statistics.ignore.cancel_ignore') : that.$t('statistics.ignore.ignore'),
-          type: 'primary',
-          onclick: data.ignored ? that.doCancelIgnore : that.doIgnore,
-        });
-        data.action.push({
-          text: data.marked ? that.$t('statistics.mark.re_marked') : that.$t('statistics.mark.mark'),
-          type: 'primary',
-          onclick: that.popSelfLearnMark,
-        });
-      });
-      return datas;
     },
     parseSearchCondition(searchQuery) {
       const that = this;
@@ -393,7 +320,7 @@ export default {
         });
       }
       that.parseSearchCondition(that.clusterReport.search_query);
-      that.setClusterRecordData(that.clusterGroupData[0]);
+      that.setClusterRecordData(that.clusterGroupData[0], 0);
     },
   },
   mounted() {

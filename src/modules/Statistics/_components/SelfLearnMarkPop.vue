@@ -220,13 +220,13 @@ export default {
       const that = this;
       that.$api.searchStdQuestion(that.appId, that.keyword)
       .then((stdQuestion) => {
-        console.log(stdQuestion);
+        console.log({ stdQuestion });
         // set the questions to tableData;
         that.updateMarkedIcon(that.markedQuestion);
         that.updateTableEmptyMsg(that.noSearchResultMsg);
       })
       .catch((err) => {
-        console.log(err);
+        console.log({ err });
       })
       .finally(() => {
         that.keywordTimer = undefined;
@@ -234,6 +234,10 @@ export default {
     },
     validate() {
       const that = this;
+      if (that.hasMultiOriginMarks) {
+        that.$notifyFail(that.$t('statistics.error.multi_origin_mark_fail'));
+        return;
+      }
       that.value.markedQuestion = that.markedQuestion;
       that.$emit('validateSuccess', that.value);
     },
@@ -247,7 +251,7 @@ export default {
       } else if (markedCount > 0) {  // only one qa
         that.$api.getMarkedQuestion(that.qa.record_id)
         .then((question) => {
-          console.log(question);
+          console.log({ question });
           that.markedQuestion = question;
           that.updateMarkedIcon(that.markedQuestion);
         }).catch(() => {
@@ -268,11 +272,11 @@ export default {
     const sentences = that.qa.map(q => q.user_question);
     that.$api.getRecommend(that.appId, sentences)
     .then((recommend) => {
-      console.log(recommend);
+      console.log({ recommend });
       // TODO: set recommend question
     })
     .catch((err) => {
-      console.log(err);
+      console.log({ err });
     })
     .finally(() => {
       that.getOriginMark();

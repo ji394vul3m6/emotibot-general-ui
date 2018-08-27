@@ -157,8 +157,8 @@ import misc from '@/utils/js/misc';
 import tagAPI from '@/api/tagType';
 import auditAPI from '@/api/audit';
 import api from './_api/selflearn';
-import SelfLearnMarkPop from './_components/SelfLearnMarkPop';
 import VIEW from './_data/dailyView';
+import dailyMixin from './_store/dailyMixin';
 
 export default {
   path: 'statistic-daily',
@@ -172,8 +172,11 @@ export default {
     DropdownSelect,
   },
   api: [tagAPI, api, auditAPI],
+  mixins: [dailyMixin],
   data() {
     return {
+      isMount: false, // use to prevent trigger doSearch in activated hook
+
       isClustering: false,
       clusteringCnt: 0,
       clusterTimer: undefined,
@@ -203,11 +206,6 @@ export default {
       pageLimit: 25,
       startDisableDate: undefined,
       endDisableDate: undefined,
-      // keywordOption: [
-      //   { val: 'all', text: this.$t('general.all') },
-      //   { val: 'question', text: this.$t('general.question') },
-      //   { val: 'answer', text: this.$t('general.answer') },
-      // ],
       emotionOptions: [
         { value: 'angry', text: this.$t('statistics.emotions.angry') },
         { value: 'not_satisfied', text: this.$t('statistics.emotions.not_satisfied') },
@@ -338,7 +336,7 @@ export default {
       const that = this;
       that.clusteingCnt = that.checkedDataRowCount;
       const param = {
-        records: that.checkedDataRow.map(row => row.record_id),
+        records: that.checkedDataRow.map(row => row.id),
       };
       that.runCluster(param);
     },
@@ -369,7 +367,7 @@ export default {
       const that = this;
       that.$api.pollClusterReport(reportId)
       .then((report) => {
-        console.log(report);
+        console.log({ report });
         if (report.status === -1) { // cluster fail
           that.clearClusterTimer();
           that.$notifyFail(that.$t('statistics.error.cluster_fail'));
@@ -391,82 +389,21 @@ export default {
       clearInterval(that.clusterTimer);
       that.clusterTimer = undefined;
     },
-    popSelfLearnMark(datarows) {
-      // Datarows is an..
-      //    object, when click mark button on general-table
-      //    array, when click batch mark button
-      // only send array to SelfLearnMarkPop
-      const propData = Array.isArray(datarows) ? datarows : [datarows];
+    setMark(markedQuestion, record, tomark) {
       const that = this;
-      const options = {
-        title: that.$t('statistics.mark.mark'),
-        component: SelfLearnMarkPop,
-        data: {
-          qa: propData,
-          markedQuestion: '', // receive marked question
-        },
-        callback: {
-          ok: (data) => {
-            const markedQuestion = data.markedQuestion;
-            const record = propData.map(prop => prop.record_id);
-            if (markedQuestion === '') {
-              that.$api.setUnmark(record)
-              .then((unmarkedRecord) => {
-                that.tableData = that.updateMarkedTableData(that.tableData, unmarkedRecord, false);
-              });
-            } else {
-              that.$api.setMark(markedQuestion, record)
-              .then((markedRecord) => {
-                that.tableData = that.updateMarkedTableData(that.tableData, markedRecord, true);
-              });
-            }
-          },
-        },
-        validate: true,
-      };
-      that.$pop(options);
-    },
-    updateMarkedTableData(tableData, markedRecord, marked) {
-      const that = this;
-      tableData.forEach((data) => {
-        if (markedRecord.indexOf(data.record_id) !== -1) {
-          data.marked = marked;
-        }
+      that.apiSetMark(that.tableData, markedQuestion, record, tomark)
+      .then((table) => {
+        console.log({ table });
+        that.tableData = table;
       });
-      return that.appendTableDataAction(tableData);
-    },
-    doIgnore(datarows) {
-      const that = this;
-      const rows = Array.isArray(datarows) ? datarows : [datarows];
-      const toIgnore = rows.map(r => r.record_id);
-      that.setIgnore(toIgnore, true);
-    },
-    doCancelIgnore(datarow) {
-      const that = this;
-      const toCancelIgnore = [datarow.record_id];
-      that.setIgnore(toCancelIgnore, false);
     },
     setIgnore(records, ignore) {
       const that = this;
-      that.$api.setIgnore(records, ignore)
-      .then((ignoredRecord) => {
-        // TODO: update ignore state on table
-        that.tableData = that.updateIgnoredTableData(that.tableData, ignoredRecord, ignore);
-        that.$notify({ text: that.$t('statistics.success.ignore_ok') });
-      })
-      .catch((err) => {
-        console.log(err);
-        that.$notifyFail(that.$t('statistics.error.ignore_fail'));
+      that.apiSetIgnore(that.tableData, records, ignore)
+      .then((table) => {
+        console.log({ table });
+        that.tableData = table;
       });
-    },
-    updateIgnoredTableData(tableData, ignoredRecord, ignored) {
-      const that = this;
-      tableData.forEach((data) => {
-        if (ignoredRecord.indexOf(data.record_id) !== -1) {
-          data.ignored = ignored;
-        }
-      });
-      return that.appendTableDataAction(tableData);
     },
     getSearchParam() {
       const params = {
@@ -546,7 +483,9 @@ export default {
       that.$api.auditExportLog({
         module,
         filename,
-      }).then(() => that.$api.getRecords(that.searchParams, null, null, true)).then((data) => {
+      })
+      .then(() => that.$api.exportRecords(that.searchParams))
+      .then((data) => {
         const csvData = data.data;
         const blobData = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvData], { type: 'text/csv' });
         misc.downloadRawFile(blobData, filename);
@@ -560,7 +499,8 @@ export default {
       that.pageIndex = page;
       that.searchParams = this.getSearchParam();
       that.$emit('startLoading');
-      that.$api.getRecords(that.searchParams, page, this.pageLimit).then((data) => {
+      that.$api.getRecords(that.searchParams, page, this.pageLimit)
+      .then((data) => {
         const res = data;
         that.tableData = that.appendTableDataAction(res.data);
         that.headerInfo = that.receiveAPIHeader(res.table_header);
@@ -571,27 +511,12 @@ export default {
         that.reloadClusterDropdown();
         that.$emit('endLoading');
         that.showTable = true;
-      }, () => {
+      })
+      .catch((err) => {
+        console.log({ err });
+        that.$notifyFail(that.$t('statistics.error.search_fail'));
         that.$emit('endLoading');
       });
-    },
-    appendTableDataAction(datas) {
-      // check status of marked and ignored, give different action
-      const that = this;
-      datas.forEach((data) => {
-        data.action = [];
-        data.action.push({
-          text: data.ignored ? that.$t('statistics.ignore.cancel_ignore') : that.$t('statistics.ignore.ignore'),
-          type: 'primary',
-          onclick: data.ignored ? that.doCancelIgnore : that.doIgnore,
-        });
-        data.action.push({
-          text: data.marked ? that.$t('statistics.mark.re_marked') : that.$t('statistics.mark.mark'),
-          type: 'primary',
-          onclick: that.popSelfLearnMark,
-        });
-      });
-      return datas;
     },
     receiveAPIHeader(headerData) {
       const that = this;
@@ -703,14 +628,21 @@ export default {
     };
   },
   activated() {
-    this.showTable = false;
-    // Refill keyword
-    const lastKeyword = this.keyword;
-    this.keyword = '';
-    this.$nextTick(() => {
-      this.keyword = lastKeyword;
-    });
-    this.doSearch(1);
+    if (this.isMount) { // activated by mount
+      this.isMount = false;
+    } else {            // activated by click goback button
+      this.showTable = false;
+      // Refill keyword
+      const lastKeyword = this.keyword;
+      this.keyword = '';
+      this.$nextTick(() => {
+        this.keyword = lastKeyword;
+      });
+      this.doSearch(1);
+    }
+  },
+  mounted() {
+    this.isMount = true;
   },
 };
 </script>

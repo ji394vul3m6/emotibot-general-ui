@@ -170,13 +170,17 @@ export default {
     },
     success: {
       ignore_ok: '更新忽略状态成功',
+      mark_ok: '标注问题成功',
       cluster_ok: '辅助分类完成，请继续其他操作',
     },
     error: {
       ignore_fail: '更新忽略状态失败',
+      mark_fail: '标注问题失败',
       try_cluster_later: '辅助分类工具正在占用，请稍后操作',
       got_it: '知道了',
       cluster_fail: '辅助分类失败',
+      multi_origin_mark_fail: '尚未为多笔用户问题选择标注问题',
+      search_fail: '无法取得对话日志',
     },
     categories: {
       title: '维度',
