@@ -92,7 +92,8 @@ export default {
       'setHasNewCategory',
     ]),
     setActive() {
-      // If set current category to a new one which is not yet added, we can't splice it out on cancel add category
+      // If set current category to a new one which is not yet added
+      // we can't splice it out on cancel add category
       if (!this.isNewCategory) {
         this.setCurrentCategory(this.treeItem);
       }
