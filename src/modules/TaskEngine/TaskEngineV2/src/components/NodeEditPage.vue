@@ -42,7 +42,14 @@
         @updateREParsers="entityCollectingTab.re_parsers = $event"
         @updateTDESetting="entityCollectingTab.tde_setting = $event"
         @updateRegisterJSON="entityCollectingTab.register_json = $event"
-      ></entity-collecting-tab>
+      ></entity-collecting-edit-tab>
+      <params-collecting-edit-tab ref="paramsCollectingTab"
+        v-if="currentTab === 'paramsCollectingTab'"
+        :initialParamsCollectingTab="paramsCollectingTab"
+        :mapTableOptions="mapTableOptions"
+        @update="paramsCollectingTab = $event"
+      >
+      </params-collecting-edit-tab>
       <edge-edit-tab ref="edgeTab"
         v-if="currentTab === 'edgeTab'"
         :initialEdgeTab="initialEdgeTab"
@@ -156,6 +163,11 @@ export default {
           this.entityCollectingTab.nodeId = this.node.nodeId;
         } else if (tab === 'settingBasicTab') {
           this.settingBasicTab = this.node.settingBasicTab;
+        } else if (tab === 'paramsCollectingTab') {
+          this.paramsCollectingTab = this.node.paramsCollectingTab || { params: [] };
+          this.paramsCollectingTab.nodeId = this.node.nodeId;
+        } else if (tab === 'paramsCollectingEdgeTab') {
+          this.paramsCollectingEdgeTab = this.node.paramsCollectingEdgeTab;
         }
       });
     },

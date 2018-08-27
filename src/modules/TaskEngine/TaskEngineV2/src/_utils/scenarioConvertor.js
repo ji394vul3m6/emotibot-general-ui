@@ -209,10 +209,44 @@ export default {
         uiNode.nluPCSettingTab.msg,
       );
     }
+    if (uiNode.nodeType === 'parameter_collecting') {
+      node.content = this.composePCContent(
+        uiNode.paramsCollectingTab.params,
+      );
+    }
     // TODO
-    // if (uiNode.nodeType === 'parameter_collecting')
     // node.global_vars.push(...parametersInParsers)
     return node;
+  },
+  composePCContent(params) {
+    const content = {};
+    content.parsers = [];
+    content.questions = [];
+    params.forEach((param) => {
+      const conditionRules = [];
+      param.parsers.forEach((parser) => {
+        conditionRules.push([{
+          source: 'text',
+          functions: [{
+            content: parser.content,
+            function_name: parser.funcName,
+          }],
+        }]);
+      });
+      content.parsers.push({ condition_rules: conditionRules });
+      content.questions.push({
+        msg: param.msg,
+        parse_failed_msg: param.parse_failed_msg,
+        condition_rules: [[{
+          source: 'global_info',
+          functions: [{
+            content: [param.skipIfKeyExist.map(key => ({ key }))],
+            function_name: 'not_contain_key',
+          }],
+        }]],
+      });
+    });
+    return content;
   },
   composeNLUPCContent(entityCollectorList, reParsers, registerJson, msg) {
     let entities;
