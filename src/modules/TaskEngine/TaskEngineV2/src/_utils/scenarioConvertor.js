@@ -67,6 +67,8 @@ export default {
         tabData.restfulSettingTab = this.parseRestfulSettingTab(node);
       } else if (tab === 'restfulEdgeTab') {
         tabData.restfulEdgeTab = this.parseRestfulEdgeTab(node);
+      } else if (tab === 'paramsCollectingTab') {
+        tabData.paramsCollectingTab = this.parseParamsCollectingTab(node);
       }
     });
     return {
@@ -80,6 +82,7 @@ export default {
       entityCollectingTab: tabData.entityCollectingTab,
       restfulSettingTab: tabData.restfulSettingTab,
       restfulEdgeTab: tabData.restfulEdgeTab,
+      paramsCollectingTab: tabData.paramsCollectingTab,
     };
   },
   parseTriggerTab(node) {
@@ -228,6 +231,41 @@ export default {
       restfulFailedThenGoto: restfulFailedEdge.to_node_id,
       restfulSucceedThenGoto: restfulSucceedEdge.to_node_id,
     };
+    return tab;
+  },
+  parseParamsCollectingTab(node) {
+    const tab = {};
+    tab.params = [];
+    node.content.questions.forEach((q, index) => {
+      const param = {};
+      param.msg = q.msg;
+      param.parse_failed_msg = q.parse_failed_msg;
+      param.parsers = [];
+      const conditionRules = node.content.parsers[index].condition_rules;
+      conditionRules.forEach((conditionRule) => {
+        const parser = {};
+        parser.content = conditionRule[0].functions[0].content;
+        parser.funcName = conditionRule[0].functions[0].function_name;
+        parser.skipIfKeyExist = [];
+        if (parser.funcName === 'regular_exp') {
+          conditionRule[0].functions[0].content.operations.forEach((operation) => {
+            parser.skipIfKeyExist.push(operation.key);
+          });
+        } else if (parser.funcName === 'hotel_parser' ||
+                  parser.funcName === 'common_parser' ||
+                  parser.funcName === 'task_parser') {
+          parser.skipIfKeyExist.push(...conditionRule[0].functions[0].content_text_array);
+        } else if (parser.funcName === 'user_custom_parser') {
+          parser.skipIfKeyExist.push(conditionRule[0].functions[0].content.to_key);
+        } else if (parser.funcName === 'polarity_parser') {
+          parser.skipIfKeyExist.push(conditionRule[0].functions[0].content.key);
+        } else if (parser.funcName === 'api_parser') {
+          parser.skipIfKeyExist.push(...conditionRule[0].functions[0].content_text_array);
+        }
+        param.parsers.push(parser);
+      });
+      tab.params.push(param);
+    });
     return tab;
   },
   convertUiNodesToNodes(uiNodes, setting) {
