@@ -1,4 +1,9 @@
 export default {
+  integration: {
+    integration: '接入部署',
+    enterpriseID: '企業 ID',
+    robotID: '機器人 ID / AppID',
+  },
   privileges: {
     role: '角色',
     user: '用戶',
@@ -679,6 +684,7 @@ export default {
       robot_function: '技能設置',
       robot_chat_skill: '話術設置',
       robot_command: '指令設置',
+      integration: '接入部署',
     },
     wordbank: {
       module_name: '詞庫',
@@ -996,6 +1002,10 @@ export default {
         view: '意圖管理查看',
         export: '意圖管理導入',
         import: '意圖管理導出',
+      },
+      integration: {
+        view: '接入部署查看',
+        edit: '接入部署編輯',
       },
     },
   },

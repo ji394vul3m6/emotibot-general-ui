@@ -1,4 +1,9 @@
 export default {
+  integration: {
+    integration: '接入部署',
+    enterpriseID: '企业 ID',
+    robotID: '机器人 ID / AppID',
+  },
   privileges: {
     role: '角色',
     user: '用户',
@@ -282,7 +287,7 @@ export default {
       delete_category_fail: '删除分类失败',
       load_commands_fail: '载入指令失败',
       add_new_tag_fail: '新增标签失败',
-      tag_invalid: '僅限10字长内的中文、半形英文与数字',
+      tag_invalid: '仅限10字长内的中文、半形英文与数字',
       add_command_fail: '创建指令失败',
       edit_command_fail: '编辑指令失败',
       delete_command_fail: '删除指令失败',
@@ -549,7 +554,7 @@ export default {
     add_label: '新增标签',
     edit_label: '编辑标签',
     label_placeholder: '输入标签名称',
-    label_format: '僅限10字长内的中文、半形英文与数字',
+    label_format: '仅限10字长内的中文、半形英文与数字',
   },
   qa_rule: {
     rule: '规则',
@@ -734,6 +739,7 @@ export default {
       robot_function: '技能设置',
       robot_chat_skill: '话术设置',
       robot_command: '指令设置',
+      integration: '接入部署',
     },
     wordbank: {
       module_name: '词库',
@@ -1063,6 +1069,10 @@ export default {
         export: '意图管理导入',
         import: '意图管理导出',
       },
+      integration: {
+        view: '接入部署查看',
+        edit: '接入部署编辑',
+      },
     },
   },
   header: {
@@ -1072,6 +1082,6 @@ export default {
     logout: '登出',
   },
   format: {
-    tag_format: '僅限10字长内的中文、半形英文与数字',
+    tag_format: '仅限10字长内的中文、半形英文与数字',
   },
 };

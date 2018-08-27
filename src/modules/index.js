@@ -15,5 +15,4 @@ export default {
   Wordbank,
   Statistics,
   Robot,
-  // Privileges,
 };
