@@ -84,7 +84,7 @@
               class="select select-target-entity"
               :ref="`selectTargetEntity_${index}`"
               :multi="true"
-              :value="parser.content.tags.split(',')"
+              :value="parser.skipIfKeyExist"
               @input="onSelectTargetEntity(index, $event)"
               :options="entityKeyOptions(parser.funcName)"
               :showCheckedIcon="true"
@@ -285,7 +285,7 @@ export default {
       } else if (funcName === 'hotel_parser') {
         this.parsers[index].content.tags = newValue.join(',');
       }
-      this.parsers[index].skipIfKeyExist = newValue.map(tag => `${tag}_${this.nodeId}`);
+      this.parsers[index].skipIfKeyExist = newValue;
     },
     onSelectMapTableInput(index, newValue) {
       const newMapTable = newValue[0];

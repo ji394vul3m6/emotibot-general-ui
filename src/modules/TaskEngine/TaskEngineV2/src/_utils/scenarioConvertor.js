@@ -268,13 +268,14 @@ export default {
     if (uiNode.nodeType === 'parameter_collecting') {
       node.content = this.composePCContent(
         uiNode.paramsCollectingTab.params,
+        uiNode.nodeId,
       );
     }
     // TODO
     // node.global_vars.push(...parametersInParsers)
     return node;
   },
-  composePCContent(params) {
+  composePCContent(params, nodeId) {
     const content = {};
     content.parsers = [];
     content.questions = [];
@@ -296,7 +297,7 @@ export default {
         condition_rules: [[{
           source: 'global_info',
           functions: [{
-            content: [param.skipIfKeyExist.map(key => ({ key }))],
+            content: [param.skipIfKeyExist.map(key => ({ key: `${key}_${nodeId}` }))],
             function_name: 'not_contain_key',
           }],
         }]],
