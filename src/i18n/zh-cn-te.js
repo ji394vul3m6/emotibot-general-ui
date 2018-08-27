@@ -51,6 +51,7 @@ export default {
         trigger: '触发',
         setting: '基本设置',
         edge: '连线',
+        params_collecting: '参数设置',
       },
     },
     scenario_settings_edit_pop: {
@@ -76,6 +77,13 @@ export default {
       target_data: '提取数据 (可多选)：',
       skip_if_exist: '若已提取以下任一数据则跳过出话和数据提取：',
       parse_from_this_node: '限定由此节点提取：',
+    },
+    paramsCollectingTab: {
+      button_add_params: '＋增加参数',
+      parser: '解析器',
+      button_add_parser: '＋增加解析器',
+      msg: '参数询问文本（询问使用者参数的语句）',
+      parse_failed_msg: '解析失败文本（参数解析失败时，回复给使用者的语句）',
     },
     edge_edit_tab: {
       instruction: '使用连线连接此节点与其他节点',

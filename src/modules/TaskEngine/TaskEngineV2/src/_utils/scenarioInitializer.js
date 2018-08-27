@@ -278,4 +278,19 @@ export default {
       tar_text: '',
     };
   },
+  initialParser() {
+    return {
+      funcName: 'regular_exp',
+      content: {
+        operations: [
+          {
+            index: 0,
+            operation: 'set_to_global_info',
+            key: '',
+          },
+        ],
+        pattern: '',
+      },
+    };
+  },
 };

@@ -260,7 +260,6 @@ export default {
         uiNode.entityCollectingTab.entityCollectorList,
         uiNode.entityCollectingTab.re_parsers,
         uiNode.entityCollectingTab.register_json,
-        uiNode.nluPCSettingTab.msg,
       );
     } else if (uiNode.nodeType === 'restful') {
       node.content = this.composeRestfulContent(uiNode);
@@ -305,7 +304,7 @@ export default {
     });
     return content;
   },
-  composeNLUPCContent(entityCollectorList, reParsers, registerJson, msg) {
+  composeNLUPCContent(entityCollectorList, reParsers, registerJson) {
     let entities;
     console.log(entityCollectorList);
     if (registerJson && registerJson.slotDefs) {
@@ -316,7 +315,6 @@ export default {
     return {
       entities,
       reParsers,
-      msg,
     };
   },
   componseDialogueContent(uiNode) {

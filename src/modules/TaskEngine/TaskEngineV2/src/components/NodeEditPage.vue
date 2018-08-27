@@ -83,6 +83,8 @@ import EntityCollectingEditTab from '@/modules/TaskEngine/TaskEngineV3/src/compo
 import TriggerEditTab from './TriggerEditTab';
 import SettingEditTab from './SettingEditTab';
 import EdgeEditTab from './EdgeEditTab';
+import ParamsCollectingEditTab from './ParamsCollectingEditTab';
+// import scenarioConvertor from '../_utils/scenarioConvertor';
 import SettingBasicEditTab from './SettingBasicEditTab';
 import RestfulSettingEditTab from './RestfulSettingEditTab';
 import RestfulEdgeEditTab from './RestfulEdgeEditTab';
@@ -98,6 +100,7 @@ export default {
     'entity-collecting-edit-tab': EntityCollectingEditTab,
     'restful-setting-edit-tab': RestfulSettingEditTab,
     'restful-edge-edit-tab': RestfulEdgeEditTab,
+    'params-collecting-edit-tab': ParamsCollectingEditTab,
   },
   props: {
     extData: {
@@ -121,6 +124,8 @@ export default {
       settingTab: undefined,
       settingBasicTab: undefined,
       entityCollectingTab: undefined,
+      paramsCollectingTab: undefined,
+      paramsCollectingEdgeTab: undefined,
       edgeTab: undefined,
       restfulSettingTab: undefined,
       restfulEdgeTab: undefined,
@@ -234,6 +239,11 @@ export default {
           name: this.$t('task_engine_v2.node_edit_page.tabs.edge'),
           icon: 'setting',
         },
+        paramsCollectingTab: {
+          type: 'paramsCollectingTab',
+          name: this.$t('task_engine_v2.node_edit_page.tabs.params_collecting'),
+          icon: 'setting',
+        },
       };
     },
     loadMappingTableOptions() {
@@ -268,9 +278,11 @@ export default {
         settingBasicTab: this.settingBasicTab,
         restfulSettingTab: this.restfulSettingTab,
         restfulEdgeTab: this.restfulEdgeTab,
+        paramsCollectingTab: this.paramsCollectingTab,
       };
       if (this.node.nodeType === 'entry' ||
-          this.node.nodeType === 'nlu_pc') {
+          this.node.nodeType === 'nlu_pc' ||
+          this.node.nodeType === 'parameter_collecting') {
         nodeResult.nodeName = this.settingBasicTab.nodeName;
       } else if (this.node.nodeType === 'restful') {
         nodeResult.nodeName = this.restfulSettingTab.nodeName;

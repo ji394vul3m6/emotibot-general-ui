@@ -5,6 +5,7 @@ export default {
       dialogue: ['settingTab', 'edgeTab'],
       nlu_pc: ['settingBasicTab', 'entityCollectingTab', 'edgeTab'],
       restful: ['restfulSettingTab', 'restfulEdgeTab'],
+      parameter_collecting: ['settingBasicTab', 'paramsCollectingTab'],
     };
   },
   getEntityListMap() {
