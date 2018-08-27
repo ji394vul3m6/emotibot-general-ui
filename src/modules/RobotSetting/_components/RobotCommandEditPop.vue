@@ -250,6 +250,7 @@ export default {
         tomorrow.setDate(today.getDate() + 1);
         this.startDate = today;
         this.endDate = tomorrow;
+        this.$refs.datePicker.dispatchEvent(event.createEvent('tooltip-hide'));
       }
     },
     replyFormat() {
