@@ -14,7 +14,7 @@
   <button
     class="button-add-params"
     @click="addParam()">
-    {{$t("task_engine_v2.paramsCollectingTab.button_add_params")}}
+    {{$t("task_engine_v2.params_collecting_tab.button_add_params")}}
   </button>
 </div>
 </template>

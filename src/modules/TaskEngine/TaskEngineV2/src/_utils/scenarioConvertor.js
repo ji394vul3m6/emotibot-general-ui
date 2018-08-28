@@ -69,6 +69,8 @@ export default {
         tabData.restfulEdgeTab = this.parseRestfulEdgeTab(node);
       } else if (tab === 'paramsCollectingTab') {
         tabData.paramsCollectingTab = this.parseParamsCollectingTab(node);
+      } else if (tab === 'paramsCollectingEdgeTab') {
+        tabData.paramsCollectingEdgeTab = this.parseParamsCollectingEdgeTab(node);
       }
     });
     return {
@@ -83,6 +85,7 @@ export default {
       restfulSettingTab: tabData.restfulSettingTab,
       restfulEdgeTab: tabData.restfulEdgeTab,
       paramsCollectingTab: tabData.paramsCollectingTab,
+      paramsCollectingEdgeTab: tabData.paramsCollectingEdgeTab,
     };
   },
   parseTriggerTab(node) {
@@ -231,6 +234,17 @@ export default {
       restfulFailedThenGoto: restfulFailedEdge.to_node_id,
       restfulSucceedThenGoto: restfulSucceedEdge.to_node_id,
     };
+    return tab;
+  },
+  parseParamsCollectingEdgeTab(node) {
+    const tab = {};
+    tab.succeedThenGoto = node.edges[0].to_node_id;
+    tab.dialogueLimit = node.edges[1].actions[0].val;
+    tab.exceedThenGoto = node.edges[2].to_node_id;
+    tab.normalEdges = [];
+    for (let index = 3; index < node.edges.length; index += 1) {
+      tab.normalEdges.push(node.edges[index]);
+    }
     return tab;
   },
   parseParamsCollectingTab(node) {

@@ -48,8 +48,15 @@
         :initialParamsCollectingTab="paramsCollectingTab"
         :mapTableOptions="mapTableOptions"
         @update="paramsCollectingTab = $event"
-      >
-      </params-collecting-edit-tab>
+      ></params-collecting-edit-tab>
+      <params-collecting-edge-edit-tab ref="paramsCollectingEdgeTab"
+        v-if="currentTab === 'paramsCollectingEdgeTab'"
+        :initialPCEdgeTab="paramsCollectingEdgeTab"
+        :initialToNodeOptions="toNodeOptions"
+        :globalVarOptions="globalVarOptions"
+        :mapTableOptions="mapTableOptions"
+        @update="paramsCollectingEdgeTab = $event"
+      ></params-collecting-edge-edit-tab>
       <edge-edit-tab ref="edgeTab"
         v-if="currentTab === 'edgeTab'"
         :initialEdgeTab="initialEdgeTab"
@@ -84,6 +91,7 @@ import TriggerEditTab from './TriggerEditTab';
 import SettingEditTab from './SettingEditTab';
 import EdgeEditTab from './EdgeEditTab';
 import ParamsCollectingEditTab from './ParamsCollectingEditTab';
+import ParamsCollectingEdgeEditTab from './ParamsCollectingEdgeEditTab';
 // import scenarioConvertor from '../_utils/scenarioConvertor';
 import SettingBasicEditTab from './SettingBasicEditTab';
 import RestfulSettingEditTab from './RestfulSettingEditTab';
@@ -101,6 +109,7 @@ export default {
     'restful-setting-edit-tab': RestfulSettingEditTab,
     'restful-edge-edit-tab': RestfulEdgeEditTab,
     'params-collecting-edit-tab': ParamsCollectingEditTab,
+    'params-collecting-edge-edit-tab': ParamsCollectingEdgeEditTab,
   },
   props: {
     extData: {
@@ -188,10 +197,12 @@ export default {
         } else if (tab === 'settingBasicTab') {
           this.settingBasicTab = this.node.settingBasicTab;
         } else if (tab === 'paramsCollectingTab') {
-          this.paramsCollectingTab = this.node.paramsCollectingTab || { params: [] };
+          this.paramsCollectingTab = this.node.paramsCollectingTab;
           this.paramsCollectingTab.nodeId = this.node.nodeId;
         } else if (tab === 'paramsCollectingEdgeTab') {
           this.paramsCollectingEdgeTab = this.node.paramsCollectingEdgeTab;
+          this.paramsCollectingEdgeTab.nodeType = this.nodeType;
+          this.paramsCollectingEdgeTab.nodeId = this.node.nodeId;
         } else if (tab === 'restfulSettingTab') {
           this.restfulSettingTab = this.node.restfulSettingTab;
         } else if (tab === 'restfulEdgeTab') {
@@ -244,6 +255,11 @@ export default {
           name: this.$t('task_engine_v2.node_edit_page.tabs.params_collecting'),
           icon: 'setting',
         },
+        paramsCollectingEdgeTab: {
+          type: 'paramsCollectingEdgeTab',
+          name: this.$t('task_engine_v2.node_edit_page.tabs.edge'),
+          icon: 'setting',
+        },
       };
     },
     loadMappingTableOptions() {
@@ -279,6 +295,7 @@ export default {
         restfulSettingTab: this.restfulSettingTab,
         restfulEdgeTab: this.restfulEdgeTab,
         paramsCollectingTab: this.paramsCollectingTab,
+        paramsCollectingEdgeTab: this.paramsCollectingEdgeTab,
       };
       if (this.node.nodeType === 'entry' ||
           this.node.nodeType === 'nlu_pc' ||

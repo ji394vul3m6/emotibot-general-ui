@@ -8,7 +8,7 @@
       <div class="parser-block" :key="parser.id">
         <div class="row row-function">
           <div class="label label-start">
-            {{$t("task_engine_v2.paramsCollectingTab.parser")}}
+            {{$t("task_engine_v2.params_collecting_tab.parser")}}
           </div>
           <dropdown-select
             class="select select-function"
@@ -24,7 +24,7 @@
             class="button button-add-parser"
             v-if="index === 0"
             @click="addParser()">
-            {{$t("task_engine_v2.paramsCollectingTab.button_add_parser")}}
+            {{$t("task_engine_v2.params_collecting_tab.button_add_parser")}}
           </button>
           <button
             class="button"
@@ -155,7 +155,7 @@
     </template>
     <div class="row">
       <div class="label">
-        {{$t("task_engine_v2.paramsCollectingTab.msg")}}
+        {{$t("task_engine_v2.params_collecting_tab.msg")}}
       </div>
     </div>
     <textarea class="text-response"
@@ -164,7 +164,7 @@
     </textarea>
     <div class="row">
       <div class="label">
-        {{$t("task_engine_v2.paramsCollectingTab.parse_failed_msg")}}
+        {{$t("task_engine_v2.params_collecting_tab.parse_failed_msg")}}
       </div>
     </div>
     <textarea class="text-response"

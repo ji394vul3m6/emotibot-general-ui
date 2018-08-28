@@ -78,12 +78,18 @@ export default {
       skip_if_exist: '若已提取以下任一数据则跳过出话和数据提取：',
       parse_from_this_node: '限定由此节点提取：',
     },
-    paramsCollectingTab: {
+    params_collecting_tab: {
       button_add_params: '＋增加参数',
       parser: '解析器',
       button_add_parser: '＋增加解析器',
       msg: '参数询问文本（询问使用者参数的语句）',
       parse_failed_msg: '解析失败文本（参数解析失败时，回复给使用者的语句）',
+    },
+    params_collecting_edge_tab: {
+      succeed: '成功',
+      succeed_description: '取得所有必要参数',
+      failed: '失敗',
+      failed_description: '参数连续解析失败',
     },
     edge_edit_tab: {
       instruction: '使用连线连接此节点与其他节点',
