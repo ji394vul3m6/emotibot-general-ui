@@ -59,13 +59,13 @@ export default {
 <style lang="scss" scoped>
 @import 'styles/variable';
 
-$border-color: #e9e9e9;
+$border-color: $color-borderline;
 $border-radius: 2px;
 $font-size: 12px;
 $line-height: 18px;
 
 $active-background: $button-blue-active-text;
-$active-border-color: #1875f0;
+$active-border-color: $color-primary;
 
 .label-switch {
   background: #ffffff;

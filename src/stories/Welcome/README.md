@@ -36,7 +36,9 @@
 
 
 ### 邊框顏色
-<div style="display: inline-block"><font color=#e9e9e9 size=5>顏色</font></div> <div style="display:inline-flex;background-color:#e9e9e9; color: white"><font size=5>顏色</font></div> `$color-borderline: #e9e9e9;` 
+<div style="display: inline-block"><font color=#dbdbdb size=5>顏色</font></div> <div style="display:inline-flex;background-color:#dbdbdb; color: white"><font size=5>顏色</font></div> `$color-borderline: #dbdbdb;` 
+
+<div style="display: inline-block"><font color=#e9e9e9 size=5>顏色</font></div> <div style="display:inline-flex;background-color:#e9e9e9; color: white"><font size=5>顏色</font></div> `$color-borderline-disabled: #e9e9e9;` 
 
 <div style="display: inline-block"><font color=#4b4b64 size=5>顏色</font></div> <div style="display:inline-flex;background-color:#4b4b64; color: white"><font size=5>顏色</font></div> `$color-borderline-hover: #4b4b64;`
 

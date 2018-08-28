@@ -74,7 +74,7 @@ $navbar-active-color: $color-primary;
 .nav-bar {
   height: 60px;
   display: flex;
-  box-shadow: inset 0 -1px 0 0 #e9e9e9;
+  box-shadow: inset 0 -1px 0 0 $color-borderline;
   justify-content: space-between;
   align-items: center;
   padding-right: 20px;

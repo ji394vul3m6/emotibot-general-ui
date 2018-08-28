@@ -239,7 +239,7 @@ $words-list-delete-color: #f76260;
 
         display: flex;
         align-items: center;
-        box-shadow: inset 0 -1px 0 0 #e9e9e9;
+        box-shadow: inset 0 -1px 0 0 $color-borderline-disabled;
         &.header {
           background: $words-list-header-bg;
         }

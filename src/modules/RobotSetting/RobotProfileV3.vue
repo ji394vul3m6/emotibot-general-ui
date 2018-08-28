@@ -513,7 +513,7 @@ $header-color: #333333;
     display: flex;
     align-items: center;
     padding: 0 20px;
-    box-shadow: inset 0 -1px 0 0 #e9e9e9;
+    box-shadow: inset 0 -1px 0 0 $color-borderline;
   }
 
   // card list css

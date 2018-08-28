@@ -259,7 +259,7 @@ export default {
 
 $table-header-background: $color-disabled;
 $table-data-background: $color-white;
-$table-color-borderline: $color-borderline;
+$table-color-borderline: $color-borderline-disabled;
 $table-row-height: 50px;
 
 .general-table-container {

@@ -169,6 +169,7 @@ $btn-error-color: $color-white;
   &.disabled {
     background: $btn-disable-bg-color;
     color: $btn-disable-color;
+    border-color: $color-borderline-disabled;
     user-select: none;
     cursor: not-allowed;
     &:hover {

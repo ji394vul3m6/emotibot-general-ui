@@ -387,7 +387,7 @@ export default {
     }
     &.splitter {
       flex: 0 0 1px;
-      box-shadow: inset 0 1px 0 0 #e9e9e9;
+      box-shadow: inset 0 1px 0 0 $color-borderline;
     }
     &.module-title {
       margin-top: 8px;

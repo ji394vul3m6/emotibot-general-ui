@@ -299,7 +299,7 @@ export default {
         flex: 0 0 auto;
         padding-bottom: 10px;
         margin-bottom: 20px;
-        box-shadow: inset 0 -1px 0 0 #e9e9e9;
+        box-shadow: inset 0 -1px 0 0 $color-borderline;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;

@@ -29,8 +29,9 @@ input {
     border-color: $color-borderline-hover;
   }
   &:disabled {
+    border-color: $color-borderline-disabled;
     &:hover{
-      border-color: $color-borderline;
+      border-color: $color-borderline-disabled;
     }
   }
   &:-webkit-autofill {
@@ -54,7 +55,7 @@ input {
     border-color: $color-borderline-hover;
   }
   &.disabled {
-    border-color: $color-borderline;
+    border-color: $color-borderline-disabled;
   }
   &:focus-within {  /** do not support IE **/
     outline: none;

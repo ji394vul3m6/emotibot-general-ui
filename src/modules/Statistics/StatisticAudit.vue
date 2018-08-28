@@ -444,7 +444,7 @@ $title-color: #666666;
     @include auto-overflow();
   }
   .paginator {
-    box-shadow: inset 0 1px 0 0 #e9e9e9;
+    box-shadow: inset 0 1px 0 0 $color-borderline-disabled;
     display: flex;
     align-items: center;
     justify-content: flex-end;

@@ -163,7 +163,7 @@ $card-remark-color: #999999;
     align-items: center;
     font-size: $function-header-font-size;
     padding: 0 20px;
-    box-shadow: inset 0 -1px 0 0 #e9e9e9;
+    box-shadow: inset 0 -1px 0 0 $color-borderline;
     .header-text {
       color: $color-font-active;
     }
@@ -207,7 +207,7 @@ $card-remark-color: #999999;
         min-width: 300px;
         height: 80px;
         border-radius: 4px;
-        border: solid 1px #e9e9e9;
+        border: solid 1px $color-borderline;
         margin-bottom: 20px;
         margin-right: 20px;
         transition: all .2s ease-in-out;

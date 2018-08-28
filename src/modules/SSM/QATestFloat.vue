@@ -456,7 +456,7 @@ $chat-info-bg: #eeeeee;
     .dimension {
       flex: 0 0 48px;
       background-color: $qa-test-input-bg;
-      box-shadow: inset 0 -1px 0 0 #e9e9e9, inset 0 1px 0 0 #e9e9e9;
+      box-shadow: inset 0 -1px 0 0 $color-borderline-disabled, inset 0 1px 0 0 $color-borderline-disabled;
       padding: 0 20px;
 
       display: flex;

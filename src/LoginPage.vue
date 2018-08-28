@@ -188,7 +188,7 @@ div {
         outline: none;
         border: none;
         background: none;
-        border: solid 1px #e9e9e9;
+        border: solid 1px $color-borderline;
         &::placeholder {
           color: #999999;
         }

@@ -378,7 +378,7 @@ export default {
 
 .role-card {
   background-color: #ffffff;
-  border: solid 1px #e9e9e9;
+  border: solid 1px $color-borderline;
   border-radius: 4px;
   &.edit-mode {
     box-shadow: 0 0 14px 0 rgba(0, 0, 0, 0.2);
@@ -429,7 +429,7 @@ export default {
         flex: 0 0 auto;
         margin: 0 10px;
         padding: 10px 0;
-        border-bottom: solid 1px #e9e9e9;
+        border-bottom: solid 1px $color-borderline;
         color: #666666;
         @include font-14px();
       }
