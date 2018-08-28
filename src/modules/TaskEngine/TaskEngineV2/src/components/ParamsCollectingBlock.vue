@@ -67,7 +67,9 @@
               <div class="label label-start">
                 {{$t("task_engine_v2.condition_block.label_target_key")}}
               </div>
-              <input class="input-content" v-model="operation.key"></input>
+              <input class="input-content" 
+                v-model="operation.key"
+                @input="updateRegSkipIfKeyExist(index)"></input>
             </div>
           </template>
         </div>
@@ -125,7 +127,10 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_target_key")}}
             </div>
-            <input class="input-content" v-model="parser.content.key"></input>
+            <input class="input-content" 
+              v-model="parser.content.key"
+              @input="onInputPolarityParserSkipIfKeyExist(index)"
+            ></input>
           </div>
         </div>
         <!-- Web API 调用 -->
@@ -235,19 +240,11 @@ export default {
     collectSkipKeys() {
       const skipKeys = [];
       this.parsers.forEach((parser) => {
-        if (parser.funcName === 'regular_exp') {
-          parser.content.operations.forEach((operation) => {
-            skipKeys.push(operation.key);
-          });
-        } else if (parser.funcName === 'hotel_parser' ||
-                   parser.funcName === 'common_parser' ||
-                   parser.funcName === 'task_parser') {
-          skipKeys.push(...parser.skipIfKeyExist);
-        } else if (parser.funcName === 'user_custom_parser') {
-          skipKeys.push(parser.content.to_key);
-        } else if (parser.funcName === 'polarity_parser') {
-          skipKeys.push(parser.content.key);
-        } else if (parser.funcName === 'api_parser') {
+        if (parser.funcName === 'hotel_parser' ||
+            parser.funcName === 'common_parser' ||
+            parser.funcName === 'task_parser') {
+          skipKeys.push(...parser.skipIfKeyExist.map(key => ({ key: `${key}${parser.content.key_suffix}` })));
+        } else {
           skipKeys.push(...parser.skipIfKeyExist);
         }
       });
@@ -268,9 +265,20 @@ export default {
     addRegTargetKey(index) {
       const operation = scenarioInitializer.initialRegularOperation();
       this.parsers[index].content.operations.push(operation);
+      this.updateRegSkipIfKeyExist(index);
     },
     deleteRegTargetKey(index, idx) {
       this.parsers[index].content.operations.splice(idx, 1);
+      this.updateRegSkipIfKeyExist(index);
+    },
+    updateRegSkipIfKeyExist(index) {
+      this.parsers[index].skipIfKeyExist = [];
+      this.parsers[index].content.operations.forEach((operation) => {
+        this.parsers[index].skipIfKeyExist.push(operation.key);
+      });
+    },
+    onInputPolarityParserSkipIfKeyExist(index) {
+      this.parsers[index].skipIfKeyExist = [this.parsers[index].content.key];
     },
     onInputWebApiSkipIfKeyExist(index, newValue) {
       this.parsers[index].skipIfKeyExist = newValue.split(',');
@@ -291,6 +299,7 @@ export default {
       const newMapTable = newValue[0];
       if (this.parsers[index].content.trans === newMapTable) return;
       this.parsers[index].content.trans = newMapTable;
+      this.parsers[index].skipIfKeyExist = [this.parsers[index].content.to_key];
     },
     onSelectFunctionInput(index, newValue) {
       const newFuncName = newValue[0];
