@@ -7,7 +7,7 @@
             {{ $t('statistics.user_question') }}：
           </div>
           <div class="row-content">
-            {{ qa[0].user_question }}
+            {{ qa[0].user_q }}
             <span v-if="qa.length > 1">, ...</span>
           </div>
         </div>
@@ -243,7 +243,7 @@ export default {
     },
     getOriginMark() {
       const that = this;
-      const markedCount = that.qa.filter(q => q.marked).length;
+      const markedCount = that.qa.filter(q => q.is_marked).length;
       if (that.qa.length > 1) {
         if (markedCount > 0) {
           that.hasMultiOriginMarks = true;
@@ -269,7 +269,7 @@ export default {
     // TODO: get Recommend
     const that = this;
 
-    const sentences = that.qa.map(q => q.user_question);
+    const sentences = that.qa.map(q => q.user_q);
     that.$api.getRecommend(that.appId, sentences)
     .then((recommend) => {
       console.log({ recommend });

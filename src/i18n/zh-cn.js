@@ -853,6 +853,7 @@ export default {
     delete_success: '删除成功',
     robot_list: '机器人列表',
     no_data: '暂无数据',
+    no_search_data: '暂无搜寻结果',
     reset: '重置',
     chat_test: '对话测试',
     custom: '自订',

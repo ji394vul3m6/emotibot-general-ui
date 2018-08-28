@@ -1,4 +1,3 @@
-import api from '../_api/selflearn';
 import SelfLearnMarkPop from '../_components/SelfLearnMarkPop';
 
 function popSelfLearnMark(datarows) {
@@ -47,12 +46,12 @@ function appendTableDataAction(datas) {
   datas.forEach((data) => {
     data.action = [];
     data.action.push({
-      text: data.ignored ? that.$t('statistics.ignore.cancel_ignore') : that.$t('statistics.ignore.ignore'),
+      text: data.is_ignored ? that.$t('statistics.ignore.cancel_ignore') : that.$t('statistics.ignore.ignore'),
       type: 'primary',
-      onclick: data.ignored ? that.doCancelIgnore : that.doIgnore,
+      onclick: data.is_ignored ? that.doCancelIgnore : that.doIgnore,
     });
     data.action.push({
-      text: data.marked ? that.$t('statistics.mark.re_marked') : that.$t('statistics.mark.mark'),
+      text: data.is_marked ? that.$t('statistics.mark.re_marked') : that.$t('statistics.mark.mark'),
       type: 'primary',
       onclick: that.popSelfLearnMark,
     });
@@ -61,26 +60,27 @@ function appendTableDataAction(datas) {
 }
 
 function updateMarkedTableData(tableData, markedRecord, marked) {
+  console.log('updateMarkedTableData', { tableData, markedRecord, marked });
   const that = this;
   tableData.forEach((data) => {
     if (markedRecord.indexOf(data.id) !== -1) {
-      data.marked = marked;
+      data.is_marked = marked;
     }
   });
-  return appendTableDataAction.call(that, tableData);
+  return that.appendTableDataAction(tableData);
 }
 
 function apiSetMark(tableData, markedQuestion, record, tomark) {
   const that = this;
-  return api.setMark(markedQuestion, record, tomark)
+  return that.$api.setMark(markedQuestion, record, tomark)
   .then(() => {
     that.$notify({ text: that.$t('statistics.success.mark_ok') });
-    return updateMarkedTableData.call(that, tableData, record, tomark);
+    return that.updateMarkedTableData(tableData, record, tomark);
   })
   .catch((err) => {
     const markedRecord = err.response.data;
     that.$notifyFail(that.$t('statistics.error.mark_fail'));
-    return updateMarkedTableData.call(that, tableData, markedRecord, tomark);
+    return that.updateMarkedTableData(tableData, markedRecord, tomark);
   });
 }
 
@@ -88,23 +88,23 @@ function updateIgnoredTableData(tableData, ignoredRecord, ignored) {
   const that = this;
   tableData.forEach((data) => {
     if (ignoredRecord.indexOf(data.id) !== -1) {
-      data.ignored = ignored;
+      data.is_ignored = ignored;
     }
   });
-  return appendTableDataAction.call(that, tableData);
+  return that.appendTableDataAction(tableData);
 }
 
 function apiSetIgnore(tableData, records, ignore) {
   const that = this;
-  return api.setIgnore(records, ignore)
+  return that.$api.setIgnore(records, ignore)
   .then(() => {
     that.$notify({ text: that.$t('statistics.success.ignore_ok') });
-    return updateIgnoredTableData.call(that, tableData, records, ignore);
+    return that.updateIgnoredTableData(tableData, records, ignore);
   })
   .catch((err) => {
     const ignoredRecord = err.response.data;
     that.$notifyFail(that.$t('statistics.error.ignore_fail'));
-    return updateIgnoredTableData.call(that, tableData, ignoredRecord, ignore);
+    return that.updateIgnoredTableData(tableData, ignoredRecord, ignore);
   });
 }
 
@@ -115,6 +115,8 @@ export default {
     appendTableDataAction,
     popSelfLearnMark,
     doIgnore,
+    updateIgnoredTableData,
     doCancelIgnore,
+    updateMarkedTableData,
   },
 };

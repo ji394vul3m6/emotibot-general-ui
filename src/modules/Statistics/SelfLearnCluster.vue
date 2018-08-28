@@ -110,7 +110,7 @@ export default {
       clusterGroupData: [],
       clusterRecordHeader: [
         {
-          key: 'user_question',
+          key: 'user_q',
           text: this.$t('statistics.user_question'),
         },
         {
@@ -220,17 +220,17 @@ export default {
     },
     getSearchParam() {
       return {
-        record: this.currentClusterRecord,
+        records: this.currentClusterRecord,
       };
     },
     receiveAPIData(datas) {
       const that = this;
       let tableData = datas.map((d) => {
         const data = {
-          user_question: d.user_question,
+          user_q: d.user_q,
           id: d.id,
-          ignored: d.ignored,
-          marked: d.marked,
+          ignored: d.is_ignored,
+          marked: d.is_marked,
         };
         return data;
       });

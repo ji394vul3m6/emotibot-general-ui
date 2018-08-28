@@ -92,7 +92,7 @@
         </div>
       </div>
     </div>
-    <div class="button-container" v-if="canExport || totalCount > 0">
+    <div class="button-container">
       <text-button v-if="canExport"
         v-on:click="doExport()"
         :disabled="!validFormInput"
@@ -123,6 +123,7 @@
         <general-table
           :tableHeader="headerInfo"
           :tableData="tableData"
+          :showEmptyMsg="[$t('general.no_search_data')]"
           @checkedChange="handleCheckedChange"
           auto-height show-empty checkbox
         ></general-table>
@@ -393,7 +394,6 @@ export default {
       const that = this;
       that.apiSetMark(that.tableData, markedQuestion, record, tomark)
       .then((table) => {
-        console.log({ table });
         that.tableData = table;
       });
     },
@@ -401,7 +401,6 @@ export default {
       const that = this;
       that.apiSetIgnore(that.tableData, records, ignore)
       .then((table) => {
-        console.log({ table });
         that.tableData = table;
       });
     },
@@ -446,7 +445,7 @@ export default {
         if (that.ignoreFilters.length > 0) {
           const group = that.getFilterValue(that.ignoreOptions, that.ignoreFilters);
           if (group.length > 0) {
-            params.isIgnored = group.indexOf('ignored') !== -1;
+            params.isIgnored = group.indexOf('ignore') !== -1;
           }
         }
         if (that.markFilters.length > 0) {
@@ -486,7 +485,7 @@ export default {
       })
       .then(() => that.$api.exportRecords(that.searchParams))
       .then((data) => {
-        const csvData = data.data;
+        const csvData = data;
         const blobData = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvData], { type: 'text/csv' });
         misc.downloadRawFile(blobData, filename);
         that.$emit('endLoading');
