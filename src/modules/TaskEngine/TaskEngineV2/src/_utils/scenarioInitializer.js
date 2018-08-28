@@ -46,8 +46,30 @@ export default {
       return this.initialNLUPCNode(nodeName, nodeDialogueCntLimit);
     } else if (nodeType === 'restful') {
       return this.initialRestfulNode(nodeName);
+    } else if (nodeType === 'parameter_collecting') {
+      return this.initialPCNode(nodeName, nodeDialogueCntLimit);
     }
     return {};
+  },
+  initialPCNode(nodeName, nodeDialogueCntLimit) {
+    return {
+      nodeId: this.guid_sort(),
+      nodeName,
+      nodeType: 'parameter_collecting',
+      settingBasicTab: {
+        nodeName,
+        nodeType: 'nlu_pc',
+      },
+      paramsCollectingTab: {
+        params: [],
+      },
+      paramsCollectingEdgeTab: {
+        dialogueLimit: nodeDialogueCntLimit,
+        exceedThenGoto: '0',
+        succeedThenGoto: '0',
+        normalEdges: [],
+      },
+    };
   },
   initialNLUPCNode(nodeName, nodeDialogueCntLimit) {
     return {

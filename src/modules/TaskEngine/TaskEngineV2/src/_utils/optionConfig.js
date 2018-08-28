@@ -84,12 +84,6 @@ export default {
         image: 'te_dialoague.png',
         description: context.$t('task_engine_v2.node_type.parameter_collecting_description'),
       },
-      {
-        type: 'router',
-        name: context.$t('task_engine_v2.node_type.router'),
-        image: 'te_dialoague.png',
-        description: context.$t('task_engine_v2.node_type.router_description'),
-      },
     ];
     return nodeTypes;
   },

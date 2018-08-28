@@ -119,13 +119,18 @@ export default {
       tab.skipIfKeyExist = [];
     }
 
-    // parse responses
-    tab.initialResponse = node.content.questions.find(
-      q => q.question_type === 'initial_response',
-    ).msg;
-    tab.failureResponse = node.content.questions.find(
-      q => q.question_type === 'failure_response',
-    ).msg;
+    if (node.ui_node_type === 'router') {
+      tab.initialResponse = '$skip_dialogue';
+      tab.failureResponse = '';
+    } else {
+      // parse responses
+      tab.initialResponse = node.content.questions.find(
+        q => q.question_type === 'initial_response',
+      ).msg;
+      tab.failureResponse = node.content.questions.find(
+        q => q.question_type === 'failure_response',
+      ).msg;
+    }
 
     // parse parseFromThisNode
     tab.parseFromThisNode = node.default_parser_with_suffix;
