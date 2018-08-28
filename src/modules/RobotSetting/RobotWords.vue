@@ -192,12 +192,13 @@ export default {
 
 $words-title-font-size: 16px;
 $words-title-line-height: 24px;
-$words-title-color: #666666;
+$words-title-color: $color-font-normal;
 
 $words-list-font-size: 14px;
 $words-list-header-bg: #f7f7f7;
-$words-list-edit-color: #1875f0;
-$words-list-delete-color: #f76260;
+$words-list-data-bg: #fcfcfc;
+$words-list-edit-color: $color-primary;
+$words-list-delete-color: $color-error;
 
 .words-list {
   display: flex;
@@ -253,6 +254,7 @@ $words-list-delete-color: #f76260;
           }
         }
         &.body {
+          background: $words-list-data-bg;
           &:hover {
             background-color: #F6F9FF;
           }

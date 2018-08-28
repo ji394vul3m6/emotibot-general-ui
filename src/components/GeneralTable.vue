@@ -258,7 +258,7 @@ export default {
 @import "styles/variable";
 
 $table-header-background: $color-disabled;
-$table-data-background: $color-white;
+$table-data-background: #fcfcfc;
 $table-color-borderline: $color-borderline-disabled;
 $table-row-height: 50px;
 
@@ -269,6 +269,7 @@ $table-row-height: 50px;
   display: flex;
   flex-direction: column;
   width: inherit;
+  background-color: #fcfcfc;
   .general-table-header {
     flex: 0 0 auto;
     .table-header-item {
