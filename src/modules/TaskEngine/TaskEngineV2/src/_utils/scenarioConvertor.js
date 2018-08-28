@@ -883,4 +883,155 @@ export default {
       }
     });
   },
+  traverseScenarioNodeTree(nodes) {
+    // initial node_info
+    let nodeInfo = {};
+    nodes.forEach((node) => {
+      nodeInfo[node.node_id] = {
+        hasInboundConnection: false,
+        hasOutboundConnection: false,
+        hasExitConnection: false,
+        hasInnerConnection: false,
+      };
+    });
+
+    nodes.forEach((node) => {
+      const nodeId = node.node_id;
+      if (nodeId === '0') return;
+      node.edges.forEach((edge) => {
+        const edgeType = edge.edge_type || 'normal';
+        if (edgeType === 'qq') {
+          nodeInfo = this.traverseQQEdge(nodeId, edge, nodeInfo);
+        } else {
+          nodeInfo = this.traverseEdge(nodeId, edge, edgeType, nodeInfo);
+        }
+      });
+    });
+    return nodeInfo;
+  },
+  traverseQQEdge(nodeId, edge, nodeInfo) {
+    if (!edge.candidate_edges) return nodeInfo;
+    edge.candidate_edges.forEach((e) => {
+      const toNodeId = e.to_node_id;
+      if (toNodeId === null || toNodeId === nodeId || nodeInfo[toNodeId] === undefined) return;
+      if (toNodeId === '0') {
+        nodeInfo[nodeId].hasExitConnection = true;
+      } else {
+        nodeInfo[toNodeId].hasInboundConnection = true;
+        nodeInfo[nodeId].hasOutboundConnection = true;
+      }
+    });
+    return nodeInfo;
+  },
+  traverseEdge(nodeId, edge, edgeType, nodeInfo) {
+    const toNodeId = edge.to_node_id;
+    if (toNodeId === null || nodeInfo[toNodeId] === undefined) {
+      return nodeInfo;
+    }
+    // console.log(toNodeId);
+    if (edgeType === 'hidden') { // hidden edge
+      if (toNodeId === nodeId) {
+        nodeInfo[nodeId].hasInnerConnection = true;
+      }
+    } else {
+      if (edgeType === 'else_into') {
+        if (toNodeId === nodeId) {
+          // inner connection: the node connect to itself
+          nodeInfo[nodeId].hasInnerConnection = true;
+        }
+      }
+      if (toNodeId === nodeId) {
+        return nodeInfo;
+      } else if (toNodeId === '0') {
+        nodeInfo[nodeId].hasExitConnection = true;
+      } else {
+        nodeInfo[toNodeId].hasInboundConnection = true;
+        nodeInfo[nodeId].hasOutboundConnection = true;
+      }
+    }
+    return nodeInfo;
+  },
+  generateWarnings(uiNodes, nodeInfo) {
+    uiNodes.forEach((uiNode) => {
+      uiNode.warnings = [];
+      const nodeType = uiNode.nodeType || 'normal';
+      const nodeId = uiNode.nodeId;
+      this.checkNodeFormat(uiNode, nodeInfo, nodeType, nodeId);
+      // has inbound connection or not
+      if (nodeType !== 'entry' &&
+          nodeInfo[nodeId].hasInboundConnection === false) {
+        uiNode.warnings.push({
+          type: 'missing_inbound_connection',
+          // warning_msg: '请新增至少一个指向此节点的连线',
+        });
+      }
+      // has exit connection or not
+      if (nodeInfo[nodeId].hasExitConnection === true) {
+        uiNode.warnings.push({
+          type: 'has_exit_connection',
+          // warning_msg: '出口节点',
+        });
+      }
+      // has outbound connection or not
+      if (nodeInfo[nodeId].hasOutboundConnection === false &&
+          nodeInfo[nodeId].hasExitConnection === false) {
+        uiNode.warnings.push({
+          type: 'missing_outbound_connection',
+          // warning_msg: '请在此节点新增至少一个指向其他节点的连线',
+        });
+      }
+    });
+  },
+  checkNodeFormat(uiNode, nodeInfo, nodeType, nodeId) {
+    if (nodeType === 'entry') {
+      if (!uiNode.triggerTab.rules || uiNode.triggerTab.rules.length === 0) {
+        uiNode.warnings.push({
+          type: 'missing_entry_trigger',
+          // warning_msg: '缺少触发条件',
+        });
+      }
+    } else if (nodeType === 'dialogue') {
+      if (!uiNode.settingTab.initialResponse || uiNode.settingTab.initialResponse === '') {
+        uiNode.warnings.push({
+          type: 'missing_response',
+          // warning_msg: '预设文本栏位不能为空白，请填入询问语句。',
+        });
+      }
+      if (nodeInfo[nodeId].hasInnerConnection === true) {
+        if (!uiNode.settingTab.failureResponse || uiNode.settingTab.failureResponse === '') {
+          uiNode.warnings.push({
+            type: 'missing_failure_response',
+            // warning_msg: '解析失败文本栏位不能为空白，请填入解析失败时的提示语句。',
+          });
+        }
+      }
+    } else if (nodeType === 'parameter_collecting') {
+      let params = [];
+      if (uiNode.paramsCollectingTab && uiNode.paramsCollectingTab.params) {
+        params = uiNode.paramsCollectingTab.params;
+      }
+      let missingMsg = false;
+      let missingParseFailedMsg = false;
+      params.forEach((param) => {
+        if (param.msg === '') {
+          missingMsg = true;
+        }
+        if (param.parse_failed_msg === '') {
+          missingParseFailedMsg = true;
+        }
+      });
+      if (missingMsg === true) {
+        uiNode.warnings.push({
+          type: 'missing_pc_response',
+          // warning_msg: '参数询问文本栏位不能为空白，请填入询问语句。',
+        });
+      }
+      if (missingParseFailedMsg === true) {
+        uiNode.warnings.push({
+          type: 'missing_pc_response',
+          // warning_msg: '解析失败文本栏位不能为空白，请填入解析失败时的提示语句。',
+        });
+      }
+    }
+  },
 };

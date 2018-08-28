@@ -12,6 +12,7 @@
       ></edges>
       <template v-for="(nodeBlock, index) in nodeBlocks">
         <node-block
+          :ref="`nodeBlock_${index}`"
           :key="nodeBlock.data.nodeId"
           :x="nodeBlock.x"
           :y="nodeBlock.y"
@@ -280,7 +281,13 @@ export default {
         scenarioDialogueCntLimit: this.moduleData.setting.sys_scenario_dialogue_cnt_limit,
         nodeDialogueCntLimit: this.moduleData.setting.sys_node_dialogue_cnt_limit,
       };
-      this.nodeBlocks = this.moduleData.ui_data.nodes.map((node) => {
+      this.nodeBlocks = this.moduleData.ui_data.nodes.map((node, index) => {
+        // prop node
+        const nodeBlockRef = `nodeBlock_${index}`;
+        if (this.$refs[nodeBlockRef] && this.$refs[nodeBlockRef].length > 0) {
+          this.$refs[nodeBlockRef][0].$emit('propNode', node);
+        }
+        // update nodeBlocks
         const nodeId = node.nodeId;
         return {
           x: this.moduleDataLayouts[nodeId].position.left,
@@ -305,6 +312,8 @@ export default {
     saveScenario() {
       const uiNodes = this.nodeBlocks.map(nodeBlock => nodeBlock.data);
       const nodes = scenarioConvertor.convertUiNodesToNodes(uiNodes, this.setting);
+      const nodeInfo = scenarioConvertor.traverseScenarioNodeTree(nodes);
+      scenarioConvertor.generateWarnings(uiNodes, nodeInfo);
       // update data
       const data = {
         version: '1.1',
@@ -366,7 +375,9 @@ export default {
     },
     saveNode(index, node) {
       this.nodeBlocks[index].data = node;
-      this.saveScenario();
+      this.$nextTick(() => {
+        this.saveScenario();
+      });
     },
     updateNodePosition(index, position) {
       this.nodeBlocks[index].x = position.left;

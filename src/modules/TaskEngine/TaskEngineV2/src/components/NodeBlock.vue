@@ -18,6 +18,11 @@
       @click="editNode">
       {{$t("general.edit")}}
     </text-button>
+    <template v-for="warning in node.warnings">
+      <div class="setting-button" v-tooltip="{ msg: $t('task_engine_v3.scenario_edit_page.tooltip_skill_edit')}">
+        <icon icon-type="setting" :enableHover="true" :size=15 @click=""/>
+      </div>
+    </template>
   </div>
 </div>
 </template>
@@ -149,6 +154,9 @@ export default {
         },
       });
     },
+    propNode() {
+      this.node = JSON.parse(JSON.stringify(this.initialNode));
+    },
     addListeners() {
       document.documentElement.addEventListener('mousemove', this.onMouseMove, false);
       document.documentElement.addEventListener('mousedown', this.onMouseDown, false);
@@ -162,6 +170,7 @@ export default {
   },
   beforeMount() {},
   mounted() {
+    this.$on('propNode', this.propNode);
     this.addListeners();
   },
   beforeDestroy() {
