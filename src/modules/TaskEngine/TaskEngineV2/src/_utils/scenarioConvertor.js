@@ -643,7 +643,7 @@ export default {
       condition_rules: [[
         this.conditionPCSucceed(),
       ]],
-      edge_type: 'pcSucceed',
+      edge_type: 'pc_succeed',
       to_node_id: toNode,
     };
   },
