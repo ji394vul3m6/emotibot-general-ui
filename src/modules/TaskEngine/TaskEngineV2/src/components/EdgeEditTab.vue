@@ -167,12 +167,12 @@ export default {
         this.exceedThenGotoOptions = [];
         this.elseIntoOptions = options;
       } else if (this.nodeType === 'nlu_pc') {
-        this.toNodeOptions = [{ text: 'do nothing', value: null }].concat(options);
-        this.exceedThenGotoOptions = [];
         this.elseIntoOptions = [{ text: 'Exit (ID: 0)', value: '0' }].concat(options);
+        this.toNodeOptions = [{ text: 'do nothing', value: null }].concat(this.elseIntoOptions);
+        this.exceedThenGotoOptions = [];
       } else {
-        this.toNodeOptions = [{ text: 'do nothing', value: null }].concat(this.exceedThenGotoOptions);
         this.exceedThenGotoOptions = [{ text: 'Exit (ID: 0)', value: '0' }].concat(options);
+        this.toNodeOptions = [{ text: 'do nothing', value: null }].concat(this.exceedThenGotoOptions);
         this.elseIntoOptions = [
           {
             text: this.$t('task_engine_v2.to_node_option.parse_fail'),
