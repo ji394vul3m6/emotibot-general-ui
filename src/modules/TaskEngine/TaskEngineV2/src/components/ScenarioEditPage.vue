@@ -312,8 +312,10 @@ export default {
     saveScenario() {
       const uiNodes = this.nodeBlocks.map(nodeBlock => nodeBlock.data);
       const nodes = scenarioConvertor.convertUiNodesToNodes(uiNodes, this.setting);
-      const nodeInfo = scenarioConvertor.traverseScenarioNodeTree(nodes);
+      this.globalEdges = scenarioConvertor.appendActionToGlobalEdges(this.globalEdges);
+      const nodeInfo = scenarioConvertor.traverseEdges(nodes, this.globalEdges);
       scenarioConvertor.generateWarnings(uiNodes, nodeInfo);
+      scenarioConvertor.addBackContentTextArray(this, nodes, this.globalEdges);
       // update data
       const data = {
         version: '1.1',

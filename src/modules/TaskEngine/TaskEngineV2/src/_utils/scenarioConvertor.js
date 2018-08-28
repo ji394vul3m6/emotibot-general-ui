@@ -293,7 +293,10 @@ export default {
     return tab;
   },
   convertUiNodesToNodes(uiNodes, setting) {
-    const nodes = uiNodes.map(uiNode => this.convertUiNodeToNode(uiNode, setting));
+    const nodes = uiNodes.map((uiNode) => {
+      const newUiNode = JSON.parse(JSON.stringify(uiNode));
+      return this.convertUiNodeToNode(newUiNode, setting);
+    });
     const exitNode = scenarioInitializer.initialExitNode();
     return [exitNode].concat(nodes);
   },
@@ -308,7 +311,6 @@ export default {
       description: uiNode.nodeName,
       edges,
       global_vars: globalVars,
-      warnings: [],
       content: {},
     };
     if (uiNode.nodeType === 'entry') {
@@ -642,6 +644,17 @@ export default {
     }
     return vars;
   },
+  appendActionToGlobalEdges(initialGlobalEdges) {
+    let globalEdges = JSON.parse(JSON.stringify(initialGlobalEdges));
+    globalEdges = globalEdges.map((edge) => {
+      edge.actions = [
+        this.actionSetParseFailed(false),
+        this.actionSetNodeDialogueCnt(0),
+      ];
+      return edge;
+    });
+    return globalEdges;
+  },
   edgePCSucceed(toNode) {
     return {
       actions: [this.actionSetNodeDialogueCnt(0)],
@@ -658,7 +671,7 @@ export default {
       condition_rules: [[
         this.conditionRestfulSucceed(),
       ]],
-      edge_type: 'normal',
+      edge_type: 'restful_succeed',
       to_node_id: toNode,
     };
   },
@@ -668,7 +681,7 @@ export default {
       condition_rules: [[
         this.conditionRestfulFailed(),
       ]],
-      edge_type: 'normal',
+      edge_type: 'restful_failed',
       to_node_id: toNode,
     };
   },
@@ -942,7 +955,7 @@ export default {
       }
     });
   },
-  traverseScenarioNodeTree(nodes) {
+  traverseEdges(nodes, globalEdges) {
     // initial node_info
     let nodeInfo = {};
     nodes.forEach((node) => {
@@ -958,6 +971,14 @@ export default {
       const nodeId = node.node_id;
       if (nodeId === '0') return;
       node.edges.forEach((edge) => {
+        const edgeType = edge.edge_type || 'normal';
+        if (edgeType === 'qq') {
+          nodeInfo = this.traverseQQEdge(nodeId, edge, nodeInfo);
+        } else {
+          nodeInfo = this.traverseEdge(nodeId, edge, edgeType, nodeInfo);
+        }
+      });
+      globalEdges.forEach((edge) => {
         const edgeType = edge.edge_type || 'normal';
         if (edgeType === 'qq') {
           nodeInfo = this.traverseQQEdge(nodeId, edge, nodeInfo);
@@ -987,7 +1008,6 @@ export default {
     if (toNodeId === null || nodeInfo[toNodeId] === undefined) {
       return nodeInfo;
     }
-    // console.log(toNodeId);
     if (edgeType === 'hidden') { // hidden edge
       if (toNodeId === nodeId) {
         nodeInfo[nodeId].hasInnerConnection = true;
@@ -1091,6 +1111,73 @@ export default {
           // warning_msg: '解析失败文本栏位不能为空白，请填入解析失败时的提示语句。',
         });
       }
+    }
+  },
+  addBackContentTextArray(context, nodes, globalEdges) {
+    nodes.forEach((node) => {
+      const nodeId = node.node_id;
+      if (nodeId === '0') return;
+      node.edges.forEach((edge) => {
+        const edgeType = edge.edge_type || 'normal';
+        this.addContentTextArrayToEdge(edge, edgeType, context);
+      });
+    });
+    globalEdges.forEach((edge) => {
+      this.addContentTextArrayToEdge(edge, edge.edge_type, context);
+    });
+  },
+  addContentTextArrayToEdge(edge, edgeType, context) {
+    if (edgeType === 'hidden' || edgeType === 'exceedThenGoTo' || edgeType === 'qq') return;
+    const counterCheckOptions = optionConfig.getCounterCheckOptions(context);
+    if (edge.condition_rules &&
+        edge.condition_rules.length > 0) {
+      const andRules = edge.condition_rules[0];
+      andRules.forEach((rule) => {
+        if (rule.functions && rule.functions.length > 0) {
+          rule.functions.forEach((func) => {
+            this.addContentTextArrayToFunc(func, counterCheckOptions);
+          });
+        }
+      });
+    }
+  },
+  addContentTextArrayToFunc(func, counterCheckOptions) {
+    const funcName = func.function_name;
+    if (funcName === 'hotel_parser') {
+      const tags = func.content.tags.split(',');
+      const array = tags.filter(
+        tag => tag !== 'multiselect-all',
+      ).map(tag => tag);
+      func.content_text_array = array;
+    } else if (funcName === 'common_parser') {
+      const tags = func.content.tags.split(',');
+      const array = tags.filter(
+        tag => tag !== 'multiselect-all',
+      ).map((tag) => {
+        // remove '_module'
+        const key = tag.replace('_module', '');
+        return key;
+      });
+      func.content_text_array = array;
+    } else if (funcName === 'task_parser') {
+      const tags = func.content.tags.split(',');
+      const array = tags.filter(
+        tag => tag !== 'multiselect-all',
+      ).map((tag) => {
+        // snake_case to CamelCase
+        const key = tag.replace(/_([\w])/g, m => m[1].toUpperCase());
+        return key;
+      });
+      func.content_text_array = array;
+    } else if (funcName === 'counter_check') {
+      const content = func.content;
+      const option = counterCheckOptions.find(o => o.value === content);
+      if (option) {
+        func.content_text_array = [option.text];
+      }
+    } else if (funcName === 'cu_parser') {
+      const content = func.content;
+      func.content_text_array = [content];
     }
   },
 };
