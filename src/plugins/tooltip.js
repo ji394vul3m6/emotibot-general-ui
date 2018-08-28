@@ -22,6 +22,7 @@ const MyPlugin = {
               x: boundedBox.right,
               y: boundedBox.top,
               msg: binding.value.msg,
+              msgs: binding.value.msgs || [],
               leftOffset: binding.value.left || 0,
               topOffset: binding.value.top || 0,
               buttons: binding.value.buttons || [],

@@ -93,6 +93,18 @@ export default {
     ];
     return nodeTypes;
   },
+  getWarningMsgMap(context) {
+    return {
+      has_exit_connection: context.$t('task_engine_v2.warnings.has_exit_connection'),
+      missing_inbound_connection: context.$t('task_engine_v2.warnings.missing_inbound_connection'),
+      missing_outbound_connection: context.$t('task_engine_v2.warnings.missing_outbound_connection'),
+      missing_entry_trigger: context.$t('task_engine_v2.warnings.missing_entry_trigger'),
+      missing_response: context.$t('task_engine_v2.warnings.missing_response'),
+      missing_failure_response: context.$t('task_engine_v2.warnings.missing_failure_response'),
+      missing_pc_response: context.$t('task_engine_v2.warnings.missing_pc_response'),
+      missing_pc_failure_response: context.$t('task_engine_v2.warnings.missing_pc_failure_response'),
+    };
+  },
   getSourceOptions(context) {
     return [
       {

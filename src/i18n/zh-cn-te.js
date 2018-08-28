@@ -163,6 +163,16 @@ export default {
         in: '包含于',
       },
     },
+    warnings: {
+      has_exit_connection: '出口节点',
+      missing_inbound_connection: '请新增至少一个指向此节点的连线',
+      missing_outbound_connection: '请在此节点新增至少一个指向其他节点的连线',
+      missing_entry_trigger: '缺少触发条件',
+      missing_response: '预设文本栏位不能为空白，请填入询问语句。',
+      missing_failure_response: '解析失败文本栏位不能为空白，请填入解析失败时的提示语句。',
+      missing_pc_response: '参数询问文本栏位不能为空白，请填入询问语句。',
+      missing_pc_failure_response: '解析失败文本栏位不能为空白，请填入解析失败时的提示语句。',
+    },
   },
   task_engine_v3: {
     wizard_mode: {

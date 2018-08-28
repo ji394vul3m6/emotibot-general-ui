@@ -1028,7 +1028,7 @@ export default {
       }
       if (missingParseFailedMsg === true) {
         uiNode.warnings.push({
-          type: 'missing_pc_response',
+          type: 'missing_pc_failure_response',
           // warning_msg: '解析失败文本栏位不能为空白，请填入解析失败时的提示语句。',
         });
       }

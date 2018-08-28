@@ -171,6 +171,7 @@ export default {
   /** used on TaskEngineV2 top panel*/
   @include iconType("save");
   @include iconType("canlendar");
+  @include iconType("warning");
 
   /** used on robot profile icon */
   @include iconType("profile_question");

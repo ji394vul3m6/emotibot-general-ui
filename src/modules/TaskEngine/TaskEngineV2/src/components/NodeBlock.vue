@@ -18,17 +18,26 @@
       @click="editNode">
       {{$t("general.edit")}}
     </text-button>
-    <template v-for="warning in node.warnings">
-      <div class="setting-button" v-tooltip="{ msg: $t('task_engine_v3.scenario_edit_page.tooltip_skill_edit')}">
-        <icon icon-type="setting" :enableHover="true" :size=15 @click=""/>
-      </div>
-    </template>
+    <div class="warning-icon"
+      v-if="hasExitConnection"
+      v-tooltip="{ msg: $t('task_engine_v2.warnings.has_exit_connection')}">
+      <img class="exit-icon"
+        src="/static/images/exit_icon.png"
+        width="32px">
+      </img>
+    </div>
+    <div class="warning-icon"
+      v-if="warningMsgs.length > 0"
+      v-tooltip="{ msgs: warningMsgs}">
+      <icon icon-type="warning" :size=22 @click=""/>
+    </div>
   </div>
 </div>
 </template>
 
 <script>
 import NodeEditPage from './NodeEditPage';
+import optionConfig from '../_utils/optionConfig';
 
 export default {
   name: 'node-block',
@@ -75,6 +84,9 @@ export default {
       lastMouseY: 0,
       canMove: false,
       hasMoved: false,
+      hasExitConnection: false,
+      warningMsgs: [],
+      warningMsgMap: {},
     };
   },
   computed: {
@@ -156,6 +168,19 @@ export default {
     },
     propNode() {
       this.node = JSON.parse(JSON.stringify(this.initialNode));
+      this.renderWarnings();
+    },
+    renderWarnings() {
+      this.warningMsgs = [];
+      this.hasExitConnection = false;
+      this.node.warnings.forEach((w) => {
+        if (w.type === 'has_exit_connection') {
+          this.hasExitConnection = true;
+        } else {
+          const msg = this.warningMsgMap[w.type];
+          this.warningMsgs.push(msg);
+        }
+      });
     },
     addListeners() {
       document.documentElement.addEventListener('mousemove', this.onMouseMove, false);
@@ -168,7 +193,9 @@ export default {
       document.documentElement.removeEventListener('mouseup', this.onMouseUp, false);
     },
   },
-  beforeMount() {},
+  beforeMount() {
+    this.warningMsgMap = optionConfig.getWarningMsgMap(this);
+  },
   mounted() {
     this.$on('propNode', this.propNode);
     this.addListeners();
@@ -232,6 +259,9 @@ export default {
     height: 36px;
     .button-edit-node{
       height: 32px;
+    }
+    .exit-icon{
+      margin: 0px 0px 0px 3px;
     }
   }
 }
