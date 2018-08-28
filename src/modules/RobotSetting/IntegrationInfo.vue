@@ -4,10 +4,10 @@
       <nav-bar :options=pageMap />
       <div class="content">
         <div class="line">
-          <span class="title">{{$t('integration.enterpriseID')}}：</span>{{ enterpriseID }}
+          <div class="title">{{$t('integration.enterpriseID')}}：</div><div>{{ enterpriseID }}</div>
         </div>
         <div class="line">
-          <span class="title">{{$t('integration.robotID')}}：</span>{{ robotID }}
+          <div class="title">{{$t('integration.robotID')}}：</div><div>{{ robotID }}</div>
         </div>
       </div>
     </div>
@@ -52,6 +52,8 @@ export default {
     @include font-14px();
     margin-bottom: 10px;
     padding: 4px 0;
+
+    display: flex;
     .title {
       margin-right: 4px;
     }
