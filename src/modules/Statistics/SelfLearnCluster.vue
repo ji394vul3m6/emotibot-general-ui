@@ -281,15 +281,15 @@ export default {
         }
       }
       // ignore
-      if (searchQuery.isIgnored !== undefined) {
-        if (searchQuery.isIgnored) {
+      if (searchQuery.is_ignored !== undefined) {
+        if (searchQuery.is_ignored) {
           that.searchCondition.push(`${that.$t('statistics.ignore.title')}: ${that.$t('statistics.ignore.ignored')}`);
         } else {
           that.searchCondition.push(`${that.$t('statistics.ignore.title')}: ${that.$t('statistics.ignore.not_ignore')}`);
         }
       }
-      if (searchQuery.isMarked !== undefined) {
-        if (searchQuery.isMarked) {
+      if (searchQuery.is_marked !== undefined) {
+        if (searchQuery.is_marked) {
           that.searchCondition.push(`${that.$t('statistics.mark.title')}: ${that.$t('statistics.mark.marked')}`);
         } else {
           that.searchCondition.push(`${that.$t('statistics.mark.title')}: ${that.$t('statistics.mark.not_marked')}`);

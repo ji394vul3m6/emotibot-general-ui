@@ -445,13 +445,13 @@ export default {
         if (that.ignoreFilters.length > 0) {
           const group = that.getFilterValue(that.ignoreOptions, that.ignoreFilters);
           if (group.length > 0) {
-            params.isIgnored = group.indexOf('ignore') !== -1;
+            params.is_ignored = group.indexOf('ignore') !== -1;
           }
         }
         if (that.markFilters.length > 0) {
           const group = that.getFilterValue(that.markOptions, that.markFilters);
           if (group.length > 0) {
-            params.isMarked = group.indexOf('marked') !== -1;
+            params.is_marked = group.indexOf('marked') !== -1;
           }
         }
       }

@@ -142,8 +142,8 @@ function pollClusterReport(reportId) {
         genders: [
           '1',
         ],
-        isIgnored: false,
-        isMarked: true,
+        is_ignored: false,
+        is_marked: true,
       },
       results: {
         clusters: [
