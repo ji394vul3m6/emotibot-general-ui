@@ -255,6 +255,7 @@ export default {
       param.msg = q.msg;
       param.parse_failed_msg = q.parse_failed_msg;
       param.parsers = [];
+      param.skipIfKeyExist = [];
       const conditionRules = node.content.parsers[index].condition_rules;
       conditionRules.forEach((conditionRule) => {
         const parser = {};
@@ -269,12 +270,16 @@ export default {
                   parser.funcName === 'common_parser' ||
                   parser.funcName === 'task_parser') {
           parser.skipIfKeyExist.push(...conditionRule[0].functions[0].content_text_array);
+          param.skipIfKeyExist.push(...parser.skipIfKeyExist.map(key => ({ key: `${key}${parser.content.key_suffix}` })));
         } else if (parser.funcName === 'user_custom_parser') {
           parser.skipIfKeyExist.push(conditionRule[0].functions[0].content.to_key);
+          param.skipIfKeyExist.push(...parser.skipIfKeyExist);
         } else if (parser.funcName === 'polarity_parser') {
           parser.skipIfKeyExist.push(conditionRule[0].functions[0].content.key);
+          param.skipIfKeyExist.push(...parser.skipIfKeyExist);
         } else if (parser.funcName === 'api_parser') {
           parser.skipIfKeyExist.push(...conditionRule[0].functions[0].content_text_array);
+          param.skipIfKeyExist.push(...parser.skipIfKeyExist);
         }
         param.parsers.push(parser);
       });
@@ -338,6 +343,7 @@ export default {
           functions: [{
             content: parser.content,
             function_name: parser.funcName,
+            content_text_array: parser.skipIfKeyExist,
           }],
         }]);
       });
@@ -458,6 +464,19 @@ export default {
       const succeedEdge = this.edgeRestfulSucceed(tab.restfulSucceedThenGoto);
       const failedEdge = this.edgeRestfulFailed(tab.restfulFailedThenGoto);
       edges = [failedEdge, succeedEdge];
+    } else if (uiNode.nodeType === 'parameter_collecting') {
+      const tab = uiNode.paramsCollectingEdgeTab;
+      const succeedEdge = this.edgePCSucceed(tab.succeedThenGoto);
+      const hiddenSetCntLimit = this.edgeHiddenSetNodeDialogueCntLimit(
+        tab.dialogueLimit,
+      );
+      const exceedThenGoto = this.edgeExceedThenGoTo(tab.exceedThenGoto);
+      edges = [
+        succeedEdge,
+        hiddenSetCntLimit,
+        exceedThenGoto,
+        ...tab.normalEdges,
+      ];
     }
     return edges;
   },
@@ -618,6 +637,16 @@ export default {
     }
     return vars;
   },
+  edgePCSucceed(toNode) {
+    return {
+      actions: [this.actionSetNodeDialogueCnt(0)],
+      condition_rules: [[
+        this.conditionPCSucceed(),
+      ]],
+      edge_type: 'pcSucceed',
+      to_node_id: toNode,
+    };
+  },
   edgeRestfulSucceed(toNode) {
     return {
       actions: [this.actionSetNodeDialogueCnt(0)],
@@ -752,6 +781,17 @@ export default {
           function_name: 'not_contain_key',
         },
       ],
+    };
+  },
+  conditionPCSucceed() {
+    return {
+      functions: [
+        {
+          content: [],
+          function_name: 'all_parameters_are_collected',
+        },
+      ],
+      source: 'global_info',
     };
   },
   conditionRestfulSucceed() {

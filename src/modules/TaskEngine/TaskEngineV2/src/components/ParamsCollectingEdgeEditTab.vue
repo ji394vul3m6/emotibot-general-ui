@@ -172,6 +172,7 @@ export default {
     },
     emitUpdate() {
       const edgeTab = {
+        succeedThenGoto: this.succeedThenGoto,
         dialogueLimit: parseInt(this.dialogueLimit, 10) || null,
         exceedThenGoto: this.exceedThenGoto || null,
         normalEdges: this.normalEdges.map((edge) => {
