@@ -31,7 +31,10 @@
       <div class="label label-margin-left">
         {{$t("task_engine_v2.edge_edit_tab.instruction_exeed_limit")}}
       </div>
-      <input class="input-limit" v-model="dialogueLimit"></input>
+      <input class="input-limit"
+        oninput="this.value = this.value.replace(/^0$/g, ''); this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(^[0-9]{1,2}).*/g, '$1');"
+        v-model="dialogueLimit">
+      </input>
       <div class="label">
         {{$t("task_engine_v2.edge_edit_tab.label_time")}}
       </div>

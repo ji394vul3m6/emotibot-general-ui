@@ -9,12 +9,16 @@
   <div class="block">
     <div class="label-header">{{$t("task_engine_v2.scenario_settings_edit_pop.scenario_dialogue_cnt_limit")}}</div>
     <input class="input-rounded input-small"
+      placeholder="Count"
+      oninput="this.value = this.value.replace(/^0$/g, ''); this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(^[0-9]{1,2}).*/g, '$1');"
       v-model="scenarioDialogueCntLimit">
     </input>
   </div>
   <div class="block">
     <div class="label-header">{{$t("task_engine_v2.scenario_settings_edit_pop.default_node_dialogue_cnt_limit")}}</div>
     <input class="input-rounded input-small"
+      placeholder="Count"
+      oninput="this.value = this.value.replace(/^0$/g, ''); this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(^[0-9]{1,2}).*/g, '$1');"
       v-model="nodeDialogueCntLimit">
     </input>
   </div>

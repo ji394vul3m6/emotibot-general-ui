@@ -69,7 +69,10 @@
               <div class="label label-start">
                 {{$t("task_engine_v2.condition_block.label_nth_match")}}
               </div>
-              <input class="input-content" v-model="operation.index"></input>
+              <input class="input-content"
+                oninput="this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(^[0-9]{1,2}).*/g, '$1');"
+                v-model.number="operation.index">
+              </input>
               <button
                 v-if="idx === 0"
                 class="button"
@@ -281,7 +284,10 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_value")}}
             </div>
-            <input class="input-content" v-model="rule.content[0].val"></input>
+            <input class="input-content"
+              oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+              v-model="rule.content[0].val">
+            </input>
           </div>
         </div>
         <!-- 轮次检查 -->
@@ -358,7 +364,10 @@
               <div class="label label-start">
                 {{$t("task_engine_v2.condition_block.label_nth_match")}}
               </div>
-              <input class="input-content" v-model="operation.index"></input>
+              <input class="input-content"
+                oninput="this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(^[0-9]{1,2}).*/g, '$1');"
+                v-model.number="operation.index">
+              </input>
               <button
                 v-if="idx === 0"
                 class="button"
