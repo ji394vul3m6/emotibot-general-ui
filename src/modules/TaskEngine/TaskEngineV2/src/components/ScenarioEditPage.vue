@@ -218,7 +218,20 @@ export default {
             edge_type: 'normal',
           });
         }
+
+        // globalEdges
+        this.globalEdges.forEach((edge) => {
+          if (!edge.to_node_id) return;
+          if (!this.idToNodeBlock[edge.to_node_id]) return;
+
+          edgeList.push({
+            from_id: nodeBlock.data.nodeId,
+            to_id: edge.to_node_id,
+            edge_type: edge.edge_type,
+          });
+        });
       });
+
       return edgeList;
     },
     filteredEdges() {
