@@ -179,15 +179,24 @@ export default {
         const nodeBlock = this.idToNodeBlock[key];
         if (nodeBlock.data.edgeTab && nodeBlock.data.edgeTab.normalEdges) {
           nodeBlock.data.edgeTab.normalEdges.forEach((edge) => {
-            // TODO: handle qq edge
-            if (!edge.to_node_id) return;
-            if (!this.idToNodeBlock[edge.to_node_id]) return;
-
-            edgeList.push({
-              from_id: nodeBlock.data.nodeId,
-              to_id: edge.to_node_id,
-              edge_type: edge.edge_type,
-            });
+            if (edge.edge_type && edge.edge_type === 'qq') {
+              edge.candidate_edges.forEach((e) => {
+                if (!this.idToNodeBlock[e.to_node_id]) return;
+                edgeList.push({
+                  from_id: nodeBlock.data.nodeId,
+                  to_id: e.to_node_id,
+                  edge_type: edge.edge_type,
+                });
+              });
+            } else {
+              if (!edge.to_node_id) return;
+              if (!this.idToNodeBlock[edge.to_node_id]) return;
+              edgeList.push({
+                from_id: nodeBlock.data.nodeId,
+                to_id: edge.to_node_id,
+                edge_type: edge.edge_type,
+              });
+            }
           });
         }
         if (nodeBlock.data.edgeTab && nodeBlock.data.edgeTab.exceedThenGoto) {
@@ -235,27 +244,35 @@ export default {
       return edgeList;
     },
     filteredEdges() {
-      return this.allEdges.filter(edge =>
+      const edgeMap = {};
+      const filteredEdges = [];
+      let idx = 0;
+      this.allEdges.filter(edge =>
         edge.edge_type !== 'hidden' &&
         edge.from_id !== '0' &&
         edge.to_id !== '0' &&
         edge.to_id !== null &&
         edge.to_id !== undefined &&
         edge.from_id !== edge.to_id,
-      ).map((edge, index) => {
+      ).forEach((edge) => {
+        const key = `${edge.from_id}_${edge.to_id}`;
+        if (key in edgeMap) return;
+        edgeMap[key] = 1;
         const nodeBlockMap = this.idToNodeBlock;
-        return {
+        filteredEdges.push({
           x1: nodeBlockMap[edge.from_id].x + 115,
           y1: nodeBlockMap[edge.from_id].y + 60,
           x2: nodeBlockMap[edge.to_id].x + 115,
           y2: nodeBlockMap[edge.to_id].y + 60,
           style: {
-            stroke: this.rainbowColors[index % this.rainbowColors.length],
+            stroke: this.rainbowColors[idx % this.rainbowColors.length],
             strokeWidth: 5,
             fill: 'none',
           },
-        };
+        });
+        idx += 1;
       });
+      return filteredEdges;
     },
     canvasStyle() {
       return {
@@ -577,7 +594,7 @@ export default {
     position: absolute;
     right: 0;
     top: 0;
-    z-index: 100;
+    // z-index: 100;
     width: 420px;
     // height: calc(100% - 8px);
     max-height: calc(100% - 8px);
