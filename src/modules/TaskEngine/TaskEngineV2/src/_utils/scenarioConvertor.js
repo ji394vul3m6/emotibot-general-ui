@@ -111,7 +111,12 @@ export default {
     const c = node.edges[1].condition_rules;
     if (c.length > 0 && c[0].length > 1) {
       tab.parser = c[0][1].functions[0].function_name;
-      tab.targetEntities = c[0][1].functions[0].content.tags.split(',');
+      if (typeof c[0][1].functions[0].content === 'object') {
+        tab.targetEntities = c[0][1].functions[0].content.tags.split(',');
+      }
+      if (typeof c[0][1].functions[0].content === 'string') {
+        tab.targetEntities = c[0][1].functions[0].content.split(',');
+      }
       tab.skipIfKeyExist = c[0][0].functions[0].content.map(obj => obj.key.split('_')[0]);
     } else {
       tab.parser = 'none';
@@ -124,12 +129,21 @@ export default {
       tab.failureResponse = '';
     } else {
       // parse responses
-      tab.initialResponse = node.content.questions.find(
+      const qLength = node.content.questions.length;
+      let initResp = node.content.questions.find(
         q => q.question_type === 'initial_response',
-      ).msg;
-      tab.failureResponse = node.content.questions.find(
+      );
+      if (initResp === undefined) {
+        initResp = node.content.questions[qLength - 1];
+      }
+      let failResp = node.content.questions.find(
         q => q.question_type === 'failure_response',
-      ).msg;
+      );
+      if (failResp === undefined) {
+        failResp = node.content.questions[qLength - 2];
+      }
+      tab.initialResponse = initResp.msg;
+      tab.failureResponse = failResp.msg;
     }
 
     // parse parseFromThisNode
@@ -137,6 +151,13 @@ export default {
     return tab;
   },
   parseEdgeTab(node) {
+    const edges = node.edges || [];
+    if (edges.length > 0 && edges[0].edge_type === undefined) {
+      return this.parseEdgeTabWithoutEdgeType(node);
+    }
+    return this.parseEdgeTabWithEdgeType(node);
+  },
+  parseEdgeTabWithEdgeType(node) {
     const tab = {};
     const nodeType = node.node_type || '';
 
@@ -150,13 +171,13 @@ export default {
       if (!exceedGotoEdge) {
         exceedGotoEdge = edges.find((edge) => {
           if (edge.condition_rules &&
-             edge.condition_rules.length > 0 &&
-             edge.condition_rules[0].length > 0 &&
-             edge.condition_rules[0][0].functions &&
-             edge.condition_rules[0][0].functions.length > 0 &&
-             edge.condition_rules[0][0].functions[0].content_text_array &&
-             edge.condition_rules[0][0].functions[0].content_text_array.length > 0 &&
-             edge.condition_rules[0][0].functions[0].content_text_array[0] === '若超过节点对话轮数限制'
+            edge.condition_rules.length > 0 &&
+            edge.condition_rules[0].length > 0 &&
+            edge.condition_rules[0][0].functions &&
+            edge.condition_rules[0][0].functions.length > 0 &&
+            edge.condition_rules[0][0].functions[0].content_text_array &&
+            edge.condition_rules[0][0].functions[0].content_text_array.length > 0 &&
+            edge.condition_rules[0][0].functions[0].content_text_array[0] === '若超过节点对话轮数限制'
             ) {
             edge.edge_type = 'exceedThenGoTo';
             return true;
@@ -167,12 +188,16 @@ export default {
       if (exceedGotoEdge) {
         tab.exceedThenGoto = exceedGotoEdge.to_node_id;
       } else {
-        tab.exceedThenGoto = null;
+        tab.exceedThenGoto = '0';
       }
     }
     // render elseInto
     const elseIntoEdge = edges.find(edge => edge.edge_type === 'else_into');
-    tab.elseInto = elseIntoEdge.to_node_id;
+    if (elseIntoEdge === undefined) {
+      tab.elseInto = null;
+    } else {
+      tab.elseInto = elseIntoEdge.to_node_id;
+    }
 
     // render dialogueLimit
     if (node.node_dialogue_cnt_limit) {
@@ -188,6 +213,53 @@ export default {
         tab.dialogueLimit = dialogueLimitEdge.actions[0].val;
       } else {
         tab.dialogueLimit = 3;
+      }
+    }
+    return tab;
+  },
+  parseEdgeTabWithoutEdgeType(node) {
+    const tab = {};
+    tab.exceedThenGoto = '0';
+    tab.normalEdges = [];
+    for (let index = 0; index < node.edges.length; index += 1) {
+      const edge = node.edges[index];
+      if (index === 0 && node.edges.length >= 3) {
+        // skip the parser function on conditions UI (which is selected in setting page)
+        // insert parser function into setting page
+        if (edge.actions &&
+            edge.actions.length >= 1 &&
+            edge.actions[0].key === 'sys_node_dialogue_cnt_limit') {
+          tab.dialogueLimit = edge.actions[0].val;
+        } else {
+          tab.dialogueLimit = 3;
+        }
+        index += 2;
+      } else if (index === node.edges.length - 1) {
+        // else edge
+        tab.elseInto = edge.to_node_id;
+      } else if (edge.edge_type === 'qq') {
+        // qq edges
+        tab.normalEdges.push(edge);
+      } else {
+        // normal edges
+        edge.edge_type = 'normal';
+        edge.condition_rules.forEach((condition) => {
+          condition.forEach((ifCase) => {
+            ifCase.functions.forEach((fun) => {
+              if (fun.function_name === 'task_parser' ||
+                  fun.function_name === 'common_parser' ||
+                  fun.function_name === 'hotel_parser') {
+                if (typeof fun.content === 'string') {
+                  fun.content = {
+                    tags: fun.content,
+                    key_suffix: `_${node.node_id}`,
+                  };
+                }
+              }
+            });
+          });
+        });
+        tab.normalEdges.push(edge);
       }
     }
     return tab;
