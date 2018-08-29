@@ -34,6 +34,9 @@ export default {
     jsonData.moduleData.ui_data = {
       nodes,
     };
+    if (!('global_edges' in jsonData.moduleData)) {
+      jsonData.moduleData.global_edges = [];
+    }
     return jsonData;
   },
   convertNode(initialNode) {
