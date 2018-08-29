@@ -40,6 +40,7 @@
         <div class="menu-item" @click="clickShowUserPreference">{{ $t('header.user_info') }}</div>
         <div class="menu-item" v-if="userInfo.type <= 1 && enterpriseID !== ''" @click="goEnterprisePrivilege">{{ $t('header.enterprise_privilege_list') }}</div>
         <div class="menu-item" v-if="userInfo.type === 0 && enterpriseID !== ''" @click="goEnterpriseList">{{ $t('header.back_to_system_manage') }}</div>
+        <div class="menu-item" @click="goAuditLog">{{ $t('header.audit_log') }}</div>
         <div class="menu-item" @click="logout">{{ $t('header.logout') }}</div>
       </div>
     </div>
@@ -115,9 +116,7 @@ export default {
       that.$router.push('/manage/enterprise-manage');
       that.hideUserPreference();
 
-      that.showUserMenu = false;
-      window.removeEventListener('click', that.clickHandler);
-      that.clickHandler = undefined;
+      that.closeMenu();
     },
     goEnterprisePrivilege() {
       const that = this;
@@ -125,13 +124,29 @@ export default {
       that.$router.push('/manage/enterprise-user-list');
       that.hideUserPreference();
 
-      that.showUserMenu = false;
-      window.removeEventListener('click', that.clickHandler);
-      that.clickHandler = undefined;
+      that.closeMenu();
+    },
+    goAuditLog() {
+      const that = this;
+      if (this.enterpriseID !== '' && this.robotID !== '') {
+        that.$router.push('/manage/audit-robot');
+      } else if (this.enterpriseID !== '') {
+        that.$router.push('/manage/audit-enterprise');
+      } else {
+        that.$router.push('/manage/audit-system');
+      }
+      that.hideUserPreference();
+      that.closeMenu();
     },
     showRobotList() {
       this.setRobot('');
       this.$router.push('/manage/robot-manage');
+    },
+    closeMenu() {
+      const that = this;
+      that.showUserMenu = false;
+      window.removeEventListener('click', that.clickHandler);
+      that.clickHandler = undefined;
     },
     showMenu() {
       const that = this;

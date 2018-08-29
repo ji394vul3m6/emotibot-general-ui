@@ -1148,6 +1148,11 @@ export default {
 
     go_back: '返回',
 
+    audit: {
+      system: '系统操作记录',
+      enterprise: '企业操作记录',
+      robot: '机器人操作记录',
+    },
     privilege: {
       statistic_dash: {
         view: '统计概览',
@@ -1216,6 +1221,7 @@ export default {
     user_info: '个人资料',
     enterprise_privilege_list: '企业权限管理',
     back_to_system_manage: '返回系统管理',
+    audit_log: '操作记录',
     logout: '登出',
   },
   format: {
