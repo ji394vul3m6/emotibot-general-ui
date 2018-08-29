@@ -19,6 +19,7 @@
       {{$t("general.edit")}}
     </text-button>
     <div class="warning-icon"
+      ref="exitIcon"
       v-if="hasExitConnection"
       v-tooltip="{ msg: $t('task_engine_v2.warnings.has_exit_connection')}">
       <img class="exit-icon"
@@ -27,9 +28,10 @@
       </img>
     </div>
     <div class="warning-icon"
-      v-if="warningMsgs.length > 0"
-      v-tooltip="{ msgs: warningMsgs}">
-      <icon icon-type="warning" :size=22 @click=""/>
+      ref="warningIcon"
+      v-if="warningTooltipValue.msgs && warningTooltipValue.msgs.length > 0"
+      v-tooltip="warningTooltipValue">
+      <icon icon-type="warning" :size=22></icon>
     </div>
   </div>
 </div>
@@ -79,13 +81,13 @@ export default {
   },
   data() {
     return {
-      node: JSON.parse(JSON.stringify(this.initialNode)),
+      node: {},
       lastMouseX: 0,
       lastMouseY: 0,
       canMove: false,
       hasMoved: false,
       hasExitConnection: false,
-      warningMsgs: [],
+      warningTooltipValue: {},
       warningMsgMap: {},
     };
   },
@@ -159,28 +161,38 @@ export default {
         },
         callback: {
           ok: (nodeResult) => {
-            console.log(nodeResult);
             this.node = nodeResult;
             this.$emit('saveNode', nodeResult);
           },
         },
       });
     },
-    propNode() {
+    renderData() {
       this.node = JSON.parse(JSON.stringify(this.initialNode));
       this.renderWarnings();
     },
+    propNode(newNode) {
+      this.node = JSON.parse(JSON.stringify(newNode));
+      this.renderWarnings();
+    },
     renderWarnings() {
-      this.warningMsgs = [];
+      if (!this.node.warnings || !(this.node.warnings instanceof Array)) return;
+      const warningMsgs = [];
       this.hasExitConnection = false;
       this.node.warnings.forEach((w) => {
         if (w.type === 'has_exit_connection') {
           this.hasExitConnection = true;
         } else {
           const msg = this.warningMsgMap[w.type];
-          this.warningMsgs.push(msg);
+          warningMsgs.push(msg);
         }
       });
+      this.warningTooltipValue.msgs = warningMsgs;
+
+      // reload
+      if (this.$refs.warningIcon) {
+        this.$refs.warningIcon.dispatchEvent(new Event('tooltip-reload'));
+      }
     },
     addListeners() {
       document.documentElement.addEventListener('mousemove', this.onMouseMove, false);
@@ -195,6 +207,7 @@ export default {
   },
   beforeMount() {
     this.warningMsgMap = optionConfig.getWarningMsgMap(this);
+    this.renderData();
   },
   mounted() {
     this.$on('propNode', this.propNode);

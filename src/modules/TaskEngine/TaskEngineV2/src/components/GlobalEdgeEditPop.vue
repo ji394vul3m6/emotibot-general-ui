@@ -13,7 +13,7 @@
         :toNodeOptions="toNodeOptions"
         :globalVarOptions="globalVarOptions"
         :mapTableOptions="mapTableOptions"
-        @update="updateEdge(index, edge)"
+        @update="updateEdge(index, $event)"
         @deleteEdge="deleteEdge(index)">
       </condition-block>
     </template>
