@@ -252,9 +252,16 @@ export default {
         that.$api.getMarkedQuestion(that.qa.record_id)
         .then((question) => {
           console.log({ question });
-          that.markedQuestion = question;
-          that.updateMarkedIcon(that.markedQuestion);
-        }).catch(() => {
+          if (question === '') {
+            that.markedQuestion = '';
+          } else {
+            that.markedQuestion = question;
+            that.updateMarkedIcon(that.markedQuestion);
+          }
+        }).catch((err) => {
+          if (err.response.status === 400) {
+            that.$notifyFail('statistics.error.not_marked_anymore');
+          }
           that.markedQuestion = '';
         });
       }

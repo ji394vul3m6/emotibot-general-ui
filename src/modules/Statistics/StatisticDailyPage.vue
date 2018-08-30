@@ -7,6 +7,7 @@
     <template v-else>
     <div class="page-header">
       {{ $t('pages.statistics.statistic_daily') }}
+      <icon iconType="info" :size="16" enableHover v-tooltip="pageInfoTooltip"></icon>
     </div>
     <div class="header">
       <div class="filter-rows">
@@ -261,6 +262,9 @@ export default {
         },
       ],
       dayRange: 1,
+      pageInfoTooltip: {
+        msg: this.$t('statistics.tooltip'),
+      },
       clusterTooltip: {
         msg: this.$t('statistics.cluster_info'),
       },
@@ -625,6 +629,9 @@ export default {
     this.endDisableDate = {
       to: this.start.dateObj,
     };
+    this.$nextTick(() => {
+      this.dayRange = 1;  // update lable switch after datepicker is updated
+    });
   },
   activated() {
     if (this.isMount) { // activated by mount
@@ -676,6 +683,9 @@ export default {
   color: $color-font-active;
   display: flex;
   align-items: center;
+  .icon {
+    margin-left: 6px;
+  }
 }
 
 .header {

@@ -104,6 +104,7 @@ export default {
     delete_category_msg: '确定要删除分类 {name} 及其子分类吗？',
   },
   statistics: {
+    tooltip: '系统记录与用户的所有对话数据，支持多条件查询和导出',
     cluster: {
       title: '辅助分类',
       condition: '筛选条件',
@@ -176,6 +177,9 @@ export default {
     error: {
       ignore_fail: '更新忽略状态失败',
       mark_fail: '标注问题失败',
+      mark_conflict: '用户问题{text}已为标准问题，不能标注为其他标准问题',
+      system_error_reload: '系统发生错误，请重新整理',
+      not_marked_anymore: '标注资料已移除，请重新标注',
       try_cluster_later: '辅助分类工具正在占用，请稍后操作',
       got_it: '知道了',
       cluster_fail: '辅助分类失败',

@@ -78,9 +78,22 @@ function apiSetMark(tableData, markedQuestion, record, tomark) {
     return that.updateMarkedTableData(tableData, record, tomark);
   })
   .catch((err) => {
-    const markedRecord = err.response.data;
-    that.$notifyFail(that.$t('statistics.error.mark_fail'));
-    return that.updateMarkedTableData(tableData, markedRecord, tomark);
+    const statusCode = err.response.status;
+    if (statusCode === 409) { // some record is stdQ, cannot be marked
+      const conflictRecord = err.response.data.conflicted_content;
+      that.$notifyFail(that.$t('statistics.error.mark_conflict', { text: conflictRecord }));
+    } else if (statusCode === 500) {
+      const rollbacked = err.response.data.rollbacked;
+      if (rollbacked) { // cancel all successed requests
+        that.$notifyFail(that.$t('statistics.error.mark_fail'));
+      } else { // request partly successed, need user reload
+        that.$notifyFail(that.$t('statistics.error.system_error_reload'));
+      }
+    } else {
+      that.$notifyFail(that.$t('statistics.error.mark_fail'));
+    }
+
+    return tableData;
   });
 }
 
@@ -102,9 +115,18 @@ function apiSetIgnore(tableData, records, ignore) {
     return that.updateIgnoredTableData(tableData, records, ignore);
   })
   .catch((err) => {
-    const ignoredRecord = err.response.data;
-    that.$notifyFail(that.$t('statistics.error.ignore_fail'));
-    return that.updateIgnoredTableData(tableData, ignoredRecord, ignore);
+    const statusCode = err.response.status;
+    if (statusCode === 500) {
+      const rollbacked = err.response.data.rollbacked;
+      if (rollbacked) { // cancel all successed requests
+        that.$notifyFail(that.$t('statistics.error.ignore_fail'));
+      } else { // request partly successed, need user reload
+        that.$notifyFail(that.$t('statistics.error.system_error_reload'));
+      }
+    } else {
+      that.$notifyFail(that.$t('statistics.error.ignore_fail'));
+    }
+    return tableData;
   });
 }
 
