@@ -8,6 +8,7 @@
 ```
 git config commit.template ./.git-commit-template
 ```
+
 > If you are using vscode, can use command belows
 ```
 # Add 'code' into path
@@ -48,5 +49,3 @@ npm test
 # run storybook at local
 npm run storybook
 ```
-
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
