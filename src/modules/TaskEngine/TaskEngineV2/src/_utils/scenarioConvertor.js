@@ -403,14 +403,15 @@ export default {
     } else if (uiNode.nodeType === 'restful') {
       node.content = this.composeRestfulContent(uiNode);
       node.global_vars.push(uiNode.restfulSettingTab.rtnVarName);
-    }
-    if (uiNode.nodeType === 'parameter_collecting') {
+    } else if (uiNode.nodeType === 'parameter_collecting') {
       node.content = this.composePCContent(
         uiNode.paramsCollectingTab.params,
       );
+      uiNode.paramsCollectingTab.params.forEach((param) => {
+        node.global_vars.push(...param.skipIfKeyExist);
+      });
     }
-    // TODO
-    // node.global_vars.push(...parametersInParsers)
+    node.global_vars = [...new Set(node.global_vars)];
     return node;
   },
   composePCContent(params) {
@@ -425,7 +426,6 @@ export default {
           functions: [{
             content: parser.content,
             function_name: parser.funcName,
-            content_text_array: parser.skipIfKeyExist,
           }],
         }]);
       });

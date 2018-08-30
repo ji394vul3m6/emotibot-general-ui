@@ -246,7 +246,7 @@ export default {
         if (parser.funcName === 'hotel_parser' ||
             parser.funcName === 'common_parser' ||
             parser.funcName === 'task_parser') {
-          skipKeys.push(...parser.skipIfKeyExist.map(key => ({ key: `${key}${parser.content.key_suffix}` })));
+          skipKeys.push(...parser.skipIfKeyExist.map(key => `${key}${parser.content.key_suffix}`));
         } else {
           skipKeys.push(...parser.skipIfKeyExist);
         }
