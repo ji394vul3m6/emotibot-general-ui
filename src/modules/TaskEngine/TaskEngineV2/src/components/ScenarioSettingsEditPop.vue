@@ -58,7 +58,7 @@ export default {
         scenarioDialogueCntLimit: parseInt(this.scenarioDialogueCntLimit, 10) || null,
         nodeDialogueCntLimit: parseInt(this.nodeDialogueCntLimit, 10) || null,
       };
-      console.log(setting);
+      // console.log(setting);
       this.$emit(
         'validateSuccess',
         setting,

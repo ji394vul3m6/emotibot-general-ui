@@ -446,7 +446,7 @@ export default {
   },
   composeNLUPCContent(entityCollectorList, reParsers, registerJson) {
     let entities;
-    console.log(entityCollectorList);
+    // console.log(entityCollectorList);
     if (registerJson && registerJson.slotDefs) {
       entities = registerJson.slotDefs.map(slot => ({ entityName: slot.slotName, prompt: null }));
     } else {

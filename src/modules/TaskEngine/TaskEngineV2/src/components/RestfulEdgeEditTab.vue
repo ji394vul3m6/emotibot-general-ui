@@ -85,7 +85,7 @@ export default {
         restfulSucceedThenGoto: this.restfulSucceedThenGoto,
         restfulFailedThenGoto: this.restfulFailedThenGoto,
       };
-      console.log(result);
+      // console.log(result);
       return result;
     },
   },

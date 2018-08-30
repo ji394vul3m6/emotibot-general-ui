@@ -235,7 +235,7 @@ export default {
       this.msg = param.msg;
       this.parse_failed_msg = param.parse_failed_msg;
       this.parsers = param.parsers;
-      console.log(this.initialParam);
+      // console.log(this.initialParam);
     },
     collectSkipKeys() {
       const skipKeys = [];

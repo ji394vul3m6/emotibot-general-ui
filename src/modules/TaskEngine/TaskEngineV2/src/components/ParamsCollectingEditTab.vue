@@ -61,7 +61,7 @@ export default {
       const paramsCollectingTab = {
         params: this.params,
       };
-      console.log(paramsCollectingTab);
+      // console.log(paramsCollectingTab);
       this.$emit('update', paramsCollectingTab);
     },
     renderTabContent() {

@@ -105,7 +105,6 @@ export default {
         condition_rules: edge.condition_rules,
         actions: [],
       }));
-      console.log(edges);
       this.$emit(
         'validateSuccess',
         edges,
