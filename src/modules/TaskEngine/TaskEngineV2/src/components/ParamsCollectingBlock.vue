@@ -142,8 +142,11 @@
             <input class="input-content" v-model="parser.content"></input>
           </div>
           <div class="row">
-            <div class="label label-start">
-              {{$t("task_engine_v2.condition_block.label_target_key")}}
+            <div class="label label-tooltip">
+              {{$t("task_engine_v2.params_collecting_tab.skip_if_key_exit")}}
+              <div class="tooltip_container" v-tooltip="{ msg: $t('task_engine_v2.params_collecting_tab.skip_if_key_exit_info')}">
+                <icon icon-type="info" :enableHover="true" :size=20 />
+              </div>
             </div>
             <input class="input-content"
               :value="parser.skipIfKeyExist.join(',')"
@@ -401,6 +404,17 @@ export default {
       height: 36px;
       line-height: 36px;
       font-size: 16px;
+    }
+    .label-tooltip{
+      display: flex;
+      .tooltip_container{
+        .button{
+          margin-left: 0;
+          background-color: transparent;
+        }
+        display: flex;
+        align-items: center;
+      }
     }
     .label-start{
       width: 84px;

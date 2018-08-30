@@ -83,6 +83,8 @@ export default {
       button_add_parser: '＋增加解析器',
       msg: '参数询问文本（询问使用者参数的语句）',
       parse_failed_msg: '解析失败文本（参数解析失败时，回复给使用者的语句）',
+      skip_if_key_exit: '参数检查',
+      skip_if_key_exit_info: '当收集到以下参数则跳过问句，请使用逗号分隔参数名称',
     },
     params_collecting_edge_tab: {
       succeed: '成功',
