@@ -385,25 +385,20 @@ export default {
           }, {}) : value;
       };
       console.log(JSON.stringify(data, replacer));
-      console.log('saveScenario===');
-      console.log(data);
-      console.log(layout);
-      // return taskEngineApi.saveScenario(
-      //   this.appId,
-      //   this.scenarioId,
-      //   JSON.stringify(data),
-      //   JSON.stringify(layout),
-      // ).then(() => {
-      //   this.moduleData = data;
-      //   this.moduleDataLayouts = layout;
-      //   this.updateWindowModuleData();
-      //   this.$notify({ text: this.$t('error_msg.save_success') });
-      // }, (err) => {
-      //   this.$notifyFail(`saveScenario failed, error:${err.message}`);
-      // });
-      this.moduleData = data;
-      this.moduleDataLayouts = layout;
-      this.renderData();
+      return taskEngineApi.saveScenario(
+        this.appId,
+        this.scenarioId,
+        JSON.stringify(data),
+        JSON.stringify(layout),
+      ).then(() => {
+        this.moduleData = data;
+        this.moduleDataLayouts = layout;
+        this.renderData();
+        this.updateWindowModuleData();
+        // this.$notify({ text: this.$t('error_msg.save_success') });
+      }, (err) => {
+        this.$notifyFail(`saveScenario failed, error:${err.message}`);
+      });
     },
     saveNode(index, node) {
       this.nodeBlocks[index].data = node;

@@ -377,7 +377,7 @@ export default {
   },
   // convert uiNode to node
   convertUiNodeToNode(uiNode, setting) {
-    console.log(uiNode);
+    // console.log(uiNode);
     const edges = this.convertUiNodeToEdges(uiNode, setting);
     const globalVars = this.getGlobalVars(edges);
     const node = {
