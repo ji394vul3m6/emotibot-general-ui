@@ -66,7 +66,6 @@
 </template>
 
 <script>
-import DropdownSelect from '@/components/DropdownSelect';
 import SkillEditPage from './SkillEditPage';
 import TriggerPage from './TriggerPageV2';
 import EntityCollectingPage from './EntityCollectingPage';
@@ -84,7 +83,6 @@ export default {
     'trigger-page': TriggerPage,
     'entity-collecting-page': EntityCollectingPage,
     'action-page': ActionPage,
-    'dropdown-select': DropdownSelect,
   },
   data() {
     return {

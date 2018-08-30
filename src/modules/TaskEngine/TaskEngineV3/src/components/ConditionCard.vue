@@ -31,14 +31,10 @@
 </template>
 
 <script>
-import DropdownSelect from '@/components/DropdownSelect';
 import selectOptions from '../utils/selectOptions';
 
 export default {
   name: 'condition-card',
-  components: {
-    'dropdown-select': DropdownSelect,
-  },
   props: {
     initialCondition: {
       type: Object,

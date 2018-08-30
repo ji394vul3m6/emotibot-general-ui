@@ -101,9 +101,9 @@
       <div class="row-title">
         <template v-if="idx === 0">{{ $t('management.assign_robot') }}</template>
       </div>
-      <dropdown-selector class="selector" :options="machineOptions" v-model="privilege.machine"/>
+      <dropdown-select class="selector" :options="machineOptions" v-model="privilege.machine"/>
       <div class="row-text">{{ $t('management.privilege_is') }}</div>
-      <dropdown-selector class="selector" :options="privilegeOptions" v-model="privilege.role"/>
+      <dropdown-select class="selector" :options="privilegeOptions" v-model="privilege.role"/>
       <div class="row-button">
         <text-button width="60px" button-type="error" v-if="privilegeSet.length > 1" @click="removePrivilege(idx)">
           {{ $t('general.delete') }}
@@ -122,7 +122,6 @@
 import md5 from 'md5';
 import event from '@/utils/js/event';
 import validate from '@/utils/js/validate';
-import DropdownSelector from '@/components/DropdownSelect';
 
 export default {
   name: 'user-add-form',
@@ -133,9 +132,6 @@ export default {
         type: 2,
       }),
     },
-  },
-  components: {
-    DropdownSelector,
   },
   computed: {
     isAdmin() {

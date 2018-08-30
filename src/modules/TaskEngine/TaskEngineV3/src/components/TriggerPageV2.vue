@@ -35,7 +35,6 @@
 </template>
 
 <script>
-import DropdownSelect from '@/components/DropdownSelect';
 import IntentList from '@/modules/IntentEngine/_components/IntentList';
 import IntentEngine from './_api/intentEngine';
 import i18nUtils from '../utils/i18nUtil';
@@ -44,7 +43,6 @@ import general from '../utils/general';
 export default {
   name: 'trigger-page',
   components: {
-    'dropdown-select': DropdownSelect,
     IntentList,
   },
   props: {

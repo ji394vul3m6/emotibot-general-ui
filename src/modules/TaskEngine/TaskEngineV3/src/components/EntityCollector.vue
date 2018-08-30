@@ -56,7 +56,6 @@
 </template>
 
 <script>
-import DropdownSelect from '@/components/DropdownSelect';
 import DropdownMenu from '@/components/basic/DropdownMenu';
 import CustomEntityTypeEditorPop from './CustomEntityTypeEditorPop';
 import i18nUtils from '../utils/i18nUtil';
@@ -64,7 +63,6 @@ import i18nUtils from '../utils/i18nUtil';
 export default {
   name: 'entity-collector',
   components: {
-    'dropdown-select': DropdownSelect,
     'dropdown-menu': DropdownMenu,
   },
   props: {
