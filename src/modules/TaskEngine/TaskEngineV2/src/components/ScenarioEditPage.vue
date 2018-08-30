@@ -23,7 +23,8 @@
           @updatePosition="updateNodePosition(index, $event)"
           @savePosition="saveScenario()"
           @deleteNode="deleteNode(index)"
-          @saveNode="saveNode(index, $event)">
+          @saveNode="saveNode(index, $event)"
+          @copyNode="copyNode(index)">
         </node-block>
       </template>
     </div>
@@ -405,6 +406,18 @@ export default {
       this.$nextTick(() => {
         this.saveScenario();
       });
+    },
+    copyNode(index) {
+      const srcNodeId = this.nodeBlocks[index].data.nodeId;
+      const newNodeId = scenarioInitializer.guid_sort();
+      const srcNodeBlockString = JSON.stringify(this.nodeBlocks[index]);
+      const newNodeStr = srcNodeBlockString.replace(new RegExp(srcNodeId, 'g'), newNodeId);
+      const newNodeBlock = JSON.parse(newNodeStr);
+      newNodeBlock.x += 100;
+      newNodeBlock.y += 100;
+      newNodeBlock.data.nodeName += '_copy';
+      this.nodeBlocks.push(newNodeBlock);
+      this.saveScenario();
     },
     updateNodePosition(index, position) {
       this.nodeBlocks[index].x = position.left;

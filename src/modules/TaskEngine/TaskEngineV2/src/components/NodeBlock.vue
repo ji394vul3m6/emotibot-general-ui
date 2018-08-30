@@ -13,10 +13,17 @@
   </div>
   <div class="button-row">
     <text-button
-      class="button-edit-node"
+      class="button button-edit-node"
       button-type='primary'
-      @click="editNode">
+      @click="editNode()">
       {{$t("general.edit")}}
+    </text-button>
+    <text-button
+      v-if="node.nodeType !== 'entry'"
+      class="button button-copy-node"
+      button-type='primary'
+      @click="copyNode()">
+      {{$t("general.copy")}}
     </text-button>
     <div class="warning-icon"
       ref="exitIcon"
@@ -167,6 +174,9 @@ export default {
         },
       });
     },
+    copyNode() {
+      this.$emit('copyNode');
+    },
     renderData() {
       this.node = JSON.parse(JSON.stringify(this.initialNode));
       this.renderWarnings();
@@ -270,8 +280,11 @@ export default {
     align-items: center;
     justify-content: center;
     height: 36px;
-    .button-edit-node{
+    .button{
       height: 32px;
+    }
+    .button-copy-node{
+      margin: 0px 0px 0px 3px;
     }
     .exit-icon{
       margin: 0px 0px 0px 3px;

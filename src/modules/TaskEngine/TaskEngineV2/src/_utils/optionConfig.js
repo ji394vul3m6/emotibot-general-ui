@@ -151,8 +151,8 @@ export default {
   },
   getRainbowColors() {
     return [
-      '#db6b6c', '#5a9bd3', '#42a198', '#f8c954', '#7e47ae',
-      '#dc7598', '#5a99d2', '#db6b6c', '#eaa355', '#8a7168',
+      '#db6b6c', '#4F68F7', '#44895F', '#f8c954', '#7e47ae',
+      '#dc7598', '#5a99d2', '#89B458', '#eaa355', '#8a7168',
     ];
   },
   getBasicCompareOptions(context) {

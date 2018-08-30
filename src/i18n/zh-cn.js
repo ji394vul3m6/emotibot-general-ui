@@ -795,6 +795,7 @@ export default {
     error: '错误',
     upload: '上传',
     browse: '浏览',
+    copy: '复制',
     save: '保存',
     saving: '保存中',
     default: '默认',
