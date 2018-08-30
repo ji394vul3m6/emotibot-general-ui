@@ -15,7 +15,16 @@
   </div>
   <div class="block">
     <div class="label-header">{{$t("task_engine_v2.setting_edit_tab.default_q")}}</div>
+    <div class="insert-var-button-row">
+      <div class="button-insert var" v-dropdown="insertVarDropdown()">
+        {{$t("task_engine_v2.setting_edit_tab.insert_var")}}
+      </div>
+      <div class="button-insert sys-var" v-dropdown="insertSysVarDropdown()">
+        {{$t("task_engine_v2.setting_edit_tab.insert_sys_var")}}
+      </div>
+    </div>
     <textarea class="text-response"
+      ref="defaultQ"
       v-model="initialResponse">
     </textarea>
   </div>
@@ -90,6 +99,10 @@ export default {
   props: {
     initialSettingTab: {
       type: Object,
+      required: true,
+    },
+    globalVarOptions: {
+      type: Array,
       required: true,
     },
   },
@@ -178,6 +191,44 @@ export default {
         this.$refs.selectSkipIfKeyExist.$emit('select', this.skipIfKeyExist);
       }
     },
+    insertVarDropdown() {
+      const options = this.globalVarOptions.map((option) => {
+        console.log(option);
+        return {
+          text: `${option.text}：${option.value}`,
+          onclick: this.insertVarSelect.bind(this, `$global{${option.value}}`),
+        };
+      });
+      return {
+        options,
+        width: '500px',
+      };
+    },
+    insertSysVarDropdown() {
+      return {
+        options: [
+          {
+            text: this.$t('task_engine_v2.setting_edit_tab.all_sys_var'),
+            onclick: this.insertVarSelect.bind(this, '$item_list'),
+          },
+          {
+            text: this.$t('task_engine_v2.setting_edit_tab.unconfirmed_sys_var'),
+            onclick: this.insertVarSelect.bind(this, '$msg_confirm'),
+          },
+        ],
+        width: '200px',
+      };
+    },
+    insertVarSelect(toInsert) {
+      const selectStart = this.$refs.defaultQ.selectionStart;
+      const selectEnd = this.$refs.defaultQ.selectionEnd;
+      this.initialResponse = `${this.initialResponse.substring(0, selectStart)}${toInsert}${this.initialResponse.substring(selectEnd)}`;
+      this.$nextTick(() => {
+        this.$refs.defaultQ.selectionStart = selectStart + toInsert.length;
+        this.$refs.defaultQ.selectionEnd = selectStart + toInsert.length;
+        this.$refs.defaultQ.focus();
+      });
+    },
     getParserOptions() {
       return [
         {
@@ -249,6 +300,34 @@ export default {
       background: white;
       &:disabled{
         background: #F3F7F9;
+      }
+    }
+    .insert-var-button-row{
+      display: flex;
+      flex-direction: row;
+      .button-insert{
+        position: relative;
+        display: flex;
+        flex-direction: row;
+        height: 36px;
+        background: #E4EAEC;
+        font-size: 14px;
+        line-height: 36px;
+        justify-content: center;
+        border-radius: 2px;
+        cursor: pointer;
+        &:not(:first-child){
+          margin: 0px 0px 0px 3px;
+        }
+        &:hover{
+          background: lighten(#E4EAEC, 3%);
+        }
+      }
+      .var{
+        width: 100px;
+      }
+      .sys-var{
+        width: 120px;
       }
     }
     .text-response{

@@ -23,6 +23,7 @@
       <setting-edit-tab ref="settingTab"
         v-if="currentTab === 'settingTab'"
         :initialSettingTab="initialSettingTab"
+        :globalVarOptions="globalVarOptions"
         @update="settingTab = $event"
       ></setting-edit-tab>
       <setting-basic-edit-tab ref="settingBasicTab"
