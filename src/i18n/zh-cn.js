@@ -1152,6 +1152,12 @@ export default {
       system: '系统操作记录',
       enterprise: '企业操作记录',
       robot: '机器人操作记录',
+      filter_time: '发生时间',
+      filter_robot: '机器人',
+      filter_module: '操作模块和类型',
+      filter_userid: '用户ID',
+      filter_enterprise: '企业',
+      total: '共 {num} 笔',
     },
     privilege: {
       statistic_dash: {
