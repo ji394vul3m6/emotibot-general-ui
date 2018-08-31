@@ -59,7 +59,11 @@ export default {
   methods: {
     emitUpdate() {
       const paramsCollectingTab = {
-        params: this.params,
+        params: this.params.map((param) => {
+          const p = JSON.parse(JSON.stringify(param));
+          delete p.id;
+          return p;
+        }),
       };
       // console.log(paramsCollectingTab);
       this.$emit('update', paramsCollectingTab);
@@ -78,9 +82,7 @@ export default {
       param.parsers = [];
       const parser = scenarioInitializer.initialParser();
       parser.id = this.$uuid.v1();
-      parser.skipIfKeyExist = [];
       param.parsers.push(parser);
-      param.skipIfKeyExist = [];
       this.params.push(param);
     },
     deleteParam(index) {

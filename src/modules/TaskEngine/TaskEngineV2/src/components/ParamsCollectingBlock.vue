@@ -69,7 +69,7 @@
               </div>
               <input class="input-content" 
                 v-model="operation.key"
-                @input="updateRegSkipIfKeyExist(index)"></input>
+              ></input>
             </div>
           </template>
         </div>
@@ -86,9 +86,9 @@
               class="select select-target-entity"
               :ref="`selectTargetEntity_${index}`"
               :multi="true"
-              :value="parser.skipIfKeyExist"
+              :value="parser.content.tags.split(',')"
               @input="onSelectTargetEntity(index, $event)"
-              :options="entityKeyOptions(parser.funcName)"
+              :options="entityModuleOptions(parser.funcName)"
               :showCheckedIcon="true"
               :showSearchBar="true"
               width="200px"
@@ -129,7 +129,6 @@
             </div>
             <input class="input-content" 
               v-model="parser.content.key"
-              @input="onInputPolarityParserSkipIfKeyExist(index)"
             ></input>
           </div>
         </div>
@@ -149,7 +148,7 @@
               </div>
             </div>
             <input class="input-content"
-              :value="parser.skipIfKeyExist.join(',')"
+              :value="getWebApiSkipIfKeyExist(index)"
               @input="onInputWebApiSkipIfKeyExist(index, $event.target.value)"
             ></input>
           </div>
@@ -207,7 +206,6 @@ export default {
       msg: '',
       parse_failed_msg: '',
       parsers: [],
-      skipIfKeyExist: [],
       selectStyle: {
         height: '36px',
         'border-radius': '5px',
@@ -229,7 +227,6 @@ export default {
         msg: this.msg,
         parse_failed_msg: this.parse_failed_msg,
         parsers: this.parsers,
-        skipIfKeyExist: this.collectSkipKeys(),
       };
       this.$emit('update', param);
     },
@@ -240,26 +237,12 @@ export default {
       this.parsers = param.parsers;
       // console.log(this.initialParam);
     },
-    collectSkipKeys() {
-      const skipKeys = [];
-      this.parsers.forEach((parser) => {
-        if (parser.funcName === 'hotel_parser' ||
-            parser.funcName === 'common_parser' ||
-            parser.funcName === 'task_parser') {
-          skipKeys.push(...parser.skipIfKeyExist.map(key => `${key}${parser.content.key_suffix}`));
-        } else {
-          skipKeys.push(...parser.skipIfKeyExist);
-        }
-      });
-      return skipKeys;
-    },
     deleteParam() {
       this.$emit('deleteParam');
     },
     addParser() {
       const parser = scenarioInitializer.initialParser();
       parser.id = this.$uuid.v1();
-      parser.skipIfKeyExist = [];
       this.parsers.push(parser);
     },
     deleteParser(index) {
@@ -268,20 +251,14 @@ export default {
     addRegTargetKey(index) {
       const operation = scenarioInitializer.initialRegularOperation();
       this.parsers[index].content.operations.push(operation);
-      this.updateRegSkipIfKeyExist(index);
     },
     deleteRegTargetKey(index, idx) {
       this.parsers[index].content.operations.splice(idx, 1);
-      this.updateRegSkipIfKeyExist(index);
     },
-    updateRegSkipIfKeyExist(index) {
-      this.parsers[index].skipIfKeyExist = [];
-      this.parsers[index].content.operations.forEach((operation) => {
-        this.parsers[index].skipIfKeyExist.push(operation.key);
-      });
-    },
-    onInputPolarityParserSkipIfKeyExist(index) {
-      this.parsers[index].skipIfKeyExist = [this.parsers[index].content.key];
+    getWebApiSkipIfKeyExist(index) {
+      if (this.parsers[index].skipIfKeyExist) {
+        return this.parsers[index].skipIfKeyExist.join(',');
+      } return '';
     },
     onInputWebApiSkipIfKeyExist(index, newValue) {
       this.parsers[index].skipIfKeyExist = newValue.split(',');
@@ -296,13 +273,11 @@ export default {
       } else if (funcName === 'hotel_parser') {
         this.parsers[index].content.tags = newValue.join(',');
       }
-      this.parsers[index].skipIfKeyExist = newValue;
     },
     onSelectMapTableInput(index, newValue) {
       const newMapTable = newValue[0];
       if (this.parsers[index].content.trans === newMapTable) return;
       this.parsers[index].content.trans = newMapTable;
-      this.parsers[index].skipIfKeyExist = [this.parsers[index].content.to_key];
     },
     onSelectFunctionInput(index, newValue) {
       const newFuncName = newValue[0];
@@ -315,7 +290,7 @@ export default {
       if (newFuncName === 'common_parser' ||
           newFuncName === 'task_parser' ||
           newFuncName === 'hotel_parser') {
-        const options = this.entityKeyOptions(newFuncName);
+        const options = this.entityModuleOptions(newFuncName);
         const selectRef = `selectTargetEntity_${index}`;
         if (this.$refs[selectRef] && this.$refs[selectRef].length > 0) {
           this.$refs[selectRef][0].$emit('updateOptions', options);
@@ -325,9 +300,9 @@ export default {
         }
       }
     },
-    entityKeyOptions(newFuncName) {
-      const entityKeyOptions = this.getEntityKeyNameOptionsMap();
-      return entityKeyOptions[newFuncName];
+    entityModuleOptions(parser) {
+      const entityModuleOptions = optionConfig.getEntityModuleOptionsMap();
+      return entityModuleOptions[parser];
     },
     getEntityKeyNameOptionsMap() {
       const entityListMap = optionConfig.getEntityListMap();

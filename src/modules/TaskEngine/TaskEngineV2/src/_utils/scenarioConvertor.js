@@ -334,32 +334,11 @@ export default {
       param.msg = q.msg;
       param.parse_failed_msg = q.parse_failed_msg;
       param.parsers = [];
-      param.skipIfKeyExist = [];
       const conditionRules = node.content.parsers[index].condition_rules;
       conditionRules.forEach((conditionRule) => {
         const parser = {};
         parser.content = conditionRule[0].functions[0].content;
         parser.funcName = conditionRule[0].functions[0].function_name;
-        parser.skipIfKeyExist = [];
-        if (parser.funcName === 'regular_exp') {
-          conditionRule[0].functions[0].content.operations.forEach((operation) => {
-            parser.skipIfKeyExist.push(operation.key);
-          });
-        } else if (parser.funcName === 'hotel_parser' ||
-                  parser.funcName === 'common_parser' ||
-                  parser.funcName === 'task_parser') {
-          parser.skipIfKeyExist.push(...conditionRule[0].functions[0].content_text_array);
-          param.skipIfKeyExist.push(...parser.skipIfKeyExist.map(key => ({ key: `${key}${parser.content.key_suffix}` })));
-        } else if (parser.funcName === 'user_custom_parser') {
-          parser.skipIfKeyExist.push(conditionRule[0].functions[0].content.to_key);
-          param.skipIfKeyExist.push(...parser.skipIfKeyExist);
-        } else if (parser.funcName === 'polarity_parser') {
-          parser.skipIfKeyExist.push(conditionRule[0].functions[0].content.key);
-          param.skipIfKeyExist.push(...parser.skipIfKeyExist);
-        } else if (parser.funcName === 'api_parser') {
-          parser.skipIfKeyExist.push(...conditionRule[0].functions[0].content_text_array);
-          param.skipIfKeyExist.push(...parser.skipIfKeyExist);
-        }
         param.parsers.push(parser);
       });
       tab.params.push(param);
@@ -406,9 +385,7 @@ export default {
       node.content = this.composePCContent(
         uiNode.paramsCollectingTab.params,
       );
-      uiNode.paramsCollectingTab.params.forEach((param) => {
-        node.global_vars.push(...param.skipIfKeyExist);
-      });
+      node.global_vars.push(...this.getGlobalVarsFromParsers(node.content.parsers));
     }
     node.global_vars = [...new Set(node.global_vars)];
     return node;
@@ -425,17 +402,33 @@ export default {
           functions: [{
             content: parser.content,
             function_name: parser.funcName,
+            skipIfKeyExist: parser.skipIfKeyExist,
           }],
         }]);
       });
       content.parsers.push({ condition_rules: conditionRules });
+    });
+    params.forEach((param, index) => {
+      const skipIfKeyExist = [];
+      content.parsers[index].condition_rules.forEach((rules) => {
+        rules.forEach((rule) => {
+          let functions = [];
+          if (rule.functions && rule.functions instanceof Array) {
+            functions = rule.functions;
+          }
+          functions.forEach((func) => {
+            const vars = this.getGlobalVarsFromFunction(func);
+            skipIfKeyExist.push(...vars);
+          });
+        });
+      });
       content.questions.push({
         msg: param.msg,
         parse_failed_msg: param.parse_failed_msg,
         condition_rules: [[{
           source: 'global_info',
           functions: [{
-            content: [param.skipIfKeyExist.map(key => ({ key }))],
+            content: [skipIfKeyExist.map(key => ({ key }))],
             function_name: 'not_contain_key',
           }],
         }]],
@@ -633,6 +626,24 @@ export default {
     const hiddenEdges = [hidden1, hidden2, hidden3];
     return hiddenEdges;
   },
+  getGlobalVarsFromParsers(parsers) {
+    const globalVars = [];
+    parsers.forEach((parser) => {
+      parser.condition_rules.forEach((rules) => {
+        rules.forEach((rule) => {
+          let functions = [];
+          if (rule.functions && rule.functions instanceof Array) {
+            functions = rule.functions;
+          }
+          functions.forEach((func) => {
+            const vars = this.getGlobalVarsFromFunction(func);
+            globalVars.push(...vars);
+          });
+        });
+      });
+    });
+    return globalVars;
+  },
   getGlobalVars(edges) {
     const globalVars = [];
     edges.forEach((edge) => {
@@ -710,6 +721,10 @@ export default {
     } else if (funcName === 'assign_value') {
       if (func.content && func.content.key) {
         vars = [func.content.key];
+      }
+    } else if (funcName === 'api_parser') {
+      if (func.skipIfKeyExist) {
+        vars = func.skipIfKeyExist;
       }
     }
     return vars;
