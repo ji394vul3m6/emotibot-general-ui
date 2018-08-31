@@ -60,7 +60,6 @@ function appendTableDataAction(datas) {
 }
 
 function updateMarkedTableData(tableData, markedRecord, marked) {
-  console.log('updateMarkedTableData', { tableData, markedRecord, marked });
   const that = this;
   tableData.forEach((data) => {
     if (markedRecord.indexOf(data.id) !== -1) {

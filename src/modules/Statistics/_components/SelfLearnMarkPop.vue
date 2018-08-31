@@ -95,7 +95,6 @@ export default {
         },
       ],
       tableData: [],
-      // tableData: [],
       recommendQuestion: [],
       noRecommendMsg: [
         this.$t('statistics.recommend_empty_msg_1'),
@@ -120,7 +119,6 @@ export default {
         that.keywordTimer = undefined;
       }
       if (that.keyword === '') {
-        // TODO: tableData 恢復成原本的推薦
         that.tableData = that.recommendQuestion;
         that.updateMarkedIcon(that.markedQuestion);
         that.updateTableEmptyMsg(that.noRecommendMsg);
@@ -182,16 +180,21 @@ export default {
       const that = this;
       that.$api.searchStdQuestion(that.appId, that.keyword)
       .then((stdQuestion) => {
-        console.log({ stdQuestion });
-        // set the questions to tableData;
-        that.tableData = stdQuestion.map(q => ({
-          question: q.content,
-        }));
+        if (stdQuestion) {
+          that.tableData = stdQuestion.map(q => ({
+            question: q.content,
+          }));
+        } else {
+          that.tableData = [];
+        }
         that.updateMarkedIcon(that.markedQuestion);
         that.updateTableEmptyMsg(that.noSearchResultMsg);
       })
       .catch((err) => {
         console.log({ err });
+        that.tableData = [];
+        that.updateMarkedIcon(that.markedQuestion);
+        that.updateTableEmptyMsg(that.noSearchResultMsg);
       })
       .finally(() => {
         that.keywordTimer = undefined;
@@ -216,7 +219,6 @@ export default {
       } else if (markedCount > 0) {  // only one qa
         that.$api.getMarkedQuestion(that.qa[0].id)
         .then((question) => {
-          console.log({ question });
           if (question === '') {
             that.markedQuestion = '';
           } else {
@@ -238,14 +240,11 @@ export default {
     that.markedQuestion = that.value.markedQuestion;
   },
   mounted() {
-    // TODO: get Recommend
     const that = this;
 
     const sentences = that.qa.map(q => q.user_q);
     that.$api.getRecommend(that.appId, sentences)
     .then((recommend) => {
-      console.log({ recommend });
-      // TODO: set recommend question
       if (recommend) {
         that.recommendQuestion = recommend.map(r => ({
           question: r.label,

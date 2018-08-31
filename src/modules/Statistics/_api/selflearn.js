@@ -6,47 +6,14 @@ const REPORT_URL = '/api/v1/stats/reports';
 function getRecords(searchParam, page, limit) {
   let queryUrl = `${RECORD_URL}/query?page=${page}`;
   queryUrl = limit ? `${queryUrl}&limit=${limit}` : queryUrl;
-  console.log({ queryUrl });
-  console.log(this);
   return this.$reqPost(queryUrl, searchParam)
-  .then((response) => {
-    console.log({ response });
-    return response.data;
-  });
-
-  // const mockData = { data: [{ user_id: '4b21158a395311e88a710242ac110003', user_question: '我喜欢吃什么', score: 77, std_q: '我什么吃的都喜欢', answer: '哈哈，原来是个不挑食的人儿，这样更健康。', log_time: '2018-08-22 16:43:21', emotion: '疑惑', qtype: '聊天类' }, { user_id: '4b21158a395311e88a710242ac110003', user_question: '我喜欢吃橘子', score: 85, std_q: '我同学喜欢吃橘子。', answer: '橘子能补充维生素C。', log_time: '2018-08-22 16:43:10', emotion: '喜欢', qtype: '聊天类' }, { user_id: '4b21158a395311e88a710242ac110003', user_question: '我还没有女朋友呢，怎么办\n', score: 100, std_q: '我没有女朋友', answer: '这是种什么生物~我也只听过没见过~', log_time: '2018-08-22 16:42:04', emotion: '疑惑', qtype: '聊天类' }, { user_id: '4b21158a395311e88a710242ac110003', user_question: '睡过了', score: 94, std_q: '睡过了', answer: '是做了什么美梦不愿意醒来吗？', log_time: '2018-08-22 16:39:07', emotion: '中性', qtype: '聊天类' }, { user_id: '4b21158a395311e88a710242ac110003', user_question: '我失恋了', score: 98, std_q: '失恋了', answer: '一切都会过去', log_time: '2018-08-22 16:39:01', emotion: '伤心', qtype: '聊天类' }, { user_id: '4b21158a395311e88a710242ac110003', user_question: '还有郭富城', score: 75, std_q: '郭富城结婚', answer: '方媛爸爸很激动地对郭富城说：“我从小就听你的歌长大的，现在我把女儿交给你，希望你好好对待她”。', log_time: '2018-08-22 16:16:37', emotion: '中性', qtype: '聊天类' }, { user_id: '4b21158a395311e88a710242ac110003', user_question: '我喜欢张学友的歌', score: 90, std_q: '我喜欢唱张学友的歌。', answer: '你比较喜欢哪首呢？', log_time: '2018-08-22 16:16:30', emotion: '喜欢', qtype: '聊天类' }, { user_id: '4b21158a395311e88a710242ac110003', user_question: 'welcome_tag', score: 100, std_q: '', answer: '您好，很高兴为您服务', log_time: '2018-08-22 16:16:27', emotion: '', qtype: '其他类' }, { user_id: '4b21158a395311e88a710242ac110003', user_question: 'welcome_tag', score: 100, std_q: '', answer: '您好，很高兴为您服务', log_time: '2018-08-22 16:09:23', emotion: '', qtype: '其他类' }, { user_id: '4b21158a395311e88a710242ac110003', user_question: 'welcome_tag', score: 100, std_q: '', answer: '您好，很高兴为您服务', log_time: '2018-08-22 16:07:41', emotion: '', qtype: '其他类' }, { user_id: '4b21158a395311e88a710242ac110003', user_question: '办信用卡有什么优惠', score: 100, std_q: '办信用卡有什么优惠', answer: '办信用卡有什么优惠的回答', log_time: '2018-08-22 16:02:41', emotion: '疑惑', qtype: '业务类' }, { user_id: '4b21158a395311e88a710242ac110003', user_question: '有什么优惠', score: 80, std_q: '', answer: '近似问', log_time: '2018-08-22 16:02:37', emotion: '疑惑', qtype: '业务类' }, { user_id: '4b21158a395311e88a710242ac110003', user_question: '怎么办信用卡', score: 99, std_q: '信用卡业务', answer: '信用卡业务的回答', log_time: '2018-08-22 16:02:33', emotion: '疑惑', qtype: '业务类' }, { user_id: '4b21158a395311e88a710242ac110003', user_question: '怎么办信用卡', score: 79, std_q: '', answer: '近似问', log_time: '2018-08-22 16:01:58', emotion: '疑惑', qtype: '业务类' }, { user_id: '4b21158a395311e88a710242ac110003', user_question: '信用卡在哪里办理', score: 100, std_q: '信用卡在哪里办理', answer: '您好，信用卡办理在首页点击活动——热门活动，最下方点击平安车主金融卡，点击立即办卡即可申请。', log_time: '2018-08-22 15:57:48', emotion: '疑惑', qtype: '业务类' }, { user_id: '4b21158a395311e88a710242ac110003', user_question: '有什么优惠', score: 75, std_q: '', answer: '近似问', log_time: '2018-08-22 15:57:03', emotion: '疑惑', qtype: '业务类' }, { user_id: '4b21158a395311e88a710242ac110003', user_question: '怎么办信用卡', score: 79, std_q: '', answer: '近似问', log_time: '2018-08-22 15:56:54', emotion: '疑惑', qtype: '业务类' }, { user_id: '4b21158a395311e88a710242ac110003', user_question: '那他老婆呢', score: 94, std_q: '姚明老婆', answer: '父姚志源，母方凤娣，妻叶莉，女儿姚沁蕾', log_time: '2018-08-22 15:56:40', emotion: '中性', qtype: '聊天类' }, { user_id: '4b21158a395311e88a710242ac110003', user_question: '姚明有多高', score: 75, std_q: '姚明有多高呢？', answer: '他2.26米高呢。', log_time: '2018-08-22 15:56:35', emotion: '中性', qtype: '聊天类' }, { user_id: '4b21158a395311e88a710242ac110003', user_question: '姚明的老婆的先生有多高', score: 75, std_q: '巅峰时期的姚明有多强?', answer: '他最强的时候是球队轴心。', log_time: '2018-08-22 15:56:22', emotion: '中性', qtype: '聊天类' }], limit: 20, page: 1, table_header: [{ text: '用户ID', id: 'user_id' }, { text: '用户问题', id: 'user_question' }, { text: '匹配分数', id: 'score' }, { text: '标准问题', id: 'std_q' }, { text: '机器人回答', id: 'answer' }, { text: '访问时间', id: 'log_time' }, { text: '情感', id: 'emotion' }, { text: '问答类别', id: 'qtype' }], total_size: 202, marked_size: 40, ignored_size: 50, cur_page: page, size: limit };
-
-  // let id = 1;
-  // mockData.data.forEach((d) => {
-  //   d.ignored = false;
-  //   d.marked = false;
-  //   d.id = id;
-  //   id += 1;
-  // });
-  // mockData.data.splice(0, 0, {
-  //   ignored: true,
-  //   marked: true,
-  //   user_id: 'hello',
-  //   user_question: '這是user_question',
-  //   emotion: '中性',
-  //   qtype: '業務',
-  //   std_q: '某個標準問',
-  //   answer: '某個回答',
-  //   log_time: 'time',
-  //   score: 80,
-  //   id: 0,
-  // });
-  // return Promise.resolve(mockData);
+  .then(response => response.data);
 }
 
 function exportRecords(searchParam) {
   const queryUrl = `${RECORD_URL}/download`;
   return this.$reqPost(queryUrl, searchParam)
-  .then((response) => {
-    const data = response.data;
-    console.log({ data });
-    return response.data;
-  });
+  .then(response => response.data);
 }
 
 function setIgnore(records, ignore) {
@@ -55,15 +22,7 @@ function setIgnore(records, ignore) {
     ignore,
     records,
   };
-  console.log(this);
-  return this.$reqPost(url, params).then((response) => {
-    console.log({ response });
-  });
-
-  // const mockData = {
-  //   records: [3, 5, 6, 7],
-  // };
-  // return Promise.resolve(mockData.records);
+  return this.$reqPost(url, params);
 }
 
 function setMark(question, records, mark) {
@@ -74,21 +33,11 @@ function setMark(question, records, mark) {
     records,
   };
   return this.$reqPost(url, params);
-
-  // const mockData = {
-  //   records: [3, 5, 6, 7],
-  // };
-
-  // return Promise.resolve(mockData.records);
 }
 
 function getMarkedQuestion(recordId) {
   const url = `${RECORD_URL}/${recordId}/marked`;
-  console.log({ url });
-  return this.$reqGet(url).then((response) => {
-    console.log(response);
-    return response.data.marked_content;
-  });
+  return this.$reqGet(url).then(response => response.data.marked_content);
 }
 
 function startCluster(params) {
@@ -194,30 +143,22 @@ function pollClusterReport(reportId) {
 }
 
 function getRecommend(appid, questions) {
-  console.log({ appid, questions });
   const url = RECOMMEND_URL;
   const params = {
     appId: appid,
     userInput: JSON.stringify(questions),
     maxTopN: 5,
   };
-  return this.$reqGet(url, { params }).then((response) => {
-    console.log({ response });
-    return response.data.data;
-  });
+  return this.$reqGet(url, { params }).then(response => response.data.data);
 }
 
 function searchStdQuestion(appid, keyword) {
-  console.log({ appid, keyword });
   const url = SEARCH_STD_Q_URL;
   const params = {
     appid,
     keyword,
   };
-  return this.$reqPost(url, params).then((response) => {
-    console.log({ response });
-    return response.data.data;
-  });
+  return this.$reqPost(url, params).then(response => response.data.data);
 }
 
 export default {
