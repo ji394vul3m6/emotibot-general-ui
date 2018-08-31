@@ -215,6 +215,30 @@ export default {
           });
         }
 
+        // push pc_node edges
+        if (nodeBlock.data.paramsCollectingEdgeTab) {
+          nodeBlock.data.paramsCollectingEdgeTab.normalEdges.forEach((edge) => {
+            if (edge.edge_type && edge.edge_type === 'qq') {
+              edge.candidate_edges.forEach((e) => {
+                if (!this.idToNodeBlock[e.to_node_id]) return;
+                edgeList.push({
+                  from_id: nodeBlock.data.nodeId,
+                  to_id: e.to_node_id,
+                  edge_type: edge.edge_type,
+                });
+              });
+            } else {
+              if (!edge.to_node_id) return;
+              if (!this.idToNodeBlock[edge.to_node_id]) return;
+              edgeList.push({
+                from_id: nodeBlock.data.nodeId,
+                to_id: edge.to_node_id,
+                edge_type: edge.edge_type,
+              });
+            }
+          });
+        }
+
         // push restful node edges
         if (nodeBlock.data.restfulEdgeTab) {
           edgeList.push({
