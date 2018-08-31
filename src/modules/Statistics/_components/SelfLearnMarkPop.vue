@@ -118,13 +118,7 @@ export default {
         clearTimeout(that.keywordTimer);
         that.keywordTimer = undefined;
       }
-      if (that.keyword === '') {
-        that.tableData = that.recommendQuestion;
-        that.updateMarkedIcon(that.markedQuestion);
-        that.updateTableEmptyMsg(that.noRecommendMsg);
-      } else {
-        that.keywordTimer = setTimeout(that.searchKeyword, 300);
-      }
+      that.keywordTimer = setTimeout(that.searchKeyword, 300);
     },
   },
   methods: {
@@ -178,27 +172,33 @@ export default {
     },
     searchKeyword() {
       const that = this;
-      that.$api.searchStdQuestion(that.appId, that.keyword)
-      .then((stdQuestion) => {
-        if (stdQuestion) {
-          that.tableData = stdQuestion.map(q => ({
-            question: q.content,
-          }));
-        } else {
+      if (that.keyword === '') {
+        that.tableData = that.recommendQuestion;
+        that.updateMarkedIcon(that.markedQuestion);
+        that.updateTableEmptyMsg(that.noRecommendMsg);
+      } else {
+        that.$api.searchStdQuestion(that.appId, that.keyword)
+        .then((stdQuestion) => {
+          if (stdQuestion) {
+            that.tableData = stdQuestion.map(q => ({
+              question: q.content,
+            }));
+          } else {
+            that.tableData = [];
+          }
+          that.updateMarkedIcon(that.markedQuestion);
+          that.updateTableEmptyMsg(that.noSearchResultMsg);
+        })
+        .catch((err) => {
+          console.log({ err });
           that.tableData = [];
-        }
-        that.updateMarkedIcon(that.markedQuestion);
-        that.updateTableEmptyMsg(that.noSearchResultMsg);
-      })
-      .catch((err) => {
-        console.log({ err });
-        that.tableData = [];
-        that.updateMarkedIcon(that.markedQuestion);
-        that.updateTableEmptyMsg(that.noSearchResultMsg);
-      })
-      .finally(() => {
-        that.keywordTimer = undefined;
-      });
+          that.updateMarkedIcon(that.markedQuestion);
+          that.updateTableEmptyMsg(that.noSearchResultMsg);
+        })
+        .finally(() => {
+          that.keywordTimer = undefined;
+        });
+      }
     },
     validate() {
       const that = this;
