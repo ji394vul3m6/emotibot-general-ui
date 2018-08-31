@@ -221,6 +221,7 @@ export default {
         .then((question) => {
           if (question === '') {
             that.markedQuestion = '';
+            that.$notifyFail(that.$t('statistics.error.not_marked_anymore'));
           } else {
             that.markedQuestion = question;
             that.updateMarkedIcon(that.markedQuestion);
