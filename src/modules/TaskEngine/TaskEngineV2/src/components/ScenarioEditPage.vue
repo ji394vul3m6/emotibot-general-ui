@@ -2,16 +2,18 @@
 <div id="scenario-edit-page" @wheel="onPageWheel()">
   <div class="browse-window" ref="window">
     <div class="canvas-page"
+      id="canvas-page"
       ref="page"
       :style="canvasStyle"
       @drop="nodeOptionDrop($event)"
       @dragover="nodeOptionDragOver($event)">
-      <edges
+      <edges class="edges"
         ref="edges"
         :edges="filteredEdges"
+        :tmpEdge="tmpEdge"
       ></edges>
       <template v-for="(nodeBlock, index) in nodeBlocks">
-        <node-block
+        <node-block class="block"
           :ref="`nodeBlock_${index}`"
           :key="nodeBlock.data.nodeId"
           :x="nodeBlock.x"
@@ -20,11 +22,14 @@
           :initialNode="nodeBlock.data"
           :toNodeOptions="toNodeOptions"
           :globalVarOptionsMap="globalVarOptionsMap"
+          :linking="linking"
           @updatePosition="updateNodePosition(index, $event)"
           @savePosition="saveScenario()"
           @deleteNode="deleteNode(index)"
           @saveNode="saveNode(index, $event)"
-          @copyNode="copyNode(index)">
+          @copyNode="copyNode(index)"
+          @linkingStart="linkingStart(index, $event)"
+          @linkingStop="linkingStop(index)">
         </node-block>
       </template>
     </div>
@@ -163,6 +168,23 @@ export default {
       nodeTypes: [],
       sidePanelTogleIcon: '-',
       showNodeOptions: true,
+      linking: false,
+      canvasOffsetLeft: 0,
+      canvasOffsetTop: 0,
+      tmpEdge: {
+        show: false,
+        x1: 0,
+        y1: 0,
+        x2: 0,
+        y2: 0,
+        style: {
+          stroke: 'grey',
+          strokeWidth: 5,
+          fill: 'none',
+        },
+        source: [],
+      },
+
     };
   },
   computed: {
@@ -367,6 +389,7 @@ export default {
         };
       });
       this.renderGlobalVarOptionsMap();
+      this.renderCanvasOffset();
     },
     renderGlobalVarOptionsMap() {
       this.globalVarOptionsMap = {};
@@ -379,6 +402,11 @@ export default {
           this.globalVarOptionsMap[node.node_id] = vars;
         }
       }));
+    },
+    renderCanvasOffset() {
+      const canvasOffset = document.getElementById('canvas-page').getBoundingClientRect();
+      this.canvasOffsetLeft = canvasOffset.x;
+      this.canvasOffsetTop = canvasOffset.y;
     },
     saveScenario() {
       const uiNodes = this.nodeBlocks.map(nodeBlock => nodeBlock.data);
@@ -612,6 +640,35 @@ export default {
       const nodeType = this.nodeTypes.find(t => t.type === type);
       return nodeType.name;
     },
+    linkingStart(index, slot) {
+      console.log('linkingStart');
+      this.linking = true;
+      const x = slot.x - this.canvasOffsetLeft;
+      const y = slot.y - this.canvasOffsetTop;
+      this.tmpEdge.show = true;
+      this.tmpEdge.x1 = x;
+      this.tmpEdge.y1 = y;
+      this.tmpEdge.x2 = x;
+      this.tmpEdge.y2 = y;
+      this.tmpEdge.source = index;
+    },
+    linkingStop() {
+      this.linking = false;
+      this.tmpEdge.show = false;
+    },
+    onMouseMove(e) {
+      if (!this.linking) {
+        return;
+      }
+      this.tmpEdge.x2 = e.pageX - this.canvasOffsetLeft;
+      this.tmpEdge.y2 = e.pageY - this.canvasOffsetTop;
+    },
+    addListeners() {
+      document.documentElement.addEventListener('mousemove', this.onMouseMove, false);
+    },
+    removeListeners() {
+      document.documentElement.removeEventListener('mousemove', this.onMouseMove, false);
+    },
   },
   beforeMount() {
     this.appId = this.$cookie.get('appid');
@@ -623,6 +680,10 @@ export default {
     this.loadScenario(this.scenarioId);
   },
   mounted() {
+    this.addListeners();
+  },
+  beforeDestroy() {
+    this.removeListeners();
   },
 };
 </script>

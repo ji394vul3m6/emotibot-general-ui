@@ -41,6 +41,18 @@
       <icon icon-type="info_warning" :size=22></icon>
     </div>
   </div>
+  <div class="edge-slot edge-slot-from"
+    id="edgeSlotFrom"
+    ref="edgeSlotFrom"
+    v-if="linking === false || isSrcNode === true"
+    :class="{'is-src-node': isSrcNode}"
+    @mousedown.prevent="srcSlotMouseDown($event)">
+  </div>
+  <div class="edge-slot edge-slot-to"
+    id="edgeSlotTo"
+    v-if="linking === true && isSrcNode === false"
+    @mousedown="">
+  </div>
 </div>
 </template>
 
@@ -85,6 +97,10 @@ export default {
       required: true,
       default: undefined,
     },
+    linking: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -96,6 +112,7 @@ export default {
       hasExitConnection: false,
       warningTooltipValue: {},
       warningMsgMap: {},
+      isSrcNode: false,
     };
   },
   computed: {
@@ -110,18 +127,15 @@ export default {
   },
   methods: {
     onMouseDown(e) {
-      // console.log('onMouseDown');
-      // console.log(e.target);
-      // console.log(e.currentTarget);
-      // console.log(this.$el);
-      // e.target.addEventListener('mousemove', this.onMouseMove);
+      const target = e.target || e.srcElement;
+      if (target.id === 'edgeSlotFrom' || target.id === 'edgeSlotTo') {
+        return;
+      }
       const mouseX = e.pageX;
       const mouseY = e.pageY;
-
       this.lastMouseX = mouseX;
       this.lastMouseY = mouseY;
 
-      const target = e.target || e.srcElement;
       if (this.$el.contains(target) && e.which === 1) {
         this.canMove = true;
         if (e.preventDefault) e.preventDefault();
@@ -151,6 +165,22 @@ export default {
       }
       this.canMove = false;
       this.hasMoved = false;
+      this.isSrcNode = false;
+      this.$emit('linkingStop');
+    },
+    srcSlotMouseDown(e) {
+      console.log('srcSlotMouseDown');
+      this.isSrcNode = true;
+      const edgeSlotFromOffset = this.$refs.edgeSlotFrom.getBoundingClientRect();
+      console.log(e.pageX);
+      console.log(edgeSlotFromOffset.x);
+      console.log(edgeSlotFromOffset);
+      const slot = {
+        x: edgeSlotFromOffset.x + 8,
+        y: edgeSlotFromOffset.y + 8,
+      };
+      this.$emit('linkingStart', slot);
+      if (e.preventDefault) e.preventDefault();
     },
     deleteNode() {
       this.$emit('deleteNode');
@@ -239,6 +269,8 @@ export default {
   flex-direction: column;
   min-width: 230px;
   min-height: 120px;
+  width: 230px;
+  height: 120px;
   background: white;
   position: absolute;
   border: 1px solid $color-borderline;
@@ -289,6 +321,35 @@ export default {
     }
     .exit-icon{
       margin: 0px 0px 0px 3px;
+    }
+  }
+  .edge-slot{
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+  }
+  .edge-slot-from{
+    position: absolute;
+    bottom: -8px;
+    left: 107px;
+    &:hover{
+      border: 2px solid grey;
+      border-radius: 100%;
+    }
+  }
+  .is-src-node {
+    background: grey;
+    border: 2px solid grey;
+    border-radius: 100%;
+  }
+  .edge-slot-to{
+    position: absolute;
+    top: -8px;
+    left: 107px;
+    border: 2px solid grey;
+    border-radius: 100%;
+    &:hover{
+      background: grey;  
     }
   }
 }

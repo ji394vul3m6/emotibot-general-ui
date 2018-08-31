@@ -3,6 +3,9 @@
     <g v-for="p in paths" >
       <path :d="p.data" :style="p.style"></path>
     </g>
+    <g v-if="tmpPath.show === true">
+      <path :d="tmpPath.data" :style="tmpPath.style" style="z-index: 100;"></path>
+    </g>
   </svg>
 </template>
 
@@ -16,12 +19,17 @@ export default {
       type: Array,
       default: [],
     },
+    tmpEdge: {
+      type: Object,
+      default: [],
+    },
   },
   data() {
     return {
       radius: 60,
       halfWidth: 115,
       halfHeight: 60,
+      tmpPath: '',
     };
   },
   computed: {
@@ -32,13 +40,23 @@ export default {
         pathList.push({
           data,
           style: edge.style,
-          outlineStyle: edge.outlineStyle,
         });
       });
       return pathList;
     },
   },
-  watch: {},
+  watch: {
+    tmpEdge: {
+      handler() {
+        this.tmpPath = {
+          show: this.tmpEdge.show,
+          data: this.computeTmpPathData(this.tmpEdge),
+          style: this.tmpEdge.style,
+        };
+      },
+      deep: true,
+    },
+  },
   methods: {
     // p
     // |
@@ -81,6 +99,14 @@ export default {
         qy += this.radius;
       }
       const data = `M ${px} ${py} L ${qx} ${qy} Q ${cx} ${cy}, ${rx} ${ry} L ${sx} ${sy}`;
+      return data;
+    },
+    computeTmpPathData(edge) {
+      const px = edge.x1;
+      const py = edge.y1;
+      const qx = edge.x2;
+      const qy = edge.y2;
+      const data = `M ${px} ${py} L ${qx} ${qy}`;
       return data;
     },
     distance(x1, y1, x2, y2) {
