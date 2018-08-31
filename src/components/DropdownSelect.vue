@@ -2,6 +2,7 @@
   <div class="dropdown-select" :style="styleObj">
     <div class="input-bar" :class="{'is-focus': show}" ref="input" @click="showSelection">
       <div class="input-block">
+        <span v-if="!checkedValues.length" class="placeholder">{{ placeholder }}</span>
         <template v-if="multi">
         <tag class="input-tag" v-for="value in checkedValues" :key="value.value" font-class="font-12">
           {{ value.text }}
@@ -83,6 +84,10 @@ export default {
     showCheckedIcon: {
       type: Boolean,
       default: true,
+    },
+    placeholder: {
+      type: String,
+      default: '',
     },
   },
   computed: {
@@ -223,6 +228,10 @@ $border-color: $color-borderline;
   border: 1px solid $border-color;
   border-radius: 2px;
   @include click-button();
+
+  .placeholder {
+    color: $color-font-disabled;
+  }
 
   &:hover {
     border-color: $color-borderline-hover;
