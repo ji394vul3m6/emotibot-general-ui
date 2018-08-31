@@ -83,14 +83,12 @@ function setMark(question, records, mark) {
 }
 
 function getMarkedQuestion(recordId) {
-  const url = `${RECORD_URL}/${recordId}/mark`;
+  const url = `${RECORD_URL}/${recordId}/marked`;
   console.log({ url });
-  // return this.$reqGet(url).then((response) => {
-  //   console.log(response);
-  //   return response.data.marked_content;
-  // });
-
-  return Promise.resolve('標註的句子ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ');
+  return this.$reqGet(url).then((response) => {
+    console.log(response);
+    return response.data.marked_content;
+  });
 }
 
 function startCluster(params) {
@@ -205,6 +203,7 @@ function getRecommend(appid, questions) {
   };
   return this.$reqGet(url, { params }).then((response) => {
     console.log({ response });
+    return response.data.data;
   });
 }
 
@@ -217,6 +216,7 @@ function searchStdQuestion(appid, keyword) {
   };
   return this.$reqPost(url, params).then((response) => {
     console.log({ response });
+    return response.data.data;
   });
 }
 

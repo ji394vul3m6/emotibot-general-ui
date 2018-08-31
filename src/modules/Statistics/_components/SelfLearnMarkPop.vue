@@ -94,47 +94,9 @@ export default {
           text: this.$t('statistics.recommend_question'),
         },
       ],
-      tableData: [
-        {
-          question: '標註的句子',
-        },
-        {
-          question: '兩句標準問',
-        },
-        {
-          question: '三句標準問',
-        },
-        {
-          question: '四句標準問',
-        },
-        {
-          question: '五句標準問',
-        },
-        {
-          question: '六句標準問',
-        },
-      ],
+      tableData: [],
       // tableData: [],
-      recommendQuestion: [
-        {
-          question: '標註的句子',
-        },
-        {
-          question: '兩句標準問',
-        },
-        {
-          question: '三句標準問',
-        },
-        {
-          question: '四句標準問',
-        },
-        {
-          question: '五句標準問',
-        },
-        {
-          question: '六句標準問',
-        },
-      ],
+      recommendQuestion: [],
       noRecommendMsg: [
         this.$t('statistics.recommend_empty_msg_1'),
         this.$t('statistics.recommend_empty_msg_2'),
@@ -222,6 +184,9 @@ export default {
       .then((stdQuestion) => {
         console.log({ stdQuestion });
         // set the questions to tableData;
+        that.tableData = stdQuestion.map(q => ({
+          question: q.content,
+        }));
         that.updateMarkedIcon(that.markedQuestion);
         that.updateTableEmptyMsg(that.noSearchResultMsg);
       })
@@ -249,7 +214,7 @@ export default {
           that.hasMultiOriginMarks = true;
         }
       } else if (markedCount > 0) {  // only one qa
-        that.$api.getMarkedQuestion(that.qa.record_id)
+        that.$api.getMarkedQuestion(that.qa[0].id)
         .then((question) => {
           console.log({ question });
           if (question === '') {
@@ -260,7 +225,7 @@ export default {
           }
         }).catch((err) => {
           if (err.response.status === 400) {
-            that.$notifyFail('statistics.error.not_marked_anymore');
+            that.$notifyFail(that.$t('statistics.error.not_marked_anymore'));
           }
           that.markedQuestion = '';
         });
@@ -281,9 +246,21 @@ export default {
     .then((recommend) => {
       console.log({ recommend });
       // TODO: set recommend question
+      if (recommend) {
+        that.recommendQuestion = recommend.map(r => ({
+          question: r.label,
+        }));
+      } else {
+        that.recommendQuestion = [];
+      }
+      that.tableData = that.recommendQuestion;
+      that.updateTableEmptyMsg(that.noRecommendMsg);
     })
     .catch((err) => {
       console.log({ err });
+      that.recommendQuestion = [];
+      that.tableData = that.recommendQuestion;
+      that.updateTableEmptyMsg(that.noRecommendMsg);
     })
     .finally(() => {
       that.getOriginMark();
