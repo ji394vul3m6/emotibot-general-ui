@@ -1,4 +1,5 @@
 import AuditLog from './StatisticAudit';
+// import DailyLog from './StatisticDaily';
 import DailyLog from './StatisticDaily';
 import Analysis from './StatisticAnalysisNew';
 // import Learning from './StatisticLearning';

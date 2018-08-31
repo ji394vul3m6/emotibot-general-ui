@@ -131,6 +131,11 @@ $btn-primary-color: $color-white;
 $btn-error-bg-color: $color-error;
 $btn-error-color: $color-white;
 
+@mixin invisibleBorder() {  // use invisible border to keep colored buttons have same width as default button
+  border-width: 0 1px;
+  border-color: rgba(255, 255, 255, 1);
+}
+
 .text-button {
   @include font-12px();
   min-width: $btn-dft-width;
@@ -179,23 +184,23 @@ $btn-error-color: $color-white;
   &.primary {
     @include button-hover-opacity();
     @include button-active-background($btn-primary-bg-color);
+    @include invisibleBorder();
     background: $btn-primary-bg-color;
     color: $btn-primary-color;
-    border: none;
   }
   &.fill {
     @include button-hover-opacity();
     @include button-active-background($btn-fill-bg-color);
+    @include invisibleBorder();
     background: $btn-fill-bg-color;
     color: $btn-fill-color;
-    border: none;
   }
   &.error {
     @include button-hover-opacity();
     @include button-active-background($btn-error-bg-color);
+    @include invisibleBorder();
     background: $btn-error-bg-color;
     color: $btn-error-color;
-    border: none;
   }
   &.custom-width {
     margin: 0;
