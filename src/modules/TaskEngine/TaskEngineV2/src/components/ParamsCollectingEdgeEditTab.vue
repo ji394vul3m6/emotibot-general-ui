@@ -1,57 +1,5 @@
 <template lang="html">
 <div id="params-collecting-edge-edit-tab">
-  <div class="succeed_then_goto block">
-    <div class="condition-row">
-      <div class="label label-bold">
-        {{$t("task_engine_v2.params_collecting_edge_tab.succeed")}}
-      </div>
-      <div class="label label-margin-left">
-        {{$t("task_engine_v2.params_collecting_edge_tab.succeed_description")}}
-      </div>
-      <div class="label label-margin-left">
-        {{$t("task_engine_v2.edge_edit_tab.label_then_goto")}}
-      </div>
-      <dropdown-select
-        class="select select-goto"
-        ref="selectExceedThenGoto"
-        :value="[succeedThenGoto]"
-        @input="succeedThenGoto = $event[0]"
-        :options="satisfiedThenGotoOptions"
-        :showCheckedIcon="false"
-        :showSearchBar="true"
-        width="200px"
-        :inputBarStyle="selectStyle"
-      />
-    </div>
-  </div>
-  <div class="exceed_limit block">
-    <div class="condition-row">
-      <div class="label label-bold">
-        {{$t("task_engine_v2.params_collecting_edge_tab.failed")}}
-      </div>
-      <div class="label label-margin-left">
-        {{$t("task_engine_v2.params_collecting_edge_tab.failed_description")}}
-      </div>
-      <input class="input-limit" v-model="dialogueLimit"></input>
-      <div class="label">
-        {{$t("task_engine_v2.edge_edit_tab.label_time")}}
-      </div>
-      <div class="label label-margin-left">
-        {{$t("task_engine_v2.edge_edit_tab.label_then_goto")}}
-      </div>
-      <dropdown-select
-        class="select select-goto"
-        ref="selectExceedThenGoto"
-        :value="[exceedThenGoto]"
-        @input="exceedThenGoto = $event[0]"
-        :options="satisfiedThenGotoOptions"
-        :showCheckedIcon="false"
-        :showSearchBar="true"
-        width="200px"
-        :inputBarStyle="selectStyle"
-      />
-    </div>
-  </div>
   <draggable v-model="normalEdges" :options="{ghostClass:'ghost'}" @start="drag=true" @end="drag=false">
     <template v-for="(edge, index) in normalEdges">
       <condition-block
@@ -59,6 +7,7 @@
         :key="edge.id"
         :nodeId="nodeId"
         :initialEdge="edge"
+        :initialDialogueLimit="dialogueLimit"
         :toNodeOptions="toNodeOptions"
         :mapTableOptions="mapTableOptions"
         :globalVarOptions="globalVarOptions"
@@ -113,8 +62,6 @@ export default {
       normalEdges: [],
       dialogueLimit: null,
       toNodeOptions: [],
-      exceedThenGoto: null,
-      succeedThenGoto: null,
       satisfiedThenGotoOptions: [],
       selectStyle: {
         height: '36px',
@@ -140,8 +87,6 @@ export default {
       const pcEdgeTab = JSON.parse(JSON.stringify(this.initialPCEdgeTab));
       this.nodeId = pcEdgeTab.nodeId;
       this.nodeType = pcEdgeTab.nodeType;
-      this.exceedThenGoto = pcEdgeTab.exceedThenGoto;
-      this.succeedThenGoto = pcEdgeTab.succeedThenGoto;
       this.dialogueLimit = pcEdgeTab.dialogueLimit;
 
       // add tmp id for edges
@@ -150,14 +95,17 @@ export default {
         return edge;
       });
 
-      // render toNodeOptions, exceedThenGotoOptions
+      // render toNodeOptions
       let options = JSON.parse(JSON.stringify(this.initialToNodeOptions));
       options = options.filter(option => option.value !== this.nodeId);
-      this.satisfiedThenGotoOptions = [{ text: 'Exit (ID: 0)', value: '0' }].concat(options);
-      this.toNodeOptions = [{ text: 'do nothing', value: null }].concat(this.satisfiedThenGotoOptions);
+      this.toNodeOptions = [{ text: 'do nothing', value: null }, { text: 'Exit (ID: 0)', value: '0' }].concat(options);
     },
     updateNormalEdge(index, $event) {
       this.normalEdges[index] = $event;
+      if (this.normalEdges[index].edge_type === 'pc_failed') {
+        this.dialogueLimit = this.normalEdges[index].dialogueLimit;
+        delete this.normalEdges[index].dialogueLimit;
+      }
       this.emitUpdate();
     },
     addEdge() {
@@ -171,18 +119,15 @@ export default {
       this.emitUpdate();
     },
     emitUpdate() {
-      const edgeTab = {
-        succeedThenGoto: this.succeedThenGoto,
+      const pcEdgeTab = {
         dialogueLimit: parseInt(this.dialogueLimit, 10) || null,
-        exceedThenGoto: this.exceedThenGoto || null,
         normalEdges: this.normalEdges.map((edge) => {
           const e = JSON.parse(JSON.stringify(edge));
           delete e.id;
           return e;
         }),
       };
-      // console.log(edgeTab);
-      this.$emit('update', edgeTab);
+      this.$emit('update', pcEdgeTab);
     },
   },
   beforeMount() {

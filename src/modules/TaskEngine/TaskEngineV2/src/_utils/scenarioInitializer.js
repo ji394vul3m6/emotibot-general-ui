@@ -65,9 +65,37 @@ export default {
       },
       paramsCollectingEdgeTab: {
         dialogueLimit: nodeDialogueCntLimit,
-        exceedThenGoto: '0',
-        succeedThenGoto: '0',
-        normalEdges: [],
+        normalEdges: [{
+          edge_type: 'pc_succeed',
+          to_node_id: '0',
+          actions: [{
+            operation: 'set_to_global_info',
+            key: 'sys_node_dialogue_cnt',
+            val: 0,
+          }],
+          condition_rules: [[{
+            source: 'global_info',
+            functions: [{
+              content: [],
+              function_name: 'all_parameters_are_collected',
+            }],
+          }]],
+        }, {
+          edge_type: 'pc_failed',
+          to_node_id: '0',
+          actions: [{
+            operation: 'set_to_global_info',
+            key: 'sys_node_dialogue_cnt',
+            val: 0,
+          }],
+          condition_rules: [[{
+            source: 'global_info',
+            functions: [{
+              content: 'node_counter',
+              function_name: 'counter_check',
+            }],
+          }]],
+        }],
       },
     };
   },

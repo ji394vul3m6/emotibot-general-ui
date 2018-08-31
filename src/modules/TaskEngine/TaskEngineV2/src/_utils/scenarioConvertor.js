@@ -318,13 +318,12 @@ export default {
   },
   parseParamsCollectingEdgeTab(node) {
     const tab = {};
-    tab.succeedThenGoto = node.edges[0].to_node_id;
+    node.edges[0].edge_type = 'pc_succeed';
     tab.dialogueLimit = node.edges[1].actions[0].val;
-    tab.exceedThenGoto = node.edges[2].to_node_id;
+    node.edges[2].edge_type = 'pc_failed';
     tab.normalEdges = [];
-    for (let index = 3; index < node.edges.length; index += 1) {
-      tab.normalEdges.push(node.edges[index]);
-    }
+    node.edges.filter(edge => edge.edge_type !== 'hidden')
+    .forEach(edge => tab.normalEdges.push(edge));
     return tab;
   },
   parseParamsCollectingTab(node) {
@@ -548,15 +547,11 @@ export default {
       edges = [failedEdge, succeedEdge];
     } else if (uiNode.nodeType === 'parameter_collecting') {
       const tab = uiNode.paramsCollectingEdgeTab;
-      const succeedEdge = this.edgePCSucceed(tab.succeedThenGoto);
       const hiddenSetCntLimit = this.edgeHiddenSetNodeDialogueCntLimit(
         tab.dialogueLimit,
       );
-      const exceedThenGoto = this.edgeExceedThenGoTo(tab.exceedThenGoto);
       edges = [
-        succeedEdge,
         hiddenSetCntLimit,
-        exceedThenGoto,
         ...tab.normalEdges,
       ];
     }
@@ -730,16 +725,6 @@ export default {
     });
     return globalEdges;
   },
-  edgePCSucceed(toNode) {
-    return {
-      actions: [this.actionSetNodeDialogueCnt(0)],
-      condition_rules: [[
-        this.conditionPCSucceed(),
-      ]],
-      edge_type: 'pc_succeed',
-      to_node_id: toNode,
-    };
-  },
   edgeRestfulSucceed(toNode) {
     return {
       actions: [this.actionSetNodeDialogueCnt(0)],
@@ -874,17 +859,6 @@ export default {
           function_name: 'not_contain_key',
         },
       ],
-    };
-  },
-  conditionPCSucceed() {
-    return {
-      functions: [
-        {
-          content: [],
-          function_name: 'all_parameters_are_collected',
-        },
-      ],
-      source: 'global_info',
     };
   },
   conditionRestfulSucceed() {

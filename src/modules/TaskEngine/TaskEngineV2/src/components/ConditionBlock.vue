@@ -1,6 +1,6 @@
 <template lang="html">
 <div id="condition-block">
-  <div class="button-delete-condition">
+  <div class="button-delete-condition" v-if="edgeType!=='pc_succeed' && edgeType!=='pc_failed'">
     <icon icon-type="delete" :enableHover="true" :size=24 @click="deleteEdge()"/>
   </div>
   <div class="normal-edge" v-if="edgeType==='normal' || edgeType==='trigger'">
@@ -529,6 +529,60 @@
       </template>
     </div>
   </div>
+  <!---->
+  <div class="succeed_then_goto pc_block" v-if="edgeType==='pc_succeed'">
+    <div class="row">
+      <div class="label label-bold">
+        {{$t("task_engine_v2.params_collecting_edge_tab.succeed")}}
+      </div>
+      <div class="label label-margin-left">
+        {{$t("task_engine_v2.params_collecting_edge_tab.succeed_description")}}
+      </div>
+      <div class="label label-margin-left">
+        {{$t("task_engine_v2.edge_edit_tab.label_then_goto")}}
+      </div>
+      <dropdown-select
+        class="select select-goto"
+        ref="selectExceedThenGoto"
+        :value="[toNode]"
+        @input="toNode = $event[0]"
+        :options="toNodeOptions.filter(option => option.text !== 'do nothing')"
+        :showCheckedIcon="false"
+        :showSearchBar="true"
+        width="200px"
+        :inputBarStyle="selectStyle"
+      />
+    </div>
+  </div>
+  <!---->
+  <div class="exceed_limit pc_block" v-if="edgeType==='pc_failed'">
+    <div class="row">
+      <div class="label label-bold">
+        {{$t("task_engine_v2.params_collecting_edge_tab.failed")}}
+      </div>
+      <div class="label label-margin-left">
+        {{$t("task_engine_v2.params_collecting_edge_tab.failed_description")}}
+      </div>
+      <input class="input-limit" v-model="dialogueLimit"></input>
+      <div class="label">
+        {{$t("task_engine_v2.edge_edit_tab.label_time")}}
+      </div>
+      <div class="label label-margin-left">
+        {{$t("task_engine_v2.edge_edit_tab.label_then_goto")}}
+      </div>
+      <dropdown-select
+        class="select select-goto"
+        ref="selectExceedThenGoto"
+        :value="[toNode]"
+        @input="toNode = $event[0]"
+        :options="toNodeOptions.filter(option => option.text !== 'do nothing')"
+        :showCheckedIcon="false"
+        :showSearchBar="true"
+        width="200px"
+        :inputBarStyle="selectStyle"
+      />
+    </div>
+  </div>
   <datalist id="globalVars">
     <template v-for="(option, index) in globalVarOptions">
       <option :value="option.value">{{option.text}}</option>
@@ -568,6 +622,10 @@ export default {
       type: Array,
       required: true,
     },
+    initialDialogueLimit: {
+      tyep: Number,
+      required: false,
+    },
   },
   data() {
     return {
@@ -588,6 +646,7 @@ export default {
       cuParserOptions: [],
       sourceOptions: [],
       funcOptionMap: [],
+      dialogueLimit: 3,
     };
   },
   computed: {},
@@ -615,10 +674,16 @@ export default {
         this.emitUpdate();
       },
     },
+    dialogueLimit: {
+      handler() {
+        this.emitUpdate();
+      },
+    },
   },
   methods: {
     renderConditionContent() {
       this.edge = JSON.parse(JSON.stringify(this.initialEdge));
+      this.dialogueLimit = this.initialDialogueLimit;
       this.edgeType = this.edge.edge_type || 'normal';
       this.sourceOptions = optionConfig.getSourceOptions(this);
       this.funcOptionMap = optionConfig.getFuncOptionMap(this);
@@ -788,6 +853,43 @@ export default {
           threshold: this.threshold,
           candidate_edges: this.candidateEdges,
         };
+      } else if (this.edgeType === 'pc_succeed') {
+        conditionBlock = {
+          id: this.edge.id,
+          edge_type: 'pc_succeed',
+          to_node_id: this.toNode,
+          actions: [{
+            operation: 'set_to_global_info',
+            key: 'sys_node_dialogue_cnt',
+            val: 0,
+          }],
+          condition_rules: [[{
+            source: 'global_info',
+            functions: [{
+              content: [],
+              function_name: 'all_parameters_are_collected',
+            }],
+          }]],
+        };
+      } else if (this.edgeType === 'pc_failed') {
+        conditionBlock = {
+          id: this.edge.id,
+          edge_type: 'pc_failed',
+          to_node_id: this.toNode,
+          actions: [{
+            operation: 'set_to_global_info',
+            key: 'sys_node_dialogue_cnt',
+            val: 0,
+          }],
+          condition_rules: [[{
+            source: 'global_info',
+            functions: [{
+              content: 'node_counter',
+              function_name: 'counter_check',
+            }],
+          }]],
+          dialogueLimit: this.dialogueLimit,
+        };
       } else {
         conditionBlock = {
           id: this.edge.id,
@@ -848,6 +950,24 @@ export default {
   .rule-block{
     &:not(:first-child){
       margin: 30px 0px 0px 0px;
+    }
+  }
+  .pc_block{
+    .label-bold{
+      font-weight: 600;
+    }
+    .label-margin-left{
+      margin-left: 20px;
+    }
+    .input-limit{
+      height: 36px;
+      margin: 0px 10px 0px 10px;
+      width: 40px;
+    }
+    .select{
+      background: white;
+      margin-left: 20px;
+      border-radius: 5px;
     }
   }
   .row{
