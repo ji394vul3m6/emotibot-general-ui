@@ -20,9 +20,18 @@
             <div class="row-title">{{ $t  ('management.audit.filter_robot') }}</div>
             <div class="row-content">
               <dropdown-select
+                v-if="isNormalUser"
                 v-model="filterRobot"
                 :options="filterRobotOptions"
                 :showCheckedIcon="false"
+                width="300px"
+              />
+
+              <dropdown-cascader
+                v-else
+                v-model="filterRobot"
+                :options="filterRobotOptions"
+                :placeholder="$t('general.please_choose')"
                 width="300px"
               />
             </div>
@@ -103,6 +112,7 @@ import { mapGetters } from 'vuex';
 // import pickerUtil from '@/utils/vue/DatePickerUtil';
 import DatetimePicker from '@/components/DateTimePicker';
 import NavBar from '@/components/NavigationBar';
+import DropdownCascader from '@/components/basic/DropdownCascader';
 import datepickerMixin from './_mixin/datepicker';
 import UserType from './_data/UserType';
 import ModuleMap from './_data/ModuleMap';
@@ -116,6 +126,7 @@ export default {
   components: {
     NavBar,
     DatetimePicker,
+    DropdownCascader,
   },
   mixins: [datepickerMixin],
   data() {
@@ -127,8 +138,71 @@ export default {
 
       expertMode: false,
 
-      filterRobot: [],
-      filterRobotOptions: [],
+      filterRobot: ['hello', 'hello-1'],
+      filterRobotOptions: [
+        {
+          text: '第一層沒選項',
+          value: 'first-no-data',
+        },
+        {
+          text: '第一層',
+          value: 'first-layer',
+          options: [{
+            text: '第二層',
+            value: 'second-layer',
+          }, {
+            text: '第二層很長很長很長很長很長很長很長很長很長',
+            value: 'seconde-layer-longer',
+          }],
+        },
+        {
+          text: '第一層很長很長很長很長很長很長很長很長很長',
+          value: 'first-layer-longer',
+          options: [{
+            text: '第二層-2',
+            value: 'second-layer-2',
+          }, {
+            text: '第二層-2很長很長很長很長很長很長很長很長很長',
+            value: 'seconde-layer-longer2',
+          }],
+        },
+        {
+          text: '哈囉你好嗎',
+          value: 'hello',
+          options: [{
+            text: '哈囉第一個',
+            value: 'hello-1',
+          }, {
+            text: '哈囉第二個',
+            value: 'hello-2',
+          }, {
+            text: '哈囉第三個',
+            value: 'hello-3',
+          }, {
+            text: '哈囉第四個',
+            value: 'hello-4',
+          }, {
+            text: '哈囉第五個很長很長很長很長很長',
+            value: 'hello-5',
+          }],
+        },
+        {
+          text: '再來一組',
+          value: 'onemore',
+          options: [{
+            text: '更多',
+            value: 'more more',
+          }],
+        },
+        {
+          text: '超過scrollbar!!',
+          value: 'scroll!',
+          options: [{
+            text: 'Scrolled?',
+            value: 'scrolled',
+          }],
+        },
+      ],
       filterUserId: '',
       filterModule: [],
       filterModuleOptions: [],
@@ -218,7 +292,6 @@ export default {
     this.setPageOption();
     this.isNormalUser = this.userType === UserType.NORMAL_USER;
     this.initDatetimePicker();
-    this.setFilterOption();
     console.log('privilegeList', this.privilegeList);
     console.log('privilegeMap', this.privilegeMap);
   },
