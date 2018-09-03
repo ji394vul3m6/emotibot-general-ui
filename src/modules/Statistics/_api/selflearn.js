@@ -1,7 +1,7 @@
 const RECOMMEND_URL = '/sherlock/clusterRecommend';
 const SEARCH_STD_Q_URL = '/sq/info';
 const RECORD_URL = '/api/v1/stats/records';
-const REPORT_URL = '/api/v1/stats/reports';
+// const REPORT_URL = '/api/v1/stats/reports';
 
 function getRecords(searchParam, page, limit) {
   let queryUrl = `${RECORD_URL}/query?page=${page}`;
@@ -41,7 +41,7 @@ function getMarkedQuestion(recordId) {
 }
 
 function startCluster(params) {
-  const url = REPORT_URL;
+  // const url = REPORT_URL;
   console.log(params);
   // return this.$reqPost(url, params).then((response) => {
   //   console.log(response);
@@ -52,7 +52,7 @@ function startCluster(params) {
 
 let counter = 0;
 function pollClusterReport(reportId) {
-  const url = `${REPORT_URL}/${reportId}`;
+  // const url = `${REPORT_URL}/${reportId}`;
   // return this.$reqGet(url).then((response) => {
   //   console.log(response);
   // });
