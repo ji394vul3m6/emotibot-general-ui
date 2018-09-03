@@ -48,14 +48,7 @@ export default {
     };
   },
   computed: {},
-  watch: {
-    params: {
-      handler() {
-        this.emitUpdate();
-      },
-      deep: true,
-    },
-  },
+  watch: {},
   methods: {
     emitUpdate() {
       const paramsCollectingTab = {
@@ -65,7 +58,7 @@ export default {
           return p;
         }),
       };
-      // console.log(paramsCollectingTab);
+      // console.log(JSON.stringify(paramsCollectingTab));
       this.$emit('update', paramsCollectingTab);
     },
     renderTabContent() {
@@ -75,6 +68,7 @@ export default {
     },
     updateParam(index, $event) {
       this.params[index] = $event;
+      this.emitUpdate();
     },
     addParam() {
       const param = {};
@@ -84,9 +78,11 @@ export default {
       parser.id = this.$uuid.v1();
       param.parsers.push(parser);
       this.params.push(param);
+      this.emitUpdate();
     },
     deleteParam(index) {
       this.params.splice(index, 1);
+      this.emitUpdate();
     },
   },
   beforeMount() {

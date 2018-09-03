@@ -264,15 +264,7 @@ export default {
       this.parsers[index].skipIfKeyExist = newValue.split(',');
     },
     onSelectTargetEntity(index, newValue) {
-      const funcName = this.parsers[index].funcName;
-      if (funcName === 'common_parser') {
-        this.parsers[index].content.tags = newValue.map(tag => `${tag}_module`).join(',');
-      } else if (funcName === 'task_parser') {
-        this.parsers[index].content.tags = newValue
-          .map(tag => tag.replace(/[\w]([A-Z])/g, m => `${m[0]}_${m[1]}`).toLowerCase()).join(',');
-      } else if (funcName === 'hotel_parser') {
-        this.parsers[index].content.tags = newValue.join(',');
-      }
+      this.parsers[index].content.tags = newValue.join(',');
     },
     onSelectMapTableInput(index, newValue) {
       const newMapTable = newValue[0];
