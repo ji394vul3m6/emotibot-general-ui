@@ -369,7 +369,7 @@ export default {
     if (uiNode.nodeType === 'entry') {
       node.entry_condition_rules = uiNode.triggerTab.rules;
     } else if (uiNode.nodeType === 'dialogue') {
-      node.content = this.componseDialogueContent(uiNode);
+      node.content = this.composeDialogueContent(uiNode);
       node.default_parser_with_suffix = uiNode.settingTab.parseFromThisNode;
       node.node_dialogue_cnt_limit = uiNode.edgeTab.dialogueLimit;
     } else if (uiNode.nodeType === 'nlu_pc') {
@@ -449,7 +449,7 @@ export default {
       reParsers,
     };
   },
-  componseDialogueContent(uiNode) {
+  composeDialogueContent(uiNode) {
     const questions = [];
     if (uiNode.settingTab.parser !== 'none' &&
         uiNode.settingTab.skipIfKeyExist.length > 0) {
@@ -527,9 +527,9 @@ export default {
       const exceedThenGoto = this.edgeExceedThenGoTo(uiNode.edgeTab.exceedThenGoto);
       const elseInto = this.edgeElseInto(uiNode.nodeId, uiNode.edgeTab.elseInto);
       edges = [
+        hiddenSetCntLimit,
         ...hiddenEdges,
         ...uiNode.edgeTab.normalEdges,
-        hiddenSetCntLimit,
         exceedThenGoto,
         elseInto,
       ];
