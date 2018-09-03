@@ -49,6 +49,7 @@ export default {
       nodeId: '',
       globalEdges: [],
       toNodeOptions: [],
+      globalVarOptions: [],
       globalVarOptionsMap: {},
       mapTableOptions: [],
     };
@@ -73,6 +74,10 @@ export default {
 
       // render globalVarOptions
       this.globalVarOptionsMap = JSON.parse(JSON.stringify(this.extData.globalVarOptionsMap));
+      this.globalVarOptions = [];
+      Object.values(this.globalVarOptionsMap).forEach((globalVarOption) => {
+        this.globalVarOptions.push(...globalVarOption);
+      });
     },
     addEdge() {
       const edge = scenarioInitializer.initialEdge();
