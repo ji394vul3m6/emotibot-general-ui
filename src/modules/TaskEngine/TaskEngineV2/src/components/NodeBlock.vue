@@ -172,9 +172,6 @@ export default {
       console.log('srcSlotMouseDown');
       this.isSrcNode = true;
       const edgeSlotFromOffset = this.$refs.edgeSlotFrom.getBoundingClientRect();
-      console.log(e.pageX);
-      console.log(edgeSlotFromOffset.x);
-      console.log(edgeSlotFromOffset);
       const slot = {
         x: edgeSlotFromOffset.x + 8,
         y: edgeSlotFromOffset.y + 8,

@@ -33,6 +33,11 @@
         </node-block>
       </template>
     </div>
+     <div class="addNewEdgeDropdown"
+      ref="addNewEdgeDropdown"
+      v-dropdown="addNewEdgeDropdown()"
+      :style="addNewEdgeDropdownStyle">
+    </div>
   </div>
   <div class="side-panel">
     <!-- <label-switch class="panel-tabs" :options="panelTabOptions" @change=""/> -->
@@ -171,6 +176,7 @@ export default {
       linking: false,
       canvasOffsetLeft: 0,
       canvasOffsetTop: 0,
+      addNewEdgeDropdownStyle: {},
       tmpEdge: {
         show: false,
         x1: 0,
@@ -346,6 +352,22 @@ export default {
   watch: {
   },
   methods: {
+    addNewEdgeDropdown() {
+      const options = [
+        {
+          text: '123',
+          onclick: () => {},
+        },
+        {
+          text: '456',
+          onclick: () => {},
+        },
+      ];
+      return {
+        options,
+        width: '500px',
+      };
+    },
     loadScenario(scenarioId) {
       return taskEngineApi.loadScenario(scenarioId).then((data) => {
         const jsonData = {
@@ -653,21 +675,30 @@ export default {
       this.tmpEdge.source = index;
     },
     linkingStop() {
-      this.linking = false;
-      this.tmpEdge.show = false;
+
     },
     onMouseMove(e) {
-      if (!this.linking) {
-        return;
-      }
+      if (!this.linking) return;
       this.tmpEdge.x2 = e.pageX - this.canvasOffsetLeft;
       this.tmpEdge.y2 = e.pageY - this.canvasOffsetTop;
     },
+    onMouseUp(e) {
+      if (!this.linking) return;
+      this.linking = false;
+      this.tmpEdge.show = false;
+      this.addNewEdgeDropdownStyle = {
+        left: `${e.pageX - this.canvasOffsetLeft}px`,
+        top: `${e.pageY - this.canvasOffsetTop}px`,
+      };
+      this.$refs.addNewEdgeDropdown.click();
+    },
     addListeners() {
       document.documentElement.addEventListener('mousemove', this.onMouseMove, false);
+      document.documentElement.addEventListener('mouseup', this.onMouseUp, false);
     },
     removeListeners() {
       document.documentElement.removeEventListener('mousemove', this.onMouseMove, false);
+      document.documentElement.removeEventListener('mouseup', this.onMouseUp, false);
     },
   },
   beforeMount() {
@@ -706,6 +737,9 @@ export default {
       background: #F1F4F5;
       background-size: 20px 20px;
       background-image: linear-gradient(to right, #DDDDDD 1px, transparent 1px), linear-gradient(to bottom, #DDDDDD 1px, transparent 1px);
+    }
+    .addNewEdgeDropdown{
+      position: absolute;
     }
   }
   .side-panel {
