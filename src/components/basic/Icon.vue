@@ -213,6 +213,7 @@ export default {
   @include iconType("year_right");
   @include iconType("month_left");
   @include iconType("month_right");
+  @include iconType("month_right_white");
 
   // robot icon should a little bit larger than other icons
   .white_robot_icon {
