@@ -192,13 +192,10 @@ export default {
       }
     },
     insertVarDropdown() {
-      const options = this.globalVarOptions.map((option) => {
-        console.log(option);
-        return {
-          text: `${option.text}：${option.value}`,
-          onclick: this.insertVarSelect.bind(this, `$global{${option.value}}`),
-        };
-      });
+      const options = this.globalVarOptions.map(option => ({
+        text: `${option.text}：${option.value}`,
+        onclick: this.insertVarSelect.bind(this, `$global{${option.value}}`),
+      }));
       return {
         options,
         width: '500px',

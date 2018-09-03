@@ -161,6 +161,7 @@ export default {
         title: `${that.node.nodeName}（${that.node.nodeId}）`,
         component: NodeEditPage,
         validate: true,
+        cancelValidate: true,
         extData: {
           node: that.node,
           toNodeOptions: that.toNodeOptions,

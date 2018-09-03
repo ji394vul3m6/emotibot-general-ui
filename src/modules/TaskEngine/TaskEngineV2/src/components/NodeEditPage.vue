@@ -86,6 +86,7 @@
 </template>
 
 <script>
+import general from '@/modules/TaskEngine/_utils/general';
 import mappingtable from '@/modules/TaskEngine/_api/taskEngine_mappingtable';
 import EntityCollectingEditTab from '@/modules/TaskEngine/TaskEngineV3/src/components/EntityCollectingPage';
 import TriggerEditTab from './TriggerEditTab';
@@ -121,6 +122,7 @@ export default {
   data() {
     return {
       currentTab: 'settingTab',
+      originalNodeString: '{}',
       node: {},
       nodeType: undefined,
       toNodeOptions: [],
@@ -168,6 +170,10 @@ export default {
   },
   methods: {
     renderData() {
+      // reserve original node json string
+      const { warnings, ...nodeWithoutWarnings } = this.extData.node;
+      this.originalNodeString = JSON.stringify(nodeWithoutWarnings, general.JSONStringifyReplacer);
+      // parse node
       this.node = JSON.parse(JSON.stringify(this.extData.node));
       this.toNodeOptions = JSON.parse(JSON.stringify(this.extData.toNodeOptions));
       this.globalVarOptions = JSON.parse(JSON.stringify(this.extData.globalVarOptions));
@@ -283,7 +289,7 @@ export default {
       }
       return true;
     },
-    validate() {
+    composeNodeResult() {
       const nodeResult = {
         nodeId: this.node.nodeId,
         nodeName: '',
@@ -307,11 +313,45 @@ export default {
       } else {
         nodeResult.nodeName = this.settingTab.nodeName;
       }
+      return nodeResult;
+    },
+    validate() {
+      const nodeResult = this.composeNodeResult();
       if (this.validResult(nodeResult)) {
         this.$emit(
           'validateSuccess',
           nodeResult,
         );
+      }
+    },
+    cancelValidate() {
+      const nodeResult = this.composeNodeResult();
+      const newNodeString = JSON.stringify(nodeResult, general.JSONStringifyReplacer);
+      // console.log(newNodeString);
+      // console.log(this.originalNodeString);
+      if (newNodeString === this.originalNodeString) {
+        this.$emit('cancelValidateSuccess');
+      } else {
+        const that = this;
+        that.$popCheck({
+          bindValue: true,
+          data: {
+            msg: that.$t('task_engine_v2.node_edit_page.confirm_to_save_changes'),
+          },
+          callback: {
+            ok() {
+              if (that.validResult(nodeResult)) {
+                that.$emit(
+                  'validateSuccess',
+                  nodeResult,
+                );
+              }
+            },
+            cancel() {
+              that.$emit('cancelValidateSuccess');
+            },
+          },
+        });
       }
     },
   },
@@ -321,6 +361,7 @@ export default {
   },
   mounted() {
     this.$on('validate', this.validate);
+    this.$on('cancelValidate', this.cancelValidate);
   },
 };
 </script>

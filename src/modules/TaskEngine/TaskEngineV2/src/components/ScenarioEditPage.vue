@@ -321,7 +321,7 @@ export default {
         this.updateWindowModuleData();
         this.renderData();
       }, (err) => {
-        general.popErrorWindow(this, 'loadScenario error', err.message);
+        this.$popError('loadScenario error', err.message);
       });
     },
     updateWindowModuleData() {
@@ -402,14 +402,7 @@ export default {
           },
         };
       });
-      const replacer = function x(key, value) {
-        return ((value instanceof Object) && !(value instanceof Array)) ?
-          Object.keys(value).sort().reduce((sorted, k) => {
-            sorted[k] = value[k];
-            return sorted;
-          }, {}) : value;
-      };
-      console.log(JSON.stringify(data, replacer));
+      console.log(JSON.stringify(data, general.JSONStringifyReplacer));
       return taskEngineApi.saveScenario(
         this.appId,
         this.scenarioId,

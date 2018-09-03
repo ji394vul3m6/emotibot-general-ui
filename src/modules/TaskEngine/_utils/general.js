@@ -35,4 +35,11 @@ export default {
     const PAGE_PATH = '/task-engine-scenario-v3';
     return `${PAGE_PATH}/${childPath}`;
   },
+  JSONStringifyReplacer(key, value) {
+    return ((value instanceof Object) && !(value instanceof Array)) ?
+      Object.keys(value).sort().reduce((sorted, k) => {
+        sorted[k] = value[k];
+        return sorted;
+      }, {}) : value;
+  },
 };

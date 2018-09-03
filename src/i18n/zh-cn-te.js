@@ -52,6 +52,7 @@ export default {
         edge: '连线',
         params_collecting: '参数设置',
       },
+      confirm_to_save_changes: '节点内容已被更动，请问是否需要保存？',
     },
     scenario_settings_edit_pop: {
       scenario_name: '场景名称',
