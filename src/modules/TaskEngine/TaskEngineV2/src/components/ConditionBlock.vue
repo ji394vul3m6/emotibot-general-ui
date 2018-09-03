@@ -107,6 +107,7 @@
             </div>
             <dropdown-select
               class="select select-target-entity"
+              :key="rule.funcName"
               :ref="`selectTargetEntity_${index}`"
               :multi="true"
               :value="rule.content.tags.split(',')"
@@ -127,6 +128,7 @@
             </div>
             <dropdown-select
               class="select"
+              :key="rule.funcName"
               :ref="`selectMapTable_${index}`"
               :value="[rule.content.trans]"
               @input="onSelectMapTableInput(index, $event)"
@@ -170,6 +172,7 @@
             </div>
             <dropdown-select
               class="select"
+              :key="rule.funcName"
               :value="[rule.content[0].compare]"
               @input="rule.content[0].compare = $event[0]"
               :options="keyValMatchCompareOptions"
@@ -203,6 +206,7 @@
             </div>
             <dropdown-select
               class="select"
+              :key="rule.funcName"
               :value="[rule.content[0].compare]"
               @input="rule.content[0].compare = $event[0]"
               :options="keyKeyMatchCompareOptions"
@@ -235,6 +239,7 @@
               {{$t("task_engine_v2.condition_block.label_content")}}
             </div>
             <input class="input-content" list="globalVars" v-model="rule.content[0].key"
+              :key="rule.funcName"
               onmouseover="old=value;" 
               onmousedown="value='';" 
               onmouseup="value=old;">
@@ -248,6 +253,7 @@
               {{$t("task_engine_v2.condition_block.label_content")}}
             </div>
             <input class="input-content" list="globalVars" v-model="rule.content[0].key"
+              :key="rule.funcName"
               onmouseover="old=value;" 
               onmousedown="value='';" 
               onmouseup="value=old;">
@@ -262,6 +268,7 @@
             </div>
             <dropdown-select
               class="select"
+              :key="rule.funcName"
               :value="[rule.content[0].compare]"
               @input="rule.content[0].compare = $event[0]"
               :options="listLengthMatchCompareOptions"
@@ -298,6 +305,7 @@
             </div>
             <dropdown-select
               class="select"
+              :key="rule.funcName"
               :value="[rule.content]"
               @input="rule.content = $event[0]"
               :options="counterCheckOptions"
@@ -418,6 +426,7 @@
             </div>
             <dropdown-select
               class="select"
+              :key="rule.funcName"
               :value="[rule.content]"
               @input="rule.content = $event[0]"
               :options="cuParserOptions"

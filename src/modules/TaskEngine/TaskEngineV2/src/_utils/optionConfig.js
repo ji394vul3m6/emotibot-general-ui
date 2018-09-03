@@ -232,42 +232,6 @@ export default {
         text: 'Intent',
         value: 'Intent',
       },
-      {
-        text: 'Intent_Rewrite',
-        value: 'Intent_Rewrite',
-      },
-      {
-        text: 'SentenceType',
-        value: 'SentenceType',
-      },
-      {
-        text: 'UserID',
-        value: 'UserID',
-      },
-      {
-        text: 'SpeechAct',
-        value: 'SpeechAct',
-      },
-      {
-        text: 'personStandard',
-        value: 'personStandard',
-      },
-      {
-        text: 'polarity',
-        value: 'polarity',
-      },
-      {
-        text: 'NE',
-        value: 'NE',
-      },
-      {
-        text: 'NE_MT',
-        value: 'NE_MT',
-      },
-      {
-        text: 'memory',
-        value: 'memory',
-      },
     ];
   },
 };
