@@ -64,7 +64,7 @@
         :initialToNodeOptions="toNodeOptions"
         :globalVarOptions="globalVarOptions"
         :mapTableOptions="mapTableOptions"
-        @update="edgeTab = $event"
+        @update="edgeTab = $event; collectGlobalVarOptions()"
       ></edge-edit-tab>
       <restful-setting-edit-tab ref="restfulSettingTab"
         v-if="currentTab === 'restfulSettingTab'"
@@ -99,6 +99,7 @@ import SettingBasicEditTab from './SettingBasicEditTab';
 import RestfulSettingEditTab from './RestfulSettingEditTab';
 import RestfulEdgeEditTab from './RestfulEdgeEditTab';
 import optionConfig from '../_utils/optionConfig';
+import scenarioConvertor from '../_utils/scenarioConvertor';
 
 export default {
   name: 'node-edit-page',
@@ -127,6 +128,7 @@ export default {
       nodeType: undefined,
       toNodeOptions: [],
       globalVarOptions: [],
+      globalVarOptionsMap: {},
       mapTableOptions: [],
       allTabs: this.getAllTabs(),
       initialTriggerTab: {},
@@ -167,6 +169,51 @@ export default {
         };
       }
     },
+    triggerTab: {
+      handler() {
+        this.collectGlobalVarOptions();
+      },
+    },
+    settingTab: {
+      handler() {
+        this.collectGlobalVarOptions();
+      },
+    },
+    settingBasicTab: {
+      handler() {
+        this.collectGlobalVarOptions();
+      },
+    },
+    entityCollectingTab: {
+      handler() {
+        this.collectGlobalVarOptions();
+      },
+    },
+    paramsCollectingTab: {
+      handler() {
+        this.collectGlobalVarOptions();
+      },
+    },
+    paramsCollectingEdgeTab: {
+      handler() {
+        this.collectGlobalVarOptions();
+      },
+    },
+    edgeTab: {
+      handler() {
+        this.collectGlobalVarOptions();
+      },
+    },
+    restfulSettingTab: {
+      handler() {
+        this.collectGlobalVarOptions();
+      },
+    },
+    restfulEdgeTab: {
+      handler() {
+        this.collectGlobalVarOptions();
+      },
+    },
   },
   methods: {
     renderData() {
@@ -176,7 +223,7 @@ export default {
       // parse node
       this.node = JSON.parse(JSON.stringify(this.extData.node));
       this.toNodeOptions = JSON.parse(JSON.stringify(this.extData.toNodeOptions));
-      this.globalVarOptions = JSON.parse(JSON.stringify(this.extData.globalVarOptions));
+      this.globalVarOptionsMap = JSON.parse(JSON.stringify(this.extData.globalVarOptionsMap));
       this.nodeType = this.node.nodeType;
       // render tab data
       let tabs = [];
@@ -215,6 +262,25 @@ export default {
         } else if (tab === 'restfulEdgeTab') {
           this.restfulEdgeTab = this.node.restfulEdgeTab;
         }
+      });
+    },
+    collectGlobalVarOptions() {
+      const nodeResult = this.composeNodeResult();
+      const dummySetting = { // only want to get global vars so use dummy setting
+        scenarioName: '',
+        scenarioDialogueCntLimit: 0,
+        nodeDialogueCntLimit: 0,
+      };
+      const edges = scenarioConvertor.convertUiNodeToEdges(nodeResult, dummySetting);
+      const nodeVars = [...new Set(scenarioConvertor.getGlobalVars(edges))];
+      const nodeVarsOptions = nodeVars.map(v => ({
+        text: nodeResult.nodeName,
+        value: v,
+      }));
+      this.globalVarOptionsMap[nodeResult.nodeId] = nodeVarsOptions;
+      this.globalVarOptions = [];
+      Object.values(this.globalVarOptionsMap).forEach((globalVarOption) => {
+        this.globalVarOptions.push(...globalVarOption);
       });
     },
     changeTab(tab) {
@@ -358,6 +424,7 @@ export default {
   beforeMount() {
     this.loadMappingTableOptions();
     this.renderData();
+    this.collectGlobalVarOptions();
   },
   mounted() {
     this.$on('validate', this.validate);

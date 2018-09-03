@@ -19,7 +19,7 @@
           :nodeTypeName="getNodeTypeName(nodeBlock.data.nodeType)"
           :initialNode="nodeBlock.data"
           :toNodeOptions="toNodeOptions"
-          :globalVarOptions="globalVarOptions"
+          :globalVarOptionsMap="globalVarOptionsMap"
           @updatePosition="updateNodePosition(index, $event)"
           @savePosition="saveScenario()"
           @deleteNode="deleteNode(index)"
@@ -350,17 +350,17 @@ export default {
           data: node,
         };
       });
-      this.renderGlobalVarOptions();
+      this.renderGlobalVarOptionsMap();
     },
-    renderGlobalVarOptions() {
-      this.globalVarOptions = [];
+    renderGlobalVarOptionsMap() {
+      this.globalVarOptionsMap = {};
       this.moduleData.nodes.forEach(((node) => {
         if (node.global_vars) {
           const vars = node.global_vars.map(v => ({
             text: node.description,
             value: v,
           }));
-          this.globalVarOptions.push(...vars);
+          this.globalVarOptionsMap[node.node_id] = vars;
         }
       }));
     },
@@ -524,7 +524,7 @@ export default {
         extData: {
           globalEdges: this.globalEdges,
           toNodeOptions: this.toNodeOptions,
-          globalVarOptions: this.globalVarOptions,
+          globalVarOptionsMap: this.globalVarOptionsMap,
         },
         callback: {
           ok: (edges) => {

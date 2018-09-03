@@ -80,8 +80,8 @@ export default {
       required: true,
       default: undefined,
     },
-    globalVarOptions: {
-      type: Array,
+    globalVarOptionsMap: {
+      type: Object,
       required: true,
       default: undefined,
     },
@@ -165,7 +165,7 @@ export default {
         extData: {
           node: that.node,
           toNodeOptions: that.toNodeOptions,
-          globalVarOptions: that.globalVarOptions,
+          globalVarOptionsMap: that.globalVarOptionsMap,
         },
         callback: {
           ok: (nodeResult) => {
