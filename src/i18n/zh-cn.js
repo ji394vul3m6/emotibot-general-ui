@@ -859,6 +859,7 @@ export default {
     robot_list: '机器人列表',
     no_data: '暂无数据',
     no_search_data: '暂无搜寻结果',
+    no_option: '无选项',
     reset: '重置',
     chat_test: '对话测试',
     custom: '自订',
@@ -903,6 +904,7 @@ export default {
     modify: '修改',
     save_change: '储存变更',
     go_back: '返回',
+    please_choose: '请选择',
   },
   dimension: {
     categories: {
