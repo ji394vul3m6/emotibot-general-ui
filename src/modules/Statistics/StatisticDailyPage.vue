@@ -109,14 +109,14 @@
         :button-type="totalCount > 0 && hasCheckedDataRow ? 'primary' : 'disable'"
         @click="popSelfLearnMark(checkedDataRow)">
         {{ $t('statistics.mark.batch_mark') }}</text-button>
-      <!-- <div id="clusterBtn" ref="clusterBtn" :class="{'disabled': totalCount <= 0}" v-dropdown="clusterDropdown">
+      <div id="clusterBtn" ref="clusterBtn" :class="{'disabled': totalCount <= 0}" v-dropdown="clusterDropdown">
         <text-button  
           icon-type="header_dropdown_white" :icon-size="8" icon-align="right"
           :button-type="totalCount > 0 ? 'primary' : 'disable'"
           >
           {{ $t('statistics.cluster.title') }}</text-button>
       </div>
-      <icon iconType="info" :size="16" v-tooltip="clusterTooltip" enableHover></icon> -->
+      <icon iconType="info" :size="16" v-tooltip="clusterTooltip" enableHover></icon>
       <div v-if="totalCount > 0" class="total-show">
         {{ $t('statistics.total_records', {num: totalCount, count: checkedDataRowCount }) }}
       </div>
@@ -286,10 +286,10 @@ export default {
     };
   },
   watch: {
-    // checkedDataRow() {
-    //   const that = this;
-    //   that.reloadClusterDropdown();
-    // },
+    checkedDataRow() {
+      const that = this;
+      that.reloadClusterDropdown();
+    },
   },
   methods: {
     ...mapMutations([
@@ -513,7 +513,7 @@ export default {
         that.markedCount = res.marked_size;
         that.ignoredCount = res.ignored_size;
         that.checkedDataRow = []; // clear all checked
-        // that.reloadClusterDropdown();
+        that.reloadClusterDropdown();
         that.$emit('endLoading');
         that.showTable = true;
       })
@@ -587,8 +587,6 @@ export default {
       this.startDisableDate = {
         from: this.end.dateObj,
       };
-    },
-    setLabelSwitch() {
     },
   },
   computed: {

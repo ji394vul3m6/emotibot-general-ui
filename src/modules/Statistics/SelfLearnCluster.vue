@@ -301,7 +301,7 @@ export default {
     },
     setUpClusterReport() {
       const that = this;
-      that.totalCount = that.clusterReport.total_size;
+      that.totalCount = that.clusterReport.results.total_size;
       that.ingoredCount = that.clusterReport.ignored_size;
       that.markedCount = that.clusterReport.marked_size;
       that.report = that.clusterReport.results;

@@ -1,7 +1,7 @@
 const RECOMMEND_URL = '/sherlock/clusterRecommend';
 const SEARCH_STD_Q_URL = '/sq/info';
 const RECORD_URL = '/api/v1/stats/records';
-// const REPORT_URL = '/api/v1/stats/reports';
+const REPORT_URL = '/api/v1/clustering/reports';
 
 function getRecords(searchParam, page, limit) {
   let queryUrl = `${RECORD_URL}/query?page=${page}`;
@@ -41,8 +41,8 @@ function getMarkedQuestion(recordId) {
 }
 
 function startCluster(params) {
-  // const url = REPORT_URL;
-  console.log(params);
+  const url = REPORT_URL;
+  console.log({ url, params });
   // return this.$reqPost(url, params).then((response) => {
   //   console.log(response);
   //   return response.data.report_id;
