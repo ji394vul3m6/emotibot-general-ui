@@ -343,4 +343,11 @@ export default {
       },
     };
   },
+  initialVarTemplate() {
+    return {
+      key: '',
+      msg: '$global{}',
+      type: 'string',
+    };
+  },
 };

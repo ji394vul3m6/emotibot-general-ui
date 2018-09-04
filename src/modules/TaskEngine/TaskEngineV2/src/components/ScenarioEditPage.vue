@@ -66,6 +66,19 @@
       </transition>
     </div>
     <div class="button-block"
+      @mouseover="showTopPanelButtonLabel.varTemplate=true"
+      @mouseleave="showTopPanelButtonLabel.varTemplate=false"
+      @click="editVarTemplate()">
+      <icon class="icon-panel" icon-type="knowledge_base" :enableHover="false" :size=18 @click=""/>
+      <transition name="label">
+        <div
+          v-if="showTopPanelButtonLabel.varTemplate"
+          class="label-button-block">
+          {{$t("task_engine_v2.scenario_edit_page.global_var_template")}}
+        </div>
+      </transition>
+    </div>
+    <div class="button-block"
       @mouseover="showTopPanelButtonLabel.globalEdge=true"
       @mouseleave="showTopPanelButtonLabel.globalEdge=false"
       @click="editGlobalEdge()">
@@ -114,6 +127,7 @@ import general from '@/modules/TaskEngine/_utils/general';
 import NodeBlock from './NodeBlock';
 import Edges from './Edges';
 import GlobalEdgeEditPop from './GlobalEdgeEditPop';
+import VarTemplateEditPop from './VarTemplateEditPop';
 import ScenarioSettingsEditPop from './ScenarioSettingsEditPop';
 import scenarioConvertor from '../_utils/scenarioConvertor';
 import scenarioInitializer from '../_utils/scenarioInitializer';
@@ -131,7 +145,7 @@ export default {
       moduleDataLayout: {},
       setting: {},
       globalEdges: [],
-      globalVars: [],
+      varTemplates: [],
       nodeBlocks: [],
       edges: [],
       panelTabOptions: [],
@@ -141,6 +155,7 @@ export default {
       rainbowColors: [],
       showTopPanelButtonLabel: {
         setting: false,
+        varTemplate: false,
         globalEdge: false,
         export: false,
         publish: false,
@@ -331,6 +346,7 @@ export default {
     renderData() {
       this.scenarioName = this.moduleData.metadata.scenario_name;
       this.globalEdges = this.moduleData.global_edges;
+      this.varTemplates = this.moduleData.msg_confirm;
       this.setting = {
         scenarioName: this.moduleData.metadata.scenario_name,
         scenarioDialogueCntLimit: this.moduleData.setting.sys_scenario_dialogue_cnt_limit,
@@ -385,7 +401,7 @@ export default {
           sys_node_dialogue_cnt_limit: this.setting.nodeDialogueCntLimit,
         },
         global_edges: this.globalEdges,
-        msg_confirm: this.moduleData.msg_confirm,
+        msg_confirm: this.varTemplates,
         nodes,
         ui_data: {
           nodes: uiNodes,
@@ -510,6 +526,24 @@ export default {
         callback: {
           ok: (setting) => {
             this.setting = setting;
+            this.saveScenario();
+          },
+        },
+      });
+    },
+    editVarTemplate() {
+      const that = this;
+      that.$pop({
+        title: '',
+        component: VarTemplateEditPop,
+        validate: true,
+        extData: {
+          varTemplates: this.varTemplates,
+          globalVarOptionsMap: this.globalVarOptionsMap,
+        },
+        callback: {
+          ok: (varTemplates) => {
+            this.varTemplates = varTemplates;
             this.saveScenario();
           },
         },
@@ -701,7 +735,7 @@ export default {
     position: absolute;
     left: 20px;
     top: 20px;
-    width: 400px;
+    width: 450px;
     height: 66px;
     background: white;
     padding: 0px 16px 0px 32px;

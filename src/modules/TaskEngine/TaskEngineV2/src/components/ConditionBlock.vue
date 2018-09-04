@@ -949,7 +949,9 @@ export default {
   padding: 20px 20px 20px 20px;
   border: 1px solid $color-borderline;
   border-radius: 5px;
-  margin: 0px 0px 20px 0px;
+  &:not(:last-child){
+    margin: 0px 0px 20px 0px;
+  }
   cursor: move;
   .button-delete-condition{
     position: absolute;

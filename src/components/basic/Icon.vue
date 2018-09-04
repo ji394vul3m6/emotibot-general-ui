@@ -172,6 +172,7 @@ export default {
   @include iconType("save");
   @include iconType("canlendar");
   @include iconType("warning");
+  @include iconType("knowledge_base");
 
   /** used on robot profile icon */
   @include iconType("profile_question");

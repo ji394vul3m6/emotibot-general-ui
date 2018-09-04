@@ -183,7 +183,7 @@ import scenarioInitializer from '../_utils/scenarioInitializer';
 import optionConfig from '../_utils/optionConfig';
 
 export default {
-  name: 'condition-block',
+  name: 'params-collecting-block',
   components: {
     'dropdown-select': DropdownSelect,
   },

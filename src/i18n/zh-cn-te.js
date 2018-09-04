@@ -38,7 +38,7 @@ export default {
       },
       ask_delete_node_confirm: '确认要删除节点：{node}',
       setting: '设置',
-      global_confirm_msg: '系统变量模版',
+      global_var_template: '变量模版',
       global_edge: '通用连线',
       export: '导出',
       publish: '发布',
@@ -58,6 +58,12 @@ export default {
       scenario_name: '场景名称',
       scenario_dialogue_cnt_limit: '全场景对话数',
       default_node_dialogue_cnt_limit: '预设节点对话数',
+    },
+    var_template_edit_pop: {
+      instruction: '为每个变量设定显示模版',
+      label_key: '键',
+      label_template: '模版',
+      button_add_template: '＋增加模版',
     },
     global_edge_edit_pop: {
       instruction: '为每个节点增加通用的连线',

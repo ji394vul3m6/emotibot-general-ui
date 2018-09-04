@@ -275,7 +275,7 @@ export default {
     color: white;
     font-size: 18px;
     font-weight: 600;
-    margin: 0px 0px 10px 0px;
+    margin: 20px 0px 10px 0px;
     cursor: pointer;
     &:hover{
       transition: background-color 0.5s ease;

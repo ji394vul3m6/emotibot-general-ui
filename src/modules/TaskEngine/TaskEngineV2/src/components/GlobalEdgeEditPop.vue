@@ -3,21 +3,23 @@
   <div class="instruction block">
     {{$t("task_engine_v2.global_edge_edit_pop.instruction")}}
   </div>
-  <draggable v-model="globalEdges" :options="{ghostClass:'ghost'}" @start="drag=true" @end="drag=false">
-    <template v-for="(edge, index) in globalEdges">
-      <condition-block
-        class="condition-block"
-        :key="edge.id"
-        :nodeId="nodeId"
-        :initialEdge="edge"
-        :toNodeOptions="toNodeOptions"
-        :globalVarOptions="globalVarOptions"
-        :mapTableOptions="mapTableOptions"
-        @update="updateEdge(index, $event)"
-        @deleteEdge="deleteEdge(index)">
-      </condition-block>
-    </template>
-  </draggable>
+  <div class="block-list-container">
+    <draggable v-model="globalEdges" :options="{ghostClass:'ghost'}" @start="drag=true" @end="drag=false">
+      <template v-for="(edge, index) in globalEdges">
+        <condition-block
+          class="condition-block"
+          :key="edge.id"
+          :nodeId="nodeId"
+          :initialEdge="edge"
+          :toNodeOptions="toNodeOptions"
+          :globalVarOptions="globalVarOptions"
+          :mapTableOptions="mapTableOptions"
+          @update="updateEdge(index, $event)"
+          @deleteEdge="deleteEdge(index)">
+        </condition-block>
+      </template>
+    </draggable>
+  </div>
   <button
     class="button-add-edge"
     @click="addEdge()">
@@ -50,7 +52,6 @@ export default {
       globalEdges: [],
       toNodeOptions: [],
       globalVarOptions: [],
-      globalVarOptionsMap: {},
       mapTableOptions: [],
     };
   },
@@ -73,9 +74,9 @@ export default {
       ].concat(options);
 
       // render globalVarOptions
-      this.globalVarOptionsMap = JSON.parse(JSON.stringify(this.extData.globalVarOptionsMap));
+      const globalVarOptionsMap = JSON.parse(JSON.stringify(this.extData.globalVarOptionsMap));
       this.globalVarOptions = [];
-      Object.values(this.globalVarOptionsMap).forEach((globalVarOption) => {
+      Object.values(globalVarOptionsMap).forEach((globalVarOption) => {
         this.globalVarOptions.push(...globalVarOption);
       });
     },
@@ -134,7 +135,7 @@ export default {
   height: 70vh;
   display: flex;
   flex-direction: column;
-  padding: 25px 25px 25px 25px;
+  padding: 25px 25px 0px 25px;
   .instruction{
     height: 60px;
     flex: 0 0 60px;
@@ -163,6 +164,13 @@ export default {
       transition: background-color 0.5s ease;
       background: lighten(#46BE8A, 10%);
     }
+  }
+  .block-list-container{
+    display: flex;
+    flex-direction: column;
+    margin: 0px 0px 20px 0px;
+    @include auto-overflow();
+    @include customScrollbar();
   }
 }
 </style>
