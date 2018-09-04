@@ -201,7 +201,7 @@ export default {
     emitUpdate() {
       const edgeTab = {
         dialogueLimit: parseInt(this.dialogueLimit, 10) || null,
-        exceedThenGoto: this.exceedThenGoto || null,
+        exceedThenGoto: this.exceedThenGoto,
         elseInto: this.elseInto || null,
         normalEdges: this.normalEdges.map((edge) => {
           const e = JSON.parse(JSON.stringify(edge));

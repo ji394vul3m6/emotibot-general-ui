@@ -393,8 +393,8 @@ export default {
     cancelValidate() {
       const nodeResult = this.composeNodeResult();
       const newNodeString = JSON.stringify(nodeResult, general.JSONStringifyReplacer);
-      // console.log(newNodeString);
-      // console.log(this.originalNodeString);
+      // console.log(`New Str: ${newNodeString}`);
+      // console.log(`Old Str: ${this.originalNodeString}`);
       if (newNodeString === this.originalNodeString) {
         this.$emit('cancelValidateSuccess');
       } else {

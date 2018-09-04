@@ -91,9 +91,31 @@ export default {
       paramsCollectingEdgeTab: tabData.paramsCollectingEdgeTab,
     };
   },
+  removeActionsAndContentTextArray(normalEdges) {
+    return normalEdges.map((edge) => {
+      if (edge.edge_type === 'normal') { // remove unneeded content_text_array and actions
+        edge.actions = [];
+        edge.condition_rules.forEach((condition) => {
+          condition.forEach((ifCase) => {
+            ifCase.functions.forEach((fun) => {
+              delete fun.content_text_array;
+            });
+          });
+        });
+      }
+      return edge;
+    });
+  },
   parseTriggerTab(node) {
     if (!node.entry_condition_rules) return undefined;
     const rules = node.entry_condition_rules;
+    rules.forEach((condition) => {
+      condition.forEach((ifCase) => {
+        ifCase.functions.forEach((fun) => {
+          delete fun.content_text_array;
+        });
+      });
+    });
     return {
       rules,
     };
@@ -167,6 +189,7 @@ export default {
     // render edges, normalEdges
     const edges = node.edges || [];
     tab.normalEdges = edges.filter(edge => edge.edge_type === 'normal' || edge.edge_type === 'qq');
+    tab.normalEdges = this.removeActionsAndContentTextArray(tab.normalEdges);
 
     // render exceedThenGoto
     if (nodeType !== 'entry') {
@@ -263,6 +286,7 @@ export default {
           });
         });
         tab.normalEdges.push(edge);
+        tab.normalEdges = this.removeActionsAndContentTextArray(tab.normalEdges);
       }
     }
     return tab;
@@ -321,9 +345,8 @@ export default {
     node.edges[0].edge_type = 'pc_succeed';
     tab.dialogueLimit = node.edges[1].actions[0].val;
     node.edges[2].edge_type = 'pc_failed';
-    tab.normalEdges = [];
-    node.edges.filter(edge => edge.edge_type !== 'hidden')
-    .forEach(edge => tab.normalEdges.push(edge));
+    tab.normalEdges = node.edges.filter(edge => edge.edge_type !== 'hidden');
+    tab.normalEdges = this.removeActionsAndContentTextArray(tab.normalEdges);
     return tab;
   },
   parseParamsCollectingTab(node) {
