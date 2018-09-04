@@ -112,6 +112,11 @@ export default {
       detectClickListener: undefined,
     };
   },
+  watch: {
+    options(options) {
+      this.initOptions(options);
+    },
+  },
   methods: {
     removeOption(opt) {
       opt.checked = false;
@@ -203,12 +208,12 @@ export default {
           hovered: false,
         });
       });
+      that.checkedValues = this.localOptions.filter(opt => opt.checked);
     },
   },
   mounted() {
     const that = this;
     that.initOptions(that.options);
-    that.checkedValues = this.localOptions.filter(opt => opt.checked);
     that.$on('select', that.selectValue);
     that.$on('updateOptions', that.initOptions);
   },
