@@ -1,23 +1,23 @@
 <template>
 <div id="page-header">
-  <div class="robot-list column" @click="showRobotList" v-if="!showUserInfoPage && enterpriseID !== ''">
+  <div class="robot-list column" @click="showRobotList" v-if="!showUserInfoPage && enterpriseID !== '' && !showAuditModule">
     {{ $t('general.robot_list') }}
   </div>
   <div class="empty column"></div>
-  <div class="enterprise column" v-if="!showUserInfoPage && enterpriseID !== ''">
+  <div class="enterprise column" v-if="!showUserInfoPage && enterpriseID !== '' && !showAuditModule">
     <div class="icon-container">
       <icon :size=22 icon-type="header_enterprise"/>
     </div>
     <div>{{ enterpriseName }}</div>
   </div>
-  <template v-if="robotID !== '' && !showUserInfoPage">
+  <template v-if="robotID !== '' && !showUserInfoPage && !showAuditModule">
   <div class="robot column">
     <div class="icon-container">
       <icon :size=22 icon-type="robot"/>
     </div>
     <div ref="robotName" class="column-text" v-tooltip="robotNameTooltip" @mouseover="showFullRobotName($event, robotName)" @mouseout="hideFullRobotName($event)">{{ robotName }}</div>
   </div>
-  <div class="chat-test column" @click="showChatTest" v-if="!showUserInfoPage">
+  <div class="chat-test column" @click="showChatTest" v-if="!showUserInfoPage && !showAuditModule">
     <div class="icon-container">
       <icon :size=22 icon-type="header_dialog"/>
     </div>
@@ -81,6 +81,14 @@ export default {
     },
     showGoEnterpriseUserList() {
       return this.robotID !== '' && this.userInfo.type <= 1;
+    },
+    showAuditModule() {
+      const auditURL = [
+        '/manage/audit-system',     // 0
+        '/manage/audit-enterprise', // 1
+        '/manage/audit-robot',      // 2
+      ];
+      return auditURL.indexOf(this.$route.path) !== -1;
     },
   },
   methods: {
