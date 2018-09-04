@@ -46,13 +46,13 @@
       ></entity-collecting-edit-tab>
       <params-collecting-edit-tab ref="paramsCollectingTab"
         v-if="currentTab === 'paramsCollectingTab'"
-        :initialParamsCollectingTab="paramsCollectingTab"
+        :initialParamsCollectingTab="initialParamsCollectingTab"
         :mapTableOptions="mapTableOptions"
         @update="paramsCollectingTab = $event"
       ></params-collecting-edit-tab>
       <params-collecting-edge-edit-tab ref="paramsCollectingEdgeTab"
         v-if="currentTab === 'paramsCollectingEdgeTab'"
-        :initialPCEdgeTab="paramsCollectingEdgeTab"
+        :initialPCEdgeTab="initialParamsCollectingEdgeTab"
         :initialToNodeOptions="toNodeOptions"
         :globalVarOptions="globalVarOptions"
         :mapTableOptions="mapTableOptions"
@@ -134,6 +134,8 @@ export default {
       initialTriggerTab: {},
       initialSettingTab: {},
       initialEdgeTab: {},
+      initialParamsCollectingTab: {},
+      initialParamsCollectingEdgeTab: {},
       triggerTab: undefined,
       settingTab: undefined,
       settingBasicTab: undefined,
@@ -247,16 +249,18 @@ export default {
           this.initialEdgeTab.nodeId = this.node.nodeId;
         } else if (tab === 'entityCollectingTab') {
           this.entityCollectingTab = this.node.entityCollectingTab;
-          this.entityCollectingTab.nodeId = this.node.nodeId;
         } else if (tab === 'settingBasicTab') {
           this.settingBasicTab = this.node.settingBasicTab;
         } else if (tab === 'paramsCollectingTab') {
           this.paramsCollectingTab = this.node.paramsCollectingTab;
-          this.paramsCollectingTab.nodeId = this.node.nodeId;
+          this.initialParamsCollectingTab = JSON.parse(JSON.stringify(this.paramsCollectingTab));
+          this.initialParamsCollectingTab.nodeId = this.node.nodeId;
         } else if (tab === 'paramsCollectingEdgeTab') {
           this.paramsCollectingEdgeTab = this.node.paramsCollectingEdgeTab;
-          this.paramsCollectingEdgeTab.nodeType = this.nodeType;
-          this.paramsCollectingEdgeTab.nodeId = this.node.nodeId;
+          this.initialParamsCollectingEdgeTab
+            = JSON.parse(JSON.stringify(this.paramsCollectingEdgeTab));
+          this.initialParamsCollectingEdgeTab.nodeType = this.nodeType;
+          this.initialParamsCollectingEdgeTab.nodeId = this.node.nodeId;
         } else if (tab === 'restfulSettingTab') {
           this.restfulSettingTab = this.node.restfulSettingTab;
         } else if (tab === 'restfulEdgeTab') {
