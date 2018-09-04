@@ -235,6 +235,7 @@ $border-color: $color-borderline;
   @include click-button();
 
   .placeholder {
+    @include font-14px();
     color: $color-font-disabled;
   }
 
