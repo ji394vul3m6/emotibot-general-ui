@@ -6,12 +6,10 @@
       ref="page"
       :style="canvasStyle"
       @drop="nodeOptionDrop($event)"
-      @dragover="nodeOptionDragOver($event)">
-      <edges class="edges"
-        ref="edges"
-        :edges="filteredEdges"
-        :tmpEdge="tmpEdge"
-      ></edges>
+      @dragover="nodeOptionDragOver($event)"
+      @mousemove="canvasMouseMove"
+      @mouseup="canvasMouseUp"
+      @click="canvasClick">
       <template v-for="(nodeBlock, index) in nodeBlocks">
         <node-block class="block"
           :ref="`nodeBlock_${index}`"
@@ -28,12 +26,16 @@
           @deleteNode="deleteNode(index)"
           @saveNode="saveNode(index, $event)"
           @copyNode="copyNode(index)"
-          @linkingStart="linkingStart(index, $event)"
-          @linkingStop="linkingStop(index)">
+          @linkingStart="linkingStart(index, $event)">
         </node-block>
       </template>
+      <edges class="edges"
+        ref="edges"
+        :edges="filteredEdges"
+        :linkingEdge="linkingEdge"
+      ></edges>
     </div>
-     <div class="addNewEdgeDropdown"
+    <div class="addNewEdgeDropdown"
       ref="addNewEdgeDropdown"
       v-dropdown="addNewEdgeDropdown()"
       :style="addNewEdgeDropdownStyle">
@@ -174,23 +176,16 @@ export default {
       sidePanelTogleIcon: '-',
       showNodeOptions: true,
       linking: false,
-      canvasOffsetLeft: 0,
-      canvasOffsetTop: 0,
       addNewEdgeDropdownStyle: {},
-      tmpEdge: {
+      linkingEdge: {
         show: false,
         x1: 0,
         y1: 0,
         x2: 0,
         y2: 0,
-        style: {
-          stroke: 'grey',
-          strokeWidth: 5,
-          fill: 'none',
-        },
-        source: [],
+        source: undefined,
       },
-
+      stopCanvasClickPropagationOnce: false,
     };
   },
   computed: {
@@ -243,14 +238,18 @@ export default {
             }
           });
         }
-        if (nodeBlock.data.edgeTab && nodeBlock.data.edgeTab.exceedThenGoto) {
+        if (nodeBlock.data.edgeTab &&
+            nodeBlock.data.edgeTab.exceedThenGoto &&
+            this.idToNodeBlock[nodeBlock.data.edgeTab.exceedThenGoto]) {
           edgeList.push({
             from_id: nodeBlock.data.nodeId,
             to_id: nodeBlock.data.edgeTab.exceedThenGoto,
             edge_type: 'exceedThenGoTo',
           });
         }
-        if (nodeBlock.data.edgeTab && nodeBlock.data.edgeTab.elseInto) {
+        if (nodeBlock.data.edgeTab &&
+            nodeBlock.data.edgeTab.elseInto &&
+            this.idToNodeBlock[nodeBlock.data.edgeTab.elseInto]) {
           edgeList.push({
             from_id: nodeBlock.data.nodeId,
             to_id: nodeBlock.data.edgeTab.elseInto,
@@ -284,23 +283,26 @@ export default {
 
         // push restful node edges
         if (nodeBlock.data.restfulEdgeTab) {
-          edgeList.push({
-            from_id: nodeBlock.data.nodeId,
-            to_id: nodeBlock.data.restfulEdgeTab.restfulSucceedThenGoto,
-            edge_type: 'normal',
-          });
-          edgeList.push({
-            from_id: nodeBlock.data.nodeId,
-            to_id: nodeBlock.data.restfulEdgeTab.restfulFailedThenGoto,
-            edge_type: 'normal',
-          });
+          if (this.idToNodeBlock[nodeBlock.data.restfulEdgeTab.restfulSucceedThenGoto]) {
+            edgeList.push({
+              from_id: nodeBlock.data.nodeId,
+              to_id: nodeBlock.data.restfulEdgeTab.restfulSucceedThenGoto,
+              edge_type: 'normal',
+            });
+          }
+          if (this.idToNodeBlock[nodeBlock.data.restfulEdgeTab.restfulFailedThenGoto]) {
+            edgeList.push({
+              from_id: nodeBlock.data.nodeId,
+              to_id: nodeBlock.data.restfulEdgeTab.restfulFailedThenGoto,
+              edge_type: 'normal',
+            });
+          }
         }
 
         // globalEdges
         this.globalEdges.forEach((edge) => {
           if (!edge.to_node_id) return;
           if (!this.idToNodeBlock[edge.to_node_id]) return;
-
           edgeList.push({
             from_id: nodeBlock.data.nodeId,
             to_id: edge.to_node_id,
@@ -340,6 +342,17 @@ export default {
         });
         idx += 1;
       });
+      filteredEdges.push({
+        x1: 282,
+        y1: 1301,
+        x2: 500,
+        y2: 1301,
+        style: {
+          stroke: this.rainbowColors[idx % this.rainbowColors.length],
+          strokeWidth: 5,
+          fill: 'none',
+        },
+      });
       return filteredEdges;
     },
     canvasStyle() {
@@ -352,22 +365,6 @@ export default {
   watch: {
   },
   methods: {
-    addNewEdgeDropdown() {
-      const options = [
-        {
-          text: '123',
-          onclick: () => {},
-        },
-        {
-          text: '456',
-          onclick: () => {},
-        },
-      ];
-      return {
-        options,
-        width: '500px',
-      };
-    },
     loadScenario(scenarioId) {
       return taskEngineApi.loadScenario(scenarioId).then((data) => {
         const jsonData = {
@@ -411,7 +408,6 @@ export default {
         };
       });
       this.renderGlobalVarOptionsMap();
-      this.renderCanvasOffset();
     },
     renderGlobalVarOptionsMap() {
       this.globalVarOptionsMap = {};
@@ -424,11 +420,6 @@ export default {
           this.globalVarOptionsMap[node.node_id] = vars;
         }
       }));
-    },
-    renderCanvasOffset() {
-      const canvasOffset = document.getElementById('canvas-page').getBoundingClientRect();
-      this.canvasOffsetLeft = canvasOffset.x;
-      this.canvasOffsetTop = canvasOffset.y;
     },
     saveScenario() {
       const uiNodes = this.nodeBlocks.map(nodeBlock => nodeBlock.data);
@@ -535,14 +526,7 @@ export default {
     nodeOptionDrop(e) {
       const nodeType = e.dataTransfer.getData('type');
       const nodeName = e.dataTransfer.getData('name');
-      const nodeDialogueCntLimit = this.setting.nodeDialogueCntLimit;
-      const node = scenarioInitializer.initialNode(nodeType, nodeName, nodeDialogueCntLimit);
-      this.nodeBlocks.push({
-        x: e.offsetX,
-        y: e.offsetY,
-        data: node,
-      });
-      this.saveScenario();
+      this.addNewNode(nodeType, nodeName, e.offsetX, e.offsetY);
     },
     onPageWheel() {
       // expand canvas width and height
@@ -663,42 +647,91 @@ export default {
       return nodeType.name;
     },
     linkingStart(index, slot) {
-      console.log('linkingStart');
       this.linking = true;
-      const x = slot.x - this.canvasOffsetLeft;
-      const y = slot.y - this.canvasOffsetTop;
-      this.tmpEdge.show = true;
-      this.tmpEdge.x1 = x;
-      this.tmpEdge.y1 = y;
-      this.tmpEdge.x2 = x;
-      this.tmpEdge.y2 = y;
-      this.tmpEdge.source = index;
+      this.linkingEdge.show = true;
+      this.linkingEdge.x1 = slot.x;
+      this.linkingEdge.y1 = slot.y;
+      this.linkingEdge.x2 = slot.x;
+      this.linkingEdge.y2 = slot.y;
+      this.linkingEdge.source = index;
     },
-    linkingStop() {
-
-    },
-    onMouseMove(e) {
+    canvasMouseMove(e) {
       if (!this.linking) return;
-      this.tmpEdge.x2 = e.pageX - this.canvasOffsetLeft;
-      this.tmpEdge.y2 = e.pageY - this.canvasOffsetTop;
+      const pageRect = this.$refs.page.getBoundingClientRect();
+      this.linkingEdge.x2 = e.clientX - pageRect.x;
+      this.linkingEdge.y2 = e.clientY - pageRect.y;
     },
-    onMouseUp(e) {
+    canvasMouseUp(e) {
       if (!this.linking) return;
       this.linking = false;
-      this.tmpEdge.show = false;
+      this.linkingEdge.show = false;
+      this.stopCanvasClickPropagationOnce = true;
+      const pageRect = this.$refs.page.getBoundingClientRect();
       this.addNewEdgeDropdownStyle = {
-        left: `${e.pageX - this.canvasOffsetLeft}px`,
-        top: `${e.pageY - this.canvasOffsetTop}px`,
+        left: `${e.clientX - pageRect.x}px`,
+        top: `${e.clientY - pageRect.y}px`,
       };
       this.$refs.addNewEdgeDropdown.click();
     },
-    addListeners() {
-      document.documentElement.addEventListener('mousemove', this.onMouseMove, false);
-      document.documentElement.addEventListener('mouseup', this.onMouseUp, false);
+    canvasClick(e) {
+      if (this.stopCanvasClickPropagationOnce) {
+        if (e.stopPropagation) e.stopPropagation();
+        this.stopCanvasClickPropagationOnce = false;
+      }
     },
-    removeListeners() {
-      document.documentElement.removeEventListener('mousemove', this.onMouseMove, false);
-      document.documentElement.removeEventListener('mouseup', this.onMouseUp, false);
+    addNewEdgeDropdown() {
+      const options = [
+        {
+          text: '当出话超过上限',
+          onclick: () => {
+            const newNode = this.addNewLinkingNode(this.linkingEdge);
+            const sourceIndex = this.linkingEdge.source;
+            this.nodeBlocks[sourceIndex].data.edgeTab.exceedThenGoto = newNode.nodeId;
+            this.saveScenario();
+          },
+        },
+        {
+          text: '当所有规则都无法符合时',
+          onclick: () => {
+            const newNode = this.addNewLinkingNode(this.linkingEdge);
+            const sourceIndex = this.linkingEdge.source;
+            this.nodeBlocks[sourceIndex].data.edgeTab.elseInto = newNode.nodeId;
+            this.saveScenario();
+          },
+        },
+        {
+          text: '自定义',
+          onclick: () => {
+            const newNode = this.addNewLinkingNode(this.linkingEdge);
+            const newEdge = scenarioInitializer.initialEdge();
+            newEdge.id = this.$uuid.v1();
+            newEdge.to_node_id = newNode.nodeId;
+            const sourceIndex = this.linkingEdge.source;
+            this.nodeBlocks[sourceIndex].data.edgeTab.normalEdges.push(newEdge);
+            this.saveScenario();
+          },
+        },
+      ];
+      return {
+        options,
+        width: '220px',
+      };
+    },
+    addNewLinkingNode(linkingEdge) {
+      const nodeType = 'dialogue';
+      const nodeName = this.getNodeTypeName(nodeType);
+      return this.addNewNode(nodeType, nodeName, linkingEdge.x2, linkingEdge.y2);
+    },
+    addNewNode(nodeType, nodeName, x, y) {
+      const nodeDialogueCntLimit = this.setting.nodeDialogueCntLimit;
+      const node = scenarioInitializer.initialNode('dialogue', nodeName, nodeDialogueCntLimit);
+      this.nodeBlocks.push({
+        x,
+        y,
+        data: node,
+      });
+      this.saveScenario();
+      return node;
     },
   },
   beforeMount() {
@@ -710,12 +743,8 @@ export default {
     this.rainbowColors = optionConfig.getRainbowColors();
     this.loadScenario(this.scenarioId);
   },
-  mounted() {
-    this.addListeners();
-  },
-  beforeDestroy() {
-    this.removeListeners();
-  },
+  mounted() {},
+  beforeDestroy() {},
 };
 </script>
 

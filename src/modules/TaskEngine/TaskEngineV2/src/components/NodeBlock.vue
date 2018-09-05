@@ -166,16 +166,13 @@ export default {
       this.canMove = false;
       this.hasMoved = false;
       this.isSrcNode = false;
-      this.$emit('linkingStop');
     },
     srcSlotMouseDown(e) {
-      console.log('srcSlotMouseDown');
       this.isSrcNode = true;
-      const edgeSlotFromOffset = this.$refs.edgeSlotFrom.getBoundingClientRect();
-      const slot = {
-        x: edgeSlotFromOffset.x + 8,
-        y: edgeSlotFromOffset.y + 8,
-      };
+      const edgeSlotFrom = this.$refs.edgeSlotFrom;
+      const x = edgeSlotFrom.offsetLeft + edgeSlotFrom.offsetParent.offsetLeft + 8;
+      const y = edgeSlotFrom.offsetTop + edgeSlotFrom.offsetParent.offsetTop + 8;
+      const slot = { x, y };
       this.$emit('linkingStart', slot);
       if (e.preventDefault) e.preventDefault();
     },

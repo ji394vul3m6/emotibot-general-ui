@@ -1,12 +1,14 @@
 <template lang="html">
-  <svg id="edges" width="100%" height="100%">
-    <g v-for="p in paths" >
-      <path :d="p.data" :style="p.style"></path>
-    </g>
-    <g v-if="tmpPath.show === true">
-      <path :d="tmpPath.data" :style="tmpPath.style" style="z-index: 100;"></path>
-    </g>
-  </svg>
+  <div id="edges" class="edges">
+    <svg class="svg">
+      <g class="paths" v-for="p in paths" >
+        <path :d="p.data" :style="p.style"></path>
+      </g>
+      <g class="linking-path" v-if="linkingPath.show === true">
+        <path :d="linkingPath.data" :style="linkingPathStyle"></path>
+      </g>
+    </svg>
+  </div>
 </template>
 
 <script>
@@ -19,7 +21,7 @@ export default {
       type: Array,
       default: [],
     },
-    tmpEdge: {
+    linkingEdge: {
       type: Object,
       default: [],
     },
@@ -29,7 +31,12 @@ export default {
       radius: 60,
       halfWidth: 115,
       halfHeight: 60,
-      tmpPath: '',
+      linkingPath: {},
+      linkingPathStyle: {
+        stroke: 'grey',
+        strokeWidth: 5,
+        fill: 'none',
+      },
     };
   },
   computed: {
@@ -46,12 +53,12 @@ export default {
     },
   },
   watch: {
-    tmpEdge: {
+    linkingEdge: {
       handler() {
-        this.tmpPath = {
-          show: this.tmpEdge.show,
-          data: this.computeTmpPathData(this.tmpEdge),
-          style: this.tmpEdge.style,
+        this.linkingPath = {
+          show: this.linkingEdge.show,
+          data: this.computeLinkingPathData(this.linkingEdge),
+          style: this.linkingEdge.style,
         };
       },
       deep: true,
@@ -101,7 +108,7 @@ export default {
       const data = `M ${px} ${py} L ${qx} ${qy} Q ${cx} ${cy}, ${rx} ${ry} L ${sx} ${sy}`;
       return data;
     },
-    computeTmpPathData(edge) {
+    computeLinkingPathData(edge) {
       const px = edge.x1;
       const py = edge.y1;
       const qx = edge.x2;
@@ -123,5 +130,13 @@ export default {
 @import 'styles/variable.scss';
 
 #edges{
+  position: relative;
+  pointer-events: none;
+  width: 100%;
+  height: 100%;
+  .svg{
+    width: 100%;
+    height: 100%;
+  }
 }
 </style>
