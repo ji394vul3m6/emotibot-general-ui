@@ -60,8 +60,11 @@
           </template>
         </div>
         <div id="filter-operation">
-          <text-button button-type="primary" v-on:click="doSearch(1)"
-          :disabled="!validFormInput">
+          <text-button
+            button-type="primary" 
+            :disabled="!validFormInput"
+            @click="doSearch(1)"
+            >
             {{ $t('general.search') }}
           </text-button>
           <div @click="expertMode = !expertMode" class="show-more" :class="{more: expertMode}">
@@ -76,7 +79,8 @@
       <div id="audit-result">
         <div id="audit-toolbar">
           <text-button v-if="canExport"
-            :button-type="totalLogCount > 0 ? 'default' : 'disable'">
+            :button-type="totalLogCount > 0 ? 'default' : 'disable'"
+            @click="doExport">
             {{ $t('general.export') }}
           </text-button>
           <div id="audit-log-count">{{ $t('management.audit.total', { num: totalLogCount }) }}</div>
@@ -111,6 +115,7 @@ import NavBar from '@/components/NavigationBar';
 import datepickerMixin from './_mixin/datepicker';
 import SystemModuleMap from './_mixin/SystemModuleMap';
 import operationType from './_mixin/operationType';
+import api from './_api/audit';
 
 const auditEnterprisePage = '/manage/audit-enterprise';
 const auditRobotPage = '/manage/audit-robot';
@@ -122,6 +127,7 @@ export default {
     NavBar,
     DatetimePicker,
   },
+  api,
   mixins: [datepickerMixin, SystemModuleMap, operationType],
   data() {
     return {
@@ -140,7 +146,7 @@ export default {
       filterActionType: [],
       filterActionTypeOptions: [],
 
-      showTable: true,
+      showTable: false,
       totalLogCount: 0,
       tableHeader: [],
       tableData: [],
@@ -178,17 +184,29 @@ export default {
       that.pageLimit = pageSize;
       that.doSearch(1);
     },
+    doExport() {
+      const that = this;
+      const searchParams = that.getSearchParams();
+      that.$api.exportSystemAuditLog(searchParams).then((response) => {
+        // TODO: export response
+        console.log({ response });
+      });
+    },
     doSearch(page) {
       const that = this;
       that.pageIdx = page;
       const searchParams = that.getSearchParams();
+      searchParams.page = that.pageIdx;
+      searchParams.limit = that.pageLimit;
       console.log({ searchParams });
+      that.$api.getSystemAuditLog(searchParams).then((response) => {
+        // TODO: parse Table Header and Table Data;
+        console.log({ response });
+      });
     },
     getSearchParams() {
       const that = this;
       const params = {
-        page: that.pageIdx,
-        limit: that.pageLimit,
         start_time: that.start.getTimestamp(),
         end_time: that.end.getTimestamp(),
       };

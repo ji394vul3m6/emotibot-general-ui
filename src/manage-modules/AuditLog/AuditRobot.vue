@@ -85,8 +85,11 @@
           </template>
         </div>
         <div id="filter-operation">
-          <text-button button-type="primary" v-on:click="doSearch(1)"
-          :disabled="!validFormInput">
+          <text-button
+            :button-type="canSearch ? 'primary': 'disable'"
+            :disabled="!validFormInput"
+            @click="doSearch(1)"
+            >
             {{ $t('general.search') }}
           </text-button>
           <div @click="expertMode = !expertMode" class="show-more" :class="{more: expertMode}">
@@ -101,7 +104,8 @@
       <div id="audit-result">
         <div id="audit-toolbar">
           <text-button v-if="canExport"
-            :button-type="totalLogCount > 0 ? 'default' : 'disable'">
+            :button-type="totalLogCount > 0 ? 'default' : 'disable'"
+            @click="doExport">
             {{ $t('general.export') }}
           </text-button>
           <div id="audit-log-count">{{ $t('management.audit.total', { num: totalLogCount }) }}</div>
@@ -132,13 +136,16 @@
 </template>
 <script>
 import { mapGetters } from 'vuex';
+import moment from 'moment';
 import DatetimePicker from '@/components/DateTimePicker';
 import NavBar from '@/components/NavigationBar';
-import DropdownCascader from '@/components/basic/DropdownCascader';
+import csvUtil from '@/utils/js/csv';
+import miscUtil from '@/utils/js/misc';
 import datepickerMixin from './_mixin/datepicker';
 import RobotModuleMap from './_mixin/RobotModuleMap';
 import operationType from './_mixin/operationType';
 import UserType from './_data/UserType';
+import api from './_api/audit';
 
 const auditEnterprisePage = '/manage/audit-enterprise';
 const auditSystemPage = '/manage/audit-system';
@@ -149,8 +156,8 @@ export default {
   components: {
     NavBar,
     DatetimePicker,
-    DropdownCascader,
   },
+  api,
   mixins: [datepickerMixin, RobotModuleMap, operationType],
   data() {
     return {
@@ -162,70 +169,72 @@ export default {
 
       expertMode: false,
 
-      filterRobot: ['hello', 'hello-1'],
+      filterRobot: [
+        // 'hello', 'hello-1',
+      ],
       filterRobotOptions: [
-        {
-          text: '第一層沒選項',
-          value: 'first-no-data',
-        },
-        {
-          text: '第一層',
-          value: 'first-layer',
-          options: [{
-            text: '第二層',
-            value: 'second-layer',
-          }, {
-            text: '第二層很長很長很長很長很長很長很長很長很長',
-            value: 'seconde-layer-longer',
-          }],
-        },
-        {
-          text: '第一層很長很長很長很長很長很長很長很長很長',
-          value: 'first-layer-longer',
-          options: [{
-            text: '第二層-2',
-            value: 'second-layer-2',
-          }, {
-            text: '第二層-2很長很長很長很長很長很長很長很長很長',
-            value: 'seconde-layer-longer2',
-          }],
-        },
-        {
-          text: '哈囉你好嗎',
-          value: 'hello',
-          options: [{
-            text: '哈囉第一個',
-            value: 'hello-1',
-          }, {
-            text: '哈囉第二個',
-            value: 'hello-2',
-          }, {
-            text: '哈囉第三個',
-            value: 'hello-3',
-          }, {
-            text: '哈囉第四個',
-            value: 'hello-4',
-          }, {
-            text: '哈囉第五個很長很長很長很長很長',
-            value: 'hello-5',
-          }],
-        },
-        {
-          text: '再來一組',
-          value: 'onemore',
-          options: [{
-            text: '更多',
-            value: 'more more',
-          }],
-        },
-        {
-          text: '超過scrollbar!!',
-          value: 'scroll!',
-          options: [{
-            text: 'Scrolled?',
-            value: 'scrolled',
-          }],
-        },
+        // {
+        //   text: '第一層沒選項',
+        //   value: 'first-no-data',
+        // },
+        // {
+        //   text: '第一層',
+        //   value: 'first-layer',
+        //   options: [{
+        //     text: '第二層',
+        //     value: 'second-layer',
+        //   }, {
+        //     text: '第二層很長很長很長很長很長很長很長很長很長',
+        //     value: 'seconde-layer-longer',
+        //   }],
+        // },
+        // {
+        //   text: '第一層很長很長很長很長很長很長很長很長很長',
+        //   value: 'first-layer-longer',
+        //   options: [{
+        //     text: '第二層-2',
+        //     value: 'second-layer-2',
+        //   }, {
+        //     text: '第二層-2很長很長很長很長很長很長很長很長很長',
+        //     value: 'seconde-layer-longer2',
+        //   }],
+        // },
+        // {
+        //   text: '哈囉你好嗎',
+        //   value: 'hello',
+        //   options: [{
+        //     text: '哈囉第一個',
+        //     value: 'hello-1',
+        //   }, {
+        //     text: '哈囉第二個',
+        //     value: 'hello-2',
+        //   }, {
+        //     text: '哈囉第三個',
+        //     value: 'hello-3',
+        //   }, {
+        //     text: '哈囉第四個',
+        //     value: 'hello-4',
+        //   }, {
+        //     text: '哈囉第五個很長很長很長很長很長',
+        //     value: 'hello-5',
+        //   }],
+        // },
+        // {
+        //   text: '再來一組',
+        //   value: 'onemore',
+        //   options: [{
+        //     text: '更多',
+        //     value: 'more more',
+        //   }],
+        // },
+        // {
+        //   text: '超過scrollbar!!',
+        //   value: 'scroll!',
+        //   options: [{
+        //     text: 'Scrolled?',
+        //     value: 'scrolled',
+        //   }],
+        // },
       ],
       filterUserId: '',
       filterModule: [],
@@ -235,7 +244,7 @@ export default {
 
       dayRange: 1,
 
-      showTable: true,
+      showTable: false,
       totalLogCount: 0,
       tableHeader: [],
       tableData: [],
@@ -257,6 +266,9 @@ export default {
     canExport() {
       return this.$hasRight('export');
     },
+    canSearch() {
+      return this.filterRobot.length > 0;
+    },
     showPagination() {
       return this.showTable && this.totalLogCount > 0;
     },
@@ -277,6 +289,7 @@ export default {
   },
   methods: {
     goBack() {
+      console.log(this.$router);
       this.$router.back(); // history forward 1 page
     },
     handlePageSizeChange(pageSize) {
@@ -284,17 +297,46 @@ export default {
       that.pageLimit = pageSize;
       that.doSearch(1);
     },
+    doExport() {
+      const that = this;
+      const searchParams = that.getSearchParams();
+      that.$api.exportRobotAuditLog(searchParams).then((response) => {
+        // TODO: export response
+        console.log({ response });
+
+        const startTimeString = moment(that.start.getTimestamp() * 1000)
+        .format('YYYYMMDDHHmm');
+        const endTimeString = moment(that.end.getTimestamp() * 1000)
+        .format('YYYYMMDDHHmm');
+        const filename = `${that.$t('statistics.audit_record_filename')}_${startTimeString}_${endTimeString}.csv`;
+
+        let recordArray = response.data.result.data;
+        recordArray = that.convertAPIDataToTable(recordArray);
+        const csvData = csvUtil.convertToCSV(recordArray, this.headerInfo);
+        const blobData = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvData], { type: 'text/csv' });
+        miscUtil.downloadRawFile(blobData, filename);
+        that.$emit('endLoading');
+      });
+    },
     doSearch(page) {
       const that = this;
       that.pageIdx = page;
       const searchParams = that.getSearchParams();
+      searchParams.page = that.pageIdx;
+      searchParams.limit = that.pageLimit;
       console.log({ searchParams });
+      that.$api.getRobotAuditLog(searchParams).then((result) => {
+        // TODO: parse Table Header and Table Data;
+        console.log({ result });
+        that.totalLogCount = result.total_size;
+        that.tableHeader = result.table_header;
+        that.tableData = result.data;
+        that.showTable = true;
+      });
     },
     getSearchParams() {
       const that = this;
       const params = {
-        page: that.pageIdx,
-        limit: that.pageLimit,
         start_time: that.start.getTimestamp(),
         end_time: that.end.getTimestamp(),
       };
@@ -351,11 +393,23 @@ export default {
         }
       } else {
         // TODO: else: system admin call api to get full enterprise and robot list
-        console.log(this.enterpriseID, this.robotID);
-        if (this.enterpriseID && this.enterpriseID !== '' &&
+        this.$api.getFullEnterpriseList().then((result) => {
+          this.filterRobotOptions = result.map((res) => {
+            const option = {};
+            option.text = res.enterprise_name;
+            option.value = res.enterprise_id;
+            option.options = res.robot_list.map(robot => ({
+              text: robot.robot_name,
+              value: robot.robot_id,
+            }));
+            return option;
+          });
+          console.log(this.enterpriseID, this.robotID);
+          if (this.enterpriseID && this.enterpriseID !== '' &&
             this.robotID && this.robotID !== '') {
-          this.filterRobot = [this.enterpriseID, this.robotID];
-        }
+            this.filterRobot = [this.enterpriseID, this.robotID];
+          }
+        });
       }
 
       /** filterModule & filterActionType */
@@ -469,6 +523,11 @@ export default {
     flex: 0 0 auto;
     display: flex;
     align-items: flex-end;
+    .text-button{
+      &.disabled {
+        pointer-events: none;
+      }
+    }
     .show-more {
       @include click-button();
       display: flex;
