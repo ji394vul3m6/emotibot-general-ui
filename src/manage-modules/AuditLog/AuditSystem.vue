@@ -1,5 +1,5 @@
 <template>
-  <div id="audit-system">
+  <div id="audit-system" class="audit-page">
     <div class="card h-fill w-fill">
       <div id="audit-header">
         <nav-bar class="nav-bar" :options="pageOption" v-model="currentPage"></nav-bar>
@@ -81,6 +81,25 @@
           </text-button>
           <div id="audit-log-count">{{ $t('management.audit.total', { num: totalLogCount }) }}</div>
         </div>
+        <div id="audit-content" v-if="showTable">
+          <general-table 
+            auto-height show-empty
+            :tableData="tableData"
+            :tableHeader="tableHeader"
+          >
+          </general-table>
+        </div>
+        <div id="audit-footer" v-if="showPagination">
+          <v-pagination size="small"
+            :total="totalLogCount"  
+            :pageIndex="pageIdx"
+            :pageSize="pageLimit"
+            :pageSizeOption="[25, 50, 100, 200, 500, 1000]"
+            :layout="['prev', 'pager', 'next', 'sizer', 'jumper']"
+            @page-change="doSearch"
+            @page-size-change="handlePageSizeChange"  
+          ></v-pagination>
+        </div>
       </div>
     </div>
   </div>
@@ -121,7 +140,10 @@ export default {
       filterActionType: [],
       filterActionTypeOptions: [],
 
+      showTable: true,
       totalLogCount: 0,
+      tableHeader: [],
+      tableData: [],
 
       pageIdx: 1,
       pageLimit: 25,
@@ -133,6 +155,9 @@ export default {
     ]),
     canExport() {
       return this.$hasRight('export');
+    },
+    showPagination() {
+      return this.showTable && this.totalLogCount > 0;
     },
   },
   watch: {
@@ -147,6 +172,11 @@ export default {
   methods: {
     goBack() {
       this.$router.back(); // history forward 1 page
+    },
+    handlePageSizeChange(pageSize) {
+      const that = this;
+      that.pageLimit = pageSize;
+      that.doSearch(1);
     },
     doSearch(page) {
       const that = this;
@@ -210,10 +240,13 @@ export default {
 </script>
 <style lang="scss" scoped>
 .audit-page {
-  display: flex;
-  flex-direction: column;
+  .card {
+    display: flex;
+    flex-direction: column;
+  }
 }
 #audit-header {
+  flex: 0 0 60px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -229,6 +262,7 @@ export default {
   }
 }
 #audit-filter {
+  flex: 0 0 auto;
   padding: 16px 20px;
   display: flex;
   border-bottom: 1px solid $color-borderline;
@@ -282,7 +316,11 @@ export default {
   }
 }
 #audit-result {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   #audit-toolbar {
+    flex: 0 0 auto;
     padding: 20px;
     display: flex;
     align-items: center;
@@ -299,6 +337,17 @@ export default {
       display: flex;
       align-items: center;
     }
+  }
+  #audit-content {
+    flex: 1;
+    display: flex;
+  }
+  #audit-footer {
+    flex: 0 0 50px;
+    border-top: 1px solid $color-borderline;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
   }
 }
 </style>

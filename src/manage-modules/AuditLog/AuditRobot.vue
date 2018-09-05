@@ -13,7 +13,6 @@
         </div>
       </div>
 
-
       <div id="audit-filter">
         <div id="filter-block">
           <div class="row">
@@ -27,7 +26,6 @@
                 :placeholder="$t('general.please_choose')"
                 width="300px"
               />
-
               <dropdown-cascader
                 v-else
                 v-model="filterRobot"
@@ -99,6 +97,7 @@
           </div>
         </div>
       </div> <!-- ./#audit-filter -->
+      
       <div id="audit-result">
         <div id="audit-toolbar">
           <text-button v-if="canExport"
@@ -107,13 +106,32 @@
           </text-button>
           <div id="audit-log-count">{{ $t('management.audit.total', { num: totalLogCount }) }}</div>
         </div>
+
+        <div id="audit-content" v-if="showTable">
+          <general-table 
+            auto-height show-empty
+            :tableData="tableData"
+            :tableHeader="tableHeader"
+          >
+          </general-table>
+        </div>
+        <div id="audit-footer" v-if="showPagination">
+          <v-pagination size="small"
+            :total="totalLogCount"  
+            :pageIndex="pageIdx"
+            :pageSize="pageLimit"
+            :pageSizeOption="[25, 50, 100, 200, 500, 1000]"
+            :layout="['prev', 'pager', 'next', 'sizer', 'jumper']"
+            @page-change="doSearch"
+            @page-size-change="handlePageSizeChange"  
+          ></v-pagination>
+        </div>
       </div>
     </div>
   </div>
 </template>
 <script>
 import { mapGetters } from 'vuex';
-// import pickerUtil from '@/utils/vue/DatePickerUtil';
 import DatetimePicker from '@/components/DateTimePicker';
 import NavBar from '@/components/NavigationBar';
 import DropdownCascader from '@/components/basic/DropdownCascader';
@@ -217,7 +235,10 @@ export default {
 
       dayRange: 1,
 
+      showTable: true,
       totalLogCount: 0,
+      tableHeader: [],
+      tableData: [],
 
       pageIdx: 1,
       pageLimit: 25,
@@ -235,6 +256,9 @@ export default {
     ]),
     canExport() {
       return this.$hasRight('export');
+    },
+    showPagination() {
+      return this.showTable && this.totalLogCount > 0;
     },
   },
   watch: {
@@ -254,6 +278,11 @@ export default {
   methods: {
     goBack() {
       this.$router.back(); // history forward 1 page
+    },
+    handlePageSizeChange(pageSize) {
+      const that = this;
+      that.pageLimit = pageSize;
+      that.doSearch(1);
     },
     doSearch(page) {
       const that = this;
@@ -381,10 +410,13 @@ export default {
 </script>
 <style lang="scss" scoped>
 .audit-page {
-  display: flex;
-  flex-direction: column;
+  .card {
+    display: flex;
+    flex-direction: column;
+  }
 }
 #audit-header {
+  flex: 0 0 60px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -401,6 +433,7 @@ export default {
 }
 
 #audit-filter {
+  flex: 0 0 auto;
   padding: 16px 20px;
   display: flex;
   border-bottom: 1px solid $color-borderline;
@@ -454,7 +487,11 @@ export default {
   }
 }
 #audit-result {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   #audit-toolbar {
+    flex: 0 0 auto;
     padding: 20px;
     display: flex;
     align-items: center;
@@ -471,6 +508,17 @@ export default {
       display: flex;
       align-items: center;
     }
+  }
+  #audit-content {
+    flex: 1;
+    display: flex;
+  }
+  #audit-footer {
+    flex: 0 0 50px;
+    border-top: 1px solid $color-borderline;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
   }
 }
 </style>
