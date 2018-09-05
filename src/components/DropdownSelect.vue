@@ -18,7 +18,7 @@
     </div>
     <div ref="list" v-if="show" class="select-list" :style="listStyle">
       <div class="select-item search" v-if="showSearchBar">
-        <input class="search-input" v-model="searchKeyWord" placeholder="Search"></input>
+        <input class="search-input" v-model="searchKeyWord" placeholder="Search">
       </div>
       <template v-for="(option, idx) in filteredLocalOptions">
       <div class="select-item item" :key="idx" v-if="!option.isGroup"
