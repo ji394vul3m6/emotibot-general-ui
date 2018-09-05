@@ -840,7 +840,8 @@ export default {
     task_engine: {
       module_name: '任务引擎',
       task_engine_scenario: '场景列表',
-      task_engine_scenario_v3: '新版场景列表',
+      task_engine_scenario_v2: '2.0版场景列表',
+      task_engine_scenario_v3: '3.0版场景列表',
       task_engine_upload: '上传转换数据',
     },
     intent_engine: {
@@ -883,6 +884,7 @@ export default {
     error: '错误',
     upload: '上传',
     browse: '浏览',
+    copy: '复制',
     save: '保存',
     saving: '保存中',
     default: '默认',

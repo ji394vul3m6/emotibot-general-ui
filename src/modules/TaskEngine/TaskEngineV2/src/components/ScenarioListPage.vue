@@ -1,23 +1,28 @@
 <template lang="html">
 <div id="scenario-list-page">
   <div class="content card h-fill w-fill">
-    <div class="header title">
-      {{$t("task_engine_v3.scenario_list_page.scenario_list")}}
-      <search-input v-model="filteredKeyWord" ></search-input>
+    <div class="row title">
+      {{$t("task_engine_v2.scenario_list_page.scenario_list")}}
     </div>
-    <div class="page">
+    <div class="row">
       <div id="toolbar">
         <div id="left-buttons">
-          <text-button button-type='primary' @click="createNewScenario">
-            {{$t("task_engine_v3.scenario_list_page.button_create_new_scenario")}}
+          <text-button button-type='primary' width='68px' height='28px' @click="createNewScenario">
+            {{$t("task_engine_v2.scenario_list_page.button_create_new_scenario")}}
           </text-button>
-          <text-button button-type='default' @click="showImportPop">
-            {{$t("task_engine_v3.scenario_list_page.button_import_scenario")}}
+          <text-button button-type='default' iconType="upload" :iconSize=15 width='68px' height='28px' @click="importScenarioJSON">
+            {{$t("task_engine_v2.scenario_list_page.button_import_scenario")}}
           </text-button>
-          <input type="file" ref="uploadInput" v-on:change="changeFile()" accept=".xlsx">
+          <text-button button-type='default' width='100px' height='28px' @click="exportAllScenarios">
+            {{$t("task_engine_v2.scenario_list_page.button_export_all_scenarios")}}
+          </text-button>
           <input type="file" ref="uploadScenarioJSONInput" @change="changeScenarioJSONFile()" accept=".json">
         </div>
+        <div id="right-buttons">
+          <search-input v-model="filteredKeyWord" ></search-input>
+        </div>
       </div>
+    </div>
     <template v-for="(scenario, index) in filteredScenarioList">
       <div class="row" @mouseover="scenario.show = true" @mouseleave="scenario.show = false">
         <div id="scenario-grid">
@@ -29,7 +34,7 @@
               {{scenario.scenarioName}}
             </div>
             <div class="delete-button">
-              <div class="icon_container" v-if="scenario.show" v-dropdown="moreOptions(scenario)">
+              <div class="icon_container" v-show="scenario.show" v-dropdown="moreOptions(scenario)">
                 <icon :size=25 icon-type="more"/>
               </div>
             </div>
@@ -37,25 +42,22 @@
         </div>
       </div>
     </template>
-    </div>
   </div>
 </div>
 </template>
 
 <script>
-import ImportScenarioPop from './ImportScenarioPop';
-import i18nUtils from '../utils/i18nUtil';
-import scenarioConvertor from '../utils/scenarioConvertor';
-import general from '../utils/general';
+import taskEngineApi from '@/modules/TaskEngine/_api/taskEngine';
+import general from '@/modules/TaskEngine/_utils/general';
 import CreateScenarioPop from './CreateScenarioPop';
-import taskEngineApi from './_api/taskEngine';
+import scenarioInitializer from '../_utils/scenarioInitializer';
+import scenarioConvertor from '../_utils/scenarioConvertor';
 
 export default {
   name: 'scenario-list-page',
   components: {},
   data() {
     return {
-      i18n: {},
       appId: '',
       scenarioList: [],
       filteredKeyWord: '',
@@ -73,12 +75,35 @@ export default {
       const that = this;
       return {
         options: [{
-          text: this.i18n.general.export,
+          text: that.$t('task_engine_v2.scenario_list_page.publish'),
+          onclick() {
+            taskEngineApi.publishScenario(that.appId, scenario.scenarioID).then(() => {
+              that.$notify({ text: that.$t('task_engine_v2.scenario_list_page.publish_succeed') });
+            }, (err) => {
+              that.$notifyFail(`${that.$t('task_engine_v2.scenario_list_page.publish_failed')}:${err.message}`);
+            });
+            taskEngineApi.loadScenario(scenario.scenarioID).then((data) => {
+              const jsonData = {
+                moduleData: JSON.parse(data.result.editingContent),
+                moduleDataLayouts: JSON.parse(data.result.editingLayout),
+              };
+              const newJsonData = scenarioConvertor.convertJsonToVersion('1.1', jsonData);
+              scenarioConvertor.registerNluTdeScenario(
+                scenario.scenarioID, newJsonData.moduleData.ui_data.nodes);
+            }, (err) => {
+              general.popErrorWindow(this, 'loadScenario error', err.message);
+            });
+            scenario.enable = true;
+            that.switchScenario(scenario);
+          },
+        },
+        {
+          text: that.$t('general.export'),
           onclick() {
             taskEngineApi.exportScenario(scenario.scenarioID);
           },
         }, {
-          text: this.i18n.general.delete,
+          text: that.$t('general.delete'),
           onclick() {
             that.deleteScenario(scenario);
           },
@@ -86,27 +111,28 @@ export default {
         alignLeft: true,
       };
     },
+    exportAllScenarios() {
+      taskEngineApi.exportAllScenarios(this.appId);
+    },
     listAllScenarios() {
       taskEngineApi.listScenarios(this.appId).then((data) => {
-        console.log(data);
         if (typeof (data) === 'object' && 'msg' in data) {
-          this.scenarioList = data.msg.filter(scenario => scenario.version === '2.0')
+          this.scenarioList = data.msg.filter(scenario => scenario.version !== '2.0')
                                       .map((scenario) => {
                                         scenario.show = false;
                                         return scenario;
                                       });
         } else {
-          general.popErrorWindow(this, 'listAllScenarios error',
-            `unexpected return value from listScenarios API: ${data}`);
+          this.$notifyFail(`listAllScenarios error: unexpected return value from listScenarios API: ${data}`);
         }
       }, (err) => {
-        general.popErrorWindow(this, 'listAllScenarios error', err.message);
+        this.$notifyFail(`listAllScenarios error:${err.message}`);
       });
     },
     createNewScenario() {
       const that = this;
       that.$pop({
-        title: this.i18n.task_engine_v3.create_scenario_pop.label_create_new_scenario,
+        title: that.$t('task_engine_v3.create_scenario_pop.label_create_new_scenario'),
         component: CreateScenarioPop,
         validate: true,
         ok_msg: that.$t('general.add'),
@@ -114,21 +140,27 @@ export default {
           scenarioName: '',
         },
         callback: {
-          ok: (scenarioName) => {
-            taskEngineApi.createScenario(that.appId, scenarioName).then((data) => {
+          ok: (obj) => {
+            taskEngineApi.createScenarioWithTemplate(that.appId, obj.scenarioName, obj.templateID)
+            .then((data) => {
               if ('template' in data && 'metadata' in data.template) {
                 const metadata = data.template.metadata;
                 const scenarioId = metadata.scenario_id;
-                const scenario = scenarioConvertor.initialScenario(metadata);
-                that.saveScenario(scenarioId, scenario).then(() => {
-                  const path = general.composePath(`scenario/${scenarioId}`);
+                if (obj.templateID === '') {
+                  const scenario = scenarioInitializer.initialScenario(metadata);
+                  that.saveScenario(scenarioId, scenario).then(() => {
+                    const path = general.composeV2Path(`scenario/${scenarioId}`);
+                    that.$router.replace(path);
+                  });
+                } else {
+                  const path = general.composeV2Path(`scenario/${scenarioId}`);
                   that.$router.replace(path);
-                });
+                }
               } else {
-                general.popErrorWindow(that, that.i18n.task_engine_v3.error_msg.create_new_scenario_failed, '');
+                that.$notifyFail(`${that.$t('task_engine_v2.scenario_list_page.create_new_scenario_failed')}`);
               }
             }, (err) => {
-              general.popErrorWindow(that, 'createScenario error', err.message);
+              that.$notifyFail(`${that.$t('task_engine_v2.scenario_list_page.create_new_scenario_failed')}:${err.message}`);
             });
           },
         },
@@ -147,12 +179,12 @@ export default {
       });
     },
     editScenario(scenarioId) {
-      const path = general.composePath(`scenario/${scenarioId}`);
+      const path = general.composeV2Path(`scenario/${scenarioId}`);
       this.$router.replace(path);
     },
     deleteScenario(scenario) {
       const that = this;
-      that.$popWarn({
+      that.$popCheck({
         data: {
           msg: that.$t(
             'task_engine_v3.scenario_list_page.ask_delete_confirm',
@@ -165,7 +197,7 @@ export default {
               if ('msg' in data && data.msg === 'Update success') {
                 that.listAllScenarios();
               } else {
-                general.popErrorWindow(that, 'deleteScenario error', 'failed to delete scenario.');
+                that.$notifyFail('deleteScenario error: failed to delete scenario.');
               }
             });
           },
@@ -175,49 +207,24 @@ export default {
     switchScenario(scenario) {
       taskEngineApi.switchScenario(this.appId, scenario.scenarioID, scenario.enable).then(() => {
       }, (err) => {
-        general.popErrorWindow(this, 'switchScenario error', err.message);
+        this.$notifyFail(`switchScenario error:${err.message}`);
       });
     },
-    showImportPop() {
+    importScenarioJSON() {
+      this.$refs.uploadScenarioJSONInput.click();
+    },
+    changeScenarioJSONFile() {
+      const files = this.$refs.uploadScenarioJSONInput.files;
+      const file = files[0] || undefined;
       const that = this;
-      that.$pop({
-        title: that.$t('task_engine_v3.import_scenario_pop.label_title'),
-        component: ImportScenarioPop,
-        disable_ok: true,
-        validate: true,
-        data: {
-          skillName: '',
-        },
-        callback: {
-          ok: (retData) => {
-            const file = retData.file;
-            const importFormat = retData.importFormat;
-            if (importFormat === 'json') {
-              that.uploadScenarioJSON(that.appId, file).then(() => {
-                that.listAllScenarios();
-              });
-            } else if (importFormat === 'xlsx') {
-              const fileName = file.name;
-              const scenarioName = fileName.substring(0, fileName.lastIndexOf('.xlsx'));
-              taskEngineApi.createScenario(that.appId, scenarioName).then((data) => {
-                if ('template' in data && 'metadata' in data.template) {
-                  const metadata = data.template.metadata;
-                  const scenarioId = metadata.scenario_id;
-                  const initialScenario = scenarioConvertor.initialScenario(metadata);
-                  that.uploadSpreadSheet(that.appId, scenarioId, initialScenario, file).then(() => {
-                    const path = general.composePath(`scenario/${scenarioId}`);
-                    that.$router.replace(path);
-                  });
-                } else {
-                  that.$notifyFail(that.$t('task_engine_v3.error_msg.create_new_scenario_failed'));
-                }
-              }, (err) => {
-                that.$notifyFail(`${that.$t('task_engine_v3.error_msg.create_new_scenario_failed')}:${err.message}`);
-              });
-            }
-          },
-        },
-      });
+      if (file.size <= 0 || file.size > 2 * 1024 * 1024) {
+        // maximum size: 2MB
+        that.$notifyFail(that.$t('error_msg.upload_file_size_error'));
+      } else {
+        that.uploadScenarioJSON(this.appId, file).then(() => {
+          this.listAllScenarios();
+        });
+      }
     },
     uploadScenarioJSON(appId, file) {
       const that = this;
@@ -227,39 +234,20 @@ export default {
       ).then((resp) => {
         if (resp.return === 0) {
           that.$notify({ text: that.$t('error_msg.success') });
-          that.$refs.uploadInput.value = '';
+          that.$refs.uploadScenarioJSONInput.value = '';
         } else {
           that.$notifyFail(`${that.$t('error_msg.save_fail')}:${resp.error}`);
         }
       }, (err) => {
-        that.$refs.uploadInput.value = '';
-        that.$notifyFail(`${that.$t('error_msg.save_fail')}:${err.message}`);
-      });
-    },
-    uploadSpreadSheet(appId, scenarioId, scenario, file) {
-      const that = this;
-      return taskEngineApi.uploadSpreadsheet(
-        appId,
-        scenarioId,
-        JSON.stringify(scenario),
-        file,
-      ).then((resp) => {
-        if (resp.return === 0) {
-          that.$notify({ text: that.$t('error_msg.success') });
-          that.$refs.uploadInput.value = '';
-        } else {
-          that.$notifyFail(`${that.$t('error_msg.save_fail')}:${resp.error}`);
-        }
-      }, (err) => {
-        that.$refs.uploadInput.value = '';
+        that.$refs.uploadScenarioJSONInput.value = '';
         that.$notifyFail(`${that.$t('error_msg.save_fail')}:${err.message}`);
       });
     },
   },
-  beforeMount() {},
-  mounted() {
-    this.i18n = i18nUtils.getLocaleMsgs(this.$i18n);
+  beforeMount() {
     this.appId = this.$cookie.get('appid');
+  },
+  mounted() {
     this.listAllScenarios();
   },
 };
@@ -268,16 +256,15 @@ export default {
 <style lang="scss" scoped>
 @import 'styles/variable.scss';
 $row-height: $default-line-height;
-@import "../scss/teVariable.scss";
-
 #scenario-list-page{
   height: 100%;
   .content {
     display: flex;
     flex-direction: column;
-    .header {
-      flex: 0 0 60px;
-      padding: 0 20px;
+    .row {
+      flex: 0 0 auto;
+      padding-left: 20px;
+
       &.title {
         @include font-16px();
         color: $color-font-active;
@@ -285,54 +272,42 @@ $row-height: $default-line-height;
         border-bottom: 1px solid $color-borderline;
         display: flex;
         align-items: center;
-        justify-content: space-between;
       }
-    }
-    .page {
-      flex: 1;
-      @include auto-overflow();
-      @include customScrollbar();
+      &:not(.title) {
+        margin-top: 20px;
+      }
 
-      #toolbar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 20px;
-        #left-buttons {
-          flex: 1;
-          .text-button {
-            margin-right: 10px;
-          }
-        }
-        #right-buttons {
-          flex: 0 0 auto;
-        }
-        #left-buttons, #right-buttons {
-          display: flex;
-          align-items: center;
-        }
+      .text-button {
+        margin-right: 10px;
       }
       input[type=file] {
         visibility: hidden;
-        width: 30px;
       }
       .file-selector {
         & ~ input {
           display: none;
         }
       }
-    }
-    .row {
-      flex: 0 0 auto;
-      padding: 20px;
-      padding-top: 0px;
+
+      #toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-right: 20px;
+        #left-buttons{
+          display: flex;
+          align-items: center;
+        }
+      }
+
       #scenario-grid {
         display: flex;
+        margin-right: 20px;
         height: 82px;
         border-radius: 4px;
         border: solid 1px $color-borderline;
         color: $color-font-active;
-        transition: all .2s ease-in-out;
+
         &:hover {
           box-shadow: 0 4px 9px 0 rgba(115, 115, 115, 0.2), 0 5px 8px 0 rgba(228, 228, 228, 0.5);
         }

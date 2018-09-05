@@ -6,12 +6,16 @@
         <label>{{ title }}</label>
       </div>
       <div v-bind:class="[customContentClasses]" class="content">
-        <component v-if="bindValue === true" @validateSuccess="validatePass"  
+        <component v-if="bindValue === true"
+          @validateSuccess="validatePass"
+          @cancelValidateSuccess="cancelValidatePass"
           @disableOK="disableOK"
           @enableOK="enableOK"
           @cancel="close"
           :is="currentView" v-model="data" :extData="extData" ref="content"></component>
-        <component v-else @validateSuccess="validatePass"  
+        <component v-else
+          @validateSuccess="validatePass"
+          @cancelValidateSuccess="cancelValidatePass"
           @disableOK="disableOK"
           @enableOK="enableOK"
           @cancel="close"
@@ -85,11 +89,10 @@ export default {
     },
     click(ok = true) {
       if (!ok) {
-        this.show = false;
-        this.currentView = undefined;
-        this.$root.$emit('close-window', this);
-        if (this.callCancel && typeof this.callCancel === 'function') {
-          this.callCancel.call(this, this.data);
+        if (this.cancelValidate) {
+          this.$refs.content.$emit('cancelValidate');
+        } else {
+          this.cancelValidatePass();
         }
       }
 
@@ -113,6 +116,18 @@ export default {
         }
       }
     },
+    cancelValidatePass(customData) {
+      this.show = false;
+      this.currentView = undefined;
+      this.$root.$emit('close-window', this);
+      if (this.callCancel && typeof this.callCancel === 'function') {
+        if (customData) {
+          this.callCancel.call(this, customData);
+        } else {
+          this.callCancel.call(this, this.data);
+        }
+      }
+    },
     showWindow(option) {
       const that = this;
       that.show = true;
@@ -124,6 +139,7 @@ export default {
       that.extData = option.extData || {};
       that.currentView = option.component;
       that.validate = option.validate;
+      that.cancelValidate = option.cancelValidate || false;
       that.disable_ok = option.disable_ok || false;
       that.custom_button = option.custom_button || [];
       that.left_button = option.left_button || undefined;
@@ -215,6 +231,8 @@ $pop-spacing: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
+  @include auto-overflow();
+  @include customScrollbar();
   &.slide-in-enter-active, &.slide-in-leave-active {
     transition: all 0.25s ease-in;
     .pop-content {
@@ -234,14 +252,14 @@ $pop-spacing: 24px;
     }
   }
 
-  $pop-max-height: 70vh;
+  $pop-max-height: 90vh;
   .pop-content {
     // animation-name: showup;
     // animation-duration: 0.5s;
 
     background: white;
     // min-width: 300px;
-    max-width: 90%;
+    // max-width: 90%;
     max-height: $pop-max-height;
 
     display: flex;
