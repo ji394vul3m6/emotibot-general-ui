@@ -38,7 +38,7 @@
       ref="warningIcon"
       v-if="warningTooltipValue.msgs && warningTooltipValue.msgs.length > 0"
       v-tooltip="warningTooltipValue">
-      <icon icon-type="warning" :size=22></icon>
+      <icon icon-type="info_warning" :size=22></icon>
     </div>
   </div>
 </div>
