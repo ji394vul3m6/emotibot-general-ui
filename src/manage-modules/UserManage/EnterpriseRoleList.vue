@@ -80,6 +80,7 @@ import roleAPI from '../_api/role';
 export default {
   name: 'enterprise-role-list',
   path: 'enterprise-role-list',
+  privCode: 'manage_user',
   components: {
     NavBar,
     CommandRow,

@@ -18,6 +18,7 @@
                   v-model="filterEnterprise"
                   :options="filterEnterpriseOptions"
                   :showCheckedIcon="false"
+                  :placeholder="$t('general.please_choose')"
                   width="300px"
                 />
               </div>
@@ -59,12 +60,15 @@
                   v-model="filterModule"
                   :options="filterModuleOptions"
                   :showCheckedIcon="false"
+                  :placeholder="$t('general.please_choose')"
                   width="160px"
+                  @input="setFilterActionType"
                 />
                 <dropdown-select
                   v-model="filterActionType"
                   :options="filterActionTypeOptions"
                   :showCheckedIcon="false"
+                  :placeholder="$t('general.please_choose')"
                   width="160px"
                 />
               </div>
@@ -102,8 +106,9 @@ import { mapGetters } from 'vuex';
 import DatetimePicker from '@/components/DateTimePicker';
 import NavBar from '@/components/NavigationBar';
 import datepickerMixin from './_mixin/datepicker';
+import EnterpriseModuleMap from './_mixin/EnterpriseModuleMap';
+import operationType from './_mixin/operationType';
 import UserType from './_data/UserType';
-import ModuleMap from './_data/ModuleMap';
 
 const auditSystemPage = '/manage/audit-system';
 const auditRobotPage = '/manage/audit-robot';
@@ -115,7 +120,7 @@ export default {
     NavBar,
     DatetimePicker,
   },
-  mixins: [datepickerMixin],
+  mixins: [datepickerMixin, EnterpriseModuleMap, operationType],
   data() {
     return {
       userType: undefined,
@@ -134,11 +139,16 @@ export default {
       filterActionTypeOptions: [],
 
       totalLogCount: 0,
+
+      pageIdx: 1,
+      pageLimit: 25,
     };
   },
   computed: {
     ...mapGetters([
       'userInfo',
+      'enterpriseList',
+      'enterpriseID',
     ]),
     canExport() {
       return this.$hasRight('export');
@@ -162,6 +172,43 @@ export default {
     goBack() {
       this.$router.back(); // history forward 1 page
     },
+    doSearch(page) {
+      const that = this;
+      that.pageIdx = page;
+      const searchParams = that.getSearchParams();
+      console.log({ searchParams });
+    },
+    getSearchParams() {
+      const that = this;
+      const params = {
+        page: that.pageIdx,
+        limit: that.pageLimit,
+        start_time: that.start.getTimestamp(),
+        end_time: that.end.getTimestamp(),
+      };
+
+      if (that.isSystemAdmin) {
+        params.enterprise_id = that.enterpriseID;
+      } else {
+        params.enterprise_id = that.filterEnterprise;
+      }
+
+      if (!that.isSystemAdmin || that.expertMode) {
+        that.filterUserId = that.filterUserId.trim();
+        if (that.filterUserId !== '') {
+          params.user_id = that.filterUserId;
+        }
+      }
+      if (that.expertMode) {
+        const targetModule = that.enterpriseModuleList
+          .find(enterpriseModule => enterpriseModule.id === that.filterModule[0]);
+        params.operation = {
+          module: targetModule.privCode,
+          type: that.filterActionType[0] === 'all' ? '' : that.filterActionType[0],
+        };
+      }
+      return params;
+    },
     setPageOption() {
       if (this.userType === UserType.SYSTEM_ADMIN) {
         this.pageOption = {
@@ -176,11 +223,47 @@ export default {
         auditRobot: this.$t('management.audit.robot'),
       };
     },
+    setFilterOption() {
+      console.log(this.enterpriseList);
+      if (this.userType === UserType.SYSTEM_ADMIN) {
+        this.filterEnterpriseOptions = this.enterpriseList.map(enterprise => ({
+          text: enterprise.name,
+          value: enterprise.enterpriseID,
+        }));
+        if (this.enterpriseID && this.enterpriseID !== '') {
+          this.filterEnterprise = [this.enterpriseID];
+        }
+      }
+
+      /** filterModule & filterActionType */
+      const moduleOptions = [];
+      this.enterpriseModuleList.forEach((enterpriseModule) => {
+        moduleOptions.push({
+          text: enterpriseModule.name,
+          value: enterpriseModule.id,
+        });
+      });
+      this.filterModuleOptions = moduleOptions;
+      this.filterModule = [moduleOptions[0].value];
+      this.setFilterActionType();
+    },
+    setFilterActionType() {
+      const currentModule = this.enterpriseModuleList
+        .find(enterpriseModule => enterpriseModule.id === this.filterModule[0]);
+      const actionTypeOptions = currentModule.operation
+        .map(op => ({
+          text: this.operationType[op],
+          value: op,
+        }));
+      this.filterActionTypeOptions = actionTypeOptions;
+      this.filterActionType = [actionTypeOptions[0].value];
+    },
   },
   beforeMount() {
     this.userType = this.userInfo.type;
     this.setPageOption();
     this.isSystemAdmin = this.userType === UserType.SYSTEM_ADMIN;
+    this.setFilterOption();
     this.initDatetimePicker();
   },
 };

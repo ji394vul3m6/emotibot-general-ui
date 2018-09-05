@@ -20,10 +20,11 @@
             <div class="row-title">{{ $t  ('management.audit.filter_robot') }}</div>
             <div class="row-content">
               <dropdown-select
-                v-if="isNormalUser"
+                v-if="!isSystemAdmin"
                 v-model="filterRobot"
                 :options="filterRobotOptions"
                 :showCheckedIcon="false"
+                :placeholder="$t('general.please_choose')"
                 width="300px"
               />
 
@@ -70,12 +71,15 @@
                   v-model="filterModule"
                   :options="filterModuleOptions"
                   :showCheckedIcon="false"
+                  :placeholder="$t('general.please_choose')"
                   width="160px"
+                  @input="setFilterActionType"
                 />
                 <dropdown-select
                   v-model="filterActionType"
                   :options="filterActionTypeOptions"
                   :showCheckedIcon="false"
+                  :placeholder="$t('general.please_choose')"
                   width="160px"
                 />
               </div>
@@ -114,8 +118,9 @@ import DatetimePicker from '@/components/DateTimePicker';
 import NavBar from '@/components/NavigationBar';
 import DropdownCascader from '@/components/basic/DropdownCascader';
 import datepickerMixin from './_mixin/datepicker';
+import RobotModuleMap from './_mixin/RobotModuleMap';
+import operationType from './_mixin/operationType';
 import UserType from './_data/UserType';
-import ModuleMap from './_data/ModuleMap';
 
 const auditEnterprisePage = '/manage/audit-enterprise';
 const auditSystemPage = '/manage/audit-system';
@@ -128,13 +133,14 @@ export default {
     DatetimePicker,
     DropdownCascader,
   },
-  mixins: [datepickerMixin],
+  mixins: [datepickerMixin, RobotModuleMap, operationType],
   data() {
     return {
       userType: undefined,
       currentPage: 'auditRobot',
       pageOption: {},
-      isNormalUser: true,
+      isNormalUser: false,
+      isSystemAdmin: false,
 
       expertMode: false,
 
@@ -212,6 +218,9 @@ export default {
       dayRange: 1,
 
       totalLogCount: 0,
+
+      pageIdx: 1,
+      pageLimit: 25,
     };
   },
   computed: {
@@ -219,6 +228,8 @@ export default {
       'userInfo',
       'robotList',
       'robotID',
+      'enterpriseList',
+      'enterpriseID',
       'privilegeList',
       'privilegeMap',
     ]),
@@ -244,6 +255,42 @@ export default {
     goBack() {
       this.$router.back(); // history forward 1 page
     },
+    doSearch(page) {
+      const that = this;
+      that.pageIdx = page;
+      const searchParams = that.getSearchParams();
+      console.log({ searchParams });
+    },
+    getSearchParams() {
+      const that = this;
+      const params = {
+        page: that.pageIdx,
+        limit: that.pageLimit,
+        start_time: that.start.getTimestamp(),
+        end_time: that.end.getTimestamp(),
+      };
+
+      if (that.userType !== UserType.SYSTEM_ADMIN) {
+        params.enterprise_id = that.enterpriseID;
+        params.robot_id = that.filterRobot;
+      } else {
+        params.enterprsie_id = that.filterRobot[0];
+        params.robot_id = that.filterRobot[1];
+      }
+      if (that.expertMode) {
+        that.filterUserId = that.filterUserId.trim();
+        if (that.filterUserId !== '') {
+          params.user_id = that.filterUserId;
+        }
+        const targetModule = that.robotModuleList
+          .find(robotModule => robotModule.id === that.filterModule[0]);
+        params.operation = {
+          module: targetModule.privCode,
+          type: that.filterActionType[0] === 'all' ? '' : that.filterActionType[0],
+        };
+      }
+      return params;
+    },
     setPageOption() {
       if (this.userType === UserType.SYSTEM_ADMIN) {
         this.pageOption = {
@@ -265,7 +312,7 @@ export default {
     },
     setFilterOption() {
       /** filterRobot */
-      if (this.userType > UserType.SYSTEM_ADMIN) {
+      if (this.userType !== UserType.SYSTEM_ADMIN) {
         this.filterRobotOptions = this.robotList.map(robot => ({
           text: robot.name,
           value: robot.id,
@@ -273,27 +320,61 @@ export default {
         if (this.robotID && this.robotID !== '') {
           this.filterRobot = [this.robotID];
         }
-      } // TODO: else: system admin call api to get full enterprise and robot list
+      } else {
+        // TODO: else: system admin call api to get full enterprise and robot list
+        console.log(this.enterpriseID, this.robotID);
+        if (this.enterpriseID && this.enterpriseID !== '' &&
+            this.robotID && this.robotID !== '') {
+          this.filterRobot = [this.enterpriseID, this.robotID];
+        }
+      }
 
-      // /** filterModule & filterActionType */
-      // const ModuleList = ModuleMap.robotModuleList;
-      // this.filterRobotOptions = this.privilegeList.map((priv) => {
-      //   const moduleKey = priv.code;
-      //   console.log({ moduleKey });
-      //   return {
-      //     text: this.$t(ModuleList[moduleKey].text_path),
-      //     value: ModuleList[moduleKey].id,
-      //   };
-      // });
+      /** filterModule & filterActionType */
+      const moduleOptions = [];
+      if (this.userType === UserType.SYSTEM_ADMIN) {
+        this.robotModuleList.forEach((robotModule) => {
+          moduleOptions.push({
+            text: robotModule.name,
+            value: robotModule.id,
+          });
+        });
+      } else {
+        const privCodes = this.privilegeList.map(priv => priv.code);
+        this.robotModuleList.forEach((robotModule) => {
+          // Only add option if the Enterprise have certain module
+          const hasModule = privCodes
+            .some(code => robotModule.privCode.indexOf(code) !== -1);
+          if (hasModule || robotModule.id === 'all') {
+            moduleOptions.push({
+              text: robotModule.name,
+              value: robotModule.id,
+            });
+          }
+        });
+      }
+      this.filterModuleOptions = moduleOptions;
+      this.filterModule = [moduleOptions[0].value];
+      this.setFilterActionType();
+    },
+    setFilterActionType() {
+      const currentModule = this.robotModuleList
+        .find(robotModule => robotModule.id === this.filterModule[0]);
+      const actionTypeOptions = currentModule.operation
+        .map(op => ({
+          text: this.operationType[op],
+          value: op,
+        }));
+      this.filterActionTypeOptions = actionTypeOptions;
+      this.filterActionType = [actionTypeOptions[0].value];
     },
   },
   beforeMount() {
     this.userType = this.userInfo.type;
     this.setPageOption();
     this.isNormalUser = this.userType === UserType.NORMAL_USER;
+    this.isSystemAdmin = this.userType === UserType.SYSTEM_ADMIN;
+    this.setFilterOption();
     this.initDatetimePicker();
-    console.log('privilegeList', this.privilegeList);
-    console.log('privilegeMap', this.privilegeMap);
   },
 };
 

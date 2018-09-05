@@ -44,12 +44,15 @@
                   v-model="filterModule"
                   :options="filterModuleOptions"
                   :showCheckedIcon="false"
+                  :placeholder="$t('general.please_choose')"
                   width="160px"
+                  @input="setFilterActionType"
                 />
                 <dropdown-select
                   v-model="filterActionType"
                   :options="filterActionTypeOptions"
                   :showCheckedIcon="false"
+                  :placeholder="$t('general.please_choose')"
                   width="160px"
                 />
               </div>
@@ -83,9 +86,12 @@
   </div>
 </template>
 <script>
+import { mapGetters } from 'vuex';
 import DatetimePicker from '@/components/DateTimePicker';
 import NavBar from '@/components/NavigationBar';
 import datepickerMixin from './_mixin/datepicker';
+import SystemModuleMap from './_mixin/SystemModuleMap';
+import operationType from './_mixin/operationType';
 
 const auditEnterprisePage = '/manage/audit-enterprise';
 const auditRobotPage = '/manage/audit-robot';
@@ -97,7 +103,7 @@ export default {
     NavBar,
     DatetimePicker,
   },
-  mixins: [datepickerMixin],
+  mixins: [datepickerMixin, SystemModuleMap, operationType],
   data() {
     return {
       currentPage: 'auditSystem',
@@ -116,9 +122,15 @@ export default {
       filterActionTypeOptions: [],
 
       totalLogCount: 0,
+
+      pageIdx: 1,
+      pageLimit: 25,
     };
   },
   computed: {
+    ...mapGetters([
+      'enterpriseID',
+    ]),
     canExport() {
       return this.$hasRight('export');
     },
@@ -136,8 +148,61 @@ export default {
     goBack() {
       this.$router.back(); // history forward 1 page
     },
+    doSearch(page) {
+      const that = this;
+      that.pageIdx = page;
+      const searchParams = that.getSearchParams();
+      console.log({ searchParams });
+    },
+    getSearchParams() {
+      const that = this;
+      const params = {
+        page: that.pageIdx,
+        limit: that.pageLimit,
+        start_time: that.start.getTimestamp(),
+        end_time: that.end.getTimestamp(),
+      };
+      that.filterUserId = that.filterUserId.trim();
+      if (that.filterUserId !== '') {
+        params.user_id = that.filterUserId;
+      }
+      if (that.expertMode) {
+        const targetModule = that.systemModuleList
+          .find(systemModule => systemModule.id === that.filterModule[0]);
+        params.operation = {
+          module: targetModule.privCode,
+          type: that.filterActionType[0] === 'all' ? '' : that.filterActionType[0],
+        };
+      }
+      return params;
+    },
+    setFilterOption() {
+      /** filterModule & filterActionType */
+      const moduleOptions = [];
+      this.systemModuleList.forEach((systemModule) => {
+        moduleOptions.push({
+          text: systemModule.name,
+          value: systemModule.id,
+        });
+      });
+      this.filterModuleOptions = moduleOptions;
+      this.filterModule = [moduleOptions[0].value];
+      this.setFilterActionType();
+    },
+    setFilterActionType() {
+      const currentModule = this.systemModuleList
+        .find(systemModule => systemModule.id === this.filterModule[0]);
+      const actionTypeOptions = currentModule.operation
+        .map(op => ({
+          text: this.operationType[op],
+          value: op,
+        }));
+      this.filterActionTypeOptions = actionTypeOptions;
+      this.filterActionType = [actionTypeOptions[0].value];
+    },
   },
   beforeMount() {
+    this.setFilterOption();
     this.initDatetimePicker();
   },
 };
