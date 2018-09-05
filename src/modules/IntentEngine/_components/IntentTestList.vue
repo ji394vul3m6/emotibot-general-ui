@@ -374,6 +374,31 @@ export default {
       const refName = `${idx}_intentAction`;
       that.$refs[refName][0].dispatchEvent(new Event('dropdown-reload'));
     },
+    deleteTestPop(intent) {
+      const that = this;
+      const option = {
+        data: {
+          msg: that.$t('intent_engine.manage.delete_test_msg', { name: intent.name }),
+        },
+        callback: {
+          ok: () => {
+            that.deleteTest(intent);
+          },
+        },
+      };
+      that.$popWarn(option);
+    },
+    deleteTest(intent) {
+      const that = this;
+      that.$api.deleteTest(intent.id)
+      .then(() => {
+        that.$emit('deleteTestDone');
+      })
+      .catch((err) => {
+        console.log(err);
+        that.$notifyFail(that.$t('intent_engine.manage.notify.delete_test_fail'));
+      });
+    },
     closeExpandIntent(intent) {
       intent.expand = false;
     },
@@ -800,7 +825,7 @@ export default {
   .intent-block {
     border: 1px solid #DBDBDB;
     border-radius: 4px;
-    transition: all .3s ease-in-out;
+    transition: all .2s ease-in-out;
     &:hover {
       box-shadow: 0 4px 9px 0 rgba(115, 115, 115, 0.2), 0 5px 8px 0 rgba(228, 228, 228, 0.5);
     }
