@@ -68,6 +68,7 @@ export default {
 
       management: '权限管理',
       intent_manage: '意图引擎',
+      integration: '接入部署',
     },
     tools: {
       encrypt: {
