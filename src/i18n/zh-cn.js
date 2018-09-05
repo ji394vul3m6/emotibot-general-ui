@@ -761,10 +761,12 @@ export default {
       positive: '正例',
       negative: '反例',
       tooltip: {
+        page_info: '意图是指用户与机器人对话的目的，定义、训练和测试这些意图有助于机器人完成复杂的多轮对话',
         name_empty: '意图名称不可为空',
         name_duplicate: '意图名称已存在',
         corpus_duplicate_positive: '已存在相同正例语料',
         corpus_duplicate_negative: '已存在相同反例语料',
+        hit_enter_to_save: '按 Enter 保存编辑',
       },
       placeholder: {
         intent_title: '输入意图名称',
@@ -798,6 +800,7 @@ export default {
       success: '意图导入成功',
       fail: '意图导入失败',
       download_template: '下载意图范本',
+      download_test_template: '下载测试题范本',
       support_format: '支援格式 .xlsx',
       upload_file: '上传档案',
       upload_file_undefined: '档案无法辨识',

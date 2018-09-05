@@ -37,9 +37,9 @@
               :options="corpusTypeOption"
               v-model="intent.viewCorpusType"
               @change="changeCorpusViewType($event, intent)"/>
-            <div v-if="!intent.hasCorpusEditing && intent.hasCorpusSelected" class="corpus-delete-btn">
+            <!-- <div v-if="!intent.hasCorpusEditing && intent.hasCorpusSelected" class="corpus-delete-btn">
               <text-button button-type="error" @click="deleteMultiCorpus(intent)">{{ $t('general.delete') }}</text-button>
-            </div>
+            </div> -->
           </div>
           <div class="corpus-block" @mouseout="clearHover(intent)">
             <div v-if="intent.isEditMode" class="corpus-add-row">
@@ -59,16 +59,19 @@
               class="corpus-row" :class="{'editing': corpus.isEdit}"
               @mouseover="hoverCorpus(intent, corpus)"
               >
-              <div v-if="!intent.hasCorpusEditing && (intent.hasCorpusSelected || (intent.isEditMode && corpus.isHover))">
+              <!-- <div v-if="!intent.hasCorpusEditing && (intent.hasCorpusSelected || (intent.isEditMode && corpus.isHover))">
                 <input type="checkbox" :checked="corpus.isSelect" @change="selectCorpus(intent, corpus)">
-              </div>
+              </div> -->
               <div class="corpus">
-                <input v-if="corpus.isEdit" type="text"   v-model="editCorpusContent"
+                <input v-if="corpus.isEdit" type="text" v-model="editCorpusContent"
+                  ref="editCorpus"
+                  v-tooltip="editCorpusTooltip"
                   :placeholder="$t('intent_engine.manage.placeholder.edit_corpus')" 
                   @compositionstart="setCompositionState(true)"
                   @compositionend="setCompositionState(false)"
                   @keydown.enter="detectCompositionState"
-                  @keyup.enter="confirmEditCorpus(intent, corpus)"/>
+                  @keyup.enter="confirmEditCorpus(intent, corpus)"
+                  @blur="leaveEditCorpus(corpus, intent)"/>
                 <!-- <span v-else-if="isSearchMode && corpus.text.indexOf(keyword) !== -1">
                   highlight keywords
                 </span> -->
@@ -139,6 +142,7 @@
             </div>
             <div class="corpus">
               <input v-if="corpus.isEdit" type="text" v-model="editCorpusContent"
+                ref="editCorpus"
                 :placeholder="$t('intent_engine.manage.placeholder.edit_corpus')" 
                 @compositionstart="setCompositionState(true)"
                 @compositionend="setCompositionState(false)"
@@ -243,8 +247,14 @@ export default {
         errorType: true,
         alignLeft: true,
       },
-      corpusTooltip: {
+      corpusTooltip: {  // on newCorpus
         msg: this.$t('intent_engine.manage.tooltip.corpus_duplicate_positive'),
+        eventOnly: true,
+        errorType: true,
+        alignLeft: true,
+      },
+      editCorpusTooltip: {
+        msg: this.$t('intent_engine.manage.tooltip.hit_enter_to_save'),
         eventOnly: true,
         errorType: true,
         alignLeft: true,
@@ -303,10 +313,10 @@ export default {
     },
     newCorpus() {
       if (this.isAddIntent && this.$refs.newCorpus !== undefined) {
-        this.$refs.newCorpus.dispatchEvent(new Event('tooltip-hide'));
+        this.$refs.newCorpus.dispatchEvent(event.createEvent('tooltip-hide'));
       } else if (!this.isAddIntent &&
         this.$refs.newCorpus !== undefined && this.$refs.newCorpus[0] !== undefined) {
-        this.$refs.newCorpus[0].dispatchEvent(new Event('tooltip-hide'));
+        this.$refs.newCorpus[0].dispatchEvent(event.createEvent('tooltip-hide'));
       }
     },
   },
@@ -380,7 +390,7 @@ export default {
           },
         },
       };
-      that.$popCheck(option);
+      that.$popWarn(option);
     },
     deleteIntent(intent) {
       const that = this;
@@ -429,6 +439,9 @@ export default {
       const that = this;
       return that.$api.getCorpus(intent.id, that.keyword)
       .then((res) => {
+        if (res.name !== intent.name) {
+          intent.name = res.name;
+        }
         const corpus = {
           pos: [],
           neg: [],
@@ -487,7 +500,7 @@ export default {
     confirmCancelEditIntent(intent, nextAction) {
       const that = this;
       that.initEditStorage();
-      that.$refs.intentName[0].dispatchEvent(new Event('tooltip-hide'));
+      that.$refs.intentName[0].dispatchEvent(event.createEvent('tooltip-hide'));
       intent.isEditMode = false;
       intent.hasCorpusSelected = false;
       intent.hasCorpusEditing = false;
@@ -534,7 +547,8 @@ export default {
         that.updatedCorpus = that.updatedCorpus
           .filter(cp => that.deletedCorpusIds
             .findIndex(dId => cp.id === dId) === -1);
-        that.$api.updateIntent(intent, that.updatedCorpus, that.addedCorpus, that.deletedCorpusIds)
+        that.$api.updateIntent(intent, that.editIntentName,
+          that.updatedCorpus, that.addedCorpus, that.deletedCorpusIds)
         .then(() => {
           that.callGetCorpus(intent);
           that.initEditStorage();
@@ -702,6 +716,12 @@ export default {
       corpus.isEdit = true;
       intent.hasCorpusEditing = true;
       that.editCorpusContent = corpus.text;
+      that.$nextTick(() => {
+        that.$refs.editCorpus[0].focus();
+        that.$nextTick(() => {
+          that.$refs.editCorpus[0].dispatchEvent(event.createEvent('tooltip-show'));
+        });
+      });
     },
     confirmEditCorpus(intent, corpus) {
       const that = this;
@@ -793,11 +813,11 @@ export default {
           const msg = (isDuplicate === POSITIVE_CORPUS) ? that.$t('intent_engine.manage.tooltip.corpus_duplicate_positive') : that.$t('intent_engine.manage.tooltip.corpus_duplicate_negative');
           that.corpusTooltip.msg = msg;
           if (that.isAddIntent) {
-            that.$refs.newCorpus.dispatchEvent(new Event('tooltip-reload'));
-            that.$refs.newCorpus.dispatchEvent(new Event('tooltip-show'));
+            that.$refs.newCorpus.dispatchEvent(event.createEvent('tooltip-reload'));
+            that.$refs.newCorpus.dispatchEvent(event.createEvent('tooltip-show'));
           } else {
-            that.$refs.newCorpus[0].dispatchEvent(new Event('tooltip-reload'));
-            that.$refs.newCorpus[0].dispatchEvent(new Event('tooltip-show'));
+            that.$refs.newCorpus[0].dispatchEvent(event.createEvent('tooltip-reload'));
+            that.$refs.newCorpus[0].dispatchEvent(event.createEvent('tooltip-show'));
           }
           return;
         }

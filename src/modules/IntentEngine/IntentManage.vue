@@ -4,6 +4,7 @@
       <div class="header">
         <div class="header-title">
           {{ $t('pages.intent_engine.intent_manage') }}
+          <icon iconType="info" :size="16" enableHover v-tooltip="pageInfoTooltip"></icon>
         </div>
         <div class="header-subtitle">
           {{ $t('intent_engine.manage.intent_num', {inum: intentList.length, cnum: corpusCounts}) }}
@@ -111,6 +112,9 @@ export default {
       },
       trainingProgress: 50,
       lastTrainedTime: '2018-07-09 16:53',
+      pageInfoTooltip: {
+        msg: this.$t('intent_engine.manage.tooltip.page_info'),
+      },
     };
   },
   computed: {
@@ -196,11 +200,11 @@ export default {
     },
     exportIntentList(version) {
       if (!this.allowExport) return;
-      const EXPORT_INTENT_URL = 'api/v1/intents/download';
+      const EXPORT_INTENT_URL = 'api/v2/intents/export';
       if (version) {
-        window.open(`${EXPORT_INTENT_URL}?version=${version}`, '_blank');
+        window.open(`${EXPORT_INTENT_URL}?version=${version}`);
       } else {
-        window.open(EXPORT_INTENT_URL, '_blank');
+        window.open(EXPORT_INTENT_URL);
       }
     },
     importIntentList() {
@@ -373,6 +377,11 @@ export default {
   .header-title {
     @include font-16px();
     color: $color-font-active;
+    display: flex;
+    align-items: center;
+    .icon {
+      margin-left: 6px;
+    }
   }
   .header-subtitle {
     @include font-16px();

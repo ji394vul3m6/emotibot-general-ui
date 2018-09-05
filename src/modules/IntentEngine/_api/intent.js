@@ -2,9 +2,9 @@ import qs from 'qs';
 
 // TODO: change these to v2 !!!!!!!!!
 const GET_INTENT_URL = 'api/v2/intents';
-const IMPORT_INTENT_URL = 'api/v1/intents/upload';
-const TRAIN_URL = 'api/v1/intents/train';
-const GET_TRAINING_STATUS_URL = 'api/v1/intents/status';
+const IMPORT_INTENT_URL = 'api/v2/intents/import';
+const TRAIN_URL = 'api/v2/intents/train';
+const GET_TRAINING_STATUS_URL = 'api/v2/intents/status';
 
 const INTENT_ACTION_URL = 'api/v2/intents/intent';
 
@@ -17,12 +17,10 @@ function getIntentsDetail(keyword, version) {
   if (keyword) {
     GET_INTENT_DETAIL_URL = `${GET_INTENT_DETAIL_URL}keyword=${keyword}`;
   }
-  return this.$reqGet(GET_INTENT_DETAIL_URL).then((rsp) => {
-    return rsp.data.result.map((intent) => {
-      intent.count = intent.positive_count + intent.negative_count;
-      return intent;
-    });
-  });
+  return this.$reqGet(GET_INTENT_DETAIL_URL).then(rsp => rsp.data.result.map((intent) => {
+    intent.count = intent.positive_count + intent.negative_count;
+    return intent;
+  }));
 }
 
 function importIntents(file) {
@@ -44,7 +42,7 @@ function addIntent(param) {
   }).then(rsp => rsp.data.result);
 }
 
-function updateIntent(intent, updated, added, deleted) {
+function updateIntent(intent, intentName, updated, added, deleted) {
   const type = {
     pos: 0,
     neg: 1,
@@ -69,7 +67,7 @@ function updateIntent(intent, updated, added, deleted) {
   })));
 
   const param = {
-    name: intent.name,
+    name: intentName,
     update: JSON.stringify(updateObj),
     delete: JSON.stringify(deleted),
   };
@@ -97,35 +95,36 @@ function startTraining() {
 
 function getTrainingStatus(version) {
   const GET_VERSION_TRAINING_STATUS_URL = version ? `${GET_TRAINING_STATUS_URL}?version=${version}` : GET_TRAINING_STATUS_URL;
-  return this.$reqGet(GET_VERSION_TRAINING_STATUS_URL)
-    .then((rsp) => {
-      const result = rsp.data.result;
-      const IE = result.ie_status;
-      // const RE = result.re_status;
-      let status = '';
-
-      /** Use this if Training Button can train both IE and RE */
-      // if (IE === 'TRAINING' || RE === 'TRAINING') {
-      //   status = 'TRAINING';
-      // } else if (IE === 'NOT_TRAINED' || RE === 'NOT_TRAINED') {
-      //   status = 'NOT_TRAINED';
-      // } else if (IE === 'TRAIN_FAILED' || RE === 'TRAIN_FAILED') {
-      //   status = 'TRAIN_FAILED';
-      // } else {
-      //   status = 'TRAINED';
-      // }
-
-      if (IE === 'TRAINING') {
-        status = 'TRAINING';
-      } else if (IE === 'NOT_TRAINED') {
-        status = 'NOT_TRAINED';
-      } else if (IE === 'TRAIN_FAILED') {
-        status = 'TRAIN_FAILED';
-      } else {
-        status = 'TRAINED';
-      }
-      return status;
-    });
+  return Promise.resolve('NOT_TRAINED');
+  // return this.$reqGet(GET_VERSION_TRAINING_STATUS_URL)
+  //   .then((rsp) => {
+  //     const result = rsp.data.result;
+  //     let status = '';
+  //     // const IE = result.ie_status;
+  //     // // const RE = result.re_status;
+//
+  //     /** Use this if Training Button can train both IE and RE */
+  //     // if (IE === 'TRAINING' || RE === 'TRAINING') {
+  //     //   status = 'TRAINING';
+  //     // } else if (IE === 'NOT_TRAINED' || RE === 'NOT_TRAINED') {
+  //     //   status = 'NOT_TRAINED';
+  //     // } else if (IE === 'TRAIN_FAILED' || RE === 'TRAIN_FAILED') {
+  //     //   status = 'TRAIN_FAILED';
+  //     // } else {
+  //     //   status = 'TRAINED';
+  //     // }
+//
+  //     if (result.status === 'TRAINING') {
+  //       status = 'TRAINING';
+  //     } else if (result.status === 'NEED_TRAIN') {
+  //       status = 'NOT_TRAINED';
+  //     } else if (result.status === 'TRAIN_FAILED') {
+  //       status = 'TRAIN_FAILED';
+  //     } else {
+  //       status = 'TRAINED';
+  //     }
+  //     return status;
+  //   });
 }
 
 export default {
