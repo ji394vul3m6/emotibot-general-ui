@@ -204,8 +204,8 @@
     addElseOptions(failedSelectUI, node);
     addElseOptions(succeedSelectUI, node);
 
-    $("#restful_connections").find(".failedThenGoto").val(node.edges[0].to_node_id);
-    $("#restful_connections").find(".succeedThenGoto").val(node.edges[1].to_node_id);
+    $("#restful_connections").find(".failedThenGoto").multiselect('select', node.edges[0].to_node_id);
+    $("#restful_connections").find(".succeedThenGoto").multiselect('select', node.edges[1].to_node_id);
   }
 
   function insertEdgesIntoJSONFromRestfulConnectionsTab(node){
@@ -518,9 +518,21 @@
     addElseOptions(failSelectUI, node);
 
     $("#polarity_connections").find(".failLimit").val(node.edges[0].actions[1].val);
-    $("#polarity_connections").find(".yesThenGoto").val(node.edges[4].to_node_id);
-    $("#polarity_connections").find(".noThenGoto").val(node.edges[5].to_node_id);
-    $("#polarity_connections").find(".failThenGoto").val(node.edges[6].to_node_id);
+    if(node.edges[4].to_node_id === null){ // init
+      $("#polarity_connections").find(".yesThenGoto").multiselect('select', '0');
+    }else{
+      $("#polarity_connections").find(".yesThenGoto").multiselect('select', node.edges[4].to_node_id);
+    }
+    if(node.edges[5].to_node_id === null){ // init
+      $("#polarity_connections").find(".noThenGoto").multiselect('select', '0');
+    }else{
+      $("#polarity_connections").find(".noThenGoto").multiselect('select', node.edges[5].to_node_id);
+    }
+    if(node.edges[6].to_node_id === null){ // init
+      $("#polarity_connections").find(".failThenGoto").multiselect('select', '0');
+    }else{
+      $("#polarity_connections").find(".failThenGoto").multiselect('select', node.edges[6].to_node_id);
+    }
   }
 
   function insertEdgesIntoParamsConnectionsTabUIFromJSON(node){
@@ -535,9 +547,17 @@
     for (var index = 0; index < node.edges.length; index++){
       var edge = node.edges[index];
       if (index == 0 && node.edges.length >= 3){
-        $("#params_connections").find(".successThenGoto").val(node.edges[0].to_node_id);
+        if(node.edges[0].to_node_id === null){ // init
+          $("#params_connections").find(".successThenGoto").multiselect('select', '0');
+        }else{
+          $("#params_connections").find(".successThenGoto").multiselect('select', node.edges[0].to_node_id);
+        }
         $("#params_connections").find(".failLimit").val(node.edges[1].actions[0].val);
-        $("#params_connections").find(".failThenGoto").val(node.edges[2].to_node_id);
+        if(node.edges[2].to_node_id === null){ // init
+          $("#params_connections").find(".failThenGoto").multiselect('select', '0');
+        }else{
+          $("#params_connections").find(".failThenGoto").multiselect('select', node.edges[2].to_node_id);
+        }
         index+=2;
       }else{
         addMoreConditions(1);
@@ -547,10 +567,10 @@
           insertQQEdgesIntoUIFromJSON(eltEdge, edge);
         }else{
           //general edges
-          if(edge.to_node_id == null){
-            eltEdge.find("div.thenGoto > select").val("null");
+          if(edge.to_node_id == null){ // init
+            eltEdge.find("div.thenGoto > select").multiselect('select', 'null');
           }else{
-            eltEdge.find("div.thenGoto > select").val(edge.to_node_id);
+            eltEdge.find("div.thenGoto > select").multiselect('select', edge.to_node_id);
           }
           var rules = edge.condition_rules[0];
           insertConditionsIntoUIFromJSON(rules, eltEdge, '.if-content');
@@ -579,7 +599,11 @@
         index+=2;
       }else if ('edge_type' in edge && edge.edge_type == 'exceedThenGoTo'){
         // insert exceedThenGoTo edge value to UI from JSON
-        $("#connections").find(".exceedThenGoTo").val(edge.to_node_id);
+        if (edge.to_node_id === null){ // init
+          $("#connections").find(".exceedThenGoTo").multiselect('select', '0');
+        }else{
+          $("#connections").find(".exceedThenGoTo").multiselect('select', edge.to_node_id);
+        }
       }else if ('edge_type' in edge && edge.edge_type == 'hidden'){
         continue;
       }else{
@@ -591,9 +615,9 @@
         }else{
           //normal edges
           if(edge.to_node_id == null){
-            eltEdge.find("div.thenGoto > select").val("null");
+            eltEdge.find("div.thenGoto > select").multiselect('select', 'null');
           }else{
-            eltEdge.find("div.thenGoto > select").val(edge.to_node_id);
+            eltEdge.find("div.thenGoto > select").multiselect('select', edge.to_node_id);
           }
           var rules = edge.condition_rules[0];
           insertConditionsIntoUIFromJSON(rules, eltEdge, '.if-content');
@@ -819,6 +843,29 @@
     insertElseIntoJSONFromUI($('#connections'), nodeId, node);
   }
 
+  function insertGlobalConnectionsIntoJSON(nodeId, node){
+    var elems = $('#moreconditions_module_gc > div');
+    for (var idx=0; idx<elems.length; idx++) {
+      var rules = [];
+      var global_vars = [];
+      var elements = $(elems[idx]).find('.if-content > div');
+      //check is qq edge or not
+      if($($(elements[0]).children("select")[1]).val() == "qq_similarity"){
+        insertQQEdgesIntoJSONFromUI(elements[0], node);
+        continue;
+      }else{
+        var rets = getConditionsFromUI(elements, nodeId);
+        var rules = rets[0];
+        var global_vars = rets[1];
+        node.global_vars = node.global_vars.concat(global_vars);
+      }
+
+      var selectElts = $(elems[idx]).find("div.thenGoto > select");
+      var to_node_id = $(selectElts[0]).val();
+      insertEdgeIntoJSONwithRules(rules, to_node_id, node);
+    }
+  }
+
   function toggleExpertMode(){
     $("#settings > .row:eq(3)").slideToggle();
     $("#settings > .row:eq(4)").slideToggle();
@@ -932,6 +979,20 @@
     updateConnections();
     checkScenarioFormat();
     window.$('#'+window.currentNode.node_id+' h4').html(he.encode($('#settings').find('[name=moduleNickname]').val()));
+    uploadScenarioJson();
+  }
+
+  function saveGlobalConnections() {
+    const nodeId = 'global_edges'
+    const pseudoNode = {
+      "node_id": nodeId,
+      "description": "通用连线",
+      "node_type": 'global_edges',
+      "edges": [],
+      "global_vars": [],
+    }
+    insertGlobalConnectionsIntoJSON(nodeId, pseudoNode);
+    window.moduleData.global_edges = pseudoNode.edges
     uploadScenarioJson();
   }
 
@@ -1161,12 +1222,21 @@
         continue;
       }
       //should not choose exit node in entry node
-      if (!(window.currentNode.node_type == "entry" && node.description == 'Exit')){
-        select.append('<option value="' + node.node_id + '">'+ he.encode(node.description) + ' (ID: ' + node.node_id + ')</option>');
-        qq_select.append('<option value="' + node.node_id + '">'+ he.encode(node.description) + ' (ID: ' + node.node_id + ')</option>');
+      if (node.description == 'Exit'){
+        if (window.currentNode && window.currentNode.node_type == "entry") {
+          continue;
+        }
       }
+      select.append('<option value="' + node.node_id + '">'+ he.encode(node.description) + ' (ID: ' + node.node_id + ')</option>');
+      qq_select.append('<option value="' + node.node_id + '">'+ he.encode(node.description) + ' (ID: ' + node.node_id + ')</option>');
     }
     $("#moreconditions_module"+id).sortable();
+    select.val('').multiselect({
+      enableCaseInsensitiveFiltering: true
+    });
+    qq_select.val('').multiselect({
+      enableCaseInsensitiveFiltering: true
+    });
   }
 
   function addMoreTriggers(id) {
@@ -1193,6 +1263,9 @@
         qq_select.append('<option value="' + node.node_id + '">'+ he.encode(node.description) + ' (ID: ' + node.node_id + ')</option>');
       }
     }
+    qq_select.val('').multiselect({
+      enableCaseInsensitiveFiltering: true
+    });
   }
 
   function addMoreNLUParameter(id) {
@@ -1246,13 +1319,14 @@
     if (node.edges.length > 0){
       var id = node.edges[node.edges.length-1].to_node_id;
       if(id == node.node_id){
-        connectionsElseUI.val("null");
-      }
-      else{
-        connectionsElseUI.val(id);
+        connectionsElseUI.multiselect('select', "null");
+      }else if(id === null){
+        connectionsElseUI.multiselect('select', "null");
+      }else{
+        connectionsElseUI.multiselect('select', id);
       }
     }else{
-      connectionsElseUI.val("null");
+      connectionsElseUI.multiselect('select', "null");
     }
   }
 
@@ -1273,6 +1347,10 @@
         connectionsElseUI.append('<option value="' + object.node_id + '">'+ he.encode(object.description) + ' (ID: ' + object.node_id + ')</option>');
       }
     }
+    connectionsElseUI.val('').multiselect({
+      enableCaseInsensitiveFiltering: true,
+      buttonWidth: 'auto'
+    });
   }
 
   function insertQQEdgesIntoUIFromJSON(eltEdge, edge){
@@ -1289,7 +1367,7 @@
       }
       var qqs_element = content.children("div.qq_sentences:last");
       qqs_element.children("input").val(edge.candidate_edges[idx].tar_text);
-      qqs_element.children("select").val(edge.candidate_edges[idx].to_node_id);
+      qqs_element.children("select").multiselect('select', edge.candidate_edges[idx].to_node_id);
     }
   }
 
@@ -1314,16 +1392,14 @@
     }
     var contentSelect = settingsUI.find('[name=parserTypeContent]').children('.multiselect').multiselect({
       includeSelectAllOption: true,
-      enableFiltering: true,
-      maxHeight: 100
+      enableCaseInsensitiveFiltering: true,
     });
     for(var idx in contextList){
       contentSelect.multiselect('select', contextList[idx]);
     }
     var requiredSelect = settingsUI.find('[name=requiredData]').children('.multiselect').multiselect({
       includeSelectAllOption: true,
-      enableFiltering: true,
-      maxHeight: 100
+      enableCaseInsensitiveFiltering: true,
     });
     for(var idx in skipKeyList){
       requiredSelect.multiselect('select', skipKeyList[idx]['key'].replace("_"+node.node_id,''));
@@ -1360,6 +1436,10 @@
         content.children("div.triggers0").children("select").val(fun.content[0]['compare']);
         content.children("div.triggers2").children("input").val(fun.content[0]['key1']);
         content.children("div.triggers3").children("input").val(fun.content[0]['key2']);
+      }
+      else if (type == "assign_value") {
+        content.children("div.triggers2").children("input").val(fun.content[0]['key']);
+        content.children("div.triggers3").children("input").val(fun.content[0]['val']);
       }
       else if (type == "regular_exp") {
         content.children("div.triggers0").children("input").val(fun.content['pattern']);
@@ -1609,6 +1689,18 @@
           ]
         }
       }
+      else if (type == "assign_value") {
+        fun = {
+          "function_name": type,
+          "content": [
+            {
+              "key": $(triggers2).val().trim(),
+              "val": $(triggers3).val().trim(),
+              "operation": "set_to_global_info"
+            }
+          ]
+        }
+      }
       else if (type == "regular_exp") {
         var operations = [];
         for(var rid=0; rid<reg_exps.length; rid++){
@@ -1710,7 +1802,7 @@
           "content": $(triggers0).val() == null ? '' : $(triggers0).val().toString().trim(),
           "content_text_array": keyArray,
         }
-        global_vars = keyArray;
+        global_vars = global_vars.concat(keyArray);
       }else {
         fun = {
           "function_name": type,
@@ -2142,8 +2234,7 @@
     }
     $(obj).parent().find("span.name0").children('.multiselect').multiselect({
       includeSelectAllOption: true,
-      enableFiltering: true,
-      maxHeight: 100
+      enableCaseInsensitiveFiltering: true
     });
   }
 
@@ -2197,6 +2288,7 @@
       searchType.append('<option value="counter_check">轮次检查</option>');
       searchType.append('<option value="user_custom_transform">转换数据</option>');
       searchType.append('<option value="regular_exp_from_var">正则表示式</option>');
+      searchType.append('<option value="assign_value">赋值</option>');
     }else if (obj.value=="cu") {
       searchType.append('<option value="cu_parser">语句解析数据提取</option>');
       searchType.append('<option value="custom_cu_parser">自定义语句解析数据提取</option>');
@@ -2282,7 +2374,22 @@
         $(obj).parent().find("span.name3").html(CONSTANT.KEY);
         insertGlobalVarsTypeahead($(obj).parent().children("div.triggers2").find("input"));
         insertGlobalVarsTypeahead($(obj).parent().children("div.triggers3").find("input"));
-    }else if(obj.value == "list_length_match"){
+    }else if(obj.value=="assign_value"){
+      $(obj).parent().children("div.triggers0").hide();
+      $(obj).parent().children("div.triggers1").hide();
+      $(obj).parent().children("div.triggers2").show();
+      $(obj).parent().children("div.triggers3").show();
+      $(obj).parent().children("div.qq_threshold").hide();
+      $(obj).parent().children("div.qq_sentences").hide();
+      $(obj).parent().children("div.reg_exp").hide();
+      $(obj).parent().children("a.andIf").show();
+      $(obj).parent().parent().parent().children("div.thenGoto").show();
+
+      $(obj).parent().find("span.name2").html(CONSTANT.KEY);
+      $(obj).parent().find("span.name3").html(CONSTANT.VALUE);
+      insertGlobalVarsTypeahead($(obj).parent().children("div.triggers2").find("input"));
+      insertGlobalVarsTypeahead($(obj).parent().children("div.triggers3").find("input"));
+  } else if(obj.value == "list_length_match"){
         var triggers0 = $(obj).parent().children("div.triggers0");
         triggers0.show();
         triggers0.children(".btn-group").remove();
@@ -2408,8 +2515,7 @@
           '</select>');
         triggers0.children('.multiselect').multiselect({
           includeSelectAllOption: true,
-          enableFiltering: true,
-          maxHeight: 100
+          enableCaseInsensitiveFiltering: true,
         });
         $(obj).parent().children("div.triggers1").hide();
         $(obj).parent().children("div.triggers2").hide();
@@ -2432,8 +2538,7 @@
           '</select>');
         triggers0.children('.multiselect').multiselect({
           includeSelectAllOption: true,
-          enableFiltering: true,
-          maxHeight: 100
+          enableCaseInsensitiveFiltering: true,
         });
         $(obj).parent().children("div.triggers1").hide();
         $(obj).parent().children("div.triggers2").hide();
@@ -2456,8 +2561,7 @@
           '</select>');
         triggers0.children('.multiselect').multiselect({
           includeSelectAllOption: true,
-          enableFiltering: true,
-          maxHeight: 100
+          enableCaseInsensitiveFiltering: true,
         });
         $(obj).parent().children("div.triggers1").hide();
         $(obj).parent().children("div.triggers2").hide();
@@ -2713,4 +2817,9 @@
   window.insertGlobalVarsIntoEditor = insertGlobalVarsIntoEditor;
   window.loadNodeEditPage = loadNodeEditPage;
   window.checkIfNodeChanged = checkIfNodeChanged;
+  window.saveGlobalConnections = saveGlobalConnections;
+  window.insertConditionsIntoUIFromJSON = insertConditionsIntoUIFromJSON;
+  window.insertQQEdgesIntoUIFromJSON = insertQQEdgesIntoUIFromJSON;
+  window.getMappingTableList = getMappingTableList;
+  window.getTemplateMappingTableList = getTemplateMappingTableList;
 })();
