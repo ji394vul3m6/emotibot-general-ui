@@ -67,6 +67,12 @@ export default {
         description: context.$t('task_engine_v2.node_type.dialogue_description'),
       },
       {
+        type: 'parameter_collecting',
+        name: context.$t('task_engine_v2.node_type.parameter_collecting'),
+        image: 'te_dialoague.png',
+        description: context.$t('task_engine_v2.node_type.parameter_collecting_description'),
+      },
+      {
         type: 'restful',
         name: context.$t('task_engine_v2.node_type.restful'),
         image: 'te_dialoague.png',
@@ -77,12 +83,6 @@ export default {
         name: context.$t('task_engine_v2.node_type.nlu_pc'),
         image: 'te_dialoague.png',
         description: context.$t('task_engine_v2.node_type.nlu_pc_description'),
-      },
-      {
-        type: 'parameter_collecting',
-        name: context.$t('task_engine_v2.node_type.parameter_collecting'),
-        image: 'te_dialoague.png',
-        description: context.$t('task_engine_v2.node_type.parameter_collecting_description'),
       },
     ];
     return nodeTypes;
