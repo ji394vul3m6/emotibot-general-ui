@@ -27,3 +27,12 @@ if (typeof Object.assign !== 'function') {
 if (typeof Number.isInteger !== 'function') {
   Number.isInteger = value => value === parseInt(value, 10);
 }
+
+if (typeof window.Event !== 'function') {
+  const eventConstructor = function Event(eventName) {
+    const event = document.createEvent('Event');
+    event.initEvent(eventName, true, true);
+    return event;
+  };
+  window.Event = eventConstructor;
+}

@@ -4,9 +4,6 @@
       <g class="paths" v-for="p in paths" >
         <path :d="p.data" :style="p.style"></path>
       </g>
-      <g class="linking-path" v-if="linkingPath.show === true">
-        <path :d="linkingPath.data" :style="linkingPathStyle"></path>
-      </g>
     </svg>
   </div>
 </template>
@@ -21,22 +18,18 @@ export default {
       type: Array,
       default: [],
     },
-    linkingEdge: {
-      type: Object,
-      default: [],
+    nodeBlockWidth: {
+      type: Number,
+      default: 230,
+    },
+    nodeBlockHeight: {
+      type: Number,
+      default: 120,
     },
   },
   data() {
     return {
       radius: 60,
-      halfWidth: 115,
-      halfHeight: 60,
-      linkingPath: {},
-      linkingPathStyle: {
-        stroke: 'grey',
-        strokeWidth: 5,
-        fill: 'none',
-      },
     };
   },
   computed: {
@@ -51,19 +44,14 @@ export default {
       });
       return pathList;
     },
-  },
-  watch: {
-    linkingEdge: {
-      handler() {
-        this.linkingPath = {
-          show: this.linkingEdge.show,
-          data: this.computeLinkingPathData(this.linkingEdge),
-          style: this.linkingEdge.style,
-        };
-      },
-      deep: true,
+    halfBlockWidth() {
+      return this.nodeBlockWidth / 2;
+    },
+    halfBlockHeight() {
+      return this.nodeBlockHeight / 2;
     },
   },
+  watch: {},
   methods: {
     // p
     // |
@@ -76,12 +64,12 @@ export default {
       let sx = edge.x2;
       let sy = edge.y2;
 
-      if (Math.abs(sx - px) <= this.halfWidth) {
+      if (Math.abs(sx - px) <= this.halfBlockWidth) {
         const meanX = (px + sx) / 2;
         px = meanX;
         sx = meanX;
       }
-      if (Math.abs(sy - py) <= this.halfHeight) {
+      if (Math.abs(sy - py) <= this.halfBlockHeight) {
         const meanY = (py + sy) / 2;
         py = meanY;
         sy = meanY;
@@ -108,14 +96,6 @@ export default {
       const data = `M ${px} ${py} L ${qx} ${qy} Q ${cx} ${cy}, ${rx} ${ry} L ${sx} ${sy}`;
       return data;
     },
-    computeLinkingPathData(edge) {
-      const px = edge.x1;
-      const py = edge.y1;
-      const qx = edge.x2;
-      const qy = edge.y2;
-      const data = `M ${px} ${py} L ${qx} ${qy}`;
-      return data;
-    },
     distance(x1, y1, x2, y2) {
       return Math.sqrt(((x2 - x1) * (x2 - x1)) + ((y2 - y1) * (y2 - y1)));
     },
@@ -130,8 +110,6 @@ export default {
 @import 'styles/variable.scss';
 
 #edges{
-  position: relative;
-  pointer-events: none;
   width: 100%;
   height: 100%;
   .svg{

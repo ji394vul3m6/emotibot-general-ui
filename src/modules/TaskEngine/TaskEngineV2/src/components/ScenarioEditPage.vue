@@ -16,6 +16,8 @@
           :key="nodeBlock.data.nodeId"
           :x="nodeBlock.x"
           :y="nodeBlock.y"
+          :nodeBlockWidth="nodeBlockWidth"
+          :nodeBlockHeight="nodeBlockHeight"
           :nodeTypeName="getNodeTypeName(nodeBlock.data.nodeType)"
           :initialNode="nodeBlock.data"
           :toNodeOptions="toNodeOptions"
@@ -32,17 +34,22 @@
       <edges class="edges"
         ref="edges"
         :edges="filteredEdges"
-        :linkingEdge="linkingEdge"
+        :nodeBlockWidth="nodeBlockWidth"
+        :nodeBlockHeight="nodeBlockHeight"
       ></edges>
+      <edges-on-top class="edgesOnTop"
+        ref="edgesOnTop"
+        :linkingEdge="linkingEdge"
+      ></edges-on-top>
     </div>
     <div class="addNewEdgeDropdown"
       ref="addNewEdgeDropdown"
-      v-dropdown="addNewEdgeDropdown()"
-      :style="addNewEdgeDropdownStyle">
+      v-dropdown="addNewEdgeDropdown"
+      :style="addNewEdgeDropdownStyle"
+      @dropdownHidden="dropdownHidden()">
     </div>
   </div>
   <div class="side-panel">
-    <!-- <label-switch class="panel-tabs" :options="panelTabOptions" @change=""/> -->
     <div class="node-option-nav-bar">
       <div class="node-option-title">{{$t("task_engine_v2.scenario_edit_page.add_node")}}</div>
       <div class="node-option-instruction">{{$t("task_engine_v2.scenario_edit_page.add_node_instruction")}}</div>
@@ -138,6 +145,7 @@ import taskEngineApi from '@/modules/TaskEngine/_api/taskEngine';
 import general from '@/modules/TaskEngine/_utils/general';
 import NodeBlock from './NodeBlock';
 import Edges from './Edges';
+import EdgesOnTop from './EdgesOnTop';
 import GlobalEdgeEditPop from './GlobalEdgeEditPop';
 import VarTemplateEditPop from './VarTemplateEditPop';
 import ScenarioSettingsEditPop from './ScenarioSettingsEditPop';
@@ -150,6 +158,7 @@ export default {
   components: {
     'node-block': NodeBlock,
     edges: Edges,
+    'edges-on-top': EdgesOnTop,
   },
   data() {
     return {
@@ -164,6 +173,8 @@ export default {
       nodeOptions: [],
       canvasWidth: 2000,
       canvasHeight: 2000,
+      nodeBlockWidth: 230,
+      nodeBlockHeight: 120,
       rainbowColors: [],
       showTopPanelButtonLabel: {
         setting: false,
@@ -176,6 +187,10 @@ export default {
       sidePanelTogleIcon: '-',
       showNodeOptions: true,
       linking: false,
+      addNewEdgeDropdown: {
+        options: [],
+        width: '220px',
+      },
       addNewEdgeDropdownStyle: {},
       linkingEdge: {
         show: false,
@@ -330,10 +345,10 @@ export default {
         edgeMap[key] = 1;
         const nodeBlockMap = this.idToNodeBlock;
         filteredEdges.push({
-          x1: nodeBlockMap[edge.from_id].x + 115,
-          y1: nodeBlockMap[edge.from_id].y + 60,
-          x2: nodeBlockMap[edge.to_id].x + 115,
-          y2: nodeBlockMap[edge.to_id].y + 60,
+          x1: nodeBlockMap[edge.from_id].x + this.halfBlockWidth,
+          y1: nodeBlockMap[edge.from_id].y + this.halfBlockHeight,
+          x2: nodeBlockMap[edge.to_id].x + this.halfBlockWidth,
+          y2: nodeBlockMap[edge.to_id].y + this.halfBlockHeight,
           style: {
             stroke: this.rainbowColors[idx % this.rainbowColors.length],
             strokeWidth: 5,
@@ -342,17 +357,6 @@ export default {
         });
         idx += 1;
       });
-      filteredEdges.push({
-        x1: 282,
-        y1: 1301,
-        x2: 500,
-        y2: 1301,
-        style: {
-          stroke: this.rainbowColors[idx % this.rainbowColors.length],
-          strokeWidth: 5,
-          fill: 'none',
-        },
-      });
       return filteredEdges;
     },
     canvasStyle() {
@@ -360,6 +364,12 @@ export default {
         width: `${this.canvasWidth}px`,
         height: `${this.canvasHeight}px`,
       };
+    },
+    halfBlockWidth() {
+      return this.nodeBlockWidth / 2;
+    },
+    halfBlockHeight() {
+      return this.nodeBlockHeight / 2;
     },
   },
   watch: {
@@ -664,13 +674,13 @@ export default {
     canvasMouseUp(e) {
       if (!this.linking) return;
       this.linking = false;
-      this.linkingEdge.show = false;
       this.stopCanvasClickPropagationOnce = true;
       const pageRect = this.$refs.page.getBoundingClientRect();
       this.addNewEdgeDropdownStyle = {
-        left: `${e.clientX - pageRect.x}px`,
-        top: `${e.clientY - pageRect.y}px`,
+        left: `${e.clientX - pageRect.x - this.halfBlockWidth}px`,
+        top: `${e.clientY - pageRect.y - this.halfBlockHeight}px`,
       };
+      this.renderAddNewEdgeDropdown();
       this.$refs.addNewEdgeDropdown.click();
     },
     canvasClick(e) {
@@ -679,48 +689,87 @@ export default {
         this.stopCanvasClickPropagationOnce = false;
       }
     },
-    addNewEdgeDropdown() {
-      const options = [
+    dropdownHidden() {
+      this.linkingEdge.show = false;
+    },
+    renderAddNewEdgeDropdown() {
+      const sourceIndex = this.linkingEdge.source;
+      if (!this.nodeBlocks[sourceIndex] || !this.nodeBlocks[sourceIndex].data) {
+        this.addNewEdgeDropdown.options = [];
+        return;
+      }
+      const sourceNode = this.nodeBlocks[sourceIndex].data;
+      const sourceNodeType = sourceNode.nodeType;
+      const defaultOptions = [
         {
-          text: '当出话超过上限',
+          text: this.$t('task_engine_v2.scenario_edit_page.new_edge_else_into'),
           onclick: () => {
             const newNode = this.addNewLinkingNode(this.linkingEdge);
-            const sourceIndex = this.linkingEdge.source;
-            this.nodeBlocks[sourceIndex].data.edgeTab.exceedThenGoto = newNode.nodeId;
+            sourceNode.edgeTab.elseInto = newNode.nodeId;
             this.saveScenario();
+            this.dropdownHidden();
           },
         },
         {
-          text: '当所有规则都无法符合时',
-          onclick: () => {
-            const newNode = this.addNewLinkingNode(this.linkingEdge);
-            const sourceIndex = this.linkingEdge.source;
-            this.nodeBlocks[sourceIndex].data.edgeTab.elseInto = newNode.nodeId;
-            this.saveScenario();
-          },
-        },
-        {
-          text: '自定义',
+          text: this.$t('task_engine_v2.scenario_edit_page.new_edge_normal'),
           onclick: () => {
             const newNode = this.addNewLinkingNode(this.linkingEdge);
             const newEdge = scenarioInitializer.initialEdge();
             newEdge.id = this.$uuid.v1();
             newEdge.to_node_id = newNode.nodeId;
-            const sourceIndex = this.linkingEdge.source;
-            this.nodeBlocks[sourceIndex].data.edgeTab.normalEdges.push(newEdge);
+            sourceNode.edgeTab.normalEdges.push(newEdge);
             this.saveScenario();
+            this.dropdownHidden();
           },
         },
       ];
-      return {
-        options,
-        width: '220px',
-      };
+      let options = [];
+      if (sourceNodeType === 'restful') {
+        options = [
+          {
+            text: this.$t('task_engine_v2.scenario_edit_page.new_edge_restful_success'),
+            onclick: () => {
+              const newNode = this.addNewLinkingNode(this.linkingEdge);
+              sourceNode.restfulEdgeTab.restfulSucceedThenGoto = newNode.nodeId;
+              this.saveScenario();
+              this.dropdownHidden();
+            },
+          },
+          {
+            text: this.$t('task_engine_v2.scenario_edit_page.new_edge_restful_fail'),
+            onclick: () => {
+              const newNode = this.addNewLinkingNode(this.linkingEdge);
+              sourceNode.restfulEdgeTab.restfulFailedThenGoto = newNode.nodeId;
+              this.saveScenario();
+              this.dropdownHidden();
+            },
+          },
+        ];
+      } else if (sourceNodeType === 'entry') {
+        options = defaultOptions;
+      } else {
+        options = [
+          {
+            text: this.$t('task_engine_v2.scenario_edit_page.new_edge_exceed_then_goto'),
+            onclick: () => {
+              const newNode = this.addNewLinkingNode(this.linkingEdge);
+              sourceNode.edgeTab.exceedThenGoto = newNode.nodeId;
+              this.saveScenario();
+              this.dropdownHidden();
+            },
+          },
+          ...defaultOptions,
+        ];
+      }
+      this.addNewEdgeDropdown.options = options;
+      this.$refs.addNewEdgeDropdown.dispatchEvent(new Event('dropdown-reload'));
     },
     addNewLinkingNode(linkingEdge) {
       const nodeType = 'dialogue';
       const nodeName = this.getNodeTypeName(nodeType);
-      return this.addNewNode(nodeType, nodeName, linkingEdge.x2, linkingEdge.y2);
+      const x = linkingEdge.x2 - this.halfBlockWidth;
+      const y = linkingEdge.y2 - this.halfBlockHeight;
+      return this.addNewNode(nodeType, nodeName, x, y);
     },
     addNewNode(nodeType, nodeName, x, y) {
       const nodeDialogueCntLimit = this.setting.nodeDialogueCntLimit;
@@ -763,6 +812,7 @@ export default {
     @include auto-overflow();
     @include customScrollbar();  
     .canvas-page{
+      position: relative;
       background: #F1F4F5;
       background-size: 20px 20px;
       background-image: linear-gradient(to right, #DDDDDD 1px, transparent 1px), linear-gradient(to bottom, #DDDDDD 1px, transparent 1px);

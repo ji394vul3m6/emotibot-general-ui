@@ -101,6 +101,14 @@ export default {
       type: Boolean,
       default: false,
     },
+    nodeBlockWidth: {
+      type: Number,
+      default: 230,
+    },
+    nodeBlockHeight: {
+      type: Number,
+      default: 120,
+    },
   },
   data() {
     return {
@@ -120,6 +128,10 @@ export default {
       return {
         top: `${this.y}px`,
         left: `${this.x}px`,
+        width: `${this.nodeBlockWidth}px`,
+        height: `${this.nodeBlockHeight}px`,
+        'min-width': `${this.nodeBlockWidth}px`,
+        'min-height': `${this.nodeBlockHeight}px`,
       };
     },
   },
@@ -261,10 +273,6 @@ export default {
   position: relative;
   display: flex;
   flex-direction: column;
-  min-width: 230px;
-  min-height: 120px;
-  width: 230px;
-  height: 120px;
   background: white;
   position: absolute;
   border: 1px solid $color-borderline;
