@@ -733,35 +733,45 @@ export default {
       const sourceNode = this.nodeBlocks[sourceIndex].data;
       const sourceNodeType = sourceNode.nodeType;
       let dstNodeId = toNodeId;
-      const defaultOptions = [
-        {
-          text: this.$t('task_engine_v2.scenario_edit_page.new_edge_else_into'),
-          onclick: () => {
-            if (dstNodeId === undefined) {
-              const newNode = this.addNewLinkingNode(this.linkingEdge);
-              dstNodeId = newNode.nodeId;
-            }
-            sourceNode.edgeTab.elseInto = dstNodeId;
-            this.saveScenario();
-            this.dropdownHidden();
-          },
+      const exceedThenGotoOption = {
+        text: this.$t('task_engine_v2.scenario_edit_page.new_edge_exceed_then_goto'),
+        onclick: () => {
+          if (dstNodeId === undefined) {
+            const newNode = this.addNewLinkingNode(this.linkingEdge);
+            dstNodeId = newNode.nodeId;
+          }
+          sourceNode.edgeTab.exceedThenGoto = dstNodeId;
+          this.saveScenario();
+          this.dropdownHidden();
         },
-        {
-          text: this.$t('task_engine_v2.scenario_edit_page.new_edge_normal'),
-          onclick: () => {
-            if (dstNodeId === undefined) {
-              const newNode = this.addNewLinkingNode(this.linkingEdge);
-              dstNodeId = newNode.nodeId;
-            }
-            const newEdge = scenarioInitializer.initialEdge();
-            newEdge.id = this.$uuid.v1();
-            newEdge.to_node_id = dstNodeId;
-            sourceNode.edgeTab.normalEdges.push(newEdge);
-            this.saveScenario();
-            this.dropdownHidden();
-          },
+      };
+      const elseIntoOption = {
+        text: this.$t('task_engine_v2.scenario_edit_page.new_edge_else_into'),
+        onclick: () => {
+          if (dstNodeId === undefined) {
+            const newNode = this.addNewLinkingNode(this.linkingEdge);
+            dstNodeId = newNode.nodeId;
+          }
+          sourceNode.edgeTab.elseInto = dstNodeId;
+          this.saveScenario();
+          this.dropdownHidden();
         },
-      ];
+      };
+      const newNormalEdgeOption = {
+        text: this.$t('task_engine_v2.scenario_edit_page.new_edge_normal'),
+        onclick: () => {
+          if (dstNodeId === undefined) {
+            const newNode = this.addNewLinkingNode(this.linkingEdge);
+            dstNodeId = newNode.nodeId;
+          }
+          const newEdge = scenarioInitializer.initialEdge();
+          newEdge.id = this.$uuid.v1();
+          newEdge.to_node_id = dstNodeId;
+          sourceNode.edgeTab.normalEdges.push(newEdge);
+          this.saveScenario();
+          this.dropdownHidden();
+        },
+      };
       let options = [];
       if (sourceNodeType === 'restful') {
         options = [
@@ -790,23 +800,48 @@ export default {
             },
           },
         ];
-      } else if (sourceNodeType === 'entry') {
-        options = defaultOptions;
-      } else {
+      } else if (sourceNodeType === 'parameter_collecting') {
         options = [
           {
-            text: this.$t('task_engine_v2.scenario_edit_page.new_edge_exceed_then_goto'),
+            text: this.$t('task_engine_v2.scenario_edit_page.new_edge_pc_success'),
             onclick: () => {
               if (dstNodeId === undefined) {
                 const newNode = this.addNewLinkingNode(this.linkingEdge);
                 dstNodeId = newNode.nodeId;
               }
-              sourceNode.edgeTab.exceedThenGoto = dstNodeId;
-              this.saveScenario();
+              const edges = sourceNode.paramsCollectingEdgeTab.normalEdges;
+              const succeedEdge = edges.find(edge => edge.edge_type === 'pc_succeed');
+              if (succeedEdge) {
+                succeedEdge.to_node_id = dstNodeId;
+                this.saveScenario();
+              }
               this.dropdownHidden();
             },
           },
-          ...defaultOptions,
+          {
+            text: this.$t('task_engine_v2.scenario_edit_page.new_edge_pc_fail'),
+            onclick: () => {
+              if (dstNodeId === undefined) {
+                const newNode = this.addNewLinkingNode(this.linkingEdge);
+                dstNodeId = newNode.nodeId;
+              }
+              const edges = sourceNode.paramsCollectingEdgeTab.normalEdges;
+              const failedEdge = edges.find(edge => edge.edge_type === 'pc_failed');
+              if (failedEdge) {
+                failedEdge.to_node_id = dstNodeId;
+                this.saveScenario();
+              }
+              this.dropdownHidden();
+            },
+          },
+        ];
+      } else if (sourceNodeType === 'entry' || sourceNodeType === 'nlu_pc') {
+        options = [elseIntoOption, newNormalEdgeOption];
+      } else {
+        options = [
+          exceedThenGotoOption,
+          elseIntoOption,
+          newNormalEdgeOption,
         ];
       }
       this.addNewEdgeDropdown.options = options;
@@ -821,7 +856,7 @@ export default {
     },
     addNewNode(nodeType, nodeName, x, y) {
       const nodeDialogueCntLimit = this.setting.nodeDialogueCntLimit;
-      const node = scenarioInitializer.initialNode('dialogue', nodeName, nodeDialogueCntLimit);
+      const node = scenarioInitializer.initialNode(nodeType, nodeName, nodeDialogueCntLimit);
       this.nodeBlocks.push({
         x,
         y,
@@ -873,8 +908,8 @@ export default {
     display: flex;
     flex-direction: column;
     position: absolute;
-    right: 0;
-    top: 0;
+    right: 0px;
+    top: 20px;
     // z-index: 100;
     width: 420px;
     // height: calc(100% - 8px);

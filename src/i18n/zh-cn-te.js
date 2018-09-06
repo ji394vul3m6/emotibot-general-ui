@@ -49,6 +49,8 @@ export default {
       new_edge_normal: '自定义',
       new_edge_restful_success: '当调用成功',
       new_edge_restful_fail: '当调用失败',
+      new_edge_pc_success: '成功取得所有参数',
+      new_edge_pc_fail: '连续解析失败超过上限',
     },
     node_edit_page: {
       tabs: {
