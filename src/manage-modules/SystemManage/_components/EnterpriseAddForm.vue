@@ -162,6 +162,7 @@ export default {
       isPasswordTooltipShown: false,
       isCheckPasswordTooltipShown: false,
       isEmailTooltipShown: false,
+      isPhoneTooltipShown: false,
 
       userNameErrorMsg: '',
       passwordErrorMsg: '',
