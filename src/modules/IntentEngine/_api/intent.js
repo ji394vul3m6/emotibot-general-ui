@@ -93,38 +93,39 @@ function startTraining() {
   return this.$reqPost(`${TRAIN_URL}?engine=intent_engine`);
 }
 
-function getTrainingStatus(version) {
-  const GET_VERSION_TRAINING_STATUS_URL = version ? `${GET_TRAINING_STATUS_URL}?version=${version}` : GET_TRAINING_STATUS_URL;
-  return Promise.resolve('NOT_TRAINED');
-  // return this.$reqGet(GET_VERSION_TRAINING_STATUS_URL)
-  //   .then((rsp) => {
-  //     const result = rsp.data.result;
-  //     let status = '';
-  //     // const IE = result.ie_status;
-  //     // // const RE = result.re_status;
-//
-  //     /** Use this if Training Button can train both IE and RE */
-  //     // if (IE === 'TRAINING' || RE === 'TRAINING') {
-  //     //   status = 'TRAINING';
-  //     // } else if (IE === 'NOT_TRAINED' || RE === 'NOT_TRAINED') {
-  //     //   status = 'NOT_TRAINED';
-  //     // } else if (IE === 'TRAIN_FAILED' || RE === 'TRAIN_FAILED') {
-  //     //   status = 'TRAIN_FAILED';
-  //     // } else {
-  //     //   status = 'TRAINED';
-  //     // }
-//
-  //     if (result.status === 'TRAINING') {
-  //       status = 'TRAINING';
-  //     } else if (result.status === 'NEED_TRAIN') {
-  //       status = 'NOT_TRAINED';
-  //     } else if (result.status === 'TRAIN_FAILED') {
-  //       status = 'TRAIN_FAILED';
-  //     } else {
-  //       status = 'TRAINED';
-  //     }
-  //     return status;
-  //   });
+function getTrainingStatus() {
+  // const GET_VERSION_TRAINING_STATUS_URL = version ?
+  // `${GET_TRAINING_STATUS_URL}?version=${version}` : GET_TRAINING_STATUS_URL;
+  // return Promise.resolve('NOT_TRAINED');
+  return this.$reqGet(GET_TRAINING_STATUS_URL)
+    .then((rsp) => {
+      const result = rsp.data.result;
+      let status = '';
+      // const IE = result.ie_status;
+      // // const RE = result.re_status;
+
+      /** Use this if Training Button can train both IE and RE */
+      // if (IE === 'TRAINING' || RE === 'TRAINING') {
+      //   status = 'TRAINING';
+      // } else if (IE === 'NOT_TRAINED' || RE === 'NOT_TRAINED') {
+      //   status = 'NOT_TRAINED';
+      // } else if (IE === 'TRAIN_FAILED' || RE === 'TRAIN_FAILED') {
+      //   status = 'TRAIN_FAILED';
+      // } else {
+      //   status = 'TRAINED';
+      // }
+
+      if (result.status === 'TRAINING') {
+        status = 'TRAINING';
+      } else if (result.status === 'NEED_TRAIN') {
+        status = 'NOT_TRAINED';
+      } else if (result.status === 'TRAIN_FAILED') {
+        status = 'TRAIN_FAILED';
+      } else {
+        status = 'TRAINED';
+      }
+      return status;
+    });
 }
 
 export default {
