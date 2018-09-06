@@ -95,6 +95,7 @@ export default {
         component: EditPop,
         data: {
           words,
+          content: '',
         },
         validate: true,
         bindValue: false,

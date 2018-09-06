@@ -2,15 +2,14 @@
   <div class="robot-words-edit">
     <div class="info">{{ origData.words.comment }}</div>
     <div class="input">
-      <input id="content" v-model="content">
-    </div>
-    <div class="err">
-      {{ errMsg }}
+      <input id="content" ref="input" v-model="content" :class="{'error': errorTooltipShown }" v-tooltip="errorTooltip">
     </div>
   </div>
 </template>
 
 <script>
+import event from '@/utils/js/event';
+
 export default {
   name: 'robot-words-edit',
   props: {
@@ -25,18 +24,36 @@ export default {
   },
   data() {
     return {
-      errMsg: '',
       content: '',
+      errorTooltip: {
+        msg: '',
+        eventOnly: true,
+        errorType: true,
+        alignLeft: true,
+      },
+      errorTooltipShown: false,
     };
+  },
+  watch: {
+    content() {
+      this.errorTooltipShown = false;
+      this.$refs.input.dispatchEvent(event.createEvent('tooltip-hide'));
+    },
   },
   methods: {
     validate() {
       const that = this;
       that.content = that.content.trim();
       if (that.content === '') {
-        that.errMsg = this.$t('error_msg.input_empty');
+        that.errorTooltip.msg = this.$t('error_msg.input_empty');
+        this.$refs.input.dispatchEvent(event.createEvent('tooltip-reload'));
+        this.$refs.input.dispatchEvent(event.createEvent('tooltip-show'));
+        this.errorTooltipShown = true;
       } else if (that.origData.words.contents.findIndex(c => c.content === that.content) >= 0) {
-        that.errMsg = this.$t('chat_skill.errorDuplicate');
+        that.errorTooltip.msg = this.$t('chat_skill.errorDuplicate');
+        this.$refs.input.dispatchEvent(event.createEvent('tooltip-reload'));
+        this.$refs.input.dispatchEvent(event.createEvent('tooltip-show'));
+        this.errorTooltipShown = true;
       } else {
         that.$emit('validateSuccess', that.content);
       }
@@ -56,8 +73,6 @@ $info-font-size: 12px;
 $info-line-height: 18px;
 $info-font-color: #999999;
 
-$error-color: #f76260;
-
 .robot-words-edit {
   padding: 0 20px;
   width: 520px;
@@ -74,11 +89,5 @@ $error-color: #f76260;
     width: 100%;
     outline: solid 1px rgba(255, 255, 255, 0.2);
   }
-}
-.err {
-  height: 40px;
-  display: flex;
-  align-items: center;
-  color: $error-color;
 }
 </style>
