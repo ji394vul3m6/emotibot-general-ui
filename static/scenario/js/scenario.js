@@ -127,7 +127,7 @@
         tasks.sort(function (a, b) { return a.scenarioName.localeCompare(b.scenarioName) });
         for (var i in tasks) {
             var task = tasks[i];
-            if(task.version === ''){
+            if(task.version === '' || task.version === '1.0' || task.version === '1.1'){
                 var taskHTML = $("#taskTemplate").val();
                 container.append(taskHTML);
                 var elt = container.children("div:last");

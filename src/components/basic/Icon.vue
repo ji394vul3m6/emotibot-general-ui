@@ -169,6 +169,11 @@ export default {
   @include iconType("setting_hover");
   @include iconTypeHover("setting");
 
+  /** used on TaskEngineV2 top panel*/
+  @include iconType("save");
+  @include iconType("canlendar");
+  @include iconType("knowledge_base");
+
   /** used on robot profile icon */
   @include iconType("profile_question");
   @include iconType("profile_answer");

@@ -30,7 +30,6 @@ Object.keys(modules).forEach((moduleName) => {
     const page = pageModule.pages[pageName];
     routes.push({
       path: `/${pageModule.pages[pageName].path}`,
-      name: `${pageModule.displayNameKey}.${page.displayNameKey}`,
       component: page,
       children: page.childrenPath || [],
     });
