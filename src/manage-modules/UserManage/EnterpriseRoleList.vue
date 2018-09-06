@@ -15,7 +15,7 @@
               <div class="card-title">
               <template v-if="role.editMode">
                 <div class="title-text">
-                  <input v-model="editName" v-tooltip="nameTooltip" ref='nameInput' maxlength=50 :placeholder="$t('management.role_name_placeholder')">
+                  <input v-model="editName" v-tooltip="nameTooltip" ref='nameInput' maxlength=50 :placeholder="$t('management.role_name_placeholder')" :class="{'error': isNameTooltipShown}">
                 </div>
                 <div class="title-action">
                   <div class="action" @click="closeEditRole(role, false)">{{ $t('general.cancel') }}</div>
@@ -117,9 +117,11 @@ export default {
       if (input) {
         const idx = this.roles.findIndex(role => role.editMode);
         if (val !== -1 && val !== idx) {
-          input[0].dispatchEvent(event.createEvent('tooltip-show'));
+          input.dispatchEvent(event.createEvent('tooltip-show'));
+          this.isNameTooltipShown = true;
         } else {
-          input[0].dispatchEvent(event.createEvent('tooltip-hide'));
+          input.dispatchEvent(event.createEvent('tooltip-hide'));
+          this.isNameTooltipShown = false;
         }
       }
     },
@@ -141,6 +143,7 @@ export default {
         errorType: true,
         alignLeft: true,
       },
+      isNameTooltipShown: false,
     };
   },
   methods: {
