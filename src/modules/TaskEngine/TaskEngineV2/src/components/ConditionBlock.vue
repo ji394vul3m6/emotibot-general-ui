@@ -185,12 +185,9 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_key")}}
             </div>
-            <input class="input-content" list="globalVars" v-model="rule.content[0].key"
-              onmouseover="old=value;" 
-              onmousedown="value='';" 
-              onmouseup="value=old;">
-            </input>
-            <!-- <input class="input-content" v-model="rule.content[0].key" v-dropdown="insertVarDropdown(index)"> -->
+            <div class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.content[0], 'key')">
+              <input class="input-content" v-model="rule.content[0].key">
+            </div>
           </div>
           <div class="row">
             <div class="label label-start">
@@ -220,11 +217,9 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_key")}}
             </div>
-            <input class="input-content" list="globalVars" v-model="rule.content[0].key1"
-              onmouseover="old=value;" 
-              onmousedown="value='';" 
-              onmouseup="value=old;">
-            </input>
+            <div class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.content[0], 'key1')">
+              <input class="input-content" v-model="rule.content[0].key1">
+            </div>
           </div>
           <div class="row">
             <div class="label label-start">
@@ -239,12 +234,9 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_content")}}
             </div>
-            <input class="input-content" list="globalVars" v-model="rule.content[0].key"
-              :key="rule.funcName"
-              onmouseover="old=value;" 
-              onmousedown="value='';" 
-              onmouseup="value=old;">
-            </input>
+            <div class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.content[0], 'key')">
+              <input class="input-content" v-model="rule.content[0].key" :key="rule.funcName">
+            </div>
           </div>
         </div>
         <!-- 不包含键 -->
@@ -253,12 +245,9 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_content")}}
             </div>
-            <input class="input-content" list="globalVars" v-model="rule.content[0].key"
-              :key="rule.funcName"
-              onmouseover="old=value;" 
-              onmousedown="value='';" 
-              onmouseup="value=old;">
-            </input>
+            <div class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.content[0], 'key')">
+              <input class="input-content" v-model="rule.content[0].key" :key="rule.funcName">
+            </div>
           </div>
         </div>
         <!-- 序列长度匹配 -->
@@ -282,11 +271,9 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_key")}}
             </div>
-            <input class="input-content" list="globalVars" v-model="rule.content[0].key"
-              onmouseover="old=value;" 
-              onmousedown="value='';" 
-              onmouseup="value=old;">
-            </input>
+            <div class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.content[0], 'key')">
+              <input class="input-content" v-model="rule.content[0].key">
+            </div>
           </div>
           <div class="row">
             <div class="label label-start">
@@ -337,11 +324,9 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_source_key")}}
             </div>
-            <input class="input-content" list="globalVars" v-model="rule.content.from_key"
-              onmouseover="old=value;" 
-              onmousedown="value='';" 
-              onmouseup="value=old;">
-            </input>
+            <div class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.content, 'from_key')">
+              <input class="input-content" v-model="rule.content.from_key">
+            </div>
           </div>
           <div class="row">
             <div class="label label-start">
@@ -362,11 +347,9 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_source_key")}}
             </div>
-            <input class="input-content" list="globalVars" v-model="rule.content.from_key"
-              onmouseover="old=value;" 
-              onmousedown="value='';" 
-              onmouseup="value=old;">
-            </input>
+            <div class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.content, 'from_key')">
+              <input class="input-content" v-model="rule.content.from_key">
+            </div>
           </div>
           <template v-for="(operation, idx) in rule.content.operations">
             <div>
@@ -408,11 +391,9 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_key")}}
             </div>
-            <input class="input-content" list="globalVars" v-model="rule.content[0].key"
-              onmouseover="old=value;" 
-              onmousedown="value='';" 
-              onmouseup="value=old;">
-            </input>
+            <div class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.content[0], 'key')">
+              <input class="input-content" v-model="rule.content[0].key">
+            </div>
           </div>
           <div class="row">
             <div class="label label-start">
@@ -595,11 +576,6 @@
       />
     </div>
   </div>
-  <datalist id="globalVars">
-    <template v-for="(option, index) in globalVarOptions">
-      <option :value="option.value">{{option.text}}</option>
-    </template>
-  </datalist>
 </div>
 </template>
 
@@ -856,6 +832,19 @@ export default {
       this.andRules[index].content.trans = newMapTable;
       // this.emitUpdate();
     },
+    insertVarDropdown(obj, key) {
+      const options = this.globalVarOptions.map(option => ({
+        text: `${option.text}：${option.value}`,
+        onclick: this.insertVarSelect.bind(this, obj, key, option.value),
+      }));
+      return {
+        options,
+        width: '450px',
+      };
+    },
+    insertVarSelect(obj, key, value) {
+      obj[key] = value;
+    },
     emitUpdate() {
       let conditionBlock = {};
       if (this.edgeType === 'qq') {
@@ -1011,6 +1000,9 @@ export default {
     }
     .input-content{
       width: 420px;
+    }
+    .input-with-dropdown-container{
+      position: relative;
     }
     .button{
       background: #57C7D4;
