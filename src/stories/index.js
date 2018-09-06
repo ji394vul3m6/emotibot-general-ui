@@ -13,7 +13,7 @@ import TextButtonStory from './TextButton';
 import LabelSwitchStory from './LabelSwitch';
 import GeneralTableStory from './GeneralTable';
 import NavBarStory from './NavigationBar';
-import DropdownSelectStory from './DropdownSelect';
+import DropdownSelectStory from './Dropdown';
 import TooltipStory from './Tooltip';
 import TagInputStory from './TagInput';
 import InputStory from './Input';
@@ -69,7 +69,7 @@ TagInputStory.forEach((story) => {
   tagInputStory.add(story.name, story.func);
 });
 
-const dropdownSelectStory = storiesOf('Basic|DropdownSelect', module).addDecorator(withKnobs);
+const dropdownSelectStory = storiesOf('Basic|Dropdown', module).addDecorator(withKnobs);
 DropdownSelectStory.forEach((story) => {
   dropdownSelectStory.add(story.name, story.func);
 });
