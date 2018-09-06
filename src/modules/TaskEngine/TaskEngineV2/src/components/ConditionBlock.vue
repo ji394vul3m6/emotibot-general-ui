@@ -368,34 +368,36 @@
             </input>
           </div>
           <template v-for="(operation, idx) in rule.content.operations">
-            <div class="row">
-              <div class="label label-start">
-                {{$t("task_engine_v2.condition_block.label_nth_match")}}
+            <div>
+              <div class="row">
+                <div class="label label-start">
+                  {{$t("task_engine_v2.condition_block.label_nth_match")}}
+                </div>
+                <input class="input-content"
+                  oninput="this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(^[0-9]{1,2}).*/g, '$1');"
+                  v-model.number="operation.index"
+                >
+                <button
+                  v-if="idx === 0"
+                  class="button"
+                  style="width: 70px;"
+                  @click="addRegTargetKey(index)">
+                  {{$t("task_engine_v2.condition_block.button_add")}}
+                </button>
+                <button
+                  v-if="idx !== 0"
+                  class="button"
+                  style="width: 60px;"
+                  @click="deleteRegTargetKey(index, idx)">
+                  {{$t("task_engine_v2.condition_block.button_remove")}}
+                </button>
               </div>
-              <input class="input-content"
-                oninput="this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(^[0-9]{1,2}).*/g, '$1');"
-                v-model.number="operation.index">
-              </input>
-              <button
-                v-if="idx === 0"
-                class="button"
-                style="width: 70px;"
-                @click="addRegTargetKey(index)">
-                {{$t("task_engine_v2.condition_block.button_add")}}
-              </button>
-              <button
-                v-if="idx !== 0"
-                class="button"
-                style="width: 60px;"
-                @click="deleteRegTargetKey(index, idx)">
-                {{$t("task_engine_v2.condition_block.button_remove")}}
-              </button>
-            </div>
-            <div class="row">
-              <div class="label label-start">
-                {{$t("task_engine_v2.condition_block.label_target_key")}}
+              <div class="row">
+                <div class="label label-start">
+                  {{$t("task_engine_v2.condition_block.label_target_key")}}
+                </div>
+                <input class="input-content" v-model="operation.key">
               </div>
-              <input class="input-content" v-model="operation.key"></input>
             </div>
           </template>
         </div>
