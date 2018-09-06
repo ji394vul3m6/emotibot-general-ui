@@ -101,9 +101,9 @@
       <div class="row-title">
         <template v-if="idx === 0">{{ $t('management.assign_robot') }}</template>
       </div>
-      <dropdown-select class="selector" :options="machineOptions" v-model="privilege.machine"/>
+      <dropdown-select class="selector" :options="machineOptions" v-model="privilege.machine" :placeholder="$t('general.please_choose')"/>
       <div class="row-text">{{ $t('management.privilege_is') }}</div>
-      <dropdown-select class="selector" :options="privilegeOptions" v-model="privilege.role"/>
+      <dropdown-select class="selector" :options="privilegeOptions" v-model="privilege.role" :placeholder="$t('general.please_choose')"/>
       <div class="row-button">
         <text-button width="60px" button-type="error" v-if="privilegeSet.length > 1" @click="removePrivilege(idx)">
           {{ $t('general.delete') }}

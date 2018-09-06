@@ -39,7 +39,8 @@
           <div class="row-title">{{ $t('statistics.emotions.title') }}</div>
           <div class="row-value">
             <dropdown-select class="single-input"
-              :options="emotionOptions" multi v-model="emotionFilters"/>
+              :options="emotionOptions" multi v-model="emotionFilters"
+              :placeholder="$t('general.please_choose')"/>
           </div>
         </div>
         <div class="row">
@@ -51,7 +52,8 @@
           <div class="row-title">{{ $t('statistics.platform.title') }}</div>
           <div class="row-value">
             <dropdown-select class="single-input"
-              :options="platformOptions" multi v-model="platformFilters"/>
+              :options="platformOptions" multi v-model="platformFilters"
+              :placeholder="$t('general.please_choose')"/>
           </div>
         </div>
         <div class="row">

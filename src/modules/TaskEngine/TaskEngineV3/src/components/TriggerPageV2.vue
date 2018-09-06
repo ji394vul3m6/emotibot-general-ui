@@ -15,6 +15,7 @@
         :options="intentOptionList"
         :showCheckedIcon="false"
         width="160px"
+        :placeholder="$t('general.please_choose')"
       />
       <text-button
         class="button-add-trigger"
