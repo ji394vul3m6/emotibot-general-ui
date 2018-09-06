@@ -21,7 +21,14 @@
       <div class="select-item search" v-if="showSearchBar">
         <input class="search-input" v-model="searchKeyWord" placeholder="Search">
       </div>
-      <template v-for="(option, idx) in filteredLocalOptions">
+      <template v-if="filteredLocalOptions.length === 0">
+        <div class="select-item item">
+          <div class="select-text not-selectable" :style="selectTextStyle">
+            {{ $t('general.no_option') }}
+          </div>
+        </div>
+      </template>
+      <template v-else v-for="(option, idx) in filteredLocalOptions">
       <div class="select-item item" :key="idx" v-if="!option.isGroup"
         :class="{
           checked: option.checked && showCheckedIcon,
