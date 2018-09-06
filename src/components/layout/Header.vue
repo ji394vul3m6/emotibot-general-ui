@@ -136,7 +136,7 @@ export default {
     },
     goAuditLog() {
       const that = this;
-      if (this.enterpriseID !== '' && this.robotID !== '') {
+      if ((this.enterpriseID !== '' && this.robotID !== '') || this.userInfo.type >= 2) { // normal user
         that.$router.push('/manage/audit-robot');
       } else if (this.enterpriseID !== '') {
         that.$router.push('/manage/audit-enterprise');
