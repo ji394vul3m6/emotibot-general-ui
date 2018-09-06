@@ -41,6 +41,21 @@
       <icon icon-type="info_warning" :size=22></icon>
     </div>
   </div>
+  <div class="edge-slot edge-slot-from"
+    id="edgeSlotFrom"
+    ref="edgeSlotFrom"
+    v-if="linking === false || isSrcNode === true"
+    :class="{'is-src-node': isSrcNode}"
+    @mousedown.stop.prevent="srcSlotMouseDown">
+  </div>
+  <div class="edge-slot edge-slot-to"
+    id="edgeSlotTo"
+    ref="edgeSlotTo"
+    v-if="linking === true && isSrcNode === false && node.nodeType !== 'entry'"
+    @mouseup.stop.prevent="dstSlotMouseUp($event)"
+    @mouseenter.stop="dstSlotMouseEnter()"
+    @mouseleave.stop="dstSlotMouseLeave()">
+  </div>
 </div>
 </template>
 
@@ -85,6 +100,18 @@ export default {
       required: true,
       default: undefined,
     },
+    linking: {
+      type: Boolean,
+      default: false,
+    },
+    nodeBlockWidth: {
+      type: Number,
+      default: 230,
+    },
+    nodeBlockHeight: {
+      type: Number,
+      default: 120,
+    },
   },
   data() {
     return {
@@ -96,6 +123,7 @@ export default {
       hasExitConnection: false,
       warningTooltipValue: {},
       warningMsgMap: {},
+      isSrcNode: false,
     };
   },
   computed: {
@@ -103,6 +131,10 @@ export default {
       return {
         top: `${this.y}px`,
         left: `${this.x}px`,
+        width: `${this.nodeBlockWidth}px`,
+        height: `${this.nodeBlockHeight}px`,
+        'min-width': `${this.nodeBlockWidth}px`,
+        'min-height': `${this.nodeBlockHeight}px`,
       };
     },
   },
@@ -110,18 +142,15 @@ export default {
   },
   methods: {
     onMouseDown(e) {
-      // console.log('onMouseDown');
-      // console.log(e.target);
-      // console.log(e.currentTarget);
-      // console.log(this.$el);
-      // e.target.addEventListener('mousemove', this.onMouseMove);
+      const target = e.target || e.srcElement;
+      if (target.id === 'edgeSlotFrom' || target.id === 'edgeSlotTo') {
+        return;
+      }
       const mouseX = e.pageX;
       const mouseY = e.pageY;
-
       this.lastMouseX = mouseX;
       this.lastMouseY = mouseY;
 
-      const target = e.target || e.srcElement;
       if (this.$el.contains(target) && e.which === 1) {
         this.canMove = true;
         if (e.preventDefault) e.preventDefault();
@@ -151,6 +180,28 @@ export default {
       }
       this.canMove = false;
       this.hasMoved = false;
+      this.isSrcNode = false;
+    },
+    srcSlotMouseDown() {
+      this.isSrcNode = true;
+      const edgeSlotFrom = this.$refs.edgeSlotFrom;
+      const x = edgeSlotFrom.offsetLeft + edgeSlotFrom.offsetParent.offsetLeft + 8;
+      const y = edgeSlotFrom.offsetTop + edgeSlotFrom.offsetParent.offsetTop + 8;
+      const slot = { x, y };
+      this.$emit('linkingStart', slot);
+    },
+    dstSlotMouseUp(e) {
+      this.$emit('linkingStop', e);
+    },
+    dstSlotMouseEnter() {
+      const edgeSlotTo = this.$refs.edgeSlotTo;
+      const x = edgeSlotTo.offsetLeft + edgeSlotTo.offsetParent.offsetLeft + 8;
+      const y = edgeSlotTo.offsetTop + edgeSlotTo.offsetParent.offsetTop + 8;
+      const slot = { x, y };
+      this.$emit('mouseEnterDstSlot', slot);
+    },
+    dstSlotMouseLeave(e) {
+      this.$emit('mouseLeaveDstSlot', e);
     },
     deleteNode() {
       this.$emit('deleteNode');
@@ -237,8 +288,6 @@ export default {
   position: relative;
   display: flex;
   flex-direction: column;
-  min-width: 230px;
-  min-height: 120px;
   background: white;
   position: absolute;
   border: 1px solid $color-borderline;
@@ -289,6 +338,37 @@ export default {
     }
     .exit-icon{
       margin: 0px 0px 0px 3px;
+    }
+  }
+  .edge-slot{
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+  }
+  .edge-slot-from{
+    position: absolute;
+    bottom: -8px;
+    left: 107px;
+    &:hover{
+      border: 2px solid #AAAAAA;
+      border-radius: 100%;
+    }
+  }
+  .is-src-node {
+    background: #AAAAAA;
+    border: 2px solid #AAAAAA;
+    border-radius: 100%;
+  }
+  .edge-slot-to{
+    z-index: 100;
+    position: absolute;
+    top: -8px;
+    left: 107px;
+    border: 2px solid #AAAAAA;
+    border-radius: 100%;
+    &:hover{
+      background: $color-primary;
+      border: 2px solid $color-primary;
     }
   }
 }

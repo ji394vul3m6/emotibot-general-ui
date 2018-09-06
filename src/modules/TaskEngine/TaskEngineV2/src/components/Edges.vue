@@ -1,9 +1,11 @@
 <template lang="html">
-  <svg id="edges" width="100%" height="100%">
-    <g v-for="p in paths" >
-      <path :d="p.data" :style="p.style"></path>
-    </g>
-  </svg>
+  <div id="edges" class="edges">
+    <svg class="svg">
+      <g class="paths" v-for="p in paths" >
+        <path :d="p.data" :style="p.style"></path>
+      </g>
+    </svg>
+  </div>
 </template>
 
 <script>
@@ -16,12 +18,18 @@ export default {
       type: Array,
       default: [],
     },
+    nodeBlockWidth: {
+      type: Number,
+      default: 230,
+    },
+    nodeBlockHeight: {
+      type: Number,
+      default: 120,
+    },
   },
   data() {
     return {
       radius: 60,
-      halfWidth: 115,
-      halfHeight: 60,
     };
   },
   computed: {
@@ -32,10 +40,15 @@ export default {
         pathList.push({
           data,
           style: edge.style,
-          outlineStyle: edge.outlineStyle,
         });
       });
       return pathList;
+    },
+    halfBlockWidth() {
+      return this.nodeBlockWidth / 2;
+    },
+    halfBlockHeight() {
+      return this.nodeBlockHeight / 2;
     },
   },
   watch: {},
@@ -51,12 +64,12 @@ export default {
       let sx = edge.x2;
       let sy = edge.y2;
 
-      if (Math.abs(sx - px) <= this.halfWidth) {
+      if (Math.abs(sx - px) <= this.halfBlockWidth) {
         const meanX = (px + sx) / 2;
         px = meanX;
         sx = meanX;
       }
-      if (Math.abs(sy - py) <= this.halfHeight) {
+      if (Math.abs(sy - py) <= this.halfBlockHeight) {
         const meanY = (py + sy) / 2;
         py = meanY;
         sy = meanY;
@@ -97,5 +110,11 @@ export default {
 @import 'styles/variable.scss';
 
 #edges{
+  width: 100%;
+  height: 100%;
+  .svg{
+    width: 100%;
+    height: 100%;
+  }
 }
 </style>

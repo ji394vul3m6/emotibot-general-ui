@@ -50,6 +50,7 @@ const MyPlugin = {
             vm.$emit('show', getPosition(el));
           });
           el.addEventListener('dropdown-hide', () => {
+            el.dispatchEvent(new Event('dropdownHidden'));
             vm.$emit('hide');
           });
 
@@ -59,6 +60,7 @@ const MyPlugin = {
             const detectClickListener = (e) => {
               const clickDom = e.target;
               if (clickDom && !dropdown.contains(clickDom)) {
+                el.dispatchEvent(new Event('dropdownHidden'));
                 vm.$emit('hide');
                 window.removeEventListener('click', detectClickListener);
               }

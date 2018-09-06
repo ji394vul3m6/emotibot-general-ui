@@ -44,6 +44,11 @@ export default {
       publish: '发布',
       add_node: '新增节点',
       add_node_instruction: '拖拉下方的节点至场景中',
+      new_edge_exceed_then_goto: '当出话超过上限',
+      new_edge_else_into: '当所有规则都无法符合时',
+      new_edge_normal: '自定义',
+      new_edge_restful_success: '当调用成功',
+      new_edge_restful_fail: '当调用失败',
     },
     node_edit_page: {
       tabs: {
