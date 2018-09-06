@@ -834,6 +834,21 @@ export default {
               this.dropdownHidden();
             },
           },
+          {
+            text: this.$t('task_engine_v2.scenario_edit_page.new_edge_normal'),
+            onclick: () => {
+              if (dstNodeId === undefined) {
+                const newNode = this.addNewLinkingNode(this.linkingEdge);
+                dstNodeId = newNode.nodeId;
+              }
+              const newEdge = scenarioInitializer.initialEdge();
+              newEdge.id = this.$uuid.v1();
+              newEdge.to_node_id = dstNodeId;
+              sourceNode.paramsCollectingEdgeTab.normalEdges.push(newEdge);
+              this.saveScenario();
+              this.dropdownHidden();
+            },
+          },
         ];
       } else if (sourceNodeType === 'entry' || sourceNodeType === 'nlu_pc') {
         options = [elseIntoOption, newNormalEdgeOption];
