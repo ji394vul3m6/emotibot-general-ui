@@ -145,7 +145,7 @@
 
 <script>
 import taskEngineApi from '@/modules/TaskEngine/_api/taskEngine';
-import general from '@/modules/TaskEngine/_utils/general';
+// import general from '@/modules/TaskEngine/_utils/general';
 import NodeBlock from './NodeBlock';
 import Edges from './Edges';
 import EdgesOnTop from './EdgesOnTop';
@@ -473,7 +473,7 @@ export default {
           },
         };
       });
-      console.log(JSON.stringify(data, general.JSONStringifyReplacer));
+      // console.log(JSON.stringify(data, general.JSONStringifyReplacer));
       return taskEngineApi.saveScenario(
         this.appId,
         this.scenarioId,

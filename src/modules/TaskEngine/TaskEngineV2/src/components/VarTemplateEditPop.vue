@@ -83,7 +83,6 @@ export default {
       this.varTemplates.splice(index, 1);
     },
     insertVarDropdown(index) {
-      console.log('insertVarDropdown');
       const options = this.globalVarOptions.map(option => ({
         text: `${option.text}：${option.value}`,
         onclick: this.insertVarSelect.bind(this, index, option.value),

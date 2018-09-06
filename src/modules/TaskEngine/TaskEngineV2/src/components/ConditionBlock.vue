@@ -190,12 +190,13 @@
               onmousedown="value='';" 
               onmouseup="value=old;">
             </input>
+            <!-- <input class="input-content" v-model="rule.content[0].key" v-dropdown="insertVarDropdown(index)"> -->
           </div>
           <div class="row">
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_value")}}
             </div>
-            <input class="input-content" v-model="rule.content[0].val"></input>
+            <input class="input-content" v-model="rule.content[0].val">
           </div>
         </div>
         <!-- 键键匹配 -->
@@ -915,7 +916,6 @@ export default {
             }],
           }))],
         };
-        // console.log(conditionBlock.condition_rules[0][0].functions[0].content);
       }
       // console.log(conditionBlock);
       this.$emit('update', conditionBlock);
