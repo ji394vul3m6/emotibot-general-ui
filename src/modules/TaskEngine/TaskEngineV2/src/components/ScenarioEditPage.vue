@@ -28,7 +28,10 @@
           @deleteNode="deleteNode(index)"
           @saveNode="saveNode(index, $event)"
           @copyNode="copyNode(index)"
-          @linkingStart="linkingStart(index, $event)">
+          @linkingStart="linkingStart(index, $event)"
+          @linkingStop="linkingStop(index, $event)"
+          @mouseEnterDstSlot="mouseEnterDstSlot(index, $event)"
+          @mouseLeaveDstSlot="mouseLeaveDstSlot()">
         </node-block>
       </template>
       <edges class="edges"
@@ -198,7 +201,8 @@ export default {
         y1: 0,
         x2: 0,
         y2: 0,
-        source: undefined,
+        srcNodeIndex: undefined,
+        dstNodeIndex: undefined,
       },
       stopCanvasClickPropagationOnce: false,
     };
@@ -663,25 +667,35 @@ export default {
       this.linkingEdge.y1 = slot.y;
       this.linkingEdge.x2 = slot.x;
       this.linkingEdge.y2 = slot.y;
-      this.linkingEdge.source = index;
+      this.linkingEdge.srcNodeIndex = index;
+    },
+    linkingStop(index, e) {
+      if (this.nodeBlocks[index] && this.nodeBlocks[index].data) {
+        const toNodeId = this.nodeBlocks[index].data.nodeId;
+        this.showAddNewEdgeDropdown(e.clientX, e.clientY, toNodeId);
+      } else {
+        this.showAddNewEdgeDropdown(e.clientX, e.clientY, undefined);
+      }
+    },
+    mouseEnterDstSlot(index, slot) {
+      if (!this.linking) return;
+      this.linkingEdge.x2 = slot.x;
+      this.linkingEdge.y2 = slot.y;
+      this.linkingEdge.dstNodeIndex = index;
+    },
+    mouseLeaveDstSlot() {
+      if (!this.linking) return;
+      this.linkingEdge.dstNodeIndex = undefined;
     },
     canvasMouseMove(e) {
       if (!this.linking) return;
+      if (this.linkingEdge.dstNodeIndex) return;
       const pageRect = this.$refs.page.getBoundingClientRect();
       this.linkingEdge.x2 = e.clientX - pageRect.x;
       this.linkingEdge.y2 = e.clientY - pageRect.y;
     },
     canvasMouseUp(e) {
-      if (!this.linking) return;
-      this.linking = false;
-      this.stopCanvasClickPropagationOnce = true;
-      const pageRect = this.$refs.page.getBoundingClientRect();
-      this.addNewEdgeDropdownStyle = {
-        left: `${e.clientX - pageRect.x - this.halfBlockWidth}px`,
-        top: `${e.clientY - pageRect.y - this.halfBlockHeight}px`,
-      };
-      this.renderAddNewEdgeDropdown();
-      this.$refs.addNewEdgeDropdown.click();
+      this.showAddNewEdgeDropdown(e.clientX, e.clientY, undefined);
     },
     canvasClick(e) {
       if (this.stopCanvasClickPropagationOnce) {
@@ -689,23 +703,45 @@ export default {
         this.stopCanvasClickPropagationOnce = false;
       }
     },
+    showAddNewEdgeDropdown(clientX, clientY, toNodeId) {
+      if (!this.linking) return;
+      this.linking = false;
+      this.stopCanvasClickPropagationOnce = true;
+      const pageRect = this.$refs.page.getBoundingClientRect();
+      let left = clientX - pageRect.x - 50;
+      let top = clientY - pageRect.y - 50;
+      if (left < 0) left = 0;
+      if (top < 0) top = 0;
+      this.addNewEdgeDropdownStyle = {
+        left: `${left}px`,
+        top: `${top}px`,
+      };
+      this.renderAddNewEdgeDropdown(toNodeId);
+      this.$refs.addNewEdgeDropdown.click();
+    },
     dropdownHidden() {
       this.linkingEdge.show = false;
+      this.linkingEdge.dstNodeIndex = undefined;
     },
-    renderAddNewEdgeDropdown() {
-      const sourceIndex = this.linkingEdge.source;
+    renderAddNewEdgeDropdown(toNodeId) {
+      const sourceIndex = this.linkingEdge.srcNodeIndex;
       if (!this.nodeBlocks[sourceIndex] || !this.nodeBlocks[sourceIndex].data) {
         this.addNewEdgeDropdown.options = [];
         return;
       }
+      // source node
       const sourceNode = this.nodeBlocks[sourceIndex].data;
       const sourceNodeType = sourceNode.nodeType;
+      let dstNodeId = toNodeId;
       const defaultOptions = [
         {
           text: this.$t('task_engine_v2.scenario_edit_page.new_edge_else_into'),
           onclick: () => {
-            const newNode = this.addNewLinkingNode(this.linkingEdge);
-            sourceNode.edgeTab.elseInto = newNode.nodeId;
+            if (dstNodeId === undefined) {
+              const newNode = this.addNewLinkingNode(this.linkingEdge);
+              dstNodeId = newNode.nodeId;
+            }
+            sourceNode.edgeTab.elseInto = dstNodeId;
             this.saveScenario();
             this.dropdownHidden();
           },
@@ -713,10 +749,13 @@ export default {
         {
           text: this.$t('task_engine_v2.scenario_edit_page.new_edge_normal'),
           onclick: () => {
-            const newNode = this.addNewLinkingNode(this.linkingEdge);
+            if (dstNodeId === undefined) {
+              const newNode = this.addNewLinkingNode(this.linkingEdge);
+              dstNodeId = newNode.nodeId;
+            }
             const newEdge = scenarioInitializer.initialEdge();
             newEdge.id = this.$uuid.v1();
-            newEdge.to_node_id = newNode.nodeId;
+            newEdge.to_node_id = dstNodeId;
             sourceNode.edgeTab.normalEdges.push(newEdge);
             this.saveScenario();
             this.dropdownHidden();
@@ -729,8 +768,11 @@ export default {
           {
             text: this.$t('task_engine_v2.scenario_edit_page.new_edge_restful_success'),
             onclick: () => {
-              const newNode = this.addNewLinkingNode(this.linkingEdge);
-              sourceNode.restfulEdgeTab.restfulSucceedThenGoto = newNode.nodeId;
+              if (dstNodeId === undefined) {
+                const newNode = this.addNewLinkingNode(this.linkingEdge);
+                dstNodeId = newNode.nodeId;
+              }
+              sourceNode.restfulEdgeTab.restfulSucceedThenGoto = dstNodeId;
               this.saveScenario();
               this.dropdownHidden();
             },
@@ -738,8 +780,11 @@ export default {
           {
             text: this.$t('task_engine_v2.scenario_edit_page.new_edge_restful_fail'),
             onclick: () => {
-              const newNode = this.addNewLinkingNode(this.linkingEdge);
-              sourceNode.restfulEdgeTab.restfulFailedThenGoto = newNode.nodeId;
+              if (dstNodeId === undefined) {
+                const newNode = this.addNewLinkingNode(this.linkingEdge);
+                dstNodeId = newNode.nodeId;
+              }
+              sourceNode.restfulEdgeTab.restfulFailedThenGoto = dstNodeId;
               this.saveScenario();
               this.dropdownHidden();
             },
@@ -752,8 +797,11 @@ export default {
           {
             text: this.$t('task_engine_v2.scenario_edit_page.new_edge_exceed_then_goto'),
             onclick: () => {
-              const newNode = this.addNewLinkingNode(this.linkingEdge);
-              sourceNode.edgeTab.exceedThenGoto = newNode.nodeId;
+              if (dstNodeId === undefined) {
+                const newNode = this.addNewLinkingNode(this.linkingEdge);
+                dstNodeId = newNode.nodeId;
+              }
+              sourceNode.edgeTab.exceedThenGoto = dstNodeId;
               this.saveScenario();
               this.dropdownHidden();
             },

@@ -46,12 +46,15 @@
     ref="edgeSlotFrom"
     v-if="linking === false || isSrcNode === true"
     :class="{'is-src-node': isSrcNode}"
-    @mousedown.prevent="srcSlotMouseDown($event)">
+    @mousedown.stop.prevent="srcSlotMouseDown">
   </div>
   <div class="edge-slot edge-slot-to"
     id="edgeSlotTo"
-    v-if="linking === true && isSrcNode === false"
-    @mousedown="">
+    ref="edgeSlotTo"
+    v-if="linking === true && isSrcNode === false && node.nodeType !== 'entry'"
+    @mouseup.stop.prevent="dstSlotMouseUp($event)"
+    @mouseenter.stop="dstSlotMouseEnter()"
+    @mouseleave.stop="dstSlotMouseLeave()">
   </div>
 </div>
 </template>
@@ -179,14 +182,26 @@ export default {
       this.hasMoved = false;
       this.isSrcNode = false;
     },
-    srcSlotMouseDown(e) {
+    srcSlotMouseDown() {
       this.isSrcNode = true;
       const edgeSlotFrom = this.$refs.edgeSlotFrom;
       const x = edgeSlotFrom.offsetLeft + edgeSlotFrom.offsetParent.offsetLeft + 8;
       const y = edgeSlotFrom.offsetTop + edgeSlotFrom.offsetParent.offsetTop + 8;
       const slot = { x, y };
       this.$emit('linkingStart', slot);
-      if (e.preventDefault) e.preventDefault();
+    },
+    dstSlotMouseUp(e) {
+      this.$emit('linkingStop', e);
+    },
+    dstSlotMouseEnter() {
+      const edgeSlotTo = this.$refs.edgeSlotTo;
+      const x = edgeSlotTo.offsetLeft + edgeSlotTo.offsetParent.offsetLeft + 8;
+      const y = edgeSlotTo.offsetTop + edgeSlotTo.offsetParent.offsetTop + 8;
+      const slot = { x, y };
+      this.$emit('mouseEnterDstSlot', slot);
+    },
+    dstSlotMouseLeave(e) {
+      this.$emit('mouseLeaveDstSlot', e);
     },
     deleteNode() {
       this.$emit('deleteNode');
@@ -335,23 +350,25 @@ export default {
     bottom: -8px;
     left: 107px;
     &:hover{
-      border: 2px solid grey;
+      border: 2px solid #AAAAAA;
       border-radius: 100%;
     }
   }
   .is-src-node {
-    background: grey;
-    border: 2px solid grey;
+    background: #AAAAAA;
+    border: 2px solid #AAAAAA;
     border-radius: 100%;
   }
   .edge-slot-to{
+    z-index: 100;
     position: absolute;
     top: -8px;
     left: 107px;
-    border: 2px solid grey;
+    border: 2px solid #AAAAAA;
     border-radius: 100%;
     &:hover{
-      background: grey;  
+      background: $color-primary;
+      border: 2px solid $color-primary;
     }
   }
 }

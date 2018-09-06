@@ -24,7 +24,7 @@ export default {
       radius: 60,
       linkingPath: {},
       linkingPathStyle: {
-        stroke: 'grey',
+        stroke: '#AAAAAA',
         strokeWidth: 5,
         fill: 'none',
       },
