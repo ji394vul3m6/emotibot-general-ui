@@ -271,7 +271,8 @@ export default {
       flex: 0 0 auto;
       padding-bottom: 20px;
     }
-    .list-table {
+    #list-table {
+      flex: 1;
       overflow: hidden;
     }
   }

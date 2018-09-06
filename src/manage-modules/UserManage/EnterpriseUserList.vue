@@ -358,6 +358,7 @@ export default {
       padding-bottom: 20px;
     }
     #list-table {
+      flex: 1;
       overflow: hidden;
     }
   }
