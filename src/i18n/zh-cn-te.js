@@ -31,6 +31,7 @@ export default {
     },
     to_node_option: {
       parse_fail: '解析失败处理',
+      add_new_dialogue_node: '新增对话节点',
     },
     scenario_edit_page: {
       tabs: {

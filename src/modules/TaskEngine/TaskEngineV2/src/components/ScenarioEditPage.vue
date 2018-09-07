@@ -489,7 +489,35 @@ export default {
         this.$notifyFail(`saveScenario failed, error:${err.message}`);
       });
     },
+    createDialogueNode(nodeType, nodeName, nodeId, x, y) {
+      const nodeDialogueCntLimit = this.setting.nodeDialogueCntLimit;
+      const node = scenarioInitializer
+        .initialNode(nodeType, nodeName, nodeDialogueCntLimit, nodeId);
+      this.nodeBlocks.push({
+        x,
+        y,
+        data: node,
+      });
+    },
+    createNodesFromEdges(index, node) {
+      if (node.edgeTab && node.edgeTab.newNodeOptions) {
+        let x = this.nodeBlocks[index].x;
+        const y = this.nodeBlocks[index].y + 150;
+        node.edgeTab.newNodeOptions.forEach((option) => {
+          x += 250;
+          this.createDialogueNode(
+            option.nodeType,
+            option.nodeName,
+            option.nodeId,
+            x,
+            y,
+          );
+        });
+        delete node.edgeTab.newNodeOptions;
+      }
+    },
     saveNode(index, node) {
+      this.createNodesFromEdges(index, node);
       this.nodeBlocks[index].data = node;
       this.$nextTick(() => {
         this.saveScenario();
