@@ -261,7 +261,8 @@ export default {
     registerNluTdeScenario(scenarioId, content) {
       Object.keys(content.skills).map((skillId) => {
         const skill = content.skills[skillId];
-        if (skill.entityCollectorList.length > 0 || skill.register_json) {
+        if (skill.entityCollectorList.length > 0 ||
+            (skill.register_json && Object.keys(skill.register_json).length > 0)) {
           const data = scenarioConvertor.convertToRegistryData(scenarioId, skill, skillId);
           api.registerNluTdeScenario(data);
         }
