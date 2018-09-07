@@ -925,6 +925,8 @@ export default {
         const newNodeID = scenarioInitializer.guid_sort();
         this.$emit('addNewDialogueNode', newNodeID);
         this.toNode = newNodeID;
+      } else {
+        this.toNode = toNode;
       }
     },
     onQQSelectGoto(toNode, index) {
@@ -932,6 +934,8 @@ export default {
         const newNodeID = scenarioInitializer.guid_sort();
         this.$emit('addNewDialogueNode', newNodeID);
         this.candidateEdges[index].to_node_id = newNodeID;
+      } else {
+        this.candidateEdges[index].to_node_id = toNode;
       }
     },
   },
