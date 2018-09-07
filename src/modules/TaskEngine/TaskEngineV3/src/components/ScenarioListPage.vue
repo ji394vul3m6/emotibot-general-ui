@@ -1,5 +1,5 @@
 <template lang="html">
-<div id="scenario-list-page">
+<div id="scenario-list-page-v3">
   <div class="content card h-fill w-fill">
     <div class="header title">
       {{$t("task_engine_v3.scenario_list_page.scenario_list")}}
@@ -18,25 +18,25 @@
           <input type="file" ref="uploadScenarioJSONInput" @change="changeScenarioJSONFile()" accept=".json">
         </div>
       </div>
-    <template v-for="(scenario, index) in filteredScenarioList">
-      <div class="row" @mouseover="scenario.show = true" @mouseleave="scenario.show = false">
-        <div id="scenario-grid">
-          <div id="scenario-toggle-container">
-            <toggle v-model="scenario.enable" @change="switchScenario(scenario)" :big="false"></toggle>
-          </div>
-          <div id="scenario-content-container">
-            <div class="name-label"  @click="editScenario(scenario.scenarioID)">
-              {{scenario.scenarioName}}
+      <template v-for="(scenario, index) in filteredScenarioList">
+        <div class="row" @mouseover="scenario.show = true" @mouseleave="scenario.show = false">
+          <div id="scenario-grid">
+            <div id="scenario-toggle-container">
+              <toggle v-model="scenario.enable" @change="switchScenario(scenario)" :big="false"></toggle>
             </div>
-            <div class="delete-button">
-              <div class="icon_container" v-if="scenario.show" v-dropdown="moreOptions(scenario)">
-                <icon :size=25 icon-type="more"/>
+            <div id="scenario-content-container">
+              <div class="name-label"  @click="editScenario(scenario.scenarioID)">
+                {{scenario.scenarioName}}
+              </div>
+              <div class="delete-button">
+                <div class="icon_container" v-if="scenario.show" v-dropdown="moreOptions(scenario)">
+                  <icon :size=25 icon-type="more"/>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </template>
+      </template>
     </div>
   </div>
 </div>
@@ -51,7 +51,7 @@ import CreateScenarioPop from './CreateScenarioPop';
 import taskEngineApi from './_api/taskEngine';
 
 export default {
-  name: 'scenario-list-page',
+  name: 'scenario-list-page-v3',
   components: {},
   data() {
     return {
@@ -270,7 +270,7 @@ export default {
 $row-height: $default-line-height;
 @import "../scss/teVariable.scss";
 
-#scenario-list-page{
+#scenario-list-page-v3{
   height: 100%;
   .content {
     display: flex;

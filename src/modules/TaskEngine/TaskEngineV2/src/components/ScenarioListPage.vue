@@ -1,47 +1,47 @@
 <template lang="html">
-<div id="scenario-list-page">
+<div id="scenario-list-page-v2">
   <div class="content card h-fill w-fill">
     <div class="row title">
       {{$t("task_engine_v2.scenario_list_page.scenario_list")}}
+      <search-input v-model="filteredKeyWord" ></search-input>
     </div>
-    <div class="row">
-      <div id="toolbar">
-        <div id="left-buttons">
-          <text-button button-type='primary' width='68px' height='28px' @click="createNewScenario">
-            {{$t("task_engine_v2.scenario_list_page.button_create_new_scenario")}}
-          </text-button>
-          <text-button button-type='default' iconType="upload" :iconSize=15 width='68px' height='28px' @click="importScenarioJSON">
-            {{$t("task_engine_v2.scenario_list_page.button_import_scenario")}}
-          </text-button>
-          <text-button button-type='default' width='100px' height='28px' @click="exportAllScenarios">
-            {{$t("task_engine_v2.scenario_list_page.button_export_all_scenarios")}}
-          </text-button>
-          <input type="file" ref="uploadScenarioJSONInput" @change="changeScenarioJSONFile()" accept=".json">
-        </div>
-        <div id="right-buttons">
-          <search-input v-model="filteredKeyWord" ></search-input>
+    <div class="page">
+      <div class="row">
+        <div id="toolbar">
+          <div id="left-buttons">
+            <text-button button-type='primary' width='68px' height='28px' @click="createNewScenario">
+              {{$t("task_engine_v2.scenario_list_page.button_create_new_scenario")}}
+            </text-button>
+            <text-button button-type='default' iconType="upload" :iconSize=15 width='68px' height='28px' @click="importScenarioJSON">
+              {{$t("task_engine_v2.scenario_list_page.button_import_scenario")}}
+            </text-button>
+            <text-button button-type='default' width='100px' height='28px' @click="exportAllScenarios">
+              {{$t("task_engine_v2.scenario_list_page.button_export_all_scenarios")}}
+            </text-button>
+            <input type="file" ref="uploadScenarioJSONInput" @change="changeScenarioJSONFile()" accept=".json">
+          </div>
         </div>
       </div>
-    </div>
-    <template v-for="(scenario, index) in filteredScenarioList">
-      <div class="row" @mouseover="scenario.show = true" @mouseleave="scenario.show = false">
-        <div id="scenario-grid">
-          <div id="scenario-toggle-container">
-            <toggle v-model="scenario.enable" @change="switchScenario(scenario)" :big="false"></toggle>
-          </div>
-          <div id="scenario-content-container">
-            <div class="name-label"  @click="editScenario(scenario.scenarioID)">
-              {{scenario.scenarioName}}
+      <template v-for="(scenario, index) in filteredScenarioList">
+        <div class="row" @mouseover="scenario.show = true" @mouseleave="scenario.show = false">
+          <div id="scenario-grid">
+            <div id="scenario-toggle-container">
+              <toggle v-model="scenario.enable" @change="switchScenario(scenario)" :big="false"></toggle>
             </div>
-            <div class="delete-button">
-              <div class="icon_container" v-show="scenario.show" v-dropdown="moreOptions(scenario)">
-                <icon :size=25 icon-type="more"/>
+            <div id="scenario-content-container">
+              <div class="name-label"  @click="editScenario(scenario.scenarioID)">
+                {{scenario.scenarioName}}
+              </div>
+              <div class="delete-button">
+                <div class="icon_container" v-show="scenario.show" v-dropdown="moreOptions(scenario)">
+                  <icon :size=25 icon-type="more"/>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </template>
+      </template>
+    </div>
   </div>
 </div>
 </template>
@@ -54,7 +54,7 @@ import scenarioInitializer from '../_utils/scenarioInitializer';
 import scenarioConvertor from '../_utils/scenarioConvertor';
 
 export default {
-  name: 'scenario-list-page',
+  name: 'scenario-list-page-v2',
   components: {},
   data() {
     return {
@@ -256,15 +256,19 @@ export default {
 <style lang="scss" scoped>
 @import 'styles/variable.scss';
 $row-height: $default-line-height;
-#scenario-list-page{
+#scenario-list-page-v2{
   height: 100%;
   .content {
     display: flex;
     flex-direction: column;
+    .page{
+      flex: 1;
+      @include auto-overflow();
+      @include customScrollbar();
+    }
     .row {
       flex: 0 0 auto;
-      padding-left: 20px;
-
+      padding: 0px 20px 0px 20px;
       &.title {
         @include font-16px();
         color: $color-font-active;
@@ -272,6 +276,7 @@ $row-height: $default-line-height;
         border-bottom: 1px solid $color-borderline;
         display: flex;
         align-items: center;
+        justify-content: space-between;
       }
       &:not(.title) {
         margin-top: 20px;
@@ -292,7 +297,6 @@ $row-height: $default-line-height;
       #toolbar {
         display: flex;
         align-items: center;
-        justify-content: space-between;
         margin-right: 20px;
         #left-buttons{
           display: flex;

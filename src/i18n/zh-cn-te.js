@@ -4,7 +4,7 @@ export default {
       button_create_new_scenario: '创建场景',
       button_import_scenario: '导入',
       button_export_all_scenarios: '导出全部场景',
-      scenario_list: '2.0版场景列表',
+      scenario_list: '场景列表',
       ask_delete_confirm: '确认要删除场景：{scenario}',
       publish: '发布',
       publish_succeed: '场景发布成功',
@@ -209,7 +209,7 @@ export default {
     scenario_list_page: {
       button_create_new_scenario: '创建场景',
       button_import_scenario: '导入',
-      scenario_list: '3.0版场景列表',
+      scenario_list: 'TDE场景列表',
       ask_delete_confirm: '确认要删除场景：{scenario}',
     },
     import_scenario_pop: {
