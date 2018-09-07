@@ -50,6 +50,7 @@
           <general-table class="content-table cluster-content"
             :tableHeader="clusterRecordHeader"
             :tableData="clusterRecordData"
+            :isLoading="isTableLoading"
             @checkedChange="handleCheckedChange"
             checkbox>
           </general-table>
@@ -135,6 +136,7 @@ export default {
       ],
       currentClusterRecord: [],
       currentClusterTitle: '',
+      isTableLoading: false,
     };
   },
   computed: {
@@ -208,14 +210,14 @@ export default {
       const that = this;
       that.pageIndex = page;
       that.searchParams = that.getSearchParam();
-      that.$emit('startLoading');
+      that.isTableLoading = true;
       that.$api.getRecords(that.searchParams, page, that.pageLimit).then((data) => {
         const res = data;
         that.checkedDataRow = []; // clear all checked
         that.clusterRecordData = that.receiveAPIData(res.data);
-        that.$emit('endLoading');
+        that.isTableLoading = false;
       }, () => {
-        that.$emit('endLoading');
+        that.isTableLoading = false;
       });
     },
     getSearchParam() {

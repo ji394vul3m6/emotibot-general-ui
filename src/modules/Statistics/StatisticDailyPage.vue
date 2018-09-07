@@ -127,6 +127,7 @@
           :tableHeader="headerInfo"
           :tableData="tableData"
           :showEmptyMsg="[$t('general.no_search_data')]"
+          :isLoading="isTableLoading"
           @checkedChange="handleCheckedChange"
           auto-height show-empty checkbox
         ></general-table>
@@ -194,6 +195,7 @@ export default {
       tableAction: [],
       actionInfo: this.$t('statistics.action_info'),
       checkedDataRow: [],
+      isTableLoading: false,
 
       showTable: false,
       totalCount: 0,
@@ -507,7 +509,7 @@ export default {
       that.pageIndex = page;
       that.searchParams = this.getSearchParam();
       that.setDailySearchParams(that.searchParams);
-      that.$emit('startLoading');
+      that.isTableLoading = true;
       that.$api.getRecords(that.searchParams, page, this.pageLimit)
       .then((data) => {
         const res = data;
@@ -518,13 +520,13 @@ export default {
         that.ignoredCount = res.ignored_size;
         that.checkedDataRow = []; // clear all checked
         that.reloadClusterDropdown();
-        that.$emit('endLoading');
+        that.isTableLoading = false;
         that.showTable = true;
       })
       .catch((err) => {
         console.log({ err });
         that.$notifyFail(that.$t('statistics.error.search_fail'));
-        that.$emit('endLoading');
+        that.isTableLoading = false;
       });
     },
     receiveAPIHeader(headerData) {
