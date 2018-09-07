@@ -23,6 +23,7 @@
           <td v-if="hasAction" class="table-col-action" :class="{'multi-action': action.length > 1}">
             {{ $t('general.actions') }}
           </td>
+          <td v-if="$scopedSlots.menu" class="fixed menu"></td>
         </tr>
       </thead>
     </table>
@@ -82,6 +83,12 @@
               v-if="data.action_enable === undefined || (data.action_enable && data.action_enable[act.key])"
             > {{ act.text }}</span>
           </td>
+          <template v-if="$scopedSlots.menu">
+            <td class="fixed menu">
+              <icon iconType="more" enableHover :size=15 @click="moreClick(idx)" style="position: initial"></icon>
+            </td>
+            <td v-if="idx === indexOfShowMenu" class="menu-container"><slot name="menu" :rowData="data" :rowIndex="idx"></slot></td>
+          </template>
         </tr>
       </tbody>
     </table>
@@ -169,6 +176,7 @@ export default {
       headerInfoTooltip: {
         msg: '',
       },
+      indexOfShowMenu: -1,
     };
   },
   computed: {
@@ -250,6 +258,12 @@ export default {
       this.headerInfoTooltip.msg = header.info;
       infoIconBlockDom.dispatchEvent(event.createEvent('tooltip-reload'));
     },
+    moreClick(index) {
+      this.indexOfShowMenu = index;
+    },
+    hideMenu() {
+      this.indexOfShowMenu = -1;
+    },
   },
   mounted() {
     if (this.checkbox) {
@@ -260,6 +274,10 @@ export default {
       // this.setCheckedData();
       // this.$emit('checkedChange', this.checkedData);
     }
+    document.body.addEventListener('click', this.hideMenu, true);
+  },
+  beforeDestroy() {
+    document.body.removeEventListener('click', this.hideMenu, true);
   },
 };
 </script>
@@ -293,10 +311,26 @@ $table-row-height: 50px;
       }
     }
   }
+  .menu {
+    width: 50px;
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .menu-container {
+    position: absolute;
+    right: 0;
+    margin-top: 20px;
+    margin-right: 45px;
+  }
   .general-table-body {
     @include auto-overflow-Y();
     @include customScrollbar();
     overflow-x: hidden;
+    tbody {
+      position: relative;
+    }
     .table-body-item {
       display: flex;
       align-items: center;
