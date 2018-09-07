@@ -27,7 +27,22 @@
       </thead>
     </table>
     </div>
-    <div class="general-table-body">
+
+    <!-- table content -->
+    <div v-if="isLoading" class="loading-display">
+      <loading-dot></loading-dot>
+    </div>
+    <div v-else-if="showEmpty && tableData.length <= 0" class="empty-display">
+      <template v-if="showEmptyMsg">
+        <div class="empty-msg" v-for="msg in showEmptyMsg" :key="msg">
+          {{ msg }}
+        </div>
+      </template>
+      <template v-else>
+        {{ $t('general.no_data') }}
+      </template>
+    </div>
+    <div v-else class="general-table-body">
     <table class="general-table" :class="[autoHeight ? 'auto-height' : '', fontClass]" v-if="tableData && tableData.length > 0">
       <tbody :class="[onclickRow ? 'clickable-row' : '']">
         <tr v-for="(data, idx) in tableData" :key="idx" :class="{'highlight': data.highlight}">
@@ -70,16 +85,6 @@
         </tr>
       </tbody>
     </table>
-    </div>
-    <div class="empty-display" v-if="showEmpty && tableData.length <= 0">
-      <template v-if="showEmptyMsg">
-        <div class="empty-msg" v-for="msg in showEmptyMsg" :key="msg">
-          {{ msg }}
-        </div>
-      </template>
-      <template v-else>
-        {{ $t('general.no_data') }}
-      </template>
     </div>
   </div>
 </template>
@@ -150,6 +155,11 @@ export default {
       type: Array,
       required: false,
       default: undefined,
+    },
+    isLoading: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
   data() {
@@ -355,6 +365,12 @@ $table-row-height: 50px;
     .empty-msg {
       margin: 3px 0;
     }
+  }
+  .loading-display {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 table {

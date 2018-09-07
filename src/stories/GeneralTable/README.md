@@ -44,6 +44,7 @@
 | autoHeight | false | Boolean | true / false | false | 欄位內容溢出寬度時是否換行
 | fontClass | false | String | 'font-12' / 'font-14' / 'font-16' | 'font-14' | 調整表格字體大小
 | onclickRow | false | Function | function (rowData, rowIdx) | - | 若傳入 onclickRow function，則 表格資料行可以點擊，<br>點擊對綁定的 function 傳入 rowData, rowIdx
+| isLoading | false | Boolean | true / false | false | 表格是否正在載入中，若 true 會顯示表格載入樣式
 
 ### prop: tableHeader 格式
 Type: Array of Objects
