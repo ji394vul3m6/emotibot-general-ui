@@ -10,8 +10,10 @@
       {{nodeTypeName}}
     </div>
   </div>
-  <div class="label-node-name">
-    {{node.nodeName}}
+  <div class="label-node-name-container">
+    <div class="label-node-name">
+      {{node.nodeName}}
+    </div>
   </div>
   <div class="button-row">
     <text-button
@@ -317,15 +319,22 @@ export default {
       padding: 0px 4px 0px 4px;
     }
   }
-  .label-node-name{
+  .label-node-name-container{
     display: flex;
     flex-direction: row;
     justify-content: center;
-    height: 36px;
-    line-height: 36px;
-    font-size: 16px;
-    font-weight: 600;
-    color: #333333;
+    .label-node-name{
+      text-align: center;
+      height: 36px;
+      line-height: 36px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #333333;
+      width: 200px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   }
   .button-row{
     display: flex;
