@@ -2,7 +2,7 @@
   <div class="content card h-fill w-fill">
     <div v-if="isClustering" id="cluster-loading">
       <loading-line></loading-line>
-      <div id="clustering-msg">{{ $t('statistics.clustering_msg', { num: clusteringCnt } ) }}</div>
+      <div id="clustering-msg">{{ clusterMsg }}</div>
     </div>
     <template v-else>
     <div class="page-header">
@@ -207,7 +207,7 @@ export default {
       startValidity: true,
       endValidity: true,
       pageIndex: 1,
-      pageLimit: 25,
+      pageLimit: 100,
       startDisableDate: undefined,
       endDisableDate: undefined,
       emotionOptions: [
@@ -283,6 +283,7 @@ export default {
           },
         ],
       },
+      clusterMsg: '',
     };
   },
   watch: {
@@ -295,6 +296,7 @@ export default {
     ...mapMutations([
       'setDailyCurrentView',
       'setClusterReport',
+      'setDailySearchParams',
     ]),
     escapeRegExp(str) {
       return str.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
@@ -341,7 +343,7 @@ export default {
     },
     doClusterByChecked() {
       const that = this;
-      that.clusteingCnt = that.checkedDataRowCount;
+      that.clusteringCnt = that.checkedDataRowCount;
       const param = {
         records: that.checkedDataRow.map(row => row.id),
       };
@@ -349,10 +351,12 @@ export default {
     },
     runCluster(params) {
       const that = this;
+      // Show loading and keep polling till cluster done, and go to cluster page
+      that.clusterMsg = that.$t('statistics.clustering_checking');
+      that.isClustering = true;
       that.$api.startCluster(params)
       .then((reportId) => {
-        // Show loading and keep polling till cluster done, and go to cluster page
-        that.isClustering = true;
+        that.clusterMsg = that.$t('statistics.clustering_msg', { num: that.clusteringCnt });
         that.clusterTimer = setInterval(() => {
           that.pollClusterReport(reportId);
         }, 5000);
@@ -366,15 +370,14 @@ export default {
           buttons: ['ok'],
           ok_msg: that.$t('statistics.error.got_it'),
         };
+        that.isClustering = false;
         that.$popWarn(option);
       });
     },
     pollClusterReport(reportId) {
-      console.log('poll cluster report');
       const that = this;
       that.$api.pollClusterReport(reportId)
       .then((report) => {
-        console.log({ report });
         if (report.status === -1) { // cluster fail
           that.clearClusterTimer();
           that.$notifyFail(that.$t('statistics.error.cluster_fail'));
@@ -503,6 +506,7 @@ export default {
       const that = this;
       that.pageIndex = page;
       that.searchParams = this.getSearchParam();
+      that.setDailySearchParams(that.searchParams);
       that.$emit('startLoading');
       that.$api.getRecords(that.searchParams, page, this.pageLimit)
       .then((data) => {

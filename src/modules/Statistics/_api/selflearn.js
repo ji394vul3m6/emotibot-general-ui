@@ -42,104 +42,12 @@ function getMarkedQuestion(recordId) {
 
 function startCluster(params) {
   const url = REPORT_URL;
-  console.log({ url, params });
-  // return this.$reqPost(url, params).then((response) => {
-  //   console.log(response);
-  //   return response.data.report_id;
-  // });
-  return Promise.resolve('reportid');
+  return this.$reqPut(url, params).then(response => response.data.report_id);
 }
 
-let counter = 0;
 function pollClusterReport(reportId) {
-  // const url = `${REPORT_URL}/${reportId}`;
-  // return this.$reqGet(url).then((response) => {
-  //   console.log(response);
-  // });
-  let mockData;
-  if (counter < 2) {
-    mockData = {
-      status: 0,
-    };
-  } else {
-    mockData = {
-      id: reportId,
-      start_time: 1534909860,
-      end_time: 1534996260,
-      status: 1,
-      total_size: 202,
-      ignored_size: 50,
-      marked_size: 40,
-      search_query: {
-        start_time: 1534909860,
-        end_time: 1534996260,
-        keyword: 'HELLo',
-        uid: 'HELLO',
-        emotions: [
-          'not_satisfied',
-          'satisfied',
-        ],
-        question_types: [
-          'chat',
-        ],
-        platforms: [
-          'app',
-          'ios',
-        ],
-        genders: [
-          '1',
-        ],
-        is_ignored: false,
-        is_marked: true,
-      },
-      results: {
-        clusters: [
-          {
-            id: 'cid1',
-            center_questions: ['某關鍵字', '某關鍵字二'],
-            tags: ['某標籤', '某標籤二'],
-            records: [
-              {
-                id: '20180828100538348860681',
-                value: '句子1',
-              },
-              {
-                id: '32245d86b9094480831e8d7c21132645',
-                value: '句子2',
-              },
-            ],
-          },
-          {
-            id: 'cid2',
-            center_questions: ['第二類', '某關鍵字二'],
-            tags: ['某標籤', '某標籤二'],
-            records: [
-              {
-                id: '20180827183358642723754',
-                value: '句子3',
-              },
-              {
-                id: '444',
-                value: '句子4',
-              },
-            ],
-          },
-        ],
-        filtered: [
-          {
-            id: '123',
-            value: '沒被分到類',
-          },
-          {
-            id: '456',
-            value: '沒被分到類二',
-          },
-        ],
-      },
-    };
-  }
-  counter += 1;
-  return Promise.resolve(mockData);
+  const url = `${REPORT_URL}/${reportId}`;
+  return this.$reqGet(url).then(response => response.data);
 }
 
 function getRecommend(appid, questions) {
