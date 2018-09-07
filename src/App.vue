@@ -8,10 +8,12 @@
       <page-menu></page-menu>
       <div id="app-page" v-if="ready" :class="{iframe: isIFrame}">
         <!-- <div class="app-header" v-if="!isIFrame">{{ pageName }}</div> -->
-        <router-view class="app-body" :class="{iframe: isIFrame}" @startLoading="startLoading" @endLoading="endLoading"/>
-        <div v-if="showLoading" class="loading">
-          <div class='loader'></div>
-          {{ loadingMsg || $t('general.loading') }}
+        <router-view v-show="!showLoading" class="app-body" :class="{iframe: isIFrame}" @startLoading="startLoading" @endLoading="endLoading"/>
+        <div v-if="showLoading" class="app-body">
+          <div class="loading card h-fill w-fill">
+            <loading-dot></loading-dot>
+            <div class="loading-msg"> {{ loadingMsg || $t('general.loading') }}</div>
+          </div>
         </div>
       </div>
       <transition name="slide-in">
@@ -23,11 +25,13 @@
       <!-- if robotID is empty, but enterpriseID not, show enterprise admin page -->
       <template v-else-if="robotID === '' && ready">
         <div id="app-page" class="manage">
-          <router-view class="app-body" @startLoading="startLoading" @endLoading="endLoading"/>
-          <div v-if="showLoading" class="loading manage">
-            <div class='loader'></div>
-            {{ loadingMsg || $t('general.loading') }}
+          <router-view v-show="!showLoading" class="app-body" @startLoading="startLoading" @endLoading="endLoading"/>
+          <div v-if="showLoading" class="app-body">
+          <div class="loading card h-fill w-fill">
+            <loading-dot></loading-dot>
+            <div class="loading-msg"> {{ loadingMsg || $t('general.loading') }}</div>
           </div>
+        </div>
         </div>
       </template>
       <template v-if="showUserInfoPage && ready">
@@ -465,44 +469,18 @@ export default {
 
 @import './assets/styles/lib/font-awesome.css';
 
-#app-page > div.loading {
-  @media screen and (max-width: $break-small) {
-    left: 0;
-    top: $page-header-height;
-    width: 100vw
-  }
-  &.manage {
-    width: 100vw;
-    left: 0;
-  }
-  position: fixed;
-  top: $page-header-height;
-  left: $page-menu-width;
-  height: 100%;
-  width: calc(100vw - #{$page-menu-width});
-  background: rgba(0%, 0%, 0%, 0.6);
-  color: white;
-  font-size: 1.5em;
+.loading {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    25% { transform: rotate(192deg); }
-    50% { transform: rotate(278deg); }
-    75% { transform: rotate(336deg); }
-    100% { transform: rotate(360deg); }
-  }
-  .loader {
-    margin-right: 10px;
-    border: 8px solid #f3f3f3; /* Light grey */
-    border-top: 8px solid #3498db; /* Blue */
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    animation: spin 2s linear infinite;
+  @include font-14px();
+  color: $color-font-mark;
+  .loading-msg {
+    margin-top: 20px;
   }
 }
+
 #chat-test-pop {
   position: fixed;
   right: -700px;

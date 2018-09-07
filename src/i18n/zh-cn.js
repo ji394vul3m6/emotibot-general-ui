@@ -936,7 +936,7 @@ export default {
     ext_answer: '答案扩展',
     ok: '确认',
     cancel: '取消',
-    loading: '读取中',
+    loading: '页面载入中',
     error_code: '错误代码',
     error: '错误',
     upload: '上传',
