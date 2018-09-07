@@ -223,8 +223,8 @@ export default {
       this.$emit('checkedChange', this.checkedData);
     },
     isAllRowChecked() {
-      const uncheckedNum = this.tableData.filter(data => data.isChecked === false).length;
-      return uncheckedNum === 0;
+      const hasUnchecked = this.tableData.some(data => data.isChecked === false);
+      return !hasUnchecked;
     },
     setCheckedData() {
       this.checkedData = this.tableData.filter(data => data.isChecked === true);
