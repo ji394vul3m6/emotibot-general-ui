@@ -957,7 +957,9 @@ export default {
     };
   },
   convertToTDERegistryData(scenarioId, entityCollectingTab, nodeId) {
-    if (entityCollectingTab.register_json) { // manually give register JSON
+    if (entityCollectingTab.register_json &&
+        Object.keys(entityCollectingTab.register_json).length > 0) {
+      // manually give register JSON
       const registerJson = JSON.parse(JSON.stringify(entityCollectingTab.register_json));
       registerJson.taskId = `${nodeId}_${scenarioId}`;
       return registerJson;
@@ -1034,8 +1036,9 @@ export default {
     nodes.filter(node => node.nodeType === 'nlu_pc').forEach((node) => {
       const entityCollectingTab = node.entityCollectingTab;
       if ((entityCollectingTab.entityCollectorList &&
-           entityCollectingTab.entityCollectorList.length > 0)
-          || entityCollectingTab.register_json) {
+           entityCollectingTab.entityCollectorList.length > 0) ||
+          (entityCollectingTab.register_json &&
+           Object.keys(entityCollectingTab.register_json).length > 0)) {
         const data = that.convertToTDERegistryData(
           scenarioId, entityCollectingTab, entityCollectingTab.nodeId);
         api.registerNluTdeScenario(data);
