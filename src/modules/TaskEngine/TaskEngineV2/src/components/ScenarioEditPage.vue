@@ -145,7 +145,7 @@
 
 <script>
 import taskEngineApi from '@/modules/TaskEngine/_api/taskEngine';
-// import general from '@/modules/TaskEngine/_utils/general';
+import general from '@/modules/TaskEngine/_utils/general';
 import NodeBlock from './NodeBlock';
 import Edges from './Edges';
 import EdgesOnTop from './EdgesOnTop';
@@ -495,15 +495,20 @@ export default {
         this.saveScenario();
       });
     },
+
     copyNode(index) {
       const srcNodeId = this.nodeBlocks[index].data.nodeId;
       const newNodeId = scenarioInitializer.guid_sort();
+      const srcNodeName = this.nodeBlocks[index].data.nodeName;
+      const newNodeName = `${srcNodeName}_copy`;
       const srcNodeBlockString = JSON.stringify(this.nodeBlocks[index]);
-      const newNodeStr = srcNodeBlockString.replace(new RegExp(srcNodeId, 'g'), newNodeId);
+      let newNodeStr = srcNodeBlockString.replace(new RegExp(srcNodeId, 'g'), newNodeId);
+      console.log(newNodeStr);
+      newNodeStr = newNodeStr.replace(new RegExp(`"nodeName":"${srcNodeName}"`, 'g'), `"nodeName":"${newNodeName}"`);
+      console.log(newNodeStr);
       const newNodeBlock = JSON.parse(newNodeStr);
       newNodeBlock.x += 100;
       newNodeBlock.y += 100;
-      newNodeBlock.data.nodeName += '_copy';
       this.nodeBlocks.push(newNodeBlock);
       this.saveScenario();
     },
@@ -871,7 +876,8 @@ export default {
     },
     addNewNode(nodeType, nodeName, x, y) {
       const nodeDialogueCntLimit = this.setting.nodeDialogueCntLimit;
-      const node = scenarioInitializer.initialNode(nodeType, nodeName, nodeDialogueCntLimit);
+      const newNodeName = general.suffixIndexToNodeName(nodeName, undefined);
+      const node = scenarioInitializer.initialNode(nodeType, newNodeName, nodeDialogueCntLimit);
       this.nodeBlocks.push({
         x,
         y,

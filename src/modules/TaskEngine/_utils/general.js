@@ -42,4 +42,25 @@ export default {
         return sorted;
       }, {}) : value;
   },
+  suffixIndexToNodeName(newNodeName, nodeNames) {
+    // suffix _${index} to newNodeName if there are other nodeNames are start with newNodeName
+    let nodeNameList = nodeNames;
+    if (!nodeNameList) {
+      nodeNameList = window.moduleData.ui_data.nodes.map(node => node.nodeName);
+    }
+    const sameNameList = nodeNameList.filter(nodeName => nodeName.startsWith(newNodeName));
+    if (sameNameList.length === 0) {
+      return newNodeName;
+    }
+    let index = 1;
+    sameNameList.forEach((name) => {
+      const matches = name.match(`^${newNodeName}_(\\d+)(_copy)*$`);
+      if (!matches) return;
+      const oldIndex = parseInt(matches[1], 10) || -1;
+      if (oldIndex >= index) {
+        index = oldIndex + 1;
+      }
+    });
+    return `${newNodeName}_${index}`;
+  },
 };
