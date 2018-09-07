@@ -12,7 +12,8 @@
         :mapTableOptions="mapTableOptions"
         :globalVarOptions="globalVarOptions"
         @update="updateNormalEdge(index, $event)"
-        @deleteEdge="deleteEdge(index)">
+        @deleteEdge="deleteEdge(index)"
+        @addNewDialogueNode="addNewDialogueNode">
       </condition-block>
     </template>
   </draggable>
@@ -27,6 +28,7 @@
 <script>
 import draggable from 'vuedraggable';
 import DropdownSelect from '@/components/DropdownSelect';
+import general from '@/modules/TaskEngine/_utils/general';
 import ConditionBlock from './ConditionBlock';
 import scenarioInitializer from '../_utils/scenarioInitializer';
 
@@ -61,6 +63,7 @@ export default {
       nodeType: '',
       normalEdges: [],
       dialogueLimit: null,
+      newNodeOptions: undefined,
       toNodeOptions: [],
       satisfiedThenGotoOptions: [],
       selectStyle: {
@@ -69,7 +72,21 @@ export default {
       },
     };
   },
-  computed: {},
+  computed: {
+    doNothingEdge() {
+      return { text: 'do nothing', value: null };
+    },
+    exitEdge() {
+      return { text: 'Exit (ID: 0)', value: '0' };
+    },
+    addNewDialogueNodeEdge() {
+      return {
+        text: this.$t('task_engine_v2.to_node_option.add_new_dialogue_node'),
+        value: 'add_new_dialogue_node',
+        isButton: true,
+      };
+    },
+  },
   watch: {
     dialogueLimit: {
       handler() {
@@ -83,6 +100,42 @@ export default {
     },
   },
   methods: {
+    addNewDialogueNode(newNodeID) {
+      if (this.newNodeOptions === undefined) {
+        this.newNodeOptions = [];
+      }
+      const nodeNames = [
+        ...window.moduleData.ui_data.nodes.map(node => node.nodeName),
+        ...this.newNodeOptions.map(option => option.nodeName),
+      ];
+      const newNodeName = general.suffixIndexToNodeName(
+                            this.$t('task_engine_v2.node_type.dialogue'),
+                            nodeNames,
+                          );
+      this.newNodeOptions.push({
+        nodeName: newNodeName,
+        nodeId: newNodeID,
+        nodeType: 'dialogue',
+      });
+      this.updateOptions();
+    },
+    updateOptions() {
+      this.composeOptions([
+        ...this.initialToNodeOptions,
+        ...this.newNodeOptions.map(option => ({
+          text: `${option.nodeName} (ID: ${option.nodeId})`,
+          value: option.nodeId,
+        })),
+      ]);
+    },
+    composeOptions(fullOptions) {
+      const options = fullOptions.filter(option => option.value !== this.nodeId);
+      this.toNodeOptions = [
+        this.addNewDialogueNodeEdge,
+        this.doNothingEdge,
+        this.exitEdge,
+      ].concat(options);
+    },
     renderTabContent() {
       const pcEdgeTab = JSON.parse(JSON.stringify(this.initialPCEdgeTab));
       this.nodeId = pcEdgeTab.nodeId;
@@ -96,9 +149,7 @@ export default {
       });
 
       // render toNodeOptions
-      let options = JSON.parse(JSON.stringify(this.initialToNodeOptions));
-      options = options.filter(option => option.value !== this.nodeId);
-      this.toNodeOptions = [{ text: 'do nothing', value: null }, { text: 'Exit (ID: 0)', value: '0' }].concat(options);
+      this.composeOptions(this.initialToNodeOptions);
     },
     updateNormalEdge(index, $event) {
       this.normalEdges[index] = $event;
@@ -126,6 +177,7 @@ export default {
           delete e.id;
           return e;
         }),
+        newNodeOptions: this.newNodeOptions,
       };
       this.$emit('update', pcEdgeTab);
     },

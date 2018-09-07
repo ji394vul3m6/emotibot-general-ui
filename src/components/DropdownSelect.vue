@@ -143,6 +143,9 @@ export default {
     options(options) {
       this.initOptions(options);
     },
+    value(val) {
+      this.selectValue = val;
+    },
   },
   methods: {
     removeOption(opt) {

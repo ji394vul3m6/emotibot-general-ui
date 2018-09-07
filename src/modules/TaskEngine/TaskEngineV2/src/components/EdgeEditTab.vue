@@ -7,6 +7,7 @@
     <template v-for="(edge, index) in normalEdges">
       <condition-block
         class="condition-block"
+        ref="conditionBlock"
         :key="edge.id"
         :nodeId="nodeId"
         :initialEdge="edge"
@@ -14,7 +15,8 @@
         :mapTableOptions="mapTableOptions"
         :globalVarOptions="globalVarOptions"
         @update="updateNormalEdge(index, $event)"
-        @deleteEdge="deleteEdge(index)">
+        @deleteEdge="deleteEdge(index)"
+        @addNewDialogueNode="addNewDialogueNode">
       </condition-block>
     </template>
   </draggable>
@@ -67,7 +69,7 @@
       </div>
       <dropdown-select
         class="select select-goto"
-        ref="selectExceedThenGoto"
+        ref="selectElseThenGoto"
         :value="[elseInto]"
         @input="elseInto = $event[0]"
         :options="elseIntoOptions"
@@ -84,6 +86,7 @@
 <script>
 import draggable from 'vuedraggable';
 import DropdownSelect from '@/components/DropdownSelect';
+import general from '@/modules/TaskEngine/_utils/general';
 import ConditionBlock from './ConditionBlock';
 import scenarioInitializer from '../_utils/scenarioInitializer';
 
@@ -118,6 +121,7 @@ export default {
       nodeType: '',
       normalEdges: [],
       dialogueLimit: null,
+      newNodeOptions: undefined,
       toNodeOptions: [],
       exceedThenGoto: null,
       exceedThenGotoOptions: [],
@@ -129,7 +133,27 @@ export default {
       },
     };
   },
-  computed: {},
+  computed: {
+    doNothingEdge() {
+      return { text: 'do nothing', value: null };
+    },
+    exitEdge() {
+      return { text: 'Exit (ID: 0)', value: '0' };
+    },
+    parseFailedEdge() {
+      return {
+        text: this.$t('task_engine_v2.to_node_option.parse_fail'),
+        value: this.nodeId,
+      };
+    },
+    addNewDialogueNodeEdge() {
+      return {
+        text: this.$t('task_engine_v2.to_node_option.add_new_dialogue_node'),
+        value: 'add_new_dialogue_node',
+        isButton: true,
+      };
+    },
+  },
   watch: {
     dialogueLimit: {
       handler() {
@@ -138,16 +162,93 @@ export default {
     },
     exceedThenGoto: {
       handler() {
+        if (this.exceedThenGoto === 'add_new_dialogue_node') {
+          const newNodeID = scenarioInitializer.guid_sort();
+          this.addNewDialogueNode(newNodeID);
+          this.exceedThenGoto = newNodeID;
+        }
         this.emitUpdate();
       },
     },
     elseInto: {
       handler() {
+        if (this.elseInto === 'add_new_dialogue_node') {
+          const newNodeID = scenarioInitializer.guid_sort();
+          this.addNewDialogueNode(newNodeID);
+          this.elseInto = newNodeID;
+        }
         this.emitUpdate();
       },
     },
   },
   methods: {
+    addNewDialogueNode(newNodeID) {
+      if (this.newNodeOptions === undefined) {
+        this.newNodeOptions = [];
+      }
+      const nodeNames = [
+        ...window.moduleData.ui_data.nodes.map(node => node.nodeName),
+        ...this.newNodeOptions.map(option => option.nodeName),
+      ];
+      const newNodeName = general.suffixIndexToNodeName(
+                            this.$t('task_engine_v2.node_type.dialogue'),
+                            nodeNames,
+                          );
+      this.newNodeOptions.push({
+        nodeName: newNodeName,
+        nodeId: newNodeID,
+        nodeType: 'dialogue',
+      });
+      this.updateOptions();
+    },
+    updateOptions() {
+      this.composeOptions([
+        ...this.initialToNodeOptions,
+        ...this.newNodeOptions.map(option => ({
+          text: `${option.nodeName} (ID: ${option.nodeId})`,
+          value: option.nodeId,
+        })),
+      ]);
+    },
+    composeOptions(fullOptions) {
+      const options = fullOptions.filter(option => option.value !== this.nodeId);
+      if (this.nodeType === 'entry') {
+        this.toNodeOptions = [
+          this.addNewDialogueNodeEdge,
+          this.doNothingEdge,
+        ].concat(options);
+        this.exceedThenGotoOptions = [];
+        this.elseIntoOptions = [
+          this.addNewDialogueNodeEdge,
+        ].concat(options);
+      } else if (this.nodeType === 'nlu_pc') {
+        this.toNodeOptions = [
+          this.addNewDialogueNodeEdge,
+          this.doNothingEdge,
+          this.exitEdge,
+        ].concat(options);
+        this.exceedThenGotoOptions = [];
+        this.elseIntoOptions = [
+          this.addNewDialogueNodeEdge,
+          this.exitEdge,
+        ].concat(options);
+      } else {
+        this.toNodeOptions = [
+          this.addNewDialogueNodeEdge,
+          this.doNothingEdge,
+          this.exitEdge,
+        ].concat(options);
+        this.exceedThenGotoOptions = [
+          this.addNewDialogueNodeEdge,
+          this.exitEdge,
+        ].concat(options);
+        this.elseIntoOptions = [
+          this.addNewDialogueNodeEdge,
+          this.parseFailedEdge,
+          this.exitEdge,
+        ].concat(options);
+      }
+    },
     renderTabContent() {
       const edgeTab = JSON.parse(JSON.stringify(this.initialEdgeTab));
       this.nodeId = edgeTab.nodeId;
@@ -163,26 +264,7 @@ export default {
       });
 
       // render toNodeOptions, exceedThenGotoOptions, elseIntoOptions
-      let options = JSON.parse(JSON.stringify(this.initialToNodeOptions));
-      options = options.filter(option => option.value !== this.nodeId);
-      if (this.nodeType === 'entry') {
-        this.toNodeOptions = [{ text: 'do nothing', value: null }].concat(options);
-        this.exceedThenGotoOptions = [];
-        this.elseIntoOptions = options;
-      } else if (this.nodeType === 'nlu_pc') {
-        this.elseIntoOptions = [{ text: 'Exit (ID: 0)', value: '0' }].concat(options);
-        this.toNodeOptions = [{ text: 'do nothing', value: null }].concat(this.elseIntoOptions);
-        this.exceedThenGotoOptions = [];
-      } else {
-        this.exceedThenGotoOptions = [{ text: 'Exit (ID: 0)', value: '0' }].concat(options);
-        this.toNodeOptions = [{ text: 'do nothing', value: null }].concat(this.exceedThenGotoOptions);
-        this.elseIntoOptions = [
-          {
-            text: this.$t('task_engine_v2.to_node_option.parse_fail'),
-            value: this.nodeId,
-          },
-        ].concat(this.exceedThenGotoOptions);
-      }
+      this.composeOptions(this.initialToNodeOptions);
     },
     updateNormalEdge(index, $event) {
       this.normalEdges[index] = $event;
@@ -208,6 +290,7 @@ export default {
           delete e.id;
           return e;
         }),
+        newNodeOptions: this.newNodeOptions,
       };
       // console.log(edgeTab);
       this.$emit('update', edgeTab);

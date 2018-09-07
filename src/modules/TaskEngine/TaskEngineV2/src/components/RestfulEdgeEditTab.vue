@@ -47,6 +47,8 @@
 
 <script>
 import DropdownSelect from '@/components/DropdownSelect';
+import general from '@/modules/TaskEngine/_utils/general';
+import scenarioInitializer from '../_utils/scenarioInitializer';
 
 export default {
   name: 'restful-edge-edit-page',
@@ -71,6 +73,7 @@ export default {
     return {
       restfulFailedThenGoto: '',
       restfulSucceedThenGoto: '',
+      newNodeOptions: undefined,
       toNodeOptions: [],
       selectStyle: {
         height: '36px',
@@ -80,10 +83,21 @@ export default {
     };
   },
   computed: {
+    exitEdge() {
+      return { text: 'Exit (ID: 0)', value: '0' };
+    },
+    addNewDialogueNodeEdge() {
+      return {
+        text: this.$t('task_engine_v2.to_node_option.add_new_dialogue_node'),
+        value: 'add_new_dialogue_node',
+        isButton: true,
+      };
+    },
     restfulEdgeTab() {
       const result = {
         restfulSucceedThenGoto: this.restfulSucceedThenGoto,
         restfulFailedThenGoto: this.restfulFailedThenGoto,
+        newNodeOptions: this.newNodeOptions,
       };
       // console.log(result);
       return result;
@@ -92,6 +106,16 @@ export default {
   watch: {
     restfulEdgeTab: {
       handler() {
+        if (this.restfulSucceedThenGoto === 'add_new_dialogue_node') {
+          const newNodeID = scenarioInitializer.guid_sort();
+          this.addNewDialogueNode(newNodeID);
+          this.restfulSucceedThenGoto = newNodeID;
+        }
+        if (this.restfulFailedThenGoto === 'add_new_dialogue_node') {
+          const newNodeID = scenarioInitializer.guid_sort();
+          this.addNewDialogueNode(newNodeID);
+          this.restfulFailedThenGoto = newNodeID;
+        }
         this.$emit('update', this.restfulEdgeTab);
         // console.log(this.restfulEdgeTab);
       },
@@ -99,6 +123,41 @@ export default {
     },
   },
   methods: {
+    addNewDialogueNode(newNodeID) {
+      if (this.newNodeOptions === undefined) {
+        this.newNodeOptions = [];
+      }
+      const nodeNames = [
+        ...window.moduleData.ui_data.nodes.map(node => node.nodeName),
+        ...this.newNodeOptions.map(option => option.nodeName),
+      ];
+      const newNodeName = general.suffixIndexToNodeName(
+                            this.$t('task_engine_v2.node_type.dialogue'),
+                            nodeNames,
+                          );
+      this.newNodeOptions.push({
+        nodeName: newNodeName,
+        nodeId: newNodeID,
+        nodeType: 'dialogue',
+      });
+      this.updateOptions();
+    },
+    updateOptions() {
+      this.composeOptions([
+        ...this.initialToNodeOptions,
+        ...this.newNodeOptions.map(option => ({
+          text: `${option.nodeName} (ID: ${option.nodeId})`,
+          value: option.nodeId,
+        })),
+      ]);
+    },
+    composeOptions(fullOptions) {
+      const options = fullOptions.filter(option => option.value !== this.nodeId);
+      this.toNodeOptions = [
+        this.addNewDialogueNodeEdge,
+        this.exitEdge,
+      ].concat(options);
+    },
     renderTabContent() {
       // render restfulSucceedThenGoto, restfulFailedThenGoto
       const restfulEdgeTab = JSON.parse(JSON.stringify(this.initialRestfulEdgeTab));
@@ -106,9 +165,7 @@ export default {
       this.restfulFailedThenGoto = restfulEdgeTab.restfulFailedThenGoto;
 
       // render toNodeOptions
-      let options = JSON.parse(JSON.stringify(this.initialToNodeOptions));
-      options = options.filter(option => option.value !== this.nodeId);
-      this.toNodeOptions = [{ text: 'Exit (ID: 0)', value: '0' }].concat(options);
+      this.composeOptions(this.initialToNodeOptions);
     },
   },
   beforeMount() {

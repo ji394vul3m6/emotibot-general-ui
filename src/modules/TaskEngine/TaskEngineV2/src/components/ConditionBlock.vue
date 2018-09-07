@@ -439,7 +439,7 @@
         class="select select-goto"
         ref="selectGoto"
         :value="[toNode]"
-        @input="toNode = $event[0]"
+        @input="onSelectGoto($event[0])"
         :options="toNodeOptions"
         :showCheckedIcon="false"
         :showSearchBar="true"
@@ -509,9 +509,9 @@
           </div>
           <dropdown-select
             class="select select-goto"
-            ref="selectGoto"
+            :ref="`qqSelectGoto_${index}`"
             :value="[edge.to_node_id]"
-            @input="edge.to_node_id = $event[0]"
+            @input="onQQSelectGoto($event[0], index)"
             :options="toNodeOptions"
             :showCheckedIcon="false"
             :showSearchBar="true"
@@ -522,7 +522,7 @@
       </template>
     </div>
   </div>
-  <!---->
+  <!--[参数收集节点]取得所有必要参数-->
   <div class="succeed_then_goto pc_block" v-if="edgeType==='pc_succeed'">
     <div class="row">
       <div class="label label-bold">
@@ -538,7 +538,7 @@
         class="select select-goto"
         ref="selectExceedThenGoto"
         :value="[toNode]"
-        @input="toNode = $event[0]"
+        @input="onSelectGoto($event[0])"
         :options="toNodeOptions.filter(option => option.text !== 'do nothing')"
         :showCheckedIcon="false"
         :showSearchBar="true"
@@ -547,7 +547,7 @@
       />
     </div>
   </div>
-  <!---->
+  <!--[参数收集节点]解析失败-->
   <div class="exceed_limit pc_block" v-if="edgeType==='pc_failed'">
     <div class="row">
       <div class="label label-bold">
@@ -565,9 +565,9 @@
       </div>
       <dropdown-select
         class="select select-goto"
-        ref="selectExceedThenGoto"
         :value="[toNode]"
-        @input="toNode = $event[0]"
+        ref="selectSucceedThenGoto"
+        @input="onSelectGoto($event[0])"
         :options="toNodeOptions.filter(option => option.text !== 'do nothing')"
         :showCheckedIcon="false"
         :showSearchBar="true"
@@ -920,12 +920,29 @@ export default {
       }
       return this.funcOptionMap[source];
     },
+    onSelectGoto(toNode) {
+      if (toNode === 'add_new_dialogue_node') {
+        const newNodeID = scenarioInitializer.guid_sort();
+        this.$emit('addNewDialogueNode', newNodeID);
+        this.toNode = newNodeID;
+      } else {
+        this.toNode = toNode;
+      }
+    },
+    onQQSelectGoto(toNode, index) {
+      if (toNode === 'add_new_dialogue_node') {
+        const newNodeID = scenarioInitializer.guid_sort();
+        this.$emit('addNewDialogueNode', newNodeID);
+        this.candidateEdges[index].to_node_id = newNodeID;
+      } else {
+        this.candidateEdges[index].to_node_id = toNode;
+      }
+    },
   },
   beforeMount() {
     this.renderConditionContent();
   },
-  mounted() {
-  },
+  mounted() {},
 };
 </script>
 
