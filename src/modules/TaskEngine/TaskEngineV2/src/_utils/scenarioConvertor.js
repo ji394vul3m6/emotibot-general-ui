@@ -556,6 +556,12 @@ export default {
         exceedThenGoto,
         elseInto,
       ];
+    } else if (uiNode.nodeType === 'nlu_pc') {
+      const elseInto = this.edgeElseInto(uiNode.nodeId, uiNode.edgeTab.elseInto);
+      edges = [
+        ...uiNode.edgeTab.normalEdges,
+        elseInto,
+      ];
     } else if (uiNode.nodeType === 'restful') {
       const tab = uiNode.restfulEdgeTab;
       const succeedEdge = this.edgeRestfulSucceed(tab.restfulSucceedThenGoto);
