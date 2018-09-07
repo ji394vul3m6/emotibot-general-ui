@@ -1,5 +1,7 @@
 <template lang="html">
-<div id="node-block" :style="style">
+<div id="node-block" :style="style"
+  @mouseover="mouseOverNode = true"
+  @mouseout="mouseOverNode = false">
   <div v-if="node.nodeType !== 'entry'" class="button-delete-node">
     <icon icon-type="delete" :enableHover="true" :size=24 @click="deleteNode()"/>
   </div>
@@ -45,7 +47,7 @@
     id="edgeSlotFrom"
     ref="edgeSlotFrom"
     v-if="linking === false || isSrcNode === true"
-    :class="{'is-src-node': isSrcNode}"
+    :class="{'is-src-node': isSrcNode, 'mouse-over-node': mouseOverNode}"
     @mousedown.stop.prevent="srcSlotMouseDown">
   </div>
   <div class="edge-slot edge-slot-to"
@@ -124,6 +126,7 @@ export default {
       warningTooltipValue: {},
       warningMsgMap: {},
       isSrcNode: false,
+      mouseOverNode: false,
     };
   },
   computed: {
@@ -349,10 +352,10 @@ export default {
     position: absolute;
     bottom: -8px;
     left: 107px;
-    &:hover{
-      border: 2px solid #AAAAAA;
-      border-radius: 100%;
-    }
+  }
+  .mouse-over-node{
+    border: 2px solid #AAAAAA;
+    border-radius: 100%;
   }
   .is-src-node {
     background: #AAAAAA;
