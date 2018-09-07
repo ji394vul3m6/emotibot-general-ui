@@ -1040,7 +1040,7 @@ export default {
           (entityCollectingTab.register_json &&
            Object.keys(entityCollectingTab.register_json).length > 0)) {
         const data = that.convertToTDERegistryData(
-          scenarioId, entityCollectingTab, entityCollectingTab.nodeId);
+          scenarioId, entityCollectingTab, node.nodeId);
         api.registerNluTdeScenario(data);
       }
     });
