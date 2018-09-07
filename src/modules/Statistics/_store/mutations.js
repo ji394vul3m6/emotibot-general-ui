@@ -6,6 +6,7 @@ export const state = {
     currentView: DAILY_VIEW.DAILY,
     searchInfo: undefined,
     clusterReport: undefined,
+    searchParams: undefined,
   },
 };
 
@@ -18,5 +19,8 @@ export const mutations = {
   },
   [types.SET_DAILY_CLUSTER_REPORT]: (_, report) => {
     state.daily.clusterReport = report;
+  },
+  [types.SET_DAILY_SEARCH_PARAMS]: (_, params) => {
+    state.daily.searchParams = params;
   },
 };

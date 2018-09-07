@@ -2,7 +2,7 @@
   <div class="content card h-fill w-fill">
     <div v-if="isClustering" id="cluster-loading">
       <loading-line></loading-line>
-      <div id="clustering-msg">{{ $t('statistics.clustering_msg', { num: clusteringCnt } ) }}</div>
+      <div id="clustering-msg">{{ clusterMsg }}</div>
     </div>
     <template v-else>
     <div class="page-header">
@@ -109,14 +109,14 @@
         :button-type="totalCount > 0 && hasCheckedDataRow ? 'primary' : 'disable'"
         @click="popSelfLearnMark(checkedDataRow)">
         {{ $t('statistics.mark.batch_mark') }}</text-button>
-      <!-- <div id="clusterBtn" ref="clusterBtn" :class="{'disabled': totalCount <= 0}" v-dropdown="clusterDropdown">
+      <div id="clusterBtn" ref="clusterBtn" :class="{'disabled': totalCount <= 0}" v-dropdown="clusterDropdown">
         <text-button  
           icon-type="header_dropdown_white" :icon-size="8" icon-align="right"
           :button-type="totalCount > 0 ? 'primary' : 'disable'"
           >
           {{ $t('statistics.cluster.title') }}</text-button>
       </div>
-      <icon iconType="info" :size="16" v-tooltip="clusterTooltip" enableHover></icon> -->
+      <icon iconType="info" :size="16" v-tooltip="clusterTooltip" enableHover></icon>
       <div v-if="totalCount > 0" class="total-show">
         {{ $t('statistics.total_records', {num: totalCount, count: checkedDataRowCount }) }}
       </div>
@@ -127,6 +127,7 @@
           :tableHeader="headerInfo"
           :tableData="tableData"
           :showEmptyMsg="[$t('general.no_search_data')]"
+          :isLoading="isTableLoading"
           @checkedChange="handleCheckedChange"
           auto-height show-empty checkbox
         ></general-table>
@@ -194,6 +195,7 @@ export default {
       tableAction: [],
       actionInfo: this.$t('statistics.action_info'),
       checkedDataRow: [],
+      isTableLoading: false,
 
       showTable: false,
       totalCount: 0,
@@ -207,7 +209,7 @@ export default {
       startValidity: true,
       endValidity: true,
       pageIndex: 1,
-      pageLimit: 25,
+      pageLimit: 100,
       startDisableDate: undefined,
       endDisableDate: undefined,
       emotionOptions: [
@@ -283,18 +285,20 @@ export default {
           },
         ],
       },
+      clusterMsg: '',
     };
   },
   watch: {
-    // checkedDataRow() {
-    //   const that = this;
-    //   that.reloadClusterDropdown();
-    // },
+    checkedDataRow() {
+      const that = this;
+      that.reloadClusterDropdown();
+    },
   },
   methods: {
     ...mapMutations([
       'setDailyCurrentView',
       'setClusterReport',
+      'setDailySearchParams',
     ]),
     escapeRegExp(str) {
       return str.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
@@ -341,7 +345,7 @@ export default {
     },
     doClusterByChecked() {
       const that = this;
-      that.clusteingCnt = that.checkedDataRowCount;
+      that.clusteringCnt = that.checkedDataRowCount;
       const param = {
         records: that.checkedDataRow.map(row => row.id),
       };
@@ -349,10 +353,12 @@ export default {
     },
     runCluster(params) {
       const that = this;
+      // Show loading and keep polling till cluster done, and go to cluster page
+      that.clusterMsg = that.$t('statistics.clustering_checking');
+      that.isClustering = true;
       that.$api.startCluster(params)
       .then((reportId) => {
-        // Show loading and keep polling till cluster done, and go to cluster page
-        that.isClustering = true;
+        that.clusterMsg = that.$t('statistics.clustering_msg', { num: that.clusteringCnt });
         that.clusterTimer = setInterval(() => {
           that.pollClusterReport(reportId);
         }, 5000);
@@ -366,15 +372,14 @@ export default {
           buttons: ['ok'],
           ok_msg: that.$t('statistics.error.got_it'),
         };
+        that.isClustering = false;
         that.$popWarn(option);
       });
     },
     pollClusterReport(reportId) {
-      console.log('poll cluster report');
       const that = this;
       that.$api.pollClusterReport(reportId)
       .then((report) => {
-        console.log({ report });
         if (report.status === -1) { // cluster fail
           that.clearClusterTimer();
           that.$notifyFail(that.$t('statistics.error.cluster_fail'));
@@ -503,7 +508,8 @@ export default {
       const that = this;
       that.pageIndex = page;
       that.searchParams = this.getSearchParam();
-      that.$emit('startLoading');
+      that.setDailySearchParams(that.searchParams);
+      that.isTableLoading = true;
       that.$api.getRecords(that.searchParams, page, this.pageLimit)
       .then((data) => {
         const res = data;
@@ -513,14 +519,14 @@ export default {
         that.markedCount = res.marked_size;
         that.ignoredCount = res.ignored_size;
         that.checkedDataRow = []; // clear all checked
-        // that.reloadClusterDropdown();
-        that.$emit('endLoading');
+        that.reloadClusterDropdown();
+        that.isTableLoading = false;
         that.showTable = true;
       })
       .catch((err) => {
         console.log({ err });
         that.$notifyFail(that.$t('statistics.error.search_fail'));
-        that.$emit('endLoading');
+        that.isTableLoading = false;
       });
     },
     receiveAPIHeader(headerData) {
@@ -587,8 +593,6 @@ export default {
       this.startDisableDate = {
         from: this.end.dateObj,
       };
-    },
-    setLabelSwitch() {
     },
   },
   computed: {

@@ -14,7 +14,6 @@
       <div id="cluster-info">
         <div id="condition-block" class="info-row">
           <span id="condition-title">{{ $t('statistics.cluster.condition') }}：</span>
-          <!-- v-for rander condition filter tag -->
           <div id="condition-tag-block">
             <span v-for="condition in searchCondition" :key="condition" class="condition-tag">
               {{ condition }}
@@ -51,6 +50,7 @@
           <general-table class="content-table cluster-content"
             :tableHeader="clusterRecordHeader"
             :tableData="clusterRecordData"
+            :isLoading="isTableLoading"
             @checkedChange="handleCheckedChange"
             checkbox>
           </general-table>
@@ -58,7 +58,7 @@
             <v-pagination
               size="small"
               :pageIndex="pageIndex"
-              :total="totalCount"
+              :total="clusterRecordCount"
               :page-size="pageLimit"
               :pageSizeOption="[25, 50, 100, 200, 500, 1000]"
               :layout="['prev', 'pager', 'next', 'sizer', 'jumper']"
@@ -134,14 +134,17 @@ export default {
           ],
         },
       ],
+      clusterRecordCount: 0,
       currentClusterRecord: [],
       currentClusterTitle: '',
+      isTableLoading: false,
     };
   },
   computed: {
     ...mapGetters([
       'dailyCurrentView',
       'clusterReport',
+      'dailySearchParams',
     ]),
     dataRowCount() {
       return this.clusterRecordData.length;
@@ -191,6 +194,7 @@ export default {
       const that = this;
       that.currentClusterTitle = cluster.tag;
       that.currentClusterRecord = cluster.records.map(r => r.id);
+      that.clusterRecordCount = cluster.count;
       that.clusterGroupData = that.updateHighlightTableData(that.clusterGroupData, idx);
       that.doSearch(1);
     },
@@ -208,14 +212,14 @@ export default {
       const that = this;
       that.pageIndex = page;
       that.searchParams = that.getSearchParam();
-      that.$emit('startLoading');
+      that.isTableLoading = true;
       that.$api.getRecords(that.searchParams, page, that.pageLimit).then((data) => {
         const res = data;
         that.checkedDataRow = []; // clear all checked
         that.clusterRecordData = that.receiveAPIData(res.data);
-        that.$emit('endLoading');
+        that.isTableLoading = false;
       }, () => {
-        that.$emit('endLoading');
+        that.isTableLoading = false;
       });
     },
     getSearchParam() {
@@ -237,8 +241,10 @@ export default {
       tableData = that.appendTableDataAction(tableData);
       return tableData;
     },
-    parseSearchCondition(searchQuery) {
+    parseSearchCondition() {
       const that = this;
+      const searchQuery = that.dailySearchParams;
+      that.searchCondition = [];
       // starttime, endtime, convert second to millisecond
       const starttime = moment.utc(searchQuery.start_time * 1000).format('YYYY/MM/DD hh:mm');
       const endtime = moment.utc(searchQuery.end_time * 1000).format('YYYY/MM/DD hh:mm');
@@ -248,7 +254,6 @@ export default {
         that.searchCondition.push(`${that.$t('statistics.user_id')}: ${searchQuery.uid}`);
       }
       // emotion
-      console.log(searchQuery.emotions);
       if (searchQuery.emotions) {
         let emotionTag = `${that.$t('statistics.emotions.title')}:`;
         searchQuery.emotions.forEach((emotion) => {
@@ -301,7 +306,7 @@ export default {
     },
     setUpClusterReport() {
       const that = this;
-      that.totalCount = that.clusterReport.total_size;
+      that.totalCount = that.clusterReport.results.total_size;
       that.ingoredCount = that.clusterReport.ignored_size;
       that.markedCount = that.clusterReport.marked_size;
       that.report = that.clusterReport.results;
@@ -319,11 +324,14 @@ export default {
           records: that.report.filtered,
         });
       }
-      that.parseSearchCondition(that.clusterReport.search_query);
+      that.parseSearchCondition();
       that.setClusterRecordData(that.clusterGroupData[0], 0);
     },
   },
   mounted() {
+    this.setUpClusterReport();
+  },
+  activated() {
     this.setUpClusterReport();
   },
 };
