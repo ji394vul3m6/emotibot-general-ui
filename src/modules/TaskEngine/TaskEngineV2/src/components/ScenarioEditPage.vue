@@ -503,9 +503,7 @@ export default {
       const newNodeName = `${srcNodeName}_copy`;
       const srcNodeBlockString = JSON.stringify(this.nodeBlocks[index]);
       let newNodeStr = srcNodeBlockString.replace(new RegExp(srcNodeId, 'g'), newNodeId);
-      console.log(newNodeStr);
       newNodeStr = newNodeStr.replace(new RegExp(`"nodeName":"${srcNodeName}"`, 'g'), `"nodeName":"${newNodeName}"`);
-      console.log(newNodeStr);
       const newNodeBlock = JSON.parse(newNodeStr);
       newNodeBlock.x += 100;
       newNodeBlock.y += 100;
