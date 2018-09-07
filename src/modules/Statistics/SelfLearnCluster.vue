@@ -58,7 +58,7 @@
             <v-pagination
               size="small"
               :pageIndex="pageIndex"
-              :total="totalCount"
+              :total="clusterRecordCount"
               :page-size="pageLimit"
               :pageSizeOption="[25, 50, 100, 200, 500, 1000]"
               :layout="['prev', 'pager', 'next', 'sizer', 'jumper']"
@@ -134,6 +134,7 @@ export default {
           ],
         },
       ],
+      clusterRecordCount: 0,
       currentClusterRecord: [],
       currentClusterTitle: '',
       isTableLoading: false,
@@ -193,6 +194,7 @@ export default {
       const that = this;
       that.currentClusterTitle = cluster.tag;
       that.currentClusterRecord = cluster.records.map(r => r.id);
+      that.clusterRecordCount = cluster.count;
       that.clusterGroupData = that.updateHighlightTableData(that.clusterGroupData, idx);
       that.doSearch(1);
     },
