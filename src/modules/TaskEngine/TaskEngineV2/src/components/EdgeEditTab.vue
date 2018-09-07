@@ -201,6 +201,7 @@ export default {
         nodeId: newNodeID,
         nodeType: 'dialogue',
       });
+      this.$emit('updateNewNodeOptions', this.newNodeOptions);
       this.updateOptions();
     },
     updateOptions() {
@@ -292,7 +293,6 @@ export default {
           delete e.id;
           return e;
         }),
-        newNodeOptions: this.newNodeOptions,
       };
       // console.log(edgeTab);
       this.$emit('update', edgeTab);

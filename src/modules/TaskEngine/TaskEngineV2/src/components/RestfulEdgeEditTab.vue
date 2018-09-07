@@ -142,6 +142,7 @@ export default {
         nodeId: newNodeID,
         nodeType: 'dialogue',
       });
+      this.$emit('updateNewNodeOptions', this.newNodeOptions);
       this.updateOptions();
     },
     updateOptions() {

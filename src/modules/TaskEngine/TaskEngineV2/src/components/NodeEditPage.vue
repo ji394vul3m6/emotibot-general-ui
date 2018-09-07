@@ -57,6 +57,7 @@
         :globalVarOptions="globalVarOptions"
         :mapTableOptions="mapTableOptions"
         @update="paramsCollectingEdgeTab = $event"
+        @updateNewNodeOptions="updateNewNodeOptions"
       ></params-collecting-edge-edit-tab>
       <edge-edit-tab ref="edgeTab"
         v-if="currentTab === 'edgeTab'"
@@ -65,6 +66,7 @@
         :globalVarOptions="globalVarOptions"
         :mapTableOptions="mapTableOptions"
         @update="edgeTab = $event; collectGlobalVarOptions()"
+        @updateNewNodeOptions="updateNewNodeOptions"
       ></edge-edit-tab>
       <restful-setting-edit-tab ref="restfulSettingTab"
         v-if="currentTab === 'restfulSettingTab'"
@@ -78,6 +80,7 @@
         :initialRestfulEdgeTab="restfulEdgeTab"
         :initialToNodeOptions="toNodeOptions"
         @update="restfulEdgeTab = $event"
+        @updateNewNodeOptions="updateNewNodeOptions"
       ></restful-edge-edit-tab>
     </keep-alive>
     </keep-alive>
@@ -145,6 +148,7 @@ export default {
       edgeTab: undefined,
       restfulSettingTab: undefined,
       restfulEdgeTab: undefined,
+      newNodeOptions: undefined,
       pageStyle: {
         width: '880px',
       },
@@ -218,6 +222,9 @@ export default {
     },
   },
   methods: {
+    updateNewNodeOptions(newNodeOptions) {
+      this.newNodeOptions = newNodeOptions;
+    },
     renderData() {
       // reserve original node json string
       const { warnings, ...nodeWithoutWarnings } = this.extData.node;
@@ -390,7 +397,7 @@ export default {
       if (this.validResult(nodeResult)) {
         this.$emit(
           'validateSuccess',
-          nodeResult,
+          { nodeResult, newNodeOptions: this.newNodeOptions },
         );
       }
     },
@@ -413,7 +420,7 @@ export default {
               if (that.validResult(nodeResult)) {
                 that.$emit(
                   'validateSuccess',
-                  nodeResult,
+                  { nodeResult, newNodeOptions: this.newNodeOptions },
                 );
               }
             },
