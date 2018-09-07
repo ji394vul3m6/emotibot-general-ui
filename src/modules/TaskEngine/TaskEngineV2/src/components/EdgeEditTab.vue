@@ -86,6 +86,7 @@
 <script>
 import draggable from 'vuedraggable';
 import DropdownSelect from '@/components/DropdownSelect';
+import general from '@/modules/TaskEngine/_utils/general';
 import ConditionBlock from './ConditionBlock';
 import scenarioInitializer from '../_utils/scenarioInitializer';
 
@@ -185,8 +186,16 @@ export default {
       if (this.newNodeOptions === undefined) {
         this.newNodeOptions = [];
       }
+      const nodeNames = [
+        ...window.moduleData.ui_data.nodes.map(node => node.nodeName),
+        ...this.newNodeOptions.map(option => option.nodeName),
+      ];
+      const newNodeName = general.suffixIndexToNodeName(
+                            this.$t('task_engine_v2.node_type.dialogue'),
+                            nodeNames,
+                          );
       this.newNodeOptions.push({
-        nodeName: this.$t('task_engine_v2.node_type.dialogue'),
+        nodeName: newNodeName,
         nodeId: newNodeID,
         nodeType: 'dialogue',
       });
