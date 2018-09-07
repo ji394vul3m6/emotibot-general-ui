@@ -912,7 +912,9 @@ export default {
     addNewNode(nodeType, nodeName, x, y) {
       const nodeDialogueCntLimit = this.setting.nodeDialogueCntLimit;
       const newNodeName = general.suffixIndexToNodeName(nodeName, undefined);
-      const node = scenarioInitializer.initialNode(nodeType, newNodeName, nodeDialogueCntLimit);
+      const node = scenarioInitializer.initialNode(
+        nodeType, newNodeName, nodeDialogueCntLimit, undefined,
+      );
       this.nodeBlocks.push({
         x,
         y,
