@@ -499,25 +499,34 @@ export default {
         data: node,
       });
     },
-    createNodesFromEdges(index, node) {
+    createTempNodesFromTab(tab, index) {
+      let x = this.nodeBlocks[index].x;
+      const y = this.nodeBlocks[index].y + 150;
+      tab.newNodeOptions.forEach((option) => {
+        x += 250;
+        this.createDialogueNode(
+          option.nodeType,
+          option.nodeName,
+          option.nodeId,
+          x,
+          y,
+        );
+      });
+      delete tab.newNodeOptions;
+    },
+    createTempNodes(index, node) {
       if (node.edgeTab && node.edgeTab.newNodeOptions) {
-        let x = this.nodeBlocks[index].x;
-        const y = this.nodeBlocks[index].y + 150;
-        node.edgeTab.newNodeOptions.forEach((option) => {
-          x += 250;
-          this.createDialogueNode(
-            option.nodeType,
-            option.nodeName,
-            option.nodeId,
-            x,
-            y,
-          );
-        });
-        delete node.edgeTab.newNodeOptions;
+        this.createTempNodesFromTab(node.edgeTab, index);
+      }
+      if (node.paramsCollectingEdgeTab && node.paramsCollectingEdgeTab.newNodeOptions) {
+        this.createTempNodesFromTab(node.paramsCollectingEdgeTab, index);
+      }
+      if (node.restfulEdgeTab && node.restfulEdgeTab.newNodeOptions) {
+        this.createTempNodesFromTab(node.restfulEdgeTab, index);
       }
     },
     saveNode(index, node) {
-      this.createNodesFromEdges(index, node);
+      this.createTempNodes(index, node);
       this.nodeBlocks[index].data = node;
       this.$nextTick(() => {
         this.saveScenario();
