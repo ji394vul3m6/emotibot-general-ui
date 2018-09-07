@@ -14,7 +14,6 @@
       <div id="cluster-info">
         <div id="condition-block" class="info-row">
           <span id="condition-title">{{ $t('statistics.cluster.condition') }}：</span>
-          <!-- v-for rander condition filter tag -->
           <div id="condition-tag-block">
             <span v-for="condition in searchCondition" :key="condition" class="condition-tag">
               {{ condition }}
@@ -142,6 +141,7 @@ export default {
     ...mapGetters([
       'dailyCurrentView',
       'clusterReport',
+      'dailySearchParams',
     ]),
     dataRowCount() {
       return this.clusterRecordData.length;
@@ -237,8 +237,10 @@ export default {
       tableData = that.appendTableDataAction(tableData);
       return tableData;
     },
-    parseSearchCondition(searchQuery) {
+    parseSearchCondition() {
       const that = this;
+      const searchQuery = that.dailySearchParams;
+      that.searchCondition = [];
       // starttime, endtime, convert second to millisecond
       const starttime = moment.utc(searchQuery.start_time * 1000).format('YYYY/MM/DD hh:mm');
       const endtime = moment.utc(searchQuery.end_time * 1000).format('YYYY/MM/DD hh:mm');
@@ -248,7 +250,6 @@ export default {
         that.searchCondition.push(`${that.$t('statistics.user_id')}: ${searchQuery.uid}`);
       }
       // emotion
-      console.log(searchQuery.emotions);
       if (searchQuery.emotions) {
         let emotionTag = `${that.$t('statistics.emotions.title')}:`;
         searchQuery.emotions.forEach((emotion) => {
@@ -319,11 +320,14 @@ export default {
           records: that.report.filtered,
         });
       }
-      that.parseSearchCondition(that.clusterReport.search_query);
+      that.parseSearchCondition();
       that.setClusterRecordData(that.clusterGroupData[0], 0);
     },
   },
   mounted() {
+    this.setUpClusterReport();
+  },
+  activated() {
     this.setUpClusterReport();
   },
 };
