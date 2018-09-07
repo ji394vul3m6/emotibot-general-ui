@@ -17,7 +17,7 @@ echo http://mirrors.ustc.edu.cn/alpine/v3.7/community >> /etc/apk/repositories
 RUN apk add --no-cache tzdata
 COPY docker/conf/nginx.conf.template /etc/nginx/nginx.conf.template
 
-COPY --from=api-server /usr/bin /api
+COPY --from=api-server /usr/bin/app /api
 COPY --from=build-env /build/dist/index.html /build/dist/
 COPY --from=build-env /build/dist/login.html /build/dist/
 COPY --from=build-env /build/dist/version.html /build/dist/
