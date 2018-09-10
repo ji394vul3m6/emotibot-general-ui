@@ -288,7 +288,7 @@ export default {
       // ignore
       if (searchQuery.is_ignored !== undefined) {
         if (searchQuery.is_ignored) {
-          that.searchCondition.push(`${that.$t('statistics.ignore.title')}: ${that.$t('statistics.ignore.ignored')}`);
+          that.searchCondition.push(`${that.$t('statistics.ignore.title')}: ${that.$t('statistics.ignore.ignore')}`);
         } else {
           that.searchCondition.push(`${that.$t('statistics.ignore.title')}: ${that.$t('statistics.ignore.not_ignore')}`);
         }
