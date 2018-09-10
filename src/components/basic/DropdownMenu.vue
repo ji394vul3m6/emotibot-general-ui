@@ -38,12 +38,12 @@ export default {
       show: false,
       showX: 0,
       showY: 0,
-      clickOutsideListener: undefined,
     };
   },
   computed: {
     style() {
       return {
+        position: 'fixed',
         top: this.show ? `${this.showY}px` : 0,
         left: this.show ? `${this.showX}px` : 0,
         visibility: this.show ? 'visible' : 'hidden',
@@ -71,17 +71,11 @@ export default {
           that.showX = (that.x + 10) - that.$el.clientWidth;
           that.showY = that.y;
         } else {
-          that.showX = -10;
+          that.showX = that.x - 10;
           // we keep 10px padding to show box-shadow, shift left for 10px to pretty align elems
           that.showY = that.y;
         }
       });
-
-      that.clickOutsideListener = (e) => {
-        if (!that.$el.contains(e.target)) {
-          that.show = false;
-        }
-      };
     });
     that.$on('hide', () => {
       that.show = false;
@@ -92,7 +86,6 @@ export default {
 <style lang="scss" scoped>
 $option-height: 32px;
 .dropdown-menu-container {
-  position: absolute;
   padding: 10px;
   z-index: 5;
 }
