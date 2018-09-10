@@ -184,6 +184,9 @@ export default {
 
       const inputBox = that.$refs.input.getBoundingClientRect();
       that.listStyle = {
+        position: 'fixed',
+        top: `${inputBox.top + inputBox.height + 3}px`,
+        left: `${inputBox.left}px`,
         width: `${inputBox.width}px`,
       };
 
@@ -205,7 +208,18 @@ export default {
           }
         }
       };
+      that.detectScrollListener = (e) => { // auto close option list when scroll outside
+        const clickDom = e.target;
+        const listDom = that.$refs.list;
+        if (listDom && !listDom.contains(clickDom)) {
+          that.show = false;
+          if (that.detectScrollListener) {
+            window.removeEventListener('scroll', that.detectScrollListener, true);
+          }
+        }
+      };
       window.addEventListener('click', that.detectClickListener);
+      window.addEventListener('scroll', that.detectScrollListener, true);
     },
     selectValue(value) {
       if (value === undefined) {
@@ -258,9 +272,6 @@ export default {
 @import 'styles/variable.scss';
 
 $border-color: $color-borderline;
-.dropdown-select {
-  position: relative;
-}
 .input-bar {
   display: flex;
   height: 28px;
