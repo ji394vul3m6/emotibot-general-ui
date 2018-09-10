@@ -233,8 +233,8 @@ export default {
         const data = {
           user_q: d.user_q,
           id: d.id,
-          ignored: d.is_ignored,
-          marked: d.is_marked,
+          is_ignored: d.is_ignored,
+          is_marked: d.is_marked,
         };
         return data;
       });
