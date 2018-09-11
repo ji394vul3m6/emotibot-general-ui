@@ -42,6 +42,7 @@ export default {
       validity: true,
       manualInput: false,
       selectInput: false,
+      listStyle: {},
     };
   },
 
@@ -488,15 +489,21 @@ export default {
 
     closeDropdown() {
       this.showDropdown = false;
-      document.removeEventListener('click', this.clickOutside, false);
+      document.removeEventListener('click', this.clickOrScrollOutside, false);
+      document.removeEventListener('scroll', this.clickOrScrollOutside, true);
+      window.removeEventListener('resize', this.reposition, false);
     },
 
     toggleDropdown() {
       this.showDropdown = !this.showDropdown;
       if (this.showDropdown) {
-        document.addEventListener('click', this.clickOutside, false);
+        document.addEventListener('click', this.clickOrScrollOutside, false);
+        document.addEventListener('scroll', this.clickOrScrollOutside, true);
+        window.addEventListener('resize', this.reposition, false);
       } else {
-        document.removeEventListener('click', this.clickOutside, false);
+        document.removeEventListener('click', this.clickOrScrollOutside, false);
+        document.removeEventListener('scroll', this.clickOrScrollOutside, true);
+        window.removeEventListener('resize', this.reposition, false);
       }
     },
 
@@ -544,7 +551,7 @@ export default {
      * Close if clicked outside the timepicker
      * @param  {Event} event
      */
-    clickOutside(event) {
+    clickOrScrollOutside(event) {
       if (this.$el && !this.$el.contains(event.target)) {
         this.toggleDropdown();
       }
@@ -554,10 +561,19 @@ export default {
       event.target.select();
     },
     clickInput(event) {
+      this.reposition();
       this.toggleDropdown(event);
       if (this.showDropdown) {
         this.selectAllText(event);
       }
+    },
+    reposition() {
+      const inputBox = this.$refs.timePicker.getBoundingClientRect();
+      this.listStyle = {
+        position: 'fixed',
+        top: `${inputBox.top + inputBox.height + 3}px`,
+        left: `${inputBox.left}px`,
+      };
     },
   },
 
@@ -568,7 +584,7 @@ export default {
 </script>
 
 <template>
-<span class="time-picker tooltip-container">
+<span class="time-picker tooltip-container" ref="timePicker">
   <input
     class="display-time"
     :class="{'invalid-timepicker-input': !validity}"
@@ -584,7 +600,7 @@ export default {
     {{ $t('error_msg.time_format_error') }}
   </div>
   <span class="clear-btn" v-if="!hideClearButton" v-show="!showDropdown && showClearBtn" @click.stop="clearTime">&times;</span>
-  <div class="dropdown" v-show="showDropdown">
+  <div class="dropdown" v-show="showDropdown" :style="listStyle">
     <div class="select-list">
       <ul class="hours">
         <li class="hint" v-text="hourType"></li>

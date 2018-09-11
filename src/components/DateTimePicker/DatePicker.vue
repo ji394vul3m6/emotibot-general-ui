@@ -1,5 +1,5 @@
 <template>
-  <div class="vdp-datepicker" :class="[wrapperClass, isRtl ? 'rtl' : '']">
+  <div class="vdp-datepicker" ref="datePicker" :class="[wrapperClass, isRtl ? 'rtl' : '']">
     <div :class="{'input-group' : bootstrapStyling}" class="tooltip-container">
       <!-- Calendar Button -->
       <span class="vdp-datepicker__calendar-button" :class="{'input-group-addon' : bootstrapStyling}" v-if="calendarButton" @click="showCalendar" v-bind:style="{'cursor:not-allowed;' : disabledPicker}">
@@ -212,6 +212,7 @@ export default {
       validity: true,
       manualInput: false,
       selectInput: false,
+      calendarStyle: {},
     };
   },
   watch: {
@@ -340,11 +341,6 @@ export default {
       }
       return years;
     },
-    calendarStyle() {
-      return {
-        position: this.isInline ? 'static' : undefined,
-      };
-    },
     isOpen() {
       return this.showDayView || this.showMonthView || this.showYearView;
     },
@@ -398,7 +394,9 @@ export default {
       this.showYearView = false;
       if (!this.isInline) {
         this.$emit('closed');
-        document.removeEventListener('click', this.clickOutside, false);
+        document.removeEventListener('click', this.clickOrScrollOutside, false);
+        document.removeEventListener('scroll', this.clickOrScrollOutside, true);
+        window.removeEventListener('resize', this.reposition, false);
       }
     },
     resetDefaultDate() {
@@ -408,7 +406,16 @@ export default {
       }
       this.setPageDate(this.selectedDate);
     },
+    reposition() {
+      const inputBox = this.$refs.datePicker.getBoundingClientRect();
+      this.calendarStyle = {
+        position: this.isInline ? 'static' : 'fixed',
+        top: `${inputBox.top + inputBox.height + 3}px`,
+        left: `${inputBox.left}px`,
+      };
+    },
     clickInput(event) {
+      this.reposition();
       this.showCalendar(event);
       if (this.isOpen) {
         this.selectAllText(event);
@@ -428,17 +435,21 @@ export default {
       if (this.isOpen) {
         return this.close();
       }
-      this.hideOnClickOutside();
+      this.hideOrReposition();
       this.setInitialView();
       if (!this.isInline) {
         this.$emit('opened');
       }
       return true;
     },
-    hideOnClickOutside() {
+    hideOrReposition() {
       const that = this;
       window.test = that;
-      document.addEventListener('click', this.clickOutside);
+      // hide on click or scroll outside
+      document.addEventListener('click', this.clickOrScrollOutside);
+      document.addEventListener('scroll', this.clickOrScrollOutside, true);
+      // reposition when resize
+      window.addEventListener('resize', this.reposition);
     },
     setInitialView() {
       const initialView = this.computedInitialView;
@@ -473,7 +484,9 @@ export default {
       this.close();
       this.showDayView = true;
       if (!this.isInline) {
-        document.addEventListener('click', this.clickOutside, false);
+        document.addEventListener('click', this.clickOrScrollOutside, false);
+        document.addEventListener('scroll', this.clickOrScrollOutside, true);
+        window.addEventListener('resize', this.reposition, false);
       }
       return true;
     },
@@ -483,7 +496,9 @@ export default {
       this.close();
       this.showMonthView = true;
       if (!this.isInline) {
-        document.addEventListener('click', this.clickOutside, false);
+        document.addEventListener('click', this.clickOrScrollOutside, false);
+        document.addEventListener('scroll', this.clickOrScrollOutside, true);
+        window.addEventListener('resize', this.reposition, false);
       }
       return true;
     },
@@ -493,7 +508,9 @@ export default {
       this.close();
       this.showYearView = true;
       if (!this.isInline) {
-        document.addEventListener('click', this.clickOutside, false);
+        document.addEventListener('click', this.clickOrScrollOutside, false);
+        document.addEventListener('scroll', this.clickOrScrollOutside, true);
+        window.addEventListener('resize', this.reposition, false);
       }
       return true;
     },
@@ -954,14 +971,16 @@ export default {
      * Close the calendar if clicked outside the datepicker
      * @param  {Event} event
      */
-    clickOutside(event) {
+    clickOrScrollOutside(event) {
       if (this.$el && !this.$el.contains(event.target)) {
         if (this.isInline) {
           return this.showDayCalendar();
         }
         this.resetDefaultDate();
         this.close();
-        document.removeEventListener('click', this.clickOutside, false);
+        document.removeEventListener('click', this.clickOrScrollOutside, false);
+        document.removeEventListener('scroll', this.clickOrScrollOutside, true);
+        window.removeEventListener('resize', this.reposition, false);
       }
       return false;
     },
@@ -1011,7 +1030,6 @@ $color-date-disabled: $color-font-disabled;
 
 .vdp-datepicker {
   color: $color-font-active;
-  position: relative;
   text-align: left;
   * {
     box-sizing: border-box;
