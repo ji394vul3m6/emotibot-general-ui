@@ -11,14 +11,14 @@
         @validityChange="value => {dateValidity = value}"
       ></date-picker>
     </div>
-    <div class='picker' id="time-picker">
+    <div class='picker' id="time-picker" :class="{'second-format': secondFormat}">
       <time-picker
         hide-clear-button
         v-model="datetime.timeObj"
         :readonly="false"
         :currentDate="datetime.dateObj"
         :disabled="disableDate"
-        format="HH:mm"
+        :format="secondFormat ? 'HH:mm:ss' : 'HH:mm'"
         :minute-interval="5"
         @change="onTimeSelected"
         @validityChange="value => {timeValidity = value}"
@@ -40,6 +40,11 @@ export default {
     },
     disableDate: {
       type: Object,
+      required: false,
+    },
+    secondFormat: {
+      type: Boolean,
+      default: false,
       required: false,
     },
   },
@@ -99,7 +104,8 @@ $light-main: $page-header-color;
   display: flex;
   align-items: center;
   position: relative;
-
+  @include font-12px();
+  
   .time-picker input.invalid-timepicker-input {
     background-color: pink;
   }
@@ -122,6 +128,14 @@ $light-main: $page-header-color;
       width: auto;
       input {
       width: 60px;
+      }
+    }
+    &.second-format {
+      .time-picker {
+        width: auto;
+        input {
+          width: 100px;
+        }
       }
     }
   }

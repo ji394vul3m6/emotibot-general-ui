@@ -68,6 +68,9 @@ export default {
       }
       return false;
     },
+    isSecondFormat() {
+      return this.format === 'HH:mm:ss';
+    },
   },
 
   watch: {
@@ -90,6 +93,12 @@ export default {
       this.hour = hour < 10 ? `0${hour}` : `${hour}`;
       this.minute = min < 10 ? `0${min}` : `${min}`;
       this.displayTime = `${this.hour}:${this.minute}`;
+
+      if (this.isSecondFormat) {
+        const sec = val.getSeconds();
+        this.second = sec < 10 ? `0${sec}` : `${sec}`;
+        this.displayTime = `${this.displayTime}:${this.second}`;
+      }
       this.parseDisplayTime();
     },
   },
@@ -108,7 +117,7 @@ export default {
         this.displayTime = `${this.displayTime.substring(0, 2)}:${this.displayTime.substring(2, 4)}`;
       }
 
-      const pattern = /^([01]?[0-9]|2[0-3]):([0-5][0-9])$/;
+      const pattern = this.isSecondFormat ? /^([01]?[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/ : /^([01]?[0-9]|2[0-3]):([0-5][0-9])$/;
 
       if (pattern.test(this.displayTime)) {
         this.validity = true;
@@ -117,19 +126,24 @@ export default {
         const currentDate = this.currentDate;
         let hour = parseInt(result[1], 10);
         let min = parseInt(result[2], 10);
+        let sec = this.isSecondFormat ? parseInt(result[3], 10) : 0;
         currentDate.setHours(hour);
         currentDate.setMinutes(min);
+        currentDate.setSeconds(sec);
         if (this.disabled && this.disabled.to && currentDate < this.disabled.to) {
           hour = this.disabled.to.getHours();
           min = this.disabled.to.getMinutes();
+          sec = this.disabled.to.getSeconds();
         }
         if (this.disabled && this.disabled.from && currentDate > this.disabled.from) {
           hour = this.disabled.from.getHours();
           min = this.disabled.from.getMinutes();
+          sec = this.disabled.from.getSeconds();
         }
         this.hour = hour < 10 ? `0${hour}` : `${hour}`;
         this.minute = min < 10 ? `0${min}` : `${min}`;
-        this.displayTime = `${this.hour}:${this.minute}`;
+        this.second = sec < 10 ? `0${sec}` : `${sec}`;
+        this.displayTime = this.isSecondFormat ? `${this.hour}:${this.minute}:${this.second}` : `${this.hour}:${this.minute}`;
         if (this.manualInput) {
           this.closeDropdown();
         }
@@ -286,7 +300,7 @@ export default {
       m.isDisabled = disabled;
       return disabled;
     },
-    isDisabledSedond(s) {
+    isDisabledSecond(s) {
       if (typeof this.disabled === 'undefined') {
         s.isDisabled = false;
         return false;

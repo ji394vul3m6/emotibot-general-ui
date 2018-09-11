@@ -28,11 +28,14 @@ disabled 格式參考 [disabled 格式](https://github.com/charliekassel/vuejs-d
 
 ### DateTimePicker
 
+預設單位精細到分鐘，若要精細到 秒，請使用 prop secondFormat
+
 ```
   // template
   <datetime-picker
     :value="someDateObj"        // 預設的日期時間 type: DateObj，見下方 DatePickerUtils 說明
     :disableDate="disableDate"  // 設置禁止選取的日期，同 DatePicker 格式
+    :secondFormat=true          // picker 單位是否精細到 秒，否則不須設置這個 prop
     @dateChanged="handleDateChanged"    // 選取日期改變回傳 event
     @validityChange="handleDateValidityChange" // 日期驗證回傳 event
   ></datetime-picker>
