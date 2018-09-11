@@ -16,7 +16,7 @@ const MyPlugin = {
   },
   hideListWhenEventTriggeredOutside(vm, el, alignLeft) {
     return (e) => {
-      if (vm.$el && !vm.$el.contains(e.target)) {
+      if (el && !el.contains(e.target)) {
         el.dispatchEvent(new Event('dropdownHidden'));
         vm.$emit('hide');
         this.removeEventListeners(vm, el, alignLeft);
@@ -24,13 +24,13 @@ const MyPlugin = {
     };
   },
   addEventListeners(vm, el, alignLeft) {
-    window.addEventListener('click', this.hideListWhenEventTriggeredOutside(vm, el));
-    window.addEventListener('scroll', this.hideListWhenEventTriggeredOutside(vm, el), true);
+    window.addEventListener('click', this.hideListWhenEventTriggeredOutside(vm, el, alignLeft));
+    window.addEventListener('scroll', this.hideListWhenEventTriggeredOutside(vm, el, alignLeft), true);
     window.addEventListener('resize', () => vm.$emit('show', this.getPosition(el, alignLeft)));
   },
   removeEventListeners(vm, el, alignLeft) {
-    window.removeEventListener('click', this.hideListWhenEventTriggeredOutside(vm, el), true);
-    window.removeEventListener('scroll', this.hideListWhenEventTriggeredOutside(vm, el), true);
+    window.removeEventListener('click', this.hideListWhenEventTriggeredOutside(vm, el, alignLeft), true);
+    window.removeEventListener('scroll', this.hideListWhenEventTriggeredOutside(vm, el, alignLeft), true);
     window.removeEventListener('resize', () => vm.$emit('show', this.getPosition(el, alignLeft)));
   },
   install(Vue) {
@@ -79,10 +79,9 @@ const MyPlugin = {
             that.removeEventListeners(vm, el, binding.value.alignLeft);
           });
 
-          el.addEventListener('click', (clickEvent) => {
+          el.addEventListener('click', () => {
             vm.$emit('show', that.getPosition(el, binding.value.alignLeft));
             that.addEventListeners(vm, el, binding.value.alignLeft);
-            clickEvent.stopPropagation();
           });
         });
       },
