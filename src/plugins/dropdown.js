@@ -1,29 +1,48 @@
 import DropdownMenu from '../components/basic/DropdownMenu';
 
-function getPosition(el, alignLeft) {
-  const boundedBox = el.getBoundingClientRect();
-  if (alignLeft) {
+const MyPlugin = {
+  getPosition(el, alignLeft) {
+    const boundedBox = el.getBoundingClientRect();
+    if (alignLeft) {
+      return {
+        x: boundedBox.right, // align by right edge
+        y: boundedBox.top + boundedBox.height + 3,
+      };
+    }
     return {
-      x: boundedBox.right, // align by right edge
+      x: boundedBox.left, // align by left edge
       y: boundedBox.top + boundedBox.height + 3,
     };
-  }
-  return {
-    x: boundedBox.left, // align by left edge
-    y: boundedBox.top + boundedBox.height + 3,
-  };
-}
-
-const MyPlugin = {
+  },
+  hideListWhenEventTriggeredOutside(vm, el, alignLeft) {
+    return (e) => {
+      if (vm.$el && !vm.$el.contains(e.target)) {
+        el.dispatchEvent(new Event('dropdownHidden'));
+        vm.$emit('hide');
+        this.removeEventListeners(vm, el, alignLeft);
+      }
+    };
+  },
+  addEventListeners(vm, el, alignLeft) {
+    window.addEventListener('click', this.hideListWhenEventTriggeredOutside(vm, el));
+    window.addEventListener('scroll', this.hideListWhenEventTriggeredOutside(vm, el), true);
+    window.addEventListener('resize', () => vm.$emit('show', this.getPosition(el, alignLeft)));
+  },
+  removeEventListeners(vm, el, alignLeft) {
+    window.removeEventListener('click', this.hideListWhenEventTriggeredOutside(vm, el), true);
+    window.removeEventListener('scroll', this.hideListWhenEventTriggeredOutside(vm, el), true);
+    window.removeEventListener('resize', () => vm.$emit('show', this.getPosition(el, alignLeft)));
+  },
   install(Vue) {
+    const that = this;
     Vue.directive('dropdown', {
       inserted(el, binding, vnode) {
         vnode.context.$nextTick(() => {
           const DropdownGenerator = Vue.extend(DropdownMenu);
           let vm = new DropdownGenerator({
             propsData: {
-              x: getPosition(el, binding.value.alignLeft).x,
-              y: getPosition(el, binding.value.alignLeft).y,
+              x: that.getPosition(el, binding.value.alignLeft).x,
+              y: that.getPosition(el, binding.value.alignLeft).y,
               options: binding.value.options,
               width: binding.value.width,
               alignLeft: binding.value.alignLeft,
@@ -39,8 +58,8 @@ const MyPlugin = {
             vm.$destroy();
             vm = new DropdownGenerator({
               propsData: {
-                x: getPosition(el, binding.value.alignLeft).x,
-                y: getPosition(el, binding.value.alignLeft).y,
+                x: that.getPosition(el, binding.value.alignLeft).x,
+                y: that.getPosition(el, binding.value.alignLeft).y,
                 options: binding.value.options,
                 width: binding.value.width,
                 alignLeft: binding.value.alignLeft,
@@ -52,34 +71,17 @@ const MyPlugin = {
           });
 
           el.addEventListener('dropdown-show', () => {
-            vm.$emit('show', getPosition(el, binding.value.alignLeft));
+            vm.$emit('show', that.getPosition(el, binding.value.alignLeft));
           });
           el.addEventListener('dropdown-hide', () => {
             el.dispatchEvent(new Event('dropdownHidden'));
             vm.$emit('hide');
+            that.removeEventListeners(vm, el, binding.value.alignLeft);
           });
 
-          const dropdown = vm.$el;
           el.addEventListener('click', (clickEvent) => {
-            vm.$emit('show', getPosition(el, binding.value.alignLeft));
-            const detectClickListener = (e) => {
-              const clickDom = e.target;
-              if (clickDom && !dropdown.contains(clickDom)) {
-                el.dispatchEvent(new Event('dropdownHidden'));
-                vm.$emit('hide');
-                window.removeEventListener('click', detectClickListener);
-              }
-            };
-            window.addEventListener('click', detectClickListener);
-            const detectScrollListener = (e) => {
-              const clickDom = e.target;
-              if (clickDom && !dropdown.contains(clickDom)) {
-                el.dispatchEvent(new Event('dropdownHidden'));
-                vm.$emit('hide');
-                window.removeEventListener('scroll', detectScrollListener, true);
-              }
-            };
-            window.addEventListener('scroll', detectScrollListener, true);
+            vm.$emit('show', that.getPosition(el, binding.value.alignLeft));
+            that.addEventListeners(vm, el, binding.value.alignLeft);
             clickEvent.stopPropagation();
           });
         });
