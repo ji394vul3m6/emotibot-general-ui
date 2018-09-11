@@ -50,7 +50,7 @@
           <td v-if="checkbox" class="table-col-checkbox">
             <input type="checkbox" @click="checkSelf(data, idx)" :checked="data.isChecked">
           </td>
-          <td v-for="header in tableHeader" :key="uniqueId(header.key)"
+          <td v-for="header in tableHeader" :key="uniqueId(header.key, idx)"
             :style="{width: header.width}"
             :class="{'fixed': header.width, 'custom-action': header.type === 'action', 'multi-action': hasMultiCustomAction, 'icon-column': header.type === 'icon'}"
              class="table-body-item"
@@ -206,9 +206,9 @@ export default {
     },
   },
   methods: {
-    uniqueId(key) {
-      const randInt = parseInt(Math.random() * 1000, 10);
-      return `${randInt}-${key}`;
+    uniqueId(key, idx) {
+      // using idx of rowData to produce unique key for array type tag instead of using random key
+      return `${idx}-${key}`;
     },
     checkSelf(data) {
       data.isChecked = !data.isChecked;
@@ -258,8 +258,15 @@ export default {
       this.headerInfoTooltip.msg = header.info;
       infoIconBlockDom.dispatchEvent(event.createEvent('tooltip-reload'));
     },
-    moreClick(index) {
+    moreClick(index, e) {
+      const rect = e.target.getBoundingClientRect();
+      const top = document.documentElement.scrollTop + rect.top;
+      const windowWidth = window.innerWidth || document.body.clientWidth;
       this.indexOfShowMenu = index;
+      this.menuStyle = {
+        top: `${top}px`,
+        right: `${windowWidth - rect.right - (rect.width / 2)}px`,
+      };
     },
     hideMenu() {
       this.indexOfShowMenu = -1;
@@ -319,10 +326,7 @@ $table-row-height: 50px;
     justify-content: center;
   }
   .menu-container {
-    position: absolute;
-    right: 0;
-    margin-top: 20px;
-    margin-right: 45px;
+    position: fixed;
   }
   .general-table-body {
     @include auto-overflow-Y();
