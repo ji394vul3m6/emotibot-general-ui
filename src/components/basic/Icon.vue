@@ -1,7 +1,7 @@
 <template>
   <div class="icon" :class="{button: button || enableHover}" @click="$emit('click', $event)" :style="containerStyle">
     <div v-if="enableHover" :class="`${iconType}_icon_hover`" :style="styleObj"></div>
-    <div v-else :class="`${iconType}_icon`" :style="styleObj"></div>
+    <div v-else :class="[`${iconType}_icon`, { active } ]" :style="styleObj"></div>
   </div>
 </template>
 
@@ -23,6 +23,10 @@ export default {
       default: false,
     },
     enableHover: {
+      type: Boolean,
+      default: false,
+    },
+    active: {
       type: Boolean,
       default: false,
     },
@@ -105,6 +109,7 @@ export default {
       border-color: $tool-tip-background transparent transparent transparent;
     }
   }
+  $activeType: 'detail','stop','pause','monitor','list';
   @mixin iconType($name) {
     .#{$name}_icon {
       background: url("../../assets/icons/#{$name}_icon.svg") no-repeat center center;
@@ -112,6 +117,14 @@ export default {
       background-size: 20px 20px;
       width: 100%;
       height: 100%;
+      @for $i from 1 through length($activeType) {
+        $type: nth($activeType,$i);
+        @if $name == $type {
+          &.active {
+            background: url("../../assets/icons/#{$name}_hover_icon.svg") no-repeat center center;
+          }
+        }
+      }
     }
     &.button {
       .#{$name}Icon:active {
@@ -164,7 +177,12 @@ export default {
   @include iconType("search");
   @include iconType("white_add");
   @include iconType("daggle");
-  @include iconType("more");
+  @include iconTypeHover("more");
+  @include iconType("stop");
+  @include iconType("pause");
+  @include iconType("monitor");
+  @include iconType("detail");
+  @include iconType("list");
   @include iconType("setting");
   @include iconType("setting_hover");
   @include iconTypeHover("setting");
