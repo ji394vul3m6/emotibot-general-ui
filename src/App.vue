@@ -103,8 +103,9 @@ export default {
     };
   },
   watch: {
-    enterpriseID() {
+    enterpriseID(val) {
       this.setPrivilegeList(this.$getPrivModules());
+      this.$cookie.set('enterprise', val, { expires: constant.cookieTimeout });
     },
     robotID(val) {
       if (val === '') {
