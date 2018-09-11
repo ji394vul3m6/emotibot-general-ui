@@ -224,9 +224,10 @@ export default {
           globalVarOptionsMap: that.globalVarOptionsMap,
         },
         callback: {
-          ok: (nodeResult) => {
-            this.node = nodeResult;
-            this.$emit('saveNode', nodeResult);
+          ok: (resultObj) => {
+            this.node = resultObj.nodeResult;
+            this.$emit('saveNode', resultObj.nodeResult);
+            this.$emit('addTempNodes', resultObj.newNodeOptions);
           },
         },
       });

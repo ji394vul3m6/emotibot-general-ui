@@ -1,33 +1,42 @@
 <template>
-  <div class='datetimepicker'>
+  <div class='datetimepicker' v-tooltip="datetimePickerTooltip" ref="picker">
     <div class='picker' id="date-picker">
       <date-picker
+        ref="datepicker"
         v-model="datetime.dateObj"
         :readonly="false"
         :disabled="disableDate"
+        :placeholder="'yyyy/mm/dd'"
+        :allowEmpty="allowEmpty"
         format="yyyy/MM/dd"
         language="zh"
         @selected="onDateSelected"
         @validityChange="value => {dateValidity = value}"
+        @displayEmpty="value => {dateEmpty = value}"
       ></date-picker>
     </div>
-    <div class='picker' id="time-picker">
+    <div class='picker' id="time-picker" :class="{'second-format': secondFormat}">
       <time-picker
+        ref="timepicker"
         hide-clear-button
         v-model="datetime.timeObj"
         :readonly="false"
         :currentDate="datetime.dateObj"
         :disabled="disableDate"
-        format="HH:mm"
+        :format="secondFormat ? 'HH:mm:ss' : 'HH:mm'"
         :minute-interval="5"
+        :placeholder="allowEmpty ? 'hh:mm:ss' : 'hh:mm'"
+        :allowEmpty="allowEmpty"
         @change="onTimeSelected"
         @validityChange="value => {timeValidity = value}"
+        @displayEmpty="value => {timeEmpty = value}"
       ></time-picker>
     </div>
   </div>
 </template>
 
 <script>
+import event from '@/utils/js/event';
 import datePickerUtil from '@/utils/vue/DatePickerUtil';
 import DatePicker from './DatePicker';
 import TimePicker from './TimePicker';
@@ -42,6 +51,16 @@ export default {
       type: Object,
       required: false,
     },
+    secondFormat: {
+      type: Boolean,
+      default: false,
+      required: false,
+    },
+    allowEmpty: {
+      type: Boolean,
+      default: false,
+      required: false,
+    },
   },
   computed: {
     datetime() {
@@ -50,12 +69,37 @@ export default {
       return d;
     },
     validity() {
+      if (this.allowEmpty) {
+        return this.emptyValidity && (this.dateValidity && this.timeValidity);
+      }
       return this.dateValidity && this.timeValidity;
+    },
+    emptyValidity() {
+      const bothEmpty = this.dateEmpty && this.timeEmpty;
+      const bothNonEmpty = !this.dateEmpty && !this.timeEmpty;
+      return bothEmpty || bothNonEmpty;
     },
   },
   watch: {
     validity() {
-      this.$emit('validityChange', this.validity);
+      const that = this;
+      that.$emit('validityChange', that.validity);
+    },
+    emptyValidity() {
+      const that = this;
+      if (that.allowEmpty) {
+        if (that.emptyValidity) {
+          if (this.dateEmpty && this.timeEmpty) {
+            that.$emit('pickerEmptyChange', true);
+          } else {
+            that.$emit('pickerEmptyChange', false);
+          }
+          that.$refs.picker.dispatchEvent(event.createEvent('tooltip-hide'));
+        } else {
+          that.$refs.picker.dispatchEvent(event.createEvent('tooltip-show'));
+          that.$emit('pickerEmptyChange', false);
+        }
+      }
     },
   },
   methods: {
@@ -84,6 +128,15 @@ export default {
     return {
       dateValidity: true,
       timeValidity: true,
+
+      dateEmpty: false,
+      timeEmpty: false,
+      datetimePickerTooltip: {
+        msg: this.$t('error_msg.time_format_error'),
+        eventOnly: true,
+        errorType: true,
+        alignLeft: true,
+      },
     };
   },
   mounted() {
@@ -99,14 +152,8 @@ $light-main: $page-header-color;
   display: flex;
   align-items: center;
   position: relative;
-
-  .time-picker input.invalid-timepicker-input {
-    background-color: pink;
-  }
-
-  .vdp-datepicker input.invalid-datepicker-input {
-    background-color: pink;
-  }
+  @include font-12px();
+  
 
   .picker {
     display: inline-block;
@@ -124,89 +171,13 @@ $light-main: $page-header-color;
       width: 60px;
       }
     }
-  }
-}
-
-.tooltip-container {
-  position: relative;
-  &.hover:hover {
-    .tooltip {
-      visibility: visible;
-    }
-  }
-
-  .tooltip {
-    z-index: 1;
-    $tool-tip-color: #d7dde4;
-    visibility: hidden;
-    padding: 5px;
-    line-height: 1em;
-    background-color: $tool-tip-color; // #d7dde4;
-    color: #000;
-    text-align: center;
-    border-radius: 5px;
-    padding: 5px;
-    position: absolute;
-    min-width: 50px;
-    bottom: calc(100% + 10px);
-    box-shadow: 1px 1px 5px black;
-  
-    &.visible {
-      visibility: visible;
-    }
-    &.nowrap {
-      white-space: nowrap;
-    }
-    &.left {
-      left: 0;
-    }
-    &.right {
-      right: 0;
-    }
-
-    &.text-left-align {
-      text-align: left;
-    }
-  
-    &.rightside {
-      top: calc(50% - 0.5em - 5px);
-      bottom: auto;
-      left: calc(100% + 10px);
-    }
-    &.downside {
-      top: calc(100% + 5px);
-      bottom: auto;
-    }
-  
-    &.downside::after {
-      top: auto;
-      bottom: 100%;
-      border-color: transparent transparent $tool-tip-color transparent;
-    }
-    &.rightside::after {
-      top: calc(50% - 5px);
-      bottom: auto;
-      left: -5px;
-      border-color: transparent $tool-tip-color transparent transparent;
-    }
-  
-  
-    &.tri-right::after {
-      left: 75%;
-    }
-    &.tri-left::after {
-      left: 25%;
-    }
-    &::after {
-      content: "";
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      margin-left: -5px;
-      border-width: 5px;
-      border-style: solid;
-      border-color: $tool-tip-color transparent transparent transparent;
-  
+    &.second-format {
+      .time-picker {
+        width: auto;
+        input {
+          width: 100px;
+        }
+      }
     }
   }
 }

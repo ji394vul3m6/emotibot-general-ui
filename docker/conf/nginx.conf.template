@@ -44,8 +44,11 @@ http {
 
     server {
         access_log /var/log/nginx/access.log auth_header;
+
         set $appid "";
         set $user_id "";
+        set $enterprise_id "";
+
         if ($http_cookie ~* "appid=([a-z0-9]+)(?:;|$)") {
             set $appid $1;
         }
@@ -62,11 +65,20 @@ http {
             set $user_id $http_x_userid;
         }
 
+        if ($http_cookie ~* "enterprise=([.%\-a-zA-Z0-9_]+)(?:;|$)") {
+            set $enterprise_id $1;
+        }
+
+        if ($http_x_enterprise != "") {
+            set $enterprise_id $http_x_enterprise;
+        }
+
         listen 80;
         #listen [::]:80;
         proxy_set_header X-AppID $appid;
         proxy_set_header X-UserID $user_id;
         proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-EnterpriseID $enterprise_id;
         location /admin {
             # auth_request /auth/v1/appid/validate;
             proxy_pass http://127.0.0.1:8088;

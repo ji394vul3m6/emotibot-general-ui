@@ -1,5 +1,5 @@
 <template>
-  <div class="vdp-datepicker" :class="[wrapperClass, isRtl ? 'rtl' : '']">
+  <div class="vdp-datepicker" :class="[wrapperClass, isRtl ? 'rtl' : '']" ref="datepicker" v-tooltip="datepickerTooltip">
     <div :class="{'input-group' : bootstrapStyling}" class="tooltip-container">
       <!-- Calendar Button -->
       <span class="vdp-datepicker__calendar-button" :class="{'input-group-addon' : bootstrapStyling}" v-if="calendarButton" @click="showCalendar" v-bind:style="{'cursor:not-allowed;' : disabledPicker}">
@@ -37,12 +37,6 @@
         :disabled="disabledPicker || readonly"
         :required="required"
         :readonly="readonly">
-      <div class="tooltip nowrap rightside"
-        :class="{
-          'visible': !validity
-        }">
-        {{ $t('error_msg.time_format_error') }}
-      </div>
       <!-- Clear Button -->
       <span class="vdp-datepicker__clear-button" :class="{'input-group-addon' : bootstrapStyling}" v-if="clearButton && selectedDate" @click="clearDate()">
         <i :class="clearButtonIcon">
@@ -129,6 +123,7 @@
 <script>
 
 import moment from 'moment';
+import eventUtil from '@/utils/js/event';
 import DateUtils from './DateUtils';
 import DateLanguages from './DateLanguages';
 
@@ -182,6 +177,10 @@ export default {
       default: 'year',
     },
     readonly: Boolean,
+    allowEmpty: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     const startDate = this.openDate ? new Date(this.openDate) : new Date();
@@ -212,6 +211,14 @@ export default {
       validity: true,
       manualInput: false,
       selectInput: false,
+      calendarStyle: {},
+
+      datepickerTooltip: {
+        msg: this.$t('error_msg.time_format_error'),
+        eventOnly: true,
+        errorType: true,
+        alignLeft: true,
+      },
     };
   },
   watch: {
@@ -224,10 +231,22 @@ export default {
     initialView() {
       this.setInitialView();
     },
-    displayDate: 'parseDisplayDate',
+    displayDate() {
+      this.parseDisplayDate();
+      if (this.displayDate === '') {
+        this.$emit('displayEmpty', true);
+      } else {
+        this.$emit('displayEmpty', false);
+      }
+    },
     formattedValue: 'refreshDisplayDate',
     validity() {
       this.$emit('validityChange', this.validity);
+      if (this.validity) {
+        this.$refs.datepicker.dispatchEvent(eventUtil.createEvent('tooltip-hide'));
+      } else {
+        this.$refs.datepicker.dispatchEvent(eventUtil.createEvent('tooltip-show'));
+      }
     },
   },
   computed: {
@@ -340,11 +359,6 @@ export default {
       }
       return years;
     },
-    calendarStyle() {
-      return {
-        position: this.isInline ? 'static' : undefined,
-      };
-    },
     isOpen() {
       return this.showDayView || this.showMonthView || this.showYearView;
     },
@@ -356,6 +370,18 @@ export default {
     },
   },
   methods: {
+    addEventListeners() {
+      // hide on click or scroll outside
+      document.addEventListener('click', this.clickOrScrollOutside);
+      document.addEventListener('scroll', this.clickOrScrollOutside, true);
+      // reposition when resize
+      window.addEventListener('resize', this.reposition);
+    },
+    removeEventListeners() {
+      document.removeEventListener('click', this.clickOrScrollOutside, false);
+      document.removeEventListener('scroll', this.clickOrScrollOutside, true);
+      window.removeEventListener('resize', this.reposition, false);
+    },
     parseDisplayDate() {
       if (this.selectInput) {
         this.manualInput = false;
@@ -375,6 +401,8 @@ export default {
         const d = new Date(this.displayDate);
         this.setDate(d.getTime());
         this.close();
+      } else if (this.allowEmpty && this.displayDate === '') {
+        this.validity = true;
       } else {
         this.validity = false;
       }
@@ -398,7 +426,7 @@ export default {
       this.showYearView = false;
       if (!this.isInline) {
         this.$emit('closed');
-        document.removeEventListener('click', this.clickOutside, false);
+        this.removeEventListeners();
       }
     },
     resetDefaultDate() {
@@ -408,7 +436,16 @@ export default {
       }
       this.setPageDate(this.selectedDate);
     },
+    reposition() {
+      const inputBox = this.$refs.datepicker.getBoundingClientRect();
+      this.calendarStyle = {
+        position: this.isInline ? 'static' : 'fixed',
+        top: `${inputBox.top + inputBox.height + 3}px`,
+        left: `${inputBox.left}px`,
+      };
+    },
     clickInput(event) {
+      this.reposition();
       this.showCalendar(event);
       if (this.isOpen) {
         this.selectAllText(event);
@@ -428,17 +465,17 @@ export default {
       if (this.isOpen) {
         return this.close();
       }
-      this.hideOnClickOutside();
+      this.hideOrReposition();
       this.setInitialView();
       if (!this.isInline) {
         this.$emit('opened');
       }
       return true;
     },
-    hideOnClickOutside() {
+    hideOrReposition() {
       const that = this;
       window.test = that;
-      document.addEventListener('click', this.clickOutside);
+      that.addEventListeners();
     },
     setInitialView() {
       const initialView = this.computedInitialView;
@@ -473,7 +510,7 @@ export default {
       this.close();
       this.showDayView = true;
       if (!this.isInline) {
-        document.addEventListener('click', this.clickOutside, false);
+        this.addEventListeners();
       }
       return true;
     },
@@ -483,7 +520,7 @@ export default {
       this.close();
       this.showMonthView = true;
       if (!this.isInline) {
-        document.addEventListener('click', this.clickOutside, false);
+        this.addEventListeners();
       }
       return true;
     },
@@ -493,7 +530,7 @@ export default {
       this.close();
       this.showYearView = true;
       if (!this.isInline) {
-        document.addEventListener('click', this.clickOutside, false);
+        this.addEventListeners();
       }
       return true;
     },
@@ -954,14 +991,14 @@ export default {
      * Close the calendar if clicked outside the datepicker
      * @param  {Event} event
      */
-    clickOutside(event) {
+    clickOrScrollOutside(event) {
       if (this.$el && !this.$el.contains(event.target)) {
         if (this.isInline) {
           return this.showDayCalendar();
         }
         this.resetDefaultDate();
         this.close();
-        document.removeEventListener('click', this.clickOutside, false);
+        this.removeEventListeners();
       }
       return false;
     },
@@ -982,6 +1019,11 @@ export default {
       if (this.value) {
         this.setValue(this.value);
       }
+      this.$nextTick(() => {
+        if (this.allowEmpty) {
+          this.displayDate = '';  // always init displayDate to empty if allowEmpty
+        }
+      });
       if (this.isInline) {
         this.setInitialView();
       }
@@ -1011,7 +1053,6 @@ $color-date-disabled: $color-font-disabled;
 
 .vdp-datepicker {
   color: $color-font-active;
-  position: relative;
   text-align: left;
   * {
     box-sizing: border-box;
@@ -1144,97 +1185,5 @@ $color-date-disabled: $color-font-disabled;
 .vdp-datepicker__clear-button.disabled, .vdp-datepicker__calendar-button.disabled {
   color: #999;
   cursor: default;
-}
-
-
-.vdp-datepicker input.invalid-datepicker-input {
-  background-color: pink;
-}
-
-
-.tooltip-container {
-  position: relative;
-  &.hover:hover {
-    .tooltip {
-      visibility: visible;
-    }
-  }
-
-  .tooltip {
-    z-index: 1;
-    $tool-tip-color: #d7dde4;
-    visibility: hidden;
-    display: none;
-    padding: 5px;
-    line-height: 1em;
-    background-color: $tool-tip-color; // #d7dde4;
-    color: #000;
-    text-align: center;
-    border-radius: 5px;
-    padding: 5px;
-    position: absolute;
-    min-width: 50px;
-    bottom: calc(100% + 10px);
-    box-shadow: 1px 1px 5px black;
-  
-    &.visible {
-      visibility: visible;
-      display: block;
-    }
-    &.nowrap {
-      white-space: nowrap;
-    }
-    &.left {
-      left: 0;
-    }
-    &.right {
-      right: 0;
-    }
-
-    &.text-left-align {
-      text-align: left;
-    }
-  
-    &.rightside {
-      top: calc(50% - 0.5em - 5px);
-      bottom: auto;
-      left: calc(100% + 10px);
-    }
-    &.downside {
-      top: calc(100% + 5px);
-      bottom: auto;
-    }
-  
-    &.downside::after {
-      top: auto;
-      bottom: 100%;
-      border-color: transparent transparent $tool-tip-color transparent;
-    }
-    &.rightside::after {
-      top: calc(50% - 5px);
-      bottom: auto;
-      left: -5px;
-      border-color: transparent $tool-tip-color transparent transparent;
-    }
-  
-  
-    &.tri-right::after {
-      left: 75%;
-    }
-    &.tri-left::after {
-      left: 25%;
-    }
-    &::after {
-      content: "";
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      margin-left: -5px;
-      border-width: 5px;
-      border-style: solid;
-      border-color: $tool-tip-color transparent transparent transparent;
-  
-    }
-  }
 }
 </style>

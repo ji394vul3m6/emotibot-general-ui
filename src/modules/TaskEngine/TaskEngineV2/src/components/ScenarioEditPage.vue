@@ -26,6 +26,7 @@
           @updatePosition="updateNodePosition(index, $event)"
           @savePosition="saveScenario()"
           @deleteNode="deleteNode(index)"
+          @addTempNodes="addTempNodes(index, $event)"
           @saveNode="saveNode(index, $event)"
           @copyNode="copyNode(index)"
           @linkingStart="linkingStart(index, $event)"
@@ -489,6 +490,32 @@ export default {
         this.$notifyFail(`saveScenario failed, error:${err.message}`);
       });
     },
+    addNewNodeWithNodeId(nodeType, nodeName, nodeId, x, y) {
+      const nodeDialogueCntLimit = this.setting.nodeDialogueCntLimit;
+      const node = scenarioInitializer
+        .initialNode(nodeType, nodeName, nodeDialogueCntLimit, nodeId);
+      this.nodeBlocks.push({
+        x,
+        y,
+        data: node,
+      });
+    },
+    addTempNodes(index, newNodeOptions) {
+      if (newNodeOptions) {
+        let x = this.nodeBlocks[index].x;
+        const y = this.nodeBlocks[index].y + 150;
+        newNodeOptions.forEach((option) => {
+          x += 250;
+          this.addNewNodeWithNodeId(
+            option.nodeType,
+            option.nodeName,
+            option.nodeId,
+            x,
+            y,
+          );
+        });
+      }
+    },
     saveNode(index, node) {
       this.nodeBlocks[index].data = node;
       this.$nextTick(() => {
@@ -503,9 +530,7 @@ export default {
       const newNodeName = `${srcNodeName}_copy`;
       const srcNodeBlockString = JSON.stringify(this.nodeBlocks[index]);
       let newNodeStr = srcNodeBlockString.replace(new RegExp(srcNodeId, 'g'), newNodeId);
-      console.log(newNodeStr);
       newNodeStr = newNodeStr.replace(new RegExp(`"nodeName":"${srcNodeName}"`, 'g'), `"nodeName":"${newNodeName}"`);
-      console.log(newNodeStr);
       const newNodeBlock = JSON.parse(newNodeStr);
       newNodeBlock.x += 100;
       newNodeBlock.y += 100;
@@ -877,7 +902,9 @@ export default {
     addNewNode(nodeType, nodeName, x, y) {
       const nodeDialogueCntLimit = this.setting.nodeDialogueCntLimit;
       const newNodeName = general.suffixIndexToNodeName(nodeName, undefined);
-      const node = scenarioInitializer.initialNode(nodeType, newNodeName, nodeDialogueCntLimit);
+      const node = scenarioInitializer.initialNode(
+        nodeType, newNodeName, nodeDialogueCntLimit, undefined,
+      );
       this.nodeBlocks.push({
         x,
         y,

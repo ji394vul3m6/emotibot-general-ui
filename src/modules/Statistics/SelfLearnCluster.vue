@@ -233,8 +233,8 @@ export default {
         const data = {
           user_q: d.user_q,
           id: d.id,
-          ignored: d.is_ignored,
-          marked: d.is_marked,
+          is_ignored: d.is_ignored,
+          is_marked: d.is_marked,
         };
         return data;
       });
@@ -288,7 +288,7 @@ export default {
       // ignore
       if (searchQuery.is_ignored !== undefined) {
         if (searchQuery.is_ignored) {
-          that.searchCondition.push(`${that.$t('statistics.ignore.title')}: ${that.$t('statistics.ignore.ignored')}`);
+          that.searchCondition.push(`${that.$t('statistics.ignore.title')}: ${that.$t('statistics.ignore.ignore')}`);
         } else {
           that.searchCondition.push(`${that.$t('statistics.ignore.title')}: ${that.$t('statistics.ignore.not_ignore')}`);
         }

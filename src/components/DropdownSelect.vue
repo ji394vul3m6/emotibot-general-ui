@@ -143,11 +143,24 @@ export default {
     options(options) {
       this.initOptions(options);
     },
+    value(val) {
+      this.selectValue = val;
+    },
   },
   methods: {
     removeOption(opt) {
       opt.checked = false;
       this.updateValue();
+    },
+    addEventListeners() {
+      window.addEventListener('click', this.hideListWhenEventTriggeredOutside);
+      window.addEventListener('scroll', this.hideListWhenEventTriggeredOutside, true);
+      window.addEventListener('resize', this.reposition);
+    },
+    removEventListeners() {
+      window.removeEventListener('click', this.hideListWhenEventTriggeredOutside);
+      window.removeEventListener('scroll', this.hideListWhenEventTriggeredOutside, true);
+      window.removeEventListener('resize', this.reposition);
     },
     selectOption(idx) {
       const value = this.filteredLocalOptions[idx].value;
@@ -163,7 +176,7 @@ export default {
         const option = that.localOptions.find(o => o.value === value);
         option.checked = true;
         that.show = false;
-        window.removeEventListener('click', that.detectClickListener);
+        this.removEventListeners();
       }
       that.updateValue();
     },
@@ -179,30 +192,31 @@ export default {
       }
       that.show = true;
 
-      const inputBox = that.$refs.input.getBoundingClientRect();
-      that.listStyle = {
+      that.reposition();
+
+      that.addEventListeners();
+    },
+    hideListWhenEventTriggeredOutside(e) {
+      if (this.$refs.list && !this.$refs.list.contains(e.target)) {
+        this.show = false;
+        this.removEventListeners();
+      }
+    },
+    reposition() {
+      const inputBox = this.$refs.input.getBoundingClientRect();
+      this.listStyle = {
+        position: 'fixed',
+        top: `${inputBox.top + inputBox.height + 3}px`,
+        left: `${inputBox.left}px`,
         width: `${inputBox.width}px`,
       };
-
       if (!this.fixedListWidth) {
-        that.listStyle.width = 'auto';
-        that.listStyle['min-width'] = `${inputBox.width}px`;
-        that.selectTextStyle['flex-grow'] = 0;
-        that.selectTextStyle['flex-shrink'] = 0;
-        that.selectTextStyle['flex-basis'] = 'auto';
+        this.listStyle.width = 'auto';
+        this.listStyle['min-width'] = `${inputBox.width}px`;
+        this.selectTextStyle['flex-grow'] = 0;
+        this.selectTextStyle['flex-shrink'] = 0;
+        this.selectTextStyle['flex-basis'] = 'auto';
       }
-
-      that.detectClickListener = (e) => {
-        const clickDom = e.target;
-        const listDom = that.$refs.list;
-        if (listDom && !listDom.contains(clickDom)) {
-          that.show = false;
-          if (that.detectClickListener) {
-            window.removeEventListener('click', that.detectClickListener);
-          }
-        }
-      };
-      window.addEventListener('click', that.detectClickListener);
     },
     selectValue(value) {
       if (value === undefined) {
@@ -255,9 +269,6 @@ export default {
 @import 'styles/variable.scss';
 
 $border-color: $color-borderline;
-.dropdown-select {
-  position: relative;
-}
 .input-bar {
   display: flex;
   height: 28px;

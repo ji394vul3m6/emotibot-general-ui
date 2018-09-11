@@ -39,9 +39,9 @@ export default {
       node_type: 'exit',
     };
   },
-  initialNode(nodeType, nodeName, nodeDialogueCntLimit) {
+  initialNode(nodeType, nodeName, nodeDialogueCntLimit, nodeId) {
     if (nodeType === 'dialogue') {
-      return this.initialDialogueNode(nodeName, nodeDialogueCntLimit);
+      return this.initialDialogueNode(nodeName, nodeDialogueCntLimit, nodeId);
     } else if (nodeType === 'nlu_pc') {
       return this.initialNLUPCNode(nodeName, nodeDialogueCntLimit);
     } else if (nodeType === 'restful') {
@@ -128,9 +128,9 @@ export default {
       },
     };
   },
-  initialDialogueNode(nodeName, nodeDialogueCntLimit) {
+  initialDialogueNode(nodeName, nodeDialogueCntLimit, nodeId) {
     return {
-      nodeId: this.guid_sort(),
+      nodeId: nodeId || this.guid_sort(),
       nodeName,
       nodeType: 'dialogue',
       settingTab: {

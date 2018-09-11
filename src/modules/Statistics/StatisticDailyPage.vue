@@ -4,7 +4,7 @@
       <loading-line></loading-line>
       <div id="clustering-msg">{{ clusterMsg }}</div>
     </div>
-    <template v-else>
+    <div v-show="!isClustering" class="page-content">
     <div class="page-header">
       {{ $t('pages.statistics.statistic_daily') }}
       <icon iconType="info" :size="16" enableHover v-tooltip="pageInfoTooltip"></icon>
@@ -146,7 +146,7 @@
       </div>
     </template>
 
-    </template>
+    </div>
   </div>
 </template>
 
@@ -676,8 +676,11 @@ export default {
   }
 }
 .content {
-  display: flex;
-  flex-direction: column;
+  .page-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
 }
 
 .page-header {
