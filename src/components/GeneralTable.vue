@@ -43,7 +43,7 @@
         {{ $t('general.no_data') }}
       </template>
     </div>
-    <div v-else class="general-table-body">
+    <div v-else class="general-table-body" @scroll.passive="hideMenu">
     <table class="general-table" :class="[autoHeight ? 'auto-height' : '', fontClass]" v-if="tableData && tableData.length > 0">
       <tbody :class="[onclickRow ? 'clickable-row' : '']">
         <tr v-for="(data, idx) in tableData" :key="idx" :class="{'highlight': data.highlight}">
@@ -85,9 +85,9 @@
           </td>
           <template v-if="$scopedSlots.menu">
             <td class="fixed menu">
-              <icon iconType="more" enableHover :size=15 @click="moreClick(idx)" style="position: initial"></icon>
+              <icon iconType="more" enableHover :size=15 @click="moreClick(idx, $event)" style="position: initial"></icon>
             </td>
-            <td v-if="idx === indexOfShowMenu" class="menu-container"><slot name="menu" :rowData="data" :rowIndex="idx"></slot></td>
+            <td v-if="idx === indexOfShowMenu" class="menu-container" :style="menuStyle"><slot name="menu" :rowData="data" :rowIndex="idx"></slot></td>
           </template>
         </tr>
       </tbody>
@@ -175,6 +175,8 @@ export default {
       checkedData: [],
       headerInfoTooltip: {
         msg: '',
+      },
+      menuStyle: {
       },
       indexOfShowMenu: -1,
     };
@@ -281,9 +283,11 @@ export default {
       // this.setCheckedData();
       // this.$emit('checkedChange', this.checkedData);
     }
+    window.addEventListener('resize', this.hideMenu);
     document.body.addEventListener('click', this.hideMenu, true);
   },
   beforeDestroy() {
+    window.removeEventListener('resize', this.hideMenu);
     document.body.removeEventListener('click', this.hideMenu, true);
   },
 };
@@ -332,9 +336,6 @@ $table-row-height: 50px;
     @include auto-overflow-Y();
     @include customScrollbar();
     overflow-x: hidden;
-    tbody {
-      position: relative;
-    }
     .table-body-item {
       display: flex;
       align-items: center;
