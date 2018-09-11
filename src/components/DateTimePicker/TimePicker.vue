@@ -487,23 +487,28 @@ export default {
       return token === 'h' || token === 'hh';
     },
 
-    closeDropdown() {
-      this.showDropdown = false;
+    addEventListeners() {
+      document.addEventListener('click', this.clickOrScrollOutside, false);
+      document.addEventListener('scroll', this.clickOrScrollOutside, true);
+      window.addEventListener('resize', this.reposition, false);
+    },
+    removeEventListeners() {
       document.removeEventListener('click', this.clickOrScrollOutside, false);
       document.removeEventListener('scroll', this.clickOrScrollOutside, true);
       window.removeEventListener('resize', this.reposition, false);
     },
 
+    closeDropdown() {
+      this.showDropdown = false;
+      this.removeEventListeners();
+    },
+
     toggleDropdown() {
       this.showDropdown = !this.showDropdown;
       if (this.showDropdown) {
-        document.addEventListener('click', this.clickOrScrollOutside, false);
-        document.addEventListener('scroll', this.clickOrScrollOutside, true);
-        window.addEventListener('resize', this.reposition, false);
+        this.addEventListeners();
       } else {
-        document.removeEventListener('click', this.clickOrScrollOutside, false);
-        document.removeEventListener('scroll', this.clickOrScrollOutside, true);
-        window.removeEventListener('resize', this.reposition, false);
+        this.removeEventListeners();
       }
     },
 

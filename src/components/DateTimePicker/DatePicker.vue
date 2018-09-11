@@ -352,6 +352,18 @@ export default {
     },
   },
   methods: {
+    addEventListeners() {
+      // hide on click or scroll outside
+      document.addEventListener('click', this.clickOrScrollOutside);
+      document.addEventListener('scroll', this.clickOrScrollOutside, true);
+      // reposition when resize
+      window.addEventListener('resize', this.reposition);
+    },
+    removeEventListeners() {
+      document.removeEventListener('click', this.clickOrScrollOutside, false);
+      document.removeEventListener('scroll', this.clickOrScrollOutside, true);
+      window.removeEventListener('resize', this.reposition, false);
+    },
     parseDisplayDate() {
       if (this.selectInput) {
         this.manualInput = false;
@@ -394,9 +406,7 @@ export default {
       this.showYearView = false;
       if (!this.isInline) {
         this.$emit('closed');
-        document.removeEventListener('click', this.clickOrScrollOutside, false);
-        document.removeEventListener('scroll', this.clickOrScrollOutside, true);
-        window.removeEventListener('resize', this.reposition, false);
+        this.removeEventListeners();
       }
     },
     resetDefaultDate() {
@@ -445,11 +455,7 @@ export default {
     hideOrReposition() {
       const that = this;
       window.test = that;
-      // hide on click or scroll outside
-      document.addEventListener('click', this.clickOrScrollOutside);
-      document.addEventListener('scroll', this.clickOrScrollOutside, true);
-      // reposition when resize
-      window.addEventListener('resize', this.reposition);
+      that.addEventListeners();
     },
     setInitialView() {
       const initialView = this.computedInitialView;
@@ -484,9 +490,7 @@ export default {
       this.close();
       this.showDayView = true;
       if (!this.isInline) {
-        document.addEventListener('click', this.clickOrScrollOutside, false);
-        document.addEventListener('scroll', this.clickOrScrollOutside, true);
-        window.addEventListener('resize', this.reposition, false);
+        this.addEventListeners();
       }
       return true;
     },
@@ -496,9 +500,7 @@ export default {
       this.close();
       this.showMonthView = true;
       if (!this.isInline) {
-        document.addEventListener('click', this.clickOrScrollOutside, false);
-        document.addEventListener('scroll', this.clickOrScrollOutside, true);
-        window.addEventListener('resize', this.reposition, false);
+        this.addEventListeners();
       }
       return true;
     },
@@ -508,9 +510,7 @@ export default {
       this.close();
       this.showYearView = true;
       if (!this.isInline) {
-        document.addEventListener('click', this.clickOrScrollOutside, false);
-        document.addEventListener('scroll', this.clickOrScrollOutside, true);
-        window.addEventListener('resize', this.reposition, false);
+        this.addEventListeners();
       }
       return true;
     },
@@ -978,9 +978,7 @@ export default {
         }
         this.resetDefaultDate();
         this.close();
-        document.removeEventListener('click', this.clickOrScrollOutside, false);
-        document.removeEventListener('scroll', this.clickOrScrollOutside, true);
-        window.removeEventListener('resize', this.reposition, false);
+        this.removeEventListeners();
       }
       return false;
     },
