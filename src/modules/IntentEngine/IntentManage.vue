@@ -59,6 +59,7 @@
   </div>
 </template>
 <script>
+import { mapGetters } from 'vuex';
 import api from './_api/intent';
 import IntentList from './_components/IntentList';
 import ImportIntentPop from './_components/ImportIntentPop';
@@ -118,6 +119,9 @@ export default {
     };
   },
   computed: {
+    ...mapGetters([
+      'robotID',
+    ]),
     hasIntents() {
       return this.intentList.length > 0;
     },
@@ -204,7 +208,7 @@ export default {
       if (version) {
         window.open(`${EXPORT_INTENT_URL}?version=${version}`);
       } else {
-        window.open(EXPORT_INTENT_URL);
+        window.open(`${EXPORT_INTENT_URL}?appid=${this.robotID}`);
       }
     },
     importIntentList() {
@@ -243,11 +247,11 @@ export default {
     startTraining() {
       const that = this;
       if (!that.canTrain) return;
+      that.$emit('startLoading', that.$t('intent_engine.is_training'));
       that.$api.startTraining()
       .then(() => {
         that.trainStatus = 'TRAINING';
         that.trainBtnClicked = true;
-        that.$emit('startLoading', that.$t('intent_engine.is_training'));
       });
     },
     pollTrainingStatus(version) {
@@ -310,7 +314,7 @@ export default {
     startPollingTrainingStatus(version) {
       this.statusTimer = setInterval(() => {
         this.pollTrainingStatus(version);
-      }, 5000);
+      }, 30000);
     },
     refreshIntentPage() {
       const that = this;
