@@ -1,4 +1,6 @@
 <script>
+import eventUtil from '@/utils/js/event';
+
 const CONFIG = {
   HOUR_TOKENS: ['HH', 'H', 'hh', 'h', 'kk', 'k'],
   MINUTE_TOKENS: ['mm', 'm'],
@@ -19,6 +21,14 @@ export default {
     readonly: Boolean,
     disabled: Object,
     currentDate: Date,
+    placeholder: {
+      type: String,
+      default: '',
+    },
+    allowEmpty: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   data() {
@@ -43,6 +53,13 @@ export default {
       manualInput: false,
       selectInput: false,
       listStyle: {},
+
+      timepickerTooltip: {
+        msg: this.$t('error_msg.time_format_error'),
+        eventOnly: true,
+        errorType: true,
+        alignLeft: true,
+      },
     };
   },
 
@@ -84,9 +101,21 @@ export default {
     },
     value: 'readValues',
     formattedDisplayTime: 'fillValues',
-    displayTime: 'parseDisplayTime',
+    displayTime() {
+      this.parseDisplayTime();
+      if (this.displayTime === '') {
+        this.$emit('displayEmpty', true);
+      } else {
+        this.$emit('displayEmpty', false);
+      }
+    },
     validity() {
       this.$emit('validityChange', this.validity);
+      if (this.validity) {
+        this.$refs.timepicker.dispatchEvent(eventUtil.createEvent('tooltip-hide'));
+      } else {
+        this.$refs.timepicker.dispatchEvent(eventUtil.createEvent('tooltip-show'));
+      }
     },
     currentDate(val) {
       const hour = val.getHours();
@@ -148,6 +177,8 @@ export default {
         if (this.manualInput) {
           this.closeDropdown();
         }
+      } else if (this.allowEmpty && this.displayTime === '') {
+        this.validity = true;
       } else {
         this.validity = false;
       }
@@ -573,7 +604,7 @@ export default {
       }
     },
     reposition() {
-      const inputBox = this.$refs.timePicker.getBoundingClientRect();
+      const inputBox = this.$refs.timepicker.getBoundingClientRect();
       this.listStyle = {
         position: 'fixed',
         top: `${inputBox.top + inputBox.height + 3}px`,
@@ -584,12 +615,18 @@ export default {
 
   mounted() {
     this.renderFormat();
+
+    this.$nextTick(() => {
+      if (this.allowEmpty) {
+        this.displayTime = '';  // always init displayDate to empty if allowEmpty
+      }
+    });
   },
 };
 </script>
 
 <template>
-<span class="time-picker tooltip-container" ref="timePicker">
+<span class="time-picker tooltip-container" ref="timepicker" v-tooltip="timepickerTooltip">
   <input
     class="display-time"
     :class="{'invalid-timepicker-input': !validity}"
@@ -597,13 +634,8 @@ export default {
     @click="clickInput"
     type="text"
     :readonly="readonly"
+    :placeholder="placeholder"
   />
-  <div class="tooltip nowrap rightside"
-    :class="{
-      'visible': !validity
-    }">
-    {{ $t('error_msg.time_format_error') }}
-  </div>
   <span class="clear-btn" v-if="!hideClearButton" v-show="!showDropdown && showClearBtn" @click.stop="clearTime">&times;</span>
   <div class="dropdown" v-show="showDropdown" :style="listStyle">
     <div class="select-list">

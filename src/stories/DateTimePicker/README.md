@@ -38,6 +38,9 @@ disabled 格式參考 [disabled 格式](https://github.com/charliekassel/vuejs-d
     :secondFormat=true          // picker 單位是否精細到 秒，否則不須設置這個 prop
     @dateChanged="handleDateChanged"    // 選取日期改變回傳 event
     @validityChange="handleDateValidityChange" // 日期驗證回傳 event
+    
+    :allowEmpty=true            // datetime picker 是否可為空值，為 true 時預設 picker 顯示為空
+    @pickerEmptyChange="handlePickerEmptyChange" // 當 allowEmpty=true，此 event 回傳目前 picker 是否為空值
   ></datetime-picker>
 
   // script
