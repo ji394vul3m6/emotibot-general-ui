@@ -24,6 +24,7 @@ do
   echo $line \
     | sed -e "s/\${ADMIN_STAT_SERVER_URL}/$ADMIN_STAT_SERVER_URL/g" \
     | sed -e "s/\${ADMIN_ELK_STAT_SERVER_URL}/$ADMIN_ELK_STAT_SERVER_URL/g" \
+    | sed -e "s/\${ADMIN_IM_SERVER_URL}/$ADMIN_IM_SERVER_URL/g" \
     | sed -e "s/\${ADMIN_BF_SERVER_URL}/$ADMIN_BF_SERVER_URL/g" >> nginx.conf
 done < nginx.conf.template
 nginx -g "daemon off;"
