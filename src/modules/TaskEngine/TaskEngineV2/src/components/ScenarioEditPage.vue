@@ -748,7 +748,9 @@ export default {
         top: `${top}px`,
       };
       this.renderAddNewEdgeDropdown(toNodeId);
-      this.$refs.addNewEdgeDropdown.click();
+      this.$nextTick(() => {
+        this.$refs.addNewEdgeDropdown.click();
+      });
     },
     dropdownHidden() {
       this.linkingEdge.show = false;
