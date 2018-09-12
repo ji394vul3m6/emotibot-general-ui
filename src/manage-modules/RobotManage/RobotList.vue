@@ -50,6 +50,7 @@ const defaultPath = '/statistic-dash';
 export default {
   path: 'robot-manage',
   name: 'robot-manage',
+  privCode: 'manage_robot',
   components: {
     NavBar,
     CommandRow,

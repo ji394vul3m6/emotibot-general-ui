@@ -40,9 +40,13 @@ export default {
       export: '导出',
       import: '导入',
       login: '登入',
+      logout: '登出',
       publish: '发布',
       active: '启动',
       deactive: '关闭',
+      mark: '标注',
+      ignore: '忽略',
+      cluster: '辅助分类',
     },
 
     modules: {
@@ -848,6 +852,18 @@ export default {
   },
   pages: {
     null: '',
+    manage_admin: {
+      module_name: '系统管理人员',
+    },
+    manage_enterprise: {
+      module_name: '企业列表',
+    },
+    manage_user: {
+      module_name: '企业用户管理',
+    },
+    manage_robot: {
+      module_name: '机器人列表',
+    },
     status: {
       module_name: '数据总览',
       statistic_dash: '统计概览',
@@ -1149,6 +1165,17 @@ export default {
 
     go_back: '返回',
 
+    audit: {
+      system: '系统操作记录',
+      enterprise: '企业操作记录',
+      robot: '机器人操作记录',
+      filter_time: '发生时间',
+      filter_robot: '机器人',
+      filter_module: '操作模块和类型',
+      filter_userid: '用户ID',
+      filter_enterprise: '企业',
+      total: '共 {num} 笔',
+    },
     privilege: {
       statistic_dash: {
         view: '统计概览',
@@ -1217,6 +1244,7 @@ export default {
     user_info: '个人资料',
     enterprise_privilege_list: '企业权限管理',
     back_to_system_manage: '返回系统管理',
+    audit_log: '操作记录',
     logout: '登出',
   },
   format: {

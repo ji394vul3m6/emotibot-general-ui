@@ -45,6 +45,7 @@ import PasswordForm from './_components/UserPasswordForm';
 export default {
   name: 'enterprise-user-list',
   path: 'enterprise-user-list',
+  privCode: 'manage_user',
   components: {
     NavBar,
     CommandRow,
