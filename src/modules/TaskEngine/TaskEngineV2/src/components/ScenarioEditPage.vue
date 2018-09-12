@@ -639,8 +639,9 @@ export default {
           globalVarOptionsMap: this.globalVarOptionsMap,
         },
         callback: {
-          ok: (edges) => {
-            this.globalEdges = edges;
+          ok: (resultObj) => {
+            this.globalEdges = resultObj.edges;
+            this.addTempNodes(this.nodeBlocks.length - 1, resultObj.newNodeOptions);
             this.saveScenario();
           },
         },

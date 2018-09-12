@@ -226,8 +226,8 @@ export default {
         callback: {
           ok: (resultObj) => {
             this.node = resultObj.nodeResult;
-            this.$emit('saveNode', resultObj.nodeResult);
             this.$emit('addTempNodes', resultObj.newNodeOptions);
+            this.$emit('saveNode', resultObj.nodeResult);
           },
         },
       });

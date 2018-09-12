@@ -15,7 +15,8 @@
           :globalVarOptions="globalVarOptions"
           :mapTableOptions="mapTableOptions"
           @update="updateEdge(index, $event)"
-          @deleteEdge="deleteEdge(index)">
+          @deleteEdge="deleteEdge(index)"
+          @addNewDialogueNode="addNewDialogueNode">
         </condition-block>
       </template>
     </draggable>
@@ -30,6 +31,7 @@
 
 <script>
 import mappingtable from '@/modules/TaskEngine/_api/taskEngine_mappingtable';
+import general from '@/modules/TaskEngine/_utils/general';
 import draggable from 'vuedraggable';
 import ConditionBlock from './ConditionBlock';
 import scenarioInitializer from '../_utils/scenarioInitializer';
@@ -53,11 +55,61 @@ export default {
       toNodeOptions: [],
       globalVarOptions: [],
       mapTableOptions: [],
+      newNodeOptions: undefined,
     };
   },
-  computed: {},
+  computed: {
+    doNothingEdge() {
+      return { text: 'do nothing', value: null };
+    },
+    exitEdge() {
+      return { text: 'Exit (ID: 0)', value: '0' };
+    },
+    addNewDialogueNodeEdge() {
+      return {
+        text: this.$t('task_engine_v2.to_node_option.add_new_dialogue_node'),
+        value: 'add_new_dialogue_node',
+        isButton: true,
+      };
+    },
+  },
   watch: {},
   methods: {
+    addNewDialogueNode(newNodeID) {
+      if (this.newNodeOptions === undefined) {
+        this.newNodeOptions = [];
+      }
+      const nodeNames = [
+        ...window.moduleData.ui_data.nodes.map(node => node.nodeName),
+        ...this.newNodeOptions.map(option => option.nodeName),
+      ];
+      const newNodeName = general.suffixIndexToNodeName(
+                            this.$t('task_engine_v2.node_type.dialogue'),
+                            nodeNames,
+                          );
+      this.newNodeOptions.push({
+        nodeName: newNodeName,
+        nodeId: newNodeID,
+        nodeType: 'dialogue',
+      });
+      this.updateOptions();
+    },
+    updateOptions() {
+      this.composeOptions([
+        ...this.extData.toNodeOptions,
+        ...this.newNodeOptions.map(option => ({
+          text: `${option.nodeName} (ID: ${option.nodeId})`,
+          value: option.nodeId,
+        })),
+      ]);
+    },
+    composeOptions(options) {
+      this.toNodeOptions = [
+        this.addNewDialogueNodeEdge,
+        this.doNothingEdge,
+        this.exitEdge,
+      ].concat(options);
+    },
     renderData() {
       // render globalEdges
       const edges = JSON.parse(JSON.stringify(this.extData.globalEdges));
@@ -67,11 +119,7 @@ export default {
       });
 
       // render toNodeOptions
-      const options = JSON.parse(JSON.stringify(this.extData.toNodeOptions));
-      this.toNodeOptions = [
-        { text: 'do nothing', value: null },
-        { text: 'Exit (ID: 0)', value: '0' },
-      ].concat(options);
+      this.composeOptions(this.extData.toNodeOptions);
 
       // render globalVarOptions
       const globalVarOptionsMap = JSON.parse(JSON.stringify(this.extData.globalVarOptionsMap));
@@ -113,7 +161,7 @@ export default {
       }));
       this.$emit(
         'validateSuccess',
-        edges,
+        { edges, newNodeOptions: this.newNodeOptions },
       );
     },
   },
