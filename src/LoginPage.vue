@@ -75,6 +75,8 @@ export default {
 
         if (info.type === 0) {
           window.location = '/#/manage/enterprise-manage';
+        } else if (info.product && info.product.indexOf('IM') >= 0) {
+          window.location = '/im-admin/imIndex';
         } else {
           window.location = '/#/manage/robot-manage';
         }

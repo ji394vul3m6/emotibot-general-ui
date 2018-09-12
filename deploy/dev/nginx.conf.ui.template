@@ -207,6 +207,9 @@ http {
         location /task_engine {
             proxy_pass http://${BF_IP};
         }
+        location /im-admin {
+            proxy_pass http://${REMOTE_IP};
+        }
 
         location /api {
             proxy_pass http://${API_IP};

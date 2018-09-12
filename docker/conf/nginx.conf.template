@@ -278,6 +278,9 @@ http {
         location /Files/ssm {
             proxy_pass http://${ADMIN_BF_SERVER_URL};
         }
+        location /im-admin {
+            proxy_pass http://${IM_SERVER_URL};
+        }
 
         # golang /api/v1
         location /api {

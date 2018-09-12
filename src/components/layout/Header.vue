@@ -1,7 +1,10 @@
 <template>
 <div id="page-header">
-  <div class="robot-list column" @click="showRobotList" v-if="!showUserInfoPage && enterpriseID !== ''">
+  <div class="robot-list column click-button" @click="showRobotList" v-if="!showUserInfoPage && enterpriseID !== ''">
     {{ $t('general.robot_list') }}
+  </div>
+  <div class="product column click-button" @click="goIMPage" v-if="userInfo.type === 1">
+    {{ $t('general.im') }}
   </div>
   <div class="empty column"></div>
   <div class="enterprise column" v-if="!showUserInfoPage && enterpriseID !== ''">
@@ -17,7 +20,7 @@
     </div>
     <div ref="robotName" class="column-text" v-tooltip="robotNameTooltip" @mouseover="showFullRobotName($event, robotName)" @mouseout="hideFullRobotName($event)">{{ robotName }}</div>
   </div>
-  <div class="chat-test column" @click="showChatTest" v-if="!showUserInfoPage">
+  <div class="chat-test click-button column" @click="showChatTest" v-if="!showUserInfoPage">
     <div class="icon-container">
       <icon :size=22 icon-type="header_dialog"/>
     </div>
@@ -133,6 +136,9 @@ export default {
       this.setRobot('');
       this.$router.push('/manage/robot-manage');
     },
+    goIMPage() {
+      window.open('/im-admin/imIndex');
+    },
     showMenu() {
       const that = this;
       that.showUserMenu = true;
@@ -208,11 +214,7 @@ export default {
     }
   }
 
-  .chat-test {
-    @include click-button();
-  }
-
-  .robot-list {
+  .click-button {
     @include click-button();
   }
 

@@ -913,6 +913,7 @@ export default {
     zh_cn: '简体中文',
     delete_success: '删除成功',
     robot_list: '机器人列表',
+    im: 'IM',
     no_data: '暂无数据',
     no_search_data: '暂无搜寻结果',
     no_option: '无选项',

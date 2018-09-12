@@ -722,6 +722,7 @@ export default {
     zh_cn: '簡體中文',
     delete_success: '刪除成功',
     robot_list: '機器人列表',
+    im: 'IM',
     no_data: '暫無數據',
     reset: '重置',
     chat_test: '對話測試',
