@@ -185,7 +185,7 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_key")}}
             </div>
-            <div class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.content[0], 'key')">
+            <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key')">
               <input class="input-content" v-model="rule.content[0].key">
             </div>
           </div>
@@ -217,7 +217,7 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_key")}}
             </div>
-            <div class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.content[0], 'key1')">
+            <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key1')">
               <input class="input-content" v-model="rule.content[0].key1">
             </div>
           </div>
@@ -234,7 +234,7 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_content")}}
             </div>
-            <div class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.content[0], 'key')">
+            <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key')">
               <input class="input-content" v-model="rule.content[0].key" :key="rule.funcName">
             </div>
           </div>
@@ -245,7 +245,7 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_content")}}
             </div>
-            <div class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.content[0], 'key')">
+            <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key')">
               <input class="input-content" v-model="rule.content[0].key" :key="rule.funcName">
             </div>
           </div>
@@ -271,7 +271,7 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_key")}}
             </div>
-            <div class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.content[0], 'key')">
+            <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key')">
               <input class="input-content" v-model="rule.content[0].key">
             </div>
           </div>
@@ -324,7 +324,7 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_source_key")}}
             </div>
-            <div class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.content, 'from_key')">
+            <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content, 'from_key')">
               <input class="input-content" v-model="rule.content.from_key">
             </div>
           </div>
@@ -347,7 +347,7 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_source_key")}}
             </div>
-            <div class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.content, 'from_key')">
+            <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content, 'from_key')">
               <input class="input-content" v-model="rule.content.from_key">
             </div>
           </div>
@@ -391,7 +391,7 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_key")}}
             </div>
-            <div class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.content[0], 'key')">
+            <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key')">
               <input class="input-content" v-model="rule.content[0].key">
             </div>
           </div>
@@ -584,6 +584,7 @@
 </template>
 
 <script>
+import event from '@/utils/js/event';
 import DropdownSelect from '@/components/DropdownSelect';
 import scenarioInitializer from '../_utils/scenarioInitializer';
 import optionConfig from '../_utils/optionConfig';
@@ -639,6 +640,7 @@ export default {
       sourceOptions: [],
       funcOptionMap: [],
       dialogueLimit: 3,
+      varDropdownMap: {},
     };
   },
   computed: {},
@@ -669,6 +671,17 @@ export default {
     dialogueLimit: {
       handler() {
         this.emitUpdate();
+      },
+    },
+    globalVarOptions: {
+      handler() {
+        this.$nextTick(() => {
+          if (this.$refs.insertVarDropdown) {
+            this.$refs.insertVarDropdown.forEach((dpd) => {
+              dpd.dispatchEvent(event.createEvent('dropdown-reload'));
+            });
+          }
+        });
       },
     },
   },
@@ -836,15 +849,16 @@ export default {
       this.andRules[index].content.trans = newMapTable;
       // this.emitUpdate();
     },
-    insertVarDropdown(obj, key) {
-      const options = this.globalVarOptions.map(option => ({
+    insertVarDropdown(id, obj, key) {
+      if (this.varDropdownMap[id] === undefined) {
+        this.varDropdownMap[id] = { width: '450px' };
+      }
+      const rtnObj = this.varDropdownMap[id];
+      rtnObj.options = this.globalVarOptions.map(option => ({
         text: `${option.text}：${option.value}`,
         onclick: this.insertVarSelect.bind(this, obj, key, option.value),
       }));
-      return {
-        options,
-        width: '450px',
-      };
+      return rtnObj;
     },
     insertVarSelect(obj, key, value) {
       obj[key] = value;

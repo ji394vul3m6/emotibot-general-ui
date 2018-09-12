@@ -16,7 +16,7 @@
   <div class="block">
     <div class="label-header">{{$t("task_engine_v2.setting_edit_tab.default_q")}}</div>
     <div class="insert-var-button-row">
-      <div class="button-insert var" v-dropdown="insertVarDropdown()">
+      <div ref="insertVarDropdown" class="button-insert var" v-dropdown="insertVarDropdown()">
         {{$t("task_engine_v2.setting_edit_tab.insert_var")}}
       </div>
       <div class="button-insert sys-var" v-dropdown="insertSysVarDropdown()">
@@ -88,6 +88,7 @@
 </template>
 
 <script>
+import event from '@/utils/js/event';
 import DropdownSelect from '@/components/DropdownSelect';
 import optionConfig from '../_utils/optionConfig';
 
@@ -123,6 +124,7 @@ export default {
         height: '36px',
         'border-radius': '5px',
       },
+      varDropdown: undefined,
     };
   },
   computed: {
@@ -146,6 +148,15 @@ export default {
         this.$emit('update', this.settingTab);
       },
       deep: true,
+    },
+    globalVarOptions: {
+      handler() {
+        this.$nextTick(() => {
+          if (this.$refs.insertVarDropdown) {
+            this.$refs.insertVarDropdown.dispatchEvent(event.createEvent('dropdown-reload'));
+          }
+        });
+      },
     },
   },
   methods: {
@@ -192,14 +203,14 @@ export default {
       }
     },
     insertVarDropdown() {
-      const options = this.globalVarOptions.map(option => ({
+      if (this.varDropdown === undefined) {
+        this.varDropdown = { width: '500px' };
+      }
+      this.varDropdown.options = this.globalVarOptions.map(option => ({
         text: `${option.text}：${option.value}`,
         onclick: this.insertVarSelect.bind(this, `$global{${option.value}}`),
       }));
-      return {
-        options,
-        width: '500px',
-      };
+      return this.varDropdown;
     },
     insertSysVarDropdown() {
       return {

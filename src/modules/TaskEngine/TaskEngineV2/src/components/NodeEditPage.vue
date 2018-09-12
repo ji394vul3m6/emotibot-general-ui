@@ -65,7 +65,7 @@
         :initialToNodeOptions="toNodeOptions"
         :globalVarOptions="globalVarOptions"
         :mapTableOptions="mapTableOptions"
-        @update="edgeTab = $event; collectGlobalVarOptions()"
+        @update="edgeTab = $event"
         @updateNewNodeOptions="updateNewNodeOptions"
       ></edge-edit-tab>
       <restful-setting-edit-tab ref="restfulSettingTab"
