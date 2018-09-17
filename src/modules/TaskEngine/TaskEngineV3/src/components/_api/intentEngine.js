@@ -4,7 +4,7 @@ const QS = require('qs');
 // const BASE_URL='../../../../api/ApiKey/';
 const BASE_URL = '/php/api/ApiKey/';
 const INTENT_ENGINE_V1_PATH = `${BASE_URL}get_intent.php`;
-const INTENT_ENGINE_V2_LIST_PATH = '/api/v1/intents';
+const INTENT_ENGINE_V2_LIST_PATH = '/api/v2/intents/intents';
 
 
 function getIntent(data) {
