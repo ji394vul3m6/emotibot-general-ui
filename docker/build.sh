@@ -1,31 +1,30 @@
 #!/bin/bash
-REPO=docker-reg.emotibot.com.cn:55688
-CONTAINER=admin-ui
-LAST_RELEASE_TAG="20171208-e04c85e"
-DATE=`date +%Y%m%d`
-GIT_HEAD="$(git rev-parse --short HEAD)"
+set -eu
 
-TAG=$1
-if [ "$TAG" == "" ]; then
-    TAG="$DATE-$GIT_HEAD"
-elif [ "$TAG" == "LR" ]; then
-    TAG=$LAST_RELEASE_TAG
+COLOR_REST='\033[0m'
+COLOR_RED='\033[0;31m'
+
+if [ "$#" -ne 1 ]; then
+    echo -e "${COLOR_RED}require at least one parameter${COLOR_REST}"
+    echo "Usage: build.sh test-option"
+    echo "  test-option contains three options:"
+    echo "      local: run container test from host, need install container-structure-test first"
+    echo "      docker: run test with docker, only support linux version docker"
+    echo "      skip-test: disable test, DO NOT RECOMMEND IN PRODUCTION LEVEL"
+    exit 1
 fi
 
-DOCKER_IMAGE=$REPO/$CONTAINER:$TAG
-echo "TAG: $TAG"
-echo "DOCKER_IMAGE: $DOCKER_IMAGE"
+# if [ -z "$(git status --porcelain)" ]; then 
+    # Working directory clean
+DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+# To force the variable scope within function, we fork a bash to run script.
+bash -c "source $DIR/util.sh && build_folder $DIR/build $1"
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-BUILDROOT=$DIR/../
+bash -c "source $DIR/util.sh && build_folder $DIR/runtime $1"
+# else 
+#     # Uncommitted changes
+#     echo -e "${COLOR_RED}Detect Uncommitted changes, please commit before you build${COLOR_REST}"
+#     echo "$(git status --porcelain)"
+#     exit 1
+# fi
 
-# Build docker
-cmd="docker build \
-  -t $DOCKER_IMAGE \
-  --build-arg GITTAG=$TAG \
-  -f $DIR/Dockerfile $BUILDROOT"
-echo $cmd
-eval $cmd
-cmd="docker tag $DOCKER_IMAGE $REPO/$CONTAINER:latest"
-echo $cmd
-eval $cmd
