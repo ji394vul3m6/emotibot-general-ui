@@ -177,6 +177,7 @@ export default {
   @include iconType("search");
   @include iconType("white_add");
   @include iconType("daggle");
+  @include iconType("more_blue");
   @include iconTypeHover("more");
   @include iconType("stop");
   @include iconType("pause");

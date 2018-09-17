@@ -49,7 +49,7 @@
     </div>
     <div class="more_setting_column">
       <div class="icon_container" v-show="moreIcon" v-dropdown="moreOptions">
-        <icon :size=25 icon-type="more"/>
+        <icon :size=25 icon-type="more_blue"/>
       </div>
     </div>
   </div>

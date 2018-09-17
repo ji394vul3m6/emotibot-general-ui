@@ -30,7 +30,7 @@
               </div>
               <div class="delete-button">
                 <div class="icon_container" v-if="scenario.show" v-dropdown="moreOptions(scenario)">
-                  <icon :size=25 icon-type="more"/>
+                  <icon :size=25 icon-type="more_blue"/>
                 </div>
               </div>
             </div>
