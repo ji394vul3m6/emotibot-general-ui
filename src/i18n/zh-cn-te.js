@@ -7,6 +7,7 @@ export default {
       scenario_list: '场景列表',
       ask_delete_confirm: '确认要删除场景：{scenario}',
       publish: '发布',
+      edit: '编辑',
       publish_succeed: '场景发布成功',
       publish_failed: '场景发布失败',
       create_new_scenario_failed: '场景建立失败',

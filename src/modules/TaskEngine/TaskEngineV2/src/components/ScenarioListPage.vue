@@ -22,25 +22,34 @@
           </div>
         </div>
       </div>
-      <template v-for="(scenario, index) in filteredScenarioList">
-        <div class="row" @mouseover="scenario.show = true" @mouseleave="scenario.show = false">
-          <div id="scenario-grid">
-            <div id="scenario-toggle-container">
-              <toggle v-model="scenario.enable" @change="switchScenario(scenario)" :big="false"></toggle>
+      <div class="scenario-list">
+        <div
+          v-for="(scenario, index) in filteredScenarioList" 
+          :key="scenario.scenarioID"
+          class="scenario-grid"
+        >
+          <div class="scenario-title">
+            <div class="name-label" @click="editScenario(scenario.scenarioID)">
+              {{scenario.scenarioName}}
             </div>
-            <div id="scenario-content-container">
-              <div class="name-label"  @click="editScenario(scenario.scenarioID)">
-                {{scenario.scenarioName}}
-              </div>
-              <div class="delete-button">
-                <div class="icon_container" v-show="scenario.show" v-dropdown="moreOptions(scenario)">
-                  <icon :size=25 icon-type="more_blue"/>
-                </div>
-              </div>
-            </div>
+            <toggle v-model="scenario.enable" @change="switchScenario(scenario)" :big="false"></toggle>
+          </div>
+          <div class="scenario-content">
+            <text-button button-type='default' iconType="edit" width='60px' height='28px' @click="editScenario(scenario.scenarioID)">
+              {{$t("task_engine_v2.scenario_list_page.edit")}}
+            </text-button>
+            <text-button button-type='default' iconType="upload" width='60px' height='28px' @click="publishScenario(scenario)">
+              {{$t("task_engine_v2.scenario_list_page.publish")}}
+            </text-button>
+            <text-button button-type='default' iconType="save" width='60px' height='28px' @click="exportScenario(scenario.scenarioID)">
+              {{$t("general.export")}}
+            </text-button>
+            <text-button button-type='default' iconType="delete" width='60px' height='28px' @click="deleteScenario(scenario)">
+              {{$t("general.delete")}}
+            </text-button>
           </div>
         </div>
-      </template>
+      </div>
     </div>
   </div>
 </div>
@@ -65,51 +74,36 @@ export default {
   },
   computed: {
     filteredScenarioList() {
-      return this.scenarioList.filter(
-        scenario => scenario.scenarioName.indexOf(this.filteredKeyWord) !== -1);
+      return this.scenarioList
+        .filter(scenario => scenario.scenarioName.indexOf(this.filteredKeyWord) !== -1)
+        .sort((a, b) => a.scenarioName.localeCompare(b.scenarioName));
     },
   },
   watch: {},
   methods: {
-    moreOptions(scenario) {
+    exportScenario(scenarioID) {
+      taskEngineApi.exportScenario(scenarioID);
+    },
+    publishScenario(scenario) {
       const that = this;
-      return {
-        options: [{
-          text: that.$t('task_engine_v2.scenario_list_page.publish'),
-          onclick() {
-            taskEngineApi.publishScenario(that.appId, scenario.scenarioID).then(() => {
-              that.$notify({ text: that.$t('task_engine_v2.scenario_list_page.publish_succeed') });
-            }, (err) => {
-              that.$notifyFail(`${that.$t('task_engine_v2.scenario_list_page.publish_failed')}:${err.message}`);
-            });
-            taskEngineApi.loadScenario(scenario.scenarioID).then((data) => {
-              const jsonData = {
-                moduleData: JSON.parse(data.result.editingContent),
-                moduleDataLayouts: JSON.parse(data.result.editingLayout),
-              };
-              const newJsonData = scenarioConvertor.convertJsonToVersion('1.1', jsonData);
-              scenarioConvertor.registerNluTdeScenario(
-                scenario.scenarioID, newJsonData.moduleData.ui_data.nodes);
-            }, (err) => {
-              general.popErrorWindow(this, 'loadScenario error', err.message);
-            });
-            scenario.enable = true;
-            that.switchScenario(scenario);
-          },
-        },
-        {
-          text: that.$t('general.export'),
-          onclick() {
-            taskEngineApi.exportScenario(scenario.scenarioID);
-          },
-        }, {
-          text: that.$t('general.delete'),
-          onclick() {
-            that.deleteScenario(scenario);
-          },
-        }],
-        alignLeft: true,
-      };
+      taskEngineApi.publishScenario(that.appId, scenario.scenarioID).then(() => {
+        that.$notify({ text: that.$t('task_engine_v2.scenario_list_page.publish_succeed') });
+      }, (err) => {
+        that.$notifyFail(`${that.$t('task_engine_v2.scenario_list_page.publish_failed')}:${err.message}`);
+      });
+      taskEngineApi.loadScenario(scenario.scenarioID).then((data) => {
+        const jsonData = {
+          moduleData: JSON.parse(data.result.editingContent),
+          moduleDataLayouts: JSON.parse(data.result.editingLayout),
+        };
+        const newJsonData = scenarioConvertor.convertJsonToVersion('1.1', jsonData);
+        scenarioConvertor.registerNluTdeScenario(
+          scenario.scenarioID, newJsonData.moduleData.ui_data.nodes);
+      }, (err) => {
+        general.popErrorWindow(this, 'loadScenario error', err.message);
+      });
+      scenario.enable = true;
+      that.switchScenario(scenario);
     },
     exportAllScenarios() {
       taskEngineApi.exportAllScenarios(this.appId);
@@ -303,51 +297,52 @@ $row-height: $default-line-height;
           align-items: center;
         }
       }
-
-      #scenario-grid {
+    }
+    .scenario-list{
+      flex: 1;
+      padding: 20px;
+      padding-bottom: 0px;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-content: flex-start;
+      .scenario-grid {
         display: flex;
-        margin-right: 20px;
-        height: 82px;
+        flex-direction: column;
+        flex: 0 0 350px;
+        max-width: 350px;
+        height: 110px;
         border-radius: 4px;
-        border: solid 1px $color-borderline;
-        color: $color-font-active;
-
+        border: 1px solid $color-borderline;
+        margin-right: 30px;
+        margin-bottom: 20px;
+        padding: 20px;
+        transition: all .2s ease-in-out;
+        
         &:hover {
           box-shadow: 0 4px 9px 0 rgba(115, 115, 115, 0.2), 0 5px 8px 0 rgba(228, 228, 228, 0.5);
+          .card-title {
+            .card-title-edit {
+              visibility: visible;
+            }
+          }
         }
 
-        #scenario-toggle-container {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 68px;
-          border-right: solid 1px $color-borderline;
-        }
-        #scenario-content-container {
+        .scenario-title {
           flex: 1 1 auto;
           display: flex;
-          align-items: center;
-          @include font-14px();
+          justify-content: space-between;
           .name-label {
-            display: flex;
-            align-items: center;
-            flex: 1 1 auto;
-            height: 100%;
-            padding-left: 20px;
-            cursor: pointer;
+            font-size: 18px;
+            @include click-button();
           }
-          .delete-button {
-            flex: 0 0 68px;
-            .icon_container{
-              position: relative;
-              width: 25px;
-              height: 25px;
-              border-radius: 25px;
-              cursor: pointer;
-              &:hover{
-                background-color: #f7f7f7;
-              }
-            }
+        }
+        .scenario-content {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          .text-button{
+            margin-right: 10px;
           }
         }
       }
