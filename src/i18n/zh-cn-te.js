@@ -53,6 +53,8 @@ export default {
       new_edge_restful_fail: '当调用失败',
       new_edge_pc_success: '成功取得所有参数',
       new_edge_pc_fail: '连续解析失败超过上限',
+      back_to_scenario_list: '返回场景列表',
+      advanced_config: '更多操作',
     },
     node_edit_page: {
       tabs: {

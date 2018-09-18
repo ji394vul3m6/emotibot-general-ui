@@ -75,70 +75,27 @@
     </div>
   </div>
   <div class="top-panel">
-    <div class="button-block"
-      @mouseover="showTopPanelButtonLabel.setting=true"
-      @mouseleave="showTopPanelButtonLabel.setting=false"
-      @click="editScenarioSettings()">
-      <icon class="icon-panel" icon-type="setting" :enableHover="false" :size=18 @click=""/>
-      <transition name="label">
-        <div
-          v-if="showTopPanelButtonLabel.setting"
-          class="label-button-block">
-          {{$t("task_engine_v2.scenario_edit_page.setting")}}
-        </div>
-      </transition>
+    <div class="top-panel-left">
+      <text-button button-type='default' iconType="month_left" width='120px' height='36px' @click="$router.replace('/task-engine-scenario-v2')">
+        {{$t("task_engine_v2.scenario_edit_page.back_to_scenario_list")}}
+      </text-button>
+      <div class="scenario-name">
+        {{moduleData.metadata.scenario_name}}
+      </div>
+      <div class="scenario-name-edit" @click="editScenarioSettings()">
+        <icon :size=12 icon-type="edit"></icon>
+      </div>
     </div>
-    <div class="button-block"
-      @mouseover="showTopPanelButtonLabel.varTemplate=true"
-      @mouseleave="showTopPanelButtonLabel.varTemplate=false"
-      @click="editVarTemplate()">
-      <icon class="icon-panel" icon-type="knowledge_base" :enableHover="false" :size=18 @click=""/>
-      <transition name="label">
-        <div
-          v-if="showTopPanelButtonLabel.varTemplate"
-          class="label-button-block">
-          {{$t("task_engine_v2.scenario_edit_page.global_var_template")}}
-        </div>
-      </transition>
-    </div>
-    <div class="button-block"
-      @mouseover="showTopPanelButtonLabel.globalEdge=true"
-      @mouseleave="showTopPanelButtonLabel.globalEdge=false"
-      @click="editGlobalEdge()">
-      <icon class="icon-panel" icon-type="canlendar" :enableHover="false" :size=18 @click=""/>
-      <transition name="label">
-        <div
-          v-if="showTopPanelButtonLabel.globalEdge"
-          class="label-button-block">
-          {{$t("task_engine_v2.scenario_edit_page.global_edge")}}
-        </div>
-      </transition>
-    </div>
-    <div class="button-block"
-      @mouseover="showTopPanelButtonLabel.export=true"
-      @mouseleave="showTopPanelButtonLabel.export=false"
-      @click="exportScenario()">
-      <icon class="icon-panel" icon-type="save" :enableHover="false" :size=18 @click=""/>
-      <transition name="label">
-        <div
-          v-if="showTopPanelButtonLabel.export"
-          class="label-button-block">
-          {{$t("task_engine_v2.scenario_edit_page.export")}}
-        </div>
-      </transition>
-    </div>
-    <div class="button-block"
-      @mouseover="showTopPanelButtonLabel.publish=true"
-      @mouseleave="showTopPanelButtonLabel.publish=false"
-      @click="publishScenario()">
-      <icon class="icon-panel" icon-type="upload" :enableHover="false" :size=18 @click=""/>
-      <transition name="label">
-        <div
-          v-if="showTopPanelButtonLabel.publish"
-          class="label-button-block">
-          {{$t("task_engine_v2.scenario_edit_page.publish")}}
-        </div>
-      </transition>
+    <div class="top-panel-right">
+      <div class="advanced-config" v-dropdown="advancedConfigOptions">
+        <text-button iconType="header_dropdown_gray" :iconSize="8" iconAlign="right" width="100px" height="36px">
+          {{$t("task_engine_v2.scenario_edit_page.advanced_config")}}
+        </text-button>
+      </div>
+      <text-button button-type='default' iconType="save" width='60px' height='36px' @click="exportScenario()">
+        {{$t("general.export")}}
+      </text-button>
+      <toggle class="button-switch-enable" v-model="enable" @change="switchScenario()" :big="false"></toggle>
     </div>
   </div>
 </div>
@@ -206,9 +163,25 @@ export default {
         dstNodeIndex: undefined,
       },
       stopCanvasClickPropagationOnce: false,
+      enable: false,
+      appId: undefined,
+      scenarioId: undefined,
     };
   },
   computed: {
+    advancedConfigOptions() {
+      const options = {
+        options: [{
+          text: this.$t('task_engine_v2.scenario_edit_page.global_var_template'),
+          onclick: this.editVarTemplate,
+        }, {
+          text: this.$t('task_engine_v2.scenario_edit_page.global_edge'),
+          onclick: this.editGlobalEdge,
+        }],
+        alignLeft: true,
+      };
+      return options;
+    },
     idToNodeBlock() {
       const map = {};
       this.nodeBlocks.forEach((nodeBlock) => {
@@ -380,6 +353,22 @@ export default {
   watch: {
   },
   methods: {
+    setSwitchToggle(appId, scenarioId) {
+      taskEngineApi.listScenarios(appId).then((data) => {
+        if (typeof (data) === 'object' && 'msg' in data) {
+          const scenario = data.msg.find(s => s.scenarioID === scenarioId);
+          this.enable = scenario.enable;
+        }
+      }, (err) => {
+        general.popErrorWindow(this, 'listScenarios error', err.message);
+      });
+    },
+    switchScenario() {
+      taskEngineApi.switchScenario(this.appId, this.scenarioId, this.enable).then(() => {
+      }, (err) => {
+        general.popErrorWindow(this, 'switchScenario error', err.message);
+      });
+    },
     loadScenario(scenarioId) {
       return taskEngineApi.loadScenario(scenarioId).then((data) => {
         const jsonData = {
@@ -485,6 +474,7 @@ export default {
         this.moduleDataLayouts = layout;
         this.renderData();
         this.updateWindowModuleData();
+        this.publishScenario();
         // this.$notify({ text: this.$t('error_msg.save_success') });
       }, (err) => {
         this.$notifyFail(`saveScenario failed, error:${err.message}`);
@@ -925,6 +915,7 @@ export default {
     this.nodeOptions = this.getNodeOptions();
     this.rainbowColors = optionConfig.getRainbowColors();
     this.loadScenario(this.scenarioId);
+    this.setSwitchToggle(this.appId, this.scenarioId);
   },
   mounted() {},
   beforeDestroy() {},
@@ -1039,14 +1030,14 @@ export default {
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: space-between;
     position: absolute;
     left: 20px;
     top: 20px;
-    width: 450px;
+    width: 700px;
     height: 66px;
     background: white;
-    padding: 0px 16px 0px 32px;
+    padding: 0px 32px 0px 32px;
     .button-block{
       display: flex;
       flex-direction: row;
@@ -1076,6 +1067,32 @@ export default {
       }
       .label-enter-to, .label-leave {
         font-size: 16px;
+      }
+    }
+    .top-panel-left{
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      .scenario-name{
+        max-width: 270px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        font-size: 24px;
+      }
+      .scenario-name-edit{
+        cursor: pointer;
+      }
+      div{
+        margin-right: 10px;
+      }
+    }
+    .top-panel-right{
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      div{
+        margin-right: 10px;
       }
     }
   }

@@ -333,6 +333,10 @@ $row-height: $default-line-height;
           display: flex;
           justify-content: space-between;
           .name-label {
+            max-width: 270px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
             font-size: 18px;
             @include click-button();
           }
