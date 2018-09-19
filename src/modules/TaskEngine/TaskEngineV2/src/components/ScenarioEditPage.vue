@@ -79,7 +79,7 @@
       <text-button button-type='default' iconType="month_left" width='120px' height='36px' @click="$router.replace('/task-engine-scenario-v2')">
         {{$t("task_engine_v2.scenario_edit_page.back_to_scenario_list")}}
       </text-button>
-      <div class="scenario-name">
+      <div v-if="moduleData.metadata" class="scenario-name">
         {{moduleData.metadata.scenario_name}}
       </div>
       <div class="scenario-name-edit" @click="editScenarioSettings()">

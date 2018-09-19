@@ -1,8 +1,13 @@
 <template lang="html">
   <div id="edges-on-top" class="edges">
     <svg class="svg">
+      <defs>
+        <marker id="head" viewBox="0 0 10 10" refX="7" refY="5" markerUnits="strokeWidth" markerWidth="4" markerHeight="3" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" stroke="none" fill="black"/>
+        </marker>
+      </defs>
       <g class="linking-path" v-if="linkingPath.show === true">
-        <path :d="linkingPath.data" :style="linkingPathStyle"></path>
+        <path marker-end='url(#head)' :d="linkingPath.data" :style="linkingPathStyle"></path>
       </g>
     </svg>
   </div>
