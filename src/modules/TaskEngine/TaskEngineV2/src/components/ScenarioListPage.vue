@@ -252,6 +252,7 @@ export default {
 $row-height: $default-line-height;
 #scenario-list-page-v2{
   height: 100%;
+  padding: 0 20px;
   .content {
     display: flex;
     flex-direction: column;
