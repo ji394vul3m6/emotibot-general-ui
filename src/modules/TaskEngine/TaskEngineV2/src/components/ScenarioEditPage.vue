@@ -75,27 +75,31 @@
     </div>
   </div>
   <div class="top-panel">
-    <div class="top-panel-left">
-      <text-button button-type='default' iconType="month_left" width='120px' height='28px' @click="$router.replace('/task-engine-scenario-v2')">
-        {{$t("task_engine_v2.scenario_edit_page.back_to_scenario_list")}}
-      </text-button>
+    <div class="breadcrumb">
+      <div class="back-to-list" @click="$router.replace('/task-engine-scenario-v2');">{{$t("task_engine_v2.scenario_list_page.scenario_list")}}</div>
+      <icon iconType="month_right" :size="20"></icon>
       <div v-if="moduleData.metadata" class="scenario-name">
         {{moduleData.metadata.scenario_name}}
       </div>
       <div class="scenario-name-edit" @click="editScenarioSettings()">
-        <icon :size=12 icon-type="edit"></icon>
+        <icon :size=12 icon-type="edit_pen" enableHover></icon>
       </div>
     </div>
-    <div class="top-panel-right">
+    <div class="header-buttons">
+      <div class="label-switch-off label-switch">{{$t("task_engine_v3.scenario_edit_page.switch_off")}}</div>
+      <toggle class="button-switch-enable" v-model="enable" @change="switchScenario()" :big="false"></toggle>
+      <div class="label-switch-on label-switch">{{$t("task_engine_v3.scenario_edit_page.switch_on")}}</div>
+      <text-button button-type='default' width='68px' height='28px' @click="exportScenario()">
+        {{$t("general.export")}}
+      </text-button>
       <div class="advanced-config" v-dropdown="advancedConfigOptions">
-        <text-button iconType="header_dropdown_gray" :iconSize="8" iconAlign="right" width="100px" height="28px">
+        <text-button iconType="header_dropdown_gray" :iconSize="8" iconAlign="right" width="91px" height="28px">
           {{$t("task_engine_v2.scenario_edit_page.advanced_config")}}
         </text-button>
       </div>
-      <text-button button-type='default' iconType="save" width='60px' height='28px' @click="exportScenario()">
-        {{$t("general.export")}}
+      <text-button button-type='default' width='68px' height='28px' @click="$router.replace('/task-engine-scenario-v2')">
+        {{$t("task_engine_v2.scenario_edit_page.back_to_scenario_list")}}
       </text-button>
-      <toggle class="button-switch-enable" v-model="enable" @change="switchScenario()" :big="false"></toggle>
     </div>
   </div>
 </div>
@@ -950,8 +954,8 @@ export default {
     display: flex;
     flex-direction: column;
     position: absolute;
-    right: 0px;
-    top: 20px;
+    right: 10px;
+    top: 100px;
     // z-index: 100;
     width: 420px;
     // height: calc(100% - 8px);
@@ -1034,64 +1038,38 @@ export default {
     position: absolute;
     left: 20px;
     top: 20px;
-    width: 700px;
-    height: 66px;
+    min-width: 1090px;
+    width: calc(100% - 40px);
+    height: 60px;
     background: white;
-    padding: 0px 32px 0px 32px;
-    .button-block{
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: center;
-      height: 36px;
-      border: 1px solid $color-borderline;
-      padding: 0px 16px 0px 16px;
-      cursor: pointer;
-      &:first-child{
-        border-radius: 6px 0px 0px 6px;
-      }
-      &:last-child{
-        border-radius: 0px 6px 6px 0px;
-      }
-      .icon-panel{
-        margin: 0px 4px 0px 0px;
-      }
-      .label-button-block{
-        font-size: 16px;
-      }
-      .label-enter-active, .label-leave-active{
-        transition: font-size 0.2s;
-      }
-      .label-enter, .label-leave-to {
-        font-size: 0px;
-      }
-      .label-enter-to, .label-leave {
-        font-size: 16px;
-      }
-    }
-    .top-panel-left{
+    box-shadow: 0 0 5px 0 rgba(102,102,102,0.08);
+    border-radius: 4px;
+    padding: 0px 20px;
+    .breadcrumb{
+      @include font-16px();
       display: flex;
       flex-direction: row;
       align-items: center;
       .scenario-name{
-        max-width: 270px;
+        max-width: 700px;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
-        font-size: 24px;
-      }
-      .scenario-name-edit{
-        cursor: pointer;
       }
       div{
         margin-right: 10px;
       }
+      .back-to-list{
+        cursor: pointer;
+        width: 64px;
+        margin-right: 10px;
+      }
     }
-    .top-panel-right{
+    .header-buttons {
       display: flex;
       flex-direction: row;
       align-items: center;
-      div{
+      div {
         margin-left: 10px;
       }
     }
