@@ -281,8 +281,9 @@ export default {
       return (this.canEditIntent || this.canDeleteIntent || this.canRemoveIntent);
     },
     alreadyEdit() {
+      const intentInEditMode = this.intentInEditMode();
       return this.deletedCorpusIds.length !== 0 || this.updatedCorpus.length !== 0 ||
-        this.addedCorpus.length !== 0;
+        this.addedCorpus.length !== 0 || this.editIntentName !== intentInEditMode.name;
     },
   },
   watch: {
