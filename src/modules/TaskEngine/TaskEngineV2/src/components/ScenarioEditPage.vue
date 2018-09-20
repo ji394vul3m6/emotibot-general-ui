@@ -135,7 +135,7 @@ export default {
       canvasWidth: 2000,
       canvasHeight: 2000,
       nodeBlockWidth: 230,
-      nodeBlockHeight: 150,
+      nodeBlockHeight: 120,
       rainbowColors: [],
       showTopPanelButtonLabel: {
         setting: false,

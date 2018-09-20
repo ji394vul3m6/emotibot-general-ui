@@ -2,7 +2,7 @@
 <div id="node-block" :style="style"
   @mouseover="mouseOverNode = true"
   @mouseout="mouseOverNode = false">
-  <div class="waring-row">
+  <div class="warning-row">
     <div class="warning-icon"
       ref="exitIcon"
       v-if="hasExitConnection"
@@ -116,7 +116,7 @@ export default {
     },
     nodeBlockHeight: {
       type: Number,
-      default: 150,
+      default: 120,
     },
   },
   data() {
@@ -310,6 +310,7 @@ export default {
     display: flex;
     flex-direction: row;
     justify-content: center;
+    margin: 12px 0px 0px 0px;
     .label-node-type{
       height: 24px;
       border: 1px solid $color-borderline;
@@ -338,12 +339,14 @@ export default {
       text-overflow: ellipsis;
     }
   }
-  .waring-row{
+  .warning-row{
+    position: absolute;
+    top: 5px;
+    left: 5px;
     display: flex;
     flex-direction: row;
     align-items: center;
     height: 24px;
-    margin: 12px 0px 0px 12px;
     .exit-icon{
       margin: 0px 0px 0px 3px;
     }
