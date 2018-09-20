@@ -30,6 +30,7 @@
           </div>
         </div>
       </div>
+      <transition name="intent-content">
       <template v-if="intent.expand">
         <div class="intent-block-content">
           <div class="corpus-tools">
@@ -88,6 +89,7 @@
           <v-pagination size="small" :total="getCurTotal(intent)" :pageIndex="intent.curPage" :pageSize="LIST_PAGE_SIZE" :layout="['prev', 'pager', 'next', 'jumper']" @page-change="handlePageChange($event, intent)"></v-pagination>
         </div>
       </template>
+      </transition>
     </div>
 
     <!--ADD INTENT BLOCK-->
@@ -888,6 +890,19 @@ export default {
     &.active {
       box-shadow: 0 4px 9px 0 rgba(115, 115, 115, 0.2), 0 5px 8px 0 rgba(228, 228, 228, 0.5);
     }
+
+    .intent-content-enter-active, .intent-content-leave-active {
+      transition: max-height .4s ease-in-out;
+      overflow: hidden;
+    }
+    .intent-content-enter, .intent-content-leave-to {
+      max-height: 0px;
+    }
+    .intent-content-enter-to, .intent-content-leave {
+      max-height: 1000px;
+      
+    }
+
     .intent-block-header {
       height: 50px;
       padding: 0 20px;
