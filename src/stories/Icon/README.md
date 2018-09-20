@@ -105,3 +105,4 @@
 | year_right | <img src="../../assets/icons/year_right_icon.svg"/>
 | month_left | <img src="../../assets/icons/month_left_icon.svg"/>
 | month_right | <img src="../../assets/icons/month_right_icon.svg"/>
+| month_right_white | <div style="background:black"><img src="../../assets/icons/month_right_white_icon.svg"/></div>
