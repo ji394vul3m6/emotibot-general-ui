@@ -109,12 +109,13 @@ export default {
       this.ieApi.listIntents().then((resp) => {
         this.intentOptionList = [];
         resp.data.result.forEach((intent) => {
-          if (intent === 'other' || intent === '其他') {
+          const intentName = intent.name;
+          if (intentName === 'other' || intentName === '其他') {
             return;
           }
           const object = {
-            text: intent,
-            value: intent,
+            text: intentName,
+            value: intentName,
           };
           this.intentOptionList.push(object);
         });
