@@ -539,7 +539,7 @@ export default {
       const elseInto = this.edgeElseInto(uiNode.nodeId, uiNode.edgeTab.elseInto);
       edges = [
         ...hiddenEdges,
-        ...uiNode.edgeTab.normalEdges,
+        ...this.addResetDialogueCntAndParseFailedAction(uiNode.edgeTab.normalEdges),
         elseInto,
       ];
     } else if (uiNode.nodeType === 'dialogue') {
@@ -552,14 +552,14 @@ export default {
       edges = [
         hiddenSetCntLimit,
         ...hiddenEdges,
-        ...uiNode.edgeTab.normalEdges,
+        ...this.addResetDialogueCntAndParseFailedAction(uiNode.edgeTab.normalEdges),
         exceedThenGoto,
         elseInto,
       ];
     } else if (uiNode.nodeType === 'nlu_pc') {
       const elseInto = this.edgeElseInto(uiNode.nodeId, uiNode.edgeTab.elseInto);
       edges = [
-        ...uiNode.edgeTab.normalEdges,
+        ...this.addResetDialogueCntAndParseFailedAction(uiNode.edgeTab.normalEdges),
         elseInto,
       ];
     } else if (uiNode.nodeType === 'restful') {
@@ -574,10 +574,21 @@ export default {
       );
       edges = [
         hiddenSetCntLimit,
-        ...tab.normalEdges,
+        ...this.addResetDialogueCntAndParseFailedAction(tab.normalEdges),
       ];
     }
     return edges;
+  },
+  addResetDialogueCntAndParseFailedAction(normalEdges) {
+    return normalEdges.map((normalEdge) => {
+      if (normalEdge.to_node_id !== null) {
+        normalEdge.actions = [
+          this.actionSetParseFailed(false),
+          this.actionSetNodeDialogueCnt(0),
+        ];
+      }
+      return normalEdge;
+    });
   },
   composeEntryNodeHiddenEdges(uiNode, setting) {
     const hidden1 = this.hiddenEdgeTemplate();
