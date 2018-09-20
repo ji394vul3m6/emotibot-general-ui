@@ -3,6 +3,7 @@
   <draggable v-model="params" :options="{ghostClass:'ghost'}" @start="drag=true" @end="drag=false">
     <template v-for="(param, index) in params">
       <params-collecting-block
+        :key="param.id"
         :nodeId="nodeId"
         :initialParam="param"
         :mapTableOptions="mapTableOptions"
@@ -58,13 +59,17 @@ export default {
           return p;
         }),
       };
-      // console.log(JSON.stringify(paramsCollectingTab));
+      // console.log(paramsCollectingTab);
       this.$emit('update', paramsCollectingTab);
     },
     renderTabContent() {
       const paramsCollectingTab = JSON.parse(JSON.stringify(this.initialParamsCollectingTab));
-      this.params = paramsCollectingTab.params;
       this.nodeId = paramsCollectingTab.nodeId;
+      // add tmp id for params
+      this.params = paramsCollectingTab.params.map((param) => {
+        param.id = this.$uuid.v1();
+        return param;
+      });
     },
     updateParam(index, $event) {
       this.params[index] = $event;

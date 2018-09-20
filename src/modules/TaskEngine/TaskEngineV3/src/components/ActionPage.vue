@@ -29,7 +29,7 @@
     </div>
   </div>
   <div class="action-group-list-container">
-    <draggable v-model="actionGroupList" :options="{ghostClass:'ghost'}" @start="drag=true" @end="drag=false">
+    <draggable v-model="actionGroupList" :options="{ghostClass:'ghost'}" @start="drag=true" @end="drag=false; emitUpdate();">
       <div class="action-group-container" v-for="(actionGroup, index) in actionGroupList">
         <action-group :key="actionGroup.actionGroupId"
           :initialActionGroup="actionGroup"
@@ -78,7 +78,7 @@ export default {
   methods: {
     updateActionGroup(index, newActionGroup) {
       this.actionGroupList[index] = newActionGroup;
-      this.$emit('update', this.actionGroupList);
+      this.emitUpdate();
     },
     addNewActionGroup(type) {
       const actionGroup = {
@@ -107,14 +107,17 @@ export default {
         });
       }
       this.actionGroupList.push(actionGroup);
-      this.$emit('update', this.actionGroupList);
+      this.emitUpdate();
     },
     deleteActionGroup(index) {
       this.actionGroupList.splice(index, 1);
-      this.$emit('update', this.actionGroupList);
+      this.emitUpdate();
     },
     rerender() {
       this.actionGroupList = JSON.parse(JSON.stringify(this.initialActionGroupList));
+    },
+    emitUpdate() {
+      this.$emit('update', this.actionGroupList);
     },
   },
   beforeMount() {},

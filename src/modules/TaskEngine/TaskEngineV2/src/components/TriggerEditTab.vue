@@ -3,7 +3,7 @@
   <div class="instruction block">
     {{$t("task_engine_v2.trigger_edit_tab.instruction")}}
   </div>
-  <draggable v-model="rules" :options="{ghostClass:'ghost'}" @start="drag=true" @end="drag=false">
+  <draggable v-model="rules" :options="{ghostClass:'ghost'}" @start="drag=true" @end="drag=false; emitUpdate();">
     <template v-for="(rule, index) in rules">
       <condition-block
         class="condition-block"
