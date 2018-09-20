@@ -302,7 +302,6 @@ export default {
       const searchParams = that.getSearchParams();
       that.$api.exportRobotAuditLog(searchParams).then((response) => {
         // TODO: export response
-        console.log({ response });
 
         const startTimeString = moment(that.start.getTimestamp() * 1000)
         .format('YYYYMMDDHHmm');
@@ -327,7 +326,7 @@ export default {
       console.log({ searchParams });
       that.$api.getRobotAuditLog(searchParams).then((result) => {
         // TODO: parse Table Header and Table Data;
-        console.log({ result });
+        console.log(result);
         that.totalLogCount = result.total_size;
         that.tableHeader = result.table_header;
         that.tableData = result.data;
@@ -342,10 +341,10 @@ export default {
       };
 
       if (that.userType !== UserType.SYSTEM_ADMIN) {
-        params.enterprise_id = that.enterpriseID;
+        params.enterprise_id = [that.enterpriseID];
         params.robot_id = that.filterRobot;
       } else {
-        params.enterprsie_id = that.filterRobot[0];
+        params.enterprsie_id = [that.filterRobot[0]];
         params.robot_id = that.filterRobot[1];
       }
       if (that.expertMode) {

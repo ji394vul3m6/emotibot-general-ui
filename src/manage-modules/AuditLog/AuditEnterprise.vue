@@ -226,9 +226,13 @@ export default {
       searchParams.page = that.pageIdx;
       searchParams.limit = that.pageLimit;
       console.log({ searchParams });
-      that.$api.getEnterpriseAuditLog(searchParams).then((response) => {
+      that.$api.getEnterpriseAuditLog(searchParams).then((result) => {
         // TODO: parse Table Header and Table Data;
-        console.log({ response });
+        console.log(result);
+        that.totalLogCount = result.total_size;
+        that.tableHeader = result.table_header;
+        that.tableData = result.data;
+        that.showTable = true;
       });
     },
     getSearchParams() {
@@ -281,9 +285,9 @@ export default {
           text: enterprise.name,
           value: enterprise.enterpriseID,
         }));
-        if (this.enterpriseID && this.enterpriseID !== '') {
-          this.filterEnterprise = [this.enterpriseID];
-        }
+      }
+      if (this.enterpriseID && this.enterpriseID !== '') {
+        this.filterEnterprise = [this.enterpriseID];
       }
 
       /** filterModule & filterActionType */
