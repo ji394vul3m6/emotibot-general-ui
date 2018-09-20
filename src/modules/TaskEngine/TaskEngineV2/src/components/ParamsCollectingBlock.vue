@@ -224,6 +224,7 @@ export default {
   methods: {
     emitUpdate() {
       const param = {
+        id: this.$uuid.v1(),
         msg: this.msg,
         parse_failed_msg: this.parse_failed_msg,
         parsers: this.parsers,

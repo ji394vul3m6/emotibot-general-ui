@@ -1,6 +1,6 @@
 <template lang="html">
 <div id="params-collecting-edit-tab">
-  <draggable v-model="params" :options="{ghostClass:'ghost'}" @start="drag=true" @end="drag=false">
+  <draggable v-model="params" :options="{ghostClass:'ghost'}" @start="drag=true" @end="drag=false; emitUpdate();">
     <template v-for="(param, index) in params">
       <params-collecting-block
         :key="param.id"
