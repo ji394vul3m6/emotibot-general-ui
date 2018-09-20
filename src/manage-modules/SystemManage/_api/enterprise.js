@@ -53,7 +53,7 @@ function addEnterprise(info) {
       return {};
     })
     .then((admin) => {
-      this.$reqPostForm(IM_ENTERPRISE_URL, {
+      this.$reqPost(IM_ENTERPRISE_URL, {
         username: info.admin.account,
         ent_code: enterprise.id,
         display_name: info.admin.account,

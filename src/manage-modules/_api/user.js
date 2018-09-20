@@ -49,7 +49,7 @@ function addEnterpriseUser(enterprise, user) {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
   }).then((rsp) => {
-    this.$reqPostForm(IM_USER_URL, {
+    this.$reqPost(IM_USER_URL, {
       username: user.username,
       ent_code: enterprise,
       display_name: user.username,
