@@ -2,6 +2,23 @@
 <div id="node-block" :style="style"
   @mouseover="mouseOverNode = true"
   @mouseout="mouseOverNode = false">
+  <div class="waring-row">
+    <div class="warning-icon"
+      ref="exitIcon"
+      v-if="hasExitConnection"
+      v-tooltip="{ msg: $t('task_engine_v2.warnings.has_exit_connection')}">
+      <img class="exit-icon"
+        src="/static/images/exit_icon.png"
+        width="32px">
+      </img>
+    </div>
+    <div class="warning-icon"
+      ref="warningIcon"
+      v-if="warningTooltipValue.msgs && warningTooltipValue.msgs.length > 0"
+      v-tooltip="warningTooltipValue">
+      <icon icon-type="info_warning" :size=22></icon>
+    </div>
+  </div>
   <div v-if="node.nodeType !== 'entry'" class="button-delete-node">
     <icon icon-type="delete" :enableHover="true" :size=24 @click="deleteNode()"/>
   </div>
@@ -29,21 +46,6 @@
       @click="copyNode()">
       {{$t("general.copy")}}
     </text-button>
-    <div class="warning-icon"
-      ref="exitIcon"
-      v-if="hasExitConnection"
-      v-tooltip="{ msg: $t('task_engine_v2.warnings.has_exit_connection')}">
-      <img class="exit-icon"
-        src="/static/images/exit_icon.png"
-        width="32px">
-      </img>
-    </div>
-    <div class="warning-icon"
-      ref="warningIcon"
-      v-if="warningTooltipValue.msgs && warningTooltipValue.msgs.length > 0"
-      v-tooltip="warningTooltipValue">
-      <icon icon-type="info_warning" :size=22></icon>
-    </div>
   </div>
   <div class="edge-slot edge-slot-from"
     id="edgeSlotFrom"
@@ -114,7 +116,7 @@ export default {
     },
     nodeBlockHeight: {
       type: Number,
-      default: 120,
+      default: 150,
     },
   },
   data() {
@@ -308,7 +310,6 @@ export default {
     display: flex;
     flex-direction: row;
     justify-content: center;
-    margin: 12px 0px 0px 0px;
     .label-node-type{
       height: 24px;
       border: 1px solid $color-borderline;
@@ -337,6 +338,16 @@ export default {
       text-overflow: ellipsis;
     }
   }
+  .waring-row{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 24px;
+    margin: 12px 0px 0px 12px;
+    .exit-icon{
+      margin: 0px 0px 0px 3px;
+    }
+  }
   .button-row{
     display: flex;
     flex-direction: row;
@@ -344,7 +355,7 @@ export default {
     justify-content: center;
     height: 36px;
     .button{
-      height: 32px;
+      height: 28px;
     }
     .button-copy-node{
       margin: 0px 0px 0px 3px;
