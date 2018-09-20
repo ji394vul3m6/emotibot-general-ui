@@ -187,6 +187,11 @@ export default {
   @include iconType("setting");
   @include iconType("setting_hover");
   @include iconTypeHover("setting");
+  @include iconType("edit_thin");
+  @include iconType("publish");
+  @include iconType("export");
+  @include iconType("trash_can");
+  @include iconTypeHover("edit_pen");
 
   /** used on TaskEngineV2 top panel*/
   @include iconType("save");

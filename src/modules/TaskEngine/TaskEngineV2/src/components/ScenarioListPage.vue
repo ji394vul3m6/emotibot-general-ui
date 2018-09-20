@@ -12,7 +12,7 @@
             <text-button button-type='primary' width='68px' height='28px' @click="createNewScenario">
               {{$t("task_engine_v2.scenario_list_page.button_create_new_scenario")}}
             </text-button>
-            <text-button button-type='default' iconType="upload" :iconSize=15 width='68px' height='28px' @click="importScenarioJSON">
+            <text-button button-type='default' :iconSize=15 width='68px' height='28px' @click="importScenarioJSON">
               {{$t("task_engine_v2.scenario_list_page.button_import_scenario")}}
             </text-button>
             <text-button button-type='default' width='100px' height='28px' @click="exportAllScenarios">
@@ -27,6 +27,8 @@
           v-for="(scenario, index) in filteredScenarioList" 
           :key="scenario.scenarioID"
           class="scenario-grid"
+          @mouseover="scenario.show = true" 
+          @mouseleave="scenario.show = false"
         >
           <div class="scenario-title">
             <div class="name-label" @click="editScenario(scenario.scenarioID)">
@@ -34,17 +36,17 @@
             </div>
             <toggle v-model="scenario.enable" @change="switchScenario(scenario)" :big="false"></toggle>
           </div>
-          <div class="scenario-content">
-            <text-button button-type='default' iconType="edit" width='60px' height='28px' @click="editScenario(scenario.scenarioID)">
+          <div class="scenario-content" v-if="scenario.show  === true">
+            <text-button button-type='default' iconType="edit_thin" width='72px' height='28px' @click="editScenario(scenario.scenarioID)">
               {{$t("task_engine_v2.scenario_list_page.edit")}}
             </text-button>
-            <text-button button-type='default' iconType="upload" width='60px' height='28px' @click="publishScenario(scenario)">
+            <text-button button-type='default' iconType="publish" width='72px' height='28px' @click="publishScenario(scenario)">
               {{$t("task_engine_v2.scenario_list_page.publish")}}
             </text-button>
-            <text-button button-type='default' iconType="save" width='60px' height='28px' @click="exportScenario(scenario.scenarioID)">
+            <text-button button-type='default' iconType="export" width='72px' height='28px' @click="exportScenario(scenario.scenarioID)">
               {{$t("general.export")}}
             </text-button>
-            <text-button button-type='default' iconType="delete" width='60px' height='28px' @click="deleteScenario(scenario)">
+            <text-button button-type='default' iconType="trash_can" width='72px' height='28px' @click="deleteScenario(scenario)">
               {{$t("general.delete")}}
             </text-button>
           </div>
@@ -310,9 +312,9 @@ $row-height: $default-line-height;
       .scenario-grid {
         display: flex;
         flex-direction: column;
-        flex: 0 0 350px;
-        max-width: 350px;
-        height: 110px;
+        flex: 0 0 360px;
+        max-width: 360px;
+        height: 112px;
         border-radius: 4px;
         border: 1px solid $color-borderline;
         margin-right: 30px;
@@ -338,7 +340,7 @@ $row-height: $default-line-height;
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
-            font-size: 18px;
+            font-size: 16px;
             @include click-button();
           }
         }
@@ -346,9 +348,7 @@ $row-height: $default-line-height;
           display: flex;
           flex-direction: row;
           flex-wrap: wrap;
-          .text-button{
-            margin-right: 10px;
-          }
+          justify-content: space-between;
         }
       }
     }
