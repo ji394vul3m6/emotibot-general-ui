@@ -76,7 +76,7 @@
   </div>
   <div class="top-panel">
     <div class="top-panel-left">
-      <text-button button-type='default' iconType="month_left" width='120px' height='36px' @click="$router.replace('/task-engine-scenario-v2')">
+      <text-button button-type='default' iconType="month_left" width='120px' height='28px' @click="$router.replace('/task-engine-scenario-v2')">
         {{$t("task_engine_v2.scenario_edit_page.back_to_scenario_list")}}
       </text-button>
       <div v-if="moduleData.metadata" class="scenario-name">
@@ -88,11 +88,11 @@
     </div>
     <div class="top-panel-right">
       <div class="advanced-config" v-dropdown="advancedConfigOptions">
-        <text-button iconType="header_dropdown_gray" :iconSize="8" iconAlign="right" width="100px" height="36px">
+        <text-button iconType="header_dropdown_gray" :iconSize="8" iconAlign="right" width="100px" height="28px">
           {{$t("task_engine_v2.scenario_edit_page.advanced_config")}}
         </text-button>
       </div>
-      <text-button button-type='default' iconType="save" width='60px' height='36px' @click="exportScenario()">
+      <text-button button-type='default' iconType="save" width='60px' height='28px' @click="exportScenario()">
         {{$t("general.export")}}
       </text-button>
       <toggle class="button-switch-enable" v-model="enable" @change="switchScenario()" :big="false"></toggle>
@@ -1092,7 +1092,7 @@ export default {
       flex-direction: row;
       align-items: center;
       div{
-        margin-right: 10px;
+        margin-left: 10px;
       }
     }
   }
