@@ -418,7 +418,14 @@ export default {
     },
     beforeExpandIntent(intent) {
       const that = this;
-      if (intent.expand) return;
+      if (intent.expand) {
+        if (that.isAddIntent) return;
+        const intentInEditMode = that.intentInEditMode();
+        if (intentInEditMode === undefined) {
+          that.closeExpandIntent(intent);
+        }
+        return;
+      }
       if (that.isAddIntent) {
         that.cancelAddNewIntent(that.expandIntent.bind(that, intent));
         return;
