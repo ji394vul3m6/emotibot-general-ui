@@ -85,7 +85,7 @@
           </td>
           <template v-if="$scopedSlots.menu">
             <td class="fixed menu">
-              <icon iconType="more" enableHover :size=15 @click="moreClick(idx, $event)" style="position: initial"></icon>
+              <icon iconType="more" enableHover :size=15 @click="moreClick(idx, data, $event)" style="position: initial"></icon>
             </td>
             <td v-if="idx === indexOfShowMenu" class="menu-container" :style="menuStyle"><slot name="menu" :rowData="data" :rowIndex="idx"></slot></td>
           </template>
@@ -260,7 +260,8 @@ export default {
       this.headerInfoTooltip.msg = header.info;
       infoIconBlockDom.dispatchEvent(event.createEvent('tooltip-reload'));
     },
-    moreClick(index, e) {
+    moreClick(index, rowData, e) {
+      this.$emit('moreClick', { rowIndex: index, rowData });
       const rect = e.target.getBoundingClientRect();
       const top = document.documentElement.scrollTop + rect.top;
       const windowWidth = window.innerWidth || document.body.clientWidth;
