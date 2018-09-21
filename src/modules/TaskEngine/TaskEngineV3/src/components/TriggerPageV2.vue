@@ -37,12 +37,15 @@
 
 <script>
 import IntentList from '@/modules/IntentEngine/_components/IntentList';
-import IntentEngine from './_api/intentEngine';
+import taskEngineApi from '@/modules/TaskEngine/_api/taskEngine';
+import intentApi from '@/modules/IntentEngine/_api/intent';
 import i18nUtils from '../utils/i18nUtil';
-import general from '../utils/general';
+// import IntentEngine from './_api/intentEngine';
+// import general from '../utils/general';
 
 export default {
   name: 'trigger-page',
+  api: { ...taskEngineApi, ...intentApi },
   components: {
     IntentList,
   },
@@ -60,6 +63,7 @@ export default {
       triggerList: JSON.parse(JSON.stringify(this.initialTriggerList)),
       newIntent: '',
       intentList: [],
+      intentListAll: [],
       intentOptionList: [],
       buttonAddEnabled: false,
     };
@@ -80,9 +84,13 @@ export default {
   watch: {
     triggerList() {
       this.$emit('update', this.triggerList);
-      this.intentList = this.triggerList.map(triggered => ({
-        name: triggered.intent_name,
-      }));
+      this.intentList = [];
+      this.triggerList.forEach((trigger) => {
+        const intent = this.intentListAll.find(i => i.name === trigger.intent_name);
+        if (intent) {
+          this.intentList.push(intent);
+        }
+      });
     },
   },
   methods: {
@@ -106,9 +114,10 @@ export default {
       this.triggerList.splice(index, 1);
     },
     loadIntentOptionList() {
-      this.ieApi.listIntents().then((resp) => {
+      this.$api.getIntentsDetail().then((intents) => {
+        this.intentListAll = intents;
         this.intentOptionList = [];
-        resp.data.result.forEach((intent) => {
+        this.intentListAll.forEach((intent) => {
           const intentName = intent.name;
           if (intentName === 'other' || intentName === '其他') {
             return;
@@ -132,8 +141,15 @@ export default {
         }
         this.$refs.selectAddTrigger.$emit('updateOptions', this.intentOptionList);
         this.$refs.selectAddTrigger.$emit('select', this.intentOptionList[0].value);
-      }, (err) => {
-        general.popErrorWindow(this, 'listIntents error', err.message);
+      }).catch((err) => {
+        console.log(err);
+        if (err.response.status < 500) {
+          if (err.response.status === 404) {
+            this.$notifyFail(this.$t('intent_engine.version_not_exist'));
+          } else {
+            this.$notifyFail(this.$t('http_status.400'));
+          }
+        }
       });
     },
     rerender() {
@@ -143,7 +159,7 @@ export default {
   beforeMount() {
     this.appId = this.$cookie.get('appid');
     // this.ieApi = new IntentEngine(this, '1.0', this.appId);
-    this.ieApi = new IntentEngine(this, '2.0', '');
+    // this.ieApi = new IntentEngine(this, '2.0', '');
     this.loadIntentOptionList();
     this.$on('rerender', this.rerender);
   },
