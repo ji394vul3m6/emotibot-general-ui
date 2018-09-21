@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import TriggerPage from './TriggerPageV2';
+import TriggerPage from './TriggerPage';
 import EntityCollectingPage from './EntityCollectingPage';
 import ActionPage from './ActionPage';
 import i18nUtils from '../utils/i18nUtil';

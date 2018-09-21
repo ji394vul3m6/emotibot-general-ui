@@ -1,48 +1,53 @@
 <template lang="html">
 <div id="trigger-page" class="page trigger-page">
-  <div class="title-container">
-    <div class="title">{{$t("task_engine_v3.trigger_page.label_title")}}</div>
-    <div class="title-description">{{$t("task_engine_v3.trigger_page.label_title_description")}}</div>
-  </div>
-  <div class="hr"><hr/></div>
-  <div class="label-intent-setting">{{$t("task_engine_v3.trigger_page.label_intent_setting")}}</div>
-  <div class="content-container">
-    <template v-for="(trigger, triggerIndex) in triggerList">
-      <div class="intent-editor-box">
-        <div class="delete-intent-button" @click="deleteThisTrigger(triggerIndex)">X</div>
-        <div class="intent-editor-container">
-          <div class="left">
-            <div class="label-choose-intent">{{$t("task_engine_v3.trigger_page.label_choose_intent")}}</div>
-            <v-select
-              v-model="triggerList[triggerIndex]"
-              :options="intentOptionList"
-              :searchable="false"
-              label="intent_name">
-            </v-select>
-            <button class="btn-basic btn-hightlight-border" @click="addNewIntent(triggerIndex)">{{$t("task_engine_v3.trigger_page.button_add_new_intent")}}</button>
-          </div>
-          <div class="right">
-            <button class="btn-basic btn-white" @click="editIntent(trigger)" v-bind:class="{disabled: !isTriggerEditable(trigger)}">{{$t("general.edit")}}</button>
-            <button class="btn-basic btn-white" @click="testIntent">{{$t("general.test")}}</button>
-          </div>
-        </div>
+  <div class="add-trigger-container">
+    <div class="row">
+      <div class="label-add-trigger">{{$t("task_engine_v3.trigger_page.label_add_trigger")}}</div>
+      <div class="icon-container" v-tooltip="{ msg: $t('task_engine_v3.trigger_page.description')}">
+        <icon icon-type="info" :enableHover="true" :size=18 />
       </div>
-    </template>
-    <div class="button-add-new-trigger" @click="addNewTrigger">{{$t("task_engine_v3.trigger_page.btn_add_new_trigger")}}</div>
+    </div>
+    <div class="row row-margin-top">
+      <dropdown-select
+        class="select-add-trigger"
+        ref="selectAddTrigger"
+        v-model="newIntentModel"
+        :options="intentOptionList"
+        :showCheckedIcon="false"
+        width="160px"
+        :placeholder="$t('general.please_choose')"
+      />
+      <text-button
+        class="button-add-trigger"
+        :button-type="buttonAddEnabled ? 'primary' : 'disable'"
+        @click="addNewTrigger">
+        {{$t("task_engine_v3.trigger_page.button_add_trigger")}}
+      </text-button>
+    </div>
   </div>
+  <intent-list
+    class="intent-list"
+    :intentList="intentList"
+    :canDeleteIntent="false"
+    :canRemoveIntent="true"
+    @removeIntent="deleteThisTrigger"
+  ></intent-list>
 </div>
 </template>
 
 <script>
-import IntentEngine from './_api/intentEngine';
+import IntentList from '@/modules/IntentEngine/_components/IntentList';
+import taskEngineApi from '@/modules/TaskEngine/_api/taskEngine';
+import intentApi from '@/modules/IntentEngine/_api/intent';
 import i18nUtils from '../utils/i18nUtil';
-import general from '../utils/general';
-import IntentEditorPop from './IntentEditorPop';
-import IntentTesterPop from './IntentTesterPop';
+// import IntentEngine from './_api/intentEngine';
+// import general from '../utils/general';
 
 export default {
   name: 'trigger-page',
+  api: { ...taskEngineApi, ...intentApi },
   components: {
+    IntentList,
   },
   props: {
     initialTriggerList: {
@@ -56,144 +61,95 @@ export default {
       appId: '',
       ieApi: null,
       triggerList: JSON.parse(JSON.stringify(this.initialTriggerList)),
+      newIntent: '',
       intentList: [],
+      intentListAll: [],
       intentOptionList: [],
+      buttonAddEnabled: false,
     };
   },
-  computed: {},
+  computed: {
+    newIntentModel: {
+      get() {
+        if (this.newIntent === '') {
+          return [];
+        }
+        return [this.newIntent];
+      },
+      set(newSelected) {
+        this.newIntent = newSelected[0];
+      },
+    },
+  },
   watch: {
     triggerList() {
       this.$emit('update', this.triggerList);
+      this.intentList = [];
+      this.triggerList.forEach((trigger) => {
+        const intent = this.intentListAll.find(i => i.name === trigger.intent_name);
+        if (intent) {
+          this.intentList.push(intent);
+        }
+      });
     },
   },
   methods: {
+    isDuplicateTrigger() {
+      const that = this;
+      return that.triggerList.findIndex(intent => intent.intent_name === that.newIntent) !== -1;
+    },
     addNewTrigger() {
-      this.triggerList.push(null);
+      if (!this.buttonAddEnabled) {
+        return;
+      }
+      if (!this.isDuplicateTrigger()) {
+        this.triggerList.push({
+          type: 'intent_engine_2.0',
+          intent_name: this.newIntent,
+          editable: true,
+        });
+      }
     },
     deleteThisTrigger(index) {
       this.triggerList.splice(index, 1);
     },
-    isTriggerEditable(trigger) {
-      if (trigger === null || trigger.editable === false || trigger.intent_name === null) {
-        return false;
-      }
-      return true;
-    },
-    checkIntent(intentName) {
-      this.ieApi.checkIntent(intentName).then(() => {
-      }, (err) => {
-        general.popErrorWindow(this, 'checkIntent error', err.message);
-      });
-    },
     loadIntentOptionList() {
-      this.ieApi.listIntents().then((data) => {
-        this.intentList = data.content;
-        this.intentOptionList = [
-          // {
-          //   'intent_name': '催促，退款',
-          //   'type': 'intent_zoo',
-          //   'editable': false
-          // },
-          // {
-          //   'intent_name': '催促，物流',
-          //   'type': 'intent_zoo',
-          //   'editable': false
-          // },
-        ];
-        data.content.forEach((op) => {
+      this.$api.getIntentsDetail().then((intents) => {
+        this.intentListAll = intents;
+        this.intentOptionList = [];
+        this.intentListAll.forEach((intent) => {
+          const intentName = intent.name;
+          if (intentName === 'other' || intentName === '其他') {
+            return;
+          }
           const object = {
-            intent_name: op.intent_name,
-            type: 'intent_engine',
-            editable: true,
+            text: intentName,
+            value: intentName,
           };
           this.intentOptionList.push(object);
         });
-      }, (err) => {
-        general.popErrorWindow(this, 'listIntents error', err.message);
-      });
-    },
-    addNewIntent(triggerIndex) {
-      const that = this;
-      that.$pop({
-        title: '',
-        component: IntentEditorPop,
-        validate: true,
-        data: {
-          editor_type: 'add_new_intent',
-          app_id: that.appId,
-          intent_id: '',
-          intent_name: '',
-          sentences: [],
-        },
-        ok_msg: that.$t('general.add'),
-        callback: {
-          ok: (newIntent) => {
-            that.updateIntent(newIntent);
-            const trigger = {
-              intent_name: newIntent.intent_name,
-              type: 'intent_engine',
-              editable: true,
-            };
-            that.triggerList[triggerIndex] = trigger;
-          },
-        },
-      });
-    },
-    editIntent(trigger) {
-      const intent = this.intentList.find(i => i.intent_name === trigger.intent_name);
-      const that = this;
-      that.$pop({
-        title: '',
-        component: IntentEditorPop,
-        validate: true,
-        data: {
-          editor_type: 'edit_intent',
-          app_id: intent.app_id,
-          intent_id: intent.intent_id,
-          intent_name: intent.intent_name,
-          sentences: intent.sentences,
-        },
-        ok_msg: that.$t('general.save'),
-        callback: {
-          ok: (newIntent) => {
-            that.updateIntent(newIntent);
-          },
-        },
-      });
-    },
-    testIntent() {
-      const that = this;
-      that.$pop({
-        title: '',
-        component: IntentTesterPop,
-        buttons: ['cancel'],
-        cancel_msg: that.$t('general.close'),
-        validate: true,
-        data: {},
-      });
-    },
-    updateIntent(intent) {
-      intent.sentences = intent.sentences.map((sentence) => {
-        sentence.sentenceid = this.$uuid.v1();
-        return sentence;
-      });
-      this.ieApi.updateIntent(JSON.stringify([intent])).then((data) => {
-        if (data.code !== 0) {
-          general.popErrorWindow(this, 'updateIntent error', `code: ${data.code}`);
+        if (this.intentOptionList.length === 0) {
+          this.intentOptionList.push({
+            text: this.$t('task_engine_v3.trigger_page.placeholder_import_intent_first'),
+            value: this.$t('task_engine_v3.trigger_page.placeholder_import_intent_first'),
+            isGroup: true,
+          });
+          this.buttonAddEnabled = false;
+        } else {
+          this.newIntent = this.intentOptionList[0].value;
+          this.buttonAddEnabled = true;
         }
-        this.loadIntentOptionList();
-      }, (err) => {
-        general.popErrorWindow(this, 'updateIntent error', err.message);
-      });
-    },
-    deleteIntent(intentName) {
-      this.ieApi.deleteIntent(intentName).then((data) => {
-        if (data.code !== 0) {
-          general.popErrorWindow(this, 'deleteIntent error', `code: ${data.code}`);
+        this.$refs.selectAddTrigger.$emit('updateOptions', this.intentOptionList);
+        this.$refs.selectAddTrigger.$emit('select', this.intentOptionList[0].value);
+      }).catch((err) => {
+        console.log(err);
+        if (err.response.status < 500) {
+          if (err.response.status === 404) {
+            this.$notifyFail(this.$t('intent_engine.version_not_exist'));
+          } else {
+            this.$notifyFail(this.$t('http_status.400'));
+          }
         }
-        this.loadIntentOptionList();
-      }, (err) => {
-        general.popErrorWindow(this, 'deleteIntent error', err.message);
       });
     },
     rerender() {
@@ -202,7 +158,7 @@ export default {
   },
   beforeMount() {
     this.appId = this.$cookie.get('appid');
-    this.ieApi = new IntentEngine(this, '1.0', this.appId);
+    // this.ieApi = new IntentEngine(this, '1.0', this.appId);
     // this.ieApi = new IntentEngine(this, '2.0', '');
     this.loadIntentOptionList();
     this.$on('rerender', this.rerender);
@@ -219,5 +175,45 @@ export default {
 
 <style lang="scss" scoped>
 @import "../scss/teVariable.scss";
-@import "../scss/triggerPage.scss";
+#trigger-page{
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  .add-trigger-container{
+    flex: 0 0 auto;
+    padding: 10px 20px;
+    height: 86px;
+    background: #f8f8f8;
+    border-radius: 4px;
+    .row{
+      display: flex;
+      flex-direction: row;
+      .label-add-trigger{
+        color: $color-font-active;
+        line-height: 28px;
+        font-size: 14px;
+      }
+      .icon-container{
+        margin-left: 4px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .select-add-trigger{
+        height: 28px;
+        background: #ffffff;
+      }
+      .button-add-trigger{
+        margin-left: 10px;
+      }
+    }
+    .row-margin-top{
+      margin-top: 10px;
+    }
+  }
+  .intent-list{
+    padding-top: 25px;
+  }
+}
 </style>

@@ -67,7 +67,7 @@
 
 <script>
 import SkillEditPage from './SkillEditPage';
-import TriggerPage from './TriggerPageV2';
+import TriggerPage from './TriggerPage';
 import EntityCollectingPage from './EntityCollectingPage';
 import ActionPage from './ActionPage';
 import EditSkillsPop from './EditSkillsPop';
