@@ -1069,7 +1069,7 @@ export default {
       display: flex;
       flex-direction: row;
       align-items: center;
-      div {
+      &>div {
         margin-left: 10px;
       }
     }

@@ -344,11 +344,14 @@ export default {
     top: 5px;
     left: 5px;
     display: flex;
-    flex-direction: row;
-    align-items: center;
-    height: 24px;
+    flex-direction: column;
     .exit-icon{
       margin: 0px 0px 0px 3px;
+    }
+    .warning-icon{
+      height: 20px;
+      display: flex;
+      align-items: center;
     }
   }
   .button-row{
