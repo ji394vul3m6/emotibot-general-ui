@@ -252,14 +252,12 @@ export default {
           params.user_id = that.filterUserId;
         }
       }
-      if (that.expertMode) {
-        const targetModule = that.enterpriseModuleList
+      const targetModule = that.enterpriseModuleList
           .find(enterpriseModule => enterpriseModule.id === that.filterModule[0]);
-        params.operation = {
-          module: targetModule.privCode,
-          type: that.filterActionType[0] === 'all' ? '' : that.filterActionType[0],
-        };
-      }
+      params.operation = {
+        module: targetModule.privCode,
+        type: that.filterActionType[0] === 'all' ? '' : that.filterActionType[0],
+      };
       return params;
     },
     setPageOption() {

@@ -280,18 +280,16 @@ export default {
         params.enterprsie_id = [that.filterRobot[0]];
         params.robot_id = [that.filterRobot[1]];
       }
-      if (that.expertMode) {
-        that.filterUserId = that.filterUserId.trim();
-        if (that.filterUserId !== '') {
-          params.user_id = that.filterUserId;
-        }
-        const targetModule = that.robotModuleList
-          .find(robotModule => robotModule.id === that.filterModule[0]);
-        params.operation = {
-          module: targetModule.privCode,
-          type: that.filterActionType[0] === 'all' ? '' : that.filterActionType[0],
-        };
+      that.filterUserId = that.filterUserId.trim();
+      if (that.filterUserId !== '') {
+        params.user_id = that.filterUserId;
       }
+      const targetModule = that.robotModuleList
+          .find(robotModule => robotModule.id === that.filterModule[0]);
+      params.operation = {
+        module: targetModule.privCode,
+        type: that.filterActionType[0] === 'all' ? '' : that.filterActionType[0],
+      };
       return params;
     },
     setPageOption() {
