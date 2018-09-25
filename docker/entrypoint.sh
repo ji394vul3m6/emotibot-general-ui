@@ -15,7 +15,7 @@ fi
 /auth/token-auth &
 
 # start api
-cd /api && ./files_init.sh && ./entrypoint.sh env.template &
+cd /api && ./files_init.sh && ./entrypoint.sh &
 
 cd /etc/nginx
 rm nginx.conf
