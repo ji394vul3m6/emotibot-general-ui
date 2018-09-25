@@ -534,7 +534,6 @@ export default {
   // convert tab data to edges
   convertUiNodeToEdges(uiNode, setting, initialGlobalEdges) {
     const globalEdges = this.addResetDialogueCntAndParseFailedAction(initialGlobalEdges);
-    console.log(globalEdges);
     let edges = [];
     if (uiNode.nodeType === 'entry') {
       const hiddenEdges = this.composeEntryNodeHiddenEdges(uiNode, setting);
@@ -580,7 +579,8 @@ export default {
       const hiddenSetCntLimit = this.edgeHiddenSetNodeDialogueCntLimit(
         tab.dialogueLimit,
       );
-      const normalEdges = this.addResetDialogueCntAndParseFailedAction(tab.normalEdges);
+      let normalEdges = this.addResetDialogueCntAndParseFailedAction(tab.normalEdges);
+      normalEdges = this.insertGlobalEdges(normalEdges, globalEdges);
       edges = [
         hiddenSetCntLimit,
         ...normalEdges,
@@ -588,7 +588,8 @@ export default {
     }
     return edges;
   },
-  addResetDialogueCntAndParseFailedAction(edges) {
+  addResetDialogueCntAndParseFailedAction(initialEdges) {
+    const edges = JSON.parse(JSON.stringify(initialEdges));
     return edges.map((edge) => {
       if (edge.to_node_id !== null) {
         edge.actions = [
@@ -600,6 +601,26 @@ export default {
       }
       return edge;
     });
+  },
+  insertGlobalEdges(normalEdges, globalEdges) {
+    let index = -1;
+    normalEdges.find((edge, idx) => {
+      if (edge.edge_type === 'virtual_global_edges') {
+        index = idx;
+        return true;
+      }
+      return false;
+    });
+    if (index === -1) {
+      return normalEdges;
+    }
+    const normalEdgesA = normalEdges.slice(0, index);
+    const normalEdgesB = normalEdges.slice(index + 1);
+    return [
+      ...normalEdgesA,
+      ...globalEdges,
+      ...normalEdgesB,
+    ];
   },
   composeEntryNodeHiddenEdges(uiNode, setting) {
     const hidden1 = this.hiddenEdgeTemplate();

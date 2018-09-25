@@ -1,6 +1,8 @@
 <template lang="html">
 <div id="condition-block">
-  <div class="button-delete-condition" v-if="edgeType!=='pc_succeed' && edgeType!=='pc_failed'">
+  <div
+    class="button-delete-condition"
+    v-if="edgeType!=='pc_succeed' && edgeType!=='pc_failed' && edgeType!=='virtual_global_edges'">
     <icon icon-type="delete" :enableHover="true" :size=24 @click="deleteEdge()"/>
   </div>
   <div class="normal-edge" v-if="edgeType==='normal' || edgeType==='trigger'">
@@ -431,7 +433,7 @@
         </div>
       </div>
     </template>
-    <div class="row row-then-goto" v-if="edgeType!=='trigger'">
+    <div class="row row-no-bottom-margin" v-if="edgeType!=='trigger'">
       <div class="label label-start">
         {{$t("task_engine_v2.edge_edit_tab.label_then_goto")}}
       </div>
@@ -526,7 +528,7 @@
   </div>
   <!--[参数收集节点]取得所有必要参数-->
   <div class="succeed_then_goto pc_block" v-if="edgeType==='pc_succeed'">
-    <div class="row">
+    <div class="row row-no-bottom-margin">
       <div class="label label-bold">
         {{$t("task_engine_v2.params_collecting_edge_tab.succeed")}}
       </div>
@@ -552,7 +554,7 @@
   </div>
   <!--[参数收集节点]解析失败-->
   <div class="exceed_limit pc_block" v-if="edgeType==='pc_failed'">
-    <div class="row">
+    <div class="row row-no-bottom-margin">
       <div class="label label-bold">
         {{$t("task_engine_v2.params_collecting_edge_tab.failed")}}
       </div>
@@ -578,6 +580,17 @@
         width="200px"
         :inputBarStyle="selectStyle"
       />
+    </div>
+  </div>
+  <!--[参数收集节点]虚拟通用连线-->
+  <div class="virtual_global_edges pc_block" v-if="edgeType==='virtual_global_edges'">
+    <div class="row row-no-bottom-margin">
+      <div class="label label-bold">
+        {{$t("task_engine_v2.params_collecting_edge_tab.virtual_global_edges")}}
+      </div>
+      <div class="label label-margin-left">
+        {{$t("task_engine_v2.params_collecting_edge_tab.virtual_global_edges_description")}}
+      </div>
     </div>
   </div>
 </div>
@@ -1013,7 +1026,7 @@ export default {
     align-items: center;
     height: 36px;
     margin: 0px 0px 10px 0px;
-    &.row-then-goto{
+    &.row-no-bottom-margin{
       margin: 0px 0px 0px 0px;
     }
     .label{

@@ -113,6 +113,8 @@ export default {
       succeed_description: '取得所有必要参数',
       failed: '失敗',
       failed_description: '参数连续解析失败',
+      virtual_global_edges: '通用连线',
+      virtual_global_edges_description: '在这个位置插入通用连线',
     },
     edge_edit_tab: {
       instruction: '使用连线连接此节点与其他节点',
