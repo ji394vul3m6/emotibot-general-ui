@@ -1,6 +1,6 @@
 const auditRobotURL = '/api/v2/statistic/audit/robot';
 const auditEnterpriseURL = '/api/v2/statistic/audit/enterprise';
-const auditSystemURL = '/audit/system';
+const auditSystemURL = '/api/v2/statistic/audit/system';
 const fullEnterpriseURL = '/auth/v3/enterpriselist';
 
 // function parseTableHeader(header) {
@@ -333,40 +333,36 @@ function exportSystemAuditLog(params) {
 
 function getFullEnterpriseList() {
   const URL = fullEnterpriseURL;
-  console.log({ URL });
-  // return this.$reqGet(URL).then((response) => {
-  //   console.log({ response });
-  //   return response.data;
-  // });
+  return this.$reqGet(URL).then(response => response.data.result);
 
-  const mockData = [{
-    enterprise_id: '1234567',
-    enterprise_name: '企業一號',
-    robot_list: [
-      {
-        robot_id: 'robot001',
-        robot_name: '機器人一號',
-      },
-      {
-        robot_id: 'robot001',
-        robot_name: '機器人二號',
-      },
-    ],
-  }, {
-    enterprise_id: '7654321',
-    enterprise_name: '企業二號',
-    robot_list: [
-      {
-        robot_id: 'robot003',
-        robot_name: '機器人三號',
-      },
-      {
-        robot_id: 'robot004',
-        robot_name: '機器人四號',
-      },
-    ],
-  }];
-  return Promise.resolve(mockData);
+  // const mockData = [{
+  //   enterprise_id: '1234567',
+  //   enterprise_name: '企業一號',
+  //   robot_list: [
+  //     {
+  //       robot_id: 'robot001',
+  //       robot_name: '機器人一號',
+  //     },
+  //     {
+  //       robot_id: 'robot001',
+  //       robot_name: '機器人二號',
+  //     },
+  //   ],
+  // }, {
+  //   enterprise_id: '7654321',
+  //   enterprise_name: '企業二號',
+  //   robot_list: [
+  //     {
+  //       robot_id: 'robot003',
+  //       robot_name: '機器人三號',
+  //     },
+  //     {
+  //       robot_id: 'robot004',
+  //       robot_name: '機器人四號',
+  //     },
+  //   ],
+  // }];
+  // return Promise.resolve(mockData);
 }
 
 export default {

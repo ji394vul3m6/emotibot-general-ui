@@ -225,10 +225,8 @@ export default {
       const searchParams = that.getSearchParams();
       searchParams.page = that.pageIdx;
       searchParams.limit = that.pageLimit;
-      console.log({ searchParams });
       that.$api.getEnterpriseAuditLog(searchParams).then((result) => {
         // TODO: parse Table Header and Table Data;
-        console.log(result);
         that.totalLogCount = result.total_size;
         that.tableHeader = result.table_header;
         that.tableData = result.data;
@@ -242,10 +240,9 @@ export default {
         end_time: that.end.getTimestamp(),
       };
 
-      if (that.isSystemAdmin) {
-        params.enterprise_id = that.enterpriseID;
-      } else {
-        params.enterprise_id = that.filterEnterprise;
+      params.enterprise_id = that.filterEnterprise;
+      if (that.isSystemAdmin && that.enterpriseID !== '') {
+        params.enterprise_id = [that.enterpriseID];
       }
 
       if (!that.isSystemAdmin || that.expertMode) {

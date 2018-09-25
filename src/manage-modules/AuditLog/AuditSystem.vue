@@ -199,9 +199,11 @@ export default {
       searchParams.page = that.pageIdx;
       searchParams.limit = that.pageLimit;
       console.log({ searchParams });
-      that.$api.getSystemAuditLog(searchParams).then((response) => {
-        // TODO: parse Table Header and Table Data;
-        console.log({ response });
+      that.$api.getSystemAuditLog(searchParams).then((result) => {
+        that.totalLogCount = result.total_size;
+        that.tableHeader = result.table_header;
+        that.tableData = result.data;
+        that.showTable = true;
       });
     },
     getSearchParams() {

@@ -323,10 +323,7 @@ export default {
       const searchParams = that.getSearchParams();
       searchParams.page = that.pageIdx;
       searchParams.limit = that.pageLimit;
-      console.log({ searchParams });
       that.$api.getRobotAuditLog(searchParams).then((result) => {
-        // TODO: parse Table Header and Table Data;
-        console.log(result);
         that.totalLogCount = result.total_size;
         that.tableHeader = result.table_header;
         that.tableData = result.data;
@@ -345,7 +342,7 @@ export default {
         params.robot_id = that.filterRobot;
       } else {
         params.enterprsie_id = [that.filterRobot[0]];
-        params.robot_id = that.filterRobot[1];
+        params.robot_id = [that.filterRobot[1]];
       }
       if (that.expertMode) {
         that.filterUserId = that.filterUserId.trim();
@@ -395,15 +392,18 @@ export default {
         this.$api.getFullEnterpriseList().then((result) => {
           this.filterRobotOptions = result.map((res) => {
             const option = {};
-            option.text = res.enterprise_name;
-            option.value = res.enterprise_id;
-            option.options = res.robot_list.map(robot => ({
-              text: robot.robot_name,
-              value: robot.robot_id,
-            }));
+            option.text = res.name;
+            option.value = res.id;
+            if (res.robots) {
+              option.options = res.robots.map(robot => ({
+                text: robot.name,
+                value: robot.id,
+              }));
+            } else {
+              option.options = [];
+            }
             return option;
           });
-          console.log(this.enterpriseID, this.robotID);
           if (this.enterpriseID && this.enterpriseID !== '' &&
             this.robotID && this.robotID !== '') {
             this.filterRobot = [this.enterpriseID, this.robotID];
