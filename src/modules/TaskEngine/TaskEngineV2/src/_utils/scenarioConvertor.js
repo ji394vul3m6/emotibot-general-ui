@@ -368,18 +368,18 @@ export default {
     });
     return tab;
   },
-  convertUiNodesToNodes(uiNodes, setting) {
+  convertUiNodesToNodes(uiNodes, setting, globalEdges) {
     const nodes = uiNodes.map((uiNode) => {
       const newUiNode = JSON.parse(JSON.stringify(uiNode));
-      return this.convertUiNodeToNode(newUiNode, setting);
+      return this.convertUiNodeToNode(newUiNode, setting, globalEdges);
     });
     const exitNode = scenarioInitializer.initialExitNode();
     return [exitNode].concat(nodes);
   },
   // convert uiNode to node
-  convertUiNodeToNode(uiNode, setting) {
+  convertUiNodeToNode(uiNode, setting, globalEdges) {
     // console.log(uiNode);
-    const edges = this.convertUiNodeToEdges(uiNode, setting);
+    const edges = this.convertUiNodeToEdges(uiNode, setting, globalEdges);
     const globalVars = this.getGlobalVars(edges);
     const node = {
       node_id: uiNode.nodeId,
@@ -532,14 +532,18 @@ export default {
     };
   },
   // convert tab data to edges
-  convertUiNodeToEdges(uiNode, setting) {
+  convertUiNodeToEdges(uiNode, setting, initialGlobalEdges) {
+    const globalEdges = this.addResetDialogueCntAndParseFailedAction(initialGlobalEdges);
+    console.log(globalEdges);
     let edges = [];
     if (uiNode.nodeType === 'entry') {
       const hiddenEdges = this.composeEntryNodeHiddenEdges(uiNode, setting);
+      const normalEdges = this.addResetDialogueCntAndParseFailedAction(uiNode.edgeTab.normalEdges);
       const elseInto = this.edgeElseInto(uiNode.nodeId, uiNode.edgeTab.elseInto);
       edges = [
         ...hiddenEdges,
-        ...this.addResetDialogueCntAndParseFailedAction(uiNode.edgeTab.normalEdges),
+        ...normalEdges,
+        ...globalEdges,
         elseInto,
       ];
     } else if (uiNode.nodeType === 'dialogue') {
@@ -547,19 +551,23 @@ export default {
       const hiddenSetCntLimit = this.edgeHiddenSetNodeDialogueCntLimit(
         uiNode.edgeTab.dialogueLimit,
       );
+      const normalEdges = this.addResetDialogueCntAndParseFailedAction(uiNode.edgeTab.normalEdges);
       const exceedThenGoto = this.edgeExceedThenGoTo(uiNode.edgeTab.exceedThenGoto);
       const elseInto = this.edgeElseInto(uiNode.nodeId, uiNode.edgeTab.elseInto);
       edges = [
         hiddenSetCntLimit,
         ...hiddenEdges,
-        ...this.addResetDialogueCntAndParseFailedAction(uiNode.edgeTab.normalEdges),
+        ...normalEdges,
+        ...globalEdges,
         exceedThenGoto,
         elseInto,
       ];
     } else if (uiNode.nodeType === 'nlu_pc') {
       const elseInto = this.edgeElseInto(uiNode.nodeId, uiNode.edgeTab.elseInto);
+      const normalEdges = this.addResetDialogueCntAndParseFailedAction(uiNode.edgeTab.normalEdges);
       edges = [
-        ...this.addResetDialogueCntAndParseFailedAction(uiNode.edgeTab.normalEdges),
+        ...normalEdges,
+        ...globalEdges,
         elseInto,
       ];
     } else if (uiNode.nodeType === 'restful') {
@@ -572,22 +580,25 @@ export default {
       const hiddenSetCntLimit = this.edgeHiddenSetNodeDialogueCntLimit(
         tab.dialogueLimit,
       );
+      const normalEdges = this.addResetDialogueCntAndParseFailedAction(tab.normalEdges);
       edges = [
         hiddenSetCntLimit,
-        ...this.addResetDialogueCntAndParseFailedAction(tab.normalEdges),
+        ...normalEdges,
       ];
     }
     return edges;
   },
-  addResetDialogueCntAndParseFailedAction(normalEdges) {
-    return normalEdges.map((normalEdge) => {
-      if (normalEdge.to_node_id !== null) {
-        normalEdge.actions = [
+  addResetDialogueCntAndParseFailedAction(edges) {
+    return edges.map((edge) => {
+      if (edge.to_node_id !== null) {
+        edge.actions = [
           this.actionSetParseFailed(false),
           this.actionSetNodeDialogueCnt(0),
         ];
+      } else {
+        edge.actions = [];
       }
-      return normalEdge;
+      return edge;
     });
   },
   composeEntryNodeHiddenEdges(uiNode, setting) {

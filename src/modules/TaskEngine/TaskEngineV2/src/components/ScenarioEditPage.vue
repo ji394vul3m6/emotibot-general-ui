@@ -431,8 +431,12 @@ export default {
     },
     saveScenario() {
       const uiNodes = this.nodeBlocks.map(nodeBlock => nodeBlock.data);
-      const nodes = scenarioConvertor.convertUiNodesToNodes(uiNodes, this.setting);
-      this.globalEdges = scenarioConvertor.appendActionToGlobalEdges(this.globalEdges);
+      const nodes = scenarioConvertor.convertUiNodesToNodes(
+        uiNodes,
+        this.setting,
+        this.globalEdges,
+      );
+      // this.globalEdges = scenarioConvertor.appendActionToGlobalEdges(this.globalEdges);
       const nodeInfo = scenarioConvertor.traverseEdges(nodes, this.globalEdges);
       scenarioConvertor.generateWarnings(uiNodes, nodeInfo);
       // scenarioConvertor.addBackContentTextArray(this, nodes, this.globalEdges);
@@ -954,7 +958,7 @@ export default {
     display: flex;
     flex-direction: column;
     position: absolute;
-    right: 10px;
+    right: 20px;
     top: 100px;
     // z-index: 100;
     width: 420px;
@@ -962,9 +966,9 @@ export default {
     max-height: calc(100% - 8px);
     background: white;
     border: 1px solid $color-borderline;
-    border-radius: 5px;
+    border-radius: 4px;
     padding: 24px;
-    margin-right: 8px;
+    // margin-right: 8px;
     @include auto-overflow();
     @include customScrollbar();
     .node-option-nav-bar{
