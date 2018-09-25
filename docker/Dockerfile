@@ -8,8 +8,8 @@ ADD src build/src
 ADD .babelrc .postcssrc.js .eslintrc.js .eslintignore login.html index.html version.html package.json build/
 RUN cd build && npm install --production && npm run build
 
-FROM docker-reg.emotibot.com.cn:55688/token-auth:20180920-849003f AS authentication
-FROM docker-reg.emotibot.com.cn:55688/admin-api:2619471_20180925-1020 AS api-server
+FROM docker-reg.emotibot.com.cn:55688/token-auth:20180925-96b0618 AS authentication
+FROM docker-reg.emotibot.com.cn:55688/admin-api:e78b917_20180925-1435 AS api-server
 
 FROM nginx:1.13-alpine
 RUN echo http://mirrors.ustc.edu.cn/alpine/v3.7/main > /etc/apk/repositories; \

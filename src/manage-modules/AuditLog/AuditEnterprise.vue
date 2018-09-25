@@ -131,6 +131,7 @@ import NavBar from '@/components/NavigationBar';
 import datepickerMixin from './_mixin/datepicker';
 import EnterpriseModuleMap from './_mixin/EnterpriseModuleMap';
 import operationType from './_mixin/operationType';
+import dataModify from './_mixin/dataModify';
 import UserType from './_data/UserType';
 import api from './_api/audit';
 
@@ -145,7 +146,7 @@ export default {
     DatetimePicker,
   },
   api,
-  mixins: [datepickerMixin, EnterpriseModuleMap, operationType],
+  mixins: [datepickerMixin, EnterpriseModuleMap, operationType, dataModify],
   data() {
     return {
       userType: undefined,
@@ -226,7 +227,7 @@ export default {
       searchParams.page = that.pageIdx;
       searchParams.limit = that.pageLimit;
       that.$api.getEnterpriseAuditLog(searchParams).then((result) => {
-        // TODO: parse Table Header and Table Data;
+        that.rowDataModify(result.data);
         that.totalLogCount = result.total_size;
         that.tableHeader = result.table_header;
         that.tableData = result.data;

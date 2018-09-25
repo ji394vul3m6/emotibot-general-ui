@@ -144,6 +144,7 @@ import miscUtil from '@/utils/js/misc';
 import datepickerMixin from './_mixin/datepicker';
 import RobotModuleMap from './_mixin/RobotModuleMap';
 import operationType from './_mixin/operationType';
+import dataModify from './_mixin/dataModify';
 import UserType from './_data/UserType';
 import api from './_api/audit';
 
@@ -158,7 +159,7 @@ export default {
     DatetimePicker,
   },
   api,
-  mixins: [datepickerMixin, RobotModuleMap, operationType],
+  mixins: [datepickerMixin, RobotModuleMap, operationType, dataModify],
   data() {
     return {
       userType: undefined,
@@ -169,73 +170,8 @@ export default {
 
       expertMode: false,
 
-      filterRobot: [
-        // 'hello', 'hello-1',
-      ],
-      filterRobotOptions: [
-        // {
-        //   text: '第一層沒選項',
-        //   value: 'first-no-data',
-        // },
-        // {
-        //   text: '第一層',
-        //   value: 'first-layer',
-        //   options: [{
-        //     text: '第二層',
-        //     value: 'second-layer',
-        //   }, {
-        //     text: '第二層很長很長很長很長很長很長很長很長很長',
-        //     value: 'seconde-layer-longer',
-        //   }],
-        // },
-        // {
-        //   text: '第一層很長很長很長很長很長很長很長很長很長',
-        //   value: 'first-layer-longer',
-        //   options: [{
-        //     text: '第二層-2',
-        //     value: 'second-layer-2',
-        //   }, {
-        //     text: '第二層-2很長很長很長很長很長很長很長很長很長',
-        //     value: 'seconde-layer-longer2',
-        //   }],
-        // },
-        // {
-        //   text: '哈囉你好嗎',
-        //   value: 'hello',
-        //   options: [{
-        //     text: '哈囉第一個',
-        //     value: 'hello-1',
-        //   }, {
-        //     text: '哈囉第二個',
-        //     value: 'hello-2',
-        //   }, {
-        //     text: '哈囉第三個',
-        //     value: 'hello-3',
-        //   }, {
-        //     text: '哈囉第四個',
-        //     value: 'hello-4',
-        //   }, {
-        //     text: '哈囉第五個很長很長很長很長很長',
-        //     value: 'hello-5',
-        //   }],
-        // },
-        // {
-        //   text: '再來一組',
-        //   value: 'onemore',
-        //   options: [{
-        //     text: '更多',
-        //     value: 'more more',
-        //   }],
-        // },
-        // {
-        //   text: '超過scrollbar!!',
-        //   value: 'scroll!',
-        //   options: [{
-        //     text: 'Scrolled?',
-        //     value: 'scrolled',
-        //   }],
-        // },
-      ],
+      filterRobot: [],
+      filterRobotOptions: [],
       filterUserId: '',
       filterModule: [],
       filterModuleOptions: [],
@@ -289,7 +225,6 @@ export default {
   },
   methods: {
     goBack() {
-      console.log(this.$router);
       this.$router.back(); // history forward 1 page
     },
     handlePageSizeChange(pageSize) {
@@ -324,6 +259,7 @@ export default {
       searchParams.page = that.pageIdx;
       searchParams.limit = that.pageLimit;
       that.$api.getRobotAuditLog(searchParams).then((result) => {
+        that.rowDataModify(result.data);
         that.totalLogCount = result.total_size;
         that.tableHeader = result.table_header;
         that.tableData = result.data;

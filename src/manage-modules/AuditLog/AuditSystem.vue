@@ -115,6 +115,7 @@ import NavBar from '@/components/NavigationBar';
 import datepickerMixin from './_mixin/datepicker';
 import SystemModuleMap from './_mixin/SystemModuleMap';
 import operationType from './_mixin/operationType';
+import dataModify from './_mixin/dataModify';
 import api from './_api/audit';
 
 const auditEnterprisePage = '/manage/audit-enterprise';
@@ -128,7 +129,7 @@ export default {
     DatetimePicker,
   },
   api,
-  mixins: [datepickerMixin, SystemModuleMap, operationType],
+  mixins: [datepickerMixin, SystemModuleMap, operationType, dataModify],
   data() {
     return {
       currentPage: 'auditSystem',
@@ -200,6 +201,7 @@ export default {
       searchParams.limit = that.pageLimit;
       console.log({ searchParams });
       that.$api.getSystemAuditLog(searchParams).then((result) => {
+        that.rowDataModify(result.data);
         that.totalLogCount = result.total_size;
         that.tableHeader = result.table_header;
         that.tableData = result.data;
