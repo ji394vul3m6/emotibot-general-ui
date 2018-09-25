@@ -84,13 +84,7 @@ export default {
   watch: {
     triggerList() {
       this.$emit('update', this.triggerList);
-      this.intentList = [];
-      this.triggerList.forEach((trigger) => {
-        const intent = this.intentListAll.find(i => i.name === trigger.intent_name);
-        if (intent) {
-          this.intentList.push(intent);
-        }
-      });
+      this.renderIntentList();
     },
   },
   methods: {
@@ -116,6 +110,7 @@ export default {
     loadIntentOptionList() {
       this.$api.getIntentsDetail().then((intents) => {
         this.intentListAll = intents;
+        this.renderIntentList();
         this.intentOptionList = [];
         this.intentListAll.forEach((intent) => {
           const intentName = intent.name;
@@ -154,6 +149,15 @@ export default {
     },
     rerender() {
       this.triggerList = JSON.parse(JSON.stringify(this.initialTriggerList));
+    },
+    renderIntentList() {
+      this.intentList = [];
+      this.triggerList.forEach((trigger) => {
+        const intent = this.intentListAll.find(i => i.name === trigger.intent_name);
+        if (intent) {
+          this.intentList.push(intent);
+        }
+      });
     },
   },
   beforeMount() {
