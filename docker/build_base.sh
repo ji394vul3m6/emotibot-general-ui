@@ -2,7 +2,7 @@
 REPO=docker-reg.emotibot.com.cn:55688
 CONTAINER=general-node-base
 DATE=`date +%Y%m%d`
-GIT_HEAD="$(git rev-parse --short HEAD)"
+GIT_HEAD="$(git rev-parse --short=7 HEAD)"
 TAG="$DATE-$GIT_HEAD"
 
 DOCKER_IMAGE=$REPO/$CONTAINER:$TAG
