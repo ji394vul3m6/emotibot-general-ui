@@ -73,6 +73,11 @@ http {
             set $enterprise_id $http_x_enterprise;
         }
 
+        set $stat_server_url "${ADMIN_STAT_SERVER_URL}";
+        set $elk_stat_server_url "${ADMIN_ELK_STAT_SERVER_URL}";
+        set $im_server_url "${ADMIN_IM_SERVER_URL}";
+        set $bf_server_url "${ADMIN_BF_SERVER_URL}";
+
         listen 80;
         #listen [::]:80;
         proxy_set_header X-AppID $appid;
@@ -90,11 +95,11 @@ http {
         }
         
         location = /stats/record {
-            proxy_pass http://${ADMIN_STAT_SERVER_URL};
+            proxy_pass http://$stat_server_url;
         }
         
         location /stats {
-            proxy_pass http://${ADMIN_ELK_STAT_SERVER_URL};
+            proxy_pass http://$elk_stat_server_url;
         }
 
         # ========== legacy houta ==========
@@ -206,80 +211,80 @@ http {
             return 301 /login.html;
         }
         location = /BF_login {
-            proxy_pass http://${ADMIN_BF_SERVER_URL}/login;
+            proxy_pass http://$bf_server_url/login;
         }
         location /BF/scenario {
             root   /build/dist;
             index  index.html index.htm;
         }
         location /BF {
-            proxy_pass http://${ADMIN_BF_SERVER_URL};
+            proxy_pass http://$bf_server_url;
         }
         location /ai {
-            proxy_pass http://${ADMIN_BF_SERVER_URL};
+            proxy_pass http://$bf_server_url;
         }
         location /dal {
-            proxy_pass http://${ADMIN_BF_SERVER_URL};
+            proxy_pass http://$bf_server_url;
         }
         location /eqlq {
-            proxy_pass http://${ADMIN_BF_SERVER_URL};
+            proxy_pass http://$bf_server_url;
         }
         location /export {
-            proxy_pass http://${ADMIN_BF_SERVER_URL};
+            proxy_pass http://$bf_server_url;
         }
         location /ml_test {
-            proxy_pass http://${ADMIN_BF_SERVER_URL};
+            proxy_pass http://$bf_server_url;
         }
         location /sherlock {
-            proxy_pass http://${ADMIN_BF_SERVER_URL};
+            proxy_pass http://$bf_server_url;
         }
         location /sq {
-            proxy_pass http://${ADMIN_BF_SERVER_URL};
+            proxy_pass http://$bf_server_url;
         }
         location /tag {
-            proxy_pass http://${ADMIN_BF_SERVER_URL};
+            proxy_pass http://$bf_server_url;
         }
         location /upload {
-            proxy_pass http://${ADMIN_BF_SERVER_URL};
+            proxy_pass http://$bf_server_url;
         }
         location /ent_config_version {
-            proxy_pass http://${ADMIN_BF_SERVER_URL};
+            proxy_pass http://$bf_server_url;
         }
         location /frontend_visible {
-            proxy_pass http://${ADMIN_BF_SERVER_URL};
+            proxy_pass http://$bf_server_url;
         }
         location /config {
-            proxy_pass http://${ADMIN_BF_SERVER_URL};
+            proxy_pass http://$bf_server_url;
         }
         location /robots {
-            proxy_pass http://${ADMIN_BF_SERVER_URL};
+            proxy_pass http://$bf_server_url;
         }
         location = /version {
-            proxy_pass http://${ADMIN_BF_SERVER_URL};
+            proxy_pass http://$bf_server_url;
         }
         location /chatlog {
-            proxy_pass http://${ADMIN_BF_SERVER_URL};
+            proxy_pass http://$bf_server_url;
         }
         location /solution_stage_status {
-            proxy_pass http://${ADMIN_BF_SERVER_URL};
+            proxy_pass http://$bf_server_url;
         }
         location /robot {
-            proxy_pass http://${ADMIN_BF_SERVER_URL};
+            proxy_pass http://$bf_server_url;
         }
         location /sentenceAccociation {
-            proxy_pass http://${ADMIN_BF_SERVER_URL};
+            proxy_pass http://$bf_server_url;
         }
         location /dimension {
-            proxy_pass http://${ADMIN_BF_SERVER_URL};
+            proxy_pass http://$bf_server_url;
         }
         location /task_engine {
-            proxy_pass http://${ADMIN_BF_SERVER_URL};
+            proxy_pass http://$bf_server_url;
         }
         location /Files/ssm {
-            proxy_pass http://${ADMIN_BF_SERVER_URL};
+            proxy_pass http://$bf_server_url;
         }
         location /im-admin {
-            proxy_pass http://${ADMIN_IM_SERVER_URL};
+            proxy_pass http://$im_server_url;
         }
 
         # golang /api/v1
