@@ -656,11 +656,6 @@ export default {
       const that = this;
       taskEngineApi.publishScenario(this.appId, this.scenarioId).then(() => {
         that.$notify({ text: that.$t('task_engine_v2.scenario_list_page.publish_succeed') });
-        // enable scenario after published
-        taskEngineApi.switchScenario(this.appId, this.scenarioId, true).then(() => {
-        }, (err) => {
-          this.$notifyFail(`enable scenario error:${err.message}`);
-        });
       }, (err) => {
         that.$notifyFail(`${that.$t('task_engine_v2.scenario_list_page.publish_failed')}:${err.message}`);
       });
