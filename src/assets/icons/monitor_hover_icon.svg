@@ -1,14 +1,23 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="18" height="18" viewBox="0 0 18 18">
-    <defs>
-        <path id="a" d="M9 15C5.897 15 3.153 13.135.77 9.404a.75.75 0 0 1 0-.808C3.153 4.866 5.897 3 9 3c3.103 0 5.847 1.865 8.23 5.596a.75.75 0 0 1 0 .808C14.847 13.134 12.103 15 9 15zm0-3a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0-2.25a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5z"/>
-    </defs>
-    <g fill="none" fill-rule="evenodd">
-        <g>
-            <mask id="b" fill="#fff">
-                <use xlink:href="#a"/>
-            </mask>
-            <g fill="#1875F0" mask="url(#b)">
-                <rect width="18" height="18" rx="4"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="18px" height="12px" viewBox="0 0 18 12" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 50.2 (55047) - http://www.bohemiancoding.com/sketch -->
+    <title>监控-on</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="part1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="1_5任务列表" transform="translate(-1124.000000, -473.000000)">
+            <g id="Group-20-+-语料不足-Mask" transform="translate(20.000000, 134.000000)">
+                <g id="Group" transform="translate(0.000000, 280.000000)">
+                    <g id="Group-4" transform="translate(1084.000000, 38.000000)">
+                        <g id="Group-3" transform="translate(20.000000, 20.000000)">
+                            <g id="监控-on" transform="translate(0.000000, 1.000000)">
+                                <path d="M9,12 C12.1030868,12 14.8465162,10.1346181 17.2302882,6.40385423 L17.2303197,6.40387439 C17.3876544,6.15763512 17.3876548,5.84243658 17.2303208,5.59619688 C14.8465412,1.86539896 12.1031009,0 9,0 C5.89691323,2.80830405e-16 3.15348384,1.86538192 0.76971183,5.59614577 L0.769680264,5.59612561 C0.612345649,5.84236488 0.612345224,6.15756342 0.769679175,6.40380312 C3.15345879,10.134601 5.89689906,12 9,12 Z" id="Oval-6" fill="#3389EE"></path>
+                                <circle id="Oval-7" fill="#FFFFFF" cx="9" cy="6" r="3"></circle>
+                                <circle id="Oval-8" fill="#3389EE" cx="9" cy="6" r="1"></circle>
+                            </g>
+                        </g>
+                    </g>
+                </g>
             </g>
         </g>
     </g>

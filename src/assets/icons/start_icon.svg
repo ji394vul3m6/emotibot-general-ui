@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="11px" height="14px" viewBox="0 0 11 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 50.2 (55047) - http://www.bohemiancoding.com/sketch -->
+    <title>启动off</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="part1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="1_5任务列表" transform="translate(-1128.000000, -642.000000)" fill="#BABABA">
+            <g id="Group-20-+-语料不足-Mask" transform="translate(20.000000, 134.000000)">
+                <g id="Group" transform="translate(0.000000, 280.000000)">
+                    <g id="Group-4" transform="translate(1084.000000, 38.000000)">
+                        <g id="Group-3" transform="translate(24.000000, 190.000000)">
+                            <path d="M10.5737329,8.09592869 L1.5186672,13.5891407 C1.04647687,13.8755926 0.431475766,13.725022 0.145023781,13.2528316 C0.0501604971,13.096458 2.44443171e-16,12.9170626 2.22044605e-16,12.7341644 L2.22044605e-16,1.74774051 C1.5440923e-16,1.19545576 0.44771525,0.747740512 1,0.747740512 C1.18289817,0.747740512 1.36229361,0.797901009 1.5186672,0.892764293 L10.5737329,6.38597625 C11.0459233,6.67242824 11.1964939,7.28742935 10.910042,7.75961967 C10.8266171,7.89713807 10.7112513,8.01250382 10.5737329,8.09592869 Z" id="启动off"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

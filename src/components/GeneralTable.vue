@@ -23,7 +23,7 @@
           <td v-if="hasAction" class="table-col-action" :class="{'multi-action': action.length > 1}">
             {{ $t('general.actions') }}
           </td>
-          <td v-if="$scopedSlots.menu" class="fixed menu"></td>
+          <td v-if="$scopedSlots.menu" class="fixed menu">{{moreText}}</td>
         </tr>
       </thead>
     </table>
@@ -46,7 +46,7 @@
     <div v-else class="general-table-body" @scroll.passive="hideMenu">
     <table class="general-table" :class="[autoHeight ? 'auto-height' : '', fontClass]" v-if="tableData && tableData.length > 0">
       <tbody :class="[onclickRow ? 'clickable-row' : '']">
-        <tr v-for="(data, idx) in tableData" :key="idx" :class="{'highlight': data.highlight}">
+        <tr v-for="(data, idx) in tableData" :key="idx" :class="{'highlight': data.highlight}" @mouseenter="hoverRowIndex = idx" @mouseleave="hoverRowIndex = indexOfShowMenu = -1">
           <td v-if="checkbox" class="table-col-checkbox">
             <input type="checkbox" @click="checkSelf(data, idx)" :checked="data.isChecked">
           </td>
@@ -85,9 +85,9 @@
           </td>
           <template v-if="$scopedSlots.menu">
             <td class="fixed menu">
-              <icon iconType="more" enableHover :size=15 @click="moreClick(idx, data, $event)" style="position: initial"></icon>
+              <icon v-show="hoverRowIndex === idx" iconType="more" enableHover :size=15 @click="moreClick(idx, data, $event)" style="position: initial"></icon>
             </td>
-            <td v-if="idx === indexOfShowMenu" class="menu-container" :style="menuStyle"><slot name="menu" :rowData="data" :rowIndex="idx"></slot></td>
+            <td v-if="idx === indexOfShowMenu && hoverRowIndex === idx" class="menu-container" :style="menuStyle"><slot name="menu" :rowData="data" :rowIndex="idx"></slot></td>
           </template>
         </tr>
       </tbody>
@@ -168,6 +168,10 @@ export default {
       required: false,
       default: false,
     },
+    moreText: {
+      type: String,
+      default: '',
+    },
   },
   data() {
     return {
@@ -179,6 +183,7 @@ export default {
       menuStyle: {
       },
       indexOfShowMenu: -1,
+      hoverRowIndex: -1,
     };
   },
   computed: {
@@ -263,12 +268,12 @@ export default {
     moreClick(index, rowData, e) {
       this.$emit('moreClick', { rowIndex: index, rowData });
       const rect = e.target.getBoundingClientRect();
-      const top = document.documentElement.scrollTop + rect.top;
+      const top = document.documentElement.scrollTop + rect.top + rect.height;
       const windowWidth = window.innerWidth || document.body.clientWidth;
       this.indexOfShowMenu = index;
       this.menuStyle = {
         top: `${top}px`,
-        right: `${windowWidth - rect.right - (rect.width / 2)}px`,
+        right: `${(windowWidth - rect.right) + (rect.width / 2)}px`,
       };
     },
     hideMenu() {
@@ -324,13 +329,14 @@ $table-row-height: 50px;
     }
   }
   .menu {
-    width: 50px;
+    min-width: 50px;
     flex: none;
     display: flex;
     align-items: center;
     justify-content: center;
   }
   .menu-container {
+    padding: 0;
     position: fixed;
   }
   .general-table-body {
