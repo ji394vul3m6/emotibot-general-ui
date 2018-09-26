@@ -596,6 +596,7 @@ export default {
         title: '',
         component: ScenarioSettingsEditPop,
         validate: true,
+        cancelValidate: true,
         extData: {
           setting: this.setting,
         },

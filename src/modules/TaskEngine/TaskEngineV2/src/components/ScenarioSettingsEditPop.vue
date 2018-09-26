@@ -26,6 +26,7 @@
 </template>
 
 <script>
+import general from '@/modules/TaskEngine/_utils/general';
 
 export default {
   name: 'scenario-settings-edit-pop',
@@ -38,31 +39,62 @@ export default {
   },
   data() {
     return {
+      originalSettingStr: '',
       scenarioName: '',
       scenarioDialogueCntLimit: 0,
       nodeDialogueCntLimit: 0,
     };
   },
-  computed: {},
+  computed: {
+    setting() {
+      return {
+        scenarioName: this.scenarioName,
+        scenarioDialogueCntLimit: parseInt(this.scenarioDialogueCntLimit, 10) || null,
+        nodeDialogueCntLimit: parseInt(this.nodeDialogueCntLimit, 10) || null,
+      };
+    },
+  },
   watch: {},
   methods: {
     renderData() {
+      this.originalSettingStr = JSON.stringify(this.extData.setting, general.JSONStringifyReplacer);
       const setting = JSON.parse(JSON.stringify(this.extData.setting));
       this.scenarioName = setting.scenarioName;
       this.scenarioDialogueCntLimit = setting.scenarioDialogueCntLimit;
       this.nodeDialogueCntLimit = setting.nodeDialogueCntLimit;
     },
     validate() {
-      const setting = {
-        scenarioName: this.scenarioName,
-        scenarioDialogueCntLimit: parseInt(this.scenarioDialogueCntLimit, 10) || null,
-        nodeDialogueCntLimit: parseInt(this.nodeDialogueCntLimit, 10) || null,
-      };
-      // console.log(setting);
       this.$emit(
         'validateSuccess',
-        setting,
+        this.setting,
       );
+    },
+    cancelValidate() {
+      const newSettingStr = JSON.stringify(this.setting, general.JSONStringifyReplacer);
+      // console.log(`New Str: ${newSettingStr}`);
+      // console.log(`Old Str: ${this.originalSettingStr}`);
+      if (newSettingStr === this.originalSettingStr) {
+        this.$emit('cancelValidateSuccess');
+      } else {
+        const that = this;
+        that.$popCheck({
+          bindValue: true,
+          data: {
+            msg: that.$t('task_engine_v2.scenario_settings_edit_pop.confirm_to_save_changes'),
+          },
+          callback: {
+            ok() {
+              that.$emit(
+                'validateSuccess',
+                that.setting,
+              );
+            },
+            cancel() {
+              that.$emit('cancelValidateSuccess');
+            },
+          },
+        });
+      }
     },
   },
   beforeMount() {
@@ -70,6 +102,7 @@ export default {
   },
   mounted() {
     this.$on('validate', this.validate);
+    this.$on('cancelValidate', this.cancelValidate);
   },
 };
 </script>

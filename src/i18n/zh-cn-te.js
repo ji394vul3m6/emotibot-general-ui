@@ -69,6 +69,7 @@ export default {
       scenario_name: '场景名称',
       scenario_dialogue_cnt_limit: '全场景对话数',
       default_node_dialogue_cnt_limit: '预设节点对话数',
+      confirm_to_save_changes: '场景基本设置已被更动，请问是否需要保存？',
     },
     var_template_edit_pop: {
       instruction: '为每个变量设定显示模版',
