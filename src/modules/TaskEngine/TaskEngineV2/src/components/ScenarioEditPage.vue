@@ -958,7 +958,7 @@ export default {
     // z-index: 100;
     width: 420px;
     // height: calc(100% - 8px);
-    max-height: calc(100% - 8px);
+    max-height: calc(100% - 100px);
     background: white;
     border: 1px solid $color-borderline;
     border-radius: 4px;
