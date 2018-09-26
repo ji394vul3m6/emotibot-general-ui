@@ -1042,7 +1042,7 @@ export default {
     position: absolute;
     left: 20px;
     top: 20px;
-    min-width: 1090px;
+    min-width: 539px;
     width: calc(100% - 40px);
     height: 60px;
     background: white;
@@ -1051,25 +1051,30 @@ export default {
     padding: 0px 20px;
     .breadcrumb{
       @include font-16px();
+      flex: 1 0 136px;
       display: flex;
+      min-width: 0;
       flex-direction: row;
       align-items: center;
+      .back-to-list{
+        flex: 0 0 64px;
+        cursor: pointer;
+      }
       .scenario-name{
-        max-width: 700px;
+        flex: 0 1 auto;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
       }
-      div{
-        margin-right: 10px;
+      .scenario-name-edit{
+        flex: 1 0 22px;
       }
-      .back-to-list{
-        cursor: pointer;
-        width: 64px;
+      div{
         margin-right: 10px;
       }
     }
     .header-buttons {
+      flex: 0 0 363px;
       display: flex;
       flex-direction: row;
       align-items: center;

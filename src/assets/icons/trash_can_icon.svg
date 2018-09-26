@@ -1,75 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="18px" height="18px" viewBox="0 0 18 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <!-- Generator: Sketch 50.2 (55047) - http://www.bohemiancoding.com/sketch -->
-    <title>Custom Preset Copy 2</title>
+    <title>delete</title>
     <desc>Created with Sketch.</desc>
-    <defs>
-        <path d="M4,0 L1086,0 C1088.20914,-4.05812251e-16 1090,1.790861 1090,4 L1090,766 C1090,768.209139 1088.20914,770 1086,770 L4,770 C1.790861,770 2.705415e-16,768.209139 0,766 L0,4 C-2.705415e-16,1.790861 1.790861,4.05812251e-16 4,0 Z" id="path-1"></path>
-        <filter x="-0.7%" y="-1.0%" width="101.4%" height="101.9%" filterUnits="objectBoundingBox" id="filter-2">
-            <feOffset dx="0" dy="0" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
-            <feGaussianBlur stdDeviation="2.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
-            <feColorMatrix values="0 0 0 0 0.4   0 0 0 0 0.4   0 0 0 0 0.4  0 0 0 0.08 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
-        </filter>
-        <rect id="path-3" x="0" y="0" width="360" height="112"></rect>
-        <filter x="-6.7%" y="-13.4%" width="113.3%" height="142.9%" filterUnits="objectBoundingBox" id="filter-4">
-            <feMorphology radius="0.5" operator="dilate" in="SourceAlpha" result="shadowSpreadOuter1"></feMorphology>
-            <feOffset dx="0" dy="4" in="shadowSpreadOuter1" result="shadowOffsetOuter1"></feOffset>
-            <feGaussianBlur stdDeviation="4.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
-            <feComposite in="shadowBlurOuter1" in2="SourceAlpha" operator="out" result="shadowBlurOuter1"></feComposite>
-            <feColorMatrix values="0 0 0 0 0.451318027   0 0 0 0 0.451318027   0 0 0 0 0.451318027  0 0 0 0.2 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
-            <feMorphology radius="0.5" operator="dilate" in="SourceAlpha" result="shadowSpreadOuter2"></feMorphology>
-            <feOffset dx="0" dy="5" in="shadowSpreadOuter2" result="shadowOffsetOuter2"></feOffset>
-            <feGaussianBlur stdDeviation="4" in="shadowOffsetOuter2" result="shadowBlurOuter2"></feGaussianBlur>
-            <feComposite in="shadowBlurOuter2" in2="SourceAlpha" operator="out" result="shadowBlurOuter2"></feComposite>
-            <feColorMatrix values="0 0 0 0 0.895089286   0 0 0 0 0.895089286   0 0 0 0 0.895089286  0 0 0 0.5 0" type="matrix" in="shadowBlurOuter2" result="shadowMatrixOuter2"></feColorMatrix>
-            <feMerge>
-                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
-                <feMergeNode in="shadowMatrixOuter2"></feMergeNode>
-            </feMerge>
-        </filter>
-        <rect id="path-5" x="0" y="0" width="72" height="28" rx="2"></rect>
-    </defs>
-    <g id="場景列表2.0" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Custom-Preset" transform="translate(-463.000000, -265.000000)">
-            <g id="Group-2">
-                <g id="06-page/All-Bg" fill="#EEEEEE">
-                    <rect id="Rectangle-3" x="0" y="0" width="1280" height="860"></rect>
-                </g>
-                <g id="06-page/All-CardBg" transform="translate(170.000000, 70.000000)">
-                    <g id="page-Bg">
-                        <use fill="black" fill-opacity="1" filter="url(#filter-2)" xlink:href="#path-1"></use>
-                        <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-1"></use>
-                    </g>
-                </g>
-            </g>
-            <g id="Group" transform="translate(190.000000, 196.000000)">
-                <g id="Rectangle">
-                    <use fill="black" fill-opacity="1" filter="url(#filter-4)" xlink:href="#path-3"></use>
-                    <use stroke="#DBDBDB" stroke-width="1" fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-3"></use>
-                </g>
-                <g id="Group-3" transform="translate(20.000000, 64.000000)">
-                    <g id="00-Button/4-Icon" transform="translate(246.000000, 0.000000)">
-                        <mask id="mask-6" fill="white">
-                            <use xlink:href="#path-5"></use>
-                        </mask>
-                        <g id="Mask"></g>
-                        <g id="13-Palette/General/white" mask="url(#mask-6)" fill="#FFFFFF" fill-rule="evenodd">
-                            <rect id="white" x="0" y="0" width="72" height="28" rx="4"></rect>
-                        </g>
-                        <g id="13-Palette/Border/Normal" mask="url(#mask-6)" stroke="#DBDBDB" stroke-width="1">
-                            <rect id="Fill/Disable" x="0.5" y="0.5" width="71" height="27" rx="2"></rect>
-                        </g>
-                        <g id="09-Font/12/Normal-left" mask="url(#mask-6)" font-family="PingFangSC-Regular, PingFang SC" font-size="12" font-weight="normal" line-spacing="28">
-                            <g transform="translate(35.000000, 0.000000)" id="Font-Content">
-                                <text>
-                                    <tspan x="0" y="13" fill="#666666">刪除</tspan>
-                                </text>
-                            </g>
-                        </g>
-                    </g>
-                    <path d="M261.192308,7.15384615 L261.192308,6.57692308 L262.346154,6.57692308 L262.346154,7.15384615 L267.538462,7.15384615 L267.538462,8.30769231 L256,8.30769231 L256,7.15384615 L261.192308,7.15384615 Z M265.807692,19.2692308 L265.807692,9.46153846 L266.961538,9.46153846 L266.961538,19.8461538 C266.961538,20.1647797 266.703241,20.4230769 266.384615,20.4230769 L257.153846,20.4230769 C256.83522,20.4230769 256.576923,20.1647797 256.576923,19.8461538 L256.576923,9.46153846 L257.730769,9.46153846 L257.730769,19.2692308 L265.807692,19.2692308 Z M264.653846,16.3846154 L263.5,16.3846154 L263.5,11.7692308 L264.653846,11.7692308 L264.653846,16.3846154 Z M262.346154,16.3846154 L261.192308,16.3846154 L261.192308,11.7692308 L262.346154,11.7692308 L262.346154,16.3846154 Z M260.038462,16.3846154 L258.884615,16.3846154 L258.884615,11.7692308 L260.038462,11.7692308 L260.038462,16.3846154 Z" id="Combined-Shape" fill="#888888" fill-rule="nonzero"></path>
-                </g>
-            </g>
-        </g>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <path d="M8.423077,2.65384616 L8.423077,2.07692309 L9.576923,2.07692309 L9.576923,2.65384616 L14.769231,2.65384616 L14.769231,3.80769232 L3.230769,3.80769232 L3.230769,2.65384616 L8.423077,2.65384616 Z M13.038461,14.7692308 L13.038461,4.96153847 L14.192307,4.96153847 L14.192307,15.3461538 C14.192307,15.6647797 13.93401,15.9230769 13.615384,15.9230769 L4.384615,15.9230769 C4.065989,15.9230769 3.807692,15.6647797 3.807692,15.3461538 L3.807692,4.96153847 L4.961538,4.96153847 L4.961538,14.7692308 L13.038461,14.7692308 Z M11.884615,11.8846154 L10.730769,11.8846154 L10.730769,7.26923081 L11.884615,7.26923081 L11.884615,11.8846154 Z M9.576923,11.8846154 L8.423077,11.8846154 L8.423077,7.26923081 L9.576923,7.26923081 L9.576923,11.8846154 Z M7.269231,11.8846154 L6.115384,11.8846154 L6.115384,7.26923081 L7.269231,7.26923081 L7.269231,11.8846154 Z" id="delete" fill="#888888" fill-rule="nonzero"></path>
     </g>
 </svg>
