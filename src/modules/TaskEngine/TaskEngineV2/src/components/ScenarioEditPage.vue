@@ -617,6 +617,7 @@ export default {
         title: '',
         component: VarTemplateEditPop,
         validate: true,
+        cancelValidate: true,
         extData: {
           varTemplates: this.varTemplates,
           globalVarOptionsMap: this.globalVarOptionsMap,
@@ -635,6 +636,7 @@ export default {
         title: '',
         component: GlobalEdgeEditPop,
         validate: true,
+        cancelValidate: true,
         extData: {
           globalEdges: this.globalEdges,
           toNodeOptions: this.toNodeOptions,

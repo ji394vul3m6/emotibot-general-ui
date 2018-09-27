@@ -51,6 +51,7 @@ export default {
   data() {
     return {
       nodeId: '',
+      originalGlobalEdgesStr: '',
       globalEdges: [],
       toNodeOptions: [],
       globalVarOptions: [],
@@ -117,6 +118,8 @@ export default {
         edge.id = this.$uuid.v1();
         return edge;
       });
+      this.originalGlobalEdgesStr =
+        JSON.stringify(this.globalEdges, general.JSONStringifyReplacer);
 
       // render toNodeOptions
       this.composeOptions(this.extData.toNodeOptions);
@@ -164,6 +167,39 @@ export default {
         { edges, newNodeOptions: this.newNodeOptions },
       );
     },
+    cancelValidate() {
+      const newGlobalEdgesStr = JSON.stringify(this.globalEdges, general.JSONStringifyReplacer);
+      // console.log(`New Str: ${newGlobalEdgesStr}`);
+      // console.log(`Old Str: ${this.originalGlobalEdgesStr}`);
+      if (newGlobalEdgesStr === this.originalGlobalEdgesStr) {
+        this.$emit('cancelValidateSuccess');
+      } else {
+        const that = this;
+        that.$popCheck({
+          bindValue: true,
+          data: {
+            msg: that.$t('task_engine_v2.global_edge_edit_pop.confirm_to_save_changes'),
+          },
+          callback: {
+            ok() {
+              const edges = that.globalEdges.map(edge => ({
+                edge_type: edge.edge_type,
+                to_node_id: edge.to_node_id,
+                condition_rules: edge.condition_rules,
+                actions: [],
+              }));
+              that.$emit(
+                'validateSuccess',
+                edges,
+              );
+            },
+            cancel() {
+              that.$emit('cancelValidateSuccess');
+            },
+          },
+        });
+      }
+    },
   },
   beforeMount() {
     this.loadMappingTableOptions();
@@ -171,6 +207,7 @@ export default {
   },
   mounted() {
     this.$on('validate', this.validate);
+    this.$on('cancelValidate', this.cancelValidate);
   },
 };
 </script>
