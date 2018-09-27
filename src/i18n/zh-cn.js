@@ -117,7 +117,7 @@ export default {
         by_search: '筛选结果',
         by_check: '列表勾选',
       },
-      result_count: '根据 {type} 共 {total} 笔用户问题，排除已忽略句子 {ignore} 笔、已标注句子 {marked} 笔',
+      result_count: '根据 {type} 共 {total} 笔用户问题，排除已忽略句子 {ignore} 笔、已标注句子 {marked} 笔、标准问题 {std} 笔',
       cluster_count: '为您生成 {num} 组分类',
       cluster_info: '「{title}」分类，已勾选 {num} 笔',
       cluster_tag: '分类名称',

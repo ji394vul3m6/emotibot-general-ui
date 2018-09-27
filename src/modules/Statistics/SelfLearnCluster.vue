@@ -21,7 +21,12 @@
           </div>
         </div>
         <div class="info-row">
-          <span>{{ $t('statistics.cluster.result_count', { type: $t('statistics.cluster.type.by_search'), total: totalCount, ignore: ingoredCount, marked: markedCount }) }}</span>
+          <span>{{ $t('statistics.cluster.result_count', {
+            type: $t('statistics.cluster.type.by_search'),
+            total: totalCount,
+            ignore: ingoredCount,
+            marked: markedCount,
+            std: stdCount}) }}</span>
         </div>
       </div>
       <div id="cluster-result">
@@ -86,6 +91,7 @@ export default {
       totalCount: 0,
       ingoredCount: 0,
       markedCount: 0,
+      stdCount: 0,
       clusterCount: 0,
       report: {},
 
@@ -309,6 +315,7 @@ export default {
       that.totalCount = that.clusterReport.results.total_size;
       that.ingoredCount = that.clusterReport.ignored_size;
       that.markedCount = that.clusterReport.marked_size;
+      that.stdCount = that.clusterReport.std_marked_size || 0;
       that.report = that.clusterReport.results;
       that.clusterCount = that.report.clusters.length;
       that.clusterGroupData = that.report.clusters.map(c => ({
