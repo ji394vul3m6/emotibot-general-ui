@@ -40,9 +40,6 @@
             <text-button button-type='default' iconType="edit_thin" width='72px' height='28px' @click="editScenario(scenario.scenarioID)">
               {{$t("task_engine_v2.scenario_list_page.edit")}}
             </text-button>
-            <text-button button-type='default' iconType="publish" width='72px' height='28px' @click="publishScenario(scenario)">
-              {{$t("task_engine_v2.scenario_list_page.publish")}}
-            </text-button>
             <text-button button-type='default' iconType="export" width='72px' height='28px' @click="exportScenario(scenario.scenarioID)">
               {{$t("general.export")}}
             </text-button>
@@ -89,7 +86,7 @@ export default {
     publishScenario(scenario) {
       const that = this;
       taskEngineApi.publishScenario(that.appId, scenario.scenarioID).then(() => {
-        that.$notify({ text: that.$t('task_engine_v2.scenario_list_page.publish_succeed') });
+        // that.$notify({ text: that.$t('task_engine_v2.scenario_list_page.publish_succeed') });
       }, (err) => {
         that.$notifyFail(`${that.$t('task_engine_v2.scenario_list_page.publish_failed')}:${err.message}`);
       });
@@ -104,8 +101,6 @@ export default {
       }, (err) => {
         general.popErrorWindow(this, 'loadScenario error', err.message);
       });
-      scenario.enable = true;
-      that.switchScenario(scenario);
     },
     exportAllScenarios() {
       taskEngineApi.exportAllScenarios(this.appId);
@@ -201,6 +196,9 @@ export default {
       });
     },
     switchScenario(scenario) {
+      if (scenario.enable) {
+        this.publishScenario(scenario);
+      }
       taskEngineApi.switchScenario(this.appId, scenario.scenarioID, scenario.enable).then(() => {
       }, (err) => {
         this.$notifyFail(`switchScenario error:${err.message}`);
@@ -348,7 +346,9 @@ $row-height: $default-line-height;
           display: flex;
           flex-direction: row;
           flex-wrap: wrap;
-          justify-content: space-between;
+          .text-button{
+            margin-right: 10px;
+          }
         }
       }
     }

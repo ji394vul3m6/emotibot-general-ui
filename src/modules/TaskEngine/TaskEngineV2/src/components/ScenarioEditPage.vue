@@ -368,6 +368,9 @@ export default {
       });
     },
     switchScenario() {
+      if (this.enable) {
+        this.publishScenario();
+      }
       taskEngineApi.switchScenario(this.appId, this.scenarioId, this.enable).then(() => {
       }, (err) => {
         general.popErrorWindow(this, 'switchScenario error', err.message);
@@ -656,7 +659,7 @@ export default {
       // publish scenario
       const that = this;
       taskEngineApi.publishScenario(this.appId, this.scenarioId).then(() => {
-        that.$notify({ text: that.$t('task_engine_v2.scenario_list_page.publish_succeed') });
+        // that.$notify({ text: that.$t('task_engine_v2.scenario_list_page.publish_succeed') });
       }, (err) => {
         that.$notifyFail(`${that.$t('task_engine_v2.scenario_list_page.publish_failed')}:${err.message}`);
       });
