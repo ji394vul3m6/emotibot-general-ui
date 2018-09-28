@@ -31,7 +31,7 @@
         </div>
       </div>
       <transition name="intent-content">
-      <template v-if="intent.expand">
+      <div v-if="intent.expand">
         <div class="intent-block-content">
           <div class="corpus-tools">
             <label-switch 
@@ -88,7 +88,7 @@
         <div v-if="getCurTotal(intent) > LIST_PAGE_SIZE" class="intent-block-footer">
           <v-pagination size="small" :total="getCurTotal(intent)" :pageIndex="intent.curPage" :pageSize="LIST_PAGE_SIZE" :layout="['prev', 'pager', 'next', 'jumper']" @page-change="handlePageChange($event, intent)"></v-pagination>
         </div>
-      </template>
+      </div>
       </transition>
     </div>
 
@@ -331,7 +331,10 @@ export default {
       return currentCorpus.slice(start, end);
     },
     getCurTotal(intent) {
+      console.log(intent);
       const currentCorpus = intent.corpus[intent.viewCorpusType];
+      console.log(currentCorpus.length);
+      console.log(currentCorpus.length > this.LIST_PAGE_SIZE);
       return currentCorpus.length;
     },
     toFirstPage(intent) {
