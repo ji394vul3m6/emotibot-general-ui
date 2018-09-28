@@ -96,6 +96,11 @@ export default {
       required: true,
       default: undefined,
     },
+    initialGlobalEdges: {
+      type: Array,
+      required: true,
+      default: undefined,
+    },
     toNodeOptions: {
       type: Array,
       required: true,
@@ -222,6 +227,7 @@ export default {
         cancelValidate: true,
         extData: {
           node: that.node,
+          globalEdges: that.initialGlobalEdges,
           toNodeOptions: that.toNodeOptions,
           globalVarOptionsMap: that.globalVarOptionsMap,
         },

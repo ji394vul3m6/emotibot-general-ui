@@ -380,13 +380,11 @@ export default {
   convertUiNodeToNode(uiNode, setting, globalEdges) {
     // console.log(uiNode);
     const edges = this.convertUiNodeToEdges(uiNode, setting, globalEdges);
-    const globalVars = this.getGlobalVars(edges);
     const node = {
       node_id: uiNode.nodeId,
       node_type: uiNode.nodeType,
       description: uiNode.nodeName,
       edges,
-      global_vars: globalVars,
       content: {},
     };
     if (uiNode.nodeType === 'entry') {
@@ -403,14 +401,11 @@ export default {
       );
     } else if (uiNode.nodeType === 'restful') {
       node.content = this.composeRestfulContent(uiNode);
-      node.global_vars.push(uiNode.restfulSettingTab.rtnVarName);
     } else if (uiNode.nodeType === 'parameter_collecting') {
       node.content = this.composePCContent(
         uiNode.paramsCollectingTab.params,
       );
-      node.global_vars.push(...this.getGlobalVarsFromParsers(node.content.parsers));
     }
-    node.global_vars = [...new Set(node.global_vars)];
     return node;
   },
   composePCContent(params) {
@@ -533,7 +528,10 @@ export default {
   },
   // convert tab data to edges
   convertUiNodeToEdges(uiNode, setting, initialGlobalEdges) {
-    const globalEdges = this.addResetDialogueCntAndParseFailedAction(initialGlobalEdges);
+    const globalEdges = this.changeSuffixOfGlobalEdges(
+      uiNode.nodeId,
+      this.addResetDialogueCntAndParseFailedAction(initialGlobalEdges),
+    );
     let edges = [];
     if (uiNode.nodeType === 'entry') {
       const hiddenEdges = this.composeEntryNodeHiddenEdges(uiNode, setting);
@@ -715,6 +713,31 @@ export default {
       });
     });
     return globalVars;
+  },
+  changeSuffixOfGlobalEdges(nodeId, globalEdges) {
+    return globalEdges.map((edge) => {
+      if (edge.condition_rules &&
+          edge.condition_rules instanceof Array &&
+          edge.condition_rules.length > 0) {
+        edge.condition_rules[0] = edge.condition_rules[0].map((rule) => {
+          if (rule.functions && rule.functions instanceof Array) {
+            rule.functions = rule.functions.map((func) => {
+              const funcName = func.function_name;
+              if (funcName === 'hotel_parser' ||
+                  funcName === 'common_parser' ||
+                  funcName === 'task_parser') {
+                if (func.content && func.content.key_suffix) {
+                  func.content.key_suffix = `_${nodeId}`;
+                }
+              }
+              return func;
+            });
+          }
+          return rule;
+        });
+      }
+      return edge;
+    });
   },
   getGlobalVars(edges) {
     const globalVars = [];

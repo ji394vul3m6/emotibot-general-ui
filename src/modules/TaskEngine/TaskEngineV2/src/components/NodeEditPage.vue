@@ -282,11 +282,10 @@ export default {
         scenarioDialogueCntLimit: 0,
         nodeDialogueCntLimit: 0,
       };
-      const dummpyGlobalEdges = [];
       const edges = scenarioConvertor.convertUiNodeToEdges(
         nodeResult,
         dummySetting,
-        dummpyGlobalEdges,
+        this.extData.globalEdges,
       );
       const nodeVars = [...new Set(scenarioConvertor.getGlobalVars(edges))];
       const nodeVarsOptions = nodeVars.map(v => ({

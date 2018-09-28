@@ -20,6 +20,7 @@
           :nodeBlockHeight="nodeBlockHeight"
           :nodeTypeName="getNodeTypeName(nodeBlock.data.nodeType)"
           :initialNode="nodeBlock.data"
+          :initialGlobalEdges="globalEdges"
           :toNodeOptions="toNodeOptions"
           :globalVarOptionsMap="globalVarOptionsMap"
           :linking="linking"
@@ -423,8 +424,15 @@ export default {
     renderGlobalVarOptionsMap() {
       this.globalVarOptionsMap = {};
       this.moduleData.nodes.forEach(((node) => {
-        if (node.global_vars) {
-          const vars = node.global_vars.map(v => ({
+        if (node.edges) {
+          let globalVars = scenarioConvertor.getGlobalVars(node.edges);
+          if (node.node_type === 'restful') {
+            globalVars.push(node.content.requests[0].rtn_var_name);
+          } else if (node.node_type === 'parameter_collecting') {
+            globalVars.push(scenarioConvertor.getGlobalVarsFromParsers(node.content.parsers));
+          }
+          globalVars = [...new Set(globalVars)];
+          const vars = globalVars.map(v => ({
             text: node.description,
             value: v,
           }));
