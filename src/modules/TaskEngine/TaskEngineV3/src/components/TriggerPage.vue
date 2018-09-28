@@ -109,7 +109,16 @@ export default {
     },
     loadIntentOptionList() {
       this.$api.getIntentsDetail().then((intents) => {
-        this.intentListAll = intents;
+        this.intentListAll = [];
+        intents.forEach((intent) => {
+          this.intentListAll.push({
+            id: intent.id,
+            name: intent.name,
+            total: intent.count,
+            positiveCount: intent.positive_count,
+            negativeCount: intent.negative_count,
+          });
+        });
         this.renderIntentList();
         this.intentOptionList = [];
         this.intentListAll.forEach((intent) => {
