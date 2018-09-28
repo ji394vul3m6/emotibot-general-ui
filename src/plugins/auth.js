@@ -174,7 +174,7 @@ function login(input) {
         token = data.result.token;
         localStorage.setItem('token', token);
         retObj.authV2 = data.result;
-        if (data.result.product && data.result.product.indexOf('IM')) {
+        if (data.result.info.product && data.result.info.product.indexOf('IM') >= 0) {
           imUser = true;
         }
         return data.result;
