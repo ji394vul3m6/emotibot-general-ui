@@ -451,7 +451,7 @@ export default {
         condition_rules: [[{
           source: 'global_info',
           functions: [{
-            content: [skipIfKeyExist.map(key => ({ key }))],
+            content: skipIfKeyExist.map(key => ({ key })),
             function_name: 'not_contain_key',
           }],
         }]],
