@@ -297,6 +297,7 @@ export default {
           ok(retData) {
             retData.type = userType;
             that.$api.addEnterpriseUser(that.enterpriseID, retData).then(() => {
+              that.$notify({ text: that.$t('management.add_user_success') });
               that.loadUsers();
             });
           },

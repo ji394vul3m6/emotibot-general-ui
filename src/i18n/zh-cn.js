@@ -1149,6 +1149,7 @@ export default {
     err_origin_empty_password: '原密码不可为空',
     err_invalid_check_password: '两次密码输入不同',
     update_password_success: '更新密码成功',
+    add_user_success: '新增使用者成功',
     err_update_password_fail: '更新密码失败',
     err_role_duplicate: '角色名称已存在',
     err_robot_name_empty: '机器人名称不可为空',
