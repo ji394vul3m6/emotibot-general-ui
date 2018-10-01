@@ -293,6 +293,7 @@ export default {
             .then((cmd) => {
               this.commands.splice(0, 0, cmd);
               this.loadLabels();
+              this.$notify({ text: this.$t('error_msg.save_success') });
             })
             .catch((err) => {
               console.log(err);
@@ -326,6 +327,7 @@ export default {
               const theCommandIdx = this.commands
                 .findIndex(cmd => cmd.id === rspCommand.id);
               this.commands.splice(theCommandIdx, 1, rspCommand);
+              this.$notify({ text: this.$t('error_msg.save_success') });
               this.loadLabels();
             })
             .catch((err) => {
@@ -383,6 +385,7 @@ export default {
               } else {
                 this.$notify({ text: this.$t('robot_command.movetopop.move_command_success') });
               }
+              this.$notify({ text: this.$t('error_msg.save_success') });
               this.$emit('reloadCommand', this.currentCategoryId);
             })
             .catch((err) => {
@@ -423,6 +426,7 @@ export default {
           const theCommandIdx = this.commands
             .findIndex(cmd => cmd.id === id);
           this.commands.splice(theCommandIdx, 1);
+          this.$notify({ text: this.$t('general.delete_success') });
         })
         .catch((err) => {
           console.log(err);
