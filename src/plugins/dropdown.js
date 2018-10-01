@@ -14,24 +14,26 @@ const MyPlugin = {
       y: boundedBox.top + boundedBox.height + 3,
     };
   },
-  hideListWhenEventTriggeredOutside(vm, el, alignLeft) {
-    return (e) => {
+  addEventListeners(vm, el, alignLeft) {
+    const resizeCallback = () => {
+      vm.$emit('show', this.getPosition(el, alignLeft));
+    };
+    const hideCallback = (e) => {
       if (el && !el.contains(e.target)) {
         el.dispatchEvent(new Event('dropdownHidden'));
         vm.$emit('hide');
-        this.removeEventListeners(vm, el, alignLeft);
+        this.removeEventListeners(window, hideCallback, resizeCallback);
       }
     };
+
+    window.addEventListener('click', hideCallback);
+    window.addEventListener('scroll', hideCallback, true);
+    window.addEventListener('resize', resizeCallback);
   },
-  addEventListeners(vm, el, alignLeft) {
-    window.addEventListener('click', this.hideListWhenEventTriggeredOutside(vm, el, alignLeft));
-    window.addEventListener('scroll', this.hideListWhenEventTriggeredOutside(vm, el, alignLeft), true);
-    window.addEventListener('resize', () => vm.$emit('show', this.getPosition(el, alignLeft)));
-  },
-  removeEventListeners(vm, el, alignLeft) {
-    window.removeEventListener('click', this.hideListWhenEventTriggeredOutside(vm, el, alignLeft), true);
-    window.removeEventListener('scroll', this.hideListWhenEventTriggeredOutside(vm, el, alignLeft), true);
-    window.removeEventListener('resize', () => vm.$emit('show', this.getPosition(el, alignLeft)));
+  removeEventListeners(target, hideCallback, resizeCallback) {
+    target.removeEventListener('click', hideCallback);
+    target.removeEventListener('scroll', hideCallback, true);
+    target.removeEventListener('resize', resizeCallback);
   },
   install(Vue) {
     const that = this;
