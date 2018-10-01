@@ -331,10 +331,7 @@ export default {
       return currentCorpus.slice(start, end);
     },
     getCurTotal(intent) {
-      console.log(intent);
       const currentCorpus = intent.corpus[intent.viewCorpusType];
-      console.log(currentCorpus.length);
-      console.log(currentCorpus.length > this.LIST_PAGE_SIZE);
       return currentCorpus.length;
     },
     toFirstPage(intent) {
