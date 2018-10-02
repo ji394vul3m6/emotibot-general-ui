@@ -814,13 +814,15 @@ export default {
         vars = func.content.operations.map(o => o.key);
       }
     } else if (funcName === 'assign_value') {
-      if (func.content && func.content.key) {
-        vars = [func.content.key];
+      if (func.content && Array.isArray(func.content)) {
+        vars = [func.content[0].key];
       }
     } else if (funcName === 'api_parser') {
       if (func.skipIfKeyExist) {
         vars = func.skipIfKeyExist;
       }
+    } else if (funcName === 'cu_parser') {
+      vars = [func.content];
     }
     return vars;
   },
