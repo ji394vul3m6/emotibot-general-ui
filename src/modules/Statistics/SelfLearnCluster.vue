@@ -252,8 +252,8 @@ export default {
       const searchQuery = that.dailySearchParams;
       that.searchCondition = [];
       // starttime, endtime, convert second to millisecond
-      const starttime = moment.utc(searchQuery.start_time * 1000).format('YYYY/MM/DD hh:mm');
-      const endtime = moment.utc(searchQuery.end_time * 1000).format('YYYY/MM/DD hh:mm');
+      const starttime = moment(searchQuery.start_time * 1000).format('YYYY/MM/DD hh:mm');
+      const endtime = moment(searchQuery.end_time * 1000).format('YYYY/MM/DD hh:mm');
       that.searchCondition.push(`${that.$t('statistics.time_range')}: ${starttime} ~ ${endtime}`);
       // uid
       if (searchQuery.uid) {
