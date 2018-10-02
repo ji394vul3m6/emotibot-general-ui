@@ -32,6 +32,7 @@
             @input="onSelectFunctionInput(index, $event)"
             :options="getFuncOptions(rule.source, index)"
             :showCheckedIcon="false"
+            :fixedListWidth="false"
             width="160px"
             :inputBarStyle="selectStyle"
           />
