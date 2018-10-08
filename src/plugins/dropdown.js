@@ -1,18 +1,21 @@
 import DropdownMenu from '../components/basic/DropdownMenu';
 
 const MyPlugin = {
-  getPosition(el, alignLeft) {
+  getPosition(el, alignLeft, optionLength) {
     const boundedBox = el.getBoundingClientRect();
-    if (alignLeft) {
-      return {
-        x: boundedBox.right, // align by right edge
-        y: boundedBox.top + boundedBox.height + 3,
-      };
-    }
-    return {
+    const ret = {
       x: boundedBox.left, // align by left edge
       y: boundedBox.top + boundedBox.height + 3,
     };
+    if (alignLeft) {
+      ret.x = boundedBox.right;  // align by right edge
+    }
+
+    const dropdownHeight = (optionLength || 0) * 32;
+    if (ret.y + dropdownHeight > window.innerHeight) {
+      ret.y = window.innerHeight - dropdownHeight;
+    }
+    return ret;
   },
   addEventListeners(vm, el, alignLeft) {
     const resizeCallback = () => {
@@ -41,10 +44,12 @@ const MyPlugin = {
       inserted(el, binding, vnode) {
         vnode.context.$nextTick(() => {
           const DropdownGenerator = Vue.extend(DropdownMenu);
+          const position = that.getPosition(el, binding.value.alignLeft,
+            binding.value.options.length);
           let vm = new DropdownGenerator({
             propsData: {
-              x: that.getPosition(el, binding.value.alignLeft).x,
-              y: that.getPosition(el, binding.value.alignLeft).y,
+              x: position.x,
+              y: position.y,
               options: binding.value.options,
               width: binding.value.width,
               alignLeft: binding.value.alignLeft,
@@ -56,12 +61,14 @@ const MyPlugin = {
 
 
           el.addEventListener('dropdown-reload', () => {
+            const newPos = that.getPosition(el, binding.value.alignLeft,
+              binding.value.options.length);
             el.removeChild(vm.$el);
             vm.$destroy();
             vm = new DropdownGenerator({
               propsData: {
-                x: that.getPosition(el, binding.value.alignLeft).x,
-                y: that.getPosition(el, binding.value.alignLeft).y,
+                x: newPos.x,
+                y: newPos.y,
                 options: binding.value.options,
                 width: binding.value.width,
                 alignLeft: binding.value.alignLeft,
@@ -73,7 +80,7 @@ const MyPlugin = {
           });
 
           el.addEventListener('dropdown-show', () => {
-            vm.$emit('show', that.getPosition(el, binding.value.alignLeft));
+            vm.$emit('show', that.getPosition(el, binding.value.alignLeft, binding.value.options.length));
           });
           el.addEventListener('dropdown-hide', () => {
             el.dispatchEvent(new Event('dropdownHidden'));
@@ -82,7 +89,7 @@ const MyPlugin = {
           });
 
           el.addEventListener('click', () => {
-            vm.$emit('show', that.getPosition(el, binding.value.alignLeft));
+            vm.$emit('show', that.getPosition(el, binding.value.alignLeft, binding.value.options.length));
             that.addEventListeners(vm, el, binding.value.alignLeft);
           });
         });
