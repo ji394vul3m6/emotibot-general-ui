@@ -60,6 +60,7 @@ export default {
       if (this.keyword === '') {
         return this.users;
       }
+      this.curPageIdx = 1;
       return this.users.filter(user => user.user_name.indexOf(this.keyword) >= 0);
     },
     showUsers() {
