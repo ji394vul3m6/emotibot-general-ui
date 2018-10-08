@@ -171,9 +171,9 @@ export default {
     clustering_checking: '准备进行辅助分类...，请勿离开此页面',
     cluster_dropdown: {
       by_search: '依据筛选结果 (共 {num} 笔)',
-      by_search_more: '依据筛选结果 (共 {num} 笔，少於 {size} 筆))',
+      by_search_more: '依据筛选结果 (共 {num} 笔，少于 {size} 笔))',
       by_checked: '依据列表勾选 (共 {num} 笔)',
-      by_checked_more: '依据列表勾选 (共 {num} 笔，少於 {size} 筆)',
+      by_checked_more: '依据列表勾选 (共 {num} 笔，少于 {size} 笔)',
     },
     success: {
       ignore_ok: '更新忽略状态成功',
@@ -339,7 +339,7 @@ export default {
         title: '触发关键字',
         advanced: '进阶设定',
         regex: '正则式',
-        keyword_placeholder: '关键字以 "/" 隔开',
+        keyword_placeholder: '关键字以 "/" 隔开, 关键字必须全符合才可触发指令',
       },
       datetime: {
         title: '生效时间',
@@ -1036,7 +1036,7 @@ export default {
     success: '设定成功',
     save_success: '保存成功',
     save_fail: '保存失败',
-    time_format_error: '時間格式錯誤',
+    time_format_error: '时间格式错误',
     empty_data: '无资料',
     data_format_err: '资料格式错误',
     update_qa_error: '问答更新失败',
