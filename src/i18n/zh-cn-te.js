@@ -67,8 +67,11 @@ export default {
     },
     scenario_settings_edit_pop: {
       scenario_name: '场景名称',
+      err_empty_scenario_name: '场景名称不可为空',
       scenario_dialogue_cnt_limit: '全场景对话数',
+      err_empty_scenario_dialogue_cnt_limit: '全场景对话数不可为空',
       default_node_dialogue_cnt_limit: '预设节点对话数',
+      err_empty_default_node_dialogue_cnt_limit: '预设节点对话数不可为空',
       confirm_to_save_changes: '场景基本设置已被更动，请问是否需要保存？',
     },
     var_template_edit_pop: {
