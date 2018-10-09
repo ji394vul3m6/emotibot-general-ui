@@ -429,7 +429,7 @@ export default {
           if (node.node_type === 'restful') {
             globalVars.push(node.content.requests[0].rtn_var_name);
           } else if (node.node_type === 'parameter_collecting') {
-            globalVars.push(scenarioConvertor.getGlobalVarsFromParsers(node.content.parsers));
+            globalVars.push(...scenarioConvertor.getGlobalVarsFromParsers(node.content.parsers));
           }
           globalVars = [...new Set(globalVars)];
           const vars = globalVars.map(v => ({
