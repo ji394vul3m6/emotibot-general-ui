@@ -109,7 +109,7 @@ export default {
       border-color: $tool-tip-background transparent transparent transparent;
     }
   }
-  $activeType: 'detail','stop','pause','monitor','list', 'start', 'edit_task';
+  $activeType: 'detail','stop','pause','monitor','list', 'start', 'edit_task', 'delete_task';
   @mixin iconType($name) {
     .#{$name}_icon {
       background: url("../../assets/icons/#{$name}_icon.svg") no-repeat center center;
@@ -186,6 +186,7 @@ export default {
   @include iconType("list");
   @include iconType("start");
   @include iconType("edit_task");
+  @include iconType("delete_task");
   @include iconType("setting");
   @include iconType("setting_hover");
   @include iconTypeHover("setting");
