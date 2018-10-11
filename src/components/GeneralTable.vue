@@ -54,7 +54,7 @@
             :style="{width: header.width}"
             :class="{'fixed': header.width, 'custom-action': header.type === 'action', 'multi-action': hasMultiCustomAction, 'icon-column': header.type === 'icon'}"
              class="table-body-item"
-            @click="handleOnclickRow(onclickRow, data, idx)">
+            @click="handleOnclickRow(onclickRow, data, idx);$emit('onCellClicked', { rowIndex: idx, rowData: data, key: header.key })">
             <div v-if="header.type === 'tag'">
               <tag class="tags" v-for="(tag, tagIdx) in data[header.key]" :key="`${tagIdx}-${tag}`" :fontClass="fontClass">{{ tag }}</tag>
             </div>
