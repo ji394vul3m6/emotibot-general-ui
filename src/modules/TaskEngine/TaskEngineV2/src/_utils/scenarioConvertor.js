@@ -380,12 +380,14 @@ export default {
   convertUiNodeToNode(uiNode, setting, globalEdges) {
     // console.log(uiNode);
     const edges = this.convertUiNodeToEdges(uiNode, setting, globalEdges);
+    const nodeInfo = this.getNodeInfo(edges);
     const node = {
       node_id: uiNode.nodeId,
       node_type: uiNode.nodeType,
       description: uiNode.nodeName,
       edges,
       content: {},
+      node_info: nodeInfo,
     };
     if (uiNode.nodeType === 'entry') {
       node.entry_condition_rules = uiNode.triggerTab.rules;
@@ -407,6 +409,19 @@ export default {
       );
     }
     return node;
+  },
+  getNodeInfo(edges) {
+    let isLastNode = true;
+    edges.forEach((edge) => {
+      if (!edge.to_node_id) return;
+      const toNodeId = edge.to_node_id;
+      if (toNodeId !== '0' && toNodeId !== null && toNodeId !== undefined) {
+        isLastNode = false;
+      }
+    });
+    return {
+      is_last_node: isLastNode,
+    };
   },
   composePCContent(params) {
     const content = {};
