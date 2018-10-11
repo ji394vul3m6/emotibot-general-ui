@@ -329,7 +329,7 @@ $table-row-height: 50px;
     }
   }
   .menu {
-    min-width: 50px;
+    min-width: 90px;
     flex: none;
     display: flex;
     align-items: center;
