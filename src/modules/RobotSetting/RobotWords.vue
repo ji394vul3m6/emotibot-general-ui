@@ -9,7 +9,7 @@
           <div class="words-title">
             <div class="title-text">{{ words.name }}</div>
             <div class="icon-container" v-tooltip="words.tooltip">
-              <icon icon-type="help" :size="13"></icon>
+              <icon icon-type="info" :size="18" enableHover></icon>
             </div>
           </div>
           <div class="button-container">
@@ -24,11 +24,11 @@
               </template>
             </div>
             <template v-if="words.contents.length === 0">
-              <div class="row">
+              <div class="row body">
                 <div class="empty-row">{{ $t('chat_skill.add_new_msg', {item: words.name}) }}</div>
               </div>
             </template>
-            <div v-for="content in words.contents" :key="content.id" class="row">
+            <div v-for="content in words.contents" :key="content.id" class="row body">
               <div class="content">{{content.content}}</div>
               <template v-if="canEdit">
               <div class="command edit" @click="popEditWordsContent(words, content)">
@@ -95,6 +95,7 @@ export default {
         component: EditPop,
         data: {
           words,
+          content: '',
         },
         validate: true,
         bindValue: false,
@@ -125,8 +126,7 @@ export default {
     },
     popDeleteWordsContent(words, contentObj) {
       const that = this;
-      that.$popCheck({
-        title: `${that.$t('general.delete')}${words.name}`,
+      that.$popWarn({
         data: {
           msg: that.$t('chat_skill.delete_check_msg', { item: contentObj.content }),
         },
@@ -193,18 +193,20 @@ export default {
 
 $words-title-font-size: 16px;
 $words-title-line-height: 24px;
-$words-title-color: #666666;
+$words-title-color: $color-font-normal;
 
 $words-list-font-size: 14px;
 $words-list-header-bg: #f7f7f7;
-$words-list-edit-color: #1875f0;
-$words-list-delete-color: #f76260;
+$words-list-data-bg: #fcfcfc;
+$words-list-edit-color: $color-primary;
+$words-list-delete-color: $color-error;
 
 .words-list {
   display: flex;
   flex-direction: column;
 
-  overflow-y: auto;
+  @include auto-overflow();
+  @include customScrollbar();
   max-height: calc(100% - 60px);
   .words {
     padding: 20px 0;
@@ -221,6 +223,8 @@ $words-list-delete-color: #f76260;
       }
       .icon-container {
         position: relative;
+        display: flex;
+        align-items: center;
       }
     }
     .button-container {
@@ -237,7 +241,7 @@ $words-list-delete-color: #f76260;
 
         display: flex;
         align-items: center;
-        box-shadow: inset 0 -1px 0 0 #e9e9e9;
+        box-shadow: inset 0 -1px 0 0 $color-borderline-disabled;
         &.header {
           background: $words-list-header-bg;
         }
@@ -248,6 +252,12 @@ $words-list-delete-color: #f76260;
         &:not(.header) {
           .command {
             @include click-button();
+          }
+        }
+        &.body {
+          background: $words-list-data-bg;
+          &:hover {
+            background-color: #F6F9FF;
           }
         }
         .command {

@@ -1,6 +1,6 @@
 <template>
   <transition-group tag="div" name="fade" class="notifications">
-    <div v-for="(notification, idx) in notifications" class="notification" :key="notification.msg" :class="notification.type">
+    <div v-for="(notification, idx) in notifications" class="notification" :key="`${idx}-${notification.msg}`" :class="notification.type">
       <icon v-if="notification.type === 'success'" icon-type="info_success" :size=20></icon>
       <icon v-else-if="notification.type === 'fail'" icon-type="info_error" :size=20></icon>
       <icon v-else-if="notification.type === 'warning'" icon-type="info_warning" :size=20></icon>

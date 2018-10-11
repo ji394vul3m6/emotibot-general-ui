@@ -4,7 +4,7 @@
     <div class="row">
       <div class="label-add-action">{{$t("task_engine_v3.action_page.label_add_action")}}</div>
       <div class="icon-container" v-tooltip="{ msg: $t('task_engine_v3.action_page.description')}">
-        <icon icon-type="info" :enableHover="true" :size=20 />
+        <icon icon-type="info" :enableHover="true" :size=18 />
       </div>
     </div>
     <div class="row row-margin-top">
@@ -29,7 +29,7 @@
     </div>
   </div>
   <div class="action-group-list-container">
-    <draggable v-model="actionGroupList" :options="{ghostClass:'ghost'}" @start="drag=true" @end="drag=false">
+    <draggable v-model="actionGroupList" :options="{ghostClass:'ghost'}" @start="drag=true" @end="drag=false; emitUpdate();">
       <div class="action-group-container" v-for="(actionGroup, index) in actionGroupList">
         <action-group :key="actionGroup.actionGroupId"
           :initialActionGroup="actionGroup"
@@ -78,7 +78,7 @@ export default {
   methods: {
     updateActionGroup(index, newActionGroup) {
       this.actionGroupList[index] = newActionGroup;
-      this.$emit('update', this.actionGroupList);
+      this.emitUpdate();
     },
     addNewActionGroup(type) {
       const actionGroup = {
@@ -107,14 +107,17 @@ export default {
         });
       }
       this.actionGroupList.push(actionGroup);
-      this.$emit('update', this.actionGroupList);
+      this.emitUpdate();
     },
     deleteActionGroup(index) {
       this.actionGroupList.splice(index, 1);
-      this.$emit('update', this.actionGroupList);
+      this.emitUpdate();
     },
     rerender() {
       this.actionGroupList = JSON.parse(JSON.stringify(this.initialActionGroupList));
+    },
+    emitUpdate() {
+      this.$emit('update', this.actionGroupList);
     },
   },
   beforeMount() {},
@@ -136,7 +139,7 @@ export default {
   .add-action-container{
     flex: 0 0 auto;
     margin: 20px 20px 0px 20px;
-    padding: 10px;
+    padding: 10px 20px;
     height: 86px;
     background: #f8f8f8;
     border-radius: 4px;
@@ -164,8 +167,6 @@ export default {
   }
   .action-group-list-container{
     flex: 1 1 auto;
-    @include auto-overflow();
-    @include customScrollbar();
     margin: 10px 0px 20px 0px;
     padding: 0px 20px 0px 20px;
     .action-group-container{

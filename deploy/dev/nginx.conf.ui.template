@@ -35,6 +35,7 @@ http {
         listen [::]:80;
         set $appid "";
         set $user_id "";
+        set $enterprise_id "";
         if ($http_cookie ~* "appid=([a-z0-9]+)(?:;|$)") {
             set $appid $1;
         }
@@ -51,9 +52,18 @@ http {
             set $user_id $http_x_userid;
         }
 
+        if ($http_cookie ~* "enterprise=([.%\-a-zA-Z0-9_]+)(?:;|$)") {
+            set $enterprise_id $1;
+        }
+
+        if ($http_x_enterprise != "") {
+            set $enterprise_id $http_x_enterprise;
+        }
+
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Appid $appid;
         proxy_set_header X-UserID $user_id;
+        proxy_set_header X-EnterpriseID $enterprise_id;
         location /stats {
             proxy_pass http://${REMOTE_IP}:8200;
         }
@@ -131,7 +141,10 @@ http {
         location /BF/scenario {
             proxy_pass http://${REMOTE_IP};
         }
-        location /BF/login.html {
+        location = /BF/login.html {
+            return 301 http://${SELF_IP}/login.html;
+        }
+        location = /im-admin/login {
             return 301 http://${SELF_IP}/login.html;
         }
         location = /BF_login {
@@ -196,6 +209,9 @@ http {
         }
         location /task_engine {
             proxy_pass http://${BF_IP};
+        }
+        location /im-admin {
+            proxy_pass http://${REMOTE_IP};
         }
 
         location /api {

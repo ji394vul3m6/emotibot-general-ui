@@ -3,35 +3,11 @@
     <div class="buttons">
       <slot></slot>
     </div>
-    <search-input v-if="showSearch" v-model='keyword' @input="keywordChange"></search-input>
   </div>  
 </template>
 
 <script>
 export default {
-  data() {
-    return {
-      keyword: '',
-      emitTimer: undefined,
-    };
-  },
-  props: {
-    showSearch: {
-      type: Boolean,
-      default: true,
-    },
-  },
-  methods: {
-    keywordChange() {
-      const that = this;
-      if (that.emitTimer) {
-        clearTimeout(that.emitTimer);
-      }
-      that.emitTimer = setTimeout(() => {
-        that.$emit('search', that.keyword);
-      }, 200);
-    },
-  },
 };
 </script>
 

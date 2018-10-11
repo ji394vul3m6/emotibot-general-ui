@@ -6,7 +6,7 @@
         <input ref="commandName" id="edit-command-input" type="text"
           v-model="commandName"
           v-tooltip="commandNameTooltip"
-          :class="{'error': isAddNewCommand ? false : !isNameValid}"
+          :class="{'error': isCommandNameTooltipShown}"
           :disabled="readonly">
         <!-- <info-input
           v-model="commandName"
@@ -31,7 +31,6 @@
       <div class="edit-title">{{ $t('robot_command.editpop.tag.title') }}</div>
       <div id="edit-tag-content" class="edit-content">
         <tag-input
-          :allowTagErrorTooltip="false"
           :origTags="origTags"
           :tagsList="tagsList"
           :readonly="readonly"
@@ -47,14 +46,15 @@
     <div id="edit-keyword" class="edit-row">
       <div class="edit-title">{{ $t('robot_command.editpop.keyword.title') }}</div>
       <div id="edit-keyword-content" class="edit-content">
-        <input type="text" v-model="keywords" :placeholder="$t('robot_command.editpop.keyword.keyword_placeholder')" :disabled="readonly">
-        <!-- <info-input
+        <!-- <input type="text" v-model="keywords" :placeholder="$t('robot_command.editpop.keyword.keyword_placeholder')" :disabled="readonly"> -->
+        <info-input
           v-model="keywords"
-          :msg="$t('robot_command.editpop.keyword.keyword_placeholder')"
+          :placeholder="$t('robot_command.editpop.keyword.keyword_placeholder')"
+        :msg="$t('robot_command.editpop.keyword.keyword_placeholder')"
           fill
           :disabled="readonly"
         >
-        </info-input> -->
+        </info-input>
         <div id="advanced-block">
           <input id="advanced" type="checkbox" v-model="hasAdvanced" :disabled="readonly">
           <label for="advanced">{{ $t('robot_command.editpop.keyword.advanced') }}</label>
@@ -144,6 +144,7 @@ import DatePicker from '@/components/DateTimePicker/DatePicker';
 import TagInput from '@/components/basic/TagInput';
 import labelAPI from '@/modules/SSM/_api/qalabel';
 import validate from '@/utils/js/validate';
+import event from '@/utils/js/event';
 
 export default {
   api: [labelAPI],
@@ -207,6 +208,7 @@ export default {
         alignLeft: true,
       },
       isReplyJsonWarning: false,
+      isCommandNameTooltipShown: false,
 
       isAddNewCommand: false,
     };
@@ -249,30 +251,36 @@ export default {
         tomorrow.setDate(today.getDate() + 1);
         this.startDate = today;
         this.endDate = tomorrow;
+        this.$refs.datePicker.dispatchEvent(event.createEvent('tooltip-hide'));
       }
     },
     replyFormat() {
       if (this.replyFormat === 'intext') {
         this.replyContentJson = '';
+        this.closeJSONTooltip();
       } else if (this.replyFormat === 'injson') {
         this.replyContentText = '';
       }
     },
+    commandName() {
+      if (this.commandName !== '') {
+        this.isCommandNameTooltipShown = false;
+        this.$refs.commandName.dispatchEvent(event.createEvent('tooltip-hide'));
+      }
+    },
     isNameEmpty() {
       this.isAddNewCommand = false;
-      this.updateNameTooltip();
+      // this.updateNameTooltip();
     },
-    isNameDuplicate() {
-      this.updateNameTooltip();
-    },
+    // isNameDuplicate() {
+    //   this.updateNameTooltip();
+    // },
     isTimeValid() {
       if (this.dateFormat === 'custom') {
         if (!this.isTimeValid) {
-          const event = new Event('tooltip-show');
-          this.$refs.datePicker.dispatchEvent(event);
+          this.$refs.datePicker.dispatchEvent(event.createEvent('tooltip-show'));
         } else {
-          const event = new Event('tooltip-hide');
-          this.$refs.datePicker.dispatchEvent(event);
+          this.$refs.datePicker.dispatchEvent(event.createEvent('tooltip-hide'));
         }
       }
     },
@@ -293,12 +301,11 @@ export default {
     validate() {
       // build return obj and return
       if (!this.isReturnDataValid()) {
-        this.updateNameTooltip();
+        // this.updateNameTooltip();
 
         if (!this.isTimeValid) {
           if (this.dateFormat === 'custom') {
-            const event = new Event('tooltip-show');
-            this.$refs.datePicker.dispatchEvent(event);
+            this.$refs.datePicker.dispatchEvent(event.createEvent('tooltip-show'));
           }
         }
         return;
@@ -340,6 +347,7 @@ export default {
       return returnObj;
     },
     isReturnDataValid() {
+      this.updateNameTooltip();
       return this.isNameValid && this.isTimeValid && this.isReplyValid();
     },
     isReplyValid() {
@@ -350,8 +358,7 @@ export default {
         } catch (err) {
           console.log(err);
           this.isReplyJsonWarning = true;
-          const event = new Event('tooltip-show');
-          this.$refs.replyFormatJSON.dispatchEvent(event);
+          this.$refs.replyFormatJSON.dispatchEvent(event.createEvent('tooltip-show'));
           return false;
         }
       }
@@ -359,8 +366,7 @@ export default {
     },
     closeJSONTooltip() {
       this.isReplyJsonWarning = false;
-      const event = new Event('tooltip-hide');
-      this.$refs.replyFormatJSON.dispatchEvent(event);
+      this.$refs.replyFormatJSON.dispatchEvent(event.createEvent('tooltip-hide'));
     },
     updateNameTooltip() {
       if (!this.isNameValid) {
@@ -370,13 +376,12 @@ export default {
         } else if (this.isNameDuplicate) {
           this.commandNameTooltip.msg = this.$t('robot_command.error.name_input_duplicate');
         }
-        const reload = new Event('tooltip-reload');
-        this.$refs.commandName.dispatchEvent(reload);
-        const event = new Event('tooltip-show');
-        this.$refs.commandName.dispatchEvent(event);
+        this.isCommandNameTooltipShown = true;
+        this.$refs.commandName.dispatchEvent(event.createEvent('tooltip-reload'));
+        this.$refs.commandName.dispatchEvent(event.createEvent('tooltip-show'));
       } else {
-        const event = new Event('tooltip-hide');
-        this.$refs.commandName.dispatchEvent(event);
+        this.isCommandNameTooltipShown = false;
+        this.$refs.commandName.dispatchEvent(event.createEvent('tooltip-hide'));
       }
     },
     parseCommandDetail() {

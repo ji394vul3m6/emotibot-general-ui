@@ -1,9 +1,9 @@
 <template>
   <div>
     <div class="card h-fill w-fill">
-      <nav-bar class='nav-bar' :options=pageOption></nav-bar>
+      <nav-bar class='nav-bar' :options=pageOption @search="doSearch" showSearch></nav-bar>
       <div class="page">
-        <command-row class="commands" @search="doSearch">
+        <command-row class="commands">
             <template v-if="isAdmin">
             <text-button button-type="primary" @click="createRobot">{{ $t('management.create_robot') }}</text-button>
             <text-button @click="goGroupList">{{ $t('management.group_manage') }}</text-button>
@@ -17,7 +17,7 @@
               <div class="card-title-image">
                 <icon :size=18 icon-type="robot"></icon>
               </div>
-              <div class="card-title-text">
+              <div :ref="robot.id" class="card-title-text" v-tooltip="robotNameTooltip" @mouseover="showFullRobotName($event, robot.name, robot.id)" @mouseout="hideFullRobotName($event, robot.id)">
                 {{ robot.name }}
               </div>
               <div class="card-title-edit" @click.stop="editName(robot)" v-if="isAdmin">
@@ -36,6 +36,8 @@
 
 <script>
 import { mapGetters, mapMutations } from 'vuex';
+import event from '@/utils/js/event';
+import misc from '@/utils/js/misc';
 import NavBar from '@/components/NavigationBar';
 import RobotForm from './_components/RobotAddForm';
 import CommandRow from '../_components/CommandRow';
@@ -48,6 +50,7 @@ const defaultPath = '/statistic-dash';
 export default {
   path: 'robot-manage',
   name: 'robot-manage',
+  privCode: 'manage_robot',
   components: {
     NavBar,
     CommandRow,
@@ -79,6 +82,13 @@ export default {
       },
       keyword: '',
       robots: [],
+      robotNameTooltip: {
+        msg: '',
+        eventOnly: true,
+        alignLeft: true,
+        top: -10,
+        left: 80,
+      },
     };
   },
   methods: {
@@ -87,6 +97,18 @@ export default {
       'setRobotList',
       'setUserRole',
     ]),
+    showFullRobotName(e, name, robotId) {
+      const that = this;
+      if (!misc.isEllipsisActive(e.target)) return;
+      that.robotNameTooltip.msg = name;
+      that.$refs[robotId][0].dispatchEvent(event.createEvent('tooltip-reload'));
+      that.$refs[robotId][0].dispatchEvent(event.createEvent('tooltip-show'));
+    },
+    hideFullRobotName(e, robotId) {
+      const that = this;
+      if (!misc.isEllipsisActive(e.target)) return;
+      that.$refs[robotId][0].dispatchEvent(event.createEvent('tooltip-hide'));
+    },
     doSearch(word) {
       this.keyword = word;
     },
@@ -239,13 +261,13 @@ export default {
 .page {
   display: flex;
   flex-direction: column;
+  @include auto-overflow();
+  @include customScrollbar();
 
   .robot-list {
     flex: 1;
     padding: 20px;
     padding-bottom: 0px;
-    @include auto-overflow();
-    @include customScrollbar();
     
     display: flex;
     flex-wrap: wrap;
@@ -255,14 +277,14 @@ export default {
       max-width: 380px;
       height: 180px;
       border-radius: 4px;
-      box-shadow: 0 0 3px 0 rgba(102, 102, 102, 0.5);
+      border: 1px solid $color-borderline;
       margin-right: 30px;
       margin-bottom: 20px;
       padding: 20px;
       @include click-button();
-
+      transition: all .2s ease-in-out;
       &:hover {
-        box-shadow: 0 0 14px 0 rgba(0, 0, 0, 0.2);
+        box-shadow: 0 4px 9px 0 rgba(115, 115, 115, 0.2), 0 5px 8px 0 rgba(228, 228, 228, 0.5);
         .card-title {
           .card-title-edit {
             visibility: visible;
@@ -276,7 +298,7 @@ export default {
         flex: 0 0 auto;
         padding-bottom: 10px;
         margin-bottom: 20px;
-        box-shadow: inset 0 -1px 0 0 #e9e9e9;
+        box-shadow: inset 0 -1px 0 0 $color-borderline;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;

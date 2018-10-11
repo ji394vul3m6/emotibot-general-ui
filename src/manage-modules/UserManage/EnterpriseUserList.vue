@@ -1,30 +1,30 @@
 <template>
   <div>
     <div class="card h-fill w-fill">
-      <nav-bar class='nav-bar' :options=pageOption></nav-bar>
+      <nav-bar class='nav-bar' :options=pageOption @search="changeKeyword" showSearch></nav-bar>
       <div class="page">
-        <command-row class="commands" @search="changeKeyword">
+        <command-row class="commands">
           <text-button button-type="primary" @click="popAddUser(2)">{{ $t('management.add_account') }}</text-button>
           <text-button @click="goRoleList">{{ $t('management.privilege_setting') }}</text-button>
         </command-row>
-        <div class="table-container">
-          <general-table
-            :table-header="tableHeader"
-            :table-data="showUsers"
-            :action="actions"
-            autoHeight
-            font-class="font-12"
-          />
-        </div>
-        <div class="table-paginator">
-          <v-pagination size="small"
-            :total="users.length"
-            :pageIndex="curPageIdx"
-            :pageSize="pageLimit"
-            :layout="['prev', 'pager', 'next', 'jumper']"
-            @page-change="handlePageChange"
-          />
-        </div>
+        <general-table
+          id="list-table"
+          :table-header="tableHeader"
+          :table-data="showUsers"
+          :action="actions"
+          autoHeight
+        />
+      </div>
+      <div class="table-paginator">
+        <v-pagination size="small"
+          :total="filteredUsers.length"
+          :pageIndex="curPageIdx"
+          :pageSize="pageLimit"
+          :pageSizeOption="[25, 50, 100, 200, 500, 1000]"
+          :layout="['prev', 'pager', 'next', 'sizer', 'jumper']"
+          @page-change="handlePageChange"
+          @page-size-change="handlePageSizeChange"
+        />
       </div>
     </div>
   </div>
@@ -45,6 +45,7 @@ import PasswordForm from './_components/UserPasswordForm';
 export default {
   name: 'enterprise-user-list',
   path: 'enterprise-user-list',
+  privCode: 'manage_user',
   components: {
     NavBar,
     CommandRow,
@@ -59,12 +60,23 @@ export default {
       if (this.keyword === '') {
         return this.users;
       }
+      this.curPageIdx = 1;
       return this.users.filter(user => user.user_name.indexOf(this.keyword) >= 0);
     },
     showUsers() {
       const start = this.pageLimit * (this.curPageIdx - 1);
       const end = start + this.pageLimit;
       return this.filteredUsers.slice(start, end);
+    },
+    lastPageIdx() {
+      return Math.ceil(this.filteredUsers.length / this.pageLimit);
+    },
+  },
+  watch: {
+    lastPageIdx() {
+      if (this.lastPageIdx < this.curPageIdx) {
+        this.curPageIdx = this.lastPageIdx;
+      }
     },
   },
   data() {
@@ -75,7 +87,7 @@ export default {
       keyword: '',
       users: [],
       curPageIdx: 1,
-      pageLimit: 20,
+      pageLimit: 25,
       tableHeader: [
         {
           key: 'user_name',
@@ -123,8 +135,15 @@ export default {
     goRoleList() {
       this.$router.push('/manage/enterprise-role-list');
     },
+    toFirstPage() {
+      this.curPageIdx = 1;
+    },
     handlePageChange(page) {
       this.curPageIdx = page;
+    },
+    handlePageSizeChange(pageSize) {
+      this.pageLimit = pageSize;
+      this.toFirstPage();
     },
     loadUsers() {
       const that = this;
@@ -279,6 +298,7 @@ export default {
           ok(retData) {
             retData.type = userType;
             that.$api.addEnterpriseUser(that.enterpriseID, retData).then(() => {
+              that.$notify({ text: that.$t('management.add_user_success') });
               that.loadUsers();
             });
           },
@@ -300,7 +320,7 @@ export default {
     },
     deleteUser(user) {
       const that = this;
-      that.$popCheck({
+      that.$popWarn({
         data: {
           msg: that.$t('privileges.check_delete_user', { user: user.user_name }),
         },
@@ -338,18 +358,20 @@ export default {
     flex-direction: column;
     .commands {
       flex: 0 0 auto;
+      padding-bottom: 20px;
     }
-    .table-container {
+    #list-table {
       flex: 1;
-      margin-top: 20px;
+      overflow: hidden;
     }
-    .table-paginator {
-      flex: 0 0 50px;
-
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-    }
+  }
+  .table-paginator {
+    flex: 0 0 50px;
+    padding-right: 12px;
+    border-top: 1px solid $color-borderline;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
   }
 }
 </style>

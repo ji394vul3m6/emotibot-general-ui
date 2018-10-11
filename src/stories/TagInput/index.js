@@ -17,16 +17,21 @@ export default [
       const origTags = object('origTags(已選擇的tag)', tags);
       const tagsList = object('tagsList(可供選擇的tag)', tagslist);
 
-      const template = `<tag-input
-        :allowTagErrorTooltip="allowTagErrorTooltip"
-        :origTags="origTags"
-        :tagsList="tagsList"
-        :readonly="readonly"
-        :width="width"
-        @selectedTagsChanged="onSelectedTagsChanged"
-        @addNewTag="onAddNewTag"
-        :allowTypeahead="allowTypeahead"
-      ></tag-input>`;
+      const template = `
+      <div>
+        <div style="height:500px">
+          <tag-input
+            :allowTagErrorTooltip="allowTagErrorTooltip"
+            :origTags="origTags"
+            :tagsList="tagsList"
+            :readonly="readonly"
+            :width="width"
+            @selectedTagsChanged="onSelectedTagsChanged"
+            @addNewTag="onAddNewTag"
+            :allowTypeahead="allowTypeahead"
+          ></tag-input>
+        </div>
+      </div>`;
 
       return {
         components: {

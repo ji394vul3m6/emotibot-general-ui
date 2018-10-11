@@ -32,7 +32,7 @@
         showEmpty></general-table>
     </div>
     <div id="card-content-footer">
-      <v-pagination size="small" :total="curTotal" :pageIndex="curPageIdx" :pageSize="pageLimit" :layout="['prev', 'pager', 'next', 'jumper']" @page-change="handlePageChange"></v-pagination>
+      <v-pagination size="small" :total="curTotal" :pageIndex="curPageIdx" :pageSize="pageLimit" :pageSizeOption="[25, 50, 100, 200, 500, 1000]" :layout="['prev', 'pager', 'next', 'sizer', 'jumper']" @page-change="handlePageChange" @page-size-change="handlePageSizeChange"></v-pagination>
     </div>
 
     <div id="content-blocker" v-if="isEditMode"></div>
@@ -117,7 +117,7 @@ export default {
       checkedCommand: [],
 
       curPageIdx: 1,
-      pageLimit: 20,
+      pageLimit: 25,
     };
   },
   computed: {
@@ -167,6 +167,7 @@ export default {
     value() {
       this.loadCurrentCommands();
       this.currentCommands = this.commands;
+      this.checkedCommand = [];
     },
     commands() {
       this.commandKeyword = '';
@@ -229,13 +230,18 @@ export default {
       } else {
         this.toCurPage(page);
       }
+      this.checkedCommand = [];
+    },
+    handlePageSizeChange(pageSize) {
+      this.pageLimit = pageSize;
+      this.toFirstPage();
+      this.checkedCommand = [];
     },
     toggleCommandStatus(data) {
       const command = this.currentCommands.find(cmd => cmd.id === data.id);
       command.status = !command.status;
       this.$api.editRobotCommand(command)
-        .then((rsp) => {
-          const rspCommand = this.parseCommand(rsp);
+        .then((rspCommand) => {
           const theCommandIdx = this.currentCommands
             .findIndex(cmd => cmd.id === rspCommand.id);
           this.currentCommands.splice(theCommandIdx, 1, command);
@@ -287,6 +293,7 @@ export default {
             .then((cmd) => {
               this.commands.splice(0, 0, cmd);
               this.loadLabels();
+              this.$notify({ text: this.$t('error_msg.save_success') });
             })
             .catch((err) => {
               console.log(err);
@@ -320,6 +327,7 @@ export default {
               const theCommandIdx = this.commands
                 .findIndex(cmd => cmd.id === rspCommand.id);
               this.commands.splice(theCommandIdx, 1, rspCommand);
+              this.$notify({ text: this.$t('error_msg.save_success') });
               this.loadLabels();
             })
             .catch((err) => {
@@ -377,6 +385,7 @@ export default {
               } else {
                 this.$notify({ text: this.$t('robot_command.movetopop.move_command_success') });
               }
+              this.$notify({ text: this.$t('error_msg.save_success') });
               this.$emit('reloadCommand', this.currentCategoryId);
             })
             .catch((err) => {
@@ -408,7 +417,7 @@ export default {
           },
         },
       };
-      this.$popCheck(option);
+      this.$popWarn(option);
     },
     confirmDeleteCommand(id) {
       // api call
@@ -417,6 +426,7 @@ export default {
           const theCommandIdx = this.commands
             .findIndex(cmd => cmd.id === id);
           this.commands.splice(theCommandIdx, 1);
+          this.$notify({ text: this.$t('general.delete_success') });
         })
         .catch((err) => {
           console.log(err);
@@ -441,7 +451,7 @@ export default {
           },
         },
       };
-      this.$popCheck(option);
+      this.$popWarn(option);
     },
     handleCheckedChange(checked) {
       this.checkedCommand = checked;
@@ -525,7 +535,7 @@ export default {
     flex-direction: column;
     #toolbar {
       flex: 0 0 auto;
-      margin: 10px 20px;
+      margin: 20px;
       display: flex;
       .text-button {
         margin: 0 5px;
@@ -542,6 +552,7 @@ export default {
   #card-content-footer {
     border-top: 1px solid $color-borderline;
     flex: 0 0 50px;
+    padding-right: 12px;
     display: flex;
     align-items: center;
     justify-content: flex-end;
@@ -552,6 +563,7 @@ export default {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.55);
+    border-radius: 4px;
   }
 }
 </style>

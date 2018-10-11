@@ -64,7 +64,7 @@
         <span class="required">＊ </span>
         {{ $t('management.user_display_name') }}
       </div>
-      <input class="row-input" ref="displayName" v-model="displayName" :placeholder="$t('management.input_placeholder')" v-tooltip="displayNameTooltip"
+      <input class="row-input" ref="displayName" v-model="displayName" :placeholder="$t('management.input_placeholder')" :maxlength="displayNameMaxlength" v-tooltip="displayNameTooltip"
       :class="{'error': isDisplayNameTooltipShown}">
     </div>
     
@@ -74,6 +74,7 @@
         {{ $t('management.phone') }}
       </div>
       <input class="row-input" ref="phone" v-model="phone" :placeholder="$t('management.input_placeholder')" v-tooltip="phoneTooltip"
+      :maxlength="phoneMaxlength"
       :class="{'error': isPhoneTooltipShown}">
     </div>
     <div class="row">
@@ -91,6 +92,7 @@
 import md5 from 'md5';
 import DropdownSelector from '@/components/DropdownSelect';
 import validate from '@/utils/js/validate';
+import event from '@/utils/js/event';
 
 export default {
   name: 'admin-add-form',
@@ -117,7 +119,7 @@ export default {
     displayName() {
       if (this.displayName.trim() !== '') {
         this.isDisplayNameTooltipShown = false;
-        this.$refs.displayName.dispatchEvent(new Event('tooltip-hide'));
+        this.$refs.displayName.dispatchEvent(event.createEvent('tooltip-hide'));
       }
     },
     userName() {
@@ -128,7 +130,7 @@ export default {
     email() {
       if (this.email.trim() !== '') {
         this.isEmailTooltipShown = false;
-        this.$refs.email.dispatchEvent(new Event('tooltip-hide'));
+        this.$refs.email.dispatchEvent(event.createEvent('tooltip-hide'));
       }
     },
     password() {
@@ -138,11 +140,11 @@ export default {
     },
     checkPassword() {
       this.isPasswordCheckTooltipShown = false;
-      this.$refs.checkPassword.dispatchEvent(new Event('tooltip-hide'));
+      this.$refs.checkPassword.dispatchEvent(event.createEvent('tooltip-hide'));
     },
     phone() {
       this.isPhoneTooltipShown = false;
-      this.$refs.phone.dispatchEvent(new Event('tooltip-hide'));
+      this.$refs.phone.dispatchEvent(event.createEvent('tooltip-hide'));
     },
   },
   data() {
@@ -158,6 +160,8 @@ export default {
       passwordMaxlength: 16,
       passwordMinlength: 6,
       userNameMaxlength: 64,
+      displayNameMaxlength: validate.displayNameMaxlength,
+      phoneMaxlength: validate.phoneMaxlength,
 
       editPasswordCallback: undefined,
       existedUsers: [],
@@ -251,30 +255,30 @@ export default {
       if (that.email.trim() === '') {
         isValid = false;
         that.emailTooltip.msg = that.$t('management.err_empty_email');
-        that.$refs.email.dispatchEvent(new Event('tooltip-reload'));
-        that.$refs.email.dispatchEvent(new Event('tooltip-show'));
+        that.$refs.email.dispatchEvent(event.createEvent('tooltip-reload'));
+        that.$refs.email.dispatchEvent(event.createEvent('tooltip-show'));
         that.isEmailTooltipShown = true;
       } else if (!validate.isValidEmail(that.email)) {
         isValid = false;
         that.emailTooltip.msg = that.$t('management.err_invalid_email');
-        that.$refs.email.dispatchEvent(new Event('tooltip-reload'));
-        that.$refs.email.dispatchEvent(new Event('tooltip-show'));
+        that.$refs.email.dispatchEvent(event.createEvent('tooltip-reload'));
+        that.$refs.email.dispatchEvent(event.createEvent('tooltip-show'));
         that.isEmailTooltipShown = true;
       }
 
       if (that.phone !== '' && !validate.isValidPhone(that.phone)) {
         isValid = false;
-        that.$refs.phone.dispatchEvent(new Event('tooltip-show'));
+        that.$refs.phone.dispatchEvent(event.createEvent('tooltip-show'));
         that.isPhoneTooltipShown = true;
       }
 
       if (that.displayName.trim() === '') {
         isValid = false;
-        that.$refs.displayName.dispatchEvent(new Event('tooltip-show'));
+        that.$refs.displayName.dispatchEvent(event.createEvent('tooltip-show'));
         that.isDisplayNameTooltipShown = true;
       } else if (!validate.isValidDisplayName(that.displayName.trim())) {
         isValid = false;
-        that.$refs.displayName.dispatchEvent(new Event('tooltip-show'));
+        that.$refs.displayName.dispatchEvent(event.createEvent('tooltip-show'));
         that.isDisplayNameTooltipShown = true;
       }
       if (!that.editMode) {
@@ -289,7 +293,7 @@ export default {
           that.isPasswordTooltipShown = true;
         } else if (that.checkPassword !== that.password) {
           isValid = false;
-          that.$refs.checkPassword.dispatchEvent(new Event('tooltip-show'));
+          that.$refs.checkPassword.dispatchEvent(event.createEvent('tooltip-show'));
           that.isPasswordCheckTooltipShown = true;
         }
       }

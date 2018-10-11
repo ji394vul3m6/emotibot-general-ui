@@ -6,7 +6,7 @@
       <div class="space"></div>
       <icon class="page-icon" :icon-type="directory.icon" :size=15 />
       <div class="name">{{$t(directory.display)}}</div>
-      <icon class="expand-icon" icon-type="menu_expand" :size=12 />
+      <icon class="expand-icon" icon-type="menu_expand" :size=18 />
     </div>
     <div v-if="directory.pages && directory.pages.length > 0" class="children" :style="childrenStyle(directory)">
       <div class="page row clickable"

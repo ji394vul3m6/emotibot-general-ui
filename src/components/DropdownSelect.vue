@@ -1,7 +1,8 @@
 <template>
   <div class="dropdown-select" :style="styleObj">
-    <div class="input-bar" :class="{'is-focus': show}" ref="input" @click="showSelection">
+    <div class="input-bar" :class="{'is-focus': show}" :style="inputBarStyle" ref="input" @click="showSelection">
       <div class="input-block">
+        <span v-if="!checkedValues.length" class="placeholder">{{ placeholder }}</span>
         <template v-if="multi">
         <tag class="input-tag" v-for="value in checkedValues" :key="value.value" font-class="font-12">
           {{ value.text }}
@@ -17,7 +18,17 @@
       </div>
     </div>
     <div ref="list" v-if="show" class="select-list" :style="listStyle">
-      <template v-for="(option, idx) in localOptions">
+      <div class="select-item search" v-if="showSearchBar">
+        <input class="search-input" v-model="searchKeyWord" placeholder="Search">
+      </div>
+      <template v-if="filteredLocalOptions.length === 0">
+        <div class="select-item item">
+          <div class="select-text not-selectable" :style="selectTextStyle">
+            {{ $t('general.no_option') }}
+          </div>
+        </div>
+      </template>
+      <template v-else v-for="(option, idx) in filteredLocalOptions">
       <div class="select-item item" :key="idx" v-if="!option.isGroup"
         :class="{
           checked: option.checked && showCheckedIcon,
@@ -84,6 +95,20 @@ export default {
       type: Boolean,
       default: true,
     },
+    placeholder: {
+      type: String,
+      default: '',
+    },
+    inputBarStyle: {
+      type: Object,
+      default() {
+        return {};
+      },
+    },
+    showSearchBar: {
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {
     styleObj() {
@@ -96,6 +121,12 @@ export default {
         width: this.width,
       };
     },
+    filteredLocalOptions() {
+      if (this.searchKeyWord === '') {
+        return this.localOptions;
+      }
+      return this.localOptions.filter(option => option.text.indexOf(this.searchKeyWord) !== -1);
+    },
   },
   data() {
     return {
@@ -105,25 +136,47 @@ export default {
       selectTextStyle: {},
       checkedValues: [],
       detectClickListener: undefined,
+      searchKeyWord: '',
     };
+  },
+  watch: {
+    options(options) {
+      this.initOptions(options);
+    },
+    value(val) {
+      this.selectValue = val;
+    },
   },
   methods: {
     removeOption(opt) {
       opt.checked = false;
       this.updateValue();
     },
+    addEventListeners() {
+      window.addEventListener('click', this.hideListWhenEventTriggeredOutside);
+      window.addEventListener('scroll', this.hideListWhenEventTriggeredOutside, true);
+      window.addEventListener('resize', this.reposition);
+    },
+    removEventListeners() {
+      window.removeEventListener('click', this.hideListWhenEventTriggeredOutside);
+      window.removeEventListener('scroll', this.hideListWhenEventTriggeredOutside, true);
+      window.removeEventListener('resize', this.reposition);
+    },
     selectOption(idx) {
+      const value = this.filteredLocalOptions[idx].value;
       const that = this;
       if (that.multi) {
-        that.localOptions[idx].checked = !that.localOptions[idx].checked;
-        that.toggleHover(that.localOptions[idx], false);
+        const option = that.localOptions.find(o => o.value === value);
+        option.checked = !option.checked;
+        that.toggleHover(option, false);
       } else {
         that.localOptions.forEach((option) => {
           option.checked = false;
         });
-        that.localOptions[idx].checked = true;
+        const option = that.localOptions.find(o => o.value === value);
+        option.checked = true;
         that.show = false;
-        window.removeEventListener('click', that.detectClickListener);
+        this.removEventListeners();
       }
       that.updateValue();
     },
@@ -139,33 +192,31 @@ export default {
       }
       that.show = true;
 
-      const inputBox = that.$refs.input.getBoundingClientRect();
-      that.listStyle = {
+      that.reposition();
+
+      that.addEventListeners();
+    },
+    hideListWhenEventTriggeredOutside(e) {
+      if (this.$refs.list && !this.$refs.list.contains(e.target)) {
+        this.show = false;
+        this.removEventListeners();
+      }
+    },
+    reposition() {
+      const inputBox = this.$refs.input.getBoundingClientRect();
+      this.listStyle = {
         position: 'fixed',
         top: `${inputBox.top + inputBox.height + 3}px`,
         left: `${inputBox.left}px`,
         width: `${inputBox.width}px`,
       };
-
       if (!this.fixedListWidth) {
-        that.listStyle.width = 'auto';
-        that.listStyle['min-width'] = `${inputBox.width}px`;
-        that.selectTextStyle['flex-grow'] = 0;
-        that.selectTextStyle['flex-shrink'] = 0;
-        that.selectTextStyle['flex-basis'] = 'auto';
+        this.listStyle.width = 'auto';
+        this.listStyle['min-width'] = `${inputBox.width}px`;
+        this.selectTextStyle['flex-grow'] = 0;
+        this.selectTextStyle['flex-shrink'] = 0;
+        this.selectTextStyle['flex-basis'] = 'auto';
       }
-
-      that.detectClickListener = (e) => {
-        const clickDom = e.target;
-        const listDom = that.$refs.list;
-        if (listDom && !listDom.contains(clickDom)) {
-          that.show = false;
-          if (that.detectClickListener) {
-            window.removeEventListener('click', that.detectClickListener);
-          }
-        }
-      };
-      window.addEventListener('click', that.detectClickListener);
     },
     selectValue(value) {
       if (value === undefined) {
@@ -183,6 +234,7 @@ export default {
         }
       });
       that.checkedValues = this.localOptions.filter(opt => opt.checked);
+      that.updateValue();
     },
     toggleHover(option, bool) {
       option.hovered = bool;
@@ -201,12 +253,12 @@ export default {
           hovered: false,
         });
       });
+      that.checkedValues = this.localOptions.filter(opt => opt.checked);
     },
   },
   mounted() {
     const that = this;
     that.initOptions(that.options);
-    that.checkedValues = this.localOptions.filter(opt => opt.checked);
     that.$on('select', that.selectValue);
     that.$on('updateOptions', that.initOptions);
   },
@@ -217,13 +269,17 @@ export default {
 @import 'styles/variable.scss';
 
 $border-color: $color-borderline;
-
 .input-bar {
   display: flex;
   height: 28px;
   border: 1px solid $border-color;
   border-radius: 2px;
   @include click-button();
+
+  .placeholder {
+    @include font-14px();
+    color: $color-font-disabled;
+  }
 
   &:hover {
     border-color: $color-borderline-hover;
@@ -240,7 +296,6 @@ $border-color: $color-borderline;
     text-overflow: ellipsis;
     white-space: nowrap;
     border: none;
-    border-right: 1px solid $border-color;
     display: flex;
     align-items: center;
     padding: 5px 8px;
@@ -262,9 +317,14 @@ $border-color: $color-borderline;
     display: flex;
     align-items: center;
     justify-content: center;
+    margin: 3px 0;
+    border-left: 1px solid $border-color;
   }
 }
 .select-list {
+  position: absolute;
+  top: 35px; // input height + 5px padding
+  left: 0;
   @include font-14px();
   z-index: 10;
   box-sizing: border-box;
@@ -298,6 +358,9 @@ $border-color: $color-borderline;
       }
       &.is-button {
         color: $color-primary;
+        &:hover {
+          color: $color-white;
+        }
       }
     }
     &.group {
@@ -320,6 +383,9 @@ $border-color: $color-borderline;
         display: flex;
         align-items: center;
       }
+    }
+    .search-input{
+      margin-left: 10px;
     }
   }
 }

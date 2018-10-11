@@ -83,20 +83,6 @@ export default {
       type: Boolean,
       default: true,
     },
-    allowTagErrorTooltip: {
-      type: Boolean,
-      default: true,
-    },
-    tagErrorWording: {
-      type: Object,
-      default() {
-        return {
-          ExceedMaxTagWording: '已达标签个数上限',
-          DuplicateTagWording: '已存在重复标签',
-          InvalidTagWording: '标签格式不符',
-        };
-      },
-    },
     area: {
       type: Boolean,
       default() {
@@ -173,9 +159,8 @@ export default {
     closeSelector() {
       this.selectorControl = false;
     },
-    handleKeyDown() {
-      this.closeErrorTooltip();
-    },
+    // handleKeyDown() {
+    // },
     clickOutside(e) {
       if (this.$el && !this.$el.contains(e.target)) {
         this.closeSelector();
@@ -218,14 +203,12 @@ export default {
       if (this.allowNewTag && !this.isInputing && tagToAdd !== '') {
         const errmsg = this.checkTagError(tagToAdd);
         if (errmsg === '') {
-          this.closeErrorTooltip();
           this.addSelectedTag(idx, tagToAdd);
           this.addNewTag(tagToAdd);
           this.$nextTick(() => {
             this.inputTag = tagRemain;
           });
         } else {
-          this.showErrorTooltip(errmsg);
           this.inputTag = tag.replace(/ /g, '');
           this.$emit('tagError', errmsg);
         }
@@ -239,15 +222,12 @@ export default {
         const idx = this.getIdxToInsertTag();
         const errmsg = this.checkTagError(tag);
         if (errmsg === '') {  // add Tage
-          this.closeErrorTooltip();
           this.addSelectedTag(idx, tag);
           this.addNewTag(tag);
         } else if (this.isDuplicate(tag)) { // delete tag if already added
-          this.closeErrorTooltip();
           const idxToRemove = this.selectedTags.indexOf(tag);
           this.removeTag(idxToRemove);
         } else {
-          this.showErrorTooltip(errmsg);
           this.$emit('tagError', errmsg);
         }
       }
@@ -265,7 +245,6 @@ export default {
           });
         }
       }
-      this.closeErrorTooltip();
       this.inputTag = '';
     },
     getIdxToInsertTag() {
@@ -312,28 +291,6 @@ export default {
     },
     isValidTag(tag) {
       return (this.tagValidation) ? this.tagValidation(tag) : true;
-    },
-    showErrorTooltip(errmsg) {
-      if (this.allowTagErrorTooltip) {
-        this.showTooltip = true;
-        switch (errmsg) {
-          case 'ExceedMaxTag':
-            this.errorWording = this.tagErrorWording.ExceedMaxTagWording;
-            break;
-          case 'DuplicateTag':
-            this.errorWording = this.tagErrorWording.DuplicateTagWording;
-            break;
-          case 'InvalidTag':
-            this.errorWording = this.tagErrorWording.InvalidTagWording;
-            break;
-          default:
-            this.errorWording = '';
-        }
-      }
-    },
-    closeErrorTooltip() {
-      this.showTooltip = false;
-      this.errorWording = '';
     },
     /**
      * Handle Delete Tag

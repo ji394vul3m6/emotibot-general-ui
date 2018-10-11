@@ -1,7 +1,7 @@
 <template>
   <div v-if="show" class="dropdown-menu-container" :style="style">
     <div class="dropdown-menu">
-      <div v-for="(option, idx) in options" :key="idx" class="menu-option" @click.stop="clickOption($event, option.onclick)">
+      <div v-for="(option, idx) in options" :key="idx" class="menu-option" :class="{'disabled': option.disabled === true}" @click.stop="clickOption($event, option.onclick)">
         {{ option.text }}
       </div>
     </div>
@@ -38,12 +38,12 @@ export default {
       show: false,
       showX: 0,
       showY: 0,
-      clickOutsideListener: undefined,
     };
   },
   computed: {
     style() {
       return {
+        position: 'fixed',
         top: this.show ? `${this.showY}px` : 0,
         left: this.show ? `${this.showX}px` : 0,
         visibility: this.show ? 'visible' : 'hidden',
@@ -71,17 +71,11 @@ export default {
           that.showX = (that.x + 10) - that.$el.clientWidth;
           that.showY = that.y;
         } else {
-          that.showX = -10;
+          that.showX = that.x - 10;
           // we keep 10px padding to show box-shadow, shift left for 10px to pretty align elems
           that.showY = that.y;
         }
       });
-
-      that.clickOutsideListener = (e) => {
-        if (!that.$el.contains(e.target)) {
-          that.show = false;
-        }
-      };
     });
     that.$on('hide', () => {
       that.show = false;
@@ -92,7 +86,6 @@ export default {
 <style lang="scss" scoped>
 $option-height: 32px;
 .dropdown-menu-container {
-  position: absolute;
   padding: 10px;
   z-index: 5;
 }
@@ -111,6 +104,13 @@ $option-height: 32px;
     display: flex;
     align-items: center;
     cursor: pointer;
+
+    &.disabled {
+      color: $color-font-disabled;
+      background-color: $color-white;
+      cursor: default;
+      pointer-events: none;
+    }
     &:hover {
       background-color: $color-select-hover;
       color: $color-white;

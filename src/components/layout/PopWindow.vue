@@ -6,26 +6,30 @@
         <label>{{ title }}</label>
       </div>
       <div v-bind:class="[customContentClasses]" class="content">
-        <component v-if="bindValue === true" @validateSuccess="validatePass"  
+        <component v-if="bindValue === true"
+          @validateSuccess="validatePass"
+          @cancelValidateSuccess="cancelValidatePass"
           @disableOK="disableOK"
           @enableOK="enableOK"
           @cancel="close"
           :is="currentView" v-model="data" :extData="extData" ref="content"></component>
-        <component v-else @validateSuccess="validatePass"  
+        <component v-else
+          @validateSuccess="validatePass"
+          @cancelValidateSuccess="cancelValidatePass"
           @disableOK="disableOK"
           @enableOK="enableOK"
           @cancel="close"
           :is="currentView" :origData="data" :extData="extData" ref="content"></component>
       </div>
-      <div class="pop-button">
+      <div class="pop-button" :class="{'center-align': popWarn}">
         <div class="left-part">
           <text-button v-if="left_button !== undefined"
-            :button-type="left_button.type ? left_button.type : 'normal'"
+            :button-type="left_button.type ? left_button.type : 'default'"
             v-on:click="customClick(left_button)" :key="left_button.msg">{{ left_button.msg }}</text-button>
         </div>
         <div class="right-part">
         <template v-for="button in custom_button">
-          <text-button :button-type="button.type ? button.type : 'normal'"
+          <text-button :button-type="button.type ? button.type : 'default'"
             v-on:click="customClick(button)" :key="button.msg">{{ button.msg }}</text-button>
         </template>
         <text-button
@@ -33,7 +37,7 @@
           ref="cancelBtn"
           v-if="buttons.indexOf('cancel') != -1">{{ cancel_msg }}</text-button>
         <text-button
-          :button-type="disable_ok ? 'disable' : 'fill'"
+          :button-type="okBtnType"
           v-on:click="click(true)"
           ref="okBtn"
           v-if="buttons.indexOf('ok') != -1">{{ ok_msg }}</text-button>
@@ -51,6 +55,12 @@ export default {
   name: 'pop-window',
   components: {
     TextButton,
+  },
+  computed: {
+    okBtnType() {
+      if (this.disable_ok) return 'disable';
+      return this.popWarn ? 'primary' : 'fill';
+    },
   },
   methods: {
     close() {
@@ -79,11 +89,10 @@ export default {
     },
     click(ok = true) {
       if (!ok) {
-        this.show = false;
-        this.currentView = undefined;
-        this.$root.$emit('close-window', this);
-        if (this.callCancel && typeof this.callCancel === 'function') {
-          this.callCancel.call(this, this.data);
+        if (this.cancelValidate) {
+          this.$refs.content.$emit('cancelValidate');
+        } else {
+          this.cancelValidatePass();
         }
       }
 
@@ -107,6 +116,18 @@ export default {
         }
       }
     },
+    cancelValidatePass(customData) {
+      this.show = false;
+      this.currentView = undefined;
+      this.$root.$emit('close-window', this);
+      if (this.callCancel && typeof this.callCancel === 'function') {
+        if (customData) {
+          this.callCancel.call(this, customData);
+        } else {
+          this.callCancel.call(this, this.data);
+        }
+      }
+    },
     showWindow(option) {
       const that = this;
       that.show = true;
@@ -118,11 +139,13 @@ export default {
       that.extData = option.extData || {};
       that.currentView = option.component;
       that.validate = option.validate;
+      that.cancelValidate = option.cancelValidate || false;
       that.disable_ok = option.disable_ok || false;
       that.custom_button = option.custom_button || [];
       that.left_button = option.left_button || undefined;
       that.clickOutsideClose = option.clickOutsideClose === true;
       that.bindValue = option.bindValue !== false;
+      that.popWarn = option.popWarn === true;
       if (option.callback) {
         that.callOk = option.callback.ok;
         that.callCancel = option.callback.cancel;
@@ -166,6 +189,7 @@ export default {
       clickOutsideClose: true,
       bindValue: true,
       left_button: undefined,
+      popWarn: false,
     };
   },
 };
@@ -207,6 +231,8 @@ $pop-spacing: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
+  @include auto-overflow();
+  @include customScrollbar();
   &.slide-in-enter-active, &.slide-in-leave-active {
     transition: all 0.25s ease-in;
     .pop-content {
@@ -226,14 +252,14 @@ $pop-spacing: 24px;
     }
   }
 
-  $pop-max-height: 70vh;
+  $pop-max-height: 90vh;
   .pop-content {
     // animation-name: showup;
     // animation-duration: 0.5s;
 
     background: white;
     // min-width: 300px;
-    max-width: 90%;
+    // max-width: 90%;
     max-height: $pop-max-height;
 
     display: flex;
@@ -267,7 +293,6 @@ $pop-spacing: 24px;
       min-height: 30px;
       max-height: calc(#{$pop-max-height} - 140px);
       padding-top: $content-padding-top;
-      // padding: 20px;
       box-sizing: border-box;
       @include auto-overflow();
       @include customScrollbar();
@@ -288,7 +313,16 @@ $pop-spacing: 24px;
       justify-content: space-between;
 
       .text-button {
-        width: 80px;
+        width: 60px;
+        &:not(:last-child) {
+          margin-right: 10px;
+        }
+      }
+      &.center-align {
+        justify-content: center;
+        .text-button {
+          width: 68px;
+        }
       }
     }
   }

@@ -1,6 +1,7 @@
 function syncDateTime(obj) {
   obj.dateObj.setHours(parseInt(obj.timeObj.HH, 10));
   obj.dateObj.setMinutes(parseInt(obj.timeObj.mm, 10));
+  obj.dateObj.setSeconds(parseInt(obj.timeObj.ss, 10));
 }
 
 function getTimestamp() {
@@ -97,6 +98,9 @@ export default {
 
     const min = picker.dateObj.getMinutes();
     picker.timeObj.mm = min >= 10 ? min.toString() : `0${min}`;
+
+    const sec = picker.dateObj.getSeconds();
+    picker.timeObj.ss = sec >= 10 ? sec.toString() : `0${sec}`;
   },
   toTimeString(picker) {
     syncDateTime(picker);

@@ -1,28 +1,30 @@
 <template lang="html">
-<div id="scenario-list-page">
+<div id="scenario-list-page-v3">
   <div class="content card h-fill w-fill">
-    <div class="row title">
+    <div class="header title">
       {{$t("task_engine_v3.scenario_list_page.scenario_list")}}
+      <search-input v-model="filteredKeyWord" ></search-input>
     </div>
-    <div class="row">
+    <div class="page">
       <div id="toolbar">
         <div id="left-buttons">
-          <text-button button-type='primary' width='68px' height='28px' @click="createNewScenario">
+          <text-button button-type='primary' @click="createNewScenario">
             {{$t("task_engine_v3.scenario_list_page.button_create_new_scenario")}}
           </text-button>
-          <text-button button-type='default' width='68px' height='28px' @click="showImportPop">
+          <text-button button-type='default' @click="showImportPop">
             {{$t("task_engine_v3.scenario_list_page.button_import_scenario")}}
           </text-button>
           <input type="file" ref="uploadInput" v-on:change="changeFile()" accept=".xlsx">
           <input type="file" ref="uploadScenarioJSONInput" @change="changeScenarioJSONFile()" accept=".json">
         </div>
-        <div id="right-buttons">
-          <search-input v-model="filteredKeyWord" ></search-input>
-        </div>
       </div>
-    </div>
-    <template v-for="(scenario, index) in filteredScenarioList">
-      <div class="row" @mouseover="scenario.show = true" @mouseleave="scenario.show = false">
+      <div
+        v-for="(scenario, index) in filteredScenarioList" 
+        :key="scenario.scenarioID"
+        class="row" 
+        @mouseover="scenario.show = true" 
+        @mouseleave="scenario.show = false"
+      >
         <div id="scenario-grid">
           <div id="scenario-toggle-container">
             <toggle v-model="scenario.enable" @change="switchScenario(scenario)" :big="false"></toggle>
@@ -32,14 +34,14 @@
               {{scenario.scenarioName}}
             </div>
             <div class="delete-button">
-              <div class="icon_container" v-show="scenario.show" v-dropdown="moreOptions(scenario)">
-                <icon :size=25 icon-type="more"/>
+              <div class="icon_container" v-if="scenario.show" v-dropdown="moreOptions(scenario)">
+                <icon :size=25 icon-type="more_blue"/>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </template>
+    </div>
   </div>
 </div>
 </template>
@@ -53,7 +55,7 @@ import CreateScenarioPop from './CreateScenarioPop';
 import taskEngineApi from './_api/taskEngine';
 
 export default {
-  name: 'scenario-list-page',
+  name: 'scenario-list-page-v3',
   components: {},
   data() {
     return {
@@ -65,8 +67,9 @@ export default {
   },
   computed: {
     filteredScenarioList() {
-      return this.scenarioList.filter(
-        scenario => scenario.scenarioName.indexOf(this.filteredKeyWord) !== -1);
+      return this.scenarioList
+        .filter(scenario => scenario.scenarioName.indexOf(this.filteredKeyWord) !== -1)
+        .sort((a, b) => a.scenarioName.localeCompare(b.scenarioName));
     },
   },
   watch: {},
@@ -90,6 +93,7 @@ export default {
     },
     listAllScenarios() {
       taskEngineApi.listScenarios(this.appId).then((data) => {
+        console.log(data);
         if (typeof (data) === 'object' && 'msg' in data) {
           this.scenarioList = data.msg.filter(scenario => scenario.version === '2.0')
                                       .map((scenario) => {
@@ -153,7 +157,7 @@ export default {
     },
     deleteScenario(scenario) {
       const that = this;
-      that.$popCheck({
+      that.$popWarn({
         data: {
           msg: that.$t(
             'task_engine_v3.scenario_list_page.ask_delete_confirm',
@@ -271,15 +275,14 @@ export default {
 $row-height: $default-line-height;
 @import "../scss/teVariable.scss";
 
-#scenario-list-page{
+#scenario-list-page-v3{
   height: 100%;
   .content {
     display: flex;
     flex-direction: column;
-    .row {
-      flex: 0 0 auto;
-      padding-left: 20px;
-
+    .header {
+      flex: 0 0 60px;
+      padding: 0 20px;
       &.title {
         @include font-16px();
         color: $color-font-active;
@@ -287,38 +290,54 @@ $row-height: $default-line-height;
         border-bottom: 1px solid $color-borderline;
         display: flex;
         align-items: center;
+        justify-content: space-between;
       }
-      &:not(.title) {
-        margin-top: 20px;
-      }
+    }
+    .page {
+      flex: 1;
+      @include auto-overflow();
+      @include customScrollbar();
 
-      .text-button {
-        margin-right: 10px;
+      #toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px;
+        #left-buttons {
+          flex: 1;
+          .text-button {
+            margin-right: 10px;
+          }
+        }
+        #right-buttons {
+          flex: 0 0 auto;
+        }
+        #left-buttons, #right-buttons {
+          display: flex;
+          align-items: center;
+        }
       }
       input[type=file] {
         visibility: hidden;
+        width: 30px;
       }
       .file-selector {
         & ~ input {
           display: none;
         }
       }
-
-      #toolbar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-right: 20px;
-      }
-
+    }
+    .row {
+      flex: 0 0 auto;
+      padding: 20px;
+      padding-top: 0px;
       #scenario-grid {
         display: flex;
-        margin-right: 20px;
         height: 82px;
         border-radius: 4px;
         border: solid 1px $color-borderline;
         color: $color-font-active;
-
+        transition: all .2s ease-in-out;
         &:hover {
           box-shadow: 0 4px 9px 0 rgba(115, 115, 115, 0.2), 0 5px 8px 0 rgba(228, 228, 228, 0.5);
         }

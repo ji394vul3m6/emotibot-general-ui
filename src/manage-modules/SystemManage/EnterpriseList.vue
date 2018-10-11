@@ -1,9 +1,9 @@
 <template>
   <div>
     <div class="card h-fill w-fill">
-      <nav-bar class='nav-bar' :options=pageOption v-model="currentPage"></nav-bar>
+      <nav-bar class='nav-bar' :options=pageOption v-model="currentPage"  @search="doSearch" showSearch></nav-bar>
       <div class="page">
-        <command-row class="commands" @search="doSearch">
+        <command-row class="commands">
             <text-button button-type="primary"
             @click="popAddEnterprise()">{{ $t('management.create_enterprise') }}</text-button>
         </command-row>
@@ -44,6 +44,7 @@ const adminListPage = '/manage/system-admin-list';
 export default {
   path: 'enterprise-manage',
   name: 'enterprise-manage',
+  privCode: 'manage_enterprise',
   components: {
     NavBar,
     CommandRow,
@@ -246,13 +247,13 @@ export default {
 .page {
   display: flex;
   flex-direction: column;
+  @include auto-overflow();
+  @include customScrollbar();
 
   .enterprise-list {
     flex: 1;
     padding: 20px;
     padding-bottom: 0px;
-    @include auto-overflow();
-    @include customScrollbar();
     
     display: flex;
     flex-wrap: wrap;
@@ -262,14 +263,14 @@ export default {
       max-width: 380px;
       height: 150px;
       border-radius: 4px;
-      box-shadow: 0 0 3px 0 rgba(102, 102, 102, 0.5);
+      border: 1px solid $color-borderline;
       margin-right: 30px;
       margin-bottom: 20px;
       padding: 20px;
       @include click-button();
-
+      transition: all .2s ease-in-out;
       &:hover {
-        box-shadow: 0 0 14px 0 rgba(0, 0, 0, 0.2);
+        box-shadow: 0 4px 9px 0 rgba(115, 115, 115, 0.2), 0 5px 8px 0 rgba(228, 228, 228, 0.5);
         .card-title {
           .card-title-edit {
             visibility: visible;

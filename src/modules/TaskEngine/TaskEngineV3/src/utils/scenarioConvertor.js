@@ -258,7 +258,8 @@ export default {
     return -1;
   },
   convertToRegistryData(scenarioId, skill, skillId) {
-    if (skill.register_json) { // manually give register JSON
+    if (skill.register_json && Object.keys(skill.register_json).length > 0) {
+      // manually give register JSON
       const registerJson = JSON.parse(JSON.stringify(skill.register_json));
       registerJson.taskId = `wizard_mode_nlu_pc_node_${skillId}_${scenarioId}`;
       return registerJson;

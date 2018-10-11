@@ -5,7 +5,7 @@
       <div class="err-detail">{{ errMsg }} </div>
     </div>
     <div v-if="!showLoading && errMsg === ''" class="table">
-      <general-table auto-height show-empty :tableHeader="tableHeader" :tableData="data" font-class='font-12'></general-table>
+      <general-table auto-height show-empty :tableHeader="tableHeader" :tableData="data" ></general-table>
       <!-- <table style="table-layout: fixed">
         <tr>
           <td v-for="key in Object.keys(value.tableColumns)" :key="key" :style="{maxWidth: value.tableColumns[key].width, minWidth: value.tableColumns[key].width}">

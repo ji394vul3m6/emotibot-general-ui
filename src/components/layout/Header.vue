@@ -1,23 +1,26 @@
 <template>
 <div id="page-header">
-  <div class="robot-list column" @click="showRobotList" v-if="!showUserInfoPage && enterpriseID !== ''">
+  <div class="robot-list column click-button" @click="showRobotList" v-if="!showUserInfoPage && enterpriseID !== '' && !showAuditModule">
     {{ $t('general.robot_list') }}
   </div>
+  <div class="product column click-button" @click="goIMPage" v-if="userInfo.type === 1 && !showAuditModule">
+    {{ $t('general.im') }}
+  </div>
   <div class="empty column"></div>
-  <div class="enterprise column" v-if="!showUserInfoPage && enterpriseID !== ''">
+  <div class="enterprise column" v-if="!showUserInfoPage && enterpriseID !== '' && !showAuditModule">
     <div class="icon-container">
       <icon :size=22 icon-type="header_enterprise"/>
     </div>
     <div>{{ enterpriseName }}</div>
   </div>
-  <template v-if="robotID !== '' && !showUserInfoPage">
+  <template v-if="robotID !== '' && !showUserInfoPage && !showAuditModule">
   <div class="robot column">
     <div class="icon-container">
       <icon :size=22 icon-type="robot"/>
     </div>
-    <div>{{ robotName }}</div>
+    <div ref="robotName" class="column-text" v-tooltip="robotNameTooltip" @mouseover="showFullRobotName($event, robotName)" @mouseout="hideFullRobotName($event)">{{ robotName }}</div>
   </div>
-  <div class="chat-test column" @click="showChatTest" v-if="!showUserInfoPage">
+  <div class="chat-test column click-button" @click="showChatTest" v-if="!showUserInfoPage && !showAuditModule">
     <div class="icon-container">
       <icon :size=22 icon-type="header_dialog"/>
     </div>
@@ -40,6 +43,7 @@
         <div class="menu-item" @click="clickShowUserPreference">{{ $t('header.user_info') }}</div>
         <div class="menu-item" v-if="userInfo.type <= 1 && enterpriseID !== ''" @click="goEnterprisePrivilege">{{ $t('header.enterprise_privilege_list') }}</div>
         <div class="menu-item" v-if="userInfo.type === 0 && enterpriseID !== ''" @click="goEnterpriseList">{{ $t('header.back_to_system_manage') }}</div>
+        <div class="menu-item" @click="goAuditLog">{{ $t('header.audit_log') }}</div>
         <div class="menu-item" @click="logout">{{ $t('header.logout') }}</div>
       </div>
     </div>
@@ -49,6 +53,7 @@
 
 <script>
 import { mapGetters, mapMutations } from 'vuex';
+import event from '@/utils/js/event';
 
 export default {
   data: () => ({
@@ -56,6 +61,12 @@ export default {
     showUserMenu: false,
     clickHandler: undefined,
     blurHandler: undefined,
+    robotNameTooltip: {
+      msg: '',
+      eventOnly: true,
+      top: 90,
+      left: -250,
+    },
   }),
   computed: {
     ...mapGetters([
@@ -74,6 +85,14 @@ export default {
     showGoEnterpriseUserList() {
       return this.robotID !== '' && this.userInfo.type <= 1;
     },
+    showAuditModule() {
+      const auditURL = [
+        '/manage/audit-system',     // 0
+        '/manage/audit-enterprise', // 1
+        '/manage/audit-robot',      // 2
+      ];
+      return auditURL.indexOf(this.$route.path) !== -1;
+    },
   },
   methods: {
     ...mapMutations([
@@ -82,6 +101,21 @@ export default {
       'showUserPreference',
       'hideUserPreference',
     ]),
+    isEllipsisActive(elem) {
+      return elem.offsetWidth < elem.scrollWidth;
+    },
+    showFullRobotName(e, name) {
+      const that = this;
+      if (!that.isEllipsisActive(e.target)) return;
+      that.robotNameTooltip.msg = name;
+      that.$refs.robotName.dispatchEvent(event.createEvent('tooltip-reload'));
+      that.$refs.robotName.dispatchEvent(event.createEvent('tooltip-show'));
+    },
+    hideFullRobotName(e) {
+      const that = this;
+      if (!that.isEllipsisActive(e.target)) return;
+      that.$refs.robotName.dispatchEvent(event.createEvent('tooltip-hide'));
+    },
     clickShowUserPreference() {
       this.showUserMenu = false;
       this.showUserPreference();
@@ -93,9 +127,7 @@ export default {
       that.$router.push('/manage/enterprise-manage');
       that.hideUserPreference();
 
-      that.showUserMenu = false;
-      window.removeEventListener('click', that.clickHandler);
-      that.clickHandler = undefined;
+      that.closeMenu();
     },
     goEnterprisePrivilege() {
       const that = this;
@@ -103,13 +135,32 @@ export default {
       that.$router.push('/manage/enterprise-user-list');
       that.hideUserPreference();
 
-      that.showUserMenu = false;
-      window.removeEventListener('click', that.clickHandler);
-      that.clickHandler = undefined;
+      that.closeMenu();
+    },
+    goAuditLog() {
+      const that = this;
+      if ((this.enterpriseID !== '' && this.robotID !== '') || this.userInfo.type >= 2) { // normal user
+        that.$router.push('/manage/audit-robot');
+      } else if (this.enterpriseID !== '') {
+        that.$router.push('/manage/audit-enterprise');
+      } else {
+        that.$router.push('/manage/audit-system');
+      }
+      that.hideUserPreference();
+      that.closeMenu();
     },
     showRobotList() {
       this.setRobot('');
       this.$router.push('/manage/robot-manage');
+    },
+    closeMenu() {
+      const that = this;
+      that.showUserMenu = false;
+      window.removeEventListener('click', that.clickHandler);
+      that.clickHandler = undefined;
+    },
+    goIMPage() {
+      window.open('/im-admin/imIndex');
     },
     showMenu() {
       const that = this;
@@ -164,6 +215,11 @@ export default {
     flex: 0 0 auto;
     &:not(.empty) {
       max-width: 300px;
+      .column-text {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
     }
     display: flex;
     align-items: center;
@@ -181,11 +237,7 @@ export default {
     }
   }
 
-  .chat-test {
-    @include click-button();
-  }
-
-  .robot-list {
+  .click-button {
     @include click-button();
   }
 
@@ -213,7 +265,7 @@ export default {
         background-color: #505050;
       }
     }
-    .user-menu-container {
+    .user-menu-container { 
       z-index: 1;
       flex: 0 0 auto;
       color: #666666;
@@ -228,21 +280,32 @@ export default {
       .user-menu {
         flex: 0 0 auto;
         background: white;
+        color: $color-font-normal;
         box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2);
         border-radius: 2px;
         display: flex;
         flex-direction: column;
         .menu-item {
+          @include font-14px;
+          height: 32px;
           flex: 0 0 32px;
-          padding: 6px 20px;
-
+          padding: 7px 15px;
+          font-weight: normal;
           display: flex;
           align-items: center;
           @include click-button();
 
           &:hover {
-            background-color: #9393a2;
+            background-color: $color-select-hover;
             color: white;
+          }
+          &:first-child {
+            border-top-left-radius: 2px;
+            border-top-right-radius: 2px;
+          }
+          &:last-child {
+            border-bottom-left-radius: 2px;
+            border-bottom-right-radius: 2px;
           }
         }
       }

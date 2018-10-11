@@ -18,9 +18,9 @@
           :placeholder="$t('category.placeholder_category_name')"
           @compositionstart="setCompositionState(true)"
           @compositionend="setCompositionState(false)"
-          @blur="confirmRootName"
+          @blur="confirmRootNameOnMethod('click')"
           @keydown.enter="detectCompositionState"
-          @keyup.enter="confirmRootName">
+          @keyup.enter="confirmRootNameOnMethod('enter')">
         <div v-else id="add-root-btn">
           <div class="icon-block">
             <icon icon-type="category_add" :size=16></icon>
@@ -307,10 +307,17 @@ export default {
     detectCompositionState() {
       this.wasCompositioning = this.compositionState;
     },
-    confirmRootName() {
+    confirmRootNameOnMethod(method) {
       if (this.wasCompositioning) {
-        return;
+        if (method === 'click') {
+          this.detectCompositionState();
+        } else if (method === 'enter') {
+          return;
+        }
       }
+      this.confirmRootName();
+    },
+    confirmRootName() {
       this.rootName = this.rootName.trim();
       // cancel add root
       if (this.rootName === '') {
@@ -361,7 +368,7 @@ export default {
           },
         },
       };
-      this.$popCheck(option);
+      this.$popWarn(option);
     },
     confirmDeleteCategory() {
       this.$emit('deleteCategory', this.currentActiveItem);
@@ -384,6 +391,7 @@ export default {
     toggleEditMode() {
       this.isEditMode = !this.isEditMode;
       if (!this.isEditMode) {
+        this.rootName = '';
         this.categoryNameKeyword = '';
         this.handleSetActiveToAll();
       }
@@ -478,7 +486,8 @@ $category-item-height: 32px;
   }
   #card-category-content {
     flex: 1 1 auto;
-    overflow-y: auto;
+    @include auto-overflow();
+    @include customScrollbar();
     #no-category-search-result {
       height: $category-item-height;
       line-height: $category-item-height;

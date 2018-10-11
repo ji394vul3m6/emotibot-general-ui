@@ -5,8 +5,8 @@
       :placeholder="$t('general.search_placeholder')"
       @keypress.enter="$emit('search', keyword)"
       @keyup="$emit('input', keyword)"
-      @focus="toggleFocus"
-      @blur="toggleFocus">
+      @focus="toggleFocus(true)"
+      @blur="toggleFocus(false)">
     <div class="input-icon"> 
       <icon icon-type="search" :size=16 />
     </div> 
@@ -43,8 +43,9 @@ export default {
     },
   },
   methods: {
-    toggleFocus() {
-      this.isFocus = !this.isFocus;
+    toggleFocus(bool) {
+      this.isFocus = bool;
+      this.$emit('focus', bool);
     },
   },
 };

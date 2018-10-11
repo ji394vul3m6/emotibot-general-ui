@@ -1,23 +1,26 @@
 <template>
 <div id="scenario_edit_page">
   <div class="content card h-fill w-fill">
-    <div class="row title">
+    <div class="header title">
       <div class="breadcrumb">
         <div class="back-to-list" @click="$router.replace('/task-engine-scenario-v3');">{{$t("task_engine_v3.scenario_list_page.scenario_list")}}</div>
-        <div>&gt;</div>
+        <icon iconType="month_right" :size="20"></icon>
         <div class="scenario-name-container">
           <div class="blank"/>
           <input
+            ref="inputScenarioName"
             class="input-scenario-name"
             v-model="scenarioName"
-            :placeholder="$t('task_engine_v3.scenario_edit_page.placeholder_name_the_scenario')">
-          <div class="bottom-border"/>
+            :placeholder="$t('task_engine_v3.scenario_edit_page.placeholder_name_the_scenario')"
+            @focus="setInputScenarioNameFocus(true)"
+            @blur="setInputScenarioNameFocus(false)">
+          <div class="bottom-border" :class="{'input-focus': inputScenarioNameFocus}"/>
         </div>
         <div class="label-switch-off label-switch">{{$t("task_engine_v3.scenario_edit_page.switch_off")}}</div>
         <toggle class="button-switch-enable" v-model="enable" @change="switchScenario()" :big="false"></toggle>
         <div class="label-switch-on label-switch">{{$t("task_engine_v3.scenario_edit_page.switch_on")}}</div>
       </div>
-      <div>
+      <div class="header-buttons">
         <text-button button-type='default' @click="$router.replace('/task-engine-scenario-v3');">{{$t("general.close")}}</text-button>
         <text-button button-type='primary' @click="toNextPage">{{saveButtonText}}</text-button>
       </div>
@@ -47,7 +50,8 @@
           </ul>
         </div>
       </div>
-      <skill-edit-page
+      <div class="page-container">
+        <skill-edit-page
           ref="skillEditPage"
           :currentPage="currentPage"
           :initialIdToNerMap="idToNerMap"
@@ -55,15 +59,15 @@
           @update="updateSkill"
           @updateIdToNerMap="updateIdToNerMap"
         ></skill-edit-page>
+      </div>
     </div>
   </div>
 </div>
 </template>
 
 <script>
-import DropdownSelect from '@/components/DropdownSelect';
 import SkillEditPage from './SkillEditPage';
-import TriggerPage from './TriggerPageV2';
+import TriggerPage from './TriggerPage';
 import EntityCollectingPage from './EntityCollectingPage';
 import ActionPage from './ActionPage';
 import EditSkillsPop from './EditSkillsPop';
@@ -79,7 +83,6 @@ export default {
     'trigger-page': TriggerPage,
     'entity-collecting-page': EntityCollectingPage,
     'action-page': ActionPage,
-    'dropdown-select': DropdownSelect,
   },
   data() {
     return {
@@ -96,6 +99,7 @@ export default {
       currentPage: 'triggerPage',
       idToNerMap: {},
       enable: false,
+      inputScenarioNameFocus: false,
     };
   },
   computed: {
@@ -153,6 +157,9 @@ export default {
   methods: {
     pageChange(key) {
       this.currentPage = key;
+    },
+    setInputScenarioNameFocus(bool) {
+      this.inputScenarioNameFocus = bool;
     },
     updateSkill(newSkill) {
       this.skills[this.currentSkillId] = newSkill;
@@ -254,7 +261,8 @@ export default {
     registerNluTdeScenario(scenarioId, content) {
       Object.keys(content.skills).map((skillId) => {
         const skill = content.skills[skillId];
-        if (skill.entityCollectorList.length > 0 || skill.register_json) {
+        if (skill.entityCollectorList.length > 0 ||
+            (skill.register_json && Object.keys(skill.register_json).length > 0)) {
           const data = scenarioConvertor.convertToRegistryData(scenarioId, skill, skillId);
           api.registerNluTdeScenario(data);
         }
@@ -280,8 +288,10 @@ export default {
       });
     },
     isValidScenario() {
+      this.scenarioName = this.scenarioName.trim();
       if (this.scenarioName === '') {
-        general.popErrorWindow(this, this.i18n.task_engine_v3.error_msg.please_enter_the_scenario_name, '');
+        this.$refs.inputScenarioName.focus();
+        this.$notifyFail(this.i18n.task_engine_v3.error_msg.please_enter_the_scenario_name);
         return false;
       }
       return true;

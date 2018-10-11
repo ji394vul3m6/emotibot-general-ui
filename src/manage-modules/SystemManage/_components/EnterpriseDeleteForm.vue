@@ -25,6 +25,8 @@
 </template>
 
 <script>
+import event from '@/utils/js/event';
+
 export default {
   name: 'robot-add-form',
   props: {
@@ -58,11 +60,11 @@ export default {
   watch: {
     password() {
       this.isPasswordTooltipShown = false;
-      this.$refs.password.dispatchEvent(new Event('tooltip-hide'));
+      this.$refs.password.dispatchEvent(event.createEvent('tooltip-hide'));
     },
     reason() {
       this.isReasonTooltipShown = false;
-      this.$refs.reason.dispatchEvent(new Event('tooltip-hide'));
+      this.$refs.reason.dispatchEvent(event.createEvent('tooltip-hide'));
     },
   },
   methods: {
@@ -74,13 +76,13 @@ export default {
        that.password.length > that.passwordMaxlength) {
         isValid = false;
         that.isPasswordTooltipShown = true;
-        that.$refs.password.dispatchEvent(new Event('tooltip-show'));
+        that.$refs.password.dispatchEvent(event.createEvent('tooltip-show'));
       }
       that.reason = that.reason.trim();
       if (that.reason === '') {
         isValid = false;
         that.isReasonTooltipShown = true;
-        that.$refs.reason.dispatchEvent(new Event('tooltip-show'));
+        that.$refs.reason.dispatchEvent(event.createEvent('tooltip-show'));
       }
 
       if (isValid) {

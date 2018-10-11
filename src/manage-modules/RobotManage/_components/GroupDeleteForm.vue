@@ -4,6 +4,7 @@
       <div class="row-title">{{ $t('management.input_personal_pass') }}</div>
       <input class="row-input" v-model="password" type="password" autocomplete="new-password"
         :placeholder="$t('management.manager_password')"
+        :class="{'error': isPasswordTooltipShown}"
         v-tooltip="passwordTooltip"
         ref="password">
     </div>
@@ -18,6 +19,7 @@
 
 <script>
 import md5 from 'md5';
+import event from '@/utils/js/event';
 
 export default {
   name: 'group-delete-form',
@@ -37,11 +39,13 @@ export default {
         errorType: true,
         alignLeft: true,
       },
+      isPasswordTooltipShown: false,
     };
   },
   watch: {
     password() {
-      this.$refs.password.dispatchEvent(new Event('tooltip-hide'));
+      this.$refs.password.dispatchEvent(event.createEvent('tooltip-hide'));
+      this.isPasswordTooltipShown = false;
     },
   },
   methods: {
@@ -50,7 +54,8 @@ export default {
       if (that.$cookie.get('verify') === md5(that.password)) {
         that.$emit('validateSuccess', that.reason);
       } else {
-        that.$refs.password.dispatchEvent(new Event('tooltip-show'));
+        that.$refs.password.dispatchEvent(event.createEvent('tooltip-show'));
+        this.isPasswordTooltipShown = true;
       }
     },
   },

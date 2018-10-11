@@ -18,7 +18,7 @@
     display: flex;
     flex-direction: column;
     margin: 0px 20px 0px 20px;
-    padding: 10px;
+    padding: 10px 20px;
     background-color: #f8f8f8;
     border-radius: 4px;
     .row{
@@ -115,8 +115,6 @@
   .entity-collector-list-container{
     display: flex;
     flex-direction: column;
-    @include auto-overflow();
-    @include customScrollbar();
     flex: 0 1 auto;
     padding: 0px 20px 0px 20px;
     .entity-collector-row{
@@ -129,6 +127,7 @@
       flex-direction: column;
       flex: 0 0 auto;
       justify-content: center;
+      transition: all .2s ease-in-out;
       &:not(:first-child){
         margin-top: 20px;
       }

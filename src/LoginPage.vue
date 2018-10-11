@@ -75,6 +75,8 @@ export default {
 
         if (info.type === 0) {
           window.location = '/#/manage/enterprise-manage';
+        } else if (info.product && info.product.indexOf('IM') >= 0) {
+          window.location = '/im-admin/imIndex';
         } else {
           window.location = '/#/manage/robot-manage';
         }
@@ -141,6 +143,7 @@ div {
   box-sizing: border-box;
 }
 .login-page {
+  font-family: PingFangHK-Regular, PingFangSC, 'Microsoft YaHei', 'Microsoft JhengHei';
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -178,12 +181,16 @@ div {
       justify-content: stretch;
       margin-bottom: 26px;
       input {
-        padding: 10px;
+        font-size: 14px;
+        line-height: 16px;
+        box-sizing: border-box;
+        display: inline-block;
+        padding: 0 8px;
         width: 100%;
         outline: none;
         border: none;
         background: none;
-        border: solid 1px #e9e9e9;
+        border: solid 1px $color-borderline;
         &::placeholder {
           color: #999999;
         }

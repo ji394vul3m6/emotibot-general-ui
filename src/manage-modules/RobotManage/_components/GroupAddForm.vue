@@ -4,6 +4,7 @@
       <div class="row-title">{{ $t('management.group_name') }}</div>
       <input class="row-input" v-model="name" ref="name"
         maxlength=50
+        :class="{'error': isNameTooltipShown}"
         :placeholder="$t('management.length_50_placeholder')"
         v-tooltip="nameTooltip">
     </div>
@@ -13,9 +14,9 @@
     <div class="block">
       <div v-for="robot in robots" :key="robot.id" class="check-item">
         <input type="checkbox" v-model="robot.check" :id="robot.id">
-        <div :for="robot.id" class="check-text" @mouseover.stop="showTooltip($event, robot)" @mouseout.stop="hideTooltip">
+        <label :for="robot.id" class="check-text" @mouseover.stop="showTooltip($event, robot)" @mouseout.stop="hideTooltip">
           {{ robot.name }}
-        </div>
+        </label>
       </div>
     </div>
     <div ref="tooltip" class="tooltip">
@@ -25,6 +26,8 @@
 </template>
 
 <script>
+import event from '@/utils/js/event';
+
 export default {
   name: 'group-add-form',
   props: {
@@ -46,12 +49,14 @@ export default {
         errorType: true,
         alignLeft: true,
       },
+      isNameTooltipShown: false,
     };
   },
   watch: {
     name() {
       if (this.name.trim() !== '') {
-        this.$refs.name.dispatchEvent(new Event('tooltip-hide'));
+        this.isNameTooltipShown = false;
+        this.$refs.name.dispatchEvent(event.createEvent('tooltip-hide'));
       }
     },
   },
@@ -86,17 +91,19 @@ export default {
 
       if (that.name === '') {
         that.nameTooltip.msg = that.$t('management.err_group_name_empty');
-        that.$refs.name.dispatchEvent(new Event('tooltip-reload'));
-        that.$refs.name.dispatchEvent(new Event('tooltip-show'));
+        that.$refs.name.dispatchEvent(event.createEvent('tooltip-reload'));
+        that.$refs.name.dispatchEvent(event.createEvent('tooltip-show'));
         that.$refs.name.focus();
+        that.isNameTooltipShown = true;
         return;
       }
       if (that.extData.groups && that.extData.groups.indexOf(that.name) >= 0) {
         if (!that.extData.group || that.name !== that.extData.group.name) {
           that.nameTooltip.msg = that.$t('management.err_group_duplicate');
-          that.$refs.name.dispatchEvent(new Event('tooltip-reload'));
-          that.$refs.name.dispatchEvent(new Event('tooltip-show'));
+          that.$refs.name.dispatchEvent(event.createEvent('tooltip-reload'));
+          that.$refs.name.dispatchEvent(event.createEvent('tooltip-show'));
           that.$refs.name.focus();
+          this.isNameTooltipShown = true;
           return;
         }
       }
@@ -195,11 +202,20 @@ export default {
       align-items: center;
       flex: 0 0 140px;
       max-width: 140px;
-      padding: 5px 10px;
+      padding: 6px 10px;
 
+      input[type=checkbox] {
+        cursor: pointer;
+        width: 14px;
+        height: 14px;
+        +label {
+          cursor: pointer;
+          margin-left: 5px;
+        }
+      }
       .check-text {
         flex: 1;
-        padding: 5px 3px;
+        // padding: 5px 3px;
         @include font-14px;
         overflow: hidden;
         white-space: nowrap;

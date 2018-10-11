@@ -13,7 +13,11 @@ import Toggle from '@/components/basic/Toggle';
 import Icon from '@/components/basic/Icon';
 import GeneralTable from '@/components/GeneralTable';
 import LabelSwitch from '@/components/basic/LabelSwitch';
+import DropdownSelect from '@/components/DropdownSelect';
+import DropdownCascader from '@/components/basic/DropdownCascader';
 import Tag from '@/components/basic/Tag';
+import LoadingLine from '@/components/basic/LoadingLine';
+import LoadingDot from '@/components/basic/LoadingDot';
 
 import '@/components/EasyTable/themes-base/index.css';
 import VPagination from '@/components/EasyTable/v-pagination';
@@ -55,7 +59,11 @@ Vue.component('icon', Icon);
 Vue.component('general-table', GeneralTable);
 Vue.component('v-pagination', VPagination);
 Vue.component('label-switch', LabelSwitch);
+Vue.component('dropdown-select', DropdownSelect);
+Vue.component('dropdown-cascader', DropdownCascader);
 Vue.component('tag', Tag);
+Vue.component('loading-line', LoadingLine);
+Vue.component('loading-dot', LoadingDot);
 
 const i18n = new VueI18n({
   locale: 'zh-cn',

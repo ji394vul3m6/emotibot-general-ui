@@ -19,10 +19,10 @@
             :placeholder="$t('wordbank.placeholder_category_name')"
             @compositionstart="setCompositionState(true)"
             @compositionend="setCompositionState(false)"
-            @blur="confirmEditItemName"
+            @blur="confirmEditItemNameOnMethod('click')"
             @keydown.enter="detectCompositionState"
-            @keyup.enter="confirmEditItemName"/>
-          <span v-else class="tree-item-name">{{ treeItem.name }}</span>
+            @keyup.enter="confirmEditItemNameOnMethod('enter')"/>
+          <div v-else class="tree-item-name">{{ treeItem.name }}</div>
         </div>
         <icon class="item-icon" icon-type="edit_blue" :size=8 
           v-if="treeItem.editable && canEdit && !treeItem.isActive"
@@ -92,7 +92,11 @@ export default {
       'setHasNewCategory',
     ]),
     setActive() {
-      this.setCurrentCategory(this.treeItem);
+      // If set current category to a new one which is not yet added
+      // we can't splice it out on cancel add category
+      if (!this.isNewCategory) {
+        this.setCurrentCategory(this.treeItem);
+      }
       this.resetActiveCategory();
       this.treeItem.isActive = true;
     },
@@ -116,16 +120,22 @@ export default {
         this.$refs.itemName.focus();
       });
     },
-    confirmEditItemName() {
+    confirmEditItemNameOnMethod(method) {
       if (this.wasCompositioning) {
-        return;
+        if (method === 'click') {
+          this.detectCompositionState();
+        } else if (method === 'enter') {
+          return;
+        }
       }
-      this.itemName = this.itemName.trim();
       if (this.isNewCategory) {
-        this.confirmAddSubCategory();
+        this.confirmAddSubCategory(method);
         return;
       }
-      // cancel edit
+      this.confirmEditItemName();
+    },
+    confirmEditItemName() {
+      this.itemName = this.itemName.trim();
       if (this.itemName === '') {
         this.itemName = this.treeItem.name;
       }
@@ -151,13 +161,18 @@ export default {
         this.isNameEditing = false;
       });
     },
-    confirmAddSubCategory() {
+    confirmAddSubCategory(method) {
+      if (method === 'enter') {
+        this.isNameEditing = false;
+        return; // avoid trigger by both enter and blur;
+      }
+      this.itemName = this.itemName.trim();
       if (this.itemName === '') {
         this.$emit('cancelAddSubCategory');
+        console.log('cancel add?');
         this.isNameEditing = false;
         return;
       }
-      if (this.itemName === this.treeItem.name) return;  // avoid trigger by both enter and focus;
 
       if (this.isItemNameDuplicate()) {
         const itemNameElem = this.$refs.itemName;
@@ -257,14 +272,19 @@ export default {
         position: relative;
         display:flex;
         align-items: center;
-
+        
         .tree-item-name {
           display: inline-block;
-          position: absolute;
+          position: absolute; 
           width: 100%;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
+
+          // IE11 Hack: absolutely positioned component cannot be align centered by flex parent
+          @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+            position: relative;
+          }
         }
       }
       .item-icon {

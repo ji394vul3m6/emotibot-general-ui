@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div id="wordbank-upload-block" class="card h-fill">
+    <div id="wordbank-upload-block" class="card h-fill w-fill">
       <div id="wordbank-upload-header">
         {{ $t('wordbank.upload_title.wordbank_upload') }}
       </div>
@@ -249,8 +249,8 @@ export default {
 
 #wordbank-upload-block {
   @include font-14px();
-  width: 100%;
-  height: 100%;
+  display: flex;
+  flex-direction: column;
 
   #wordbank-upload-header {
     @include font-16px();
@@ -262,7 +262,10 @@ export default {
     padding: 20px;
   }
   #wordbank-upload-content {
+    flex: 1;
     padding: 20px;
+    @include auto-overflow();
+    @include customScrollbar();
   }
 
   .upload-item-block {

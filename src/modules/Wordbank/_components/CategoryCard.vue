@@ -4,7 +4,10 @@
     <div id="card-category-header">
       <div id="card-category-header-block">
         <div id="card-category-row">
-          <div class="card-category-title">{{ $t('pages.wordbank.wordbank_list') }}</div>
+          <div class="card-category-title">
+            {{ $t('pages.wordbank.wordbank_list') }}
+            <icon iconType="info" :size="16" enableHover v-tooltip="categoryCardTooltip"></icon>
+          </div>
           <div v-if="canSetting" class="card-category-setting" @click="triggerEditMode">
             <span v-if="isEditMode"> {{ $t('wordbank.leave_setting') }}</span>
             <span v-else> {{ $t('wordbank.setting') }} </span>
@@ -19,9 +22,9 @@
           maxlength="20"
           @compositionstart="setCompositionState(true)"
           @compositionend="setCompositionState(false)"
-          @blur="confirmRootName"
+          @blur="confirmRootNameOnMethod('click')"
           @keydown.enter="detectCompositionState"
-          @keyup.enter="confirmRootName">
+          @keyup.enter="confirmRootNameOnMethod('enter')">
         <div v-else id="add-root-btn">
           <div class="icon-block">
             <icon icon-type="category_add" :size=16></icon>
@@ -75,6 +78,9 @@ export default {
       wasCompositioning: false,
       hasSearchResult: true,
       MAX_LAYER: 4,
+      categoryCardTooltip: {
+        msg: this.$t('wordbank.category_card_tooltip'),
+      },
     };
   },
   computed: {
@@ -179,10 +185,17 @@ export default {
     detectCompositionState() {
       this.wasCompositioning = this.compositionState;
     },
-    confirmRootName() {
+    confirmRootNameOnMethod(method) {
       if (this.wasCompositioning) {
-        return;
+        if (method === 'click') {
+          this.detectCompositionState();
+        } else if (method === 'enter') {
+          return;
+        }
       }
+      this.confirmRootName();
+    },
+    confirmRootName() {
       this.rootName = this.rootName.trim();
       // cancel add root
       if (this.rootName === '') {
@@ -230,7 +243,7 @@ export default {
           },
         },
       };
-      this.$popCheck(option);
+      this.$popWarn(option);
     },
     confirmDeleteCategory() {
       const cid = this.currentCategory.cid;
@@ -241,12 +254,13 @@ export default {
         this.setCurrentCategory(this.wordbank.children[0]);
       })
       .catch(() => {
-        this.$notifyFail(this.$t('wordbank.delete_category_fail'));
+        this.$notifyFail(this.$t('wordbank.error.delete_category_fail'));
       });
     },
     triggerEditMode() {
       this.toggleEditMode();
       if (!this.isEditMode) {
+        this.rootName = '';
         this.loadWordbanks();
       }
     },
@@ -293,6 +307,11 @@ $category-item-height: 32px;
           @include font-16px();
           font-weight: 500;
           color: $color-font-active;
+          display: flex;
+          align-items: center;
+          .icon {
+            margin-left: 6px;
+          }
         }
         .card-category-setting {
           @include font-12px();
@@ -345,7 +364,8 @@ $category-item-height: 32px;
   }
   #card-category-content {
     flex: 1 1 auto;
-    overflow-y: auto;
+    @include auto-overflow();
+    @include customScrollbar();
     #no-category-search-result {
       height: $category-item-height;
       line-height: $category-item-height;

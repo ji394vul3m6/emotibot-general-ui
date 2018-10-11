@@ -9,36 +9,55 @@
           </td>
           <td v-for="header in tableHeader" :key="header.key" 
             :style="{width: header.width}"
-            :class="{'fixed': header.width}"
+            :class="{'fixed': header.width, 'custom-action': header.type === 'action', 'multi-action': hasMultiCustomAction, 'icon-column': header.type === 'icon'}"
             class="table-header-item">
             {{ header.text }}
             <div v-if="header.info && header.info !== ''" :ref="`${header.key}-info`"
               class="table-header-icon"
               v-tooltip="headerInfoTooltip"
               @mouseover="updateHeaderInfoTooltip(header)"
-              @mouseout="toggleIconStyle(header, 'info')">
-              <icon :ref="`${header.key}-icon`" :icon-type="header.infoicon" :size=16></icon>
+             >
+              <icon :ref="`${header.key}-icon`" icon-type="info" :size=16 enableHover></icon>
             </div>
           </td>
-          <td v-if="hasAction" class="table-col-action" :class="{'multi-action': action.length > 1}"> {{ $t('general.actions') }} </td>
+          <td v-if="hasAction" class="table-col-action" :class="{'multi-action': action.length > 1}">
+            {{ $t('general.actions') }}
+          </td>
+          <td v-if="$scopedSlots.menu" class="fixed menu"></td>
         </tr>
       </thead>
     </table>
     </div>
-    <div class="general-table-body">
+
+    <!-- table content -->
+    <div v-if="isLoading" class="loading-display">
+      <loading-dot></loading-dot>
+    </div>
+    <div v-else-if="showEmpty && tableData.length <= 0" class="empty-display">
+      <template v-if="showEmptyMsg">
+        <div class="empty-msg" v-for="msg in showEmptyMsg" :key="msg">
+          {{ msg }}
+        </div>
+      </template>
+      <template v-else>
+        {{ $t('general.no_data') }}
+      </template>
+    </div>
+    <div v-else class="general-table-body" @scroll.passive="hideMenu">
     <table class="general-table" :class="[autoHeight ? 'auto-height' : '', fontClass]" v-if="tableData && tableData.length > 0">
       <tbody :class="[onclickRow ? 'clickable-row' : '']">
-        <tr v-for="(data, idx) in tableData" :key="idx">
+        <tr v-for="(data, idx) in tableData" :key="idx" :class="{'highlight': data.highlight}">
           <td v-if="checkbox" class="table-col-checkbox">
             <input type="checkbox" @click="checkSelf(data, idx)" :checked="data.isChecked">
           </td>
-          <td v-for="header in tableHeader" :key="uniqueId(header.key)"
+          <td v-for="header in tableHeader" :key="uniqueId(header.key, idx)"
             :style="{width: header.width}"
-            :class="{'fixed': header.width}"
+            :class="{'fixed': header.width, 'custom-action': header.type === 'action', 'multi-action': hasMultiCustomAction, 'icon-column': header.type === 'icon'}"
+             class="table-body-item"
             @click="handleOnclickRow(onclickRow, data, idx)">
-            <template v-if="header.type === 'tag'">
+            <div v-if="header.type === 'tag'">
               <tag class="tags" v-for="(tag, tagIdx) in data[header.key]" :key="`${tagIdx}-${tag}`" :fontClass="fontClass">{{ tag }}</tag>
-            </template>
+            </div>
             <!-- type toggle need to have a readonly mode -->
             <template v-else-if="header.type === 'toggle'">
               <toggle class="toggles"
@@ -46,7 +65,16 @@
                 :disabled="data[header.key].disabled"
                 @change="data[header.key].onclick(data, idx)"></toggle>
             </template>
-            <template v-else>{{ data[header.key] }}</template>
+            <template v-else-if="header.type === 'action'">
+              <span class="actions" v-for="act in data[header.key]"
+                :key="act.text" :class="act.type" @click="act.onclick(data, idx)">
+                {{act.text}}
+              </span>
+            </template>
+            <template v-else-if="header.type === 'icon'">
+              <icon v-if="data[header.key]" :icon-type="data[header.key].iconType" :size="data[header.key].iconSize"></icon>
+            </template>
+            <div v-else>{{ data[header.key] }}</div>
           </td>
           <td v-if="hasAction" class="table-col-action" :class="{'multi-action': action.length > 1}">
             <span class="actions" v-for="act in action" 
@@ -55,17 +83,21 @@
               v-if="data.action_enable === undefined || (data.action_enable && data.action_enable[act.key])"
             > {{ act.text }}</span>
           </td>
+          <template v-if="$scopedSlots.menu">
+            <td class="fixed menu">
+              <icon iconType="more" enableHover :size=15 @click="moreClick(idx, data, $event)" style="position: initial"></icon>
+            </td>
+            <td v-if="idx === indexOfShowMenu" class="menu-container" :style="menuStyle"><slot name="menu" :rowData="data" :rowIndex="idx"></slot></td>
+          </template>
         </tr>
       </tbody>
     </table>
-    </div>
-    <div class="empty-display" v-if="showEmpty && tableData.length <= 0">
-      {{ $t('general.no_data') }}
     </div>
   </div>
 </template>
 
 <script>
+import event from '@/utils/js/event';
 import Tag from '@/components/basic/Tag';
 import Toggle from '@/components/basic/Toggle';
 
@@ -101,6 +133,11 @@ export default {
         return [];
       },
     },
+    actionInfo: {
+      type: String,
+      required: false,
+      default: '',
+    },
     onclickRow: {
       type: Function,
       required: false,
@@ -121,6 +158,16 @@ export default {
       required: false,
       default: false,
     },
+    showEmptyMsg: {
+      type: Array,
+      required: false,
+      default: undefined,
+    },
+    isLoading: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
@@ -129,11 +176,23 @@ export default {
       headerInfoTooltip: {
         msg: '',
       },
+      menuStyle: {
+      },
+      indexOfShowMenu: -1,
     };
   },
   computed: {
     hasAction() {
       return this.action.length > 0;
+    },
+    hasMultiCustomAction() {
+      const actionHeader = this.tableHeader.find(header => header.type === 'action');
+      if (!actionHeader) return false;
+      const key = actionHeader.key;
+      if (this.tableData.length > 0) {
+        return this.tableData[0][key].length > 1;
+      }
+      return false;
     },
   },
   watch: {
@@ -147,18 +206,11 @@ export default {
         // this.$emit('checkedChange', this.checkedData);
       }
     },
-    tableHeader() {
-      this.tableHeader.forEach((header) => {
-        if (header.info && header.info !== '') {
-          header.infoicon = 'info';
-        }
-      });
-    },
   },
   methods: {
-    uniqueId(key) {
-      const randInt = parseInt(Math.random() * 1000, 10);
-      return `${randInt}-${key}`;
+    uniqueId(key, idx) {
+      // using idx of rowData to produce unique key for array type tag instead of using random key
+      return `${idx}-${key}`;
     },
     checkSelf(data) {
       data.isChecked = !data.isChecked;
@@ -181,8 +233,8 @@ export default {
       this.$emit('checkedChange', this.checkedData);
     },
     isAllRowChecked() {
-      const uncheckedNum = this.tableData.filter(data => data.isChecked === false).length;
-      return uncheckedNum === 0;
+      const hasUnchecked = this.tableData.some(data => data.isChecked === false);
+      return !hasUnchecked;
     },
     setCheckedData() {
       this.checkedData = this.tableData.filter(data => data.isChecked === true);
@@ -198,9 +250,6 @@ export default {
       const tableHeaderRightPos = tableHeaderDom.getBoundingClientRect().right;
       const infoIconRightPos = infoIconBlockDom.getBoundingClientRect().right;
 
-      /** Change icon style on hover */
-      this.toggleIconStyle(header, 'info_hover');
-
       /** Max-width of tooltip is 300px,
       /*  Let tooltip alignLeft if infoIcon is too close to righthand side of table */
       if (tableHeaderRightPos - infoIconRightPos < 350) {
@@ -209,19 +258,38 @@ export default {
         this.headerInfoTooltip.alignLeft = false;
       }
       this.headerInfoTooltip.msg = header.info;
-      infoIconBlockDom.dispatchEvent(new Event('tooltip-reload'));
+      infoIconBlockDom.dispatchEvent(event.createEvent('tooltip-reload'));
     },
-    toggleIconStyle(header, icon) {
-      header.infoicon = icon;
-      this.$forceUpdate();
+    moreClick(index, rowData, e) {
+      this.$emit('moreClick', { rowIndex: index, rowData });
+      const rect = e.target.getBoundingClientRect();
+      const top = document.documentElement.scrollTop + rect.top;
+      const windowWidth = window.innerWidth || document.body.clientWidth;
+      this.indexOfShowMenu = index;
+      this.menuStyle = {
+        top: `${top}px`,
+        right: `${windowWidth - rect.right - (rect.width / 2)}px`,
+      };
+    },
+    hideMenu() {
+      this.indexOfShowMenu = -1;
     },
   },
-  beforeMount() {
-    this.tableHeader.forEach((header) => {
-      if (header.info && header.info !== '') {
-        header.infoicon = 'info';
-      }
-    });
+  mounted() {
+    if (this.checkbox) {
+      this.tableData.forEach((data) => {
+        data.isChecked = false;
+      });
+      this.isAllChecked = false;
+      // this.setCheckedData();
+      // this.$emit('checkedChange', this.checkedData);
+    }
+    window.addEventListener('resize', this.hideMenu);
+    document.body.addEventListener('click', this.hideMenu, true);
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.hideMenu);
+    document.body.removeEventListener('click', this.hideMenu, true);
   },
 };
 </script>
@@ -230,8 +298,8 @@ export default {
 @import "styles/variable";
 
 $table-header-background: $color-disabled;
-$table-data-background: $color-white;
-$table-color-borderline: $color-borderline;
+$table-data-background: #fcfcfc;
+$table-color-borderline: $color-borderline-disabled;
 $table-row-height: 50px;
 
 .general-table-container {
@@ -241,6 +309,7 @@ $table-row-height: 50px;
   display: flex;
   flex-direction: column;
   width: inherit;
+  background-color: #fcfcfc;
   .general-table-header {
     flex: 0 0 auto;
     .table-header-item {
@@ -254,10 +323,29 @@ $table-row-height: 50px;
       }
     }
   }
+  .menu {
+    width: 50px;
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .menu-container {
+    position: fixed;
+  }
   .general-table-body {
     @include auto-overflow-Y();
     @include customScrollbar();
     overflow-x: hidden;
+    .table-body-item {
+      display: flex;
+      align-items: center;
+      div {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+    }
     tr {
       &:hover{
       background-color: #F6F9FF;
@@ -271,8 +359,54 @@ $table-row-height: 50px;
         }
       }
     }
+
+    .auto-height {
+      thead {
+        tr {
+          height: auto;
+        }
+      }
+      tbody {
+        tr {
+          height: auto;
+          td {
+            text-overflow: unset;
+            overflow: unset;
+            white-space: unset;
+            word-break: break-all;
+
+            &.table-body-item {
+              div {
+                text-overflow: unset;
+                overflow: unset;
+                white-space: unset;
+                word-break: break-all;
+
+                // IE11 do not has unset css property
+                @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+                  overflow: visible;
+                  white-space: normal;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
   .empty-display {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: $color-font-mark;
+    @include font-14px();
+    .empty-msg {
+      margin: 3px 0;
+    }
+  }
+  .loading-display {
     flex: 1;
     display: flex;
     align-items: center;
@@ -300,6 +434,7 @@ table {
       height: $table-row-height;
       display: flex;
       border-bottom: 1px solid $table-color-borderline;
+
       td {
         flex: 1 0 0;
         box-sizing: border-box;
@@ -317,10 +452,28 @@ table {
       .table-col-checkbox {
         flex: 0 0 50px;
       }
+      .table-header-item {
+        &.icon-column {
+          flex: 0 0 50px;
+        }
+        &.custom-action {
+          flex: 0 0 88px;
+          max-width: 88px;
+          &.multi-action {
+            flex: 0 0 176px;
+            max-width: 176px;  // IE11 Hack: Apply max-width on flex children so box-sizing   would work
+            display: flex;
+            // justify-content: space-between;
+          }
+        }
+      }
       .table-col-action {
         flex: 0 0 60px;
+        max-width: 60px;  // IE11 Hack: Apply max-width on flex children so box-sizing would work
         &.multi-action {
           flex: 0 0 110px;
+          max-width: 110px;  // IE11 Hack: Apply max-width on flex children so box-sizing would work
+          display: flex;  // IE11 need flex to grow the width
         }
       }
     }
@@ -334,8 +487,11 @@ table {
       width: inherit;
       overflow: hidden;
       border-bottom: 1px solid $table-color-borderline;
+      &.highlight {
+        background-color: #e6e6e6;
+      }
       td {
-        flex: 1 0 0;
+        flex: 1 0 0px;
         // min-width: 100px;
         box-sizing: border-box;
         padding: 15px 10px;
@@ -355,10 +511,36 @@ table {
       .table-col-checkbox {
         flex: 0 0 50px;
       }
+      .table-body-item {
+        &.icon-column {
+          flex: 0 0 50px;
+        }
+        &.custom-action {
+          flex: 0 0 88px;
+          max-width: 88px;
+          &.multi-action {
+            flex: 0 0 176px;
+            max-width: 176px;  // IE11 Hack: Apply max-width on flex children so box-sizing   would work
+            display: flex;
+            justify-content: space-between;
+          }
+          .actions {
+            width: 88px;
+            &.primary {
+              color: $color-primary;
+            }
+            &:hover {
+              cursor: pointer;
+            }
+          }
+        }
+      }
       .table-col-action {
         flex: 0 0 60px;
+        max-width: 60px;  // IE11 Hack: Apply max-width on flex children so box-sizing would work
         &.multi-action {
           flex: 0 0 110px;
+          max-width: 110px;  // IE11 Hack: Apply max-width on flex children so box-sizing would work
           display: flex;
           justify-content: space-between;
         }
@@ -372,25 +554,6 @@ table {
           &:hover {
             cursor:pointer;
           }
-        }
-      }
-    }
-  }
-
-  &.auto-height {
-    thead {
-      tr {
-        height: auto;
-      }
-    }
-    tbody {
-      tr {
-        height: auto;
-        td {
-          text-overflow: unset;
-          overflow: unset;
-          white-space: unset;
-          word-break: break-all;
         }
       }
     }

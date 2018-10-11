@@ -10,6 +10,7 @@
 </template>
 <script>
 import { mapGetters, mapMutations } from 'vuex';
+import event from '@/utils/js/event';
 import CategoryTree from './CategoryTree';
 
 export default {
@@ -35,8 +36,7 @@ export default {
     isActiveId() {
       if (this.isActiveId !== undefined) {
         this.$emit('enableOK');
-        const event = new Event('tooltip-hide');
-        this.$refs.moveToContainer.dispatchEvent(event);
+        this.$refs.moveToContainer.dispatchEvent(event.createEvent('tooltip-hide'));
       } else {
         this.$emit('disableOK');
       }
@@ -54,8 +54,7 @@ export default {
     validate() {
       if (this.isActiveId === undefined) {
         // should show error message somewhere
-        const event = new Event('tooltip-show');
-        this.$refs.moveToContainer.dispatchEvent(event);
+        this.$refs.moveToContainer.dispatchEvent(event.createEvent('tooltip-show'));
         return;
       }
       this.$emit('validateSuccess', this.isActiveId);
@@ -84,6 +83,7 @@ export default {
   width: 700px;
   margin: 0 30px;
   border: 1px solid $color-borderline;
-  overflow: scroll;
+  @include auto-overflow();
+  @include customScrollbar();
 }
 </style>

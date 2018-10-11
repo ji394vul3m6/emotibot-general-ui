@@ -67,9 +67,9 @@ export default {
       option_choose_one: '請選擇',
     },
     create_scenario_pop: {
-      label_create_new_scenario: '創建新場景',
-      label_name_the_scenario: '給場景取個名字：',
-      placeholder_enter_scenario_name: '輸入場景名稱...',
+      label_create_new_scenario: '創建場景',
+      label_name_the_scenario: '場景名稱：',
+      placeholder_enter_scenario_name: '輸入場景名稱',
     },
     create_skill_pop: {
       label_create_new_skill: '創建新任務',
@@ -125,7 +125,7 @@ export default {
     entity_collecting_page: {
       title: '在此場景中，您需要收集使用者的哪些信息？',
       description: '設定此對話場景需要收集的信息，以及各信息的對應問句',
-      add_new_entity_collector: '+新增抽取信息',
+      add_new_entity_collector: '新增抽取信息',
       edit_entity_relation: '設置實體關聯性',
       edit_sentence_replacement: '設置語句替換',
       edit_tde_setting: '設置TDE屬性',

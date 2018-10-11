@@ -9,6 +9,7 @@
     :options="targetOptions"
     :fixedListWidth="false"
     width="160px"
+    :placeholder="$t('general.please_choose')"
   />
   <dropdown-select
     v-if="needOperator"
@@ -17,6 +18,7 @@
     v-model="operatorModel"
     :options="operatorOptions"
     width="96px"
+    :placeholder="$t('general.please_choose')"
   />
   <input
     v-if="needContent"
@@ -31,14 +33,10 @@
 </template>
 
 <script>
-import DropdownSelect from '@/components/DropdownSelect';
 import selectOptions from '../utils/selectOptions';
 
 export default {
   name: 'condition-card',
-  components: {
-    'dropdown-select': DropdownSelect,
-  },
   props: {
     initialCondition: {
       type: Object,

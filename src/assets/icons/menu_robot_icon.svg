@@ -1,19 +1,15 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="15px" height="18px" viewBox="0 0 15 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 49.3 (51167) - http://www.bohemiancoding.com/sketch -->
-    <title>机器人设置off</title>
-    <desc>Created with Sketch.</desc>
-    <defs></defs>
-    <g id="用戶管理" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="用戶管理--編輯" transform="translate(-15.000000, -341.000000)" fill="#BABABA">
-            <g id="sideBar" transform="translate(0.000000, 50.000000)">
-                <g id="Group">
-                    <g id="menu_l1" transform="translate(0.000000, 280.000000)">
-                        <g id="优化" transform="translate(15.000000, 11.000000)">
-                            <path d="M7.99301257,0.629977814 L14.4930126,4.31331115 C14.806345,4.4908662 15,4.82319028 15,5.18333333 L15,12.5178747 C15,12.8780178 14.806345,13.2103418 14.4930126,13.3878969 L7.99301257,17.0712302 C7.68718242,17.244534 7.31281758,17.244534 7.00698743,17.0712302 L0.506987428,13.3878969 C0.193654984,13.2103418 -1.77939802e-16,12.8780178 -2.22044605e-16,12.5178747 L-2.22044605e-16,5.18333333 C-2.66149408e-16,4.82319028 0.193654984,4.4908662 0.506987428,4.31331115 L7.00698743,0.629977814 C7.31281758,0.456674062 7.68718242,0.456674062 7.99301257,0.629977814 Z M7.5,11.201208 C8.88071187,11.201208 10,10.0819199 10,8.70120805 C10,7.32049617 8.88071187,6.20120805 7.5,6.20120805 C6.11928813,6.20120805 5,7.32049617 5,8.70120805 C5,10.0819199 6.11928813,11.201208 7.5,11.201208 Z" id="机器人设置off"></path>
-                        </g>
-                    </g>
-                </g>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="18" height="18" viewBox="0 0 18 18">
+    <defs>
+        <path id="a" d="M9.493 1.13l6.5 3.683a1 1 0 0 1 .507.87v7.335a1 1 0 0 1-.507.87l-6.5 3.683a1 1 0 0 1-.986 0l-6.5-3.683a1 1 0 0 1-.507-.87V5.683a1 1 0 0 1 .507-.87l6.5-3.683a1 1 0 0 1 .986 0zM9 11.701a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
+    </defs>
+    <g fill="none" fill-rule="evenodd">
+        <g>
+            <mask id="b" fill="#fff">
+                <use xlink:href="#a"/>
+            </mask>
+            <use fill="#BABABA" xlink:href="#a"/>
+            <g fill="#CCC" mask="url(#b)">
+                <rect width="18" height="18" rx="4"/>
             </g>
         </g>
     </g>

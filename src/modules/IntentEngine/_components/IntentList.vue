@@ -1,25 +1,28 @@
 <template>
   <div class="intent-list">
-    <div v-for="(intent, idx) in intentList" :key="idx" class="intent-block" :class="{'active': intent.expand}" >
-      <!--@click="beforeExpandIntent(intent)"-->
-      <div class="intent-block-header">
+    <div v-for="(intent, idx) in intentListShown" :key="idx" class="intent-block" :class="{'active': intent.expand}" @mouseover="hoverIntent(intent, true)" @mouseout="hoverIntent(intent, false)">
+      <div class="intent-block-header" @click="beforeExpandIntent(intent)">
         <div class="intent-icons">
           <icon icon-type="intent" :size="16"/>
         </div>
         <div class="intent-title">
           <input v-if="intent.isEditMode" type="text" ref="intentName" v-model="editIntentName" v-tooltip="intentNameTooltip" :placeholder="$t('intent_engine.manage.placeholder.intent_title')" />
+          <span v-else-if="searchIntentWithKeyword">
+            {{intent.name}}
+            {{$t('intent_engine.manage.corpus_search_num', { pos: intent.positiveCount, neg: intent.negativeCount })}}
+          </span>
           <span v-else>{{intent.name}}
-            <!-- {{$t('intent_engine.manage.corpus_num', { num: intent.total })}} -->
+            {{$t('intent_engine.manage.corpus_num', { pos: intent.positiveCount, neg: intent.negativeCount })}}
           </span>
         </div>
         <div v-if="hasIntentAction" class="intent-action">
           <div v-if="intent.isEditMode" class="intent-save-tool">
             <text-button button-type="primary" @click="saveEditIntent(intent)">{{ $t('general.save') }}</text-button>
-            <text-button @click.stop="cancelEditIntent(intent)">{{ $t('general.cancel') }}</text-button>
+            <text-button @click.stop="cancelEditIntentPop(intent)">{{ $t('general.cancel') }}</text-button>
           </div>
           <div v-else class="intent-action-tool">
-            <div class="intent-action-icon" :ref="`${idx}_intentAction`" @click.stop="showDropdown(intent, idx)" v-dropdown="intentActionDropdown">
-              <icon icon-type="more" :size="24"></icon> 
+            <div v-if="intent.isHover || intent.expand" class="intent-action-icon" :ref="`${idx}_intentAction`" @click.stop="showDropdown(intent, idx)" v-dropdown="intentActionDropdown">
+              <icon icon-type="more_blue" :size="24"></icon> 
             </div>
             <div v-if="intent.expand" class="intent-action-icon close" @click.stop="closeExpandIntent(intent, idx)">
               <icon icon-type="close_expand" :size="18"></icon> 
@@ -27,26 +30,52 @@
           </div>
         </div>
       </div>
-      <template v-if="intent.expand">
+      <transition name="intent-content">
+      <div v-if="intent.expand">
         <div class="intent-block-content">
-          <div class="corpus-block" @mouseout="clearHover(intent)">
-            <div v-if="!intent.hasCorpusEditing && intent.hasCorpusSelected" class="corpus-delete-btn">
+          <div class="corpus-tools">
+            <label-switch 
+              :options="corpusTypeOption"
+              v-model="intent.viewCorpusType"
+              @change="changeCorpusViewType($event, intent)"/>
+            <!-- <div v-if="!intent.hasCorpusEditing && intent.hasCorpusSelected" class="corpus-delete-btn">
               <text-button button-type="error" @click="deleteMultiCorpus(intent)">{{ $t('general.delete') }}</text-button>
+            </div> -->
+          </div>
+          <div class="corpus-block" @mouseout="clearHover(intent)">
+            <div v-if="intent.isEditMode" class="corpus-add-row">
+              <input type="text" v-model="newCorpus" v-tooltip="corpusTooltip"
+                ref="newCorpus"
+                :placeholder="$t('intent_engine.manage.placeholder.add_corpus')"
+                @compositionstart="setCompositionState(true)"
+                @compositionend="setCompositionState(false)"
+                @keydown.enter="detectCompositionState"
+                @keyup.enter="addCorpus(intent)"/>
+              <text-button class="add-corpus-btn" @click="addCorpusByClick(intent)">{{ $t('intent_engine.manage.addin') }}</text-button>
             </div>
-            <div v-for="(corpus, cidx) in intent.corpus" :key="`${idx}-${cidx}`"
+            <div v-if="intent.corpus[intent.viewCorpusType].length === 0" class="corpus-row">
+              {{ $t('general.no_data') }}
+            </div>
+            <div v-else v-for="(corpus, cidx) in getCorpusPage(intent)" :key="`${idx}-${cidx}`"
               class="corpus-row" :class="{'editing': corpus.isEdit}"
               @mouseover="hoverCorpus(intent, corpus)"
               >
-              <div v-if="!intent.hasCorpusEditing && (intent.hasCorpusSelected || (intent.isEditMode && corpus.isHover))">
+              <!-- <div v-if="!intent.hasCorpusEditing && (intent.hasCorpusSelected || (intent.isEditMode && corpus.isHover))">
                 <input type="checkbox" :checked="corpus.isSelect" @change="selectCorpus(intent, corpus)">
-              </div>
+              </div> -->
               <div class="corpus">
-                <input v-if="corpus.isEdit" type="text"   v-model="editCorpusContent"
+                <input v-if="corpus.isEdit" type="text" v-model="editCorpusContent"
+                  ref="editCorpus"
+                  v-tooltip="editCorpusTooltip"
                   :placeholder="$t('intent_engine.manage.placeholder.edit_corpus')" 
                   @compositionstart="setCompositionState(true)"
                   @compositionend="setCompositionState(false)"
                   @keydown.enter="detectCompositionState"
-                  @keyup.enter="confirmEditCorpus(intent, corpus)"/>
+                  @keyup.enter="confirmEditCorpus(intent, corpus)"
+                  @blur="leaveEditCorpus(corpus, intent)"/>
+                <!-- <span v-else-if="isSearchMode && corpus.text.indexOf(keyword) !== -1">
+                  highlight keywords
+                </span> -->
                 <span v-else>{{corpus.text}}</span>
               </div>
               <div v-if="!intent.hasCorpusEditing && intent.isEditMode && corpus.isHover" class="corpus-action">
@@ -54,18 +83,13 @@
                 <div class="corpus-action-delete" @click="deleteCorpus(intent, corpus)">{{ $t('general.delete')}}</div>
               </div>
             </div>
-            <div v-if="intent.isEditMode" class="corpus-add-row">
-              <input type="text" v-model="newCorpus"
-                :placeholder="$t('intent_engine.manage.placeholder.add_corpus')"
-                @compositionstart="setCompositionState(true)"
-                @compositionend="setCompositionState(false)"
-                @keydown.enter="detectCompositionState"
-                @keyup.enter="addCorpus(intent)"/>
-              <text-button class="add-corpus-btn" button-type="primary" @click="addCorpusByClick(intent)">{{ $t('intent_engine.manage.addin') }}</text-button>
-            </div>
-          </div>
+          </div> 
         </div> 
-      </template>
+        <div v-if="getCurTotal(intent) > LIST_PAGE_SIZE" class="intent-block-footer">
+          <v-pagination size="small" :total="getCurTotal(intent)" :pageIndex="intent.curPage" :pageSize="LIST_PAGE_SIZE" :layout="['prev', 'pager', 'next', 'jumper']" @page-change="handlePageChange($event, intent)"></v-pagination>
+        </div>
+      </div>
+      </transition>
     </div>
 
     <!--ADD INTENT BLOCK-->
@@ -88,11 +112,30 @@
         </div>
       </div>
       <div class="intent-block-content">
-        <div class="corpus-block" @mouseout="clearHover(newIntent)">
+        <div class="corpus-tools">
+          <label-switch 
+            :options="corpusTypeOption"
+            v-model="newIntent.viewCorpusType"
+            @change="changeCorpusViewType($event, newIntent)"/>
           <div v-if="!newIntent.hasCorpusEditing && newIntent.hasCorpusSelected" class="corpus-delete-btn">
-            <text-button button-type="error" @click="deleteMultiCorpus(intent)">{{ $t('general.delete') }}</text-button>
+            <text-button button-type="error" @click="deleteMultiCorpus(newIntent)">{{ $t('general.delete') }}</text-button>
           </div>
-          <div v-for="(corpus, cidx) in newIntent.corpus" :key="`newIntent-${cidx}`"
+        </div>
+        <div class="corpus-block" @mouseout="clearHover(newIntent)">
+          <div v-if="newIntent.isEditMode" class="corpus-add-row">
+            <input type="text" v-model="newCorpus" v-tooltip="corpusTooltip"
+            ref="newCorpus"
+              :placeholder="$t('intent_engine.manage.placeholder.add_corpus')"
+              @compositionstart="setCompositionState(true)"
+              @compositionend="setCompositionState(false)"
+              @keydown.enter="detectCompositionState"
+              @keyup.enter="addCorpus(newIntent)"/>
+            <text-button class="add-corpus-btn" @click="addCorpusByClick(newIntent)">{{ $t('intent_engine.manage.addin') }}</text-button>
+          </div>
+          <div v-if="newIntent.corpus[newIntent.viewCorpusType].length === 0" class="corpus-row">
+            {{ $t('general.no_data') }}
+          </div>
+          <div v-else v-for="(corpus, cidx) in getCorpusPage(newIntent)" :key="`newIntent-${cidx}`"
             class="corpus-row" :class="{'editing': corpus.isEdit}"
             @mouseover="hoverCorpus(newIntent, corpus)"
           >
@@ -101,6 +144,7 @@
             </div>
             <div class="corpus">
               <input v-if="corpus.isEdit" type="text" v-model="editCorpusContent"
+                ref="editCorpus"
                 :placeholder="$t('intent_engine.manage.placeholder.edit_corpus')" 
                 @compositionstart="setCompositionState(true)"
                 @compositionend="setCompositionState(false)"
@@ -113,22 +157,23 @@
                 <div class="corpus-action-delete" @click="deleteCorpus(newIntent, corpus)">{{ $t('general.delete')}}</div>
             </div>
           </div>
-          <div v-if="newIntent.isEditMode" class="corpus-add-row">
-            <input type="text" v-model="newCorpus"
-              :placeholder="$t('intent_engine.manage.placeholder.add_corpus')"
-              @compositionstart="setCompositionState(true)"
-              @compositionend="setCompositionState(false)"
-              @keydown.enter="detectCompositionState"
-              @keyup.enter="addCorpus(newIntent)"/>
-            <text-button class="add-corpus-btn" button-type="primary" @click="addCorpusByClick(newIntent)">{{ $t('intent_engine.manage.addin') }}</text-button>
-          </div>
         </div>
-      </div> 
+      </div>
+      <div v-if="getCurTotal(newIntent) > LIST_PAGE_SIZE" class="intent-block-footer">
+        <v-pagination size="small" :total="getCurTotal(newIntent)" :pageIndex="newIntent.curPage" :pageSize="LIST_PAGE_SIZE" :layout="['prev', 'pager', 'next', 'jumper']" @page-change="handlePageChange($event, newIntent)"></v-pagination>
+      </div>
     </div>
   </div>
 </template>
 <script>
+import event from '@/utils/js/event';
+import api from '../_api/intent';
+
+const POSITIVE_CORPUS = 'pos';
+const NEGATIVE_CORPUS = 'neg';
+
 export default {
+  api,
   props: {
     intentList: {
       type: Array,
@@ -139,28 +184,53 @@ export default {
       type: Boolean,
       default: false,
     },
-    canDeleteIntent: {
+    searchIntentMode: {
+      type: Boolean,
+      default: false,
+    },
+    searchIntentWithKeyword: {
+      type: Boolean,
+      default: false,
+    },
+    canEditIntent: {
       type: Boolean,
       default: true,
     },
-    canRemoveIntent: {
+    canDeleteIntent: {  // Delete from database
+      type: Boolean,
+      default: true,
+    },
+    canRemoveIntent: {  // Remove from view, allow emit 'removeIntent' event
       type: Boolean,
       default: false,
+    },
+    keyword: {
+      type: String,
+      default: '',
     },
   },
   data() {
     return {
+      intentListShown: [],
       editIntentName: '',
       editCorpusContent: '',
 
       isAddIntent: false,
       newIntentName: '',
       newCorpus: '',
+      corpusBackup: {},
+      LIST_PAGE_SIZE: 10,
       newIntent: {
         name: '',
-        corpus: [],
+        corpus: {
+          pos: [],
+          neg: [],
+        },
+        curPage: 1,
         expand: true,
+        isHover: false,
         isEditMode: true,
+        viewCorpusType: POSITIVE_CORPUS,
         hasCorpusSelected: false,
         hasCorpusEditing: false,
       },
@@ -169,7 +239,6 @@ export default {
         options: [{
           text: '編輯',
           onclick: this.beforeEditIntent,
-          // onclick: this.beforeEditIntent(intent, idx),
         }],
         alignLeft: true,
       },
@@ -180,62 +249,124 @@ export default {
         errorType: true,
         alignLeft: true,
       },
+      corpusTooltip: {  // on newCorpus
+        msg: this.$t('intent_engine.manage.tooltip.corpus_duplicate_positive'),
+        eventOnly: true,
+        errorType: true,
+        alignLeft: true,
+      },
+      editCorpusTooltip: {
+        msg: this.$t('intent_engine.manage.tooltip.hit_enter_to_save'),
+        eventOnly: true,
+        errorType: true,
+        alignLeft: true,
+      },
 
+      corpusTypeOption: [{
+        text: this.$t('intent_engine.manage.positive'),
+        val: POSITIVE_CORPUS,
+      }, {
+        text: this.$t('intent_engine.manage.negative'),
+        val: NEGATIVE_CORPUS,
+      }],
       compositionState: false,
       wasCompositioning: false,
+
+      // Keep edit actions at local and send these till user click save btn
+      deletedCorpusIds: [],
+      updatedCorpus: [],
+      addedCorpus: [],
     };
   },
   computed: {
     hasIntentAction() {
-      return (this.canDeleteIntent || this.canRemoveIntent);
+      return (this.canEditIntent || this.canDeleteIntent || this.canRemoveIntent);
+    },
+    alreadyEdit() {
+      const intentInEditMode = this.intentInEditMode();
+      return this.deletedCorpusIds.length !== 0 || this.updatedCorpus.length !== 0 ||
+        this.addedCorpus.length !== 0 || this.editIntentName !== intentInEditMode.name;
     },
   },
   watch: {
     intentList() {
-      this.intentList.forEach((intent) => {
-        intent.corpus = [];
-        intent.expand = false;
-        intent.isEditMode = false;
-        intent.hasCorpusSelected = false;
-        intent.hasCorpusEditing = false;
-      });
+      this.parseIntentListShown();
     },
     addIntentMode() {
       if (this.addIntentMode) {
         this.beforeAddIntent();
+      } else {
+        this.isAddIntent = false;
+      }
+    },
+    searchIntentMode() {
+      if (this.searchIntentMode) {
+        this.beforeSearchIntent();
       }
     },
     editIntentName() {
-      if (this.$refs.intentName !== undefined) {
-        this.$refs.intentName[0].dispatchEvent(new Event('tooltip-hide'));
+      if (this.$refs.intentName !== undefined && this.$refs.intentName[0] !== undefined) {
+        this.$refs.intentName[0].dispatchEvent(event.createEvent('tooltip-hide'));
       }
     },
     newIntentName() {
       if (this.$refs.intentAddName !== undefined) {
-        this.$refs.intentAddName.dispatchEvent(new Event('tooltip-hide'));
+        this.$refs.intentAddName.dispatchEvent(event.createEvent('tooltip-hide'));
+      }
+    },
+    newCorpus() {
+      if (this.isAddIntent && this.$refs.newCorpus !== undefined) {
+        this.$refs.newCorpus.dispatchEvent(event.createEvent('tooltip-hide'));
+      } else if (!this.isAddIntent &&
+        this.$refs.newCorpus !== undefined && this.$refs.newCorpus[0] !== undefined) {
+        this.$refs.newCorpus[0].dispatchEvent(event.createEvent('tooltip-hide'));
       }
     },
   },
   methods: {
+    getCorpusPage(intent) {
+      const currentCorpus = intent.corpus[intent.viewCorpusType];
+      const start = this.LIST_PAGE_SIZE * (intent.curPage - 1);
+      const end = this.LIST_PAGE_SIZE * intent.curPage;
+      return currentCorpus.slice(start, end);
+    },
+    getCurTotal(intent) {
+      const currentCorpus = intent.corpus[intent.viewCorpusType];
+      return currentCorpus.length;
+    },
+    toFirstPage(intent) {
+      intent.curPage = 1;
+    },
+    handlePageChange(pageIdx, intent) {
+      intent.curPage = pageIdx;
+      if (intent.hasCorpusEditing) {
+        const editingCorpus = intent.corpus[intent.viewCorpusType].find(cp => cp.isEdit === true);
+        this.leaveEditCorpus(editingCorpus, intent);
+      }
+    },
     setCompositionState(bool) {
       this.compositionState = bool;
     },
     detectCompositionState() {
       this.wasCompositioning = this.compositionState;
     },
+    hoverIntent(intent, bool) {
+      intent.isHover = bool;
+    },
     showDropdown(intent, idx) {
       const that = this;
-      // that.intentActionDropdown.options = [{
-      //   text: that.$t('general.edit'),
-      //   onclick: that.beforeEditIntent.bind(that, intent, idx),
-      // }];
       that.intentActionDropdown.options = [];
-
+      if (that.canEditIntent) {
+        that.intentActionDropdown.options = [{
+          text: that.$t('general.edit'),
+          onclick: that.beforeEditIntent.bind(that, intent, idx),
+        }];
+      }
       if (that.canDeleteIntent) {
         that.intentActionDropdown.options.push({
           text: that.$t('general.delete'),
           onclick: () => {
-            console.log('click delete');
+            that.deleteIntentPop(intent);
           },
         });
       }
@@ -248,31 +379,63 @@ export default {
         });
       }
       const refName = `${idx}_intentAction`;
-      that.$refs[refName][0].dispatchEvent(new Event('dropdown-reload'));
+      that.$refs[refName][0].dispatchEvent(event.createEvent('dropdown-reload'));
+    },
+    deleteIntentPop(intent) {
+      const that = this;
+      const option = {
+        data: {
+          msg: that.$t('intent_engine.manage.delete_intent_msg', { name: intent.name }),
+        },
+        callback: {
+          ok: () => {
+            that.deleteIntent(intent);
+          },
+        },
+      };
+      that.$popWarn(option);
+    },
+    deleteIntent(intent) {
+      const that = this;
+      that.$api.deleteIntent(intent.id)
+      .then(() => {
+        that.$emit('deleteIntentDone');
+      })
+      .catch((err) => {
+        console.log(err);
+        that.$notifyFail(that.$t('intent_engine.manage.notify.delete_intent_fail'));
+      });
     },
     closeExpandIntent(intent) {
       intent.expand = false;
     },
     closeAllIntent() {
       const that = this;
-      that.intentList.forEach((intentItem) => {
+      that.intentListShown.forEach((intentItem) => {
         intentItem.expand = false;
       });
     },
     intentInEditMode() {
       const that = this;
-      return that.intentList.find(intent => intent.isEditMode === true);
+      return that.intentListShown.find(intent => intent.isEditMode === true);
     },
     beforeExpandIntent(intent) {
       const that = this;
-      if (intent.expand) return;
+      if (intent.expand) {
+        if (that.isAddIntent) return;
+        const intentInEditMode = that.intentInEditMode();
+        if (intentInEditMode === undefined) {
+          that.closeExpandIntent(intent);
+        }
+        return;
+      }
       if (that.isAddIntent) {
-        that.cancelAddNewIntent(that.editIntent.bind(that, intent));
+        that.cancelAddNewIntent(that.expandIntent.bind(that, intent));
         return;
       }
       const intentInEditMode = that.intentInEditMode();
       if (intentInEditMode !== undefined) {
-        that.cancelEditIntent(intentInEditMode, that.expandIntent.bind(that, intent));
+        that.cancelEditIntentPop(intentInEditMode, that.expandIntent.bind(that, intent));
       } else {
         that.expandIntent(intent);
       }
@@ -280,10 +443,46 @@ export default {
     expandIntent(intent) {
       const that = this;
       that.closeAllIntent();
-      // TODO: call api to get coupus from the target intent;
-      intent.expand = true;
+      return that.callGetCorpus(intent);
     },
-
+    callGetCorpus(intent) {
+      const that = this;
+      return that.$api.getCorpus(intent.id, that.keyword)
+      .then((res) => {
+        if (res.name !== intent.name) {
+          intent.name = res.name;
+        }
+        const corpus = {
+          pos: [],
+          neg: [],
+        };
+        corpus.pos = res.positive.map((cp) => {
+          cp.text = cp.content;
+          cp.isEdit = false;
+          cp.isHover = false;
+          cp.isSelect = false;
+          return cp;
+        });
+        corpus.neg = res.negative.map((cp) => {
+          cp.text = cp.content;
+          cp.isEdit = false;
+          cp.isHover = false;
+          cp.isSelect = false;
+          return cp;
+        });
+        intent.corpus = corpus;
+        that.corpusBackup = {
+          pos: [].concat(intent.corpus.pos),
+          neg: [].concat(intent.corpus.neg),
+        };
+        intent.expand = true;
+        that.toFirstPage(intent);
+      })
+      .catch((err) => {
+        console.log(err);
+        that.$notifyFail(that.$t('intent_engine.manage.notify.get_corpus_fail'));
+      });
+    },
     /** Handle Edit Intent */
     beforeEditIntent(intent) {
       const that = this;
@@ -293,56 +492,89 @@ export default {
       }
       const intentInEditMode = that.intentInEditMode();
       if (intentInEditMode !== undefined) {
-        that.cancelEditIntent(intentInEditMode, that.editIntent.bind(that, intent));
+        that.cancelEditIntentPop(intentInEditMode, that.editIntent.bind(that, intent));
       } else {
         that.editIntent(intent);
       }
     },
     editIntent(intent) {
       const that = this;
-      that.expandIntent(intent);
-      intent.isEditMode = true;
-      that.editIntentName = intent.name;
-      that.$forceUpdate();
+      that.expandIntent(intent).then(() => {
+        intent.isEditMode = true;
+        that.editIntentName = intent.name;
+        that.$nextTick(() => {
+          that.$refs.intentName[0].focus();
+        });
+      });
     },
-    cancelEditIntent(intent, nextAction) {
+    confirmCancelEditIntent(intent, nextAction) {
       const that = this;
+      that.initEditStorage();
+      that.$refs.intentName[0].dispatchEvent(event.createEvent('tooltip-hide'));
+      intent.isEditMode = false;
+      intent.hasCorpusSelected = false;
+      intent.hasCorpusEditing = false;
+      intent.corpus = that.corpusBackup;
+      intent.viewCorpusType = POSITIVE_CORPUS;
+      if (nextAction) {
+        nextAction();
+      }
+    },
+    cancelEditIntentPop(intent, nextActionOnOk, nextActionOnCancel) {
+      const that = this;
+      if (!that.alreadyEdit) {
+        that.confirmCancelEditIntent(intent, nextActionOnOk);
+        return;
+      }
       const option = {
         data: {
           msg: that.$t('intent_engine.manage.cancel_edit_msg'),
         },
         callback: {
           ok: () => {
-            that.$refs.intentName[0].dispatchEvent(new Event('tooltip-hide'));
-            intent.isEditMode = false;
-            intent.hasCorpusSelected = false;
-            intent.hasCorpusEditing = false;
-            intent.corpus.forEach((cp) => {
-              cp.isSelect = false;
-              cp.isEdit = false;
-            });
-            if (nextAction !== undefined) {
-              nextAction();
+            that.confirmCancelEditIntent(intent, nextActionOnOk);
+          },
+          cancel: () => {
+            if (nextActionOnCancel) {
+              nextActionOnCancel();
             }
           },
         },
       };
       that.$popCheck(option);
     },
+    initEditStorage() {
+      const that = this;
+      that.newCorpus = '';
+      that.deletedCorpusIds = [];
+      that.updatedCorpus = [];
+      that.addedCorpus = [];
+    },
     saveEditIntent(intent) {
       const that = this;
-      console.log('intent:', intent);
       const intentNameValid = that.validateIntentName(that.editIntentName, intent.name);
-      // TODO: validate, call api to save, reload everything
       if (intentNameValid) {
-        // form request param
-        // call api to save, call api to reload itself
+        that.updatedCorpus = that.updatedCorpus
+          .filter(cp => that.deletedCorpusIds
+            .findIndex(dId => cp.id === dId) === -1);
+        that.$api.updateIntent(intent, that.editIntentName,
+          that.updatedCorpus, that.addedCorpus, that.deletedCorpusIds)
+        .then(() => {
+          that.callGetCorpus(intent);
+          that.initEditStorage();
+          intent.isEditMode = false;
+          that.$notify({ text: that.$t('intent_engine.manage.notify.update_intent_success') });
+        })
+        .catch((err) => {
+          console.log(err);
+          that.$notifyFail(that.$t('intent_engine.manage.notify.update_intent_fail'));
+          that.callGetCorpus(intent);
+          that.initEditStorage();
+        });
       } else {
-        // Show tooltip
-        console.log(that.$refs);
         that.$refs.intentName[0].focus();
-        that.$refs.intentName[0].dispatchEvent(new Event('tooltip-reload'));
-        that.$refs.intentName[0].dispatchEvent(new Event('tooltip-show'));
+        that.$refs.intentName[0].dispatchEvent(event.createEvent('tooltip-reload'));
+        that.$refs.intentName[0].dispatchEvent(event.createEvent('tooltip-show'));
       }
     },
     validateIntentName(name, oldname) {
@@ -352,20 +584,30 @@ export default {
         return false;
       }
       const isNotOldName = (oldname === undefined) ? true : (oldname !== name);
-      const hasDuplicateName = that.intentList.find(intent => intent.name === name) !== undefined;
+      const hasDuplicateName = that.intentListShown
+        .find(intent => intent.name === name) !== undefined;
       if (isNotOldName && hasDuplicateName) {
         that.intentNameTooltip.msg = that.$t('intent_engine.manage.tooltip.name_duplicate');
         return false;
       }
       return true;
     },
-
+    beforeSearchIntent() {
+      const that = this;
+      const intentInEditMode = that.intentInEditMode();
+      if (intentInEditMode !== undefined) {
+        that.cancelEditIntentPop(intentInEditMode, null, that.cancelSearch);
+      }
+    },
+    cancelSearch() {
+      this.$emit('cancelSearch');
+    },
     /** Handle Add Intent */
     beforeAddIntent() {
       const that = this;
       const intentInEditMode = that.intentInEditMode();
       if (intentInEditMode !== undefined) {
-        that.cancelEditIntent(intentInEditMode, that.addIntent);
+        that.cancelEditIntentPop(intentInEditMode, that.addIntent);
       } else {
         that.addIntent();
       }
@@ -375,9 +617,14 @@ export default {
       that.closeAllIntent();
       that.newIntent = {
         name: '',
-        corpus: [],
+        corpus: {
+          pos: [],
+          neg: [],
+        },
+        curPage: 1,
         expand: true,
         isEditMode: true,
+        viewCorpusType: POSITIVE_CORPUS,
         hasCorpusSelected: false,
         hasCorpusEditing: false,
       };
@@ -389,28 +636,42 @@ export default {
     saveAddIntent() {
       const that = this;
       const intentNameValid = that.validateIntentName(that.newIntentName);
-      // TODO: validate, call api to save, reload everything
       if (intentNameValid) {
-        // form request param
-        // call api to add, call api to reload all
-        that.$emit('addIntentDone');
+        const param = {
+          name: that.newIntentName,
+          pos: that.newIntent.corpus.pos.map(cp => cp.text),
+          neg: that.newIntent.corpus.neg.map(cp => cp.text),
+        };
+        that.$api.addIntent(param)
+        .then(() => {
+          that.$emit('addIntentDone', true);  // reload all
+          that.initEditStorage();
+          that.newIntentName = '';
+          that.$notify({ text: that.$t('intent_engine.manage.notify.add_intent_success') });
+        })
+        .catch((err) => {
+          console.log(err);
+          that.$notifyFail(that.$t('intent_engine.manage.notify.add_intent_fail'));
+        });
       } else {
         that.$refs.intentAddName.focus();
-        that.$refs.intentAddName.dispatchEvent(new Event('tooltip-reload'));
-        that.$refs.intentAddName.dispatchEvent(new Event('tooltip-show'));
+        that.$refs.intentAddName.dispatchEvent(event.createEvent('tooltip-reload'));
+        that.$refs.intentAddName.dispatchEvent(event.createEvent('tooltip-show'));
       }
     },
     cancelAddNewIntent(nextAction) {
       const that = this;
       const option = {
         data: {
-          msg: that.$t('intent_engine.manage.cancel_edit_msg'),
+          msg: that.$t('intent_engine.manage.cancel_add_msg'),
         },
         callback: {
           ok: () => {
             that.newIntent = {};
             that.isAddIntent = false;
-            that.$emit('addIntentDone');
+            that.newIntentName = '';
+            that.initEditStorage();
+            that.$emit('addIntentDone', false);
             if (nextAction !== undefined) {
               nextAction();
             }
@@ -421,47 +682,125 @@ export default {
     },
 
     /** Handle Corpus */
+    changeCorpusViewType(type, intent) {
+      // cancel all actions of previous type
+      intent.hasCorpusEditing = false;
+      intent.hasCorpusSelected = false;
+      this.toFirstPage(intent);
+      if (type === POSITIVE_CORPUS) {
+        intent.corpus[NEGATIVE_CORPUS].forEach((cp) => {
+          cp.isSelect = false;
+          cp.isEdit = false;
+        });
+      } else if (type === NEGATIVE_CORPUS) {
+        intent.corpus[POSITIVE_CORPUS].forEach((cp) => {
+          cp.isSelect = false;
+          cp.isEdit = false;
+        });
+      }
+    },
     hoverCorpus(intent, corpus) {
-      intent.corpus.forEach((cp) => {
+      intent.corpus[intent.viewCorpusType].forEach((cp) => {
         cp.isHover = false;
       });
       corpus.isHover = true;
     },
     clearHover(intent) {
-      intent.corpus.forEach((cp) => {
-        cp.isHover = false;
-      });
+      if (intent.corpus) {
+        intent.corpus[intent.viewCorpusType].forEach((cp) => {
+          cp.isHover = false;
+        });
+      }
     },
     selectCorpus(intent, corpus) {
       corpus.isSelect = !corpus.isSelect;
-      intent.hasCorpusSelected = intent.corpus.filter(cp => cp.isSelect === true).length !== 0;
+      intent.hasCorpusSelected = intent.corpus[intent.viewCorpusType]
+        .filter(cp => cp.isSelect === true).length !== 0;
+    },
+    leaveEditCorpus(corpus, intent) {
+      corpus.isEdit = false;
+      intent.hasCorpusEditing = false;
     },
     editCorpus(intent, corpus) {
       const that = this;
       corpus.isEdit = true;
       intent.hasCorpusEditing = true;
       that.editCorpusContent = corpus.text;
+      that.$nextTick(() => {
+        that.$refs.editCorpus[0].focus();
+        that.$nextTick(() => {
+          that.$refs.editCorpus[0].dispatchEvent(event.createEvent('tooltip-show'));
+        });
+      });
     },
     confirmEditCorpus(intent, corpus) {
       const that = this;
       if (that.wasCompositioning) {
         return;
       }
-      corpus.text = that.editCorpusContent;
-      corpus.isEdit = false;
-      intent.hasCorpusEditing = false;
+      that.editCorpusContent = that.editCorpusContent.trim();
+      if (that.editCorpusContent === '') {
+        that.deleteCorpus(intent, corpus);
+      } else {
+        corpus.text = that.editCorpusContent;
+        that.refreshUpdatedCorpus(corpus, that.editCorpusContent, intent.viewCorpusType);
+      }
+      that.leaveEditCorpus(corpus, intent);
+    },
+    refreshUpdatedCorpus(corpus, newText, type) {
+      const that = this;
+      const idxInUpdatedCorpus = that.updatedCorpus.findIndex(cp => cp.id === corpus.id);
+      const idxInAddedCorpus = that.addedCorpus.findIndex(cp => cp.id === corpus.id);
+
+      if (idxInAddedCorpus !== -1) {
+        that.addedCorpus[idxInAddedCorpus].text = newText;
+      } else if (idxInUpdatedCorpus !== -1) {
+        that.updatedCorpus[idxInUpdatedCorpus].text = newText;
+      } else {
+        that.updatedCorpus.push({
+          id: corpus.id,
+          text: newText,
+          type,
+        });
+      }
+    },
+    refreshDeletedCorpus(corpus) {
+      const that = this;
+      if (corpus.id >= 0) {  // positive ids are corpus already in db
+        that.deletedCorpusIds.push(corpus.id);
+      } else { // negative ids are newly add corpus
+        const idxInAddedCorpus = that.addedCorpus.findIndex(cp => cp.id === corpus.id);
+        that.addedCorpus.splice(idxInAddedCorpus, 1);
+      }
     },
     deleteCorpus(intent, corpus) {
-      const corpusIdx = intent.corpus.findIndex(cp => cp.id === corpus.id);
-      intent.corpus.splice(corpusIdx, 1);
-      intent.hasCorpusSelected = intent.corpus.filter(cp => cp.isSelect === true).length !== 0;
+      const that = this;
+      const viewedCorpus = intent.corpus[intent.viewCorpusType];
+      const corpusIdx = viewedCorpus.findIndex(cp => cp.id === corpus.id);
+      viewedCorpus.splice(corpusIdx, 1);
+      const page = Math.floor((viewedCorpus.length - 1) / 10) + 1;
+      if (page < intent.curPage) {
+        intent.curPage = page;
+      }
+      that.refreshDeletedCorpus(corpus);
+      intent.hasCorpusSelected = viewedCorpus
+        .filter(cp => cp.isSelect === true).length !== 0;
     },
     deleteMultiCorpus(intent) {
       const that = this;
-      const selectedCorpus = intent.corpus.filter(cp => cp.isSelect === true);
+      const selectedCorpus = intent.corpus[intent.viewCorpusType]
+        .filter(cp => cp.isSelect === true);
       selectedCorpus.forEach((corpus) => {
         that.deleteCorpus(intent, corpus);
       });
+    },
+    isDuplicateCorpus(newCorpus, intent) {
+      if (intent.corpus[POSITIVE_CORPUS].find(cp => cp.text === newCorpus) !== undefined) {
+        return POSITIVE_CORPUS;
+      } else if (intent.corpus[NEGATIVE_CORPUS].find(cp => cp.text === newCorpus) !== undefined) {
+        return NEGATIVE_CORPUS;
+      }
+      return undefined;
     },
     addCorpusByClick(intent) {
       const that = this;
@@ -473,16 +812,64 @@ export default {
       if (that.wasCompositioning) {
         return;
       }
+      if (intent.hasCorpusEditing) {
+        const editingCorpus = intent.corpus[intent.viewCorpusType].find(cp => cp.isEdit === true);
+        that.leaveEditCorpus(editingCorpus, intent);
+      }
       if (that.newCorpus !== '') {
-        intent.corpus.push({
-          id: parseInt(Math.random() * 1000, 10),
+        const isDuplicate = that.isDuplicateCorpus(that.newCorpus, intent);
+        if (isDuplicate !== undefined) {
+          // show tooltip
+          const msg = (isDuplicate === POSITIVE_CORPUS) ? that.$t('intent_engine.manage.tooltip.corpus_duplicate_positive') : that.$t('intent_engine.manage.tooltip.corpus_duplicate_negative');
+          that.corpusTooltip.msg = msg;
+          if (that.isAddIntent) {
+            that.$refs.newCorpus.dispatchEvent(event.createEvent('tooltip-reload'));
+            that.$refs.newCorpus.dispatchEvent(event.createEvent('tooltip-show'));
+          } else {
+            that.$refs.newCorpus[0].dispatchEvent(event.createEvent('tooltip-reload'));
+            that.$refs.newCorpus[0].dispatchEvent(event.createEvent('tooltip-show'));
+          }
+          return;
+        }
+        const tempId = -parseInt(Math.random() * 1000, 10);
+        intent.corpus[intent.viewCorpusType].splice(0, 0, {
+          id: tempId,
           text: that.newCorpus,
           isHover: false,
           isSelect: false,
         });
+        that.addedCorpus.push({
+          id: tempId,
+          text: that.newCorpus,
+          type: intent.viewCorpusType,
+        });
         that.newCorpus = '';
+        that.toFirstPage(intent);
       }
     },
+    parseIntentListShown() {
+      this.intentListShown = this.intentList.map(intent => ({
+        id: intent.id,
+        name: intent.name,
+        total: intent.total,
+        positiveCount: intent.positiveCount,
+        negativeCount: intent.negativeCount,
+        curPage: 1,
+        corpus: {},
+        expand: false,
+        isHover: false,
+        isEditMode: false,
+        viewCorpusType: POSITIVE_CORPUS,
+        hasCorpusSelected: false,
+        hasCorpusEditing: false,
+      }));
+    },
+  },
+  mounted() {
+    this.parseIntentListShown();
+    if (this.addIntentMode) {
+      this.isAddIntent = true;
+    }
   },
 };
 </script>
@@ -496,13 +883,26 @@ export default {
   .intent-block {
     border: 1px solid #DBDBDB;
     border-radius: 4px;
-    transition: all .3s ease-in-out;
+    transition: all .2s ease-in-out;
     &:hover {
       box-shadow: 0 4px 9px 0 rgba(115, 115, 115, 0.2), 0 5px 8px 0 rgba(228, 228, 228, 0.5);
     }
     &.active {
       box-shadow: 0 4px 9px 0 rgba(115, 115, 115, 0.2), 0 5px 8px 0 rgba(228, 228, 228, 0.5);
     }
+
+    .intent-content-enter-active, .intent-content-leave-active {
+      transition: max-height .4s ease-in-out;
+      overflow: hidden;
+    }
+    .intent-content-enter, .intent-content-leave-to {
+      max-height: 0px;
+    }
+    .intent-content-enter-to, .intent-content-leave {
+      max-height: 1000px;
+      
+    }
+
     .intent-block-header {
       height: 50px;
       padding: 0 20px;
@@ -557,14 +957,21 @@ export default {
     .intent-block-content {
       padding: 10px 20px;
       border-top: 1px solid $color-borderline;
+      color: $color-font-normal;
+      .corpus-tools{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+      }
       .corpus-block {
-        border-left: 2px solid rgba(74, 144, 226, 0.24);
+        border-left: 3px solid rgba(74, 144, 226, 0.24);
         .corpus-delete-btn {
           margin-left: 15px;
           padding-left: 5px;
         }
         .corpus-row {
-          height: 28px;
+          min-height: 28px;
           margin: 4px 0;
           margin-left: 15px;
           padding: 0 15px 0 5px;
@@ -588,6 +995,7 @@ export default {
           .corpus {
             flex: 1;
             display: flex;
+            word-break: break-all;
             input[type=text] {
               flex: 1;
             }
@@ -621,6 +1029,14 @@ export default {
           }
         }
       }
+    }
+    .intent-block-footer {
+      border-top: 1px solid $color-borderline;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 12px;
     }  
   }
 }

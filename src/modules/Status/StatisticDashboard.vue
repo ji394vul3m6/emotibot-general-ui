@@ -273,6 +273,8 @@ $row-height: $default-line-height;
 $stat-card-height: 300px;
 
 #statistic-dash {
+  @include auto-overflow();
+  @include customScrollbar();
   & > .content {
     .statistic {
       height: $stat-card-height;
@@ -303,7 +305,6 @@ $stat-card-height: 300px;
         font-size: 16px;
         line-height: 16px;
         color: #333333;
-        font-weight: 600;
       }
       .statistic-select {
         padding: 10px 20px;

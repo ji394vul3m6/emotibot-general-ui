@@ -1,24 +1,55 @@
 import DropdownMenu from '../components/basic/DropdownMenu';
 
-function getPosition(el) {
-  const boundedBox = el.getBoundingClientRect();
-  return {
-    x: boundedBox.width,
-    y: boundedBox.height,
-  };
-}
-
 const MyPlugin = {
+  getPosition(el, alignLeft, optionLength) {
+    const boundedBox = el.getBoundingClientRect();
+    const ret = {
+      x: boundedBox.left, // align by left edge
+      y: boundedBox.top + boundedBox.height + 3,
+    };
+    if (alignLeft) {
+      ret.x = boundedBox.right;  // align by right edge
+    }
+
+    const dropdownHeight = (optionLength || 0) * 32;
+    if (ret.y + dropdownHeight > window.innerHeight) {
+      ret.y = window.innerHeight - dropdownHeight;
+    }
+    return ret;
+  },
+  addEventListeners(vm, el, alignLeft) {
+    const resizeCallback = () => {
+      vm.$emit('show', this.getPosition(el, alignLeft));
+    };
+    const hideCallback = (e) => {
+      if (el && !el.contains(e.target)) {
+        el.dispatchEvent(new Event('dropdownHidden'));
+        vm.$emit('hide');
+        this.removeEventListeners(window, hideCallback, resizeCallback);
+      }
+    };
+
+    window.addEventListener('click', hideCallback);
+    window.addEventListener('scroll', hideCallback, true);
+    window.addEventListener('resize', resizeCallback);
+  },
+  removeEventListeners(target, hideCallback, resizeCallback) {
+    target.removeEventListener('click', hideCallback);
+    target.removeEventListener('scroll', hideCallback, true);
+    target.removeEventListener('resize', resizeCallback);
+  },
   install(Vue) {
+    const that = this;
     Vue.directive('dropdown', {
       inserted(el, binding, vnode) {
-        const boundedBox = el.getBoundingClientRect();
         vnode.context.$nextTick(() => {
           const DropdownGenerator = Vue.extend(DropdownMenu);
+          const position = that.getPosition(el, binding.value.alignLeft,
+            binding.value.options.length);
           let vm = new DropdownGenerator({
             propsData: {
-              x: boundedBox.width,
-              y: boundedBox.height,
+              x: position.x,
+              y: position.y,
               options: binding.value.options,
               width: binding.value.width,
               alignLeft: binding.value.alignLeft,
@@ -30,12 +61,14 @@ const MyPlugin = {
 
 
           el.addEventListener('dropdown-reload', () => {
+            const newPos = that.getPosition(el, binding.value.alignLeft,
+              binding.value.options.length);
             el.removeChild(vm.$el);
             vm.$destroy();
             vm = new DropdownGenerator({
               propsData: {
-                x: boundedBox.width,
-                y: boundedBox.height,
+                x: newPos.x,
+                y: newPos.y,
                 options: binding.value.options,
                 width: binding.value.width,
                 alignLeft: binding.value.alignLeft,
@@ -47,24 +80,17 @@ const MyPlugin = {
           });
 
           el.addEventListener('dropdown-show', () => {
-            vm.$emit('show', getPosition(el));
+            vm.$emit('show', that.getPosition(el, binding.value.alignLeft, binding.value.options.length));
           });
           el.addEventListener('dropdown-hide', () => {
+            el.dispatchEvent(new Event('dropdownHidden'));
             vm.$emit('hide');
+            that.removeEventListeners(vm, el, binding.value.alignLeft);
           });
 
-          const dropdown = vm.$el;
-          el.addEventListener('click', (clickEvent) => {
-            vm.$emit('show', getPosition(el));
-            const detectClickListener = (e) => {
-              const clickDom = e.target;
-              if (clickDom && !dropdown.contains(clickDom)) {
-                vm.$emit('hide');
-                window.removeEventListener('click', detectClickListener);
-              }
-            };
-            window.addEventListener('click', detectClickListener);
-            clickEvent.stopPropagation();
+          el.addEventListener('click', () => {
+            vm.$emit('show', that.getPosition(el, binding.value.alignLeft, binding.value.options.length));
+            that.addEventListeners(vm, el, binding.value.alignLeft);
           });
         });
       },

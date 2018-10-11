@@ -1,4 +1,9 @@
 export default {
+  integration: {
+    integration: '接入部署',
+    enterpriseID: '企業 ID',
+    robotID: '機器人 ID / AppID',
+  },
   privileges: {
     role: '角色',
     user: '用戶',
@@ -679,6 +684,7 @@ export default {
       robot_function: '技能設置',
       robot_chat_skill: '話術設置',
       robot_command: '指令設置',
+      integration: '接入部署',
     },
     wordbank: {
       module_name: '詞庫',
@@ -716,6 +722,7 @@ export default {
     zh_cn: '簡體中文',
     delete_success: '刪除成功',
     robot_list: '機器人列表',
+    im: 'IM',
     no_data: '暫無數據',
     reset: '重置',
     chat_test: '對話測試',
@@ -924,6 +931,7 @@ export default {
     err_origin_empty_password: '原密碼不可爲空',
     err_invalid_check_password: '兩次密碼輸入不同',
     update_password_success: '更新密碼成功',
+    add_user_success: '新增使用者成功',
     err_update_password_fail: '更新密碼失敗',
     err_role_duplicate: '角色名稱已存在',
     err_robot_name_empty: '機器人名稱不可爲空',
@@ -996,6 +1004,10 @@ export default {
         view: '意圖管理查看',
         export: '意圖管理導入',
         import: '意圖管理導出',
+      },
+      integration: {
+        view: '接入部署查看',
+        edit: '接入部署編輯',
       },
     },
   },

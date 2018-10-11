@@ -1,4 +1,5 @@
 import { configure } from '@storybook/vue';
+import { setOptions } from '@storybook/addon-options';
 
 import Vue from 'vue';
 import Vuex from 'vuex'; // Vue plugins
@@ -12,15 +13,31 @@ import Textbutton from '../src/components/basic/TextButton';
 import tooltip from '../src/plugins/tooltip';
 import dropdown from '../src/plugins/dropdown';
 
+// Import self extensions.
+import CustomNotification from '../src/plugins/CustomNotification';
+import PopWindow from '../src/plugins/PopWindow';
+
 // Install Vue plugins.
 Vue.use(Vuex);
 Vue.use(tooltip);
 Vue.use(dropdown);
+Vue.use(PopWindow);
+Vue.use(CustomNotification, {
+  delay: 4000,
+});
 
 // Install self component
 Vue.component('icon', Icon);
 Vue.component('tag', Tag);
 Vue.component('text-button', Textbutton);
+
+setOptions({
+  name: 'BFOP General Components',
+  url: '#',
+  addonPanelInRight: true,
+  hierarchySeparator: /\//,
+  hierarchyRootSeparator: /\|/,
+});
 
 function loadStories() {
   // You can require as many stories as you need.

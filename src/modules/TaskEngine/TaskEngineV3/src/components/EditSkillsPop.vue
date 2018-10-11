@@ -29,6 +29,7 @@
 </template>
 
 <script>
+import event from '@/utils/js/event';
 
 export default {
   name: 'edit-skills-pop',
@@ -85,7 +86,7 @@ export default {
           msg: `${this.$t('task_engine_v3.edit_skill_pop.warn_delete_skill')}`,
         },
       };
-      this.$popCheck(options);
+      this.$popWarn(options);
     },
     validateDate() {
       let success = true;
@@ -93,8 +94,8 @@ export default {
         if (this.skills[skillId].skillName === '') {
           this.nameTooltipMap[skillId].msg = this.$t('task_engine_v3.edit_skill_pop.tooltip_empty_name');
           const refName = `inputName_${skillId}`;
-          this.$refs[refName][0].dispatchEvent(new Event('tooltip-reload'));
-          this.$refs[refName][0].dispatchEvent(new Event('tooltip-show'));
+          this.$refs[refName][0].dispatchEvent(event.createEvent('tooltip-reload'));
+          this.$refs[refName][0].dispatchEvent(event.createEvent('tooltip-show'));
           this.$refs[refName][0].focus();
           success = false;
         }// TODO: check duplicate skill names;
@@ -148,6 +149,7 @@ export default {
       align-items: center;
       padding: 10px;
       margin-bottom: 12px;
+      transition: all .2s ease-in-out;
       &:hover{
         box-shadow: 0 4px 9px 0 rgba(115, 115, 115, 0.2), 0 5px 8px 0 rgba(228, 228, 228, 0.5);
       }

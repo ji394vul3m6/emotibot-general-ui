@@ -1,10 +1,12 @@
 import { object, boolean, select } from '@storybook/addon-knobs';
 import { action } from '@storybook/addon-actions';
+import { withMarkdownNotes } from '@storybook/addon-notes';
 import GeneralTable from '../../components/GeneralTable';
+import README from './README.md';
 
 export default [{
-  name: 'generalTable',
-  func: (i18n) => {
+  name: 'GeneralTable',
+  func: withMarkdownNotes(README)((i18n) => {
     function clickToggle(rowdata, idx) {
       action('click toggle')(rowdata, idx);
     }
@@ -102,5 +104,5 @@ export default [{
       template,
       i18n,
     };
-  },
+  }),
 }];

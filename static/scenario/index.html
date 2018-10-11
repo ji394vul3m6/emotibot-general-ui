@@ -19,7 +19,7 @@
         </script>
         <style>
             .dropdown-menu {
-                max-height: 150px;
+                max-height: 500px;
                 overflow-y: auto;
             }
             .tooltip-inner {
@@ -348,6 +348,7 @@
                 <div class="btn-group pull-right">
                     <a href="modals/scenario_setting.html" class="btn btn-outline btn-default" onclick="resetSetting();" data-target="#scenario_setting" data-toggle="modal"><i class="icon wb-wrench" aria-hidden="true"></i> 设置</a>
                     <a href="modals/global_confirmation.html" class="btn btn-outline btn-default" type="button" data-target="#globalConfirmMessage" data-toggle="modal"><i class="icon wb-menu"></i> 系统变量模板</a>
+                    <a href="modals/global_connection.html" class="btn btn-outline btn-default" type="button" data-target="#globalConnections" data-toggle="modal"><i class="icon wb-link-intact"></i> 通用连线</a>
                     <a class="btn btn-outline btn-default" onclick="exportScenarioToJSONfile()" type="button"><i class="icon wb-file" aria-hidden="true"></i> 导出</a>
                     <a class="btn btn-outline btn-default" onclick="publishScenario()" type="button"><i class="icon wb-upload" aria-hidden="true"></i> 发布</a>
                 </div>
@@ -367,10 +368,9 @@
                 </div>
             </div>
         </div>
-
         <div class="modal fade" id="globalConnections"  role="dialog" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
+            <div class="modal-dialog modal-lg" style="width:725px;">
+                <div class="modal-content" style="padding:25px">
                 </div>
             </div>
         </div>
@@ -671,9 +671,9 @@
                 </div>
                 <div class="margin-top-10 well font-size-16">
                     <span style="width:80px; display:inline-block"><b>预设前往</b></span>
-                    <span style="width:250px; display:inline-block !important">当所有规则都无法符合时</span>
-                    <span style="width:70px; display:inline-block">则前往</span>
-                    <select name="elseGoTo" style="width:200px; display:inline-block !important" class="form-control elseGoTo">
+                    <span style="width:200px; display:inline-block !important">当所有规则都无法符合时</span>
+                    <span style="width:60px; display:inline-block">则前往</span>
+                    <select name="elseGoTo" style="width:250px; display:inline-block !important" class="form-control elseGoTo">
                         <option value="null">解析失败处理</option>
                     </select>
                 </div>

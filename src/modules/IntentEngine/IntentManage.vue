@@ -1,44 +1,65 @@
 <template>
   <div id="intent-manage">
-    <div class="card w-fill h-fill">
+    <div id="intent-manage-card" class="card w-fill h-fill">
       <div class="header">
         <div class="header-title">
           {{ $t('pages.intent_engine.intent_manage') }}
+          <icon iconType="info" :size="16" enableHover v-tooltip="pageInfoTooltip"></icon>
         </div>
         <div class="header-subtitle">
-          {{ $t('intent_engine.manage.intent_num', {inum: intentList.length}) }}
+          {{ $t('intent_engine.manage.intent_num', {inum: intentList.length, cnum: corpusCounts}) }}
         </div>
         <div class="header-tool">
+          <div v-if="isTraining" class="train-hint training">
+            <loading-line></loading-line>
+            {{ $t('intent_engine.manage.train_status_msg.is_training', {percentage: trainingProgress}) }}
+          </div>
+          <div v-else class="train-hint">
+            {{ $t('intent_engine.manage.train_status_msg.last_train', {timestr: lastTrainedTime}) }}
+          </div>
           <text-button id="train-button"
             :button-type="canTrain ? 'default' : 'disable'"
             :icon-type="canTrain ? 'info_warning' : 'info_warning_gray'" width="100px"
             @click="startTraining" v-tooltip="trainButtonTooltip">{{ $t('intent_engine.train') }}</text-button>
-          <search-input v-model="intentKeyword"></search-input>
+          <search-input v-model="intentKeyword" @focus="setSearchIntent"></search-input>
         </div>
       </div>
       <div class="content">
         <div class="content-tool">
           <div class="content-tool-left">
-            <!-- <text-button v-if="canAdd" button-type="primary" @click="addIntent">{{ $t('intent_engine.manage.add_intent') }}</text-button> -->
-            <text-button v-if="canImport" @click="importIntentList">{{ $t('general.import') }}</text-button>
-            <text-button v-if="canExport" @click="exportIntentList(currentVersion)">{{ $t('general.export') }}</text-button>
+            <text-button v-if="canAdd" :button-type="allowAdd ? 'primary' : 'disable'" @click="addIntent">{{ $t('intent_engine.manage.add_intent') }}</text-button>
+            <text-button v-if="canImport" :button-type="allowImport ? 'default' : 'disable'" @click="importIntentList">{{ $t('general.import') }}</text-button>
+            <text-button v-if="canExport" :button-type="allowExport ? 'default' : 'disable'" @click="exportIntentList(currentVersion)">{{ $t('general.export') }}</text-button>
           </div>
           <div v-if="!hasIntents" class="content-tool-right">
             <text-button @click="downloadTemplate">{{ $t('intent_engine.import.download_template') }}</text-button>
           </div>
         </div>
+        <div v-if="!hasIntents && !isAddIntent" class="init_page">
+          {{ $t('intent_engine.manage.no_data.title') }}<br>
+          {{ $t('intent_engine.manage.no_data.hint_left') }}<br>
+          {{ $t('intent_engine.manage.no_data.hint_right') }}
+        </div>
+        <div v-else-if="hasIntents || isAddIntent">
         <intent-list 
-          :intentList="intentListToShow"
-          :canEditIntent="false"
-          :canDeleteIntent="false"
+          :intentList="intentList"
+          :canEditIntent="canEdit && allowEdit"
+          :canDeleteIntent="canEdit && allowEdit"
           :addIntentMode="isAddIntent"
-          @addIntentDone="finishAddIntent()">
+          :searchIntentMode="isSearchIntent"
+          :searchIntentWithKeyword="isSearchKeyword"
+          :keyword="intentKeyword"
+          @addIntentDone="finishAddIntent($event)"
+          @deleteIntentDone="refreshIntentPage()"
+          @cancelSearch="setSearchIntent(false)">
         </intent-list>
+        </div>
       </div>
     </div>
   </div>
 </template>
 <script>
+import { mapGetters } from 'vuex';
 import api from './_api/intent';
 import IntentList from './_components/IntentList';
 import ImportIntentPop from './_components/ImportIntentPop';
@@ -55,38 +76,52 @@ export default {
   data() {
     return {
       statusTimer: null,
+      fetchStatusError: false,
       trainStatus: undefined,  // 'TRAINED', 'NOT_TRAINED', 'TRAINING'
       trainBtnClicked: false,
       intentKeyword: '',
+      keywordTimer: null,
+      keywordDelay: 500, // ms
 
       isAddIntent: false,
+      isSearchIntent: false,  // on focus search input
+      isSearchKeyword: false,    // call search api with keyword or not
 
       intentList: [
-        {
-          name: '',
-          total: 0,
-          // corpus: [
-          //   {
-          //     id: 0,
-          //     text: '',
-          //     isHover: false,
-          //     isSelect: false,
-          //   },
-          // ],
-          // expand: false,
-          // isEditMode: false,
-          // hasCorpusSelected: false,
-          // hasCorpusEditing: false,
-        },
+        // {
+        //   name: '',
+        //   total: 0,
+        //   corpus: [
+        //     {
+        //       id: 0,
+        //       text: '',
+        //       isHover: false,
+        //       isSelect: false,
+        //     },
+        //   ],
+        //   expand: false,
+        //   isEditMode: false,
+        //   hasCorpusSelected: false,
+        //   hasCorpusEditing: false,
+        // },
       ],
+      corpusCounts: 0,
       currentVersion: '',
       trainButtonTooltip: {
         msg: this.$t('intent_engine.manage.train_button_tooltip'),
         alignLeft: true,
       },
+      trainingProgress: 50,
+      lastTrainedTime: '2018-07-09 16:53',
+      pageInfoTooltip: {
+        msg: this.$t('intent_engine.manage.tooltip.page_info'),
+      },
     };
   },
   computed: {
+    ...mapGetters([
+      'robotID',
+    ]),
     hasIntents() {
       return this.intentList.length > 0;
     },
@@ -97,10 +132,29 @@ export default {
       return this.$hasRight('import');
     },
     canExport() {
-      return this.$hasRight('export') && !this.versionNotAvailable;
+      return this.$hasRight('export');
+    },
+    allowImport() {
+      return !this.isTraining && !this.fetchStatusError;
+    },
+    allowExport() {
+      return !this.versionNotAvailable && this.hasIntents &&
+        !this.isTraining && !this.fetchStatusError;
     },
     canEdit() {
       return this.$hasRight('edit') && !this.versionNotAvailable;
+    },
+    canAdd() {
+      return this.$hasRight('edit');
+    },
+    allowEdit() {
+      return !this.isTraining;
+    },
+    allowAdd() {
+      return !this.isTraining && !this.fetchStatusError;
+    },
+    allowLoadPage() {
+      return !this.fetchStatusError;
     },
     canTrain() {
       return !this.versionNotAvailable && (this.hasIntents && this.shouldTrain);
@@ -108,12 +162,26 @@ export default {
     shouldTrain() {
       return this.trainStatus === 'NOT_TRAINED' || this.trainStatus === 'TRAIN_FAILED';
     },
-    intentListToShow() {
-      if (this.intentKeyword !== '') {
-        return this.intentList.filter(intent => intent.name.includes(this.intentKeyword));
-        // NOTE: 'includes' may not support IE
+    isTraining() {
+      return this.trainStatus === 'TRAINING';
+    },
+  },
+  watch: {
+    intentList() {
+      const that = this;
+      if (!that.isSearchIntent) {
+        that.corpusCounts = that.intentList.reduce((acc, intent) => acc + intent.total
+      , 0);
       }
-      return this.intentList;
+    },
+    intentKeyword() {
+      const that = this;
+      if (that.keywordTimer) {
+        clearTimeout(that.keywordTimer);
+      }
+      that.keywordTimer = setTimeout(() => {
+        that.refreshIntentPage();
+      }, that.keywordDelay);
     },
   },
   methods: {
@@ -121,22 +189,32 @@ export default {
       window.open('/Files/intent_template.xlsx', '_blank');
     },
     addIntent() {
+      if (!this.allowAdd) return;
       this.isAddIntent = true;
       this.intentKeyword = '';
     },
-    finishAddIntent() {
+    finishAddIntent(done) {
       this.isAddIntent = false;
+      if (done) {
+        this.refreshIntentPage();
+      }
+    },
+    setSearchIntent(bool) {
+      this.isSearchIntent = bool;
     },
     exportIntentList(version) {
-      const EXPORT_INTENT_URL = 'api/v1/intents/download';
+      if (!this.allowExport) return;
+      const EXPORT_INTENT_URL = 'api/v2/intents/export';
       if (version) {
-        window.open(`${EXPORT_INTENT_URL}?version=${version}`, '_blank');
+        window.open(`${EXPORT_INTENT_URL}?version=${version}`);
       } else {
-        window.open(EXPORT_INTENT_URL, '_blank');
+        window.open(`${EXPORT_INTENT_URL}?appid=${this.robotID}`);
       }
     },
     importIntentList() {
       const that = this;
+      if (!that.allowImport) return;
+
       const popOption = {
         title: that.$t('intent_engine.import.title'),
         component: ImportIntentPop,
@@ -169,11 +247,11 @@ export default {
     startTraining() {
       const that = this;
       if (!that.canTrain) return;
+      that.$emit('startLoading', that.$t('intent_engine.is_training'));
       that.$api.startTraining()
       .then(() => {
         that.trainStatus = 'TRAINING';
         that.trainBtnClicked = true;
-        that.$emit('startLoading', that.$t('intent_engine.is_training'));
       });
     },
     pollTrainingStatus(version) {
@@ -181,8 +259,9 @@ export default {
       const prevStatus = that.trainStatus;
       that.$api.getTrainingStatus(version)
       .then((status) => {
+        that.fetchStatusError = false;
         if (status === 'TRAINING') {
-          that.$emit('startLoading', that.$t('intent_engine.is_training'));
+          // that.$emit('startLoading', that.$t('intent_engine.is_training'));
           that.trainStatus = status;
         } else if (prevStatus === 'TRAINING') {
           that.refreshIntentPage(); // also hideloading
@@ -214,6 +293,7 @@ export default {
         }
       })
       .catch((err) => {
+        that.fetchStatusError = true;
         that.trainBtnClicked = false;
         console.log(err);
         if (err.response.status === 400) {
@@ -238,19 +318,21 @@ export default {
     },
     refreshIntentPage() {
       const that = this;
+      if (!this.allowLoadPage) return;
       this.$emit('startLoading');
-      that.$api.getIntents()
+      // that.$api.getIntents()
+      that.$api.getIntentsDetail(that.intentKeyword)
       .then((intents) => {
+        that.isSearchKeyword = that.intentKeyword !== '';
+
         that.intentList = [];
         intents.forEach((intent) => {
           that.intentList.push({
-            name: intent,
-            total: 0,
-            // corpus: [],
-            // expand: false,
-            // isEditMode: false,
-            // hasCorpusSelected: false,
-            // hasCorpusEditing: false,
+            id: intent.id,
+            name: intent.name,
+            total: intent.count,
+            positiveCount: intent.positive_count,
+            negativeCount: intent.negative_count,
           });
         });
       })
@@ -281,6 +363,14 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+
+#intent-manage-card {
+  display: flex;
+  flex-direction: column;
+  .content {
+    flex: 1;
+  }
+}
 .header {
   height: 60px;
   padding: 0 20px;
@@ -291,6 +381,11 @@ export default {
   .header-title {
     @include font-16px();
     color: $color-font-active;
+    display: flex;
+    align-items: center;
+    .icon {
+      margin-left: 6px;
+    }
   }
   .header-subtitle {
     @include font-16px();
@@ -304,6 +399,13 @@ export default {
     > :not(:last-child) {
       margin-right: 10px;
     }
+    .train-hint {
+      @include font-14px();
+      color: $color-font-mark;
+      &.training {
+        color: $color-primary;
+      }
+    }
     .text-button {
       border-color: $color-warning;
       &.disabled {
@@ -314,6 +416,11 @@ export default {
 }
 .content {
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+  @include customScrollbar();
+
   .content-tool {
     flex: 0 0 auto;
     margin-bottom: 20px;
@@ -325,6 +432,18 @@ export default {
         margin-right: 0px;
       }
     }
+  }
+  .intent-list {
+    flex: 1;
+  }
+  .init_page {
+    @include font-14px();
+    color: $color-font-disabled;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
   }
 }
 </style>

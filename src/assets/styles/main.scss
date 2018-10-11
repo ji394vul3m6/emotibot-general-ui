@@ -13,6 +13,7 @@ input {
   border: solid 1px $color-borderline;
   border-radius: 2px;
   color: $color-font-normal;
+  font-family: $app-dft-font-family;
   &::placeholder {
     color: $color-font-disabled;
   }
@@ -28,8 +29,9 @@ input {
     border-color: $color-borderline-hover;
   }
   &:disabled {
+    border-color: $color-borderline-disabled;
     &:hover{
-      border-color: $color-borderline;
+      border-color: $color-borderline-disabled;
     }
   }
   &:-webkit-autofill {
@@ -53,7 +55,7 @@ input {
     border-color: $color-borderline-hover;
   }
   &.disabled {
-    border-color: $color-borderline;
+    border-color: $color-borderline-disabled;
   }
   &:focus-within {  /** do not support IE **/
     outline: none;
@@ -65,7 +67,7 @@ input {
   }
 
   input {
-    flex: 1 1 auto;
+    flex: 1 1 0px;  // IE11 Hack: give flex-basis specific px or %
     min-width: 0px;
     padding: 4px 8px;
     padding-right: 0px;
@@ -90,6 +92,7 @@ textarea {
   padding: 5px 8px;
   border: solid 1px $color-borderline;
   border-radius: 2px;
+  font-family: $app-dft-font-family;
   &::placeholder {
     color: $color-font-disabled;
   }
@@ -115,7 +118,7 @@ textarea {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: $color-font-normal;
-  margin-top: 60px;
+  // margin-top: 60px;
   overflow: hidden;
   height: 100vh;
   width: 100vw;
@@ -184,6 +187,10 @@ textarea {
   &.show {
     visibility: visible;
   }
+}
+
+#task-engine-v2{
+  padding: 0px !important;
 }
 
 // .icon {

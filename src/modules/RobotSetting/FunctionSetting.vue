@@ -3,20 +3,23 @@
   <div class="card h-fill w-fill">
     <div class="header">
       <div class="header-text">{{ $t('pages.robot_setting.robot_function') }}</div>
+      <icon iconType="info" :size="16" enableHover v-tooltip="pageInfoTooltip"></icon>
     </div>
-    <div class="row">
-      <text-button v-if="canEdit" v-on:click="setAll(true)" :button-type="allActive ? 'disable': 'default'">{{ $t("robot_setting.all_active") }}</text-button>
-      <text-button v-if="canEdit" v-on:click="setAll(false)" :button-type="allDeactive ? 'disable': 'default'">{{ $t("robot_setting.all_deactive") }}</text-button>
-    </div>
-    <div class="skill-card-container">
-      <div v-for="skill in moduleList" :key="skill.id" class="skill-card" :class="{checked: skill.active}">
-        <div class="skill-switch" v-if="canEdit">
-          <toggle v-model="skill.active" @change="updateSkill(skill)"/>
-        </div>
-        <div class="skill-switch" v-else style="cursor: default;"></div>
-        <div class="skill-text">
-          <div class="skill-name">{{ skill.name }}</div>
-          <div class="skill-remark">{{ skill.remark }}</div>
+    <div class="page">
+      <div class="row">
+        <text-button v-if="canEdit" v-on:click="setAll(true)" :button-type="allActive ? 'disable': 'default'">{{ $t("robot_setting.all_active") }}</text-button>
+        <text-button v-if="canEdit" v-on:click="setAll(false)" :button-type="allDeactive ? 'disable': 'default'">{{ $t("robot_setting.all_deactive") }}</text-button>
+      </div>
+      <div class="skill-card-container">
+        <div v-for="skill in moduleList" :key="skill.id" class="skill-card" :class="{checked: skill.active}">
+          <div class="skill-switch" v-if="canEdit">
+            <toggle v-model="skill.active" @change="updateSkill(skill)"/>
+          </div>
+          <div class="skill-switch" v-else style="cursor: default;"></div>
+          <div class="skill-text">
+            <div class="skill-name">{{ skill.name }}</div>
+            <div class="skill-remark">{{ skill.remark }}</div>
+          </div>
         </div>
       </div>
     </div>
@@ -72,6 +75,7 @@ export default {
     },
     setAll(val) {
       const that = this;
+      if ((val && this.allActive) || (!val && this.allDeactive)) return;
       that.moduleList.forEach((skill) => {
         skill.checked = val;
       });
@@ -110,6 +114,9 @@ export default {
       showLoading: false,
       moduleList: [],
       i18n: undefined,
+      pageInfoTooltip: {
+        msg: this.$t('robot_setting.tooltip'),
+      },
     };
   },
   activated() {
@@ -141,7 +148,7 @@ $function-header-font-size: 16px;
 $function-header-bg: #fcfcfc;
 
 $card-name-font-size: 14px;
-$card-name-color: #666666;
+$card-name-color: $color-font-active;
 $card-remark-font-size: 12px;
 $card-remark-color: #999999;
 
@@ -156,75 +163,90 @@ $card-remark-color: #999999;
     align-items: center;
     font-size: $function-header-font-size;
     padding: 0 20px;
-    box-shadow: inset 0 -1px 0 0 #e9e9e9;
+    box-shadow: inset 0 -1px 0 0 $color-borderline;
     .header-text {
       color: $color-font-active;
-      flex: 0 0 80px;
     }
+    .icon {
+       margin-left: 6px;
+     }
     .text-button {
       margin-right: 10px;
     }
   }
-  .row {
-    flex: 0 0 auto;
-    margin: 20px;
-    margin-top: 10px;
-    margin-bottom: 0;
-  }
-  .skill-card-container {
+  .page {
     flex: 1;
-    overflow-y: auto;
-    overflow-x: hidden;
-    height: calc(100% - $function-header-height);
-
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    align-content: flex-start;
-    padding: 20px;
-
-    .skill-card {
-      flex: 0 0 calc(50% - 10px);
-      flex-basis: calc(50% - 10px);
-      min-width: 300px;
-      height: 80px;
-      border-radius: 2px;
-      border: solid 1px #e9e9e9;
-      margin-bottom: 10px;
-      margin-right: 20px;
-      &:nth-child(2n) {
-        margin-right: 0px;
+    @include auto-overflow();
+    @include customScrollbar();
+    .row {
+      flex: 0 0 auto;
+      margin: 20px;
+      .text-button {
+        margin: 0 5px;
+        &:first-child {
+          margin-left: 0px;
+        }
       }
-
+    }
+    .skill-card-container {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      height: calc(100% - $function-header-height);
+  
       display: flex;
-      align-items: center;
-      .skill-text {
-        display: flex;
-        flex-direction: column;
-        margin-left: 20px;
-        .skill-name {
-          font-size: $card-name-font-size;
-          color: $card-name-color;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      align-content: flex-start;
+      padding: 20px;
+      padding-top: 0px;
+  
+      .skill-card {
+        flex: 0 0 calc(50% - 10px);
+        flex-basis: calc(50% - 10px);
+        min-width: 300px;
+        height: 80px;
+        border-radius: 4px;
+        border: solid 1px $color-borderline;
+        margin-bottom: 20px;
+        margin-right: 20px;
+        transition: all .2s ease-in-out;
+        &:nth-child(2n) {
+          margin-right: 0px;
         }
-        .skill-remark {
-          margin-top: 6px;
-          font-size: $card-remark-font-size;
-          color: $card-remark-color;
-          &::before {
-            content: '"';
-          }
-          &::after {
-            content: '"';
-          }
+        &:hover{
+          box-shadow: 0 4px 9px 0 rgba(115, 115, 115, 0.2), 0 5px 8px 0 rgba(228, 228, 228, 0.5);
         }
-      }
-      .skill-switch {
-        flex: 0 0 70px;
         display: flex;
-        justify-content: center;
         align-items: center;
-        border-right: 1px solid #dbdbdb;
-        height: 100%;
+        .skill-text {
+          display: flex;
+          flex-direction: column;
+          margin-left: 20px;
+          .skill-name {
+            font-size: $card-name-font-size;
+            color: $card-name-color;
+          }
+          .skill-remark {
+            margin-top: 6px;
+            font-size: $card-remark-font-size;
+            color: $card-remark-color;
+            &::before {
+              content: '"';
+            }
+            &::after {
+              content: '"';
+            }
+          }
+        }
+        .skill-switch {
+          flex: 0 0 70px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          border-right: 1px solid #dbdbdb;
+          height: 100%;
+        }
       }
     }
   }

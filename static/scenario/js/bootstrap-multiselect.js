@@ -95,7 +95,12 @@
 
                             selected += label + ', ';
                         });
-                        return selected.substr(0, selected.length - 2) + ' <b class="caret"></b>';
+                        selected = selected.substr(0, selected.length - 2);
+                        if (selected.indexOf('(ID: ') >= 15){
+                            selected = selected.substr(0, 15) + ' ...';
+                        }
+                        return `${selected} <b class="caret"></b>`;
+                        // return selected.substr(0, selected.length - 2) + ' <b class="caret"></b>';
                     }
                 }
             },

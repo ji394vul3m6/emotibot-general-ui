@@ -49,14 +49,13 @@
     </div>
     <div class="more_setting_column">
       <div class="icon_container" v-show="moreIcon" v-dropdown="moreOptions">
-        <icon :size=25 icon-type="more"/>
+        <icon :size=25 icon-type="more_blue"/>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import DropdownSelect from '@/components/DropdownSelect';
 import DropdownMenu from '@/components/basic/DropdownMenu';
 import CustomEntityTypeEditorPop from './CustomEntityTypeEditorPop';
 import i18nUtils from '../utils/i18nUtil';
@@ -64,7 +63,6 @@ import i18nUtils from '../utils/i18nUtil';
 export default {
   name: 'entity-collector',
   components: {
-    'dropdown-select': DropdownSelect,
     'dropdown-menu': DropdownMenu,
   },
   props: {

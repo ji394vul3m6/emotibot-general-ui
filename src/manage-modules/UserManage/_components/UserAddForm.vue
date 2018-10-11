@@ -70,7 +70,7 @@
         {{ $t('management.user_display_name') }}
       </div>
       <div class="row-input-col">
-        <input class="row-input" ref="displayName" v-model="displayName" :placeholder="$t('management.input_placeholder')" v-tooltip="displayNameTooltip"
+        <input class="row-input" ref="displayName" v-model="displayName" :placeholder="$t('management.input_placeholder')" :maxlength="displayNameMaxlength" v-tooltip="displayNameTooltip"
         :class="{'error': isDisplayNameTooltipShown}">
       </div>
     </div>
@@ -82,6 +82,7 @@
       </div>
       <div class="row-input-col">
         <input class="row-input" ref="phone" v-model="phone" :placeholder="$t('management.input_placeholder')" v-tooltip="phoneTooltip"
+        :maxlength="phoneMaxlength"
         :class="{'error': isPhoneTooltipShown}">
       </div>
     </div>
@@ -100,9 +101,9 @@
       <div class="row-title">
         <template v-if="idx === 0">{{ $t('management.assign_robot') }}</template>
       </div>
-      <dropdown-selector class="selector" :options="machineOptions" v-model="privilege.machine"/>
+      <dropdown-select class="selector" :options="machineOptions" v-model="privilege.machine" :placeholder="$t('general.please_choose')"/>
       <div class="row-text">{{ $t('management.privilege_is') }}</div>
-      <dropdown-selector class="selector" :options="privilegeOptions" v-model="privilege.role"/>
+      <dropdown-select class="selector" :options="privilegeOptions" v-model="privilege.role" :placeholder="$t('general.please_choose')"/>
       <div class="row-button">
         <text-button width="60px" button-type="error" v-if="privilegeSet.length > 1" @click="removePrivilege(idx)">
           {{ $t('general.delete') }}
@@ -119,8 +120,8 @@
 
 <script>
 import md5 from 'md5';
+import event from '@/utils/js/event';
 import validate from '@/utils/js/validate';
-import DropdownSelector from '@/components/DropdownSelect';
 
 export default {
   name: 'user-add-form',
@@ -132,9 +133,6 @@ export default {
       }),
     },
   },
-  components: {
-    DropdownSelector,
-  },
   computed: {
     isAdmin() {
       return this.userType === 1;
@@ -144,7 +142,7 @@ export default {
     displayName() {
       if (this.displayName.trim() !== '') {
         this.isDisplayNameTooltipShown = false;
-        this.$refs.displayName.dispatchEvent(new Event('tooltip-hide'));
+        this.$refs.displayName.dispatchEvent(event.createEvent('tooltip-hide'));
       }
     },
     userName() {
@@ -155,12 +153,12 @@ export default {
     email() {
       if (this.email.trim() !== '') {
         this.isEmailTooltipShown = false;
-        this.$refs.email.dispatchEvent(new Event('tooltip-hide'));
+        this.$refs.email.dispatchEvent(event.createEvent('tooltip-hide'));
       }
     },
     phone() {
       this.isPhoneTooltipShown = false;
-      this.$refs.phone.dispatchEvent(new Event('tooltip-hide'));
+      this.$refs.phone.dispatchEvent(event.createEvent('tooltip-hide'));
     },
     password() {
       if (this.password.trim() !== '') {
@@ -169,7 +167,7 @@ export default {
     },
     checkPassword() {
       this.isPasswordCheckTooltipShown = false;
-      this.$refs.checkPassword.dispatchEvent(new Event('tooltip-hide'));
+      this.$refs.checkPassword.dispatchEvent(event.createEvent('tooltip-hide'));
     },
   },
   data() {
@@ -186,6 +184,8 @@ export default {
       passwordMaxlength: 16,
       passwordMinlength: 6,
       userNameMaxlength: 64,
+      displayNameMaxlength: validate.displayNameMaxlength,
+      phoneMaxlength: validate.phoneMaxlength,
 
       privilegeSet: [{
         machine: [],
@@ -260,7 +260,6 @@ export default {
       if (!isValid) {
         return;
       }
-
       const ret = {
         username: that.userName.trim(),
         name: that.displayName.trim(),
@@ -318,30 +317,30 @@ export default {
       if (that.email.trim() === '') {
         isValid = false;
         that.emailTooltip.msg = that.$t('management.err_empty_email');
-        that.$refs.email.dispatchEvent(new Event('tooltip-reload'));
-        that.$refs.email.dispatchEvent(new Event('tooltip-show'));
+        that.$refs.email.dispatchEvent(event.createEvent('tooltip-reload'));
+        that.$refs.email.dispatchEvent(event.createEvent('tooltip-show'));
         that.isEmailTooltipShown = true;
       } else if (!validate.isValidEmail(that.email)) {
         isValid = false;
         that.emailTooltip.msg = that.$t('management.err_invalid_email');
-        that.$refs.email.dispatchEvent(new Event('tooltip-reload'));
-        that.$refs.email.dispatchEvent(new Event('tooltip-show'));
+        that.$refs.email.dispatchEvent(event.createEvent('tooltip-reload'));
+        that.$refs.email.dispatchEvent(event.createEvent('tooltip-show'));
         that.isEmailTooltipShown = true;
       }
 
       if (that.phone !== '' && !validate.isValidPhone(that.phone)) {
         isValid = false;
-        that.$refs.phone.dispatchEvent(new Event('tooltip-show'));
+        that.$refs.phone.dispatchEvent(event.createEvent('tooltip-show'));
         that.isPhoneTooltipShown = true;
       }
 
       if (that.displayName.trim() === '') {
         isValid = false;
-        that.$refs.displayName.dispatchEvent(new Event('tooltip-show'));
+        that.$refs.displayName.dispatchEvent(event.createEvent('tooltip-show'));
         that.isDisplayNameTooltipShown = true;
       } else if (!validate.isValidDisplayName(that.displayName.trim())) {
         isValid = false;
-        that.$refs.displayName.dispatchEvent(new Event('tooltip-show'));
+        that.$refs.displayName.dispatchEvent(event.createEvent('tooltip-show'));
         that.isDisplayNameTooltipShown = true;
       }
       if (!that.editMode) {
@@ -356,7 +355,7 @@ export default {
           that.isPasswordTooltipShown = true;
         } else if (that.checkPassword !== that.password) {
           isValid = false;
-          that.$refs.checkPassword.dispatchEvent(new Event('tooltip-show'));
+          that.$refs.checkPassword.dispatchEvent(event.createEvent('tooltip-show'));
           that.isPasswordCheckTooltipShown = true;
         }
       }

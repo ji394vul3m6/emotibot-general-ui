@@ -4,6 +4,7 @@
       <div class="row-title">{{ $t('management.robot_name') }}</div>
       <input class="row-input" v-model="name"
         :placeholder="$t('management.input_placeholder')"
+        :class="{'error': isNameTooltipShown}"
         v-tooltip="nameTooltip"
         maxlength=50
         ref="name">
@@ -17,6 +18,8 @@
 </template>
 
 <script>
+import event from '@/utils/js/event';
+
 export default {
   name: 'robot-add-form',
   props: {
@@ -36,12 +39,14 @@ export default {
         errorType: true,
         alignLeft: true,
       },
+      isNameTooltipShown: false,
     };
   },
   watch: {
     name() {
       if (this.name.trim() !== '') {
-        this.$refs.name.dispatchEvent(new Event('tooltip-hide'));
+        this.isNameTooltipShown = false;
+        this.$refs.name.dispatchEvent(event.createEvent('tooltip-hide'));
       }
     },
   },
@@ -51,15 +56,17 @@ export default {
       that.name = that.name.trim();
       if (that.name === '') {
         that.nameTooltip.msg = that.$t('management.err_robot_name_empty');
-        that.$refs.name.dispatchEvent(new Event('tooltip-reload'));
-        that.$refs.name.dispatchEvent(new Event('tooltip-show'));
+        that.$refs.name.dispatchEvent(event.createEvent('tooltip-reload'));
+        that.$refs.name.dispatchEvent(event.createEvent('tooltip-show'));
         that.$refs.name.focus();
+        that.isNameTooltipShown = true;
         return;
       } else if (that.name !== that.extData.name && that.existedRobots.indexOf(that.name) >= 0) {
         that.nameTooltip.msg = that.$t('management.err_robot_duplicate');
-        that.$refs.name.dispatchEvent(new Event('tooltip-reload'));
-        that.$refs.name.dispatchEvent(new Event('tooltip-show'));
+        that.$refs.name.dispatchEvent(event.createEvent('tooltip-reload'));
+        that.$refs.name.dispatchEvent(event.createEvent('tooltip-show'));
         that.$refs.name.focus();
+        that.isNameTooltipShown = true;
         return;
       }
       that.$emit('validateSuccess', {

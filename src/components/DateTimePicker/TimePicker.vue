@@ -1,4 +1,6 @@
 <script>
+import eventUtil from '@/utils/js/event';
+
 const CONFIG = {
   HOUR_TOKENS: ['HH', 'H', 'hh', 'h', 'kk', 'k'],
   MINUTE_TOKENS: ['mm', 'm'],
@@ -19,6 +21,14 @@ export default {
     readonly: Boolean,
     disabled: Object,
     currentDate: Date,
+    placeholder: {
+      type: String,
+      default: '',
+    },
+    allowEmpty: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   data() {
@@ -42,6 +52,14 @@ export default {
       validity: true,
       manualInput: false,
       selectInput: false,
+      listStyle: {},
+
+      timepickerTooltip: {
+        msg: this.$t('error_msg.time_format_error'),
+        eventOnly: true,
+        errorType: true,
+        alignLeft: true,
+      },
     };
   },
 
@@ -68,6 +86,9 @@ export default {
       }
       return false;
     },
+    isSecondFormat() {
+      return this.format === 'HH:mm:ss';
+    },
   },
 
   watch: {
@@ -80,9 +101,21 @@ export default {
     },
     value: 'readValues',
     formattedDisplayTime: 'fillValues',
-    displayTime: 'parseDisplayTime',
+    displayTime() {
+      this.parseDisplayTime();
+      if (this.displayTime === '') {
+        this.$emit('displayEmpty', true);
+      } else {
+        this.$emit('displayEmpty', false);
+      }
+    },
     validity() {
       this.$emit('validityChange', this.validity);
+      if (this.validity) {
+        this.$refs.timepicker.dispatchEvent(eventUtil.createEvent('tooltip-hide'));
+      } else {
+        this.$refs.timepicker.dispatchEvent(eventUtil.createEvent('tooltip-show'));
+      }
     },
     currentDate(val) {
       const hour = val.getHours();
@@ -90,6 +123,12 @@ export default {
       this.hour = hour < 10 ? `0${hour}` : `${hour}`;
       this.minute = min < 10 ? `0${min}` : `${min}`;
       this.displayTime = `${this.hour}:${this.minute}`;
+
+      if (this.isSecondFormat) {
+        const sec = val.getSeconds();
+        this.second = sec < 10 ? `0${sec}` : `${sec}`;
+        this.displayTime = `${this.displayTime}:${this.second}`;
+      }
       this.parseDisplayTime();
     },
   },
@@ -108,7 +147,7 @@ export default {
         this.displayTime = `${this.displayTime.substring(0, 2)}:${this.displayTime.substring(2, 4)}`;
       }
 
-      const pattern = /^([01]?[0-9]|2[0-3]):([0-5][0-9])$/;
+      const pattern = this.isSecondFormat ? /^([01]?[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/ : /^([01]?[0-9]|2[0-3]):([0-5][0-9])$/;
 
       if (pattern.test(this.displayTime)) {
         this.validity = true;
@@ -117,22 +156,29 @@ export default {
         const currentDate = this.currentDate;
         let hour = parseInt(result[1], 10);
         let min = parseInt(result[2], 10);
+        let sec = this.isSecondFormat ? parseInt(result[3], 10) : 0;
         currentDate.setHours(hour);
         currentDate.setMinutes(min);
+        currentDate.setSeconds(sec);
         if (this.disabled && this.disabled.to && currentDate < this.disabled.to) {
           hour = this.disabled.to.getHours();
           min = this.disabled.to.getMinutes();
+          sec = this.disabled.to.getSeconds();
         }
         if (this.disabled && this.disabled.from && currentDate > this.disabled.from) {
           hour = this.disabled.from.getHours();
           min = this.disabled.from.getMinutes();
+          sec = this.disabled.from.getSeconds();
         }
         this.hour = hour < 10 ? `0${hour}` : `${hour}`;
         this.minute = min < 10 ? `0${min}` : `${min}`;
-        this.displayTime = `${this.hour}:${this.minute}`;
+        this.second = sec < 10 ? `0${sec}` : `${sec}`;
+        this.displayTime = this.isSecondFormat ? `${this.hour}:${this.minute}:${this.second}` : `${this.hour}:${this.minute}`;
         if (this.manualInput) {
           this.closeDropdown();
         }
+      } else if (this.allowEmpty && this.displayTime === '') {
+        this.validity = true;
       } else {
         this.validity = false;
       }
@@ -286,7 +332,7 @@ export default {
       m.isDisabled = disabled;
       return disabled;
     },
-    isDisabledSedond(s) {
+    isDisabledSecond(s) {
       if (typeof this.disabled === 'undefined') {
         s.isDisabled = false;
         return false;
@@ -472,17 +518,28 @@ export default {
       return token === 'h' || token === 'hh';
     },
 
+    addEventListeners() {
+      document.addEventListener('click', this.clickOrScrollOutside, false);
+      document.addEventListener('scroll', this.clickOrScrollOutside, true);
+      window.addEventListener('resize', this.reposition, false);
+    },
+    removeEventListeners() {
+      document.removeEventListener('click', this.clickOrScrollOutside, false);
+      document.removeEventListener('scroll', this.clickOrScrollOutside, true);
+      window.removeEventListener('resize', this.reposition, false);
+    },
+
     closeDropdown() {
       this.showDropdown = false;
-      document.removeEventListener('click', this.clickOutside, false);
+      this.removeEventListeners();
     },
 
     toggleDropdown() {
       this.showDropdown = !this.showDropdown;
       if (this.showDropdown) {
-        document.addEventListener('click', this.clickOutside, false);
+        this.addEventListeners();
       } else {
-        document.removeEventListener('click', this.clickOutside, false);
+        this.removeEventListeners();
       }
     },
 
@@ -530,7 +587,7 @@ export default {
      * Close if clicked outside the timepicker
      * @param  {Event} event
      */
-    clickOutside(event) {
+    clickOrScrollOutside(event) {
       if (this.$el && !this.$el.contains(event.target)) {
         this.toggleDropdown();
       }
@@ -540,21 +597,36 @@ export default {
       event.target.select();
     },
     clickInput(event) {
+      this.reposition();
       this.toggleDropdown(event);
       if (this.showDropdown) {
         this.selectAllText(event);
       }
     },
+    reposition() {
+      const inputBox = this.$refs.timepicker.getBoundingClientRect();
+      this.listStyle = {
+        position: 'fixed',
+        top: `${inputBox.top + inputBox.height + 3}px`,
+        left: `${inputBox.left}px`,
+      };
+    },
   },
 
   mounted() {
     this.renderFormat();
+
+    this.$nextTick(() => {
+      if (this.allowEmpty) {
+        this.displayTime = '';  // always init displayDate to empty if allowEmpty
+      }
+    });
   },
 };
 </script>
 
 <template>
-<span class="time-picker tooltip-container">
+<span class="time-picker tooltip-container" ref="timepicker" v-tooltip="timepickerTooltip">
   <input
     class="display-time"
     :class="{'invalid-timepicker-input': !validity}"
@@ -562,15 +634,10 @@ export default {
     @click="clickInput"
     type="text"
     :readonly="readonly"
+    :placeholder="placeholder"
   />
-  <div class="tooltip nowrap rightside"
-    :class="{
-      'visible': !validity
-    }">
-    {{ $t('error_msg.time_format_error') }}
-  </div>
   <span class="clear-btn" v-if="!hideClearButton" v-show="!showDropdown && showClearBtn" @click.stop="clearTime">&times;</span>
-  <div class="dropdown" v-show="showDropdown">
+  <div class="dropdown" v-show="showDropdown" :style="listStyle">
     <div class="select-list">
       <ul class="hours">
         <li class="hint" v-text="hourType"></li>

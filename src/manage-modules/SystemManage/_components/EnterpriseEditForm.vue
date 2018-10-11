@@ -37,6 +37,8 @@
 </template>
 
 <script>
+import event from '@/utils/js/event';
+
 export default {
   name: 'enterprise-edit-form',
   props: {
@@ -61,7 +63,7 @@ export default {
     name() {
       if (this.name.trim() !== '') {
         this.isNameTooltipShown = false;
-        this.$refs.name.dispatchEvent(new Event('tooltip-hide'));
+        this.$refs.name.dispatchEvent(event.createEvent('tooltip-hide'));
       }
     },
   },
@@ -80,12 +82,12 @@ export default {
 
       triggerObj.focus();
       this.$nextTick(() => {
-        triggerObj.dispatchEvent(new Event('tooltip-reload'));
-        triggerObj.dispatchEvent(new Event('tooltip-show'));
+        triggerObj.dispatchEvent(event.createEvent('tooltip-reload'));
+        triggerObj.dispatchEvent(event.createEvent('tooltip-show'));
       });
     },
     closeModuleTooltip() {
-      this.$refs.moduleTitle.dispatchEvent(new Event('tooltip-hide'));
+      this.$refs.moduleTitle.dispatchEvent(event.createEvent('tooltip-hide'));
     },
     validate() {
       const that = this;
@@ -155,6 +157,12 @@ export default {
       width: 14px;
       height: 14px;
       cursor: pointer;
+      &:disabled{
+        cursor: default;
+        +label {
+          cursor: default;
+        }
+      }
     }
   }
 }
@@ -180,7 +188,7 @@ export default {
     }
     &.splitter {
       flex: 0 0 1px;
-      box-shadow: inset 0 1px 0 0 #e9e9e9;
+      box-shadow: inset 0 1px 0 0 $color-borderline;
     }
     &.module-title {
       margin-top: 8px;

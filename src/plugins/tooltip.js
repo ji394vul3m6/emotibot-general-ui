@@ -1,3 +1,4 @@
+import event from '@/utils/js/event';
 import Tooltip from '../components/basic/Tooltip';
 
 function getPosition(el) {
@@ -7,9 +8,9 @@ function getPosition(el) {
     y: boundedBox.top,
   };
 }
-
 const MyPlugin = {
   install(Vue) {
+    let VM;
     Vue.directive('tooltip', {
       inserted(el, binding, vnode) {
         const parent = el.parentElement;
@@ -22,6 +23,7 @@ const MyPlugin = {
               x: boundedBox.right,
               y: boundedBox.top,
               msg: binding.value.msg,
+              msgs: binding.value.msgs || [],
               leftOffset: binding.value.left || 0,
               topOffset: binding.value.top || 0,
               buttons: binding.value.buttons || [],
@@ -30,6 +32,7 @@ const MyPlugin = {
               alignLeft: binding.value.alignLeft || false,
             },
           });
+          VM = vm;
           vm.$mount();
           parent.appendChild(vm.$el);
           vm.$forceUpdate();
@@ -46,17 +49,17 @@ const MyPlugin = {
               const pos = el.getBoundingClientRect();
               const inRange = parentPos.top <= pos.top && parentPos.bottom >= pos.bottom;
               if (!inRange && vm.show) {
-                el.dispatchEvent(new Event('tooltip-hide'));
+                el.dispatchEvent(event.createEvent('tooltip-hide'));
                 vm.hideWithScroll = true;
               } else if (inRange && (vm.show || vm.hideWithScroll)) {
-                el.dispatchEvent(new Event('tooltip-show'));
+                el.dispatchEvent(event.createEvent('tooltip-show'));
                 vm.hideWithScroll = false;
               }
             });
           }
 
           el.addEventListener('tooltip-reload', () => {
-            parent.removeChild(vm.$el);
+            vm.$el.remove();
             vm.$destroy();
             boundedBox = el.getBoundingClientRect();
             vm = new TooltipGenerator({
@@ -64,6 +67,7 @@ const MyPlugin = {
                 x: boundedBox.right,
                 y: boundedBox.top,
                 msg: binding.value.msg,
+                msgs: binding.value.msgs || [],
                 leftOffset: binding.value.left || 0,
                 topOffset: binding.value.top || 0,
                 buttons: binding.value.buttons || [],
@@ -72,6 +76,7 @@ const MyPlugin = {
                 alignLeft: binding.value.alignLeft || false,
               },
             });
+            VM = vm;
             vm.$mount();
             parent.appendChild(vm.$el);
             vm.$forceUpdate();
@@ -124,6 +129,9 @@ const MyPlugin = {
             });
           }
         });
+      },
+      unbind() {
+        VM.$el.remove();
       },
     });
   },

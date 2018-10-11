@@ -61,6 +61,7 @@
       <input class="row-input"
         :placeholder="$t('management.input_placeholder')"
         :class="{'error': isDisplayNameTooltipShown}"
+        :maxlength="displayNameMaxlength"
         v-model="adminDisplayName"
         v-tooltip="displayNameTooltip"
         ref="displayName">
@@ -97,6 +98,18 @@
     </div>
     <div class="row">
       <div class="row-title">
+        <div class="required"></div>
+        {{ $t('management.phone') }}
+      </div>
+      <input class="row-input" ref="phone"
+        v-model="phone"
+        :placeholder="$t('management.input_placeholder')" 
+        v-tooltip="phoneTooltip"
+        :maxlength="phoneMaxlength"
+        :class="{'error': isPhoneTooltipShown}">
+    </div>
+    <div class="row">
+      <div class="row-title">
         <div class="required">＊</div>
         {{ $t('management.email') }}
       </div>
@@ -112,6 +125,7 @@
 
 <script>
 import validate from '@/utils/js/validate';
+import event from '@/utils/js/event';
 
 export default {
   name: 'enterprise-add-form',
@@ -133,12 +147,14 @@ export default {
       checkPasswordTooltip: this.genErrTooltip(),
       emailTooltip: this.genErrTooltip(),
       moduleTooltip: this.genErrTooltip(),
+      phoneTooltip: this.genErrTooltip(),
 
       adminUserName: '',
       adminDisplayName: '',
       adminEmail: '',
       adminPassword: '',
       adminCheckPassword: '',
+      phone: '',
 
       isNameTooltipShown: false,
       isUserNameTooltipShown: false,
@@ -146,6 +162,7 @@ export default {
       isPasswordTooltipShown: false,
       isCheckPasswordTooltipShown: false,
       isEmailTooltipShown: false,
+      isPhoneTooltipShown: false,
 
       userNameErrorMsg: '',
       passwordErrorMsg: '',
@@ -153,13 +170,15 @@ export default {
       userNameMaxlength: 64,
       passwordMinlength: 6,
       passwordMaxlength: 16,
+      displayNameMaxlength: validate.displayNameMaxlength,
+      phoneMaxlength: validate.phoneMaxlength,
     };
   },
   watch: {
     name() {
       if (this.name.trim() !== '') {
         this.isNameTooltipShown = false;
-        this.$refs.name.dispatchEvent(new Event('tooltip-hide'));
+        this.$refs.name.dispatchEvent(event.createEvent('tooltip-hide'));
       }
     },
     adminUserName() {
@@ -170,14 +189,18 @@ export default {
     adminDisplayName() {
       if (this.adminDisplayName.trim() !== '') {
         this.isDisplayNameTooltipShown = false;
-        this.$refs.displayName.dispatchEvent(new Event('tooltip-hide'));
+        this.$refs.displayName.dispatchEvent(event.createEvent('tooltip-hide'));
       }
     },
     adminEmail() {
       if (this.adminEmail.trim() !== '') {
         this.isEmailTooltipShown = false;
-        this.$refs.email.dispatchEvent(new Event('tooltip-hide'));
+        this.$refs.email.dispatchEvent(event.createEvent('tooltip-hide'));
       }
+    },
+    phone() {
+      this.isPhoneTooltipShown = false;
+      this.$refs.phone.dispatchEvent(event.createEvent('tooltip-hide'));
     },
     adminPassword() {
       if (this.adminPassword.trim() !== '') {
@@ -186,7 +209,7 @@ export default {
     },
     adminCheckPassword() {
       this.isCheckPasswordTooltipShown = false;
-      this.$refs.checkPassword.dispatchEvent(new Event('tooltip-hide'));
+      this.$refs.checkPassword.dispatchEvent(event.createEvent('tooltip-hide'));
     },
   },
   methods: {
@@ -202,12 +225,12 @@ export default {
       tooltip.msg = msg;
       const triggerObj = context.$el ? context.$el : context;
       this.$nextTick(() => {
-        triggerObj.dispatchEvent(new Event('tooltip-reload'));
-        triggerObj.dispatchEvent(new Event('tooltip-show'));
+        triggerObj.dispatchEvent(event.createEvent('tooltip-reload'));
+        triggerObj.dispatchEvent(event.createEvent('tooltip-show'));
       });
     },
     closeModuleTooltip() {
-      this.$refs.moduleTitle.dispatchEvent(new Event('tooltip-hide'));
+      this.$refs.moduleTitle.dispatchEvent(event.createEvent('tooltip-hide'));
     },
     validate() {
       const that = this;
@@ -241,6 +264,11 @@ export default {
         isValid = false;
         that.isDisplayNameTooltipShown = true;
         that.showUpdatedTooltip(that.$refs.displayName, that.displayNameTooltip, that.$t('management.err_display_name_length'));
+      }
+      if (that.phone !== '' && !validate.isValidPhone(that.phone)) {
+        isValid = false;
+        that.isPhoneTooltipShown = true;
+        that.showUpdatedTooltip(that.$refs.phone, that.phoneTooltip, that.$t('management.err_invalid_phone'));
       }
       if (that.adminEmail === '') {
         isValid = false;
@@ -281,6 +309,7 @@ export default {
             name: that.adminDisplayName,
             password: that.adminPassword,
             email: that.adminEmail,
+            phone: that.phone,
           },
         });
       }
@@ -359,7 +388,7 @@ export default {
     }
     &.splitter {
       flex: 0 0 1px;
-      box-shadow: inset 0 1px 0 0 #e9e9e9;
+      box-shadow: inset 0 1px 0 0 $color-borderline;
     }
     &.module-title {
       margin-top: 8px;

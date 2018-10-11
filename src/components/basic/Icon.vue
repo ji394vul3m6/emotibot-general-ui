@@ -1,7 +1,7 @@
 <template>
-  <div class="icon" :class="{button: button}" @click="$emit('click', $event)" :style="containerStyle">
+  <div class="icon" :class="{button: button || enableHover}" @click="$emit('click', $event)" :style="containerStyle">
     <div v-if="enableHover" :class="`${iconType}_icon_hover`" :style="styleObj"></div>
-    <div v-else :class="`${iconType}_icon`" :style="styleObj"></div>
+    <div v-else :class="[`${iconType}_icon`, { active } ]" :style="styleObj"></div>
   </div>
 </template>
 
@@ -23,6 +23,10 @@ export default {
       default: false,
     },
     enableHover: {
+      type: Boolean,
+      default: false,
+    },
+    active: {
       type: Boolean,
       default: false,
     },
@@ -105,6 +109,7 @@ export default {
       border-color: $tool-tip-background transparent transparent transparent;
     }
   }
+  $activeType: 'detail','stop','pause','monitor','list';
   @mixin iconType($name) {
     .#{$name}_icon {
       background: url("../../assets/icons/#{$name}_icon.svg") no-repeat center center;
@@ -112,6 +117,14 @@ export default {
       background-size: 20px 20px;
       width: 100%;
       height: 100%;
+      @for $i from 1 through length($activeType) {
+        $type: nth($activeType,$i);
+        @if $name == $type {
+          &.active {
+            background: url("../../assets/icons/#{$name}_hover_icon.svg") no-repeat center center;
+          }
+        }
+      }
     }
     &.button {
       .#{$name}Icon:active {
@@ -146,6 +159,7 @@ export default {
   @include iconType("add");
   @include iconType("check");
   @include iconType("checked");
+  @include iconType("check_green");
   @include iconType("close");
   @include iconType("delete");
   @include iconType("delete_hover");
@@ -163,10 +177,26 @@ export default {
   @include iconType("search");
   @include iconType("white_add");
   @include iconType("daggle");
-  @include iconType("more");
+  @include iconType("more_blue");
+  @include iconTypeHover("more");
+  @include iconType("stop");
+  @include iconType("pause");
+  @include iconType("monitor");
+  @include iconType("detail");
+  @include iconType("list");
   @include iconType("setting");
   @include iconType("setting_hover");
   @include iconTypeHover("setting");
+  @include iconType("edit_thin");
+  @include iconType("publish");
+  @include iconType("export");
+  @include iconType("trash_can");
+  @include iconTypeHover("edit_pen");
+
+  /** used on TaskEngineV2 top panel*/
+  @include iconType("save");
+  @include iconType("canlendar");
+  @include iconType("knowledge_base");
 
   /** used on robot profile icon */
   @include iconType("profile_question");
@@ -196,6 +226,7 @@ export default {
   @include iconType("header_dialog");
   @include iconType("header_dropdown");
   @include iconType("header_dropdown_gray");
+  @include iconType("header_dropdown_white");
 
   @include iconType("intent");
   @include iconType("info_warning_gray");
@@ -206,6 +237,7 @@ export default {
   @include iconType("year_right");
   @include iconType("month_left");
   @include iconType("month_right");
+  @include iconType("month_right_white");
 
   // robot icon should a little bit larger than other icons
   .white_robot_icon {

@@ -45,12 +45,13 @@
         @checkedChange="handleCheckedChange" checkbox showEmpty></general-table>
     </div>
     <div id="edit-footer">
-      <v-pagination size="small" :total="curTotal" :pageIndex="curPageIdx" :pageSize="pageLimit" :layout="['prev', 'pager', 'next', 'jumper']" @page-change="handlePageChange"></v-pagination>
+      <v-pagination size="small" :total="curTotal" :pageIndex="curPageIdx" :pageSize="pageLimit" :pageSizeOption="[25, 50, 100, 200, 500, 1000]" :layout="['prev', 'pager', 'next', 'sizer', 'jumper']" @page-change="handlePageChange" @page-size-change="handlePageSizeChange"></v-pagination>
     </div>
   </div>
 </template>
 <script>
 import { mapGetters } from 'vuex';
+import event from '@/utils/js/event';
 
 export default {
   props: {
@@ -187,8 +188,7 @@ export default {
     },
     isDuplicate() {
       if (!this.isDuplicate) {
-        const event = new Event('tooltip-hide');
-        this.$refs.synonymInput.dispatchEvent(event);
+        this.$refs.synonymInput.dispatchEvent(event.createEvent('tooltip-hide'));
       }
     },
     isWordbankNameEmpty() {
@@ -211,6 +211,11 @@ export default {
     },
     handlePageChange(page) {
       this.toCurPage(page);
+      this.checkedSynonyms = [];
+    },
+    handlePageSizeChange(pageSize) {
+      this.pageLimit = pageSize;
+      this.toFirstPage();
       this.checkedSynonyms = [];
     },
     handleCheckedChange(checkedData) {
@@ -247,8 +252,7 @@ export default {
         return;
       }
       if (this.isDuplicate) {
-        const event = new Event('tooltip-show');
-        this.$refs.synonymInput.dispatchEvent(event);
+        this.$refs.synonymInput.dispatchEvent(event.createEvent('tooltip-show'));
         return;
       }
       if (this.isNewSynonymValid) {
@@ -269,14 +273,11 @@ export default {
         } else if (this.isWordbankNameDuplicate) {
           this.wordbankNameTooltip.msg = this.$t('wordbank.error.wordbank_name_duplicate');
         } // TODO: else if wordbank name too long
-        const reload = new Event('tooltip-reload');
-        this.$refs.wordbankName.dispatchEvent(reload);
-        const event = new Event('tooltip-show');
-        this.$refs.wordbankName.dispatchEvent(event);
+        this.$refs.wordbankName.dispatchEvent(event.createEvent('tooltip-reload'));
+        this.$refs.wordbankName.dispatchEvent(event.createEvent('tooltip-show'));
       } else {
         this.$emit('enableOK');
-        const event = new Event('tooltip-hide');
-        this.$refs.wordbankName.dispatchEvent(event);
+        this.$refs.wordbankName.dispatchEvent(event.createEvent('tooltip-hide'));
       }
     },
     setReadonly() {
@@ -306,8 +307,7 @@ export default {
       }
       if (this.isWordbankNameDuplicate) {
         wordbankNameElem.focus();
-        const event = new Event('tooltip-show');
-        this.$refs.wordbankName.dispatchEvent(event);
+        this.$refs.wordbankName.dispatchEvent(event.createEvent('tooltip-show'));
         return;
       }
       const editedWordbank = {
@@ -354,6 +354,7 @@ export default {
   #edit-footer {
     border-top: 1px solid $color-borderline;
     flex: 0 0 50px;
+    padding-right: 12px;
     display: flex;
     align-items: center;
     justify-content: flex-end;

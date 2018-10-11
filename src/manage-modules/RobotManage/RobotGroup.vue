@@ -1,12 +1,14 @@
 <template>
   <div>
     <div class="card w-fill h-fill">
-      <nav-bar :options="pageOption"></nav-bar>
-      <div class="back-button">
-        <text-button @click="goRobotList">{{ $t('management.go_back') }}</text-button>
+      <div class="header">
+        <nav-bar :options="pageOption" @search="keywordChange" showSearch></nav-bar>
+        <div class="back-button">
+          <text-button @click="goRobotList">{{ $t('management.go_back') }}</text-button>
+        </div>
       </div>
       <div class="page">
-        <command-row class="commands" @search="keywordChange">
+        <command-row class="commands">
           <text-button button-type="primary" @click="popGroupEditor()">{{ $t('management.create_group') }}</text-button>
         </command-row>
         <div class="group-list">
@@ -20,9 +22,7 @@
               </div>
             </div>
             <div class="card-content">
-              <div v-for="app in group.apps" :key="app.id" class="robot-name">
-                {{ app.name }}
-              </div>
+              <tag class="tags" v-for="app in group.apps" :key="app.id">{{ app.name }}</tag>
             </div>
           </div>
         </div>
@@ -34,6 +34,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import NavBar from '@/components/NavigationBar';
+import Tag from '@/components/basic/Tag';
 import CommandRow from '../_components/CommandRow';
 import GroupAddForm from './_components/GroupAddForm';
 import GroupDeleteForm from './_components/GroupDeleteForm';
@@ -43,6 +44,7 @@ import AppAPI from '../_api/robot';
 export default {
   path: 'robot-group',
   name: 'robot-group',
+  privCode: 'manage_robot',
   api: [GroupAPI, AppAPI],
   data() {
     return {
@@ -56,6 +58,7 @@ export default {
   components: {
     NavBar,
     CommandRow,
+    Tag,
   },
   computed: {
     ...mapGetters([
@@ -181,14 +184,19 @@ export default {
   display: flex;
   flex-direction: column;
   position: relative;
-  .back-button {
-    position: absolute;
-    right: 20px;
-    top: 20px;
-  }
 
-  .nav-bar {
+  .header{
     flex: 0 0 60px;
+    display: flex;
+    .nav-bar {
+      flex: 1;
+    }
+    .back-button {
+      flex: 0 90px;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid $color-borderline;
+    }
   }
   .page {
     flex: 1;
@@ -197,18 +205,19 @@ export default {
 .page {
   display: flex;
   flex-direction: column;
+  @include auto-overflow();
+  @include customScrollbar();
   .commands {
     flex: 0 0 auto;
   }
   .group-list {
     flex: 1;
     padding: 20px;
-    padding-bottom: 0;
-    @include auto-overflow();
-    @include customScrollbar();
+    padding-bottom: 0; 
 
     display: flex;
     flex-wrap: wrap;
+    align-content: flex-start;
     .group-card {
       flex: 0 0 274px;
       max-width: 274px;
@@ -216,10 +225,10 @@ export default {
       margin-right: 30px;
       margin-bottom: 30px;
       border-radius: 4px;
-      border: solid 1px #e9e9e9;
-
+      border: solid 1px $color-borderline;
+      transition: all .2s ease-in-out;
       &:hover {
-        box-shadow: 0 0 14px 0 rgba(0, 0, 0, 0.2);
+        box-shadow: 0 4px 9px 0 rgba(115, 115, 115, 0.2), 0 5px 8px 0 rgba(228, 228, 228, 0.5);
         .card-title {
           .card-title-edit {
             visibility: visible;
@@ -231,11 +240,11 @@ export default {
       flex-direction: column;
       .card-title {
         flex: 0 0 auto;
-
+        color: $color-font-active;
         border-top-left-radius: 4px;
         border-top-right-radius: 4px;
         background-color: #ffffff;
-        border-bottom: solid 1px #e9e9e9;
+        border-bottom: solid 1px $color-borderline;
         font-size: 16px;
         line-height: 24px;
         padding: 10px;
@@ -265,20 +274,23 @@ export default {
       }
       .card-content {
         flex: 1;
-        padding: 20px 10px;
+        padding: 10px;
         @include auto-overflow();
         @include customScrollbar();
 
         display: flex;
         flex-wrap: wrap;
         align-content: flex-start;
-        & > div {
+        .tags {
           flex: 0 0 auto;
-          margin-right: 20px;
-          max-width: 150px;
+          max-width: 230px;
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
+          height: 26px;
+          &.tag {
+            margin: 3px 5px;
+          }
         }
       }
     }

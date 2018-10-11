@@ -3,15 +3,17 @@
     <div :class="{blur: isPopOpen}">
       <div id="app-logo"></div>
       <page-header v-if="ready"></page-header>
-      <!-- if robotID is not empty, show robot page -->
-      <template v-if="robotID !== '' && ready">
+      <!-- if not Manage Module, show robot page -->
+      <template v-if="!isManageModule && ready">
       <page-menu></page-menu>
       <div id="app-page" v-if="ready" :class="{iframe: isIFrame}">
         <!-- <div class="app-header" v-if="!isIFrame">{{ pageName }}</div> -->
-        <router-view class="app-body" :class="{iframe: isIFrame}" @startLoading="startLoading" @endLoading="endLoading"/>
-        <div v-if="showLoading" class="loading">
-          <div class='loader'></div>
-          {{ loadingMsg || $t('general.loading') }}
+        <router-view v-show="!showLoading" class="app-body" :class="{iframe: isIFrame}" @startLoading="startLoading" @endLoading="endLoading"/>
+        <div v-if="showLoading" class="app-body">
+          <div class="loading card h-fill w-fill">
+            <loading-dot></loading-dot>
+            <div class="loading-msg"> {{ loadingMsg || $t('general.loading') }}</div>
+          </div>
         </div>
       </div>
       <transition name="slide-in">
@@ -20,14 +22,16 @@
       </div>
       </transition>
       </template>
-      <!-- if robotID is empty, but enterpriseID not, show enterprise admin page -->
-      <template v-else-if="robotID === '' && ready">
+      <!-- if isManageModule, show enterprise admin page -->
+      <template v-else-if="isManageModule && ready">
         <div id="app-page" class="manage">
-          <router-view class="app-body" @startLoading="startLoading" @endLoading="endLoading"/>
-          <div v-if="showLoading" class="loading manage">
-            <div class='loader'></div>
-            {{ loadingMsg || $t('general.loading') }}
+          <router-view v-show="!showLoading" class="app-body" @startLoading="startLoading" @endLoading="endLoading"/>
+          <div v-if="showLoading" class="app-body">
+          <div class="loading card h-fill w-fill">
+            <loading-dot></loading-dot>
+            <div class="loading-msg"> {{ loadingMsg || $t('general.loading') }}</div>
           </div>
+        </div>
         </div>
       </template>
       <template v-if="showUserInfoPage && ready">
@@ -73,6 +77,10 @@ export default {
     isIFrame() {
       return this.currentPage.isIFrame;
     },
+    isManageModule() {
+      const manageModule = /^\/manage(.*)?/;
+      return manageModule.test(this.$route.path);
+    },
     ...mapGetters([
       'robotID',
       'userID',
@@ -99,8 +107,9 @@ export default {
     };
   },
   watch: {
-    enterpriseID() {
+    enterpriseID(val) {
       this.setPrivilegeList(this.$getPrivModules());
+      this.$cookie.set('enterprise', val, { expires: constant.cookieTimeout });
     },
     robotID(val) {
       if (val === '') {
@@ -147,17 +156,47 @@ export default {
       'setRobot',
       'setEnterprise',
     ]),
+    checkAuditRoute() {
+      const that = this;
+      const auditURL = [
+        '/manage/audit-system',     // 0
+        '/manage/audit-enterprise', // 1
+        '/manage/audit-robot',      // 2
+      ];
+      const isAuditURL = that.$route.matched.reduce((val, match) =>
+        val || auditURL.indexOf(match.path) !== -1, false);
+      if (!isAuditURL) return false;
+
+      // Users can only go to audit page according to it's previledge
+      if (that.userInfo.type >= 2) {  // normal user
+        if (auditURL.splice(that.userInfo.type).indexOf(that.$route.path) === -1) {
+          that.$router.push('/manage/audit-robot');
+        }
+      } else if (that.userInfo.type === 1) {  // enterprise admin
+        if (auditURL.splice(that.userInfo.type).indexOf(that.$route.path) === -1) {
+          that.$router.push('/manage/audit-enterprise');
+        }
+      } // else system admin, can go wherever he/she wants
+      return true;
+    },
     checkPrivilege() {
       const that = this;
+
+      const isAuditRoute = this.checkAuditRoute();
+      if (isAuditRoute) {
+        return;
+      }
+
       if (that.enterpriseID === '') {
         if (that.userInfo.type >= 1) {
           that.$router.push('error');
           return;
         }
-        // when renterprise is empty, path should only in enterprise list or system user list
+        // when enterprise is empty, path should only in enterprise list or system user list
         const validURL = [
           '/manage/enterprise-manage',
           '/manage/system-admin-list',
+          '/manage/audit-system',
         ];
         const valid = that.$route.matched.reduce((val, match) =>
           val || validURL.indexOf(match.path) >= 0, false);
@@ -465,44 +504,18 @@ export default {
 
 @import './assets/styles/lib/font-awesome.css';
 
-#app-page > div.loading {
-  @media screen and (max-width: $break-small) {
-    left: 0;
-    top: $page-header-height;
-    width: 100vw
-  }
-  &.manage {
-    width: 100vw;
-    left: 0;
-  }
-  position: fixed;
-  top: $page-header-height;
-  left: $page-menu-width;
-  height: 100%;
-  width: calc(100vw - #{$page-menu-width});
-  background: rgba(0%, 0%, 0%, 0.6);
-  color: white;
-  font-size: 1.5em;
+.loading {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    25% { transform: rotate(192deg); }
-    50% { transform: rotate(278deg); }
-    75% { transform: rotate(336deg); }
-    100% { transform: rotate(360deg); }
-  }
-  .loader {
-    margin-right: 10px;
-    border: 8px solid #f3f3f3; /* Light grey */
-    border-top: 8px solid #3498db; /* Blue */
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    animation: spin 2s linear infinite;
+  @include font-14px();
+  color: $color-font-mark;
+  .loading-msg {
+    margin-top: 20px;
   }
 }
+
 #chat-test-pop {
   position: fixed;
   right: -700px;

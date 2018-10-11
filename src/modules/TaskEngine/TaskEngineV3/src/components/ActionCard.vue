@@ -67,15 +67,11 @@
 </template>
 
 <script>
-import DropdownSelect from '@/components/DropdownSelect';
 import i18nUtils from '../utils/i18nUtil';
 import CreateSkillPop from './CreateSkillPop';
 
 export default {
   name: 'action-card',
-  components: {
-    'dropdown-select': DropdownSelect,
-  },
   props: {
     initialAction: {
       type: Object,

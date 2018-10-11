@@ -58,14 +58,18 @@ export default {
   .type-container {
     flex: 0 0 200px;
     border-radius: 4px;
-    border: solid 1px #e9e9e9;
+    border: solid 1px $color-borderline;
 
     &:hover {
       box-shadow: 0 0 14px 0 rgba(0, 0, 0, 0.2);
     }
     &.choose {
       box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.25);
+      border: 1px solid $color-borderline-hover;
       background-color: #ffffff;
+      &:hover {
+        box-shadow: 0 0 14px 0 rgba(0, 0, 0, 0.2);
+      }
     }
 
     display: flex;

@@ -44,10 +44,11 @@
               <div class="title">{{ $t('robot_setting.similar_question') }}</div>
               <div class="list">
                 <div class="list-row" v-for="relate in robotQA.relate_questions" :key="relate.id"
-                  :class="[relate.editMode ? 'edit-row' : '']">
+                  :class="[relate.editMode ? 'edit-row' : '']" @mouseover="setHover(relate, true)"
+                  @mouseout="setHover(relate, false)">
                   <template v-if="relate.editMode !== true">
                   <div class="list-content">{{ relate.content }}</div>
-                  <div class="command" v-if="canEdit">
+                  <div class="command" v-if="canEdit && relate.isHover">
                     <div class="clickable edit"
                     @click="startEdit(relate)">{{ $t('general.edit') }}</div>
                     <div class="clickable delete"
@@ -75,10 +76,12 @@
               <div class="title">{{ $t('robot_setting.extend_answer') }}</div>
               <div class="list">
                 <div class="list-row" v-for="answer in robotQA.answers.slice(1)" :key="answer.id"
-                  :class="[answer.editMode ? 'edit-row' : '']">
+                  :class="[answer.editMode ? 'edit-row' : '']"
+                  @mouseover="setHover(answer, true)"
+                  @mouseout="setHover(answer, false)">
                   <template v-if="answer.editMode !== true">
                   <div class="list-content">{{ answer.content }}</div>
-                  <div class="command" v-if="canEdit">
+                  <div class="command" v-if="canEdit && answer.isHover">
                     <div class="clickable edit"
                     @click="startEdit(answer)">{{ $t('general.edit') }}</div>
                     <div class="clickable delete"
@@ -159,6 +162,11 @@ export default {
     },
     compositionend() {
       this.inComposition = false;
+    },
+    setHover(elem, bool) {
+      const that = this;
+      elem.isHover = bool;
+      that.$forceUpdate();
     },
     cancelEdit(obj) {
       obj.editMode = false;
@@ -281,7 +289,6 @@ export default {
         if (robotQA.answers.length === 1) {
           robotQA.show_answer = data.content;
         }
-        document.activeElement.blur();
       });
       that.newQuestion = '';
     },
@@ -361,9 +368,11 @@ export default {
 
           qa.relate_questions.forEach((q) => {
             q.editMode = false;
+            q.isHover = false;
           });
           qa.answers.forEach((answer) => {
             answer.editMode = false;
+            answer.isHover = false;
           });
 
           qa.expand = false;
@@ -408,8 +417,8 @@ $header-color: #333333;
     }
   }
   .close-button {
-    position: absolute;
-    right: 16px;
+    display: flex;
+    align-items: center;
   }
 }
 
@@ -491,7 +500,6 @@ $header-color: #333333;
 .card {
   height: 100%;
   overflow-y: auto;
-  padding-bottom: 10px;
   box-sizing: border-box;
   line-height: $default-line-height;
 
@@ -505,7 +513,7 @@ $header-color: #333333;
     display: flex;
     align-items: center;
     padding: 0 20px;
-    box-shadow: inset 0 -1px 0 0 #e9e9e9;
+    box-shadow: inset 0 -1px 0 0 $color-borderline;
   }
 
   // card list css
@@ -525,11 +533,12 @@ $header-color: #333333;
       flex: 0 0 calc(50% - 20px);
       flex-basis: calc(50% - 20px);
       margin-bottom: 20px;
-      padding: 20px;
+      padding: 15px 16px;
       margin-right: 20px;
       transition: all .5s ease-in-out;
       height: 90px;
-
+      border-radius: 4px;
+      transition: all .2s ease-in-out;
       // expand will set width to 100% and use animate
       &.expand {
         flex: 0 0 calc(100% - 20px);
@@ -578,7 +587,12 @@ $header-color: #333333;
     }
   }
   .footer {
-    flex: 0 0 auto;
+    flex: 0 0 50px;
+    display: flex;
+    padding-right: 12px;
+    justify-content: flex-end;
+    align-items: center;
+    border-top: 1px solid $color-borderline;
   }
 }
 </style>

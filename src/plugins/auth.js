@@ -16,6 +16,11 @@ function failPromise(msg) {
     reject(msg);
   });
 }
+function successPromise(msg) {
+  return new Promise((resolve) => {
+    resolve(msg);
+  });
+}
 
 function parseJwt(token) {
   const base64Url = token.split('.')[1];
@@ -145,6 +150,8 @@ function login(input) {
     account: input.account,
     passwd: md5(input.password),
   };
+  let imUser = false;
+  const retObj = {};
   that.$cookie.set('verify', md5(input.password), { expires: constant.cookieTimeout });
 
   let token;
@@ -155,9 +162,9 @@ function login(input) {
       authTypes = res.result.AUTH_TYPE.split(',');
     }
 
-    const promiseMap = {};
+    let promise;
     if (authTypes.indexOf('all') >= 0 || authTypes.indexOf('authV2') >= 0) {
-      promiseMap.authV2 = that.$reqPost(LOGIN_PATH, qs.stringify(params), {
+      promise = that.$reqPost(LOGIN_PATH, qs.stringify(params), {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
@@ -166,35 +173,38 @@ function login(input) {
         const data = rsp.data;
         token = data.result.token;
         localStorage.setItem('token', token);
+        retObj.authV2 = data.result;
+        if (data.result.info.product && data.result.info.product.indexOf('IM') >= 0) {
+          imUser = true;
+        }
         return data.result;
       });
     }
     if (authTypes.indexOf('all') >= 0 || authTypes.indexOf('authBF') >= 0) {
-      promiseMap.authBF = that.$reqPost(BF_LOGIN, {
-        email: input.account,
-        password: md5(input.password),
-      })
-      .then((rsp) => {
-        const data = rsp.data;
-        if (data.error_code !== 0) {
-          return failPromise('bf logging fail');
+      promise = promise.then(() => {
+        if (imUser) {
+          return successPromise('');
         }
-        const accessToken = data.data.access_token;
-        that.$cookie.set('access_token', accessToken, { expires: constant.cookieTimeout });
-        return data.data;
+        return that.$reqPost(BF_LOGIN, {
+          email: input.account,
+          password: md5(input.password),
+        })
+        .then((rsp) => {
+          const data = rsp.data;
+          if (data.error_code !== 0) {
+            return failPromise('bf logging fail');
+          }
+          const accessToken = data.data.access_token;
+          that.$cookie.set('access_token', accessToken, { expires: constant.cookieTimeout });
+          retObj.authBF = data.data;
+          return data.data;
+        });
       });
     }
-    const keys = Object.keys(promiseMap);
-    if (keys.length <= 0) {
+    if (!promise) {
       return failPromise('no valid auth set');
     }
-    return Promise.all(keys.map(key => promiseMap[key])).then((args) => {
-      const ret = {};
-      args.forEach((val, idx) => {
-        ret[keys[idx]] = val;
-      });
-      return ret;
-    });
+    return promise.then(() => retObj);
   });
 }
 

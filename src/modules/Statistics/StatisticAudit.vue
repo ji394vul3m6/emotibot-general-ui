@@ -51,17 +51,19 @@
         <text-button v-if="canExport"
           v-on:click="doExport()"
           :disabled="!validFormInput"
-          :button-type="totalCount > 0 ? 'normal' : 'disable'">{{ $t('general.export') }}</text-button>
+          :button-type="totalCount > 0 ? 'default' : 'disable'">{{ $t('general.export') }}</text-button>
         <div v-if="totalCount > 0" class="total-show">
           {{ $t('statistics.total_records', {num: totalCount}) }}
         </div>
       </div>
+      <template v-if="showTable">
       <div class="table-container" v-if="showTable">
-        <general-table auto-height show-empty :tableData="tableData" :tableHeader="headerInfo" font-class="font-12"></general-table>
+        <general-table auto-height show-empty :tableData="tableData" :tableHeader="headerInfo" ></general-table>
       </div>
-      <div class="row paginator">
-        <v-pagination size="small" v-if="showPagination" :pageIndex="pageIndex" v-on:page-change="doSearch" :total="totalCount" :page-size="20" :layout="['prev', 'pager', 'next', 'jumper']"></v-pagination>
+      <div class="paginator">
+        <v-pagination size="small" v-if="showPagination" :pageIndex="pageIndex" :pageSizeOption="[25, 50, 100, 200, 500, 1000]" v-on:page-change="doSearch" @page-size-change="handlePageSizeChange" :total="totalCount" :page-size="pageLimit" :layout="['prev', 'pager', 'next', 'sizer', 'jumper']"></v-pagination>
       </div>
+      </template>
     </div>
   </div>
 </template>
@@ -115,6 +117,11 @@ export default {
       this.startDisableDate = {
         from: this.end.dateObj,
       };
+    },
+    handlePageSizeChange(pageSize) {
+      const that = this;
+      that.pageLimit = pageSize;
+      that.doSearch(1);
     },
     doExport() {
       const that = this;
@@ -175,6 +182,7 @@ export default {
           operation: '-1',
         },
         page,
+        limit: that.pageLimit,
       };
       // only in export mode, filter with module and action
       if (that.expertMode) {
@@ -314,6 +322,7 @@ export default {
       startValidity: true,
       endValidity: true,
       pageIndex: 1,
+      pageLimit: 25,
       startDisableDate: undefined,
       endDisableDate: undefined,
 
@@ -373,7 +382,7 @@ $title-color: #666666;
 
 .header {
   padding: 0 20px;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   display: flex;
   align-items: flex-end;
   .filter {
@@ -408,7 +417,8 @@ $title-color: #666666;
     align-items: center;
 
     .row-title {
-      width: 48px;
+      @include font-14px();
+      width: 60px;
       margin-right: 20px;
       color: $title-color;
       &.inline {
@@ -417,19 +427,14 @@ $title-color: #666666;
     }
     &.button-container {
       margin-top: 0;
-      padding: 10px 20px;
+      padding: 20px;
       .total-show:not(:first-child) {
         margin-left: 10px;
       }
-      box-shadow: inset 0 1px 0 0 #e9e9e9, inset 0 0 0 1px #e9e9e9;;
+      border-top: 1px solid $color-borderline;
     }
-    &.paginator {
-      box-shadow: inset 0 1px 0 0 #e9e9e9;
-      margin-top: 0;
-      padding: 20px;
-    }
-  }
 
+  }
   .table-container {
     width: 100%;
     flex: 1;
@@ -437,6 +442,14 @@ $title-color: #666666;
     display: flex;
     flex-direction: column;
     @include auto-overflow();
+  }
+  .paginator {
+    box-shadow: inset 0 1px 0 0 $color-borderline-disabled;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex: 0 0 50px;
+    padding-right: 12px;
   }
 }
 </style>

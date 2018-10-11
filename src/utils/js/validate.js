@@ -1,3 +1,7 @@
+const displayNameMinlength = 2;
+const displayNameMaxlength = 50;
+const phoneMaxlength = 20;
+
 function isValidPassword(input) {
   const validRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9~@!#$%^&*()[\]{}:;"',./?<>+\-=|_ ]{6,16}$/g;
   return validRegex.test(input);
@@ -19,9 +23,7 @@ function isValidPhone(input) {
 }
 
 function isValidDisplayName(input) {
-  const minlength = 2;
-  const maxlength = 50;
-  return input.length >= minlength && input.length <= maxlength;
+  return input.length >= displayNameMinlength && input.length <= displayNameMaxlength;
 }
 
 function isValidLabel(input) {
@@ -37,4 +39,6 @@ export default {
   isValidPhone,
   isValidDisplayName,
   isValidLabel,
+  displayNameMaxlength,
+  phoneMaxlength,
 };

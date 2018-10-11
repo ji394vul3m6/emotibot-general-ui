@@ -35,7 +35,6 @@
 <script>
 import { mapGetters, mapMutations } from 'vuex';
 import NavBar from '@/components/NavigationBar';
-import DropdownSelector from '@/components/DropdownSelect';
 import api from './_api/user';
 import adminAPI from './SystemManage/_api/system';
 import UserForm from './_components/NormalUserEditForm';
@@ -45,7 +44,6 @@ export default {
   name: 'user-preference',
   components: {
     NavBar,
-    'dropdown-select': DropdownSelector,
   },
   api: [api, adminAPI],
   data() {
@@ -266,6 +264,8 @@ export default {
   .card {
     position: relative;
     @include card();
+    display: flex;
+    flex-direction: column;
   }
 
   .header {
@@ -293,11 +293,11 @@ export default {
   
   .content {
     width: 100%;
-    display: flex;
-    flex-direction: column;
+    flex: 1;
     padding: 30px 20px;
     @include font-14px();
-
+    @include auto-overflow();
+    @include customScrollbar();
     .row {
       margin-bottom: 20px;
 

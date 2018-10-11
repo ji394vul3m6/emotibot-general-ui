@@ -1,9 +1,14 @@
 <template>
   <div class="tooltip" :style="style" :class="{'error': error}" ref="tooltip">
-    <div class="tooltip-text" v-if="buttons === undefined || buttons.length <= 0">
+    <div class="tooltip-text" v-if="msg !== '' && (buttons === undefined || buttons.length <= 0)">
       {{ msg }}
     </div>
-    <div class="tooltip-form" v-else>
+    <div class="tooltip-text" v-if="msgs.length > 0 && (buttons === undefined || buttons.length <= 0)">
+      <template v-for="m in msgs">
+        <p>{{ m }}</p>
+      </template>
+    </div>
+    <div class="tooltip-form" v-if="buttons !== undefined && buttons.length > 0">
       <div class="tooltip-info">
         <div class="tooltip-icon" v-if="iconType && iconType !== ''">
           <icon :icon-type="iconType" :size=12 />
@@ -41,6 +46,10 @@ export default {
     msg: {
       type: String,
       default: '',
+    },
+    msgs: {
+      type: Array,
+      default() { return []; },
     },
     leftOffset: {
       type: Number,
@@ -143,6 +152,7 @@ export default {
   z-index: 2;
   visibility: hidden;
   word-break: break-all;
+  white-space: normal;  // explicitly set normal to avoid being rewritten by parent
 
   & > .tooltip-text {
     max-width: 300px;
