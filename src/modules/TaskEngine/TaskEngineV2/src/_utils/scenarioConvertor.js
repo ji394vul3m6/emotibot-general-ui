@@ -362,6 +362,9 @@ export default {
         const parser = {};
         parser.content = conditionRule[0].functions[0].content;
         parser.funcName = conditionRule[0].functions[0].function_name;
+        if (parser.funcName === 'api_parser' && conditionRule[0].functions[0].content_text_array) {
+          parser.skipIfKeyExist = conditionRule[0].functions[0].content_text_array;
+        }
         param.parsers.push(parser);
       });
       tab.params.push(param);
