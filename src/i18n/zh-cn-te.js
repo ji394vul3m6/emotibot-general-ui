@@ -79,7 +79,9 @@ export default {
     var_template_edit_pop: {
       instruction: '为每个变量设定显示模版',
       label_key: '键',
+      err_empty_label_key: '键不可为空',
       label_template: '模版',
+      err_empty_label_template: '模版不可为空',
       button_add_template: '＋增加模版',
       confirm_to_save_changes: '变量模版设置已被更动，请问是否需要保存？',
     },

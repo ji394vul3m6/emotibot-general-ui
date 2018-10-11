@@ -15,14 +15,26 @@
               {{$t("task_engine_v2.var_template_edit_pop.label_key")}}
             </div>
             <div class="input-template-container" v-dropdown="insertVarDropdown(index)">
-              <input class="input-key" v-model="template.key"></input>
+              <input 
+                ref="input_key" 
+                class="input-key" 
+                v-model="template.key"
+                v-tooltip="inputKeyTooltip"
+                :class="{'error': template.isInputKeyTooltipShown}"
+              ></input>
             </div>
           </div>
           <div class="row">
             <div class="label">
               {{$t("task_engine_v2.var_template_edit_pop.label_template")}}
             </div>
-            <input class="input-template" v-model="template.msg"></input>
+            <input 
+              ref="input_template" 
+              class="input-template" 
+              v-model="template.msg"
+              v-tooltip="inputTemplateTooltip"
+              :class="{'error': template.isInputTemplateTooltipShown}"
+            ></input>
           </div>
         </div>
       </template>
@@ -37,6 +49,7 @@
 </template>
 
 <script>
+import event from '@/utils/js/event';
 import general from '@/modules/TaskEngine/_utils/general';
 import draggable from 'vuedraggable';
 import scenarioInitializer from '../_utils/scenarioInitializer';
@@ -54,19 +67,49 @@ export default {
   },
   data() {
     return {
+      inputKeyTooltip: {
+        msg: this.$t('task_engine_v2.var_template_edit_pop.err_empty_label_key'),
+        eventOnly: true,
+        errorType: true,
+        alignLeft: true,
+      },
+      inputTemplateTooltip: {
+        msg: this.$t('task_engine_v2.var_template_edit_pop.err_empty_label_template'),
+        eventOnly: true,
+        errorType: true,
+        alignLeft: true,
+      },
       varTemplates: [],
       originalVarTemplatesStr: '',
       globalVarOptions: [],
     };
   },
   computed: {},
-  watch: {},
+  watch: {
+    varTemplates: {
+      handler() {
+        this.varTemplates.forEach((varTemplate, index) => {
+          if (varTemplate.key.trim() !== '') {
+            varTemplate.isInputKeyTooltipShown = false;
+            this.$refs.input_key[index].dispatchEvent(event.createEvent('tooltip-hide'));
+          }
+          if (varTemplate.msg.trim() !== '') {
+            varTemplate.isInputTemplateTooltipShown = false;
+            this.$refs.input_template[index].dispatchEvent(event.createEvent('tooltip-hide'));
+          }
+        });
+      },
+      deep: true,
+    },
+  },
   methods: {
     renderData() {
       // render globalEdges
       const templates = JSON.parse(JSON.stringify(this.extData.varTemplates));
       this.varTemplates = templates.map((template) => {
         template.id = this.$uuid.v1();
+        template.isInputKeyTooltipShown = false;
+        template.isInputTemplateTooltipShown = false;
         return template;
       });
       this.originalVarTemplatesStr =
@@ -101,16 +144,36 @@ export default {
       this.varTemplates[index].key = key;
       this.varTemplates[index].msg = toInsert;
     },
+    validateResult() {
+      let isValid = true;
+      this.varTemplates.forEach((varTemplate, index) => {
+        if (varTemplate.key.trim() === '') {
+          this.$refs.input_key[index].dispatchEvent(event.createEvent('tooltip-reload'));
+          this.$refs.input_key[index].dispatchEvent(event.createEvent('tooltip-show'));
+          varTemplate.isInputKeyTooltipShown = true;
+          isValid = false;
+        }
+        if (varTemplate.msg.trim() === '') {
+          this.$refs.input_template[index].dispatchEvent(event.createEvent('tooltip-reload'));
+          this.$refs.input_template[index].dispatchEvent(event.createEvent('tooltip-show'));
+          varTemplate.isInputTemplateTooltipShown = true;
+          isValid = false;
+        }
+      });
+      return isValid;
+    },
     validate() {
-      const varTemplates = this.varTemplates.map(varTemplate => ({
-        key: varTemplate.key,
-        msg: varTemplate.msg,
-        type: varTemplate.type,
-      }));
-      this.$emit(
-        'validateSuccess',
-        varTemplates,
-      );
+      if (this.validateResult()) {
+        const varTemplates = this.varTemplates.map(varTemplate => ({
+          key: varTemplate.key,
+          msg: varTemplate.msg,
+          type: varTemplate.type,
+        }));
+        this.$emit(
+          'validateSuccess',
+          varTemplates,
+        );
+      }
     },
     cancelValidate() {
       const newVarTemplatesStr = JSON.stringify(this.varTemplates, general.JSONStringifyReplacer);
