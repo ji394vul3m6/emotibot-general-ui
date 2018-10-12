@@ -27,8 +27,8 @@ do
     | sed -e "s/\${ADMIN_STAT_SERVER_URL}/$ADMIN_STAT_SERVER_URL/g" \
     | sed -e "s/\${ADMIN_ELK_STAT_SERVER_URL}/$ADMIN_ELK_STAT_SERVER_URL/g" \
     | sed -e "s/\${ADMIN_IM_SERVER_URL}/$ADMIN_IM_SERVER_URL/g" \
-    | sed -e "s/\${ADMIN_IM_MSG_KF_URL}/$ADMIN_IM_SERVER_URL/g" \
-    | sed -e "s/\${ADMIN_IM_WEB_AGENT}/$ADMIN_IM_SERVER_URL/g" \
+    | sed -e "s/\${ADMIN_IM_MSG_KF_URL}/$ADMIN_IM_MSG_KF_URL/g" \
+    | sed -e "s/\${ADMIN_IM_WEB_AGENT}/$ADMIN_IM_WEB_AGENT/g" \
     | sed -e "s/\${ADMIN_BF_SERVER_URL}/$ADMIN_BF_SERVER_URL/g" \
     | sed -e "s/\${NAMESERVER}/$NAMESERVER/g" >> nginx.conf
 done < nginx.conf.template
