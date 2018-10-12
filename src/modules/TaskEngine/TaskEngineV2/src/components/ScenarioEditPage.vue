@@ -569,16 +569,16 @@ export default {
       });
     },
     nodeOptionDragStart(nodeType, name, e) {
-      e.dataTransfer.setData('type', nodeType);
-      e.dataTransfer.setData('name', name);
+      e.dataTransfer.setData('text', JSON.stringify({ nodeType, name }));
     },
     nodeOptionDragOver(e) {
       e.preventDefault();
       e.dataTransfer.dropEffect = 'copy';
     },
     nodeOptionDrop(e) {
-      const nodeType = e.dataTransfer.getData('type');
-      const nodeName = e.dataTransfer.getData('name');
+      const eObj = JSON.parse(e.dataTransfer.getData('text'));
+      const nodeType = eObj.nodeType;
+      const nodeName = eObj.name;
       this.addNewNode(nodeType, nodeName, e.offsetX, e.offsetY);
     },
     onPageWheel() {
