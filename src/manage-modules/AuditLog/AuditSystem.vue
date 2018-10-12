@@ -78,11 +78,11 @@
 
       <div id="audit-result">
         <div id="audit-toolbar">
-          <text-button v-if="canExport"
+          <!-- <text-button v-if="canExport"
             :button-type="totalLogCount > 0 ? 'default' : 'disable'"
             @click="doExport">
             {{ $t('general.export') }}
-          </text-button>
+          </text-button> -->
           <div id="audit-log-count">{{ $t('management.audit.total', { num: totalLogCount }) }}</div>
         </div>
         <div id="audit-content" v-if="showTable">
