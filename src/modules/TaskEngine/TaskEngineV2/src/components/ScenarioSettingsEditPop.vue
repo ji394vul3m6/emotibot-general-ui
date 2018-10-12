@@ -96,13 +96,13 @@ export default {
       }
     },
     scenarioDialogueCntLimit() {
-      if (this.scenarioDialogueCntLimit.trim() !== '') {
+      if (this.scenarioDialogueCntLimit !== '') {
         this.isScenarioDialogueCntLimitTooltipShown = false;
         this.$refs.scenarioDialogueCntLimit.dispatchEvent(event.createEvent('tooltip-hide'));
       }
     },
     nodeDialogueCntLimit() {
-      if (this.nodeDialogueCntLimit.trim() !== '') {
+      if (this.nodeDialogueCntLimit !== '') {
         this.isNodeDialogueCntLimitTooltipShown = false;
         this.$refs.nodeDialogueCntLimit.dispatchEvent(event.createEvent('tooltip-hide'));
       }
@@ -124,13 +124,13 @@ export default {
         this.isScenarioNameTooltipShown = true;
         isValid = false;
       }
-      if (this.scenarioDialogueCntLimit.trim() === '') {
+      if (this.scenarioDialogueCntLimit === '') {
         this.$refs.scenarioDialogueCntLimit.dispatchEvent(event.createEvent('tooltip-reload'));
         this.$refs.scenarioDialogueCntLimit.dispatchEvent(event.createEvent('tooltip-show'));
         this.isScenarioDialogueCntLimitTooltipShown = true;
         isValid = false;
       }
-      if (this.nodeDialogueCntLimit.trim() === '') {
+      if (this.nodeDialogueCntLimit === '') {
         this.$refs.nodeDialogueCntLimit.dispatchEvent(event.createEvent('tooltip-reload'));
         this.$refs.nodeDialogueCntLimit.dispatchEvent(event.createEvent('tooltip-show'));
         this.isNodeDialogueCntLimitTooltipShown = true;
