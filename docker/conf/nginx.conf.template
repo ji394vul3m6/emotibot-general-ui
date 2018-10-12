@@ -76,8 +76,11 @@ http {
 
         set $stat_server_url "${ADMIN_STAT_SERVER_URL}";
         set $elk_stat_server_url "${ADMIN_ELK_STAT_SERVER_URL}";
-        set $im_server_url "${ADMIN_IM_SERVER_URL}";
         set $bf_server_url "${ADMIN_BF_SERVER_URL}";
+
+        set $im_server_url "${ADMIN_IM_SERVER_URL}";
+        set $im_msg_kf "${ADMIN_IM_MSG_KF_URL}";
+        set $im_web_agent "${ADMIN_IM_WEB_AGENT}";
 
         listen 80;
         #listen [::]:80;
@@ -292,6 +295,24 @@ http {
             proxy_set_header   X-Real-IP   $remote_addr;
             proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_pass http://$im_server_url;
+        }
+        location /msg-kf {
+            proxy_pass http://$im_msg_kf;
+            proxy_set_header   Host    $host;
+            proxy_set_header   X-Real-IP   $remote_addr;
+            proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection $connection_upgrade;
+        }
+        location /web-agent {
+            proxy_pass http://$im_web_agent;
+            proxy_set_header   Host    $host;
+            proxy_set_header   X-Real-IP   $remote_addr;
+            proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection $connection_upgrade;
         }
 
         # golang /api/v1
