@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <div :class="{blur: isPopOpen}">
+    <div :class="{blur: isBackgroundBlur}">
       <div id="app-logo"></div>
       <page-header v-if="ready"></page-header>
       <!-- if not Manage Module, show robot page -->
@@ -100,7 +100,7 @@ export default {
       loadingMsg: '',
       ready: false,
       userInfo: {},
-      isPopOpen: false,
+      isBackgroundBlur: false,
       testComponent: QATest,
       checkCookieMs: 5000,
       checkCookieLoop: undefined,
@@ -480,10 +480,14 @@ export default {
     });
 
     that.$root.$on('pop-window', () => {
-      that.isPopOpen = that.$isPopOpen();
+      that.$nextTick(() => {
+        that.isBackgroundBlur = that.$isBackgroundBlur();
+      });
     });
     that.$root.$on('close-window', () => {
-      that.isPopOpen = that.$isPopOpen();
+      that.$nextTick(() => {
+        that.isBackgroundBlur = that.$isBackgroundBlur();
+      });
     });
     that.$root.$on('open-chat-test', () => {
       that.openChatTest();
