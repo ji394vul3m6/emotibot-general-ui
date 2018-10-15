@@ -3,7 +3,7 @@
   <div class="robot-list column click-button" @click="showRobotList" v-if="!showUserInfoPage && enterpriseID !== '' && !showAuditModule">
     {{ $t('general.robot_list') }}
   </div>
-  <div class="product column click-button" @click="goIMPage" v-if="userInfo.type === 1 && !showAuditModule">
+  <div class="product column click-button" @click="goIMPage" v-if="userInfo.type === 1 && !showAuditModule && imEnable">
     {{ $t('general.im') }}
   </div>
   <div class="empty column"></div>
@@ -53,6 +53,7 @@
 
 <script>
 import { mapGetters, mapMutations } from 'vuex';
+import api from '@/api/system';
 import event from '@/utils/js/event';
 
 export default {
@@ -67,7 +68,9 @@ export default {
       top: 90,
       left: -250,
     },
+    imEnable: false,
   }),
+  api,
   computed: {
     ...mapGetters([
       'robotName',
@@ -189,6 +192,12 @@ export default {
     showChatTest() {
       this.$root.$emit('open-chat-test');
     },
+  },
+  mounted() {
+    const that = this;
+    that.$api.getEnv().then((data) => {
+      that.imEnable = !(data.IM_ENABLE === '0' || data.IM_ENABLE === 'false');
+    });
   },
 };
 </script>

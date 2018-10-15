@@ -294,7 +294,7 @@ export default {
           return e;
         }),
       };
-      console.log(edgeTab);
+      // console.log(edgeTab);
       this.$emit('update', edgeTab);
     },
   },

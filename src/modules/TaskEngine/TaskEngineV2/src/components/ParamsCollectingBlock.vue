@@ -213,14 +213,7 @@ export default {
     };
   },
   computed: {},
-  watch: {
-    parsers: {
-      handler() {
-        this.emitUpdate();
-      },
-      deep: true,
-    },
-  },
+  watch: {},
   methods: {
     emitUpdate() {
       const param = {
@@ -245,16 +238,20 @@ export default {
       const parser = scenarioInitializer.initialParser();
       parser.id = this.$uuid.v1();
       this.parsers.push(parser);
+      this.emitUpdate();
     },
     deleteParser(index) {
       this.parsers.splice(index, 1);
+      this.emitUpdate();
     },
     addRegTargetKey(index) {
       const operation = scenarioInitializer.initialRegularOperation();
       this.parsers[index].content.operations.push(operation);
+      this.emitUpdate();
     },
     deleteRegTargetKey(index, idx) {
       this.parsers[index].content.operations.splice(idx, 1);
+      this.emitUpdate();
     },
     getWebApiSkipIfKeyExist(index) {
       if (this.parsers[index].skipIfKeyExist) {
@@ -263,14 +260,17 @@ export default {
     },
     onInputWebApiSkipIfKeyExist(index, newValue) {
       this.parsers[index].skipIfKeyExist = newValue.split(',');
+      this.emitUpdate();
     },
     onSelectTargetEntity(index, newValue) {
       this.parsers[index].content.tags = newValue.join(',');
+      this.emitUpdate();
     },
     onSelectMapTableInput(index, newValue) {
       const newMapTable = newValue[0];
       if (this.parsers[index].content.trans === newMapTable) return;
       this.parsers[index].content.trans = newMapTable;
+      this.emitUpdate();
     },
     onSelectFunctionInput(index, newValue) {
       const newFuncName = newValue[0];
@@ -292,6 +292,7 @@ export default {
           });
         }
       }
+      this.emitUpdate();
     },
     entityModuleOptions(parser) {
       const entityModuleOptions = optionConfig.getEntityModuleOptionsMap();

@@ -429,7 +429,7 @@ export default {
           if (node.node_type === 'restful') {
             globalVars.push(node.content.requests[0].rtn_var_name);
           } else if (node.node_type === 'parameter_collecting') {
-            globalVars.push(scenarioConvertor.getGlobalVarsFromParsers(node.content.parsers));
+            globalVars.push(...scenarioConvertor.getGlobalVarsFromParsers(node.content.parsers));
           }
           globalVars = [...new Set(globalVars)];
           const vars = globalVars.map(v => ({
@@ -569,16 +569,16 @@ export default {
       });
     },
     nodeOptionDragStart(nodeType, name, e) {
-      e.dataTransfer.setData('type', nodeType);
-      e.dataTransfer.setData('name', name);
+      e.dataTransfer.setData('text', JSON.stringify({ nodeType, name }));
     },
     nodeOptionDragOver(e) {
       e.preventDefault();
       e.dataTransfer.dropEffect = 'copy';
     },
     nodeOptionDrop(e) {
-      const nodeType = e.dataTransfer.getData('type');
-      const nodeName = e.dataTransfer.getData('name');
+      const eObj = JSON.parse(e.dataTransfer.getData('text'));
+      const nodeType = eObj.nodeType;
+      const nodeName = eObj.name;
       this.addNewNode(nodeType, nodeName, e.offsetX, e.offsetY);
     },
     onPageWheel() {
