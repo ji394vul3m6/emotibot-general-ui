@@ -831,7 +831,29 @@ export default {
         },
       };
       let options = [];
-      if (sourceNodeType === 'restful') {
+      if (sourceNodeType === 'action') {
+        options = [
+          {
+            text: this.$t('task_engine_v2.scenario_edit_page.new_edge_normal'),
+            onclick: () => {
+              if (dstNodeId === undefined) {
+                const newNode = this.addNewLinkingNode(this.linkingEdge);
+                dstNodeId = newNode.nodeId;
+              }
+              sourceNode.actionTab.actionGroupList.push({
+                actionGroupId: this.$uuid.v1(),
+                actionList: [{
+                  type: 'goto',
+                  targetSkillId: dstNodeId,
+                }],
+                conditionList: [],
+              });
+              this.saveScenario();
+              this.dropdownHidden();
+            },
+          },
+        ];
+      } else if (sourceNodeType === 'restful') {
         options = [
           {
             text: this.$t('task_engine_v2.scenario_edit_page.new_edge_restful_success'),
