@@ -174,6 +174,12 @@ export default {
     node.content = JSON.parse(JSON.stringify(actionGroupList));
     node.content.forEach((actionGroup) => {
       actionGroup.conditionList = this.convertConditionList(actionGroup.conditionList);
+      actionGroup.actionList = actionGroup.actionList.map((action) => {
+        if (action.type === 'goto') {
+          action.targetSkillId = `wizard_mode_nlu_pc_node_${action.targetSkillId}`;
+        }
+        return action;
+      });
     });
     return node;
   },

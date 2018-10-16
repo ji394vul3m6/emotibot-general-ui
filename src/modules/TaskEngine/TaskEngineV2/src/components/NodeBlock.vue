@@ -123,6 +123,10 @@ export default {
       type: Number,
       default: 120,
     },
+    version: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {
@@ -230,6 +234,7 @@ export default {
           globalEdges: that.initialGlobalEdges,
           toNodeOptions: that.toNodeOptions,
           globalVarOptionsMap: that.globalVarOptionsMap,
+          version: this.version,
         },
         callback: {
           ok: (resultObj) => {

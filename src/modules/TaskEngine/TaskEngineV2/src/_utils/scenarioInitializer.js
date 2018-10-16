@@ -48,8 +48,24 @@ export default {
       return this.initialRestfulNode(nodeName);
     } else if (nodeType === 'parameter_collecting') {
       return this.initialPCNode(nodeName, nodeDialogueCntLimit);
+    } else if (nodeType === 'action') {
+      return this.initialActionNode(nodeName);
     }
     return {};
+  },
+  initialActionNode(nodeName) {
+    return {
+      nodeId: this.guid_sort(),
+      nodeName,
+      nodeType: 'action',
+      settingBasicTab: {
+        nodeName,
+        nodeType: 'action',
+      },
+      actionTab: {
+        actionGroupList: [],
+      },
+    };
   },
   initialPCNode(nodeName, nodeDialogueCntLimit) {
     return {

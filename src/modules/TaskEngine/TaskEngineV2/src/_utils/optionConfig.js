@@ -6,6 +6,7 @@ export default {
       nlu_pc: ['settingBasicTab', 'entityCollectingTab', 'edgeTab'],
       restful: ['restfulSettingTab', 'restfulEdgeTab'],
       parameter_collecting: ['settingBasicTab', 'paramsCollectingTab', 'paramsCollectingEdgeTab'],
+      action: ['settingBasicTab', 'actionTab'],
     };
   },
   getEntityListMap() {
@@ -83,6 +84,12 @@ export default {
         name: context.$t('task_engine_v2.node_type.nlu_pc'),
         image: 'te_dialoague.png',
         description: context.$t('task_engine_v2.node_type.nlu_pc_description'),
+      },
+      {
+        type: 'action',
+        name: context.$t('task_engine_v2.node_type.action'),
+        image: 'te_dialoague.png',
+        description: context.$t('task_engine_v2.node_type.action_description'),
       },
     ];
     return nodeTypes;

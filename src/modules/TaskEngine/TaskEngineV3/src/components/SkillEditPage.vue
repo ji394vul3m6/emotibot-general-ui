@@ -26,6 +26,7 @@
       :initialActionGroupList="skill.actionGroupList"
       :initialEntityCollectorList="skill.entityCollectorList"
       :initialSkillNameList="initialSkillNameList"
+      :version="version"
       @update="updateActionGroupList"
     ></action-page>
   </keep-alive>
@@ -46,6 +47,10 @@ export default {
     'action-page': ActionPage,
   },
   props: {
+    version: {
+      type: String,
+      required: true,
+    },
     currentPage: {
       type: String,
       required: true,
