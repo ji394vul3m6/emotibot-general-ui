@@ -298,6 +298,23 @@ export default {
           }
         }
 
+        // push action node edges
+        if (nodeBlock.data.actionTab) {
+          nodeBlock.data.actionTab.actionGroupList.forEach((actionGroup) => {
+            actionGroup.actionList.forEach((action) => {
+              if (action.type === 'goto') {
+                if (this.idToNodeBlock[action.targetSkillId]) {
+                  edgeList.push({
+                    from_id: nodeBlock.data.nodeId,
+                    to_id: action.targetSkillId,
+                    edge_type: 'normal',
+                  });
+                }
+              }
+            });
+          });
+        }
+
         // globalEdges
         this.globalEdges.forEach((edge) => {
           if (!edge.to_node_id) return;
