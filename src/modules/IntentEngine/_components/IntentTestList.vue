@@ -31,7 +31,7 @@
           </div>
           <div v-else class="intent-action-tool">
             <div v-if="intent.isHover || intent.expand" class="intent-action-icon" :ref="`${idx}_intentAction`" @click.stop="showDropdown(intent, idx)" v-dropdown="intentActionDropdown">
-              <icon icon-type="more" :size="24"></icon> 
+              <icon icon-type="more_blue" :size="24"></icon> 
             </div>
             <div v-if="intent.expand" class="intent-action-icon close" @click.stop="closeExpandIntent(intent, idx)">
               <icon icon-type="close_expand" :size="18"></icon> 

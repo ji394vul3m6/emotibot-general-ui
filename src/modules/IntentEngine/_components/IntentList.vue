@@ -22,7 +22,7 @@
           </div>
           <div v-else class="intent-action-tool">
             <div v-if="intent.isHover || intent.expand" class="intent-action-icon" :ref="`${idx}_intentAction`" @click.stop="showDropdown(intent, idx)" v-dropdown="intentActionDropdown">
-              <icon icon-type="more" :size="24"></icon> 
+              <icon icon-type="more_blue" :size="24"></icon> 
             </div>
             <div v-if="intent.expand" class="intent-action-icon close" @click.stop="closeExpandIntent(intent, idx)">
               <icon icon-type="close_expand" :size="18"></icon> 
@@ -30,7 +30,8 @@
           </div>
         </div>
       </div>
-      <template v-if="intent.expand">
+      <transition name="intent-content">
+      <div v-if="intent.expand">
         <div class="intent-block-content">
           <div class="corpus-tools">
             <label-switch 
@@ -87,7 +88,8 @@
         <div v-if="getCurTotal(intent) > LIST_PAGE_SIZE" class="intent-block-footer">
           <v-pagination size="small" :total="getCurTotal(intent)" :pageIndex="intent.curPage" :pageSize="LIST_PAGE_SIZE" :layout="['prev', 'pager', 'next', 'jumper']" @page-change="handlePageChange($event, intent)"></v-pagination>
         </div>
-      </template>
+      </div>
+      </transition>
     </div>
 
     <!--ADD INTENT BLOCK-->
@@ -281,8 +283,9 @@ export default {
       return (this.canEditIntent || this.canDeleteIntent || this.canRemoveIntent);
     },
     alreadyEdit() {
+      const intentInEditMode = this.intentInEditMode();
       return this.deletedCorpusIds.length !== 0 || this.updatedCorpus.length !== 0 ||
-        this.addedCorpus.length !== 0;
+        this.addedCorpus.length !== 0 || this.editIntentName !== intentInEditMode.name;
     },
   },
   watch: {
@@ -418,7 +421,14 @@ export default {
     },
     beforeExpandIntent(intent) {
       const that = this;
-      if (intent.expand) return;
+      if (intent.expand) {
+        if (that.isAddIntent) return;
+        const intentInEditMode = that.intentInEditMode();
+        if (intentInEditMode === undefined) {
+          that.closeExpandIntent(intent);
+        }
+        return;
+      }
       if (that.isAddIntent) {
         that.cancelAddNewIntent(that.expandIntent.bind(that, intent));
         return;
@@ -880,6 +890,19 @@ export default {
     &.active {
       box-shadow: 0 4px 9px 0 rgba(115, 115, 115, 0.2), 0 5px 8px 0 rgba(228, 228, 228, 0.5);
     }
+
+    .intent-content-enter-active, .intent-content-leave-active {
+      transition: max-height .4s ease-in-out;
+      overflow: hidden;
+    }
+    .intent-content-enter, .intent-content-leave-to {
+      max-height: 0px;
+    }
+    .intent-content-enter-to, .intent-content-leave {
+      max-height: 1000px;
+      
+    }
+
     .intent-block-header {
       height: 50px;
       padding: 0 20px;

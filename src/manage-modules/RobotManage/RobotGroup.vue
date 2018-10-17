@@ -44,6 +44,7 @@ import AppAPI from '../_api/robot';
 export default {
   path: 'robot-group',
   name: 'robot-group',
+  privCode: 'manage_robot',
   api: [GroupAPI, AppAPI],
   data() {
     return {

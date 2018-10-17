@@ -48,8 +48,24 @@ export default {
       return this.initialRestfulNode(nodeName);
     } else if (nodeType === 'parameter_collecting') {
       return this.initialPCNode(nodeName, nodeDialogueCntLimit);
+    } else if (nodeType === 'action') {
+      return this.initialActionNode(nodeName);
     }
     return {};
+  },
+  initialActionNode(nodeName) {
+    return {
+      nodeId: this.guid_sort(),
+      nodeName,
+      nodeType: 'action',
+      settingBasicTab: {
+        nodeName,
+        nodeType: 'action',
+      },
+      actionTab: {
+        actionGroupList: [],
+      },
+    };
   },
   initialPCNode(nodeName, nodeDialogueCntLimit) {
     return {
@@ -58,44 +74,53 @@ export default {
       nodeType: 'parameter_collecting',
       settingBasicTab: {
         nodeName,
-        nodeType: 'nlu_pc',
+        nodeType: 'parameter_collecting',
       },
       paramsCollectingTab: {
         params: [],
       },
       paramsCollectingEdgeTab: {
         dialogueLimit: nodeDialogueCntLimit,
-        normalEdges: [{
-          edge_type: 'pc_succeed',
-          to_node_id: '0',
-          actions: [{
-            operation: 'set_to_global_info',
-            key: 'sys_node_dialogue_cnt',
-            val: 0,
-          }],
-          condition_rules: [[{
-            source: 'global_info',
-            functions: [{
-              content: [],
-              function_name: 'all_parameters_are_collected',
+        normalEdges: [
+          {
+            edge_type: 'virtual_global_edges',
+            to_node_id: null,
+            actions: [],
+            condition_rules: [[]],
+          },
+          {
+            edge_type: 'pc_succeed',
+            to_node_id: '0',
+            actions: [{
+              operation: 'set_to_global_info',
+              key: 'sys_node_dialogue_cnt',
+              val: 0,
             }],
-          }]],
-        }, {
-          edge_type: 'pc_failed',
-          to_node_id: '0',
-          actions: [{
-            operation: 'set_to_global_info',
-            key: 'sys_node_dialogue_cnt',
-            val: 0,
-          }],
-          condition_rules: [[{
-            source: 'global_info',
-            functions: [{
-              content: 'node_counter',
-              function_name: 'counter_check',
+            condition_rules: [[{
+              source: 'global_info',
+              functions: [{
+                content: [],
+                function_name: 'all_parameters_are_collected',
+              }],
+            }]],
+          },
+          {
+            edge_type: 'pc_failed',
+            to_node_id: '0',
+            actions: [{
+              operation: 'set_to_global_info',
+              key: 'sys_node_dialogue_cnt',
+              val: 0,
             }],
-          }]],
-        }],
+            condition_rules: [[{
+              source: 'global_info',
+              functions: [{
+                content: 'node_counter',
+                function_name: 'counter_check',
+              }],
+            }]],
+          },
+        ],
       },
     };
   },

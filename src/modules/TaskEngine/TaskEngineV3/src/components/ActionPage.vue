@@ -29,14 +29,16 @@
     </div>
   </div>
   <div class="action-group-list-container">
-    <draggable v-model="actionGroupList" :options="{ghostClass:'ghost'}" @start="drag=true" @end="drag=false">
+    <draggable v-model="actionGroupList" :options="{ghostClass:'ghost'}" @start="drag=true" @end="drag=false; emitUpdate();">
       <div class="action-group-container" v-for="(actionGroup, index) in actionGroupList">
         <action-group :key="actionGroup.actionGroupId"
           :initialActionGroup="actionGroup"
           :initialEntityCollectorList="initialEntityCollectorList"
-          :initialSkillNameList="initialSkillNameList"
+          :initialSkillNameList="skillNameList"
+          :version="version"
           @update="updateActionGroup(index, $event)"
           @deleteActionGroupButtonClick="deleteActionGroup(index)"
+          @addNewDialogueNode="addNewDialogueNode"
         ></action-group>
       </div>
     </draggable>
@@ -45,6 +47,7 @@
 </template>
 
 <script>
+import general from '@/modules/TaskEngine/_utils/general';
 import draggable from 'vuedraggable';
 import ActionGroup from '../components/ActionGroup';
 
@@ -67,18 +70,53 @@ export default {
       type: Array,
       required: true,
     },
+    version: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {
       actionGroupList: JSON.parse(JSON.stringify(this.initialActionGroupList)),
+      skillNameList: [],
+      newNodeOptions: [],
     };
   },
   computed: {},
   watch: {},
   methods: {
+    addNewDialogueNode(newNodeID) {
+      const nodeNames = [
+        ...window.moduleData.ui_data.nodes.map(node => node.nodeName),
+        ...this.newNodeOptions.map(option => option.nodeName),
+      ];
+      const newNodeName = general.suffixIndexToNodeName(
+                            this.$t('task_engine_v2.node_type.dialogue'),
+                            nodeNames,
+                          );
+      this.newNodeOptions.push({
+        nodeName: newNodeName,
+        nodeId: newNodeID,
+        nodeType: 'dialogue',
+      });
+      this.$emit('updateNewNodeOptions', this.newNodeOptions);
+      this.updateOptions();
+    },
+    updateOptions() {
+      this.composeSkillNameList([
+        ...this.initialSkillNameList,
+        ...this.newNodeOptions.map(option => ({
+          text: `${option.nodeName} (ID: ${option.nodeId})`,
+          value: option.nodeId,
+        })),
+      ]);
+    },
+    composeSkillNameList(newSkillNameList) {
+      this.skillNameList = newSkillNameList;
+    },
     updateActionGroup(index, newActionGroup) {
       this.actionGroupList[index] = newActionGroup;
-      this.$emit('update', this.actionGroupList);
+      this.emitUpdate();
     },
     addNewActionGroup(type) {
       const actionGroup = {
@@ -107,17 +145,22 @@ export default {
         });
       }
       this.actionGroupList.push(actionGroup);
-      this.$emit('update', this.actionGroupList);
+      this.emitUpdate();
     },
     deleteActionGroup(index) {
       this.actionGroupList.splice(index, 1);
-      this.$emit('update', this.actionGroupList);
+      this.emitUpdate();
     },
     rerender() {
       this.actionGroupList = JSON.parse(JSON.stringify(this.initialActionGroupList));
     },
+    emitUpdate() {
+      this.$emit('update', this.actionGroupList);
+    },
   },
-  beforeMount() {},
+  beforeMount() {
+    this.composeSkillNameList(JSON.parse(JSON.stringify(this.initialSkillNameList)));
+  },
   mounted() {
     this.$on('rerender', this.rerender);
   },

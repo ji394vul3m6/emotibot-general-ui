@@ -40,14 +40,14 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_pattern")}}
             </div>
-            <input class="input-content" v-model="parser.content.pattern"></input>
+            <input class="input-content" v-model="parser.content.pattern" @input="emitUpdate"></input>
           </div>
           <template v-for="(operation, idx) in parser.content.operations">
             <div class="row">
               <div class="label label-start">
                 {{$t("task_engine_v2.condition_block.label_nth_match")}}
               </div>
-              <input class="input-content" v-model="operation.index"></input>
+              <input class="input-content" v-model="operation.index" @input="emitUpdate"></input>
               <button
                 v-if="idx === 0"
                 class="button"
@@ -69,6 +69,7 @@
               </div>
               <input class="input-content" 
                 v-model="operation.key"
+                @input="emitUpdate"
               ></input>
             </div>
           </template>
@@ -118,7 +119,7 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_target_key")}}
             </div>
-            <input class="input-content" v-model="parser.content.to_key"></input>
+            <input class="input-content" v-model="parser.content.to_key" @input="emitUpdate"></input>
           </div>
         </div>
         <!-- 是否判断解析器 -->
@@ -129,6 +130,7 @@
             </div>
             <input class="input-content" 
               v-model="parser.content.key"
+              @input="emitUpdate"
             ></input>
           </div>
         </div>
@@ -138,7 +140,7 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_link")}}
             </div>
-            <input class="input-content" v-model="parser.content"></input>
+            <input class="input-content" v-model="parser.content" @input="emitUpdate"></input>
           </div>
           <div class="row">
             <div class="label label-tooltip">
@@ -213,17 +215,11 @@ export default {
     };
   },
   computed: {},
-  watch: {
-    parsers: {
-      handler() {
-        this.emitUpdate();
-      },
-      deep: true,
-    },
-  },
+  watch: {},
   methods: {
     emitUpdate() {
       const param = {
+        id: this.$uuid.v1(),
         msg: this.msg,
         parse_failed_msg: this.parse_failed_msg,
         parsers: this.parsers,
@@ -244,16 +240,20 @@ export default {
       const parser = scenarioInitializer.initialParser();
       parser.id = this.$uuid.v1();
       this.parsers.push(parser);
+      this.emitUpdate();
     },
     deleteParser(index) {
       this.parsers.splice(index, 1);
+      this.emitUpdate();
     },
     addRegTargetKey(index) {
       const operation = scenarioInitializer.initialRegularOperation();
       this.parsers[index].content.operations.push(operation);
+      this.emitUpdate();
     },
     deleteRegTargetKey(index, idx) {
       this.parsers[index].content.operations.splice(idx, 1);
+      this.emitUpdate();
     },
     getWebApiSkipIfKeyExist(index) {
       if (this.parsers[index].skipIfKeyExist) {
@@ -262,14 +262,17 @@ export default {
     },
     onInputWebApiSkipIfKeyExist(index, newValue) {
       this.parsers[index].skipIfKeyExist = newValue.split(',');
+      this.emitUpdate();
     },
     onSelectTargetEntity(index, newValue) {
       this.parsers[index].content.tags = newValue.join(',');
+      this.emitUpdate();
     },
     onSelectMapTableInput(index, newValue) {
       const newMapTable = newValue[0];
       if (this.parsers[index].content.trans === newMapTable) return;
       this.parsers[index].content.trans = newMapTable;
+      this.emitUpdate();
     },
     onSelectFunctionInput(index, newValue) {
       const newFuncName = newValue[0];
@@ -291,6 +294,7 @@ export default {
           });
         }
       }
+      this.emitUpdate();
     },
     entityModuleOptions(parser) {
       const entityModuleOptions = optionConfig.getEntityModuleOptionsMap();

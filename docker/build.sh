@@ -27,4 +27,3 @@ bash -c "source $DIR/util.sh && build_folder $DIR/runtime $1"
 #     echo "$(git status --porcelain)"
 #     exit 1
 # fi
-

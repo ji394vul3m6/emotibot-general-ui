@@ -1,3 +1,4 @@
+import scenarioConvertorV3 from '@/modules/TaskEngine/TaskEngineV3/src/utils/scenarioConvertor';
 import optionConfig from './optionConfig';
 import scenarioInitializer from './scenarioInitializer';
 import api from '../../../_api/taskEngine';
@@ -173,6 +174,7 @@ export default {
 
     // parse parseFromThisNode
     tab.parseFromThisNode = node.default_parser_with_suffix;
+    tab.isWeakEnd = false;
     return tab;
   },
   parseEdgeTab(node) {
@@ -362,32 +364,35 @@ export default {
         const parser = {};
         parser.content = conditionRule[0].functions[0].content;
         parser.funcName = conditionRule[0].functions[0].function_name;
+        if (parser.funcName === 'api_parser' && conditionRule[0].functions[0].content_text_array) {
+          parser.skipIfKeyExist = conditionRule[0].functions[0].content_text_array;
+        }
         param.parsers.push(parser);
       });
       tab.params.push(param);
     });
     return tab;
   },
-  convertUiNodesToNodes(uiNodes, setting) {
+  convertUiNodesToNodes(uiNodes, setting, globalEdges) {
     const nodes = uiNodes.map((uiNode) => {
       const newUiNode = JSON.parse(JSON.stringify(uiNode));
-      return this.convertUiNodeToNode(newUiNode, setting);
+      return this.convertUiNodeToNode(newUiNode, setting, globalEdges);
     });
     const exitNode = scenarioInitializer.initialExitNode();
     return [exitNode].concat(nodes);
   },
   // convert uiNode to node
-  convertUiNodeToNode(uiNode, setting) {
+  convertUiNodeToNode(uiNode, setting, globalEdges) {
     // console.log(uiNode);
-    const edges = this.convertUiNodeToEdges(uiNode, setting);
-    const globalVars = this.getGlobalVars(edges);
+    const edges = this.convertUiNodeToEdges(uiNode, setting, globalEdges);
+    const nodeInfo = this.getNodeInfo(edges);
     const node = {
       node_id: uiNode.nodeId,
       node_type: uiNode.nodeType,
       description: uiNode.nodeName,
       edges,
-      global_vars: globalVars,
       content: {},
+      node_info: nodeInfo,
     };
     if (uiNode.nodeType === 'entry') {
       node.entry_condition_rules = uiNode.triggerTab.rules;
@@ -403,15 +408,31 @@ export default {
       );
     } else if (uiNode.nodeType === 'restful') {
       node.content = this.composeRestfulContent(uiNode);
-      node.global_vars.push(uiNode.restfulSettingTab.rtnVarName);
     } else if (uiNode.nodeType === 'parameter_collecting') {
       node.content = this.composePCContent(
         uiNode.paramsCollectingTab.params,
       );
-      node.global_vars.push(...this.getGlobalVarsFromParsers(node.content.parsers));
+    } else if (uiNode.nodeType === 'action') {
+      node.content = JSON.parse(JSON.stringify(uiNode.actionTab.actionGroupList));
+      node.content.forEach((actionGroup) => {
+        actionGroup.conditionList =
+          scenarioConvertorV3.convertConditionList(actionGroup.conditionList);
+      });
     }
-    node.global_vars = [...new Set(node.global_vars)];
     return node;
+  },
+  getNodeInfo(edges) {
+    let isLastNode = true;
+    edges.forEach((edge) => {
+      if (!edge.to_node_id) return;
+      const toNodeId = edge.to_node_id;
+      if (toNodeId !== '0' && toNodeId !== null && toNodeId !== undefined) {
+        isLastNode = false;
+      }
+    });
+    return {
+      is_last_node: isLastNode,
+    };
   },
   composePCContent(params) {
     const content = {};
@@ -451,7 +472,7 @@ export default {
         condition_rules: [[{
           source: 'global_info',
           functions: [{
-            content: [skipIfKeyExist.map(key => ({ key }))],
+            content: skipIfKeyExist.map(key => ({ key })),
             function_name: 'not_contain_key',
           }],
         }]],
@@ -499,6 +520,7 @@ export default {
     // insert initial_response
     const initialQ = this.questionTemplste('initial_response');
     initialQ.msg = uiNode.settingTab.initialResponse;
+    initialQ.is_weak_end = uiNode.settingTab.isWeakEnd;
     questions.push(initialQ);
     return {
       questions,
@@ -532,14 +554,20 @@ export default {
     };
   },
   // convert tab data to edges
-  convertUiNodeToEdges(uiNode, setting) {
+  convertUiNodeToEdges(uiNode, setting, initialGlobalEdges) {
+    const globalEdges = this.changeSuffixOfGlobalEdges(
+      uiNode.nodeId,
+      this.addResetDialogueCntAndParseFailedAction(initialGlobalEdges),
+    );
     let edges = [];
     if (uiNode.nodeType === 'entry') {
       const hiddenEdges = this.composeEntryNodeHiddenEdges(uiNode, setting);
+      const normalEdges = this.addResetDialogueCntAndParseFailedAction(uiNode.edgeTab.normalEdges);
       const elseInto = this.edgeElseInto(uiNode.nodeId, uiNode.edgeTab.elseInto);
       edges = [
         ...hiddenEdges,
-        ...uiNode.edgeTab.normalEdges,
+        ...normalEdges,
+        ...globalEdges,
         elseInto,
       ];
     } else if (uiNode.nodeType === 'dialogue') {
@@ -547,19 +575,23 @@ export default {
       const hiddenSetCntLimit = this.edgeHiddenSetNodeDialogueCntLimit(
         uiNode.edgeTab.dialogueLimit,
       );
+      const normalEdges = this.addResetDialogueCntAndParseFailedAction(uiNode.edgeTab.normalEdges);
       const exceedThenGoto = this.edgeExceedThenGoTo(uiNode.edgeTab.exceedThenGoto);
       const elseInto = this.edgeElseInto(uiNode.nodeId, uiNode.edgeTab.elseInto);
       edges = [
         hiddenSetCntLimit,
         ...hiddenEdges,
-        ...uiNode.edgeTab.normalEdges,
+        ...normalEdges,
+        ...globalEdges,
         exceedThenGoto,
         elseInto,
       ];
     } else if (uiNode.nodeType === 'nlu_pc') {
       const elseInto = this.edgeElseInto(uiNode.nodeId, uiNode.edgeTab.elseInto);
+      const normalEdges = this.addResetDialogueCntAndParseFailedAction(uiNode.edgeTab.normalEdges);
       edges = [
-        ...uiNode.edgeTab.normalEdges,
+        ...normalEdges,
+        ...globalEdges,
         elseInto,
       ];
     } else if (uiNode.nodeType === 'restful') {
@@ -572,12 +604,51 @@ export default {
       const hiddenSetCntLimit = this.edgeHiddenSetNodeDialogueCntLimit(
         tab.dialogueLimit,
       );
+      let normalEdges = this.addResetDialogueCntAndParseFailedAction(tab.normalEdges);
+      normalEdges = this.insertGlobalEdges(normalEdges, globalEdges);
       edges = [
         hiddenSetCntLimit,
-        ...tab.normalEdges,
+        ...normalEdges,
       ];
+    } else if (uiNode.nodeType === 'action') {
+      const elseInto = this.edgeElseInto(uiNode.nodeId, '0');
+      edges = [elseInto];
     }
     return edges;
+  },
+  addResetDialogueCntAndParseFailedAction(initialEdges) {
+    const edges = JSON.parse(JSON.stringify(initialEdges));
+    return edges.map((edge) => {
+      if (edge.to_node_id !== null) {
+        edge.actions = [
+          this.actionSetParseFailed(false),
+          this.actionSetNodeDialogueCnt(0),
+        ];
+      } else {
+        edge.actions = [];
+      }
+      return edge;
+    });
+  },
+  insertGlobalEdges(normalEdges, globalEdges) {
+    let index = -1;
+    normalEdges.find((edge, idx) => {
+      if (edge.edge_type === 'virtual_global_edges') {
+        index = idx;
+        return true;
+      }
+      return false;
+    });
+    if (index === -1) {
+      return normalEdges;
+    }
+    const normalEdgesA = normalEdges.slice(0, index);
+    const normalEdgesB = normalEdges.slice(index + 1);
+    return [
+      ...normalEdgesA,
+      ...globalEdges,
+      ...normalEdgesB,
+    ];
   },
   composeEntryNodeHiddenEdges(uiNode, setting) {
     const hidden1 = this.hiddenEdgeTemplate();
@@ -673,6 +744,31 @@ export default {
     });
     return globalVars;
   },
+  changeSuffixOfGlobalEdges(nodeId, globalEdges) {
+    return globalEdges.map((edge) => {
+      if (edge.condition_rules &&
+          edge.condition_rules instanceof Array &&
+          edge.condition_rules.length > 0) {
+        edge.condition_rules[0] = edge.condition_rules[0].map((rule) => {
+          if (rule.functions && rule.functions instanceof Array) {
+            rule.functions = rule.functions.map((func) => {
+              const funcName = func.function_name;
+              if (funcName === 'hotel_parser' ||
+                  funcName === 'common_parser' ||
+                  funcName === 'task_parser') {
+                if (func.content && func.content.key_suffix) {
+                  func.content.key_suffix = `_${nodeId}`;
+                }
+              }
+              return func;
+            });
+          }
+          return rule;
+        });
+      }
+      return edge;
+    });
+  },
   getGlobalVars(edges) {
     const globalVars = [];
     edges.forEach((edge) => {
@@ -748,13 +844,15 @@ export default {
         vars = func.content.operations.map(o => o.key);
       }
     } else if (funcName === 'assign_value') {
-      if (func.content && func.content.key) {
-        vars = [func.content.key];
+      if (func.content && Array.isArray(func.content)) {
+        vars = [func.content[0].key];
       }
     } else if (funcName === 'api_parser') {
       if (func.skipIfKeyExist) {
         vars = func.skipIfKeyExist;
       }
+    } else if (funcName === 'cu_parser') {
+      vars = [func.content];
     }
     return vars;
   },

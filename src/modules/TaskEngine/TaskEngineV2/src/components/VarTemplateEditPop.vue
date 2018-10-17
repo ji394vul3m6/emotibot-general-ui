@@ -37,6 +37,7 @@
 </template>
 
 <script>
+import general from '@/modules/TaskEngine/_utils/general';
 import draggable from 'vuedraggable';
 import scenarioInitializer from '../_utils/scenarioInitializer';
 
@@ -54,6 +55,7 @@ export default {
   data() {
     return {
       varTemplates: [],
+      originalVarTemplatesStr: '',
       globalVarOptions: [],
     };
   },
@@ -67,6 +69,8 @@ export default {
         template.id = this.$uuid.v1();
         return template;
       });
+      this.originalVarTemplatesStr =
+        JSON.stringify(this.varTemplates, general.JSONStringifyReplacer);
 
       // render globalVarOptions
       const globalVarOptionsMap = JSON.parse(JSON.stringify(this.extData.globalVarOptionsMap));
@@ -108,12 +112,45 @@ export default {
         varTemplates,
       );
     },
+    cancelValidate() {
+      const newVarTemplatesStr = JSON.stringify(this.varTemplates, general.JSONStringifyReplacer);
+      // console.log(`New Str: ${newVarTemplatesStr}`);
+      // console.log(`Old Str: ${this.originalVarTemplatesStr}`);
+      if (newVarTemplatesStr === this.originalVarTemplatesStr) {
+        this.$emit('cancelValidateSuccess');
+      } else {
+        const that = this;
+        that.$popCheck({
+          bindValue: true,
+          data: {
+            msg: that.$t('task_engine_v2.var_template_edit_pop.confirm_to_save_changes'),
+          },
+          callback: {
+            ok() {
+              const varTemplates = that.varTemplates.map(varTemplate => ({
+                key: varTemplate.key,
+                msg: varTemplate.msg,
+                type: varTemplate.type,
+              }));
+              that.$emit(
+                'validateSuccess',
+                varTemplates,
+              );
+            },
+            cancel() {
+              that.$emit('cancelValidateSuccess');
+            },
+          },
+        });
+      }
+    },
   },
   beforeMount() {
     this.renderData();
   },
   mounted() {
     this.$on('validate', this.validate);
+    this.$on('cancelValidate', this.cancelValidate);
   },
 };
 </script>

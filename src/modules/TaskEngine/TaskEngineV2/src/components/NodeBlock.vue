@@ -2,6 +2,23 @@
 <div id="node-block" :style="style"
   @mouseover="mouseOverNode = true"
   @mouseout="mouseOverNode = false">
+  <div class="warning-row">
+    <div class="warning-icon"
+      ref="exitIcon"
+      v-if="hasExitConnection"
+      v-tooltip="{ msg: $t('task_engine_v2.warnings.has_exit_connection')}">
+      <img class="exit-icon"
+        src="/static/images/exit_icon.png"
+        width="32px">
+      </img>
+    </div>
+    <div class="warning-icon"
+      ref="warningIcon"
+      v-if="warningTooltipValue.msgs && warningTooltipValue.msgs.length > 0"
+      v-tooltip="warningTooltipValue">
+      <icon icon-type="info_warning" :size=22></icon>
+    </div>
+  </div>
   <div v-if="node.nodeType !== 'entry'" class="button-delete-node">
     <icon icon-type="delete" :enableHover="true" :size=24 @click="deleteNode()"/>
   </div>
@@ -29,21 +46,6 @@
       @click="copyNode()">
       {{$t("general.copy")}}
     </text-button>
-    <div class="warning-icon"
-      ref="exitIcon"
-      v-if="hasExitConnection"
-      v-tooltip="{ msg: $t('task_engine_v2.warnings.has_exit_connection')}">
-      <img class="exit-icon"
-        src="/static/images/exit_icon.png"
-        width="32px">
-      </img>
-    </div>
-    <div class="warning-icon"
-      ref="warningIcon"
-      v-if="warningTooltipValue.msgs && warningTooltipValue.msgs.length > 0"
-      v-tooltip="warningTooltipValue">
-      <icon icon-type="info_warning" :size=22></icon>
-    </div>
   </div>
   <div class="edge-slot edge-slot-from"
     id="edgeSlotFrom"
@@ -94,6 +96,11 @@ export default {
       required: true,
       default: undefined,
     },
+    initialGlobalEdges: {
+      type: Array,
+      required: true,
+      default: undefined,
+    },
     toNodeOptions: {
       type: Array,
       required: true,
@@ -115,6 +122,10 @@ export default {
     nodeBlockHeight: {
       type: Number,
       default: 120,
+    },
+    version: {
+      type: String,
+      required: true,
     },
   },
   data() {
@@ -220,8 +231,10 @@ export default {
         cancelValidate: true,
         extData: {
           node: that.node,
+          globalEdges: that.initialGlobalEdges,
           toNodeOptions: that.toNodeOptions,
           globalVarOptionsMap: that.globalVarOptionsMap,
+          version: this.version,
         },
         callback: {
           ok: (resultObj) => {
@@ -337,6 +350,21 @@ export default {
       text-overflow: ellipsis;
     }
   }
+  .warning-row{
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    display: flex;
+    flex-direction: column;
+    .exit-icon{
+      margin: 0px 0px 0px 3px;
+    }
+    .warning-icon{
+      height: 20px;
+      display: flex;
+      align-items: center;
+    }
+  }
   .button-row{
     display: flex;
     flex-direction: row;
@@ -344,7 +372,7 @@ export default {
     justify-content: center;
     height: 36px;
     .button{
-      height: 32px;
+      height: 28px;
     }
     .button-copy-node{
       margin: 0px 0px 0px 3px;

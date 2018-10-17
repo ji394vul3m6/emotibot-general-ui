@@ -20,6 +20,7 @@
         :initialCondition="condition"
         :index="index"
         :initialEntityCollectorList="initialEntityCollectorList"
+        :version="version"
         @update="updateCondition(index, $event)"
         @deleteConditionButtonClick="deleteCondition(index)"
       ></condition-card>
@@ -29,7 +30,9 @@
         :key="randIndex('action')"
         :initialAction="action"
         :initialSkillNameList="initialSkillNameList"
+        :version="version"
         @update="updateAction(index, $event)"
+        @addNewDialogueNode="addNewDialogueNode"
       ></action-card>
     </template>
   </div>
@@ -58,6 +61,10 @@ export default {
     },
     initialSkillNameList: {
       type: Array,
+      required: true,
+    },
+    version: {
+      type: String,
       required: true,
     },
   },
@@ -90,6 +97,9 @@ export default {
   },
   watch: {},
   methods: {
+    addNewDialogueNode(newNodeID) {
+      this.$emit('addNewDialogueNode', newNodeID);
+    },
     randIndex(name) {
       const rand = Math.floor(Math.random() * 1000);
       return `${name}-${rand}`;

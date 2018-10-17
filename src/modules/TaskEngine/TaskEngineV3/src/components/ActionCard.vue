@@ -58,8 +58,10 @@
     <dropdown-select
       class="select-skill"
       ref="selectSkill"
-      v-model="skillModel"
+      :value="[action.targetSkillId]"
+      @input="onSelectGoto($event[0])"
       :options="skillOptions"
+      :fixedListWidth="false"
       width="160px"
     />
   </div>
@@ -67,6 +69,7 @@
 </template>
 
 <script>
+import scenarioInitializer from '@/modules/TaskEngine/TaskEngineV2/src/_utils/scenarioInitializer';
 import i18nUtils from '../utils/i18nUtil';
 import CreateSkillPop from './CreateSkillPop';
 
@@ -81,6 +84,10 @@ export default {
       type: Array,
       required: true,
     },
+    version: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {
@@ -93,30 +100,27 @@ export default {
   },
   computed: {
     skillOptions() {
-      const skillNameList = JSON.parse(JSON.stringify(this.initialSkillNameList));
+      const skillNameList = [];
+      if (this.version === '2.0') {
+        skillNameList.push({
+          text: '创建新任务',
+          value: 'add_new_skill',
+          isButton: true,
+        });
+      } else if (this.version === '1.1') {
+        skillNameList.push({
+          text: this.$t('task_engine_v2.to_node_option.add_new_dialogue_node'),
+          value: 'add_new_dialogue_node',
+          isButton: true,
+        });
+      }
       // add finish_scenario_option
       skillNameList.push({
         text: this.i18n.task_engine_v3.action_card.goto.option_finish_scenario,
         value: 'exit',
       });
-      skillNameList.push({
-        text: '创建新任务',
-        value: 'add_new_skill',
-        isButton: true,
-      });
+      skillNameList.push(...JSON.parse(JSON.stringify(this.initialSkillNameList)));
       return skillNameList;
-    },
-    skillModel: {
-      get() {
-        return [this.action.targetSkillId];
-      },
-      set(newValue) {
-        if (newValue[0] === 'add_new_skill') {
-          this.addNewSkill();
-        } else {
-          this.action.targetSkillId = newValue[0];
-        }
-      },
     },
     methodOptions() {
       const options = [];
@@ -164,6 +168,18 @@ export default {
     },
   },
   methods: {
+    onSelectGoto(toNode) {
+      if (toNode === 'add_new_skill') {
+        this.addNewSkill();
+      } else if (toNode === 'add_new_dialogue_node') {
+        const newNodeID = scenarioInitializer.guid_sort();
+        this.$emit('addNewDialogueNode', newNodeID);
+        this.action.targetSkillId = newNodeID;
+      } else {
+        this.action.targetSkillId = toNode;
+      }
+      this.$emit('update', this.action);
+    },
     addNewSkill() {
       const that = this;
       that.$pop({

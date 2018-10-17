@@ -18,25 +18,29 @@
           <input type="file" ref="uploadScenarioJSONInput" @change="changeScenarioJSONFile()" accept=".json">
         </div>
       </div>
-      <template v-for="(scenario, index) in filteredScenarioList">
-        <div class="row" @mouseover="scenario.show = true" @mouseleave="scenario.show = false">
-          <div id="scenario-grid">
-            <div id="scenario-toggle-container">
-              <toggle v-model="scenario.enable" @change="switchScenario(scenario)" :big="false"></toggle>
+      <div
+        v-for="(scenario, index) in filteredScenarioList" 
+        :key="scenario.scenarioID"
+        class="row" 
+        @mouseover="scenario.show = true" 
+        @mouseleave="scenario.show = false"
+      >
+        <div id="scenario-grid">
+          <div id="scenario-toggle-container">
+            <toggle v-model="scenario.enable" @change="switchScenario(scenario)" :big="false"></toggle>
+          </div>
+          <div id="scenario-content-container">
+            <div class="name-label"  @click="editScenario(scenario.scenarioID)">
+              {{scenario.scenarioName}}
             </div>
-            <div id="scenario-content-container">
-              <div class="name-label"  @click="editScenario(scenario.scenarioID)">
-                {{scenario.scenarioName}}
-              </div>
-              <div class="delete-button">
-                <div class="icon_container" v-if="scenario.show" v-dropdown="moreOptions(scenario)">
-                  <icon :size=25 icon-type="more"/>
-                </div>
+            <div class="delete-button">
+              <div class="icon_container" v-if="scenario.show" v-dropdown="moreOptions(scenario)">
+                <icon :size=25 icon-type="more_blue"/>
               </div>
             </div>
           </div>
         </div>
-      </template>
+      </div>
     </div>
   </div>
 </div>
@@ -63,8 +67,9 @@ export default {
   },
   computed: {
     filteredScenarioList() {
-      return this.scenarioList.filter(
-        scenario => scenario.scenarioName.indexOf(this.filteredKeyWord) !== -1);
+      return this.scenarioList
+        .filter(scenario => scenario.scenarioName.indexOf(this.filteredKeyWord) !== -1)
+        .sort((a, b) => a.scenarioName.localeCompare(b.scenarioName));
     },
   },
   watch: {},

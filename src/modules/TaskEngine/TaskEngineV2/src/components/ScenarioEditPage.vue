@@ -20,9 +20,11 @@
           :nodeBlockHeight="nodeBlockHeight"
           :nodeTypeName="getNodeTypeName(nodeBlock.data.nodeType)"
           :initialNode="nodeBlock.data"
+          :initialGlobalEdges="globalEdges"
           :toNodeOptions="toNodeOptions"
           :globalVarOptionsMap="globalVarOptionsMap"
           :linking="linking"
+          :version="moduleData.version"
           @updatePosition="updateNodePosition(index, $event)"
           @savePosition="saveScenario()"
           @deleteNode="deleteNode(index)"
@@ -75,70 +77,31 @@
     </div>
   </div>
   <div class="top-panel">
-    <div class="button-block"
-      @mouseover="showTopPanelButtonLabel.setting=true"
-      @mouseleave="showTopPanelButtonLabel.setting=false"
-      @click="editScenarioSettings()">
-      <icon class="icon-panel" icon-type="setting" :enableHover="false" :size=18 @click=""/>
-      <transition name="label">
-        <div
-          v-if="showTopPanelButtonLabel.setting"
-          class="label-button-block">
-          {{$t("task_engine_v2.scenario_edit_page.setting")}}
-        </div>
-      </transition>
+    <div class="breadcrumb">
+      <div class="back-to-list" @click="$router.replace('/task-engine-scenario-v2');">{{$t("task_engine_v2.scenario_list_page.scenario_list")}}</div>
+      <icon iconType="month_right" :size="20"></icon>
+      <div v-if="moduleData.metadata" class="scenario-name">
+        {{moduleData.metadata.scenario_name}}
+      </div>
+      <div class="scenario-name-edit" @click="editScenarioSettings()">
+        <icon :size=12 icon-type="edit_pen" enableHover></icon>
+      </div>
     </div>
-    <div class="button-block"
-      @mouseover="showTopPanelButtonLabel.varTemplate=true"
-      @mouseleave="showTopPanelButtonLabel.varTemplate=false"
-      @click="editVarTemplate()">
-      <icon class="icon-panel" icon-type="knowledge_base" :enableHover="false" :size=18 @click=""/>
-      <transition name="label">
-        <div
-          v-if="showTopPanelButtonLabel.varTemplate"
-          class="label-button-block">
-          {{$t("task_engine_v2.scenario_edit_page.global_var_template")}}
-        </div>
-      </transition>
-    </div>
-    <div class="button-block"
-      @mouseover="showTopPanelButtonLabel.globalEdge=true"
-      @mouseleave="showTopPanelButtonLabel.globalEdge=false"
-      @click="editGlobalEdge()">
-      <icon class="icon-panel" icon-type="canlendar" :enableHover="false" :size=18 @click=""/>
-      <transition name="label">
-        <div
-          v-if="showTopPanelButtonLabel.globalEdge"
-          class="label-button-block">
-          {{$t("task_engine_v2.scenario_edit_page.global_edge")}}
-        </div>
-      </transition>
-    </div>
-    <div class="button-block"
-      @mouseover="showTopPanelButtonLabel.export=true"
-      @mouseleave="showTopPanelButtonLabel.export=false"
-      @click="exportScenario()">
-      <icon class="icon-panel" icon-type="save" :enableHover="false" :size=18 @click=""/>
-      <transition name="label">
-        <div
-          v-if="showTopPanelButtonLabel.export"
-          class="label-button-block">
-          {{$t("task_engine_v2.scenario_edit_page.export")}}
-        </div>
-      </transition>
-    </div>
-    <div class="button-block"
-      @mouseover="showTopPanelButtonLabel.publish=true"
-      @mouseleave="showTopPanelButtonLabel.publish=false"
-      @click="publishScenario()">
-      <icon class="icon-panel" icon-type="upload" :enableHover="false" :size=18 @click=""/>
-      <transition name="label">
-        <div
-          v-if="showTopPanelButtonLabel.publish"
-          class="label-button-block">
-          {{$t("task_engine_v2.scenario_edit_page.publish")}}
-        </div>
-      </transition>
+    <div class="header-buttons">
+      <div class="label-switch-off label-switch">{{$t("task_engine_v3.scenario_edit_page.switch_off")}}</div>
+      <toggle class="button-switch-enable" v-model="enable" @change="switchScenario()" :big="false"></toggle>
+      <div class="label-switch-on label-switch">{{$t("task_engine_v3.scenario_edit_page.switch_on")}}</div>
+      <text-button button-type='default' width='68px' height='28px' @click="exportScenario()">
+        {{$t("general.export")}}
+      </text-button>
+      <div class="advanced-config" v-dropdown="advancedConfigOptions">
+        <text-button iconType="header_dropdown_gray" :iconSize="8" iconAlign="right" width="91px" height="28px">
+          {{$t("task_engine_v2.scenario_edit_page.advanced_config")}}
+        </text-button>
+      </div>
+      <text-button button-type='default' width='68px' height='28px' @click="$router.replace('/task-engine-scenario-v2')">
+        {{$t("task_engine_v2.scenario_edit_page.back_to_scenario_list")}}
+      </text-button>
     </div>
   </div>
 </div>
@@ -206,9 +169,25 @@ export default {
         dstNodeIndex: undefined,
       },
       stopCanvasClickPropagationOnce: false,
+      enable: false,
+      appId: undefined,
+      scenarioId: undefined,
     };
   },
   computed: {
+    advancedConfigOptions() {
+      const options = {
+        options: [{
+          text: this.$t('task_engine_v2.scenario_edit_page.global_var_template'),
+          onclick: this.editVarTemplate,
+        }, {
+          text: this.$t('task_engine_v2.scenario_edit_page.global_edge'),
+          onclick: this.editGlobalEdge,
+        }],
+        alignLeft: true,
+      };
+      return options;
+    },
     idToNodeBlock() {
       const map = {};
       this.nodeBlocks.forEach((nodeBlock) => {
@@ -319,6 +298,23 @@ export default {
           }
         }
 
+        // push action node edges
+        if (nodeBlock.data.actionTab) {
+          nodeBlock.data.actionTab.actionGroupList.forEach((actionGroup) => {
+            actionGroup.actionList.forEach((action) => {
+              if (action.type === 'goto') {
+                if (this.idToNodeBlock[action.targetSkillId]) {
+                  edgeList.push({
+                    from_id: nodeBlock.data.nodeId,
+                    to_id: action.targetSkillId,
+                    edge_type: 'normal',
+                  });
+                }
+              }
+            });
+          });
+        }
+
         // globalEdges
         this.globalEdges.forEach((edge) => {
           if (!edge.to_node_id) return;
@@ -380,6 +376,25 @@ export default {
   watch: {
   },
   methods: {
+    setSwitchToggle(appId, scenarioId) {
+      taskEngineApi.listScenarios(appId).then((data) => {
+        if (typeof (data) === 'object' && 'msg' in data) {
+          const scenario = data.msg.find(s => s.scenarioID === scenarioId);
+          this.enable = scenario.enable;
+        }
+      }, (err) => {
+        general.popErrorWindow(this, 'listScenarios error', err.message);
+      });
+    },
+    switchScenario() {
+      if (this.enable) {
+        this.publishScenario();
+      }
+      taskEngineApi.switchScenario(this.appId, this.scenarioId, this.enable).then(() => {
+      }, (err) => {
+        general.popErrorWindow(this, 'switchScenario error', err.message);
+      });
+    },
     loadScenario(scenarioId) {
       return taskEngineApi.loadScenario(scenarioId).then((data) => {
         const jsonData = {
@@ -427,8 +442,15 @@ export default {
     renderGlobalVarOptionsMap() {
       this.globalVarOptionsMap = {};
       this.moduleData.nodes.forEach(((node) => {
-        if (node.global_vars) {
-          const vars = node.global_vars.map(v => ({
+        if (node.edges) {
+          let globalVars = scenarioConvertor.getGlobalVars(node.edges);
+          if (node.node_type === 'restful') {
+            globalVars.push(node.content.requests[0].rtn_var_name);
+          } else if (node.node_type === 'parameter_collecting') {
+            globalVars.push(...scenarioConvertor.getGlobalVarsFromParsers(node.content.parsers));
+          }
+          globalVars = [...new Set(globalVars)];
+          const vars = globalVars.map(v => ({
             text: node.description,
             value: v,
           }));
@@ -438,8 +460,12 @@ export default {
     },
     saveScenario() {
       const uiNodes = this.nodeBlocks.map(nodeBlock => nodeBlock.data);
-      const nodes = scenarioConvertor.convertUiNodesToNodes(uiNodes, this.setting);
-      this.globalEdges = scenarioConvertor.appendActionToGlobalEdges(this.globalEdges);
+      const nodes = scenarioConvertor.convertUiNodesToNodes(
+        uiNodes,
+        this.setting,
+        this.globalEdges,
+      );
+      // this.globalEdges = scenarioConvertor.appendActionToGlobalEdges(this.globalEdges);
       const nodeInfo = scenarioConvertor.traverseEdges(nodes, this.globalEdges);
       scenarioConvertor.generateWarnings(uiNodes, nodeInfo);
       // scenarioConvertor.addBackContentTextArray(this, nodes, this.globalEdges);
@@ -485,6 +511,7 @@ export default {
         this.moduleDataLayouts = layout;
         this.renderData();
         this.updateWindowModuleData();
+        this.publishScenario();
         // this.$notify({ text: this.$t('error_msg.save_success') });
       }, (err) => {
         this.$notifyFail(`saveScenario failed, error:${err.message}`);
@@ -560,16 +587,16 @@ export default {
       });
     },
     nodeOptionDragStart(nodeType, name, e) {
-      e.dataTransfer.setData('type', nodeType);
-      e.dataTransfer.setData('name', name);
+      e.dataTransfer.setData('text', JSON.stringify({ nodeType, name }));
     },
     nodeOptionDragOver(e) {
       e.preventDefault();
       e.dataTransfer.dropEffect = 'copy';
     },
     nodeOptionDrop(e) {
-      const nodeType = e.dataTransfer.getData('type');
-      const nodeName = e.dataTransfer.getData('name');
+      const eObj = JSON.parse(e.dataTransfer.getData('text'));
+      const nodeType = eObj.nodeType;
+      const nodeName = eObj.name;
       this.addNewNode(nodeType, nodeName, e.offsetX, e.offsetY);
     },
     onPageWheel() {
@@ -598,6 +625,7 @@ export default {
         title: '',
         component: ScenarioSettingsEditPop,
         validate: true,
+        cancelValidate: true,
         extData: {
           setting: this.setting,
         },
@@ -615,6 +643,7 @@ export default {
         title: '',
         component: VarTemplateEditPop,
         validate: true,
+        cancelValidate: true,
         extData: {
           varTemplates: this.varTemplates,
           globalVarOptionsMap: this.globalVarOptionsMap,
@@ -633,6 +662,7 @@ export default {
         title: '',
         component: GlobalEdgeEditPop,
         validate: true,
+        cancelValidate: true,
         extData: {
           globalEdges: this.globalEdges,
           toNodeOptions: this.toNodeOptions,
@@ -657,12 +687,7 @@ export default {
       // publish scenario
       const that = this;
       taskEngineApi.publishScenario(this.appId, this.scenarioId).then(() => {
-        that.$notify({ text: that.$t('task_engine_v2.scenario_list_page.publish_succeed') });
-        // enable scenario after published
-        taskEngineApi.switchScenario(this.appId, this.scenarioId, true).then(() => {
-        }, (err) => {
-          this.$notifyFail(`enable scenario error:${err.message}`);
-        });
+        // that.$notify({ text: that.$t('task_engine_v2.scenario_list_page.publish_succeed') });
       }, (err) => {
         that.$notifyFail(`${that.$t('task_engine_v2.scenario_list_page.publish_failed')}:${err.message}`);
       });
@@ -806,7 +831,29 @@ export default {
         },
       };
       let options = [];
-      if (sourceNodeType === 'restful') {
+      if (sourceNodeType === 'action') {
+        options = [
+          {
+            text: this.$t('task_engine_v2.scenario_edit_page.new_edge_normal'),
+            onclick: () => {
+              if (dstNodeId === undefined) {
+                const newNode = this.addNewLinkingNode(this.linkingEdge);
+                dstNodeId = newNode.nodeId;
+              }
+              sourceNode.actionTab.actionGroupList.push({
+                actionGroupId: this.$uuid.v1(),
+                actionList: [{
+                  type: 'goto',
+                  targetSkillId: dstNodeId,
+                }],
+                conditionList: [],
+              });
+              this.saveScenario();
+              this.dropdownHidden();
+            },
+          },
+        ];
+      } else if (sourceNodeType === 'restful') {
         options = [
           {
             text: this.$t('task_engine_v2.scenario_edit_page.new_edge_restful_success'),
@@ -925,6 +972,7 @@ export default {
     this.nodeOptions = this.getNodeOptions();
     this.rainbowColors = optionConfig.getRainbowColors();
     this.loadScenario(this.scenarioId);
+    this.setSwitchToggle(this.appId, this.scenarioId);
   },
   mounted() {},
   beforeDestroy() {},
@@ -959,17 +1007,17 @@ export default {
     display: flex;
     flex-direction: column;
     position: absolute;
-    right: 0px;
-    top: 20px;
+    right: 20px;
+    top: 100px;
     // z-index: 100;
     width: 420px;
     // height: calc(100% - 8px);
-    max-height: calc(100% - 8px);
+    max-height: calc(100% - 100px);
     background: white;
     border: 1px solid $color-borderline;
-    border-radius: 5px;
+    border-radius: 4px;
     padding: 24px;
-    margin-right: 8px;
+    // margin-right: 8px;
     @include auto-overflow();
     @include customScrollbar();
     .node-option-nav-bar{
@@ -1039,43 +1087,48 @@ export default {
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: space-between;
     position: absolute;
     left: 20px;
     top: 20px;
-    width: 450px;
-    height: 66px;
+    min-width: 539px;
+    width: calc(100% - 40px);
+    height: 60px;
     background: white;
-    padding: 0px 16px 0px 32px;
-    .button-block{
+    box-shadow: 0 0 5px 0 rgba(102,102,102,0.08);
+    border-radius: 4px;
+    padding: 0px 20px;
+    .breadcrumb{
+      @include font-16px();
+      flex: 1 0 136px;
+      display: flex;
+      min-width: 0;
+      flex-direction: row;
+      align-items: center;
+      .back-to-list{
+        flex: 0 0 64px;
+        cursor: pointer;
+      }
+      .scenario-name{
+        flex: 0 1 auto;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+      .scenario-name-edit{
+        flex: 1 0 22px;
+      }
+      div{
+        margin-right: 10px;
+      }
+    }
+    .header-buttons {
+      flex: 0 0 363px;
       display: flex;
       flex-direction: row;
       align-items: center;
-      justify-content: center;
-      height: 36px;
-      border: 1px solid $color-borderline;
-      padding: 0px 16px 0px 16px;
-      cursor: pointer;
-      &:first-child{
-        border-radius: 6px 0px 0px 6px;
-      }
-      &:last-child{
-        border-radius: 0px 6px 6px 0px;
-      }
-      .icon-panel{
-        margin: 0px 4px 0px 0px;
-      }
-      .label-button-block{
-        font-size: 16px;
-      }
-      .label-enter-active, .label-leave-active{
-        transition: font-size 0.2s;
-      }
-      .label-enter, .label-leave-to {
-        font-size: 0px;
-      }
-      .label-enter-to, .label-leave {
-        font-size: 16px;
+      &>div {
+        margin-left: 10px;
       }
     }
   }

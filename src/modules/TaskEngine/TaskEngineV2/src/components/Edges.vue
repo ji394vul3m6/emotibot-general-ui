@@ -1,5 +1,5 @@
 <template lang="html">
-  <div id="edges" class="edges">
+  <div id="edges" class="edges"> 
     <svg class="svg">
       <g class="paths" v-for="p in paths" >
         <path :d="p.data" :style="p.style"></path>

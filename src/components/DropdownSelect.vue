@@ -1,6 +1,6 @@
 <template>
   <div class="dropdown-select" :style="styleObj">
-    <div class="input-bar" :class="{'is-focus': show}" :style="inputBarStyle" ref="input" @click="showSelection">
+    <div class="input-bar" :class="{'is-focus': show, error: showError}" :style="inputBarStyle" ref="input" @click="showSelection">
       <div class="input-block">
         <span v-if="!checkedValues.length" class="placeholder">{{ placeholder }}</span>
         <template v-if="multi">
@@ -13,8 +13,8 @@
           <div class="input-text">{{checkedValues[0].text}}</div>
         </template>
       </div>
-      <div class="icon-block">
-        <icon icon-type="drop_down" :size=10></icon>
+      <div class="icon-block" :class="{error: showError}">
+        <icon :icon-type="!showError ? 'drop_down' : 'red_arrow'" :size=10></icon>
       </div>
     </div>
     <div ref="list" v-if="show" class="select-list" :style="listStyle">
@@ -106,6 +106,10 @@ export default {
       },
     },
     showSearchBar: {
+      type: Boolean,
+      default: false,
+    },
+    showError: {
       type: Boolean,
       default: false,
     },
@@ -274,6 +278,9 @@ $border-color: $color-borderline;
   height: 28px;
   border: 1px solid $border-color;
   border-radius: 2px;
+  &.error {
+    border: 1px solid #f25c62;
+  }
   @include click-button();
 
   .placeholder {
@@ -319,6 +326,9 @@ $border-color: $color-borderline;
     justify-content: center;
     margin: 3px 0;
     border-left: 1px solid $border-color;
+    &.error {
+      border-left: 1px solid #f25c62;
+    }
   }
 }
 .select-list {

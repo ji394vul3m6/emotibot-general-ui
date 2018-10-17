@@ -314,7 +314,7 @@ export default {
     startPollingTrainingStatus(version) {
       this.statusTimer = setInterval(() => {
         this.pollTrainingStatus(version);
-      }, 30000);
+      }, 5000);
     },
     refreshIntentPage() {
       const that = this;

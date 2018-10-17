@@ -3,7 +3,11 @@
   <div class="block">
     <div class="label-header">{{$t("task_engine_v2.scenario_settings_edit_pop.scenario_name")}}</div>
     <input class="input-rounded"
-      v-model="scenarioName">
+      v-model="scenarioName"
+      ref="scenarioName"
+      :class="{'error': isScenarioNameTooltipShown}"
+      v-tooltip="scenarioNameTooltip"
+    >
     </input>
   </div>
   <div class="block">
@@ -11,7 +15,11 @@
     <input class="input-rounded input-small"
       placeholder="Count"
       oninput="this.value = this.value.replace(/^0$/g, ''); this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(^[0-9]{1,2}).*/g, '$1');"
-      v-model="scenarioDialogueCntLimit">
+      v-model="scenarioDialogueCntLimit"
+      ref="scenarioDialogueCntLimit"
+      :class="{'error': isScenarioDialogueCntLimitTooltipShown}"
+      v-tooltip="scenarioDialogueCntLimitTooltip"
+    >
     </input>
   </div>
   <div class="block">
@@ -19,13 +27,19 @@
     <input class="input-rounded input-small"
       placeholder="Count"
       oninput="this.value = this.value.replace(/^0$/g, ''); this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(^[0-9]{1,2}).*/g, '$1');"
-      v-model="nodeDialogueCntLimit">
+      v-model="nodeDialogueCntLimit"
+      ref="nodeDialogueCntLimit"
+      :class="{'error': isNodeDialogueCntLimitTooltipShown}"
+      v-tooltip="NodeDialogueCntLimitTooltip"
+    >
     </input>
   </div>
 </div>
 </template>
 
 <script>
+import general from '@/modules/TaskEngine/_utils/general';
+import event from '@/utils/js/event';
 
 export default {
   name: 'scenario-settings-edit-pop',
@@ -38,31 +52,126 @@ export default {
   },
   data() {
     return {
+      originalSettingStr: '',
       scenarioName: '',
       scenarioDialogueCntLimit: 0,
       nodeDialogueCntLimit: 0,
+      isScenarioNameTooltipShown: false,
+      isScenarioDialogueCntLimitTooltipShown: false,
+      isNodeDialogueCntLimitTooltipShown: false,
+      scenarioNameTooltip: {
+        msg: this.$t('task_engine_v2.scenario_settings_edit_pop.err_empty_scenario_name'),
+        eventOnly: true,
+        errorType: true,
+        alignLeft: true,
+      },
+      scenarioDialogueCntLimitTooltip: {
+        msg: this.$t('task_engine_v2.scenario_settings_edit_pop.err_empty_scenario_dialogue_cnt_limit'),
+        eventOnly: true,
+        errorType: true,
+        alignLeft: true,
+      },
+      NodeDialogueCntLimitTooltip: {
+        msg: this.$t('task_engine_v2.scenario_settings_edit_pop.err_empty_default_node_dialogue_cnt_limit'),
+        eventOnly: true,
+        errorType: true,
+        alignLeft: true,
+      },
     };
   },
-  computed: {},
-  watch: {},
+  computed: {
+    setting() {
+      return {
+        scenarioName: this.scenarioName,
+        scenarioDialogueCntLimit: parseInt(this.scenarioDialogueCntLimit, 10) || null,
+        nodeDialogueCntLimit: parseInt(this.nodeDialogueCntLimit, 10) || null,
+      };
+    },
+  },
+  watch: {
+    scenarioName() {
+      if (this.scenarioName.trim() !== '') {
+        this.isScenarioNameTooltipShown = false;
+        this.$refs.scenarioName.dispatchEvent(event.createEvent('tooltip-hide'));
+      }
+    },
+    scenarioDialogueCntLimit() {
+      if (this.scenarioDialogueCntLimit !== '') {
+        this.isScenarioDialogueCntLimitTooltipShown = false;
+        this.$refs.scenarioDialogueCntLimit.dispatchEvent(event.createEvent('tooltip-hide'));
+      }
+    },
+    nodeDialogueCntLimit() {
+      if (this.nodeDialogueCntLimit !== '') {
+        this.isNodeDialogueCntLimitTooltipShown = false;
+        this.$refs.nodeDialogueCntLimit.dispatchEvent(event.createEvent('tooltip-hide'));
+      }
+    },
+  },
   methods: {
     renderData() {
+      this.originalSettingStr = JSON.stringify(this.extData.setting, general.JSONStringifyReplacer);
       const setting = JSON.parse(JSON.stringify(this.extData.setting));
       this.scenarioName = setting.scenarioName;
       this.scenarioDialogueCntLimit = setting.scenarioDialogueCntLimit;
       this.nodeDialogueCntLimit = setting.nodeDialogueCntLimit;
     },
+    validateResult() {
+      let isValid = true;
+      if (this.scenarioName.trim() === '') {
+        this.$refs.scenarioName.dispatchEvent(event.createEvent('tooltip-reload'));
+        this.$refs.scenarioName.dispatchEvent(event.createEvent('tooltip-show'));
+        this.isScenarioNameTooltipShown = true;
+        isValid = false;
+      }
+      if (this.scenarioDialogueCntLimit === '') {
+        this.$refs.scenarioDialogueCntLimit.dispatchEvent(event.createEvent('tooltip-reload'));
+        this.$refs.scenarioDialogueCntLimit.dispatchEvent(event.createEvent('tooltip-show'));
+        this.isScenarioDialogueCntLimitTooltipShown = true;
+        isValid = false;
+      }
+      if (this.nodeDialogueCntLimit === '') {
+        this.$refs.nodeDialogueCntLimit.dispatchEvent(event.createEvent('tooltip-reload'));
+        this.$refs.nodeDialogueCntLimit.dispatchEvent(event.createEvent('tooltip-show'));
+        this.isNodeDialogueCntLimitTooltipShown = true;
+        isValid = false;
+      }
+      return isValid;
+    },
     validate() {
-      const setting = {
-        scenarioName: this.scenarioName,
-        scenarioDialogueCntLimit: parseInt(this.scenarioDialogueCntLimit, 10) || null,
-        nodeDialogueCntLimit: parseInt(this.nodeDialogueCntLimit, 10) || null,
-      };
-      // console.log(setting);
-      this.$emit(
-        'validateSuccess',
-        setting,
-      );
+      if (this.validateResult()) {
+        this.$emit(
+          'validateSuccess',
+          this.setting,
+        );
+      }
+    },
+    cancelValidate() {
+      const newSettingStr = JSON.stringify(this.setting, general.JSONStringifyReplacer);
+      // console.log(`New Str: ${newSettingStr}`);
+      // console.log(`Old Str: ${this.originalSettingStr}`);
+      if (newSettingStr === this.originalSettingStr) {
+        this.$emit('cancelValidateSuccess');
+      } else {
+        const that = this;
+        that.$popCheck({
+          bindValue: true,
+          data: {
+            msg: that.$t('task_engine_v2.scenario_settings_edit_pop.confirm_to_save_changes'),
+          },
+          callback: {
+            ok() {
+              that.$emit(
+                'validateSuccess',
+                that.setting,
+              );
+            },
+            cancel() {
+              that.$emit('cancelValidateSuccess');
+            },
+          },
+        });
+      }
     },
   },
   beforeMount() {
@@ -70,6 +179,7 @@ export default {
   },
   mounted() {
     this.$on('validate', this.validate);
+    this.$on('cancelValidate', this.cancelValidate);
   },
 };
 </script>
@@ -99,6 +209,9 @@ export default {
       background: white;
       &:disabled{
         background: #F3F7F9;
+      }
+      &.error {
+        background-color: $color-input-error;
       }
     }
     .input-small{

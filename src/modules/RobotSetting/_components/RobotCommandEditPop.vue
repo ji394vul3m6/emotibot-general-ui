@@ -46,14 +46,15 @@
     <div id="edit-keyword" class="edit-row">
       <div class="edit-title">{{ $t('robot_command.editpop.keyword.title') }}</div>
       <div id="edit-keyword-content" class="edit-content">
-        <input type="text" v-model="keywords" :placeholder="$t('robot_command.editpop.keyword.keyword_placeholder')" :disabled="readonly">
-        <!-- <info-input
+        <!-- <input type="text" v-model="keywords" :placeholder="$t('robot_command.editpop.keyword.keyword_placeholder')" :disabled="readonly"> -->
+        <info-input
           v-model="keywords"
-          :msg="$t('robot_command.editpop.keyword.keyword_placeholder')"
+          :placeholder="$t('robot_command.editpop.keyword.keyword_placeholder')"
+        :msg="$t('robot_command.editpop.keyword.keyword_placeholder')"
           fill
           :disabled="readonly"
         >
-        </info-input> -->
+        </info-input>
         <div id="advanced-block">
           <input id="advanced" type="checkbox" v-model="hasAdvanced" :disabled="readonly">
           <label for="advanced">{{ $t('robot_command.editpop.keyword.advanced') }}</label>

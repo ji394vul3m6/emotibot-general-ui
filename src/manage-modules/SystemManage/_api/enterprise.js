@@ -6,6 +6,8 @@ const ENTERPRISE_URL = '/auth/v3/enterprise';
 const BF2_ENTERPRISE_URL = '/api/v1/bf/enterprise';
 const BF2_USER_URL = '/api/v1/bf/user';
 
+const IM_ENTERPRISE_URL = '/im-admin/create';
+
 function getEnterprises() {
   return this.$reqGet(ENTERPRISES_URL).then(rsp => rsp.data.result);
 }
@@ -50,12 +52,20 @@ function addEnterprise(info) {
       }
       return {};
     })
-    .then(admin => this.$reqPostForm(BF2_USER_URL, {
-      id: admin.id,
-      account: info.admin.account,
-      password: md5(info.admin.password),
-      enterprise: enterprise.id,
-    })));
+    .then((admin) => {
+      this.$reqPost(IM_ENTERPRISE_URL, {
+        username: info.admin.account,
+        ent_code: enterprise.id,
+        display_name: info.admin.account,
+        user_type: 1,
+      });
+      return this.$reqPostForm(BF2_USER_URL, {
+        id: admin.id,
+        account: info.admin.account,
+        password: md5(info.admin.password),
+        enterprise: enterprise.id,
+      });
+    }));
 }
 
 function updateEnterprise(id, data) {

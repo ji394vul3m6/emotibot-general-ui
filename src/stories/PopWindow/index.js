@@ -49,6 +49,16 @@ export default [
               </text-button>
             </div>
           </div>
+          <div :style="divBlockStyle">
+            <div style="font-size: 18px">說明彈窗：$popDescription</div> 
+            <div :style="tipBlockStyle"> 
+              <text-button
+                button-type='error'
+                @click="showDescriptionPop">
+                點我出現 說明 POP
+              </text-button>
+            </div>
+          </div>
           <pop-windows></pop-windows>
         </div>`;
 
@@ -73,6 +83,8 @@ export default [
           showErrorPop() {
           },
           showPop() {
+          },
+          showDescriptionPop() {
           },
           showWarnPop() {
             const that = this;

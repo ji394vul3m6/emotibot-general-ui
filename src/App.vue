@@ -1,10 +1,10 @@
 <template>
   <div id="app">
-    <div :class="{blur: isPopOpen}">
+    <div :class="{blur: isBackgroundBlur}">
       <div id="app-logo"></div>
       <page-header v-if="ready"></page-header>
-      <!-- if robotID is not empty, show robot page -->
-      <template v-if="robotID !== '' && ready">
+      <!-- if not Manage Module, show robot page -->
+      <template v-if="!isManageModule && ready">
       <page-menu></page-menu>
       <div id="app-page" v-if="ready" :class="{iframe: isIFrame}">
         <!-- <div class="app-header" v-if="!isIFrame">{{ pageName }}</div> -->
@@ -22,8 +22,8 @@
       </div>
       </transition>
       </template>
-      <!-- if robotID is empty, but enterpriseID not, show enterprise admin page -->
-      <template v-else-if="robotID === '' && ready">
+      <!-- if isManageModule, show enterprise admin page -->
+      <template v-else-if="isManageModule && ready">
         <div id="app-page" class="manage">
           <router-view v-show="!showLoading" class="app-body" @startLoading="startLoading" @endLoading="endLoading"/>
           <div v-if="showLoading" class="app-body">
@@ -77,6 +77,10 @@ export default {
     isIFrame() {
       return this.currentPage.isIFrame;
     },
+    isManageModule() {
+      const manageModule = /^\/manage(.*)?/;
+      return manageModule.test(this.$route.path);
+    },
     ...mapGetters([
       'robotID',
       'userID',
@@ -96,7 +100,7 @@ export default {
       loadingMsg: '',
       ready: false,
       userInfo: {},
-      isPopOpen: false,
+      isBackgroundBlur: false,
       testComponent: QATest,
       checkCookieMs: 5000,
       checkCookieLoop: undefined,
@@ -152,17 +156,47 @@ export default {
       'setRobot',
       'setEnterprise',
     ]),
+    checkAuditRoute() {
+      const that = this;
+      const auditURL = [
+        '/manage/audit-system',     // 0
+        '/manage/audit-enterprise', // 1
+        '/manage/audit-robot',      // 2
+      ];
+      const isAuditURL = that.$route.matched.reduce((val, match) =>
+        val || auditURL.indexOf(match.path) !== -1, false);
+      if (!isAuditURL) return false;
+
+      // Users can only go to audit page according to it's previledge
+      if (that.userInfo.type >= 2) {  // normal user
+        if (auditURL.splice(that.userInfo.type).indexOf(that.$route.path) === -1) {
+          that.$router.push('/manage/audit-robot');
+        }
+      } else if (that.userInfo.type === 1) {  // enterprise admin
+        if (auditURL.splice(that.userInfo.type).indexOf(that.$route.path) === -1) {
+          that.$router.push('/manage/audit-enterprise');
+        }
+      } // else system admin, can go wherever he/she wants
+      return true;
+    },
     checkPrivilege() {
       const that = this;
+
+      const isAuditRoute = this.checkAuditRoute();
+      if (isAuditRoute) {
+        return;
+      }
+
       if (that.enterpriseID === '') {
         if (that.userInfo.type >= 1) {
           that.$router.push('error');
           return;
         }
-        // when renterprise is empty, path should only in enterprise list or system user list
+        // when enterprise is empty, path should only in enterprise list or system user list
         const validURL = [
           '/manage/enterprise-manage',
           '/manage/system-admin-list',
+          '/manage/audit-system',
         ];
         const valid = that.$route.matched.reduce((val, match) =>
           val || validURL.indexOf(match.path) >= 0, false);
@@ -446,10 +480,14 @@ export default {
     });
 
     that.$root.$on('pop-window', () => {
-      that.isPopOpen = that.$isPopOpen();
+      that.$nextTick(() => {
+        that.isBackgroundBlur = that.$isBackgroundBlur();
+      });
     });
     that.$root.$on('close-window', () => {
-      that.isPopOpen = that.$isPopOpen();
+      that.$nextTick(() => {
+        that.isBackgroundBlur = that.$isBackgroundBlur();
+      });
     });
     that.$root.$on('open-chat-test', () => {
       that.openChatTest();

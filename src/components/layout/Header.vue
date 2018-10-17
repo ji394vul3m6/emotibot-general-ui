@@ -1,26 +1,26 @@
 <template>
 <div id="page-header">
-  <div class="robot-list column click-button" @click="showRobotList" v-if="!showUserInfoPage && enterpriseID !== ''">
+  <div class="robot-list column click-button" @click="showRobotList" v-if="enterpriseID !== '' && !showSpecialPage">
     {{ $t('general.robot_list') }}
   </div>
-  <div class="product column click-button" @click="goIMPage" v-if="userInfo.type === 1">
+  <div class="product column click-button" @click="goIMPage" v-if="userInfo.type === 1 && imEnable && !showSpecialPage">
     {{ $t('general.im') }}
   </div>
   <div class="empty column"></div>
-  <div class="enterprise column" v-if="!showUserInfoPage && enterpriseID !== ''">
+  <div class="enterprise column" v-if="!showUserInfoPage && enterpriseID !== '' && !showAuditModule">
     <div class="icon-container">
       <icon :size=22 icon-type="header_enterprise"/>
     </div>
     <div>{{ enterpriseName }}</div>
   </div>
-  <template v-if="robotID !== '' && !showUserInfoPage">
+  <template v-if="robotID !== '' && !showUserInfoPage && !showAuditModule">
   <div class="robot column">
     <div class="icon-container">
       <icon :size=22 icon-type="robot"/>
     </div>
     <div ref="robotName" class="column-text" v-tooltip="robotNameTooltip" @mouseover="showFullRobotName($event, robotName)" @mouseout="hideFullRobotName($event)">{{ robotName }}</div>
   </div>
-  <div class="chat-test click-button column" @click="showChatTest" v-if="!showUserInfoPage">
+  <div class="chat-test column click-button" @click="showChatTest" v-if="!showUserInfoPage && !showAuditModule">
     <div class="icon-container">
       <icon :size=22 icon-type="header_dialog"/>
     </div>
@@ -43,6 +43,7 @@
         <div class="menu-item" @click="clickShowUserPreference">{{ $t('header.user_info') }}</div>
         <div class="menu-item" v-if="userInfo.type <= 1 && enterpriseID !== ''" @click="goEnterprisePrivilege">{{ $t('header.enterprise_privilege_list') }}</div>
         <div class="menu-item" v-if="userInfo.type === 0 && enterpriseID !== ''" @click="goEnterpriseList">{{ $t('header.back_to_system_manage') }}</div>
+        <div class="menu-item" @click="goAuditLog">{{ $t('header.audit_log') }}</div>
         <div class="menu-item" @click="logout">{{ $t('header.logout') }}</div>
       </div>
     </div>
@@ -52,6 +53,7 @@
 
 <script>
 import { mapGetters, mapMutations } from 'vuex';
+import api from '@/api/system';
 import event from '@/utils/js/event';
 
 export default {
@@ -66,7 +68,9 @@ export default {
       top: 90,
       left: -250,
     },
+    imEnable: false,
   }),
+  api,
   computed: {
     ...mapGetters([
       'robotName',
@@ -83,6 +87,17 @@ export default {
     },
     showGoEnterpriseUserList() {
       return this.robotID !== '' && this.userInfo.type <= 1;
+    },
+    showAuditModule() {
+      const auditURL = [
+        '/manage/audit-system',     // 0
+        '/manage/audit-enterprise', // 1
+        '/manage/audit-robot',      // 2
+      ];
+      return auditURL.indexOf(this.$route.path) !== -1;
+    },
+    showSpecialPage() {
+      return this.showAuditModule || this.showUserInfoPage;
     },
   },
   methods: {
@@ -118,9 +133,7 @@ export default {
       that.$router.push('/manage/enterprise-manage');
       that.hideUserPreference();
 
-      that.showUserMenu = false;
-      window.removeEventListener('click', that.clickHandler);
-      that.clickHandler = undefined;
+      that.closeMenu();
     },
     goEnterprisePrivilege() {
       const that = this;
@@ -128,13 +141,29 @@ export default {
       that.$router.push('/manage/enterprise-user-list');
       that.hideUserPreference();
 
-      that.showUserMenu = false;
-      window.removeEventListener('click', that.clickHandler);
-      that.clickHandler = undefined;
+      that.closeMenu();
+    },
+    goAuditLog() {
+      const that = this;
+      if ((this.enterpriseID !== '' && this.robotID !== '') || this.userInfo.type >= 2) { // normal user
+        that.$router.push('/manage/audit-robot');
+      } else if (this.enterpriseID !== '') {
+        that.$router.push('/manage/audit-enterprise');
+      } else {
+        that.$router.push('/manage/audit-system');
+      }
+      that.hideUserPreference();
+      that.closeMenu();
     },
     showRobotList() {
       this.setRobot('');
       this.$router.push('/manage/robot-manage');
+    },
+    closeMenu() {
+      const that = this;
+      that.showUserMenu = false;
+      window.removeEventListener('click', that.clickHandler);
+      that.clickHandler = undefined;
     },
     goIMPage() {
       window.open('/im-admin/imIndex');
@@ -166,6 +195,12 @@ export default {
     showChatTest() {
       this.$root.$emit('open-chat-test');
     },
+  },
+  mounted() {
+    const that = this;
+    that.$api.getEnv().then((data) => {
+      that.imEnable = !(data.IM_ENABLE === '0' || data.IM_ENABLE === 'false');
+    });
   },
 };
 </script>

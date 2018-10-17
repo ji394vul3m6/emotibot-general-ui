@@ -98,6 +98,7 @@ export default {
       this.$api.editCommandClass(item.cid, itemName)
       .then(() => {
         this.$refs.categoryCard.editItemNameSuccess(true);
+        this.$notify({ text: this.$t('error_msg.save_success') });
       })
       .catch((err) => {
         if (err.response.status >= 400 && err.response.status < 500) {
@@ -114,6 +115,7 @@ export default {
       this.$api.deleteCommandClass(cid)
       .then(() => {
         this.$refs.categoryCard.deleteCategorySuccess(true);
+        this.$notify({ text: this.$t('general.delete_success') });
       })
       .catch((err) => {
         if (err.response.status >= 400 && err.response.status < 500) {
@@ -130,6 +132,7 @@ export default {
       this.$api.addCommandClass(newName, layer)
       .then((category) => {
         this.$refs.categoryCard.addCategorySuccess(true, category);
+        this.$notify({ text: this.$t('error_msg.save_success') });
       })
       .catch((err) => {
         if (err.response.status >= 400 && err.response.status < 500) {

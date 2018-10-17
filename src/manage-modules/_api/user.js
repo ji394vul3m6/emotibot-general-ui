@@ -1,6 +1,7 @@
 import qs from 'qs';
 
 const BF2_USER_URL = '/api/v1/bf/user';
+const IM_USER_URL = '/im-admin/create';
 
 // const V2_PREFIX = '/auth/v2';
 const V3_PREFIX = '/auth/v3';
@@ -48,6 +49,12 @@ function addEnterpriseUser(enterprise, user) {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
   }).then((rsp) => {
+    this.$reqPost(IM_USER_URL, {
+      username: user.username,
+      ent_code: enterprise,
+      display_name: user.username,
+      user_type: 1,
+    });
     userID = rsp.data.result.id;
     user.id = userID;
     user.account = user.username;

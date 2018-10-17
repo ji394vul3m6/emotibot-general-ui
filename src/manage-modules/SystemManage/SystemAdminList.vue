@@ -40,6 +40,7 @@ const enterpriseListPage = '/manage/enterprise-manage';
 export default {
   name: 'system-admin-list',
   path: 'system-admin-list',
+  privCode: 'manage_admin',
   components: {
     NavBar,
     CommandRow,

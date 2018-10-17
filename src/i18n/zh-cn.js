@@ -40,9 +40,13 @@ export default {
       export: '导出',
       import: '导入',
       login: '登入',
+      logout: '登出',
       publish: '发布',
       active: '启动',
       deactive: '关闭',
+      mark: '标注',
+      ignore: '忽略',
+      cluster: '辅助分类',
     },
 
     modules: {
@@ -113,7 +117,7 @@ export default {
         by_search: '筛选结果',
         by_check: '列表勾选',
       },
-      result_count: '根据 {type} 共 {total} 笔用户问题，排除已忽略句子 {ignore} 笔、已标注句子 {marked} 笔',
+      result_count: '根据 {type} 共 {total} 笔用户问题，排除已忽略句子 {ignore} 笔、已标注句子 {marked} 笔、标准问题 {std} 笔',
       cluster_count: '为您生成 {num} 组分类',
       cluster_info: '「{title}」分类，已勾选 {num} 笔',
       cluster_tag: '分类名称',
@@ -167,9 +171,9 @@ export default {
     clustering_checking: '准备进行辅助分类...，请勿离开此页面',
     cluster_dropdown: {
       by_search: '依据筛选结果 (共 {num} 笔)',
-      by_search_more: '依据筛选结果 (共 {num} 笔，少於 {size} 筆))',
+      by_search_more: '依据筛选结果 (共 {num} 笔，少于 {size} 笔))',
       by_checked: '依据列表勾选 (共 {num} 笔)',
-      by_checked_more: '依据列表勾选 (共 {num} 笔，少於 {size} 筆)',
+      by_checked_more: '依据列表勾选 (共 {num} 笔，少于 {size} 笔)',
     },
     success: {
       ignore_ok: '更新忽略状态成功',
@@ -335,7 +339,7 @@ export default {
         title: '触发关键字',
         advanced: '进阶设定',
         regex: '正则式',
-        keyword_placeholder: '关键字以 "/" 隔开',
+        keyword_placeholder: '关键字以 "/" 隔开, 关键字必须全符合才可触发指令',
       },
       datetime: {
         title: '生效时间',
@@ -848,6 +852,18 @@ export default {
   },
   pages: {
     null: '',
+    manage_admin: {
+      module_name: '系统管理人员',
+    },
+    manage_enterprise: {
+      module_name: '企业列表',
+    },
+    manage_user: {
+      module_name: '企业用户管理',
+    },
+    manage_robot: {
+      module_name: '机器人列表',
+    },
     status: {
       module_name: '数据总览',
       statistic_dash: '统计概览',
@@ -1020,7 +1036,7 @@ export default {
     success: '设定成功',
     save_success: '保存成功',
     save_fail: '保存失败',
-    time_format_error: '時間格式錯誤',
+    time_format_error: '时间格式错误',
     empty_data: '无资料',
     data_format_err: '资料格式错误',
     update_qa_error: '问答更新失败',
@@ -1133,6 +1149,7 @@ export default {
     err_origin_empty_password: '原密码不可为空',
     err_invalid_check_password: '两次密码输入不同',
     update_password_success: '更新密码成功',
+    add_user_success: '新增使用者成功',
     err_update_password_fail: '更新密码失败',
     err_role_duplicate: '角色名称已存在',
     err_robot_name_empty: '机器人名称不可为空',
@@ -1149,6 +1166,17 @@ export default {
 
     go_back: '返回',
 
+    audit: {
+      system: '系统操作记录',
+      enterprise: '企业操作记录',
+      robot: '机器人操作记录',
+      filter_time: '发生时间',
+      filter_robot: '机器人',
+      filter_module: '操作模块和类型',
+      filter_userid: '用户ID',
+      filter_enterprise: '企业',
+      total: '共 {num} 笔',
+    },
     privilege: {
       statistic_dash: {
         view: '统计概览',
@@ -1217,6 +1245,7 @@ export default {
     user_info: '个人资料',
     enterprise_privilege_list: '企业权限管理',
     back_to_system_manage: '返回系统管理',
+    audit_log: '操作记录',
     logout: '登出',
   },
   format: {

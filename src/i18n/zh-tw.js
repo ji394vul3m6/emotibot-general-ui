@@ -931,6 +931,7 @@ export default {
     err_origin_empty_password: '原密碼不可爲空',
     err_invalid_check_password: '兩次密碼輸入不同',
     update_password_success: '更新密碼成功',
+    add_user_success: '新增使用者成功',
     err_update_password_fail: '更新密碼失敗',
     err_role_duplicate: '角色名稱已存在',
     err_robot_name_empty: '機器人名稱不可爲空',

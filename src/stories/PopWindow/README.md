@@ -36,6 +36,15 @@
   that.$popCheck(option);
 ```
 
+### $popDescription：段落式的說明文字彈窗，可點擊彈窗外範圍關閉
+```
+  const option = {
+    title: '說明彈窗的標題',
+    component: somePop,   // 自訂 popWindow 版型以 component 置入
+  };
+  that.$popDescription(option);
+```
+
 ### $pop：自訂彈窗
 ```
   const options = {

@@ -23,7 +23,7 @@
           <td v-if="hasAction" class="table-col-action" :class="{'multi-action': action.length > 1}">
             {{ $t('general.actions') }}
           </td>
-          <td v-if="$scopedSlots.menu" class="fixed menu"></td>
+          <td v-if="$scopedSlots.menu" class="fixed menu">{{moreText}}</td>
         </tr>
       </thead>
     </table>
@@ -43,10 +43,10 @@
         {{ $t('general.no_data') }}
       </template>
     </div>
-    <div v-else class="general-table-body">
+    <div v-else class="general-table-body" @scroll.passive="hideMenu">
     <table class="general-table" :class="[autoHeight ? 'auto-height' : '', fontClass]" v-if="tableData && tableData.length > 0">
       <tbody :class="[onclickRow ? 'clickable-row' : '']">
-        <tr v-for="(data, idx) in tableData" :key="idx" :class="{'highlight': data.highlight}">
+        <tr v-for="(data, idx) in tableData" :key="idx" :class="{'highlight': data.highlight}" @mouseenter="hoverRowIndex = idx" @mouseleave="hoverRowIndex = indexOfShowMenu = -1">
           <td v-if="checkbox" class="table-col-checkbox">
             <input type="checkbox" @click="checkSelf(data, idx)" :checked="data.isChecked">
           </td>
@@ -54,7 +54,7 @@
             :style="{width: header.width}"
             :class="{'fixed': header.width, 'custom-action': header.type === 'action', 'multi-action': hasMultiCustomAction, 'icon-column': header.type === 'icon'}"
              class="table-body-item"
-            @click="handleOnclickRow(onclickRow, data, idx)">
+            @click="handleOnclickRow(onclickRow, data, idx);$emit('onCellClicked', { rowIndex: idx, rowData: data, key: header.key })">
             <div v-if="header.type === 'tag'">
               <tag class="tags" v-for="(tag, tagIdx) in data[header.key]" :key="`${tagIdx}-${tag}`" :fontClass="fontClass">{{ tag }}</tag>
             </div>
@@ -85,9 +85,9 @@
           </td>
           <template v-if="$scopedSlots.menu">
             <td class="fixed menu">
-              <icon iconType="more" enableHover :size=15 @click="moreClick(idx)" style="position: initial"></icon>
+              <icon v-show="hoverRowIndex === idx" iconType="more" enableHover :size=15 @click="moreClick(idx, data, $event)" style="position: initial"></icon>
             </td>
-            <td v-if="idx === indexOfShowMenu" class="menu-container"><slot name="menu" :rowData="data" :rowIndex="idx"></slot></td>
+            <td v-if="idx === indexOfShowMenu && hoverRowIndex === idx" class="menu-container" :style="menuStyle"><slot name="menu" :rowData="data" :rowIndex="idx"></slot></td>
           </template>
         </tr>
       </tbody>
@@ -168,6 +168,10 @@ export default {
       required: false,
       default: false,
     },
+    moreText: {
+      type: String,
+      default: '',
+    },
   },
   data() {
     return {
@@ -176,7 +180,10 @@ export default {
       headerInfoTooltip: {
         msg: '',
       },
+      menuStyle: {
+      },
       indexOfShowMenu: -1,
+      hoverRowIndex: -1,
     };
   },
   computed: {
@@ -258,14 +265,15 @@ export default {
       this.headerInfoTooltip.msg = header.info;
       infoIconBlockDom.dispatchEvent(event.createEvent('tooltip-reload'));
     },
-    moreClick(index, e) {
+    moreClick(index, rowData, e) {
+      this.$emit('moreClick', { rowIndex: index, rowData });
       const rect = e.target.getBoundingClientRect();
-      const top = document.documentElement.scrollTop + rect.top;
+      const top = document.documentElement.scrollTop + rect.top + rect.height;
       const windowWidth = window.innerWidth || document.body.clientWidth;
       this.indexOfShowMenu = index;
       this.menuStyle = {
         top: `${top}px`,
-        right: `${windowWidth - rect.right - (rect.width / 2)}px`,
+        right: `${(windowWidth - rect.right) + (rect.width / 2)}px`,
       };
     },
     hideMenu() {
@@ -281,9 +289,11 @@ export default {
       // this.setCheckedData();
       // this.$emit('checkedChange', this.checkedData);
     }
+    window.addEventListener('resize', this.hideMenu);
     document.body.addEventListener('click', this.hideMenu, true);
   },
   beforeDestroy() {
+    window.removeEventListener('resize', this.hideMenu);
     document.body.removeEventListener('click', this.hideMenu, true);
   },
 };
@@ -319,22 +329,20 @@ $table-row-height: 50px;
     }
   }
   .menu {
-    width: 50px;
+    min-width: 90px;
     flex: none;
     display: flex;
     align-items: center;
     justify-content: center;
   }
   .menu-container {
+    padding: 0;
     position: fixed;
   }
   .general-table-body {
     @include auto-overflow-Y();
     @include customScrollbar();
     overflow-x: hidden;
-    tbody {
-      position: relative;
-    }
     .table-body-item {
       display: flex;
       align-items: center;

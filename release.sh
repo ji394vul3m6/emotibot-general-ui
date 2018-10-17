@@ -45,7 +45,7 @@ if ! [[ "$BRANCH" == "development" ]]; then
   exit 1;
 fi
 
-LATEST_TAG=`git tag | sort -u | tail -n 1`;
+LATEST_TAG=`git tag | grep 'v[0-9]\+\.[0-9]\+\.[0-9]\+' | sort -u | tail -n 1`;
 RAW_LOG=`git log ${LATEST_TAG}..HEAD --pretty=tformat:"=====%n%an  %h%n%s%n%n%b %n%n"`;
 BFOP_ISSUES=`echo $RAW_LOG | grep -o "BFOP-[0-9]\+" | paste -sd "," -`;
 OTHER_ISSUES=`echo $RAW_LOG | grep -o "[A-Z]\+-[0-9]\+" | grep -v BFOP | paste -sd "," -`;

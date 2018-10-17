@@ -7,6 +7,7 @@ export default {
       scenario_list: '场景列表',
       ask_delete_confirm: '确认要删除场景：{scenario}',
       publish: '发布',
+      edit: '编辑',
       publish_succeed: '场景发布成功',
       publish_failed: '场景发布失败',
       create_new_scenario_failed: '场景建立失败',
@@ -17,11 +18,12 @@ export default {
       restful: 'RESTful数据调用节点',
       nlu_pc: 'TDE参数收集节点',
       parameter_collecting: '参数收集节点',
+      action: '动作节点',
       dialogue_description: '与使用者进行交互的节点',
       restful_description: '使用RESTful接口调用数据',
       nlu_pc_description: '利用TDE接口收集所需参数的节点',
       parameter_collecting_description: '收集所需参数的节点',
-      router_description: '制定规则专发给其他的节点',
+      action_description: '执行动作的节点',
     },
     parser: {
       none: '无',
@@ -52,6 +54,8 @@ export default {
       new_edge_restful_fail: '当调用失败',
       new_edge_pc_success: '成功取得所有参数',
       new_edge_pc_fail: '连续解析失败超过上限',
+      back_to_scenario_list: '返回',
+      advanced_config: '更多操作',
     },
     node_edit_page: {
       tabs: {
@@ -59,23 +63,30 @@ export default {
         setting: '基本设置',
         edge: '连线',
         params_collecting: '参数设置',
+        action: '动作',
       },
       confirm_to_save_changes: '节点内容已被更动，请问是否需要保存？',
     },
     scenario_settings_edit_pop: {
       scenario_name: '场景名称',
+      err_empty_scenario_name: '场景名称不可为空',
       scenario_dialogue_cnt_limit: '全场景对话数',
+      err_empty_scenario_dialogue_cnt_limit: '全场景对话数不可为空',
       default_node_dialogue_cnt_limit: '预设节点对话数',
+      err_empty_default_node_dialogue_cnt_limit: '预设节点对话数不可为空',
+      confirm_to_save_changes: '场景基本设置已被更动，请问是否需要保存？',
     },
     var_template_edit_pop: {
       instruction: '为每个变量设定显示模版',
       label_key: '键',
       label_template: '模版',
       button_add_template: '＋增加模版',
+      confirm_to_save_changes: '变量模版设置已被更动，请问是否需要保存？',
     },
     global_edge_edit_pop: {
       instruction: '为每个节点增加通用的连线',
       button_add_edge: '＋增加连线',
+      confirm_to_save_changes: '通用连线设置已被更动，请问是否需要保存？',
     },
     trigger_edit_tab: {
       instruction: '设置触发此场景的条件',
@@ -95,6 +106,7 @@ export default {
       target_data: '提取数据 (可多选)：',
       skip_if_exist: '若已提取以下任一数据则跳过出话和数据提取：',
       parse_from_this_node: '限定由此节点提取：',
+      is_weak_end: '设定为弱结束回话',
     },
     params_collecting_tab: {
       button_add_params: '＋增加参数',
@@ -110,6 +122,8 @@ export default {
       succeed_description: '取得所有必要参数',
       failed: '失敗',
       failed_description: '参数连续解析失败',
+      virtual_global_edges: '通用连线',
+      virtual_global_edges_description: '在这个位置插入通用连线',
     },
     edge_edit_tab: {
       instruction: '使用连线连接此节点与其他节点',

@@ -422,48 +422,45 @@ export default {
       };
       const that = this;
 
-      // only in expert mode, also use other filter besides time
-      if (that.expertMode) {
         // keyword
-        if (that.trimmedKeyword) {
-          const escapedKeyword = that.escapeRegExp(that.trimmedKeyword);
-          params.keyword = escapedKeyword;
-        }
+      if (that.trimmedKeyword) {
+        const escapedKeyword = that.escapeRegExp(that.trimmedKeyword);
+        params.keyword = escapedKeyword;
+      }
         // id
-        if (that.trimmedUserID) {
-          params.uid = that.trimmedUserID;
+      if (that.trimmedUserID) {
+        params.uid = that.trimmedUserID;
+      }
+      if (that.emotionFilters.length > 0) {
+        const group = that.getFilterValue(that.emotionOptions, that.emotionFilters);
+        params.emotions = group;
+      }
+      if (that.qtypeFilters.length > 0) {
+        const group = that.getFilterValue(that.qtypesOptions, that.qtypeFilters);
+        if (group.length > 0) {
+          params.question_types = group;
         }
-        if (that.emotionFilters.length > 0) {
-          const group = that.getFilterValue(that.emotionOptions, that.emotionFilters);
-          params.emotions = group;
+      }
+      if (that.platformFilters.length > 0) {
+        const group = that.getFilterValue(that.platformOptions, that.platformFilters);
+        params.platforms = group;
+      }
+      if (that.genderFilters.length > 0) {
+        const group = that.getFilterValue(that.genderOptions, that.genderFilters);
+        if (group.length > 0) {
+          params.genders = group;
         }
-        if (that.qtypeFilters.length > 0) {
-          const group = that.getFilterValue(that.qtypesOptions, that.qtypeFilters);
-          if (group.length > 0) {
-            params.question_types = group;
-          }
+      }
+      if (that.ignoreFilters.length > 0) {
+        const group = that.getFilterValue(that.ignoreOptions, that.ignoreFilters);
+        if (group.length > 0) {
+          params.is_ignored = group.indexOf('ignore') !== -1;
         }
-        if (that.platformFilters.length > 0) {
-          const group = that.getFilterValue(that.platformOptions, that.platformFilters);
-          params.platforms = group;
-        }
-        if (that.genderFilters.length > 0) {
-          const group = that.getFilterValue(that.genderOptions, that.genderFilters);
-          if (group.length > 0) {
-            params.genders = group;
-          }
-        }
-        if (that.ignoreFilters.length > 0) {
-          const group = that.getFilterValue(that.ignoreOptions, that.ignoreFilters);
-          if (group.length > 0) {
-            params.is_ignored = group.indexOf('ignore') !== -1;
-          }
-        }
-        if (that.markFilters.length > 0) {
-          const group = that.getFilterValue(that.markOptions, that.markFilters);
-          if (group.length > 0) {
-            params.is_marked = group.indexOf('marked') !== -1;
-          }
+      }
+      if (that.markFilters.length > 0) {
+        const group = that.getFilterValue(that.markOptions, that.markFilters);
+        if (group.length > 0) {
+          params.is_marked = group.indexOf('marked') !== -1;
         }
       }
       return params;

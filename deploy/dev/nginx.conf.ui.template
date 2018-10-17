@@ -141,7 +141,10 @@ http {
         location /BF/scenario {
             proxy_pass http://${REMOTE_IP};
         }
-        location /BF/login.html {
+        location = /BF/login.html {
+            return 301 http://${SELF_IP}/login.html;
+        }
+        location = /im-admin/login {
             return 301 http://${SELF_IP}/login.html;
         }
         location = /BF_login {

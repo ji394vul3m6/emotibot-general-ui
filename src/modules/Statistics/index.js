@@ -1,4 +1,4 @@
-import AuditLog from './StatisticAudit';
+// import AuditLog from './StatisticAudit';
 // import DailyLog from './StatisticDaily';
 import DailyLog from './StatisticDaily';
 import Analysis from './StatisticAnalysisNew';
@@ -11,6 +11,6 @@ export default {
     Analysis,
     DailyLog,
     // Learning,
-    AuditLog,
+    // AuditLog,
   },
 };

@@ -26,6 +26,7 @@
       :initialActionGroupList="skill.actionGroupList"
       :initialEntityCollectorList="skill.entityCollectorList"
       :initialSkillNameList="initialSkillNameList"
+      :version="version"
       @update="updateActionGroupList"
     ></action-page>
   </keep-alive>
@@ -33,7 +34,7 @@
 </template>
 
 <script>
-import TriggerPage from './TriggerPageV2';
+import TriggerPage from './TriggerPage';
 import EntityCollectingPage from './EntityCollectingPage';
 import ActionPage from './ActionPage';
 import i18nUtils from '../utils/i18nUtil';
@@ -46,6 +47,10 @@ export default {
     'action-page': ActionPage,
   },
   props: {
+    version: {
+      type: String,
+      required: true,
+    },
     currentPage: {
       type: String,
       required: true,
