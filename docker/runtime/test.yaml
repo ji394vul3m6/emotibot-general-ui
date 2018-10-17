@@ -92,16 +92,27 @@ globalEnvVars:
     value: http://${DAL_HOST}:8885/
   - key: "ADMIN_CLUSTERING_TOOL_URL"
     value: http://${CLUSTER_HOST}:13014/
+  - key: "ADMIN_BF_SERVER_URL"
+    value: "127.0.0.1"
+  - key: "ADMIN_IM_SERVER_URL"
+    value: "127.0.0.1"
+  - key: "ADMIN_IM_MSG_KF_URL"
+    value: "127.0.0.1"
+  - key: "ADMIN_IM_WEB_AGENT"
+    value: "127.0.0.1"
+  - key: "ADMIN_STAT_SERVER_URL"
+    value: "127.0.0.1"
+  - key: "ADMIN_ELK_STAT_SERVER_URL"
+    value: "127.0.0.1"
 commandTests:
 # Check Nginx is install properly
   - name: "nginx execute"
-    setup: [["envsubst", "< /etc/nginx.conf.template", "> /etc/nginx.conf"]]
+    setup: [["envsubst", "$$NAMESERVER$$ADMIN_BF_SERVER_URL$$ADMIN_IM_SERVER_URL$$ADMIN_STAT_SERVER_URL$$ADMIN_ELK_STAT_SERVER_URL", "< /etc/nginx/nginx.conf.template", "> /etc/nginx/nginx.conf"]]
     command: "nginx"
     exitCode: 0
-# Check api-server can run
-  - name: "api execute"
-    command: "./entrypoint.sh"
-    expectedOutput: ["0"]
+  - name: "file int"
+    command: "/api/files_init.sh"
+    exitCode: 0
 fileContentTests:
 # Check ui version is recorded as fallowed
   - name: "ui version"
