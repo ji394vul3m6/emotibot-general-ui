@@ -1,9 +1,9 @@
 <template>
 <div id="page-header">
-  <div class="robot-list column click-button" @click="showRobotList" v-if="!showUserInfoPage && enterpriseID !== '' && !showAuditModule">
+  <div class="robot-list column click-button" @click="showRobotList" v-if="enterpriseID !== '' && !showSpecialPage">
     {{ $t('general.robot_list') }}
   </div>
-  <div class="product column click-button" @click="goIMPage" v-if="userInfo.type === 1 && !showAuditModule && imEnable">
+  <div class="product column click-button" @click="goIMPage" v-if="userInfo.type === 1 && imEnable && !showSpecialPage">
     {{ $t('general.im') }}
   </div>
   <div class="empty column"></div>
@@ -95,6 +95,9 @@ export default {
         '/manage/audit-robot',      // 2
       ];
       return auditURL.indexOf(this.$route.path) !== -1;
+    },
+    showSpecialPage() {
+      return this.showAuditModule || this.showUserInfoPage;
     },
   },
   methods: {
