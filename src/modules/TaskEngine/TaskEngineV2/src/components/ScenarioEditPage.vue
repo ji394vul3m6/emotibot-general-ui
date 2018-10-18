@@ -448,6 +448,8 @@ export default {
             globalVars.push(node.content.requests[0].rtn_var_name);
           } else if (node.node_type === 'parameter_collecting') {
             globalVars.push(...scenarioConvertor.getGlobalVarsFromParsers(node.content.parsers));
+          } else if (node.node_type === 'nlu_pc') {
+            globalVars.push(...node.content.entities.map(entity => entity.entityName));
           }
           globalVars = [...new Set(globalVars)];
           const vars = globalVars.map(v => ({
