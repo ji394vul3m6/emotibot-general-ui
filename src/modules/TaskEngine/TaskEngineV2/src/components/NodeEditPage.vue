@@ -301,7 +301,22 @@ export default {
         dummySetting,
         this.extData.globalEdges,
       );
-      const nodeVars = [...new Set(scenarioConvertor.getGlobalVars(edges))];
+      let nodeVars = [...scenarioConvertor.getGlobalVars(edges)];
+      if (this.nodeType === 'restful') {
+        nodeVars.push(nodeResult.restfulSettingTab.rtnVarName);
+      } else if (this.nodeType === 'parameter_collecting') {
+        nodeVars.push(...scenarioConvertor.getGlobalVarsFromParsers(
+          scenarioConvertor.composePCContent(nodeResult.paramsCollectingTab.params).parsers,
+        ));
+      } else if (this.nodeType === 'nlu_pc') {
+        nodeVars.push(...scenarioConvertor.composeNLUPCContent(
+            nodeResult.entityCollectingTab.entityCollectorList,
+            nodeResult.entityCollectingTab.re_parsers,
+            nodeResult.entityCollectingTab.register_json,
+          ).entities.map(entity => entity.entityName),
+        );
+      }
+      nodeVars = [...new Set(nodeVars)];
       const nodeVarsOptions = nodeVars.map(v => ({
         text: nodeResult.nodeName,
         value: v,
