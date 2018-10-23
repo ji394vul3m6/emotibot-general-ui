@@ -92,7 +92,7 @@ http {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-EnterpriseID $enterprise_id;
         add_header X-Frame-Options SAMEORIGIN;
-        add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; frame-src 'self'";
+        add_header Content-Security-Policy "default-src 'self' 'unsafe-inline' 'unsafe-eval' data:";
 
         location /admin {
             # auth_request /auth/v1/appid/validate;

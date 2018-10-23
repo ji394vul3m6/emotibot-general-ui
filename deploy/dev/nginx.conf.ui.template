@@ -64,6 +64,9 @@ http {
         proxy_set_header X-Appid $appid;
         proxy_set_header X-UserID $user_id;
         proxy_set_header X-EnterpriseID $enterprise_id;
+        add_header X-Frame-Options SAMEORIGIN;
+        add_header Content-Security-Policy "default-src 'self' 'unsafe-inline' 'unsafe-eval' data:";        
+
         location /stats {
             proxy_pass http://${REMOTE_IP}:8200;
         }
