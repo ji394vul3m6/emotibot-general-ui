@@ -396,6 +396,7 @@ export default {
         ],
         pattern: '',
       },
+      required: true,
     };
   },
   initialVarTemplate() {

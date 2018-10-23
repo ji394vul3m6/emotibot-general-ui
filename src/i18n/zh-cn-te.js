@@ -110,6 +110,7 @@ export default {
     params_collecting_tab: {
       button_add_params: '＋增加参数',
       parser: '解析器',
+      required: '必要',
       button_add_parser: '＋增加解析器',
       msg: '参数询问文本（询问使用者参数的语句）',
       parse_failed_msg: '解析失败文本（参数解析失败时，回复给使用者的语句）',

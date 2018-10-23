@@ -11,7 +11,7 @@
             {{$t("task_engine_v2.params_collecting_tab.parser")}}
           </div>
           <dropdown-select
-            class="select select-function"
+            class="select row-content"
             :ref="`selectFunction_${index}`"
             :value="[parser.funcName]"
             @input="onSelectFunctionInput(index, $event)"
@@ -40,14 +40,14 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_pattern")}}
             </div>
-            <input class="input-content" v-model="parser.content.pattern" @input="emitUpdate"></input>
+            <input class="row-content input-content" v-model="parser.content.pattern" @input="emitUpdate"></input>
           </div>
           <template v-for="(operation, idx) in parser.content.operations">
             <div class="row">
               <div class="label label-start">
                 {{$t("task_engine_v2.condition_block.label_nth_match")}}
               </div>
-              <input class="input-content" 
+              <input class="row-content input-content" 
                 v-model.number="operation.index"
                 oninput="this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(^[0-9]{1,2}).*/g, '$1');"
                 @input="emitUpdate">
@@ -71,7 +71,7 @@
               <div class="label label-start">
                 {{$t("task_engine_v2.condition_block.label_target_key")}}
               </div>
-              <input class="input-content" 
+              <input class="row-content input-content" 
                 v-model="operation.key"
                 @input="emitUpdate"
               ></input>
@@ -88,7 +88,7 @@
               {{$t("task_engine_v2.condition_block.label_content")}}
             </div>
             <dropdown-select
-              class="select select-target-entity"
+              class="select row-content"
               :ref="`selectTargetEntity_${index}`"
               :multi="true"
               :value="parser.content.tags.split(',')"
@@ -108,7 +108,7 @@
               {{$t("task_engine_v2.condition_block.label_mapping_table")}}
             </div>
             <dropdown-select
-              class="select"
+              class="select row-content"
               :ref="`selectMapTable_${index}`"
               :value="[parser.content.trans]"
               @input="onSelectMapTableInput(index, $event)"
@@ -123,7 +123,7 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_target_key")}}
             </div>
-            <input class="input-content" v-model="parser.content.to_key" @input="emitUpdate"></input>
+            <input class="row-content input-content" v-model="parser.content.to_key" @input="emitUpdate"></input>
           </div>
         </div>
         <!-- 是否判断解析器 -->
@@ -132,7 +132,7 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_target_key")}}
             </div>
-            <input class="input-content" 
+            <input class="row-content input-content" 
               v-model="parser.content.key"
               @input="emitUpdate"
             ></input>
@@ -144,41 +144,53 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_link")}}
             </div>
-            <input class="input-content" v-model="parser.content" @input="emitUpdate"></input>
+            <input class="row-content input-content" v-model="parser.content" @input="emitUpdate"></input>
           </div>
           <div class="row">
-            <div class="label label-tooltip">
+            <div class="label label-start label-tooltip">
               {{$t("task_engine_v2.params_collecting_tab.skip_if_key_exit")}}
               <div class="tooltip_container" v-tooltip="{ msg: $t('task_engine_v2.params_collecting_tab.skip_if_key_exit_info')}">
                 <icon icon-type="info" :enableHover="true" :size=20 />
               </div>
             </div>
-            <input class="input-content"
+            <input class="row-content input-content"
               :value="getWebApiSkipIfKeyExist(index)"
               @input="onInputWebApiSkipIfKeyExist(index, $event.target.value)"
             ></input>
           </div>
         </div>
+        <div class="row">
+          <div class="label label-start">
+            {{$t("task_engine_v2.params_collecting_tab.required")}}
+          </div>
+          <input class="row-content checkbox-content"
+            type="checkbox"
+            :checked="parser.required"
+            @input="onInputRequiredCheckbox(index, $event.target.checked)"
+          ></input>
+        </div>
       </div>
     </template>
-    <div class="row">
-      <div class="label">
-        {{$t("task_engine_v2.params_collecting_tab.msg")}}
+    <div class="msgs" v-if="hasRequiredParser===true">
+      <div class="row">
+        <div class="label">
+          {{$t("task_engine_v2.params_collecting_tab.msg")}}
+        </div>
       </div>
-    </div>
-    <textarea class="text-response"
-      @input="emitUpdate"
-      v-model="msg">
-    </textarea>
-    <div class="row">
-      <div class="label">
-        {{$t("task_engine_v2.params_collecting_tab.parse_failed_msg")}}
+      <textarea class="text-response"
+        @input="emitUpdate"
+        v-model="msg">
+      </textarea>
+      <div class="row">
+        <div class="label">
+          {{$t("task_engine_v2.params_collecting_tab.parse_failed_msg")}}
+        </div>
       </div>
+      <textarea class="text-response"
+        @input="emitUpdate"
+        v-model="parse_failed_msg">
+      </textarea>
     </div>
-    <textarea class="text-response"
-      @input="emitUpdate"
-      v-model="parse_failed_msg">
-    </textarea>
   </div>
 </div>
 </template>
@@ -216,9 +228,11 @@ export default {
         height: '36px',
         'border-radius': '5px',
       },
+      hasRequiredParser: true,
     };
   },
-  computed: {},
+  computed: {
+  },
   watch: {},
   methods: {
     emitUpdate() {
@@ -235,7 +249,24 @@ export default {
       this.msg = param.msg;
       this.parse_failed_msg = param.parse_failed_msg;
       this.parsers = param.parsers;
+
+      // initial required=true if not exist
+      this.parsers.map((parser) => {
+        if (parser.required === undefined) {
+          parser.required = true;
+        }
+        return parser;
+      });
       // console.log(this.initialParam);
+    },
+    renderHasRequiredParser() {
+      let hasRequired = false;
+      this.parsers.forEach((parser) => {
+        if (parser.required === true) {
+          hasRequired = true;
+        }
+      });
+      this.hasRequiredParser = hasRequired;
     },
     deleteParam() {
       this.$emit('deleteParam');
@@ -300,6 +331,11 @@ export default {
       }
       this.emitUpdate();
     },
+    onInputRequiredCheckbox(index, newValue) {
+      this.parsers[index].required = newValue;
+      this.emitUpdate();
+      this.renderHasRequiredParser();
+    },
     entityModuleOptions(parser) {
       const entityModuleOptions = optionConfig.getEntityModuleOptionsMap();
       return entityModuleOptions[parser];
@@ -337,6 +373,7 @@ export default {
   },
   beforeMount() {
     this.renderConditionContent();
+    this.renderHasRequiredParser();
   },
   mounted() {
   },
@@ -394,18 +431,20 @@ export default {
     .label-start{
       width: 84px;
     }
+    .row-content{
+      margin-left: 10px;
+    }
     .select{
       background: white;
-    }
-    .select-function{
-      margin-left: 10px;
     }
     input{
       height: 36px;
     }
     .input-content{
-      margin-left: 10px;
       width: 420px;
+    }
+    .checkbox-content{
+      width: 5px;
     }
     .button{
       background: #57C7D4;
