@@ -520,7 +520,6 @@ export default {
     // insert initial_response
     const initialQ = this.questionTemplste('initial_response');
     initialQ.msg = uiNode.settingTab.initialResponse;
-    initialQ.is_weak_end = uiNode.settingTab.isWeakEnd;
     questions.push(initialQ);
     return {
       questions,
