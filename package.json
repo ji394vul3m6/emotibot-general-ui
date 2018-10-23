@@ -41,6 +41,7 @@
     "vuex": "~3.0.1"
   },
   "devDependencies": {
+    "@kazupon/vue-i18n-loader": "^0.3.0",
     "@storybook/addon-actions": "^3.3.14",
     "@storybook/addon-knobs": "^3.3.14",
     "@storybook/addon-notes": "^3.4.10",
