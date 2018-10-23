@@ -174,7 +174,6 @@ export default {
 
     // parse parseFromThisNode
     tab.parseFromThisNode = node.default_parser_with_suffix;
-    tab.isWeakEnd = false;
     return tab;
   },
   parseEdgeTab(node) {
