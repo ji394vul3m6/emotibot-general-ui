@@ -400,6 +400,7 @@ export default {
       height: 36px;
     }
     .input-content{
+      margin-left: 10px;
       width: 420px;
     }
     .button{
