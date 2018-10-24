@@ -248,10 +248,8 @@ export default {
       const param = JSON.parse(JSON.stringify(this.initialParam));
       this.msg = param.msg;
       this.parse_failed_msg = param.parse_failed_msg;
-      this.parsers = param.parsers;
-
-      // initial required=true if not exist
-      this.parsers.map((parser) => {
+      // set default parser.required to true
+      this.parsers = param.parsers.map((parser) => {
         if (parser.required === undefined) {
           parser.required = true;
         }

@@ -439,45 +439,56 @@ export default {
     content.questions = [];
     params.forEach((param) => {
       const conditionRules = [];
+      const skipIfKeyExistList = [];
       param.parsers.forEach((parser) => {
-        conditionRules.push([{
-          source: 'text',
-          functions: [{
-            content: parser.content,
-            function_name: parser.funcName,
-            skipIfKeyExist: parser.skipIfKeyExist,
-          }],
-        }]);
+        const rule = this.composePCNodeParserRule(parser);
+        conditionRules.push([rule]);
+
+        let required = true;
+        if (parser.required !== undefined) {
+          required = parser.required;
+        }
+        // add the vars to skipIfKeyExistList if their required checkbox is set to true
+        if (required === true) {
+          rule.functions.forEach((func) => {
+            const vars = this.getGlobalVarsFromFunction(func);
+            skipIfKeyExistList.push(...vars);
+          });
+        }
       });
       content.parsers.push({ condition_rules: conditionRules });
-    });
-    params.forEach((param, index) => {
-      const skipIfKeyExist = [];
-      content.parsers[index].condition_rules.forEach((rules) => {
-        rules.forEach((rule) => {
-          let functions = [];
-          if (rule.functions && rule.functions instanceof Array) {
-            functions = rule.functions;
-          }
-          functions.forEach((func) => {
-            const vars = this.getGlobalVarsFromFunction(func);
-            skipIfKeyExist.push(...vars);
-          });
-        });
-      });
-      content.questions.push({
-        msg: param.msg,
-        parse_failed_msg: param.parse_failed_msg,
-        condition_rules: [[{
-          source: 'global_info',
-          functions: [{
-            content: skipIfKeyExist.map(key => ({ key })),
-            function_name: 'not_contain_key',
-          }],
-        }]],
-      });
+      const question = this.composePCNodeQuestion(param, skipIfKeyExistList);
+      content.questions.push(question);
     });
     return content;
+  },
+  composePCNodeParserRule(parser) {
+    const rule = {
+      source: 'text',
+      functions: [{
+        content: parser.content,
+        function_name: parser.funcName,
+      }],
+    };
+    // set skipIfKeyExist if exist
+    if (parser.skipIfKeyExist !== undefined) {
+      rule.functions[0].skipIfKeyExist = parser.skipIfKeyExist;
+    }
+    return rule;
+  },
+  composePCNodeQuestion(param, skipIfKeyExistList) {
+    const question = {
+      msg: param.msg,
+      parse_failed_msg: param.parse_failed_msg,
+      condition_rules: [[{
+        source: 'global_info',
+        functions: [{
+          content: skipIfKeyExistList.map(key => ({ key })),
+          function_name: 'not_contain_key',
+        }],
+      }]],
+    };
+    return question;
   },
   composeNLUPCContent(entityCollectorList, reParsers, registerJson) {
     let entities;
