@@ -1,7 +1,7 @@
 import DropdownMenu from '../components/basic/DropdownMenu';
 
 const MyPlugin = {
-  getPosition(el, alignLeft, optionLength) {
+  getPosition(el, alignLeft, optionLength) {  // eslint-disable-line
     const boundedBox = el.getBoundingClientRect();
     const ret = {
       x: boundedBox.left, // align by left edge
@@ -11,10 +11,10 @@ const MyPlugin = {
       ret.x = boundedBox.right;  // align by right edge
     }
 
-    const dropdownHeight = (optionLength || 0) * 32;
-    if (ret.y + dropdownHeight > window.innerHeight) {
-      ret.y = window.innerHeight - dropdownHeight;
-    }
+    // const dropdownHeight = (optionLength || 0) * 32;
+    // if (ret.y + dropdownHeight > window.innerHeight) {
+    //   ret.y = window.innerHeight - dropdownHeight;
+    // }
     return ret;
   },
   addEventListeners(vm, el, alignLeft) {
@@ -60,18 +60,18 @@ const MyPlugin = {
           vm.$forceUpdate();
 
 
-          el.addEventListener('dropdown-reload', () => {
-            const newPos = that.getPosition(el, binding.value.alignLeft,
-              binding.value.options.length);
+          el.addEventListener('dropdown-reload', ({ detail: value }) => {
+            const newPos = that.getPosition(el, value.alignLeft,
+              value.options.length);
             el.removeChild(vm.$el);
             vm.$destroy();
             vm = new DropdownGenerator({
               propsData: {
                 x: newPos.x,
                 y: newPos.y,
-                options: binding.value.options,
-                width: binding.value.width,
-                alignLeft: binding.value.alignLeft,
+                options: value.options,
+                width: value.width,
+                alignLeft: value.alignLeft,
               },
             });
             vm.$mount();
