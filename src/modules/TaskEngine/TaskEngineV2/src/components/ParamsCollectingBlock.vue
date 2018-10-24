@@ -47,7 +47,11 @@
               <div class="label label-start">
                 {{$t("task_engine_v2.condition_block.label_nth_match")}}
               </div>
-              <input class="input-content" v-model="operation.index" @input="emitUpdate"></input>
+              <input class="input-content" 
+                v-model.number="operation.index"
+                oninput="this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(^[0-9]{1,2}).*/g, '$1');"
+                @input="emitUpdate">
+              </input>
               <button
                 v-if="idx === 0"
                 class="button"
