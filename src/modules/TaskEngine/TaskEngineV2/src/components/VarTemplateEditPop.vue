@@ -1,12 +1,31 @@
+<i18n>
+{
+  "zh-cn": {
+    "task_engine_v2": {
+      "var_template_edit_pop": {
+        "instruction": "为每个变量设定显示模版",
+        "label_key": "键",
+        "err_empty_label_key": "键不可为空",
+        "label_template": "模版",
+        "err_empty_label_template": "模版不可为空",
+        "button_add_template": "＋增加模版",
+        "confirm_to_save_changes": "变量模版设置已被更动，请问是否需要保存？"
+      }
+    }
+  }
+}
+</i18n>
+
 <template lang="html">
 <div id="var-template-edit-pop">
   <div class="instruction block">
     {{$t("task_engine_v2.var_template_edit_pop.instruction")}}
   </div>
   <div class="block-list-container">
-    <draggable v-model="varTemplates" :options="{ghostClass:'ghost'}" @start="drag=true" @end="drag=false">
+    <draggable v-model="varTemplates" :options="{ghostClass:'ghost'}" @start="drag=true;hideTooltip()" @end="drag=false;dropDownReload()">
       <template v-for="(template, index) in varTemplates">
         <div class="block block-template" :key="template.id">
+          {{template.id.substr(1,7)}}
           <div class="button-delete-template">
             <icon icon-type="delete" :enableHover="true" :size=24 @click="deleteTemplate(index)"/>
           </div>
@@ -14,9 +33,9 @@
             <div class="label">
               {{$t("task_engine_v2.var_template_edit_pop.label_key")}}
             </div>
-            <div class="input-template-container" v-dropdown="insertVarDropdown(index)">
+            <div ref="dropdown" class="input-template-container" v-dropdown="insertVarDropdown(index)" :data-id="template.id">
               <input 
-                ref="input_key" 
+                :ref="`input_key_${template.id}`" 
                 class="input-key" 
                 v-model="template.key"
                 v-tooltip="inputKeyTooltip"
@@ -29,7 +48,7 @@
               {{$t("task_engine_v2.var_template_edit_pop.label_template")}}
             </div>
             <input 
-              ref="input_template" 
+              :ref="`input_template_${template.id}`" 
               class="input-template" 
               v-model="template.msg"
               v-tooltip="inputTemplateTooltip"
@@ -66,6 +85,24 @@ export default {
     },
   },
   data() {
+    // render globalEdges
+    const varTemplates = this.extData.varTemplates.map((template) => {
+      const obj = { ...template };
+      obj.id = this.$uuid.v1();
+      obj.isInputKeyTooltipShown = false;
+      obj.isInputTemplateTooltipShown = false;
+      return obj;
+    });
+    const originalVarTemplatesStr =
+      JSON.stringify(this.varTemplates, general.JSONStringifyReplacer);
+
+    // render globalVarOptions
+    const globalVarOptionsMap = this.extData.globalVarOptionsMap;
+    const globalVarOptions = Object.values(globalVarOptionsMap)
+    .reduce((acc, globalVarOption) => {
+      acc.push(...globalVarOption);
+      return acc;
+    }, []);
     return {
       inputKeyTooltip: {
         msg: this.$t('task_engine_v2.var_template_edit_pop.err_empty_label_key'),
@@ -79,48 +116,12 @@ export default {
         errorType: true,
         alignLeft: true,
       },
-      varTemplates: [],
-      originalVarTemplatesStr: '',
-      globalVarOptions: [],
+      varTemplates,
+      originalVarTemplatesStr,
+      globalVarOptions,
     };
   },
-  computed: {},
-  watch: {
-    varTemplates: {
-      handler() {
-        this.varTemplates.forEach((varTemplate, index) => {
-          if (varTemplate.key.trim() !== '') {
-            varTemplate.isInputKeyTooltipShown = false;
-            this.$refs.input_key[index].dispatchEvent(event.createEvent('tooltip-hide'));
-          }
-          if (varTemplate.msg.trim() !== '') {
-            varTemplate.isInputTemplateTooltipShown = false;
-            this.$refs.input_template[index].dispatchEvent(event.createEvent('tooltip-hide'));
-          }
-        });
-      },
-      deep: true,
-    },
-  },
   methods: {
-    renderData() {
-      // render globalEdges
-      const templates = JSON.parse(JSON.stringify(this.extData.varTemplates));
-      this.varTemplates = templates.map((template) => {
-        template.id = this.$uuid.v1();
-        template.isInputKeyTooltipShown = false;
-        template.isInputTemplateTooltipShown = false;
-        return template;
-      });
-      this.originalVarTemplatesStr =
-        JSON.stringify(this.varTemplates, general.JSONStringifyReplacer);
-
-      // render globalVarOptions
-      const globalVarOptionsMap = JSON.parse(JSON.stringify(this.extData.globalVarOptionsMap));
-      Object.values(globalVarOptionsMap).forEach((globalVarOption) => {
-        this.globalVarOptions.push(...globalVarOption);
-      });
-    },
     addTemplate() {
       const template = scenarioInitializer.initialVarTemplate();
       template.id = this.$uuid.v1();
@@ -132,7 +133,7 @@ export default {
     insertVarDropdown(index) {
       const options = this.globalVarOptions.map(option => ({
         text: `${option.text}：${option.value}`,
-        onclick: this.insertVarSelect.bind(this, index, option.value),
+        onclick: () => { this.insertVarSelect(index, option.value); },
       }));
       return {
         options,
@@ -146,16 +147,16 @@ export default {
     },
     validateResult() {
       let isValid = true;
-      this.varTemplates.forEach((varTemplate, index) => {
+      this.varTemplates.forEach((varTemplate) => {
         if (varTemplate.key.trim() === '') {
-          this.$refs.input_key[index].dispatchEvent(event.createEvent('tooltip-reload'));
-          this.$refs.input_key[index].dispatchEvent(event.createEvent('tooltip-show'));
+          const input = this.$refs[`input_key_${varTemplate.id}`][0];
+          input.dispatchEvent(event.createEvent('tooltip-show'));
           varTemplate.isInputKeyTooltipShown = true;
           isValid = false;
         }
         if (varTemplate.msg.trim() === '') {
-          this.$refs.input_template[index].dispatchEvent(event.createEvent('tooltip-reload'));
-          this.$refs.input_template[index].dispatchEvent(event.createEvent('tooltip-show'));
+          const input = this.$refs[`input_template_${varTemplate.id}`];
+          input.dispatchEvent(event.createEvent('tooltip-show'));
           varTemplate.isInputTemplateTooltipShown = true;
           isValid = false;
         }
@@ -207,13 +208,40 @@ export default {
         });
       }
     },
-  },
-  beforeMount() {
-    this.renderData();
+    hideTooltip() {
+      this.varTemplates.forEach((varTemplate) => {
+        const inputKey = this.$refs[`input_key_${varTemplate.id}`][0];
+        const inputTemplate = this.$refs[`input_template_${varTemplate.id}`][0];
+        varTemplate.isInputKeyTooltipShown = false;
+        inputKey.dispatchEvent(event.createEvent('tooltip-hide'));
+        varTemplate.isInputTemplateTooltipShown = false;
+        inputTemplate.dispatchEvent(event.createEvent('tooltip-hide'));
+      });
+    },
+    dropDownReload() {
+      this.$refs.dropdown.forEach((el) => {
+        const index = this.varTemplates.findIndex(varTemplate => varTemplate.id === el.dataset.id);
+        el.dispatchEvent(event.createCustomEvent('dropdown-reload', this.insertVarDropdown(index)));
+      });
+    },
   },
   mounted() {
     this.$on('validate', this.validate);
     this.$on('cancelValidate', this.cancelValidate);
+  },
+  updated() {
+    this.varTemplates.forEach((varTemplate) => {
+      const inputKey = this.$refs[`input_key_${varTemplate.id}`][0];
+      const inputTemplate = this.$refs[`input_template_${varTemplate.id}`][0];
+      if (varTemplate.key.trim() !== '') {
+        varTemplate.isInputKeyTooltipShown = false;
+        inputKey.dispatchEvent(event.createEvent('tooltip-hide'));
+      }
+      if (varTemplate.msg.trim() !== '') {
+        varTemplate.isInputTemplateTooltipShown = false;
+        inputTemplate.dispatchEvent(event.createEvent('tooltip-hide'));
+      }
+    });
   },
 };
 </script>
