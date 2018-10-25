@@ -1,17 +1,13 @@
 <i18n>
 {
   "zh-cn": {
-    "task_engine_v2": {
-      "var_template_edit_pop": {
-        "instruction": "为每个变量设定显示模版",
-        "label_key": "键",
-        "err_empty_label_key": "键不可为空",
-        "label_template": "模版",
-        "err_empty_label_template": "模版不可为空",
-        "button_add_template": "＋增加模版",
-        "confirm_to_save_changes": "变量模版设置已被更动，请问是否需要保存？"
-      }
-    }
+    "instruction": "为每个变量设定显示模版",
+    "label_key": "键",
+    "err_empty_label_key": "键不可为空",
+    "label_template": "模版",
+    "err_empty_label_template": "模版不可为空",
+    "button_add_template": "＋增加模版",
+    "confirm_to_save_changes": "变量模版设置已被更动，请问是否需要保存？"
   }
 }
 </i18n>
@@ -19,7 +15,7 @@
 <template lang="html">
 <div id="var-template-edit-pop">
   <div class="instruction block">
-    {{$t("task_engine_v2.var_template_edit_pop.instruction")}}
+    {{$t("instruction")}}
   </div>
   <div class="block-list-container">
     <draggable v-model="varTemplates" :options="{ghostClass:'ghost'}" @start="dragStart" @end="dragEnd">
@@ -30,7 +26,7 @@
           </div>
           <div class="row">
             <div class="label">
-              {{$t("task_engine_v2.var_template_edit_pop.label_key")}}
+              {{$t("label_key")}}
             </div>
             <div ref="dropdown" class="input-template-container" v-dropdown="insertVarDropdown(index)" :data-id="template.id">
               <input 
@@ -43,7 +39,7 @@
           </div>
           <div class="row">
             <div class="label">
-              {{$t("task_engine_v2.var_template_edit_pop.label_template")}}
+              {{$t("label_template")}}
             </div>
             <input 
               :ref="`input_template_${template.id}`" 
@@ -58,7 +54,7 @@
     <button
       class="button-add-template"
       @click="addTemplate()">
-      {{$t("task_engine_v2.var_template_edit_pop.button_add_template")}}
+      {{$t("button_add_template")}}
     </button>
   </div>
 </div>
@@ -102,13 +98,13 @@ export default {
     }, []);
     return {
       inputKeyTooltip: {
-        msg: this.$t('task_engine_v2.var_template_edit_pop.err_empty_label_key'),
+        msg: this.$t('err_empty_label_key'),
         eventOnly: true,
         errorType: true,
         alignLeft: true,
       },
       inputTemplateTooltip: {
-        msg: this.$t('task_engine_v2.var_template_edit_pop.err_empty_label_template'),
+        msg: this.$t('err_empty_label_template'),
         eventOnly: true,
         errorType: true,
         alignLeft: true,
@@ -185,7 +181,7 @@ export default {
         that.$popCheck({
           bindValue: true,
           data: {
-            msg: that.$t('task_engine_v2.var_template_edit_pop.confirm_to_save_changes'),
+            msg: that.$t('confirm_to_save_changes'),
           },
           callback: {
             ok() {

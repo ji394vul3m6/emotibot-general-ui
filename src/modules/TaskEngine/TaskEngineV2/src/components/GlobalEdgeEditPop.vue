@@ -1,8 +1,16 @@
+<i18n>
+{
+  "zh-cn": {
+    "instruction": "为每个节点增加通用的连线",
+    "button_add_edge": "＋增加连线",
+    "confirm_to_save_changes": "通用连线设置已被更动，请问是否需要保存？"
+  }
+}
+</i18n>
+
 <template lang="html">
 <div id="global-edge-edit-pop">
-  <div class="instruction block">
-    {{$t("task_engine_v2.global_edge_edit_pop.instruction")}}
-  </div>
+  <div class="instruction block" v-t="'instruction'"></div>
   <div class="block-list-container">
     <draggable v-model="globalEdges" :options="{ghostClass:'ghost'}" @start="drag=true" @end="drag=false">
       <template v-for="(edge, index) in globalEdges">
@@ -24,7 +32,7 @@
   <button
     class="button-add-edge"
     @click="addEdge()">
-    {{$t("task_engine_v2.global_edge_edit_pop.button_add_edge")}}
+    {{$t("button_add_edge")}}
   </button>
 </div>
 </template>
@@ -40,7 +48,7 @@ export default {
   name: 'global-edge-edit-pop',
   components: {
     draggable,
-    'condition-block': ConditionBlock,
+    ConditionBlock,
   },
   props: {
     extData: {
@@ -178,7 +186,7 @@ export default {
         that.$popCheck({
           bindValue: true,
           data: {
-            msg: that.$t('task_engine_v2.global_edge_edit_pop.confirm_to_save_changes'),
+            msg: that.$t('confirm_to_save_changes'),
           },
           callback: {
             ok() {
