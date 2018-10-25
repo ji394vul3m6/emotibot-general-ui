@@ -22,10 +22,9 @@
     {{$t("task_engine_v2.var_template_edit_pop.instruction")}}
   </div>
   <div class="block-list-container">
-    <draggable v-model="varTemplates" :options="{ghostClass:'ghost'}" @start="drag=true;hideTooltip()" @end="drag=false;dropDownReload()">
+    <draggable v-model="varTemplates" :options="{ghostClass:'ghost'}" @start="dragStart" @end="dragEnd">
       <template v-for="(template, index) in varTemplates">
-        <div class="block block-template" :key="template.id">
-          {{template.id.substr(1,7)}}
+        <div class="block" :key="template.id" :class="{'block-template': true}">
           <div class="button-delete-template">
             <icon icon-type="delete" :enableHover="true" :size=24 @click="deleteTemplate(index)"/>
           </div>
@@ -39,8 +38,7 @@
                 class="input-key" 
                 v-model="template.key"
                 v-tooltip="inputKeyTooltip"
-                :class="{'error': template.isInputKeyTooltipShown}"
-              ></input>
+                :class="{'error': template.isInputKeyTooltipShown}"/>
             </div>
           </div>
           <div class="row">
@@ -52,8 +50,7 @@
               class="input-template" 
               v-model="template.msg"
               v-tooltip="inputTemplateTooltip"
-              :class="{'error': template.isInputTemplateTooltipShown}"
-            ></input>
+              :class="{'error': template.isInputTemplateTooltipShown}"/>
           </div>
         </div>
       </template>
@@ -119,6 +116,7 @@ export default {
       varTemplates,
       originalVarTemplatesStr,
       globalVarOptions,
+      valid: false,
     };
   },
   methods: {
@@ -208,21 +206,18 @@ export default {
         });
       }
     },
-    hideTooltip() {
-      this.varTemplates.forEach((varTemplate) => {
-        const inputKey = this.$refs[`input_key_${varTemplate.id}`][0];
-        const inputTemplate = this.$refs[`input_template_${varTemplate.id}`][0];
-        varTemplate.isInputKeyTooltipShown = false;
-        inputKey.dispatchEvent(event.createEvent('tooltip-hide'));
-        varTemplate.isInputTemplateTooltipShown = false;
-        inputTemplate.dispatchEvent(event.createEvent('tooltip-hide'));
-      });
-    },
     dropDownReload() {
       this.$refs.dropdown.forEach((el) => {
         const index = this.varTemplates.findIndex(varTemplate => varTemplate.id === el.dataset.id);
         el.dispatchEvent(event.createCustomEvent('dropdown-reload', this.insertVarDropdown(index)));
       });
+    },
+    dragStart() {
+      this.drag = true;
+    },
+    dragEnd() {
+      this.drag = false;
+      this.dropDownReload();
     },
   },
   mounted() {
