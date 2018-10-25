@@ -173,8 +173,11 @@
     </template>
     <div class="msgs" v-if="hasRequiredParser===true">
       <div class="row">
-        <div class="label">
+        <div class="label label-tooltip">
           {{$t("task_engine_v2.params_collecting_tab.msg")}}
+          <div class="tooltip_container" v-tooltip="{ msg: $t('task_engine_v2.params_collecting_tab.msg_description')}">
+            <icon icon-type="info" :enableHover="true" :size=20 />
+          </div>
         </div>
       </div>
       <textarea class="text-response"
@@ -273,6 +276,7 @@ export default {
       const parser = scenarioInitializer.initialParser();
       parser.id = this.$uuid.v1();
       this.parsers.push(parser);
+      this.renderHasRequiredParser();
       this.emitUpdate();
     },
     deleteParser(index) {
@@ -331,8 +335,8 @@ export default {
     },
     onInputRequiredCheckbox(index, newValue) {
       this.parsers[index].required = newValue;
-      this.emitUpdate();
       this.renderHasRequiredParser();
+      this.emitUpdate();
     },
     entityModuleOptions(parser) {
       const entityModuleOptions = optionConfig.getEntityModuleOptionsMap();
