@@ -60,7 +60,7 @@ const MyPlugin = {
           vm.$forceUpdate();
 
 
-          el.addEventListener('dropdown-reload', ({ detail: value }) => {
+          el.addEventListener('dropdown-reload', ({ detail: value = binding.value }) => {
             const newPos = that.getPosition(el, value.alignLeft,
               value.options.length);
             el.removeChild(vm.$el);
