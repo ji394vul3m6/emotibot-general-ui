@@ -13,10 +13,10 @@
         autocomplete="off">
       </div>
       <div class="input-row captcha-row" v-if="useCaptcha">
+        <img :src="captchaSrc">
         <input ref="captcha" type="text" v-model="input.captcha"
         :placeholder="$t('login.captcha_place')"
         autocomplete="off">
-        <img :src="captchaSrc">
       </div>
       <div class="input-button-row">
         <loading-button main fill @click="submit" ref="btn">
@@ -204,12 +204,13 @@ div {
     }
     .input-row {
       flex: 0 0 28px;
-        border: solid 1px $color-borderline;
+      border: solid 1px $color-borderline;
+      border-radius: 2px;
 
       display: flex;
       align-items: stretch;
       justify-content: stretch;
-      margin-bottom: 26px;
+      margin-bottom: 10px;
       input {
         text-align: center;
         font-size: 14px;
@@ -230,15 +231,19 @@ div {
         justify-content: space-between;
         input {
           border: solid 1px $color-borderline;
-          width: calc(50% - 5px);
+          border-radius: 2px;
+          width: calc(50% - 4px);
         }
         img {
           width: 50%;
+          border: solid 1px $color-borderline;
+          border-radius: 2px;
         }
       }
     }
     .input-button-row {
       flex: 0 0 auto;
+      margin-top: 10px;
       margin-bottom: 15px;
 
       display: flex;
