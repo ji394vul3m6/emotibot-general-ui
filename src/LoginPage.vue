@@ -12,6 +12,12 @@
         :placeholder="$t('login.password_place')" @keydown="passwordKey"
         autocomplete="off">
       </div>
+      <div class="input-row captcha-row" v-if="useCaptcha">
+        <img :src="captchaSrc">
+        <input ref="captcha" type="text" v-model="input.captcha"
+        :placeholder="$t('login.captcha_place')"
+        autocomplete="off">
+      </div>
       <div class="input-button-row">
         <loading-button main fill @click="submit" ref="btn">
           <template slot="init">{{ $t('login.login') }}</template>
@@ -29,6 +35,7 @@
 <script>
 import Icon from './components/basic/Icon';
 import LoadingButton from './components/basic/LoadingButton';
+import api from './api/system';
 
 export default {
   name: 'login',
@@ -36,6 +43,7 @@ export default {
     icon: Icon,
     LoadingButton,
   },
+  api,
   data() {
     return {
       input: {
@@ -45,6 +53,8 @@ export default {
       hasError: false,
       i18n: {},
       redirect: '',
+      useCaptcha: false,
+      captchaSrc: '',
     };
   },
   methods: {
@@ -63,7 +73,6 @@ export default {
       }
       that.$refs.btn.$emit('loading');
       that.$login(that.input).then((result) => {
-        console.log(result);
         if (result.authV2 === undefined) {
           return;
         }
@@ -80,16 +89,25 @@ export default {
         } else {
           window.location = '/#/manage/robot-manage';
         }
+
         // if (that.redirect && that.redirect !== '') {
         //   window.location = `/#${that.redirect}`;
         // } else {
         //
         // }
       }, (err) => {
-        that.$notify({ text: '登录失败', type: 'fail' });
-        that.$refs.user.focus();
+        if (err.response.status === 400 && that.useCaptcha) {
+          that.$notify({ text: '验证码错误', type: 'fail' });
+          if (that.$refs.captcha) {
+            that.$refs.captcha.focus();
+          }
+        } else {
+          that.$notify({ text: '登录失败', type: 'fail' });
+          that.$refs.user.focus();
+        }
+      })
+      .finally(() => {
         that.$refs.btn.$emit('reset');
-        console.log(err);
       });
     },
     passwordKey(e) {
@@ -113,6 +131,18 @@ export default {
     if (Object.keys(queryMap).indexOf('redirect') >= 0) {
       that.redirect = decodeURIComponent(queryMap.redirect);
     }
+    that.$api.getEnv().then((env) => {
+      if (env.USE_CAPTCHA) {
+        that.useCaptcha = true;
+        return that.$api.getCaptcha().then((rsp) => {
+          that.captchaSrc = rsp.data;
+          that.input.captchaID = rsp.id;
+        });
+      }
+      return new Promise((r) => {
+        setTimeout(r(), 0);
+      });
+    });
   },
 };
 </script>
@@ -174,13 +204,15 @@ div {
     }
     .input-row {
       flex: 0 0 28px;
-      border: solid 1px #666666;
+      border: solid 1px $color-borderline;
+      border-radius: 2px;
 
       display: flex;
       align-items: stretch;
       justify-content: stretch;
-      margin-bottom: 26px;
+      margin-bottom: 10px;
       input {
+        text-align: center;
         font-size: 14px;
         line-height: 16px;
         box-sizing: border-box;
@@ -190,14 +222,28 @@ div {
         outline: none;
         border: none;
         background: none;
-        border: solid 1px $color-borderline;
         &::placeholder {
           color: #999999;
+        }
+      }
+      &.captcha-row {
+        border: none;
+        justify-content: space-between;
+        input {
+          border: solid 1px $color-borderline;
+          border-radius: 2px;
+          width: calc(50% - 4px);
+        }
+        img {
+          width: 50%;
+          border: solid 1px $color-borderline;
+          border-radius: 2px;
         }
       }
     }
     .input-button-row {
       flex: 0 0 auto;
+      margin-top: 10px;
       margin-bottom: 15px;
 
       display: flex;

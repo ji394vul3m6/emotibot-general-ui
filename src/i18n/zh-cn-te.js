@@ -94,7 +94,6 @@ export default {
       target_data: '提取数据 (可多选)：',
       skip_if_exist: '若已提取以下任一数据则跳过出话和数据提取：',
       parse_from_this_node: '限定由此节点提取：',
-      is_weak_end: '设定为弱结束回话',
     },
     params_collecting_tab: {
       button_add_params: '＋增加参数',

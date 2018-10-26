@@ -10,6 +10,7 @@ import messages from './i18n';
 import CustomNotification from './plugins/CustomNotification';
 import request from './plugins/request';
 import auth from './plugins/auth';
+import api from './plugins/api';
 import './plugins/Polyfill';
 
 Vue.use(VueCookie);
@@ -17,6 +18,7 @@ Vue.use(VueI18n);
 Vue.use(CustomNotification);
 Vue.use(request);
 Vue.use(auth);
+Vue.use(api);
 
 const i18n = new VueI18n({
   locale: 'zh-cn',

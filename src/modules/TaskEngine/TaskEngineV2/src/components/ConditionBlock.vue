@@ -279,7 +279,20 @@
             <div class="label label-start">
               {{$t("condition_block.label_value")}}
             </div>
-            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].val">
+            <input v-if="rule.content[0].compare === '>'  ||
+                         rule.content[0].compare === '>=' ||
+                         rule.content[0].compare === '<'  ||
+                         rule.content[0].compare === '<=' "
+              ref="input-content" 
+              v-tooltip="inputTooltip"
+              class="input-content"
+              oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+              v-model="rule.content[0].val"
+            >
+            <input v-else
+              class="input-content"
+              v-model="rule.content[0].val"
+            >
           </div>
         </div>
         <!-- 键键匹配 -->

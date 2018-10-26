@@ -5,10 +5,40 @@ export default {
     const entryNodeId = this.guid_sort();
     const scenario = {
       editingContent: {
+        version: '1.1',
         metadata: JSON.parse(JSON.stringify(metadata)),
         setting: {
           sys_scenario_dialogue_cnt_limit: 30,
           sys_node_dialogue_cnt_limit: 3,
+        },
+        ui_data: {
+          nodes: [
+            {
+              triggerTab: {
+                rules: [],
+              },
+              nodeType: 'entry',
+              nodeName: '入口节点',
+              warnings: [
+                {
+                  type: 'missing_entry_trigger',
+                },
+                {
+                  type: 'missing_outbound_connection',
+                },
+              ],
+              nodeId: entryNodeId,
+              edgeTab: {
+                dialogueLimit: 3,
+                elseInto: null,
+                normalEdges: [],
+              },
+              settingBasicTab: {
+                nodeType: 'entry',
+                nodeName: '入口节点',
+              },
+            },
+          ],
         },
         nodes: [
           {
