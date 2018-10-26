@@ -1,3 +1,11 @@
+<i18n>
+{
+  "zh-cn": {
+    "err_empty": "不可为空"
+  }
+}
+</i18n>
+
 <template lang="html">
 <div id="condition-block">
   <div
@@ -56,7 +64,7 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_content")}}
             </div>
-            <input class="input-content" v-model="rule.content"></input>
+            <input ref="input-content" class="input-content" v-model="rule.content" v-tooltip="inputTooltip"></input>
           </div>
         </div>
         <!-- 正则表示式 -->
@@ -65,14 +73,14 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_pattern")}}
             </div>
-            <input class="input-content" v-model="rule.content.pattern"></input>
+            <input ref="input-content" class="input-content" v-model="rule.content.pattern" v-tooltip="inputTooltip"></input>
           </div>
           <template v-for="(operation, idx) in rule.content.operations">
             <div class="row">
               <div class="label label-start">
                 {{$t("task_engine_v2.condition_block.label_nth_match")}}
               </div>
-              <input class="input-content"
+              <input class="input-content" ref="input-content" v-tooltip="inputTooltip"
                 oninput="this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(^[0-9]{1,2}).*/g, '$1');"
                 v-model.number="operation.index">
               </input>
@@ -95,7 +103,7 @@
               <div class="label label-start">
                 {{$t("task_engine_v2.condition_block.label_target_key")}}
               </div>
-              <input class="input-content" v-model="operation.key"></input>
+              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="operation.key"></input>
             </div>
           </template>
         </div>
@@ -146,7 +154,7 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_target_key")}}
             </div>
-            <input class="input-content" v-model="rule.content.to_key"></input>
+            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.to_key"></input>
           </div>
         </div>
         <!-- 是否判断解析器 -->
@@ -155,7 +163,7 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_target_key")}}
             </div>
-            <input class="input-content" v-model="rule.content.key"></input>
+            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.key"></input>
           </div>
         </div>
         <!-- Web API 调用 -->
@@ -164,7 +172,7 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_link")}}
             </div>
-            <input class="input-content" v-model="rule.content"></input>
+            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content"></input>
           </div>
         </div>
         <!-- 键值匹配 -->
@@ -189,14 +197,14 @@
               {{$t("task_engine_v2.condition_block.label_key")}}
             </div>
             <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key')">
-              <input class="input-content" v-model="rule.content[0].key">
+              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key">
             </div>
           </div>
           <div class="row">
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_value")}}
             </div>
-            <input class="input-content" v-model="rule.content[0].val">
+            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].val">
           </div>
         </div>
         <!-- 键键匹配 -->
@@ -221,14 +229,14 @@
               {{$t("task_engine_v2.condition_block.label_key")}}
             </div>
             <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key1')">
-              <input class="input-content" v-model="rule.content[0].key1">
+              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key1">
             </div>
           </div>
           <div class="row">
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_key")}}
             </div>
-            <input class="input-content" v-model="rule.content[0].key2"></input>
+            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key2"></input>
           </div>
         </div>
         <!-- 包含键 -->
@@ -238,7 +246,7 @@
               {{$t("task_engine_v2.condition_block.label_content")}}
             </div>
             <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key')">
-              <input class="input-content" v-model="rule.content[0].key" :key="rule.funcName">
+              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key" :key="rule.funcName">
             </div>
           </div>
         </div>
@@ -249,7 +257,7 @@
               {{$t("task_engine_v2.condition_block.label_content")}}
             </div>
             <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key')">
-              <input class="input-content" v-model="rule.content[0].key" :key="rule.funcName">
+              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key" :key="rule.funcName">
             </div>
           </div>
         </div>
@@ -275,14 +283,14 @@
               {{$t("task_engine_v2.condition_block.label_key")}}
             </div>
             <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key')">
-              <input class="input-content" v-model="rule.content[0].key">
+              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key">
             </div>
           </div>
           <div class="row">
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_value")}}
             </div>
-            <input class="input-content"
+            <input class="input-content" ref="input-content" v-tooltip="inputTooltip"
               oninput="this.value = this.value.replace(/[^0-9]/g, '');"
               v-model="rule.content[0].val">
             </input>
@@ -328,14 +336,14 @@
               {{$t("task_engine_v2.condition_block.label_source_key")}}
             </div>
             <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content, 'from_key')">
-              <input class="input-content" v-model="rule.content.from_key">
+              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.from_key">
             </div>
           </div>
           <div class="row">
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_target_key")}}
             </div>
-            <input class="input-content" v-model="rule.content.to_key"></input>
+            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.to_key"></input>
           </div>
         </div>
         <!-- 正则表示式 -->
@@ -344,14 +352,14 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_pattern")}}
             </div>
-            <input class="input-content" v-model="rule.content.pattern"></input>
+            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.pattern"></input>
           </div>
           <div class="row">
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_source_key")}}
             </div>
             <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content, 'from_key')">
-              <input class="input-content" v-model="rule.content.from_key">
+              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.from_key">
             </div>
           </div>
           <template v-for="(operation, idx) in rule.content.operations">
@@ -360,7 +368,7 @@
                 <div class="label label-start">
                   {{$t("task_engine_v2.condition_block.label_nth_match")}}
                 </div>
-                <input class="input-content"
+                <input class="input-content" ref="input-content" v-tooltip="inputTooltip"
                   oninput="this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(^[0-9]{1,2}).*/g, '$1');"
                   v-model.number="operation.index"
                 >
@@ -383,7 +391,7 @@
                 <div class="label label-start">
                   {{$t("task_engine_v2.condition_block.label_target_key")}}
                 </div>
-                <input class="input-content" v-model="operation.key">
+                <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="operation.key">
               </div>
             </div>
           </template>
@@ -395,14 +403,14 @@
               {{$t("task_engine_v2.condition_block.label_key")}}
             </div>
             <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key')">
-              <input class="input-content" v-model="rule.content[0].key">
+              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key">
             </div>
           </div>
           <div class="row">
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_value")}}
             </div>
-            <input class="input-content" v-model="rule.content[0].val"></input>
+            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].val"></input>
           </div>
         </div>
         <!-- 语句解析数据提取 -->
@@ -429,7 +437,7 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_content")}}
             </div>
-            <input class="input-content" v-model="rule.content"></input>
+            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content"></input>
           </div>
         </div>
       </div>
@@ -484,14 +492,14 @@
         <div class="label label-start">
           {{$t("task_engine_v2.condition_block.label_similarity_threshold")}}
         </div>
-        <input class="input-content" v-model="threshold"></input>
+        <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="threshold"></input>
       </div>
       <template v-for="(edge, index) in candidateEdges">
         <div class="row">
           <div class="label label-start">
             {{$t("task_engine_v2.condition_block.label_sentence")}}
           </div>
-          <input class="input-content" v-model="edge.tar_text"></input>
+          <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="edge.tar_text"></input>
           <button
             v-if="index===0"
             class="button"
@@ -562,7 +570,7 @@
       <div class="label label-margin-left">
         {{$t("task_engine_v2.params_collecting_edge_tab.failed_description")}}
       </div>
-      <input class="input-limit" v-model="dialogueLimit"></input>
+      <input ref="input-content" v-tooltip="inputTooltip" class="input-limit" v-model="dialogueLimit"></input>
       <div class="label">
         {{$t("task_engine_v2.edge_edit_tab.label_time")}}
       </div>
@@ -630,8 +638,12 @@ export default {
       required: true,
     },
     initialDialogueLimit: {
-      tyep: Number,
+      type: Number,
       required: false,
+    },
+    showTooltip: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -655,6 +667,12 @@ export default {
       funcOptionMap: [],
       dialogueLimit: 3,
       varDropdownMap: {},
+      inputTooltip: {
+        msg: this.$t('err_empty'),
+        eventOnly: true,
+        errorType: true,
+        alignLeft: true,
+      },
     };
   },
   computed: {},
@@ -697,6 +715,16 @@ export default {
           }
         });
       },
+    },
+    showTooltip(newV, oldV) {
+      if (newV && !oldV) {
+        this.$refs['input-content'].forEach((el) => {
+          if (!el.value) {
+            el.dispatchEvent(event.createEvent('tooltip-show'));
+          }
+        });
+        this.$emit('hideShowTooltip');
+      }
     },
   },
   methods: {

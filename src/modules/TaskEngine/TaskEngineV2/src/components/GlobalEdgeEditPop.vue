@@ -3,7 +3,9 @@
   "zh-cn": {
     "instruction": "为每个节点增加通用的连线",
     "button_add_edge": "＋增加连线",
-    "confirm_to_save_changes": "通用连线设置已被更动，请问是否需要保存？"
+    "confirm_to_save_changes": "通用连线设置已被更动，请问是否需要保存？",
+    "add_new_dialogue_node": "新增对话节点",
+    "dialogue": "对话节点"
   }
 }
 </i18n>
@@ -22,9 +24,11 @@
           :toNodeOptions="toNodeOptions"
           :globalVarOptions="globalVarOptions"
           :mapTableOptions="mapTableOptions"
+          :showTooltip="showTooltip"
           @update="updateEdge(index, $event)"
           @deleteEdge="deleteEdge(index)"
-          @addNewDialogueNode="addNewDialogueNode">
+          @addNewDialogueNode="addNewDialogueNode"
+          @hideShowTooltip="showTooltip = false">
         </condition-block>
       </template>
     </draggable>
@@ -57,43 +61,49 @@ export default {
     },
   },
   data() {
+    // render globalEdges
+    const globalEdges = this.extData.globalEdges.map((edge) => {
+      const obj = { ...edge };
+      obj.id = this.$uuid.v1();
+      obj.valid = false;
+      return obj;
+    });
+    const originalGlobalEdgesStr =
+      JSON.stringify(globalEdges, general.JSONStringifyReplacer);
+
+    // render toNodeOptions
+    const toNodeOptions = [
+      this.addNewDialogueNodeEdge,
+      this.doNothingEdge,
+      this.exitEdge,
+    ].concat(this.extData.toNodeOptions);
+
+    // render globalVarOptions
+    const globalVarOptionsMap = this.extData.globalVarOptionsMap;
+    const globalVarOptions = Object.values(globalVarOptionsMap)
+    .reduce((acc, globalVarOption) => {
+      acc.push(...globalVarOption);
+      return acc;
+    }, []);
     return {
       nodeId: '',
-      originalGlobalEdgesStr: '',
-      globalEdges: [],
-      toNodeOptions: [],
-      globalVarOptions: [],
+      originalGlobalEdgesStr,
+      globalEdges,
+      toNodeOptions,
+      globalVarOptions,
       mapTableOptions: [],
-      newNodeOptions: undefined,
+      newNodeOptions: [],
+      showTooltip: false,
     };
   },
-  computed: {
-    doNothingEdge() {
-      return { text: 'do nothing', value: null };
-    },
-    exitEdge() {
-      return { text: 'Exit (ID: 0)', value: '0' };
-    },
-    addNewDialogueNodeEdge() {
-      return {
-        text: this.$t('task_engine_v2.to_node_option.add_new_dialogue_node'),
-        value: 'add_new_dialogue_node',
-        isButton: true,
-      };
-    },
-  },
-  watch: {},
   methods: {
     addNewDialogueNode(newNodeID) {
-      if (this.newNodeOptions === undefined) {
-        this.newNodeOptions = [];
-      }
       const nodeNames = [
         ...window.moduleData.ui_data.nodes.map(node => node.nodeName),
         ...this.newNodeOptions.map(option => option.nodeName),
       ];
       const newNodeName = general.suffixIndexToNodeName(
-                            this.$t('task_engine_v2.node_type.dialogue'),
+                            this.$t('dialogue'),
                             nodeNames,
                           );
       this.newNodeOptions.push({
@@ -118,26 +128,6 @@ export default {
         this.doNothingEdge,
         this.exitEdge,
       ].concat(options);
-    },
-    renderData() {
-      // render globalEdges
-      const edges = JSON.parse(JSON.stringify(this.extData.globalEdges));
-      this.globalEdges = edges.map((edge) => {
-        edge.id = this.$uuid.v1();
-        return edge;
-      });
-      this.originalGlobalEdgesStr =
-        JSON.stringify(this.globalEdges, general.JSONStringifyReplacer);
-
-      // render toNodeOptions
-      this.composeOptions(this.extData.toNodeOptions);
-
-      // render globalVarOptions
-      const globalVarOptionsMap = JSON.parse(JSON.stringify(this.extData.globalVarOptionsMap));
-      this.globalVarOptions = [];
-      Object.values(globalVarOptionsMap).forEach((globalVarOption) => {
-        this.globalVarOptions.push(...globalVarOption);
-      });
     },
     addEdge() {
       const edge = scenarioInitializer.initialEdge();
@@ -164,16 +154,23 @@ export default {
       });
     },
     validate() {
-      const edges = this.globalEdges.map(edge => ({
-        edge_type: edge.edge_type,
-        to_node_id: edge.to_node_id,
-        condition_rules: edge.condition_rules,
-        actions: [],
-      }));
-      this.$emit(
-        'validateSuccess',
-        { edges, newNodeOptions: this.newNodeOptions },
-      );
+      this.showTooltip = true;
+      let valid = true;
+      const edges = this.globalEdges.map((edge) => {
+        if (!edge.valid) valid = false;
+        return {
+          edge_type: edge.edge_type,
+          to_node_id: edge.to_node_id,
+          condition_rules: edge.condition_rules,
+          actions: [],
+        };
+      });
+      if (valid) {
+        this.$emit(
+          'validateSuccess',
+          { edges, newNodeOptions: this.newNodeOptions },
+        );
+      }
     },
     cancelValidate() {
       const newGlobalEdgesStr = JSON.stringify(this.globalEdges, general.JSONStringifyReplacer);
@@ -209,11 +206,17 @@ export default {
       }
     },
   },
-  beforeMount() {
-    this.loadMappingTableOptions();
-    this.renderData();
+  beforeCreate() {
+    this.doNothingEdge = { text: 'do nothing', value: null };
+    this.exitEdge = { text: 'Exit (ID: 0)', value: '0' };
+    this.addNewDialogueNodeEdge = {
+      text: this.$t('add_new_dialogue_node'),
+      value: 'add_new_dialogue_node',
+      isButton: true,
+    };
   },
   mounted() {
+    this.loadMappingTableOptions();
     this.$on('validate', this.validate);
     this.$on('cancelValidate', this.cancelValidate);
   },
