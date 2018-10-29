@@ -16,6 +16,8 @@
         <img :src="captchaSrc">
         <input ref="captcha" type="text" v-model="input.captcha"
         :placeholder="$t('login.captcha_place')"
+        :maxlength="captchaLength"
+        @keydown="passwordKey"
         autocomplete="off">
       </div>
       <div class="input-button-row">
@@ -55,6 +57,7 @@ export default {
       redirect: '',
       useCaptcha: false,
       captchaSrc: '',
+      captchaLength: 6,
     };
   },
   methods: {
@@ -102,6 +105,7 @@ export default {
             that.$refs.captcha.focus();
           }
         } else {
+          that.reloadCaptcha();
           that.$notify({ text: '登录失败', type: 'fail' });
           that.$refs.user.focus();
         }
@@ -114,6 +118,23 @@ export default {
       if (e.keyCode === 13) {
         this.submit();
       }
+    },
+    reloadCaptcha() {
+      const that = this;
+      that.captchaSrc = '';
+      that.input.captcha = '';
+      that.$api.getEnv().then((env) => {
+        if (env.USE_CAPTCHA) {
+          that.useCaptcha = true;
+          return that.$api.getCaptcha().then((rsp) => {
+            that.captchaSrc = rsp.data;
+            that.input.captchaID = rsp.id;
+          });
+        }
+        return new Promise((r) => {
+          setTimeout(r(), 0);
+        });
+      });
     },
   },
   mounted() {
@@ -131,18 +152,7 @@ export default {
     if (Object.keys(queryMap).indexOf('redirect') >= 0) {
       that.redirect = decodeURIComponent(queryMap.redirect);
     }
-    that.$api.getEnv().then((env) => {
-      if (env.USE_CAPTCHA) {
-        that.useCaptcha = true;
-        return that.$api.getCaptcha().then((rsp) => {
-          that.captchaSrc = rsp.data;
-          that.input.captchaID = rsp.id;
-        });
-      }
-      return new Promise((r) => {
-        setTimeout(r(), 0);
-      });
-    });
+    that.reloadCaptcha();
   },
 };
 </script>
