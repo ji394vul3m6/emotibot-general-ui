@@ -124,7 +124,7 @@ export default {
       that.captchaSrc = '';
       that.input.captcha = '';
       that.$api.getEnv().then((env) => {
-        if (env.USE_CAPTCHA) {
+        if (env.USE_CAPTCHA === '1' || env.USE_CAPTCHA === 'true' || env.USE_CAPTCHA === true) {
           that.useCaptcha = true;
           return that.$api.getCaptcha().then((rsp) => {
             that.captchaSrc = rsp.data;
