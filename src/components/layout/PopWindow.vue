@@ -1,9 +1,12 @@
 <template>
 <transition name="slide-in">
-  <div class="pop-window" :class="{hidden: !show}" v-on:mousedown="exitPop">
+  <div class="pop-window" :class="{hidden: !show, 'background-dark': isBackgroundDark}" v-on:mousedown="exitPop">
     <div class="pop-content">
       <div class="title" v-if="title">
         <label>{{ title }}</label>
+        <div v-if="popDescription" class="close-button" @click="close">
+          <icon icon-type="info_close" :size="16"></icon>
+        </div>
       </div>
       <div v-bind:class="[customContentClasses]" class="content">
         <component v-if="bindValue === true"
@@ -21,7 +24,7 @@
           @cancel="close"
           :is="currentView" :origData="data" :extData="extData" ref="content"></component>
       </div>
-      <div class="pop-button" :class="{'center-align': popWarn}">
+      <div v-if="!popDescription" class="pop-button" :class="{'center-align': popWarn}">
         <div class="left-part">
           <text-button v-if="left_button !== undefined"
             :button-type="left_button.type ? left_button.type : 'default'"
@@ -65,6 +68,7 @@ export default {
   methods: {
     close() {
       this.$root.$emit('close-window', this);
+      this.$setBackgroundBlur(false);
     },
     exitPop(e) {
       const target = e.target;
@@ -76,7 +80,7 @@ export default {
       if (button.closeAfterClick) {
         this.show = false;
         this.currentView = undefined;
-        this.$root.$emit('close-window', this);
+        this.close();
       }
 
       if (button.callback) {
@@ -107,7 +111,7 @@ export default {
     validatePass(customData) {
       this.show = false;
       this.currentView = undefined;
-      this.$root.$emit('close-window', this);
+      this.close();
       if (this.callOk && typeof this.callOk === 'function') {
         if (customData) {
           this.callOk.call(this, customData);
@@ -119,7 +123,7 @@ export default {
     cancelValidatePass(customData) {
       this.show = false;
       this.currentView = undefined;
-      this.$root.$emit('close-window', this);
+      this.close();
       if (this.callCancel && typeof this.callCancel === 'function') {
         if (customData) {
           this.callCancel.call(this, customData);
@@ -146,6 +150,7 @@ export default {
       that.clickOutsideClose = option.clickOutsideClose === true;
       that.bindValue = option.bindValue !== false;
       that.popWarn = option.popWarn === true;
+      that.popDescription = option.popDescription === true;
       if (option.callback) {
         that.callOk = option.callback.ok;
         that.callCancel = option.callback.cancel;
@@ -157,6 +162,14 @@ export default {
         that.customContentClasses = option.customContentClasses;
       } else {
         that.customContentClasses = [];
+      }
+
+      if (option.popDescription) {
+        that.isBackgroundDark = false;
+        that.$setBackgroundBlur(false);
+      } else {
+        that.isBackgroundDark = true;
+        that.$setBackgroundBlur(true);
       }
     },
     hideWindow() {
@@ -190,6 +203,8 @@ export default {
       bindValue: true,
       left_button: undefined,
       popWarn: false,
+      popDescription: false,
+      isBackgroundDark: false,
     };
   },
 };
@@ -219,15 +234,15 @@ $pop-spacing: 24px;
   &.hidden {
     visibility: hidden;
   }
-
+  &.background-dark {
+    background: rgba(0%, 0%, 0%, 0.6);
+  }
   position: absolute;
   top: 0;
   left: 0;
-  background: rgba(0%, 0%, 0%, 0.6);
   height: 100%;
   width: 100%;
   z-index: 100;
-
   display: flex;
   align-items: center;
   justify-content: center;
@@ -280,11 +295,16 @@ $pop-spacing: 24px;
       padding: $pop-spacing;
       padding-bottom: calc(#{$pop-spacing} - #{$content-padding-top});
       width: 100%;
+      display: flex;
+      justify-content: space-between;
       & > label {
         display: inline-block;
         max-width: 600px;
         overflow: hidden;
         text-overflow: ellipsis;
+      }
+      .close-button {
+        cursor: pointer;
       }
     }
 

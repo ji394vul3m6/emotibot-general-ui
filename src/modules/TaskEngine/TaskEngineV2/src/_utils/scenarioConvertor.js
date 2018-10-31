@@ -1,3 +1,4 @@
+import scenarioConvertorV3 from '@/modules/TaskEngine/TaskEngineV3/src/utils/scenarioConvertor';
 import optionConfig from './optionConfig';
 import scenarioInitializer from './scenarioInitializer';
 import api from '../../../_api/taskEngine';
@@ -173,7 +174,6 @@ export default {
 
     // parse parseFromThisNode
     tab.parseFromThisNode = node.default_parser_with_suffix;
-    tab.isWeakEnd = false;
     return tab;
   },
   parseEdgeTab(node) {
@@ -411,6 +411,12 @@ export default {
       node.content = this.composePCContent(
         uiNode.paramsCollectingTab.params,
       );
+    } else if (uiNode.nodeType === 'action') {
+      node.content = JSON.parse(JSON.stringify(uiNode.actionTab.actionGroupList));
+      node.content.forEach((actionGroup) => {
+        actionGroup.conditionList =
+          scenarioConvertorV3.convertConditionList(actionGroup.conditionList);
+      });
     }
     return node;
   },
@@ -513,7 +519,6 @@ export default {
     // insert initial_response
     const initialQ = this.questionTemplste('initial_response');
     initialQ.msg = uiNode.settingTab.initialResponse;
-    initialQ.is_weak_end = uiNode.settingTab.isWeakEnd;
     questions.push(initialQ);
     return {
       questions,
@@ -603,6 +608,9 @@ export default {
         hiddenSetCntLimit,
         ...normalEdges,
       ];
+    } else if (uiNode.nodeType === 'action') {
+      const elseInto = this.edgeElseInto(uiNode.nodeId, '0');
+      edges = [elseInto];
     }
     return edges;
   },

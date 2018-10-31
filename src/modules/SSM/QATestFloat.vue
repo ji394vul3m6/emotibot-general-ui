@@ -3,6 +3,7 @@
     <div class="header">
       <div class="info">
         <div class="robot-icon">
+          <icon :size=24 icon-type="robot"></icon>
         </div>
         <div class="name">
           {{ robotName }}
@@ -21,7 +22,9 @@
     <div class="list" ref="qaBox">
       <div v-for="(data, idx) in chatData" :key="idx" :class="data.role" class="chat-box">
         <div class="chat-image" v-if="data.role !== 'user'">
-          <div class="robot-icon"></div>
+          <div class="robot-icon">
+            <icon :size=24 icon-type="robot"></icon>
+          </div>
         </div>
         <div class="chat-item">
           <template v-if="data.content.type === 'text' && data.content.subType === 'text'">
@@ -341,6 +344,9 @@ $chat-info-bg: #eeeeee;
 
     .robot-icon {
       margin: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
     .name {
       font-size: $robot-name-font-size;
@@ -388,6 +394,10 @@ $chat-info-bg: #eeeeee;
   width: $robot-icon-size;
   background: $robot-icon-bg;
   border: 1px solid $robot-icon-border;
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .qa-test-float {

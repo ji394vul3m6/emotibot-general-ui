@@ -34,14 +34,12 @@ export default {
           that.$refs.pops[idx].showWindow(option);
         }
       });
-      that.$setPopCount(that.popWindows.length);
     },
     closePopWindow(popWindow) {
       const idx = this.$refs.pops.findIndex(p => p === popWindow);
       if (idx >= 0) {
         this.popWindows.splice(idx, 1);
       }
-      this.$setPopCount(this.popWindows.length);
     },
   },
   mounted() {

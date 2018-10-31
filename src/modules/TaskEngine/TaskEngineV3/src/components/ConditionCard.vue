@@ -49,6 +49,10 @@ export default {
     index: {
       type: Number,
     },
+    version: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {
@@ -61,33 +65,52 @@ export default {
   computed: {
     targetOptions() {
       let options = [];
-      // append entity targets
-      let entityOptions = this.entities.map(entity => ({
-        text: entity.entityName,
-        value: entity.entityName,
-        inGroup: true,
-      }));
-      entityOptions = entityOptions.filter(option => option.text !== null);
-      if (entityOptions.length > 0) {
-        options.push(
-          {
-            text: this.$t('task_engine_v3.condition_card.target_type.entity'),
-            isGroup: true,
-          },
-        );
-        options = options.concat(entityOptions);
+      if (this.version === '2.0') {
+        // append entity targets
+        let entityOptions = this.entities.map(entity => ({
+          text: entity.entityName,
+          value: entity.entityName,
+          inGroup: true,
+        }));
+        entityOptions = entityOptions.filter(option => option.text !== null);
+        if (entityOptions.length > 0) {
+          options.push(
+            {
+              text: this.$t('task_engine_v3.condition_card.target_type.entity'),
+              isGroup: true,
+            },
+          );
+          options = options.concat(entityOptions);
+        }
+        // append context targets
+        options.push({
+          text: this.$t('task_engine_v3.condition_card.target_type.context'),
+          isGroup: true,
+        });
+        const contextOptions = this.contextTargets.map(contextTarget => ({
+          text: contextTarget.displayText,
+          value: contextTarget.name,
+          inGroup: true,
+        }));
+        options = options.concat(contextOptions);
+      } else if (this.version === '1.1') {
+        // append entity targets
+        let entityOptions = this.entities.map(entity => ({
+          text: `${entity.text}：${entity.value}`,
+          value: entity.value,
+          inGroup: true,
+        }));
+        entityOptions = entityOptions.filter(option => option.text !== null);
+        if (entityOptions.length > 0) {
+          options.push(
+            {
+              text: this.$t('task_engine_v3.condition_card.target_type.entity'),
+              isGroup: true,
+            },
+          );
+          options = options.concat(entityOptions);
+        }
       }
-      // append context targets
-      options.push({
-        text: this.$t('task_engine_v3.condition_card.target_type.context'),
-        isGroup: true,
-      });
-      const contextOptions = this.contextTargets.map(contextTarget => ({
-        text: contextTarget.displayText,
-        value: contextTarget.name,
-        inGroup: true,
-      }));
-      options = options.concat(contextOptions);
       return options;
     },
     targetModel: {

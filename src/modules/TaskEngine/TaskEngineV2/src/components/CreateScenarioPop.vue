@@ -16,8 +16,7 @@
       <div class="edit-title">{{$t("task_engine_v3.create_scenario_pop.label_name_the_scenario")}}</div>
       <div class="edit-data">
         <input ref="scenarioName" v-tooltip="noNameTooltip" v-model="scenarioName" 
-          :placeholder="$t('task_engine_v3.create_scenario_pop.placeholder_enter_scenario_name')" 
-          @keydown.enter="validate"
+          :placeholder="$t('task_engine_v3.create_scenario_pop.placeholder_enter_scenario_name')"
         ></input>
       </div>
     </div>
@@ -27,6 +26,7 @@
 
 <script>
 import taskEngineApi from '@/modules/TaskEngine/_api/taskEngine';
+import event from '@/utils/js/event';
 
 export default {
   name: 'scenario-editor-pop',
@@ -53,12 +53,18 @@ export default {
     };
   },
   computed: {},
-  watch: {},
+  watch: {
+    scenarioName() {
+      if (this.scenarioName.trim() !== '') {
+        this.$refs.scenarioName.dispatchEvent(event.createEvent('tooltip-hide'));
+      }
+    },
+  },
   methods: {
     validate() {
       if (this.scenarioName === '') {
-        this.$refs.scenarioName.dispatchEvent(new Event('tooltip-reload'));
-        this.$refs.scenarioName.dispatchEvent(new Event('tooltip-show'));
+        this.$refs.scenarioName.dispatchEvent(event.createEvent('tooltip-reload'));
+        this.$refs.scenarioName.dispatchEvent(event.createEvent('tooltip-show'));
         this.$refs.scenarioName.focus();
       } else {
         this.$emit('validateSuccess', { scenarioName: this.scenarioName, templateID: this.templateID });

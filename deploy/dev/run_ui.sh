@@ -30,7 +30,7 @@ else
   REMOTE_IP=$1
   echo "Use remote api service: $1"
 fi
-BF_IP="$REMOTE_IP:3000";
+BF_IP="$REMOTE_IP";
 if [[ -z "$API_IP" ]]; then
   API_IP=$REMOTE_IP
 fi

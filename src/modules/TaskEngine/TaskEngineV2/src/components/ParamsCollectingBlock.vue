@@ -40,14 +40,18 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_pattern")}}
             </div>
-            <input class="input-content" v-model="parser.content.pattern"></input>
+            <input class="input-content" v-model="parser.content.pattern" @input="emitUpdate"></input>
           </div>
           <template v-for="(operation, idx) in parser.content.operations">
             <div class="row">
               <div class="label label-start">
                 {{$t("task_engine_v2.condition_block.label_nth_match")}}
               </div>
-              <input class="input-content" v-model="operation.index"></input>
+              <input class="input-content" 
+                v-model.number="operation.index"
+                oninput="this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(^[0-9]{1,2}).*/g, '$1');"
+                @input="emitUpdate">
+              </input>
               <button
                 v-if="idx === 0"
                 class="button"
@@ -69,6 +73,7 @@
               </div>
               <input class="input-content" 
                 v-model="operation.key"
+                @input="emitUpdate"
               ></input>
             </div>
           </template>
@@ -118,7 +123,7 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_target_key")}}
             </div>
-            <input class="input-content" v-model="parser.content.to_key"></input>
+            <input class="input-content" v-model="parser.content.to_key" @input="emitUpdate"></input>
           </div>
         </div>
         <!-- 是否判断解析器 -->
@@ -129,6 +134,7 @@
             </div>
             <input class="input-content" 
               v-model="parser.content.key"
+              @input="emitUpdate"
             ></input>
           </div>
         </div>
@@ -138,7 +144,7 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_link")}}
             </div>
-            <input class="input-content" v-model="parser.content"></input>
+            <input class="input-content" v-model="parser.content" @input="emitUpdate"></input>
           </div>
           <div class="row">
             <div class="label label-tooltip">
@@ -398,6 +404,7 @@ export default {
       height: 36px;
     }
     .input-content{
+      margin-left: 10px;
       width: 420px;
     }
     .button{

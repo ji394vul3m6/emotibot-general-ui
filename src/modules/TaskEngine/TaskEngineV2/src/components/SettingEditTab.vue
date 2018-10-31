@@ -15,10 +15,6 @@
   </div>
   <div class="block">
     <div class="label-header">{{$t("task_engine_v2.setting_edit_tab.default_q")}}</div>
-    <div class="set-weak-end-row">
-      <input type="checkbox" v-model="isWeakEnd">
-      {{$t("task_engine_v2.setting_edit_tab.is_weak_end")}}
-    </div>
     <div class="insert-var-button-row">
       <div ref="insertVarDropdown" class="button-insert var" v-dropdown="insertVarDropdown()">
         {{$t("task_engine_v2.setting_edit_tab.insert_var")}}
@@ -129,7 +125,6 @@ export default {
         'border-radius': '5px',
       },
       varDropdown: undefined,
-      isWeakEnd: false,
     };
   },
   computed: {
@@ -142,7 +137,6 @@ export default {
         initialResponse: this.initialResponse,
         failureResponse: this.failureResponse,
         parseFromThisNode: this.parseFromThisNode,
-        isWeakEnd: this.isWeakEnd,
       };
       // console.log(result);
       return result;
@@ -176,11 +170,6 @@ export default {
       this.initialResponse = settingTab.initialResponse;
       this.failureResponse = settingTab.failureResponse;
       this.parseFromThisNode = settingTab.parseFromThisNode;
-      if (settingTab.isWeakEnd === undefined) {
-        this.isWeakEnd = false;
-      } else {
-        this.isWeakEnd = settingTab.isWeakEnd;
-      }
 
       // render entityModuleOptions, entityKeyNameOptions
       const entityModuleOptionsMap = optionConfig.getEntityModuleOptionsMap();
@@ -320,11 +309,6 @@ export default {
       &:disabled{
         background: #F3F7F9;
       }
-    }
-    .set-weak-end-row{
-      display: flex;
-      flex-direction: row;
-      align-items: center;
     }
     .insert-var-button-row{
       display: flex;

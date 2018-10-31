@@ -162,6 +162,11 @@ function login(input) {
       authTypes = res.result.AUTH_TYPE.split(',');
     }
 
+    if (res.result.USE_CAPTCHA) {
+      params.captcha = input.captcha;
+      params.captchaID = input.captchaID;
+    }
+
     let promise;
     if (authTypes.indexOf('all') >= 0 || authTypes.indexOf('authV2') >= 0) {
       promise = that.$reqPost(LOGIN_PATH, qs.stringify(params), {

@@ -21,6 +21,13 @@ function popWarn(option) {
   that.$root.$emit('pop-window', option);
 }
 
+function popDescription(option) {
+  const that = this;
+  option.popDescription = true;
+  option.clickOutsideClose = true;
+  that.$root.$emit('pop-window', option);
+}
+
 function popError(msg, info) {
   const that = this;
   return new Promise((resolve) => {
@@ -49,14 +56,15 @@ function popError(msg, info) {
 const MyPlugin = {
   install(Vue) {
     Vue.component(PopWindows.name, PopWindows);
-    let popCount = 0;
+    let backgroundBlur = false;
 
     Vue.prototype.$pop = popWindow;
     Vue.prototype.$popError = popError;
     Vue.prototype.$popCheck = popCheck;
     Vue.prototype.$popWarn = popWarn;
-    Vue.prototype.$isPopOpen = () => popCount > 0;
-    Vue.prototype.$setPopCount = (c) => { popCount = c; };
+    Vue.prototype.$popDescription = popDescription;
+    Vue.prototype.$isBackgroundBlur = () => backgroundBlur;
+    Vue.prototype.$setBackgroundBlur = (bool) => { backgroundBlur = bool; };
   },
 };
 

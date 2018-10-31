@@ -24,6 +24,7 @@
           :toNodeOptions="toNodeOptions"
           :globalVarOptionsMap="globalVarOptionsMap"
           :linking="linking"
+          :version="moduleData.version"
           @updatePosition="updateNodePosition(index, $event)"
           @savePosition="saveScenario()"
           @deleteNode="deleteNode(index)"
@@ -297,6 +298,23 @@ export default {
           }
         }
 
+        // push action node edges
+        if (nodeBlock.data.actionTab) {
+          nodeBlock.data.actionTab.actionGroupList.forEach((actionGroup) => {
+            actionGroup.actionList.forEach((action) => {
+              if (action.type === 'goto') {
+                if (this.idToNodeBlock[action.targetSkillId]) {
+                  edgeList.push({
+                    from_id: nodeBlock.data.nodeId,
+                    to_id: action.targetSkillId,
+                    edge_type: 'normal',
+                  });
+                }
+              }
+            });
+          });
+        }
+
         // globalEdges
         this.globalEdges.forEach((edge) => {
           if (!edge.to_node_id) return;
@@ -430,6 +448,8 @@ export default {
             globalVars.push(node.content.requests[0].rtn_var_name);
           } else if (node.node_type === 'parameter_collecting') {
             globalVars.push(...scenarioConvertor.getGlobalVarsFromParsers(node.content.parsers));
+          } else if (node.node_type === 'nlu_pc') {
+            globalVars.push(...node.content.entities.map(entity => entity.entityName));
           }
           globalVars = [...new Set(globalVars)];
           const vars = globalVars.map(v => ({
@@ -813,7 +833,29 @@ export default {
         },
       };
       let options = [];
-      if (sourceNodeType === 'restful') {
+      if (sourceNodeType === 'action') {
+        options = [
+          {
+            text: this.$t('task_engine_v2.scenario_edit_page.new_edge_normal'),
+            onclick: () => {
+              if (dstNodeId === undefined) {
+                const newNode = this.addNewLinkingNode(this.linkingEdge);
+                dstNodeId = newNode.nodeId;
+              }
+              sourceNode.actionTab.actionGroupList.push({
+                actionGroupId: this.$uuid.v1(),
+                actionList: [{
+                  type: 'goto',
+                  targetSkillId: dstNodeId,
+                }],
+                conditionList: [],
+              });
+              this.saveScenario();
+              this.dropdownHidden();
+            },
+          },
+        ];
+      } else if (sourceNodeType === 'restful') {
         options = [
           {
             text: this.$t('task_engine_v2.scenario_edit_page.new_edge_restful_success'),

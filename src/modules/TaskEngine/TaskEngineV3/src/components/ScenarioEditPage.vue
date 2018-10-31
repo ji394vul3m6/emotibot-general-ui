@@ -56,6 +56,7 @@
           :currentPage="currentPage"
           :initialIdToNerMap="idToNerMap"
           :initialSkillNameList="skillNameList"
+          :version="version"
           @update="updateSkill"
           @updateIdToNerMap="updateIdToNerMap"
         ></skill-edit-page>
@@ -100,6 +101,7 @@ export default {
       idToNerMap: {},
       enable: false,
       inputScenarioNameFocus: false,
+      version: '2.0',
     };
   },
   computed: {
@@ -202,6 +204,7 @@ export default {
         window.moduleData = JSON.parse(data.result.editingContent);
         window.moduleDataLayouts = JSON.parse(data.result.editingLayout);
         this.scenarioName = window.moduleData.metadata.scenario_name;
+        this.version = window.moduleData.version;
         this.renderData(window.moduleData);
       }, (err) => {
         general.popErrorWindow(this, 'loadScenario error', err.message);
