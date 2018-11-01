@@ -1,7 +1,14 @@
 import event from '@/utils/js/event';
 import Tooltip from '../components/basic/Tooltip';
 
-function getPosition(el) {
+function getPosition(el, absolute = false) {
+  if (absolute) {
+    const parentRight = el.parentElement.getBoundingClientRect().right;
+    const right = el.getBoundingClientRect().right;
+    return {
+      x: parentRight - right,
+    };
+  }
   const boundedBox = el.getBoundingClientRect();
   return {
     x: boundedBox.right,
@@ -10,10 +17,11 @@ function getPosition(el) {
 }
 const MyPlugin = {
   install(Vue) {
-    let VM;
     Vue.directive('tooltip', {
       inserted(el, binding, vnode) {
         const parent = el.parentElement;
+        if (!parent.style.position) { parent.style.position = 'relative'; }
+
         let scrollParent;
         let boundedBox = el.getBoundingClientRect();
         vnode.context.$nextTick(() => {
@@ -30,9 +38,9 @@ const MyPlugin = {
               data: binding.value.data,
               tooltipType: binding.value.errorType ? 'error' : 'default',
               alignLeft: binding.value.alignLeft || false,
+              absolute: binding.value.absolute,
             },
           });
-          VM = vm;
           vm.$mount();
           parent.appendChild(vm.$el);
           vm.$forceUpdate();
@@ -74,9 +82,9 @@ const MyPlugin = {
                 data: binding.value.data,
                 tooltipType: binding.value.errorType ? 'error' : 'default',
                 alignLeft: binding.value.alignLeft || false,
+                absolute: binding.value.absolute,
               },
             });
-            VM = vm;
             vm.$mount();
             parent.appendChild(vm.$el);
             vm.$forceUpdate();
@@ -94,7 +102,7 @@ const MyPlugin = {
                 return;
               }
             }
-            vm.$emit('show', getPosition(el));
+            vm.$emit('show', getPosition(el, binding.value.absolute));
           });
           el.addEventListener('tooltip-hide', () => {
             vm.$emit('hide');
@@ -103,7 +111,7 @@ const MyPlugin = {
           if (binding.value.clickShow) {
             const tooltip = vm.$el;
             el.addEventListener('click', (clickEvent) => {
-              vm.$emit('show', getPosition(el));
+              vm.$emit('show', getPosition(el, binding.value.absolute));
               const detectClickListener = (e) => {
                 const clickDom = e.target;
                 if (clickDom && !tooltip.contains(clickDom)) {
@@ -122,7 +130,7 @@ const MyPlugin = {
             });
           } else if (!binding.value.eventOnly) {
             el.addEventListener('mouseover', () => {
-              vm.$emit('show', getPosition(el));
+              vm.$emit('show', getPosition(el, binding.value.absolute));
             });
             el.addEventListener('mouseout', () => {
               vm.$emit('hide');
@@ -130,8 +138,10 @@ const MyPlugin = {
           }
         });
       },
-      unbind() {
-        VM.$el.remove();
+      unbind(el) {
+        if (el.nextSibling) {
+          el.nextSibling.remove();
+        }
       },
     });
   },

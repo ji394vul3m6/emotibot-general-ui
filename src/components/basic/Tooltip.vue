@@ -1,5 +1,5 @@
 <template>
-  <div v-if="show" class="tooltip" :style="style" :class="{'error': error}" ref="tooltip">
+  <div v-if="show" class="tooltip" :style="style" :class="{absolute,'error': error}" ref="tooltip">
     <div class="tooltip-text" v-if="msg !== '' && (buttons === undefined || buttons.length <= 0)">
       {{ msg }}
     </div>
@@ -83,6 +83,10 @@ export default {
       type: Object,
       default: undefined,
     },
+    absolute: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -94,6 +98,12 @@ export default {
   },
   computed: {
     style() {
+      if (this.absolute) {
+        return {
+          right: `${this.showX}px`,
+          top: `${this.showY}px`,
+        };
+      }
       return {
         top: `${this.showY}px`,
         left: `${this.showX}px`,
@@ -138,6 +148,10 @@ export default {
           that.showX = that.x + that.leftOffset;
           that.showY = (that.y - that.$el.clientHeight - 8) + that.topOffset;
         }
+        if (that.absolute) {
+          that.showX = pos.x;
+          that.showY = -this.$el.getBoundingClientRect().height - 5;
+        }
       });
     });
     that.$on('hide', () => {
@@ -149,6 +163,9 @@ export default {
 
 <style lang='scss' scoped>
 .tooltip {
+  &.absolute {
+    position: absolute;
+  }
   position: fixed;
   z-index: 2;
   word-break: break-all;
