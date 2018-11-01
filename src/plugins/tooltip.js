@@ -20,7 +20,7 @@ const MyPlugin = {
     Vue.directive('tooltip', {
       inserted(el, binding, vnode) {
         const parent = el.parentElement;
-        if (!parent.style.position) { parent.style.position = 'relative'; }
+        if (binding.value.absolute && !parent.style.position) { parent.style.position = 'relative'; }
 
         let scrollParent;
         let boundedBox = el.getBoundingClientRect();
