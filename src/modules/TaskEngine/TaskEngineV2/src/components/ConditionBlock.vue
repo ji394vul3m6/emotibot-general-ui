@@ -773,13 +773,6 @@ export default {
   },
   computed: {},
   watch: {
-    'edge.valid': function (newV, oldV) { // eslint-disable-line
-      if (!newV && oldV) {
-        // this.$refs['input-content'].forEach((el) => {
-        //   el.dispatchEvent(event.createEvent('validateConditionBlock-hide'));
-        // });
-      }
-    },
     andRules: {
       handler() {
         this.emitUpdate();
@@ -821,12 +814,14 @@ export default {
     },
     validateConditionBlock(newV, oldV) {
       if (newV && !oldV) {
+        let valid = true;
         this.$refs['input-content'].forEach((el) => {
           if (!el.value) {
+            valid = false;
             el.dispatchEvent(event.createEvent('tooltip-show'));
           }
         });
-        this.$emit('update:validateConditionBlock', false);
+        this.$emit('update:valid', valid);
       }
     },
   },
@@ -1081,14 +1076,6 @@ export default {
           }))],
         };
       }
-      // console.log(conditionBlock);
-      let valid = true;
-      this.$refs['input-content'].forEach((el) => {
-        if (!el.value) {
-          valid = false;
-        }
-      });
-      conditionBlock.valid = valid;
       this.$emit('update', conditionBlock);
     },
     entityModuleOptions(parser) {

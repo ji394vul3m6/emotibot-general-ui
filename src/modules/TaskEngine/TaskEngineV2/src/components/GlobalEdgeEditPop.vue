@@ -24,7 +24,8 @@
           :toNodeOptions="toNodeOptions"
           :globalVarOptions="globalVarOptions"
           :mapTableOptions="mapTableOptions"
-          :validateConditionBlock.sync="validateConditionBlock"
+          :validateConditionBlock="validateConditionBlock"
+          :valid.sync="edge.valid"
           @update="updateEdge(index, $event)"
           @deleteEdge="deleteEdge(index)"
           @addNewDialogueNode="addNewDialogueNode">
@@ -156,6 +157,7 @@ export default {
     validate() {
       this.validateConditionBlock = true;
       this.$nextTick(() => {
+        this.validateConditionBlock = false;
         let valid = true;
         const edges = this.globalEdges.map((edge) => {
           if (!edge.valid) valid = false;
