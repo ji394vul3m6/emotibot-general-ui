@@ -24,11 +24,10 @@
           :toNodeOptions="toNodeOptions"
           :globalVarOptions="globalVarOptions"
           :mapTableOptions="mapTableOptions"
-          :showTooltip="showTooltip"
+          :validateConditionBlock.sync="validateConditionBlock"
           @update="updateEdge(index, $event)"
           @deleteEdge="deleteEdge(index)"
-          @addNewDialogueNode="addNewDialogueNode"
-          @hideShowTooltip="showTooltip = false">
+          @addNewDialogueNode="addNewDialogueNode">
         </condition-block>
       </template>
     </draggable>
@@ -93,7 +92,7 @@ export default {
       globalVarOptions,
       mapTableOptions: [],
       newNodeOptions: [],
-      showTooltip: false,
+      validateConditionBlock: false,
     };
   },
   methods: {
@@ -132,6 +131,7 @@ export default {
     addEdge() {
       const edge = scenarioInitializer.initialEdge();
       edge.id = this.$uuid.v1();
+      edge.valid = false;
       this.globalEdges.push(edge);
     },
     deleteEdge(index) {
@@ -154,23 +154,25 @@ export default {
       });
     },
     validate() {
-      this.showTooltip = true;
-      let valid = true;
-      const edges = this.globalEdges.map((edge) => {
-        if (!edge.valid) valid = false;
-        return {
-          edge_type: edge.edge_type,
-          to_node_id: edge.to_node_id,
-          condition_rules: edge.condition_rules,
-          actions: [],
-        };
+      this.validateConditionBlock = true;
+      this.$nextTick(() => {
+        let valid = true;
+        const edges = this.globalEdges.map((edge) => {
+          if (!edge.valid) valid = false;
+          return {
+            edge_type: edge.edge_type,
+            to_node_id: edge.to_node_id,
+            condition_rules: edge.condition_rules,
+            actions: [],
+          };
+        });
+        if (valid) {
+          this.$emit(
+            'validateSuccess',
+            { edges, newNodeOptions: this.newNodeOptions },
+          );
+        }
       });
-      if (valid) {
-        this.$emit(
-          'validateSuccess',
-          { edges, newNodeOptions: this.newNodeOptions },
-        );
-      }
     },
     cancelValidate() {
       const newGlobalEdgesStr = JSON.stringify(this.globalEdges, general.JSONStringifyReplacer);
