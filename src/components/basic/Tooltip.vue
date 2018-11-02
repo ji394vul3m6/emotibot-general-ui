@@ -150,7 +150,7 @@ export default {
         }
         if (that.absolute) {
           that.showX = pos.x;
-          that.showY = -this.$el.getBoundingClientRect().height - 5;
+          that.showY = pos.y - this.$el.getBoundingClientRect().height - 5;
         }
       });
     });

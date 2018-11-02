@@ -5,8 +5,11 @@ function getPosition(el, absolute = false) {
   if (absolute) {
     const parentRight = el.parentElement.getBoundingClientRect().right;
     const right = el.getBoundingClientRect().right;
+    const parentTop = el.parentElement.getBoundingClientRect().top;
+    const top = el.getBoundingClientRect().top;
     return {
       x: parentRight - right,
+      y: top - parentTop,
     };
   }
   const boundedBox = el.getBoundingClientRect();
