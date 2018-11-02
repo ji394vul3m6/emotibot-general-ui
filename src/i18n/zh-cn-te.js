@@ -110,8 +110,10 @@ export default {
     params_collecting_tab: {
       button_add_params: '＋增加参数',
       parser: '解析器',
+      required: '必要',
       button_add_parser: '＋增加解析器',
       msg: '参数询问文本（询问使用者参数的语句）',
+      msg_description: '当收集框中所有被勾选为必要的参数『全部都还没有』收集到时，才会使用此参数询问文本做询问。如果已经收集到其中一个必要参数，则会跳过此收集框。建议为每一个必要参数都另外设置一个单独的收集框，以确保有任何一个必要参数时缺少时都有相对应的询问话术。',
       parse_failed_msg: '解析失败文本（参数解析失败时，回复给使用者的语句）',
       skip_if_key_exit: '参数检查',
       skip_if_key_exit_info: '当收集到以下参数则跳过问句，请使用逗号分隔参数名称',
