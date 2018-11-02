@@ -163,11 +163,13 @@
           <div class="label label-start">
             {{$t("task_engine_v2.params_collecting_tab.required")}}
           </div>
-          <input class="row-content checkbox-content"
-            type="checkbox"
-            :checked="parser.required"
-            @input="onInputRequiredCheckbox(index, $event.target.checked)"
-          ></input>
+          <div class="row-content">
+            <input class="checkbox-content"
+              type="checkbox"
+              :checked="parser.required"
+              @input="onInputRequiredCheckbox(index, $event.target.checked)"
+            ></input>
+          </div>
         </div>
       </div>
     </template>
@@ -446,7 +448,8 @@ export default {
       width: 420px;
     }
     .checkbox-content{
-      width: 5px;
+      height: auto;
+      width: auto;
     }
     .button{
       background: #57C7D4;
