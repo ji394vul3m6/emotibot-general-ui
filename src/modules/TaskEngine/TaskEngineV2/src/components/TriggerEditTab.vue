@@ -1,8 +1,15 @@
+<i18n>
+{
+  "zh-cn": {
+    "instruction": "设置触发此场景的条件",
+    "button_add_rule": "＋增加规则"
+  }
+}
+</i18n>
+
 <template lang="html">
 <div id="trigger-edit-tab">
-  <div class="instruction block">
-    {{$t("task_engine_v2.trigger_edit_tab.instruction")}}
-  </div>
+  <div class="instruction block" v-t="'instruction'"></div>
   <draggable v-model="rules" :options="{ghostClass:'ghost'}" @start="drag=true" @end="drag=false; emitUpdate();">
     <template v-for="(rule, index) in rules">
       <condition-block
@@ -13,15 +20,17 @@
         :toNodeOptions="[]"
         :globalVarOptions="globalVarOptions"
         :mapTableOptions="mapTableOptions"
+        :validateConditionBlock="validateTab"
+        @update:valid="$set(rule, 'valid', $event); if ($event) {isAllConditionBlockValid()}"
         @update="updateRule(index, $event)"
         @deleteEdge="deleteRule(index)">
       </condition-block>
     </template>
   </draggable>
   <button
+    v-t="'button_add_rule'"
     class="button-add-rule"
     @click="addRule()">
-    {{$t("task_engine_v2.trigger_edit_tab.button_add_rule")}}
   </button>
 </div>
 
@@ -39,7 +48,11 @@ export default {
     'condition-block': ConditionBlock,
   },
   props: {
-    initialTriggerTab: {
+    validateTab: {
+      type: Boolean,
+      default: false,
+    },
+    triggerTab: {
       type: Object,
       required: true,
     },
@@ -54,26 +67,28 @@ export default {
   },
   data() {
     return {
-      nodeId: '',
-      rules: [],
-    };
-  },
-  computed: {},
-  watch: {},
-  methods: {
-    renderTabContent() {
-      const triggerTab = JSON.parse(JSON.stringify(this.initialTriggerTab));
-      this.nodeId = triggerTab.nodeId;
-      this.rules = triggerTab.rules.map(rule => ({
+      nodeId: this.triggerTab.nodeId,
+      rules: this.triggerTab.rules.map(rule => ({
         id: this.$uuid.v1(),
         to_node_id: null,
         edge_type: 'trigger',
         condition_rules: [rule],
-      }));
+        valid: false,
+      })),
+    };
+  },
+  watch: {
+    validateTab(newV, oldV) {
+      if (newV && !oldV && !this.rules.length) {
+        this.$emit('update:valid', true);
+      }
     },
+  },
+  methods: {
     addRule() {
       const rule = scenarioInitializer.initialTriggerRule();
       rule.id = this.$uuid.v1();
+      rule.valid = false;
       this.rules.push(rule);
       this.emitUpdate();
     },
@@ -92,11 +107,15 @@ export default {
       // console.log(triggerTab);
       this.$emit('update', triggerTab);
     },
-  },
-  beforeMount() {
-    this.renderTabContent();
-  },
-  mounted() {
+    isAllConditionBlockValid() {
+      let valid = true;
+      this.rules.forEach((rule) => {
+        if (!rule.valid) {
+          valid = false;
+        }
+      });
+      this.$emit('update:valid', valid);
+    },
   },
 };
 </script>

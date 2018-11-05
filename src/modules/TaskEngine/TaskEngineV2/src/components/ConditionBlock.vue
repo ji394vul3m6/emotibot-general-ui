@@ -634,10 +634,10 @@
   <div class="succeed_then_goto pc_block" v-if="edgeType==='pc_succeed'">
     <div class="row row-no-bottom-margin">
       <div class="label label-bold">
-        {{$t(".params_collecting_edge_tab.succeed")}}
+        {{$t("params_collecting_edge_tab.succeed")}}
       </div>
       <div class="label label-margin-left">
-        {{$t(".params_collecting_edge_tab.succeed_description")}}
+        {{$t("params_collecting_edge_tab.succeed_description")}}
       </div>
       <div class="label label-margin-left">
         {{$t("edge_edit_tab.label_then_goto")}}
@@ -815,13 +815,21 @@ export default {
     validateConditionBlock(newV, oldV) {
       if (newV && !oldV) {
         let valid = true;
-        this.$refs['input-content'].forEach((el) => {
-          if (!el.value) {
-            valid = false;
-            el.dispatchEvent(event.createEvent('tooltip-show'));
+        if (this.$refs['input-content']) {
+          let refs = this.$refs['input-content'];
+          if (!Array.isArray(refs)) {
+            refs = [refs];
           }
-        });
-        this.$emit('update:valid', valid);
+          refs.forEach((el) => {
+            if (!el.value) {
+              valid = false;
+              el.dispatchEvent(event.createEvent('tooltip-show'));
+            }
+          });
+          this.$emit('update:valid', valid);
+        } else {
+          this.$emit('update:valid', true);
+        }
       }
     },
   },
