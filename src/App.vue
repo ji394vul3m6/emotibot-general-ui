@@ -62,6 +62,13 @@ const debugCodeArr = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft
 let debugCodeIdx = 0;
 let debugTimer;
 
+function forceUpdate(vueObj) {
+  vueObj.$children.forEach((child) => {
+    forceUpdate(child);
+  });
+  vueObj.$forceUpdate();
+}
+
 export default {
   name: 'app',
   components: {
@@ -137,7 +144,7 @@ export default {
     },
     showLanguage(val) {
       this.$i18n.locale = val;
-      this.$root.$forceUpdate();
+      forceUpdate(this.$root);
     },
   },
   methods: {

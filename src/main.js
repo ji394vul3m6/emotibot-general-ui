@@ -65,8 +65,13 @@ Vue.component('tag', Tag);
 Vue.component('loading-line', LoadingLine);
 Vue.component('loading-dot', LoadingDot);
 
+let locale = localStorage.getItem('locale');
+if (!locale) {
+  locale = 'zh-cn';
+}
+
 const i18n = new VueI18n({
-  locale: 'zh-cn',
+  locale,
   messages,
 });
 
