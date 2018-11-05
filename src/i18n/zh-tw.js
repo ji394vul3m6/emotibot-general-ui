@@ -95,6 +95,8 @@ export default {
     password_place: '輸入密碼',
     captcha_place: '輸入驗證碼',
     contact_sm: '無法登入？請聯絡管理人員',
+    notify_fail: '登入失敗',
+    notify_input: '請輸入帳密',
   },
   category: {
     title: '分類',

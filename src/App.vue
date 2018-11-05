@@ -51,6 +51,7 @@ import PageHeader from '@/components/layout/Header';
 import PageMenu from '@/components/layout/Menu';
 import QATest from '@/modules/SSM/QATestFloat';
 import constant from '@/utils/js/constant';
+import misc from '@/utils/js/misc';
 import UserPreference from '@/manage-modules/UserPreference';
 import userAPI from '@/manage-modules/_api/user';
 import adminAPI from '@/manage-modules/SystemManage/_api/system';
@@ -162,6 +163,7 @@ export default {
       'setUserInfo',
       'setRobot',
       'setEnterprise',
+      'setLanguage',
     ]),
     checkAuditRoute() {
       const that = this;
@@ -485,6 +487,8 @@ export default {
       const fullPath = that.$route.fullPath;
       window.location = `/login.html?invalid=1&redirect=${encodeURIComponent(fullPath)}`;
     });
+
+    that.setLanguage(misc.getBrowserLanguage());
 
     that.$root.$on('pop-window', () => {
       that.$nextTick(() => {

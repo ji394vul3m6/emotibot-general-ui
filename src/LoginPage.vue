@@ -35,6 +35,7 @@
 </template>
 
 <script>
+import misc from '@/utils/js/misc';
 import Icon from './components/basic/Icon';
 import LoadingButton from './components/basic/LoadingButton';
 import api from './api/system';
@@ -66,7 +67,7 @@ export default {
       that.$refs.user.blur();
       that.$refs.password.blur();
       if (!that.input.account || !that.input.password) {
-        that.$notify({ text: '请输入帐密', type: 'fail' });
+        that.$notify({ text: that.$t('login.notify_input'), type: 'fail' });
         if (!that.input.account) {
           that.$refs.user.focus();
         } else {
@@ -139,6 +140,7 @@ export default {
   },
   mounted() {
     const that = this;
+    that.$i18n.locale = misc.getBrowserLanguage();
     that.$refs.user.focus();
     const querys = document.location.search.substr(1).split('&');
     const queryMap = {};

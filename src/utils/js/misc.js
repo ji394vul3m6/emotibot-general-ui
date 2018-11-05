@@ -44,9 +44,17 @@ function controlKeyOnly(e) {
   return false;
 }
 
+function getBrowserLanguage() {
+  const browserLanguage = window.navigator.language;
+  const validZHTW = ['zh-TW', 'zh-HK'];
+
+  return validZHTW.find(i18n => i18n === browserLanguage) ? 'zh-tw' : 'zh-cn';
+}
+
 export default {
   useIE,
   isEllipsisActive,
   downloadRawFile,
   controlKeyOnly,
+  getBrowserLanguage,
 };
