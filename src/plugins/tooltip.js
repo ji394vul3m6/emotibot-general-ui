@@ -45,7 +45,7 @@ const MyPlugin = {
             },
           });
           vm.$mount();
-          parent.appendChild(vm.$el);
+          parent.insertBefore(vm.$el, el.nextSibling);
           vm.$forceUpdate();
 
           for (let temp = parent; temp != null; temp = temp.parentElement) {
@@ -89,7 +89,7 @@ const MyPlugin = {
               },
             });
             vm.$mount();
-            parent.appendChild(vm.$el);
+            parent.insertBefore(vm.$el, el.nextSibling);
             vm.$forceUpdate();
           });
           el.addEventListener('tooltip-show', (e) => {
