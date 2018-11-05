@@ -444,6 +444,9 @@ export default {
     input{
       height: 36px;
     }
+    input[type=checkbox]{
+      @include general-checkbox();
+    }
     .input-content{
       width: 420px;
     }
