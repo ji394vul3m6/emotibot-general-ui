@@ -17,6 +17,34 @@
     @click="addParam()">
     {{$t("task_engine_v2.params_collecting_tab.button_add_params")}}
   </button>
+  <div class="confirm-params-block block">
+    <div class="condition-row">
+      <div class="label">
+        {{$t("task_engine_v2.params_collecting_tab.label_enable_confirm_msg")}}
+      </div>
+      <input class="checkbox-content"
+        type="checkbox"
+        :checked="enableConfirmMsg"
+        @input="onInputEnableConfirmMsg($event.target.checked)"
+      ></input>
+    </div>
+    <div class="confim-msgs" v-if="enableConfirmMsg===true">
+      <textarea class="text-response"
+        :value="confirmMsg"
+        @input="onInputConfirmMsg($event.target.value)">
+      </textarea>
+      <div class="condition-row">
+        <div class="label">
+          {{$t("task_engine_v2.params_collecting_tab.parse_failed_msg")}}
+        </div>
+      </div>
+      <textarea class="text-response"
+        :value="confirmMsgParseFail"
+        @input="onInputConfirmMsgParseFail($event.target.value)">
+      </textarea>
+    </div>
+    
+  </div>
 </div>
 </template>
 
@@ -46,6 +74,9 @@ export default {
   data() {
     return {
       params: [],
+      enableConfirmMsg: false,
+      confirmMsg: '',
+      confirmMsgParseFail: '',
     };
   },
   computed: {},
@@ -58,8 +89,11 @@ export default {
           delete p.id;
           return p;
         }),
+        enableConfirmMsg: this.enableConfirmMsg,
+        confirmMsg: this.confirmMsg,
+        confirmMsgParseFail: this.confirmMsgParseFail,
       };
-      // console.log(paramsCollectingTab);
+      console.log(paramsCollectingTab);
       this.$emit('update', paramsCollectingTab);
     },
     renderTabContent() {
@@ -70,6 +104,9 @@ export default {
         param.id = this.$uuid.v1();
         return param;
       });
+      this.enableConfirmMsg = paramsCollectingTab.enableConfirmMsg || false;
+      this.confirmMsg = paramsCollectingTab.confirmMsg || '';
+      this.confirmMsgParseFail = paramsCollectingTab.confirmMsgParseFail || '';
     },
     updateParam(index, $event) {
       this.params[index] = $event;
@@ -89,6 +126,18 @@ export default {
       this.params.splice(index, 1);
       this.emitUpdate();
     },
+    onInputEnableConfirmMsg(newValue) {
+      this.enableConfirmMsg = newValue;
+      this.emitUpdate();
+    },
+    onInputConfirmMsg(newValue) {
+      this.confirmMsg = newValue;
+      this.emitUpdate();
+    },
+    onInputConfirmMsgParseFail(newValue) {
+      this.confirmMsgParseFail = newValue;
+      this.emitUpdate();
+    },
   },
   beforeMount() {
     this.renderTabContent();
@@ -106,6 +155,8 @@ export default {
   flex-direction: column;
   padding: 0px 30px 0px 20px;
   .block{
+    display: flex;
+    flex-direction: column;
     background: #F3F7F9;
     padding: 20px 20px 20px 20px;
     border: 1px solid $color-borderline;
@@ -137,6 +188,18 @@ export default {
         margin-left: 20px;
         border-radius: 5px;
       }
+      input[type=checkbox]{
+        @include general-checkbox();
+      }
+    }
+    .confim-msgs{
+      display: flex;
+      flex-direction: column;
+      .text-response{
+        height: 100px;
+        color: $color-font-normal;
+        margin: 10px 0px 10px 0px;
+      }
     }
   }
   .instruction{
@@ -152,7 +215,7 @@ export default {
     color: white;
     font-size: 18px;
     font-weight: 600;
-    margin: 0px 0px 10px 0px;
+    margin: 0px 0px 20px 0px;
     cursor: pointer;
     &:hover{
       transition: background-color 0.5s ease;

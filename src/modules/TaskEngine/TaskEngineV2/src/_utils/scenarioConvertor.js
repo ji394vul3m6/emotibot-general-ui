@@ -351,7 +351,11 @@ export default {
     return tab;
   },
   parseParamsCollectingTab(node) {
-    const tab = {};
+    const tab = {
+      enableConfirmMsg: false,
+      confirmMsg: '',
+      confirmMsgParseFail: '',
+    };
     tab.params = [];
     node.content.questions.forEach((q, index) => {
       const param = {};
@@ -410,6 +414,9 @@ export default {
     } else if (uiNode.nodeType === 'parameter_collecting') {
       node.content = this.composePCContent(
         uiNode.paramsCollectingTab.params,
+        uiNode.paramsCollectingTab.enableConfirmMsg,
+        uiNode.paramsCollectingTab.confirmMsg,
+        uiNode.paramsCollectingTab.confirmMsgParseFail,
       );
     } else if (uiNode.nodeType === 'action') {
       node.content = JSON.parse(JSON.stringify(uiNode.actionTab.actionGroupList));
@@ -433,10 +440,13 @@ export default {
       is_last_node: isLastNode,
     };
   },
-  composePCContent(params) {
+  composePCContent(params, enableConfirmMsg, confirmMsg, confirmMsgParseFail) {
     const content = {};
     content.parsers = [];
     content.questions = [];
+    content.enable_confirm_msg = enableConfirmMsg;
+    content.confirm_msg = confirmMsg;
+    content.confirm_msg_parse_fail = confirmMsgParseFail;
     params.forEach((param) => {
       const conditionRules = [];
       const skipIfKeyExistList = [];
