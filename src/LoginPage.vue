@@ -16,6 +16,8 @@
         <img :src="captchaSrc">
         <input ref="captcha" type="text" v-model="input.captcha"
         :placeholder="$t('login.captcha_place')"
+        :maxlength="captchaLength"
+        @keydown="passwordKey"
         autocomplete="off">
       </div>
       <div class="input-button-row">
@@ -33,6 +35,7 @@
 </template>
 
 <script>
+import misc from '@/utils/js/misc';
 import Icon from './components/basic/Icon';
 import LoadingButton from './components/basic/LoadingButton';
 import api from './api/system';
@@ -55,6 +58,7 @@ export default {
       redirect: '',
       useCaptcha: false,
       captchaSrc: '',
+      captchaLength: 6,
     };
   },
   methods: {
@@ -63,7 +67,7 @@ export default {
       that.$refs.user.blur();
       that.$refs.password.blur();
       if (!that.input.account || !that.input.password) {
-        that.$notify({ text: '请输入帐密', type: 'fail' });
+        that.$notify({ text: that.$t('login.notify_input'), type: 'fail' });
         if (!that.input.account) {
           that.$refs.user.focus();
         } else {
@@ -102,6 +106,7 @@ export default {
             that.$refs.captcha.focus();
           }
         } else {
+          that.reloadCaptcha();
           that.$notify({ text: '登录失败', type: 'fail' });
           that.$refs.user.focus();
         }
@@ -115,9 +120,27 @@ export default {
         this.submit();
       }
     },
+    reloadCaptcha() {
+      const that = this;
+      that.captchaSrc = '';
+      that.input.captcha = '';
+      that.$api.getEnv().then((env) => {
+        if (env.USE_CAPTCHA === '1' || env.USE_CAPTCHA === 'true' || env.USE_CAPTCHA === true) {
+          that.useCaptcha = true;
+          return that.$api.getCaptcha().then((rsp) => {
+            that.captchaSrc = rsp.data;
+            that.input.captchaID = rsp.id;
+          });
+        }
+        return new Promise((r) => {
+          setTimeout(r(), 0);
+        });
+      });
+    },
   },
   mounted() {
     const that = this;
+    that.$i18n.locale = misc.getBrowserLanguage();
     that.$refs.user.focus();
     const querys = document.location.search.substr(1).split('&');
     const queryMap = {};
@@ -131,18 +154,7 @@ export default {
     if (Object.keys(queryMap).indexOf('redirect') >= 0) {
       that.redirect = decodeURIComponent(queryMap.redirect);
     }
-    that.$api.getEnv().then((env) => {
-      if (env.USE_CAPTCHA) {
-        that.useCaptcha = true;
-        return that.$api.getCaptcha().then((rsp) => {
-          that.captchaSrc = rsp.data;
-          that.input.captchaID = rsp.id;
-        });
-      }
-      return new Promise((r) => {
-        setTimeout(r(), 0);
-      });
-    });
+    that.reloadCaptcha();
   },
 };
 </script>

@@ -21,12 +21,12 @@
           <text-button v-if="col.key==='password'"
           @click="popEditPassword">{{ $t('management.modify_password') }}</text-button>
         </div>
-        <!-- <div class="row">
+        <div class="row">
           <div class="row-title">{{ $t('general.language') }}：</div>
           <div class="row-content">
             <dropdown-select :options="languageOption" width="150px" v-model="nowLanguage" ref="language" @input="changeLanguage"/>
           </div>
-        </div> -->
+        </div>
       </div>
     </div>
   </div>
@@ -238,7 +238,11 @@ export default {
     },
     changeLanguage(value) {
       const language = value[0];
+      if (this.showLanguage === language) {
+        return;
+      }
       this.setLanguage(language);
+      location.reload();
     },
   },
   mounted() {
