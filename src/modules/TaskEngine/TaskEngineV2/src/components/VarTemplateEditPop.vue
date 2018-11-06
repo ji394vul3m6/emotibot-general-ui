@@ -240,8 +240,8 @@ export default {
     padding: 20px 20px 20px 20px;
     border: 1px solid $color-borderline;
     border-radius: 5px;
-    &:not(:last-child){
-      margin: 0px 0px 20px 0px;
+    &:nth-child(n+2){
+      margin: 20px 0px 0px 0px;
     }
   }
   .block-template{
@@ -259,6 +259,7 @@ export default {
     flex-direction: column;
     @include auto-overflow();
     @include customScrollbar();
+    padding-top: 20px;
     .button-delete-template{
       position: absolute;
       top: 10px;
