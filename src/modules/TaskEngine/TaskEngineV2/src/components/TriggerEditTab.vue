@@ -1,15 +1,6 @@
-<i18n>
-{
-  "zh-cn": {
-    "instruction": "设置触发此场景的条件",
-    "button_add_rule": "＋增加规则"
-  }
-}
-</i18n>
-
 <template lang="html">
 <div id="trigger-edit-tab">
-  <div class="instruction block" v-t="'instruction'"></div>
+  <div class="instruction block" v-t="'task_engine_v2.trigger_edit_tab.instruction'"></div>
   <draggable v-model="rules" :options="{ghostClass:'ghost'}" @start="drag=true" @end="drag=false; emitUpdate();">
     <template v-for="(rule, index) in rules">
       <condition-block
@@ -28,7 +19,7 @@
     </template>
   </draggable>
   <button
-    v-t="'button_add_rule'"
+    v-t="'task_engine_v2.trigger_edit_tab.button_add_rule'"
     class="button-add-rule"
     @click="addRule()">
   </button>

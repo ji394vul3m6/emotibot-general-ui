@@ -1,11 +1,3 @@
-<i18n>
-{
-  "zh-cn": {
-    "err_empty": "不可为空"
-  }
-}
-</i18n>
-
 <template lang="html">
 <div id="restful-setting-edit-page">
   <div class="block">
@@ -109,7 +101,7 @@ export default {
         'border-radius': '5px',
       },
       tooltip: {
-        msg: this.$t('err_empty'),
+        msg: this.$t('task_engine_v2.err_empty'),
         eventOnly: true,
         errorType: true,
         alignLeft: true,

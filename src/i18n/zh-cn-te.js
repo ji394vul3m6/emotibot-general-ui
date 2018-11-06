@@ -1,5 +1,6 @@
 export default {
   task_engine_v2: {
+    err_empty: '不可为空',
     scenario_list_page: {
       button_create_new_scenario: '创建场景',
       button_import_scenario: '导入',
@@ -75,6 +76,21 @@ export default {
       default_node_dialogue_cnt_limit: '预设节点对话数',
       err_empty_default_node_dialogue_cnt_limit: '预设节点对话数不可为空',
       confirm_to_save_changes: '场景基本设置已被更动，请问是否需要保存？',
+    },
+    var_template_edit_pop: {
+      instruction: '为每个变量设定显示模版',
+      label_key: '键',
+      err_empty_label_key: '键不可为空',
+      label_template: '模版',
+      err_empty_label_template: '模版不可为空',
+      button_add_template: '＋增加模版',
+      confirm_to_save_changes: '变量模版设置已被更动，请问是否需要保存？',
+    },
+    global_edge_edit_pop: {
+      instruction: '为每个节点增加通用的连线',
+      add_new_dialogue_node: '新增对话节点',
+      button_add_edge: '＋增加连线',
+      confirm_to_save_changes: '通用连线设置已被更动，请问是否需要保存？',
     },
     trigger_edit_tab: {
       instruction: '设置触发此场景的条件',

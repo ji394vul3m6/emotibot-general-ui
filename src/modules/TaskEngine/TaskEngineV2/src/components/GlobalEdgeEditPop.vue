@@ -1,18 +1,6 @@
-<i18n>
-{
-  "zh-cn": {
-    "instruction": "为每个节点增加通用的连线",
-    "button_add_edge": "＋增加连线",
-    "confirm_to_save_changes": "通用连线设置已被更动，请问是否需要保存？",
-    "add_new_dialogue_node": "新增对话节点",
-    "dialogue": "对话节点"
-  }
-}
-</i18n>
-
 <template lang="html">
 <div id="global-edge-edit-pop">
-  <div class="instruction block" v-t="'instruction'"></div>
+  <div class="instruction block" v-t="'task_engine_v2.global_edge_edit_pop.instruction'"></div>
   <div class="block-list-container">
     <draggable v-model="globalEdges" :options="{ghostClass:'ghost'}" @start="drag=true" @end="drag=false">
       <template v-for="(edge, index) in globalEdges">
@@ -36,7 +24,7 @@
   <button
     class="button-add-edge"
     @click="addEdge()">
-    {{$t("button_add_edge")}}
+    {{$t("task_engine_v2.global_edge_edit_pop.button_add_edge")}}
   </button>
 </div>
 </template>
@@ -103,7 +91,7 @@ export default {
         ...this.newNodeOptions.map(option => option.nodeName),
       ];
       const newNodeName = general.suffixIndexToNodeName(
-                            this.$t('dialogue'),
+                            this.$t('task_engine_v2.global_edge_edit_pop.dialogue'),
                             nodeNames,
                           );
       this.newNodeOptions.push({
@@ -187,7 +175,7 @@ export default {
         that.$popCheck({
           bindValue: true,
           data: {
-            msg: that.$t('confirm_to_save_changes'),
+            msg: that.$t('task_engine_v2.global_edge_edit_pop.confirm_to_save_changes'),
           },
           callback: {
             ok() {
@@ -214,7 +202,7 @@ export default {
     this.doNothingEdge = { text: 'do nothing', value: null };
     this.exitEdge = { text: 'Exit (ID: 0)', value: '0' };
     this.addNewDialogueNodeEdge = {
-      text: this.$t('add_new_dialogue_node'),
+      text: this.$t('task_engine_v2.to_node_option.add_new_dialogue_node'),
       value: 'add_new_dialogue_node',
       isButton: true,
     };

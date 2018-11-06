@@ -1,86 +1,3 @@
-<i18n>
-{
-  "zh-cn": {
-    "err_empty": "不可为空",
-    "condition_block": {
-      "label_content": "内容",
-      "button_add": "＋增加",
-      "button_remove": "移除",
-      "label_pattern": "模式",
-      "label_nth_match": "第几符合词",
-      "label_mapping_table": "转换数据",
-      "label_source_key": "来源键",
-      "label_target_key": "目的键",
-      "label_link": "连结",
-      "label_similarity_threshold": "相似度门槛",
-      "label_sentence": "句子",
-      "label_compare_operator": "比较方式",
-      "label_key": "键",
-      "label_value": "值",
-      "node_counter": "若超过节点对话轮数限制",
-      "scenario_counter": "若超过全场景对话轮数限制",
-      "source": {
-        "text": "用户输入文本",
-        "global_info": "场景已收集数据",
-        "cu": "语句解析数据"
-      },
-      "func": {
-        "match": "完全相符",
-        "contains": "包含文本",
-        "regular_exp": "正则表示式",
-        "hotel_parser": "酒店预定语句解析器",
-        "common_parser": "通用语句解析器",
-        "task_parser": "场景语句解析器",
-        "user_custom_parser": "转换数据解析器",
-        "polarity_parser": "是否判断解析器",
-        "api_parser": "Web API 调用",
-        "qq": "语句相似度",
-        "key_val_match": "键值匹配",
-        "key_key_match": "键键匹配",
-        "contain_key": "包含键",
-        "not_contain_key": "不包含键",
-        "list_length_match": "序列长度匹配",
-        "counter_check": "轮次检查",
-        "user_custom_transform": "转换数据",
-        "regular_exp_from_var": "正则表示式",
-        "assign_value": "赋值",
-        "cu_parser": "语句解析数据提取",
-        "custom_cu_parser": "自定义语句解析数据提取"
-      },
-      "operator": {
-        "equal_to": "等于",
-        "not_equal_to": "不等于",
-        "greater_than": "大于",
-        "greater_or_equal_to": "大于等于",
-        "less_than": "小于",
-        "less_or_equal_to": "小于等于",
-        "ignore_case_compare": "忽略大小写等于",
-        "reg_exp": "正则表示式",
-        "in": "包含于"
-      }
-    },
-    "edge_edit_tab": {
-      "instruction": "使用连线连接此节点与其他节点",
-      "button_add_edge": "＋增加连线",
-      "label_then_goto": "则前往",
-      "label_exceed_limit": "超过轮次",
-      "instruction_exeed_limit": "当此节点出话超过",
-      "label_time": "次",
-      "label_default_goto": "预设前往",
-      "instruction_default_goto": "当所有规则都无法符合时"
-    },
-    "params_collecting_edge_tab": {
-      "succeed": "成功",
-      "succeed_description": "取得所有必要参数",
-      "failed": "失敗",
-      "failed_description": "参数连续解析失败",
-      "virtual_global_edges": "通用连线",
-      "virtual_global_edges_description": "在这个位置插入通用连线"
-    }
-  }
-}
-</i18n>
-
 <template lang="html">
 <div id="condition-block">
   <div
@@ -130,14 +47,14 @@
             style="width: 60px;"
             v-if="index !== 0"
             @click="deleteRule(index)">
-            {{$t("condition_block.button_remove")}}
+            {{$t("task_engine_v2.condition_block.button_remove")}}
           </button>
         </div>
         <!-- 完全相符 / 包含文本 -->
         <div class="content-contain" v-if="rule.funcName === 'match' || rule.funcName == 'contains'">
           <div class="row row-content">
             <div class="label label-start">
-              {{$t("condition_block.label_content")}}
+              {{$t("task_engine_v2.condition_block.label_content")}}
             </div>
             <input ref="input-content" class="input-content" v-model="rule.content" v-tooltip="inputTooltip" @focus="onInputFocus"></input>
           </div>
@@ -146,14 +63,14 @@
         <div class="content-regular-exp" v-if="rule.funcName === 'regular_exp'">
           <div class="row">
             <div class="label label-start">
-              {{$t("condition_block.label_pattern")}}
+              {{$t("task_engine_v2.condition_block.label_pattern")}}
             </div>
             <input ref="input-content" class="input-content" v-model="rule.content.pattern" v-tooltip="inputTooltip" @focus="onInputFocus"></input>
           </div>
           <template v-for="(operation, idx) in rule.content.operations">
             <div class="row">
               <div class="label label-start">
-                {{$t("condition_block.label_nth_match")}}
+                {{$t("task_engine_v2.condition_block.label_nth_match")}}
               </div>
               <input class="input-content" ref="input-content" v-tooltip="inputTooltip"
                 oninput="this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(^[0-9]{1,2}).*/g, '$1');"
@@ -165,19 +82,19 @@
                 class="button"
                 style="width: 70px;"
                 @click="addRegTargetKey(index)">
-                {{$t("condition_block.button_add")}}
+                {{$t("task_engine_v2.condition_block.button_add")}}
               </button>
               <button
                 v-if="idx !== 0"
                 class="button"
                 style="width: 60px;"
                 @click="deleteRegTargetKey(index, idx)">
-                {{$t("condition_block.button_remove")}}
+                {{$t("task_engine_v2.condition_block.button_remove")}}
               </button>
             </div>
             <div class="row">
               <div class="label label-start">
-                {{$t("condition_block.label_target_key")}}
+                {{$t("task_engine_v2.condition_block.label_target_key")}}
               </div>
               <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="operation.key" @focus="onInputFocus"></input>
             </div>
@@ -190,7 +107,7 @@
                 rule.funcName === 'task_parser'">
           <div class="row">
             <div class="label label-start">
-              {{$t("condition_block.label_content")}}
+              {{$t("task_engine_v2.condition_block.label_content")}}
             </div>
             <dropdown-select
               class="select select-target-entity"
@@ -211,7 +128,7 @@
         <div class="content-map-table" v-if="rule.funcName === 'user_custom_parser'">
           <div class="row">
             <div class="label label-start">
-              {{$t("condition_block.label_mapping_table")}}
+              {{$t("task_engine_v2.condition_block.label_mapping_table")}}
             </div>
             <dropdown-select
               class="select"
@@ -228,7 +145,7 @@
           </div>
           <div class="row">
             <div class="label label-start">
-              {{$t("condition_block.label_target_key")}}
+              {{$t("task_engine_v2.condition_block.label_target_key")}}
             </div>
             <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.to_key" @focus="onInputFocus"></input>
           </div>
@@ -237,7 +154,7 @@
         <div class="content-polarity-parser" v-if="rule.funcName === 'polarity_parser'">
           <div class="row">
             <div class="label label-start">
-              {{$t("condition_block.label_target_key")}}
+              {{$t("task_engine_v2.condition_block.label_target_key")}}
             </div>
             <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.key" @focus="onInputFocus"></input>
           </div>
@@ -246,7 +163,7 @@
         <div class="content-api-parser" v-if="rule.funcName === 'api_parser'">
           <div class="row">
             <div class="label label-start">
-              {{$t("condition_block.label_link")}}
+              {{$t("task_engine_v2.condition_block.label_link")}}
             </div>
             <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content" @focus="onInputFocus"></input>
           </div>
@@ -255,7 +172,7 @@
         <div class="content-api-parser" v-if="rule.funcName === 'key_val_match'">
           <div class="row">
             <div class="label label-start">
-              {{$t("condition_block.label_compare_operator")}}
+              {{$t("task_engine_v2.condition_block.label_compare_operator")}}
             </div>
             <dropdown-select
               class="select"
@@ -270,7 +187,7 @@
           </div>
           <div class="row">
             <div class="label label-start">
-              {{$t("condition_block.label_key")}}
+              {{$t("task_engine_v2.condition_block.label_key")}}
             </div>
             <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key')">
               <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key" @focus="onInputFocus">
@@ -278,7 +195,7 @@
           </div>
           <div class="row">
             <div class="label label-start">
-              {{$t("condition_block.label_value")}}
+              {{$t("task_engine_v2.condition_block.label_value")}}
             </div>
             <input v-if="rule.content[0].compare === '>'  ||
                          rule.content[0].compare === '>=' ||
@@ -304,7 +221,7 @@
         <div class="content-api-parser" v-if="rule.funcName === 'key_key_match'">
           <div class="row">
             <div class="label label-start">
-              {{$t("condition_block.label_compare_operator")}}
+              {{$t("task_engine_v2.condition_block.label_compare_operator")}}
             </div>
             <dropdown-select
               class="select"
@@ -319,7 +236,7 @@
           </div>
           <div class="row">
             <div class="label label-start">
-              {{$t("condition_block.label_key")}}
+              {{$t("task_engine_v2.condition_block.label_key")}}
             </div>
             <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key1')">
               <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key1" @focus="onInputFocus">
@@ -327,7 +244,7 @@
           </div>
           <div class="row">
             <div class="label label-start">
-              {{$t("condition_block.label_key")}}
+              {{$t("task_engine_v2.condition_block.label_key")}}
             </div>
             <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key2" @focus="onInputFocus"></input>
           </div>
@@ -336,7 +253,7 @@
         <div class="content-api-parser" v-if="rule.funcName === 'contain_key'">
           <div class="row">
             <div class="label label-start">
-              {{$t("condition_block.label_content")}}
+              {{$t("task_engine_v2.condition_block.label_content")}}
             </div>
             <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key')">
               <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key" :key="rule.funcName" @focus="onInputFocus">
@@ -347,7 +264,7 @@
         <div class="content-api-parser" v-if="rule.funcName === 'not_contain_key'">
           <div class="row">
             <div class="label label-start">
-              {{$t("condition_block.label_content")}}
+              {{$t("task_engine_v2.condition_block.label_content")}}
             </div>
             <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key')">
               <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key" :key="rule.funcName" @focus="onInputFocus">
@@ -358,7 +275,7 @@
         <div class="content-api-parser" v-if="rule.funcName === 'list_length_match'">
           <div class="row">
             <div class="label label-start">
-              {{$t("condition_block.label_compare_operator")}}
+              {{$t("task_engine_v2.condition_block.label_compare_operator")}}
             </div>
             <dropdown-select
               class="select"
@@ -373,7 +290,7 @@
           </div>
           <div class="row">
             <div class="label label-start">
-              {{$t("condition_block.label_key")}}
+              {{$t("task_engine_v2.condition_block.label_key")}}
             </div>
             <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key')">
               <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key" @focus="onInputFocus">
@@ -381,7 +298,7 @@
           </div>
           <div class="row">
             <div class="label label-start">
-              {{$t("condition_block.label_value")}}
+              {{$t("task_engine_v2.condition_block.label_value")}}
             </div>
             <input class="input-content" ref="input-content" v-tooltip="inputTooltip"
               oninput="this.value = this.value.replace(/[^0-9]/g, '');"
@@ -394,7 +311,7 @@
         <div class="content-api-parser" v-if="rule.funcName === 'counter_check'">
           <div class="row">
             <div class="label label-start">
-              {{$t("condition_block.label_content")}}
+              {{$t("task_engine_v2.condition_block.label_content")}}
             </div>
             <dropdown-select
               class="select"
@@ -412,7 +329,7 @@
         <div class="content-api-parser" v-if="rule.funcName === 'user_custom_transform'">
           <div class="row">
             <div class="label label-start">
-              {{$t("condition_block.label_mapping_table")}}
+              {{$t("task_engine_v2.condition_block.label_mapping_table")}}
             </div>
             <dropdown-select
               class="select"
@@ -427,7 +344,7 @@
           </div>
           <div class="row">
             <div class="label label-start">
-              {{$t("condition_block.label_source_key")}}
+              {{$t("task_engine_v2.condition_block.label_source_key")}}
             </div>
             <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content, 'from_key')">
               <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.from_key" @focus="onInputFocus">
@@ -435,7 +352,7 @@
           </div>
           <div class="row">
             <div class="label label-start">
-              {{$t("condition_block.label_target_key")}}
+              {{$t("task_engine_v2.condition_block.label_target_key")}}
             </div>
             <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.to_key" @focus="onInputFocus"></input>
           </div>
@@ -444,13 +361,13 @@
         <div class="content-api-parser" v-if="rule.funcName === 'regular_exp_from_var'">
           <div class="row">
             <div class="label label-start">
-              {{$t("condition_block.label_pattern")}}
+              {{$t("task_engine_v2.condition_block.label_pattern")}}
             </div>
             <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.pattern" @focus="onInputFocus"></input>
           </div>
           <div class="row">
             <div class="label label-start">
-              {{$t("condition_block.label_source_key")}}
+              {{$t("task_engine_v2.condition_block.label_source_key")}}
             </div>
             <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content, 'from_key')">
               <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.from_key" @focus="onInputFocus">
@@ -460,7 +377,7 @@
             <div>
               <div class="row">
                 <div class="label label-start">
-                  {{$t("condition_block.label_nth_match")}}
+                  {{$t("task_engine_v2.condition_block.label_nth_match")}}
                 </div>
                 <input class="input-content" ref="input-content" v-tooltip="inputTooltip"
                   oninput="this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(^[0-9]{1,2}).*/g, '$1');"
@@ -472,19 +389,19 @@
                   class="button"
                   style="width: 70px;"
                   @click="addRegTargetKey(index)">
-                  {{$t("condition_block.button_add")}}
+                  {{$t("task_engine_v2.condition_block.button_add")}}
                 </button>
                 <button
                   v-if="idx !== 0"
                   class="button"
                   style="width: 60px;"
                   @click="deleteRegTargetKey(index, idx)">
-                  {{$t("condition_block.button_remove")}}
+                  {{$t("task_engine_v2.condition_block.button_remove")}}
                 </button>
               </div>
               <div class="row">
                 <div class="label label-start">
-                  {{$t("condition_block.label_target_key")}}
+                  {{$t("task_engine_v2.condition_block.label_target_key")}}
                 </div>
                 <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="operation.key" @focus="onInputFocus">
               </div>
@@ -495,7 +412,7 @@
         <div class="content-api-parser" v-if="rule.funcName === 'assign_value'">
           <div class="row">
             <div class="label label-start">
-              {{$t("condition_block.label_key")}}
+              {{$t("task_engine_v2.condition_block.label_key")}}
             </div>
             <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key')">
               <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key" @focus="onInputFocus">
@@ -503,7 +420,7 @@
           </div>
           <div class="row">
             <div class="label label-start">
-              {{$t("condition_block.label_value")}}
+              {{$t("task_engine_v2.condition_block.label_value")}}
             </div>
             <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].val" @focus="onInputFocus"></input>
           </div>
@@ -512,7 +429,7 @@
         <div class="content-api-parser" v-if="rule.funcName === 'cu_parser'">
           <div class="row">
             <div class="label label-start">
-              {{$t("condition_block.label_content")}}
+              {{$t("task_engine_v2.condition_block.label_content")}}
             </div>
             <dropdown-select
               class="select"
@@ -530,7 +447,7 @@
         <div class="content-api-parser" v-if="rule.funcName === 'custom_cu_parser'">
           <div class="row">
             <div class="label label-start">
-              {{$t("condition_block.label_content")}}
+              {{$t("task_engine_v2.condition_block.label_content")}}
             </div>
             <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content" @focus="onInputFocus"></input>
           </div>
@@ -539,7 +456,7 @@
     </template>
     <div class="row row-no-bottom-margin" v-if="edgeType!=='trigger'">
       <div class="label label-start">
-        {{$t("edge_edit_tab.label_then_goto")}}
+        {{$t("task_engine_v2.edge_edit_tab.label_then_goto")}}
       </div>
       <dropdown-select
         class="select select-goto"
@@ -585,14 +502,14 @@
       </div>
       <div class="row">
         <div class="label label-start">
-          {{$t("condition_block.label_similarity_threshold")}}
+          {{$t("task_engine_v2.condition_block.label_similarity_threshold")}}
         </div>
         <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="threshold" @focus="onInputFocus"></input>
       </div>
       <template v-for="(edge, index) in candidateEdges">
         <div class="row">
           <div class="label label-start">
-            {{$t("condition_block.label_sentence")}}
+            {{$t("task_engine_v2.condition_block.label_sentence")}}
           </div>
           <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="edge.tar_text" @focus="onInputFocus"></input>
           <button
@@ -600,19 +517,19 @@
             class="button"
             style="width: 100px;"
             @click="addQQCandidateEdge()">
-            {{`${$t("condition_block.button_add")}${$t("condition_block.label_sentence")}`}}
+            {{`${$t("task_engine_v2.condition_block.button_add")}${$t("condition_block.label_sentence")}`}}
           </button>
           <button
             v-if="index!==0"
             class="button"
             style="width: 60px;"
             @click="deleteQQCandidateEdge(index)">
-            {{$t("condition_block.button_remove")}}
+            {{$t("task_engine_v2.condition_block.button_remove")}}
           </button>
         </div>
         <div class="row">
           <div class="label label-start">
-            {{$t("edge_edit_tab.label_then_goto")}}
+            {{$t("task_engine_v2.edge_edit_tab.label_then_goto")}}
           </div>
           <dropdown-select
             class="select select-goto"
@@ -634,13 +551,13 @@
   <div class="succeed_then_goto pc_block" v-if="edgeType==='pc_succeed'">
     <div class="row row-no-bottom-margin">
       <div class="label label-bold">
-        {{$t("params_collecting_edge_tab.succeed")}}
+        {{$t("task_engine_v2.params_collecting_edge_tab.succeed")}}
       </div>
       <div class="label label-margin-left">
-        {{$t("params_collecting_edge_tab.succeed_description")}}
+        {{$t("task_engine_v2.params_collecting_edge_tab.succeed_description")}}
       </div>
       <div class="label label-margin-left">
-        {{$t("edge_edit_tab.label_then_goto")}}
+        {{$t("task_engine_v2.edge_edit_tab.label_then_goto")}}
       </div>
       <dropdown-select
         class="select select-goto"
@@ -660,17 +577,17 @@
   <div class="exceed_limit pc_block" v-if="edgeType==='pc_failed'">
     <div class="row row-no-bottom-margin">
       <div class="label label-bold">
-        {{$t("params_collecting_edge_tab.failed")}}
+        {{$t("task_engine_v2.params_collecting_edge_tab.failed")}}
       </div>
       <div class="label label-margin-left">
-        {{$t("params_collecting_edge_tab.failed_description")}}
+        {{$t("task_engine_v2.params_collecting_edge_tab.failed_description")}}
       </div>
       <input ref="input-content" v-tooltip="inputTooltip" class="input-limit" v-model="dialogueLimit" @focus="onInputFocus"></input>
       <div class="label">
-        {{$t("edge_edit_tab.label_time")}}
+        {{$t("task_engine_v2.edge_edit_tab.label_time")}}
       </div>
       <div class="label label-margin-left">
-        {{$t("edge_edit_tab.label_then_goto")}}
+        {{$t("task_engine_v2.edge_edit_tab.label_then_goto")}}
       </div>
       <dropdown-select
         class="select select-goto"
@@ -690,10 +607,10 @@
   <div class="virtual_global_edges pc_block" v-if="edgeType==='virtual_global_edges'">
     <div class="row row-no-bottom-margin">
       <div class="label label-bold">
-        {{$t("params_collecting_edge_tab.virtual_global_edges")}}
+        {{$t("task_engine_v2.params_collecting_edge_tab.virtual_global_edges")}}
       </div>
       <div class="label label-margin-left">
-        {{$t("params_collecting_edge_tab.virtual_global_edges_description")}}
+        {{$t("task_engine_v2.params_collecting_edge_tab.virtual_global_edges_description")}}
       </div>
     </div>
   </div>
@@ -763,7 +680,7 @@ export default {
       dialogueLimit: 3,
       varDropdownMap: {},
       inputTooltip: {
-        msg: this.$t('err_empty'),
+        msg: this.$t('task_engine_v2.err_empty'),
         eventOnly: true,
         errorType: true,
         alignLeft: true,

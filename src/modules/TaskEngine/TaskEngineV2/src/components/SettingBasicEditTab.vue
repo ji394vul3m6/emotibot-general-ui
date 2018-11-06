@@ -1,39 +1,14 @@
-<i18n>
-{
-  "zh-cn": {
-    "err_empty": "不可为空",
-    "setting_edit_tab": {
-      "node_type": "节点类型",
-      "node_name": "节点名称"
-    },
-    "node_type": {
-      "entry": "入口节点",
-      "dialogue": "对话节点",
-      "restful": "RESTful数据调用节点",
-      "nlu_pc": "TDE参数收集节点",
-      "parameter_collecting": "参数收集节点",
-      "action": "动作节点",
-      "dialogue_description": "与使用者进行交互的节点",
-      "restful_description": "使用RESTful接口调用数据",
-      "nlu_pc_description": "利用TDE接口收集所需参数的节点",
-      "parameter_collecting_description": "收集所需参数的节点",
-      "action_description": "执行动作的节点"
-    }
-  }
-}
-</i18n>
-
 <template lang="html">
 <div id="nlu-pc-setting-tab">
   <div class="block">
-    <div class="label-header">{{$t("setting_edit_tab.node_type")}}</div>
+    <div class="label-header">{{$t("task_engine_v2.setting_edit_tab.node_type")}}</div>
     <input class="input-rounded input-readonly"
       disabled
-      :value="$t(`node_type.${nodeType}`)">
+      :value="$t(`task_engine_v2.node_type.${nodeType}`)">
     </input>
   </div>
   <div class="block">
-    <div class="label-header">{{$t("setting_edit_tab.node_name")}}</div>
+    <div class="label-header">{{$t("task_engine_v2.setting_edit_tab.node_name")}}</div>
     <input class="input-rounded"
       ref="input-content" v-tooltip="tooltip" @focus="onInputFocus"
       v-model="nodeName">
@@ -65,7 +40,7 @@ export default {
       nodeType,
       nodeName,
       tooltip: {
-        msg: this.$t('err_empty'),
+        msg: this.$t('task_engine_v2.err_empty'),
         eventOnly: true,
         errorType: true,
         alignLeft: true,

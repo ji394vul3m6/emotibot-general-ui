@@ -109,15 +109,15 @@ export default {
   getSourceOptions(context) {
     return [
       {
-        text: context.$t('condition_block.source.text'),
+        text: context.$t('task_engine_v2.condition_block.source.text'),
         value: 'text',
       },
       {
-        text: context.$t('condition_block.source.global_info'),
+        text: context.$t('task_engine_v2.condition_block.source.global_info'),
         value: 'global_info',
       },
       {
-        text: context.$t('condition_block.source.cu'),
+        text: context.$t('task_engine_v2.condition_block.source.cu'),
         value: 'cu',
       },
     ];
@@ -134,21 +134,21 @@ export default {
     const cuFuncs = ['cu_parser', 'custom_cu_parser'];
     return {
       text: textFuncs.map((func) => {
-        const key = `condition_block.func.${func}`;
+        const key = `task_engine_v2.condition_block.func.${func}`;
         return {
           text: context.$t(key),
           value: func,
         };
       }),
       global_info: globalIngoFuncs.map((func) => {
-        const key = `condition_block.func.${func}`;
+        const key = `task_engine_v2.condition_block.func.${func}`;
         return {
           text: context.$t(key),
           value: func,
         };
       }),
       cu: cuFuncs.map((func) => {
-        const key = `condition_block.func.${func}`;
+        const key = `task_engine_v2.condition_block.func.${func}`;
         return {
           text: context.$t(key),
           value: func,
@@ -165,27 +165,27 @@ export default {
   getBasicCompareOptions(context) {
     return [
       {
-        text: context.$t('condition_block.operator.equal_to'),
+        text: context.$t('task_engine_v2.condition_block.operator.equal_to'),
         value: '==',
       },
       {
-        text: context.$t('condition_block.operator.not_equal_to'),
+        text: context.$t('task_engine_v2.condition_block.operator.not_equal_to'),
         value: '!=',
       },
       {
-        text: context.$t('condition_block.operator.greater_than'),
+        text: context.$t('task_engine_v2.condition_block.operator.greater_than'),
         value: '>',
       },
       {
-        text: context.$t('condition_block.operator.greater_or_equal_to'),
+        text: context.$t('task_engine_v2.condition_block.operator.greater_or_equal_to'),
         value: '>=',
       },
       {
-        text: context.$t('condition_block.operator.less_than'),
+        text: context.$t('task_engine_v2.condition_block.operator.less_than'),
         value: '<',
       },
       {
-        text: context.$t('condition_block.operator.less_or_equal_to'),
+        text: context.$t('task_engine_v2.condition_block.operator.less_or_equal_to'),
         value: '<=',
       },
     ];
@@ -195,11 +195,11 @@ export default {
     return [
       ...options,
       {
-        text: context.$t('condition_block.operator.ignore_case_compare'),
+        text: context.$t('task_engine_v2.condition_block.operator.ignore_case_compare'),
         value: 'ignore_case_compare',
       },
       {
-        text: context.$t('condition_block.operator.reg_exp'),
+        text: context.$t('task_engine_v2.condition_block.operator.reg_exp'),
         value: 'reg_exp',
       },
     ];
@@ -209,11 +209,11 @@ export default {
     return [
       ...options,
       {
-        text: context.$t('condition_block.operator.ignore_case_compare'),
+        text: context.$t('task_engine_v2.condition_block.operator.ignore_case_compare'),
         value: 'ignore_case_compare',
       },
       {
-        text: context.$t('condition_block.operator.in'),
+        text: context.$t('task_engine_v2.condition_block.operator.in'),
         value: 'in',
       },
     ];
@@ -224,11 +224,11 @@ export default {
   getCounterCheckOptions(context) {
     return [
       {
-        text: context.$t('condition_block.node_counter'),
+        text: context.$t('task_engine_v2.condition_block.node_counter'),
         value: 'node_counter',
       },
       {
-        text: context.$t('condition_block.scenario_counter'),
+        text: context.$t('task_engine_v2.condition_block.scenario_counter'),
         value: 'scenario_counter',
       },
     ];

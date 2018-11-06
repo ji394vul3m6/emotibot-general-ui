@@ -1,69 +1,27 @@
-<i18n>
-{
-  "zh-cn": {
-    "err_empty": "不可为空",
-    "setting_edit_tab": {
-      "node_type": "节点类型",
-      "node_name": "节点名称",
-      "default_q": "预设文本",
-      "insert_var": "插入变量",
-      "insert_sys_var": "插入系统变量",
-      "all_sys_var": "所有系统变量",
-      "unconfirmed_sys_var": "尚未确认的系统变量",
-      "parse_text": "语句解析",
-      "parse_fail_q": "解析失败文本",
-      "parser": "解析器：",
-      "target_data": "提取数据 (可多选)：",
-      "skip_if_exist": "若已提取以下任一数据则跳过出话和数据提取：",
-      "parse_from_this_node": "限定由此节点提取："
-    },
-    "parser": {
-      "none": "无",
-      "common_parser": "通用语句解析器",
-      "task_parser": "场景语句解析器",
-      "hotel_parser": "酒店预定语句解析器"
-    },
-    "node_type": {
-      "entry": "入口节点",
-      "dialogue": "对话节点",
-      "restful": "RESTful数据调用节点",
-      "nlu_pc": "TDE参数收集节点",
-      "parameter_collecting": "参数收集节点",
-      "action": "动作节点",
-      "dialogue_description": "与使用者进行交互的节点",
-      "restful_description": "使用RESTful接口调用数据",
-      "nlu_pc_description": "利用TDE接口收集所需参数的节点",
-      "parameter_collecting_description": "收集所需参数的节点",
-      "action_description": "执行动作的节点"
-    }
-  }
-}
-</i18n>
-
 <template lang="html">
 <div id="setting-edit-tab">
   <div class="block">
-    <div class="label-header">{{$t("setting_edit_tab.node_type")}}</div>
+    <div class="label-header">{{$t("task_engine_v2.setting_edit_tab.node_type")}}</div>
     <input class="input-rounded input-readonly"
       disabled
-      :value="$t(`node_type.${nodeType}`)">
+      :value="$t(`task_engine_v2.node_type.${nodeType}`)">
     </input>
   </div>
   <div class="block">
-    <div class="label-header">{{$t("setting_edit_tab.node_name")}}</div>
+    <div class="label-header">{{$t("task_engine_v2.setting_edit_tab.node_name")}}</div>
     <input class="input-rounded" ref="input-content" v-tooltip="tooltip"
       v-model="nodeName"
       @focus="onInputFocus">
     </input>
   </div>
   <div class="block">
-    <div class="label-header">{{$t("setting_edit_tab.default_q")}}</div>
+    <div class="label-header">{{$t("task_engine_v2.setting_edit_tab.default_q")}}</div>
     <div class="insert-var-button-row">
       <div ref="insertVarDropdown" class="button-insert var" v-dropdown="insertVarDropdown()">
-        {{$t("setting_edit_tab.insert_var")}}
+        {{$t("task_engine_v2.setting_edit_tab.insert_var")}}
       </div>
       <div class="button-insert sys-var" v-dropdown="insertSysVarDropdown()">
-        {{$t("setting_edit_tab.insert_sys_var")}}
+        {{$t("task_engine_v2.setting_edit_tab.insert_sys_var")}}
       </div>
     </div>
     <textarea class="text-response"
@@ -74,9 +32,9 @@
     </textarea>
   </div>
   <div class="block">
-    <div class="label-header">{{$t("setting_edit_tab.parse_text")}}</div>
+    <div class="label-header">{{$t("task_engine_v2.setting_edit_tab.parse_text")}}</div>
     <div class="row">
-      <div class="label-text">{{$t("setting_edit_tab.parser")}}</div>
+      <div class="label-text">{{$t("task_engine_v2.setting_edit_tab.parser")}}</div>
       <dropdown-select
         class="select select-parser"
         ref="selectParser"
@@ -89,7 +47,7 @@
       />
     </div>
     <div class="row">
-      <div class="label-text">{{$t("setting_edit_tab.target_data")}}</div>
+      <div class="label-text">{{$t("task_engine_v2.setting_edit_tab.target_data")}}</div>
       <dropdown-select
         class="select select-target-entity"
         v-if="parser !== 'none'"
@@ -104,7 +62,7 @@
       />
     </div>
     <div class="row">
-      <div class="label-text">{{$t("setting_edit_tab.skip_if_exist")}}</div>
+      <div class="label-text">{{$t("task_engine_v2.setting_edit_tab.skip_if_exist")}}</div>
       <dropdown-select
         class="select select-skip-if-key-exist"
         v-if="parser !== 'none'"
@@ -119,12 +77,12 @@
       />
     </div>
     <div class="row">
-      <div class="label-text">{{$t("setting_edit_tab.parse_from_this_node")}}</div>
+      <div class="label-text">{{$t("task_engine_v2.setting_edit_tab.parse_from_this_node")}}</div>
       <input class="checkbox" type="checkbox" v-if="parser !== 'none'" v-model="parseFromThisNode">
     </div>
   </div>
   <div class="block">
-    <div class="label-header">{{$t("setting_edit_tab.parse_fail_q")}}</div>
+    <div class="label-header">{{$t("task_engine_v2.setting_edit_tab.parse_fail_q")}}</div>
     <textarea class="text-response" ref="fail-textarea" v-tooltip="tooltip"
       v-model="failureResponse"
       @focus="onInputFocus">
@@ -181,7 +139,7 @@ export default {
       },
       varDropdown: undefined,
       tooltip: {
-        msg: this.$t('err_empty'),
+        msg: this.$t('task_engine_v2.err_empty'),
         eventOnly: true,
         errorType: true,
         alignLeft: true,
@@ -280,11 +238,11 @@ export default {
       return {
         options: [
           {
-            text: this.$t('setting_edit_tab.all_sys_var'),
+            text: this.$t('task_engine_v2.setting_edit_tab.all_sys_var'),
             onclick: this.insertVarSelect.bind(this, '$item_list'),
           },
           {
-            text: this.$t('setting_edit_tab.unconfirmed_sys_var'),
+            text: this.$t('task_engine_v2.setting_edit_tab.unconfirmed_sys_var'),
             onclick: this.insertVarSelect.bind(this, '$msg_confirm'),
           },
         ],
@@ -304,19 +262,19 @@ export default {
     getParserOptions() {
       return [
         {
-          text: this.$t('parser.none'),
+          text: this.$t('task_engine_v2.parser.none'),
           value: 'none',
         },
         {
-          text: this.$t('parser.common_parser'),
+          text: this.$t('task_engine_v2.parser.common_parser'),
           value: 'common_parser',
         },
         {
-          text: this.$t('parser.task_parser'),
+          text: this.$t('task_engine_v2.parser.task_parser'),
           value: 'task_parser',
         },
         {
-          text: this.$t('parser.hotel_parser'),
+          text: this.$t('task_engine_v2.parser.hotel_parser'),
           value: 'hotel_parser',
         },
       ];
