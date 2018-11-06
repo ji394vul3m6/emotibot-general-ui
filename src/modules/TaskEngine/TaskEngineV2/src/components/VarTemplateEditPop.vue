@@ -16,11 +16,13 @@
             </div>
             <div ref="dropdown" class="input-template-container" v-dropdown="insertVarDropdown(index)" :data-id="template.id">
               <input 
-                :ref="`input_key_${template.id}`" 
+                ref="input_key" 
                 class="input-key" 
+                :data-index="index"
                 v-model="template.key"
                 v-tooltip="inputKeyTooltip"
-                :class="{'error': template.isInputKeyTooltipShown}"/>
+                :class="{'error': template.isInputKeyTooltipShown}"
+                @focus="template.isInputKeyTooltipShown = false;onInputFocus($event)"/>
             </div>
           </div>
           <div class="row">
@@ -28,11 +30,13 @@
               {{$t("task_engine_v2.var_template_edit_pop.label_template")}}
             </div>
             <input 
-              :ref="`input_template_${template.id}`" 
+              ref="input_template" 
               class="input-template" 
+              :data-index="index"
               v-model="template.msg"
               v-tooltip="inputTemplateTooltip"
-              :class="{'error': template.isInputTemplateTooltipShown}"/>
+              :class="{'error': template.isInputTemplateTooltipShown}"
+              @focus="template.isInputTemplateTooltipShown = false;onInputFocus($event)"/>
           </div>
         </div>
       </template>
@@ -101,9 +105,39 @@ export default {
       originalVarTemplatesStr,
       globalVarOptions,
       valid: false,
+      validateInput: false,
     };
   },
+  watch: {
+    validateInput(newV, oldV) {
+      if (newV && !oldV) {
+        if (!this.varTemplates.length) {
+          this.valid = true;
+        } else {
+          let valid = true;
+          this.$refs.input_key.forEach((el) => {
+            if (!el.value.trim()) {
+              valid = false;
+              this.varTemplates[el.dataset.index].isInputKeyTooltipShown = true;
+              el.dispatchEvent(event.createEvent('tooltip-show'));
+            }
+          });
+          this.$refs.input_template.forEach((el) => {
+            if (!el.value.trim()) {
+              valid = false;
+              this.varTemplates[el.dataset.index].isInputTemplateTooltipShown = true;
+              el.dispatchEvent(event.createEvent('tooltip-show'));
+            }
+          });
+          this.valid = valid;
+        }
+      }
+    },
+  },
   methods: {
+    onInputFocus(evt) {
+      evt.target.dispatchEvent(event.createEvent('tooltip-hide'));
+    },
     addTemplate() {
       const template = scenarioInitializer.initialVarTemplate();
       template.id = this.$uuid.v1();
@@ -127,36 +161,22 @@ export default {
       this.varTemplates[index].key = key;
       this.varTemplates[index].msg = toInsert;
     },
-    validateResult() {
-      let isValid = true;
-      this.varTemplates.forEach((varTemplate) => {
-        if (varTemplate.key.trim() === '') {
-          const input = this.$refs[`input_key_${varTemplate.id}`][0];
-          input.dispatchEvent(event.createEvent('tooltip-show'));
-          varTemplate.isInputKeyTooltipShown = true;
-          isValid = false;
-        }
-        if (varTemplate.msg.trim() === '') {
-          const input = this.$refs[`input_template_${varTemplate.id}`];
-          input.dispatchEvent(event.createEvent('tooltip-show'));
-          varTemplate.isInputTemplateTooltipShown = true;
-          isValid = false;
+    validate() {
+      this.validateInput = true;
+      this.$nextTick(() => {
+        this.validateInput = false;
+        if (this.valid) {
+          const varTemplates = this.varTemplates.map(varTemplate => ({
+            key: varTemplate.key,
+            msg: varTemplate.msg,
+            type: varTemplate.type,
+          }));
+          this.$emit(
+            'validateSuccess',
+            varTemplates,
+          );
         }
       });
-      return isValid;
-    },
-    validate() {
-      if (this.validateResult()) {
-        const varTemplates = this.varTemplates.map(varTemplate => ({
-          key: varTemplate.key,
-          msg: varTemplate.msg,
-          type: varTemplate.type,
-        }));
-        this.$emit(
-          'validateSuccess',
-          varTemplates,
-        );
-      }
     },
     cancelValidate() {
       const newVarTemplatesStr = JSON.stringify(this.varTemplates, general.JSONStringifyReplacer);
@@ -207,20 +227,6 @@ export default {
   mounted() {
     this.$on('validate', this.validate);
     this.$on('cancelValidate', this.cancelValidate);
-  },
-  updated() {
-    this.varTemplates.forEach((varTemplate) => {
-      const inputKey = this.$refs[`input_key_${varTemplate.id}`][0];
-      const inputTemplate = this.$refs[`input_template_${varTemplate.id}`][0];
-      if (varTemplate.key.trim() !== '') {
-        varTemplate.isInputKeyTooltipShown = false;
-        inputKey.dispatchEvent(event.createEvent('tooltip-hide'));
-      }
-      if (varTemplate.msg.trim() !== '') {
-        varTemplate.isInputTemplateTooltipShown = false;
-        inputTemplate.dispatchEvent(event.createEvent('tooltip-hide'));
-      }
-    });
   },
 };
 </script>
