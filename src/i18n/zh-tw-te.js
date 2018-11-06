@@ -225,10 +225,11 @@ export default {
       },
     },
     scenario_list_page: {
-      button_create_new_scenario: '+創建新場景',
-      scenario_list: '場景列表',
       placeholder_search: '搜尋...',
-      ask_delete_confirm: '是否確認要刪除此場景？',
+      button_create_new_scenario: '創建場景',
+      button_import_scenario: '導入',
+      scenario_list: 'TDE場景列表',
+      ask_delete_confirm: '確認要刪除場景：{scenario}',
     },
     scenario_edit_page: {
       main_skill: '主任務',
