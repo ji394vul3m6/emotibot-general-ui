@@ -1,11 +1,3 @@
-<i18n>
-{
-  "zh-cn": {
-    "err_empty": "不可为空"
-  }
-}
-</i18n>
-
 <template lang="html">
 <div id="edge-edit-tab">
   <div class="instruction block">
