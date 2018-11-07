@@ -1,20 +1,17 @@
 import DropdownMenu from '../components/basic/DropdownMenu';
 
 const MyPlugin = {
-  getPosition(el, alignLeft, optionLength) {  // eslint-disable-line
+  getPosition(el, alignLeft) {
     const boundedBox = el.getBoundingClientRect();
     const ret = {
       x: boundedBox.left, // align by left edge
       y: boundedBox.top + boundedBox.height + 3,
+      anchorRect: boundedBox,
     };
     if (alignLeft) {
       ret.x = boundedBox.right;  // align by right edge
     }
 
-    // const dropdownHeight = (optionLength || 0) * 32;
-    // if (ret.y + dropdownHeight > window.innerHeight) {
-    //   ret.y = window.innerHeight - dropdownHeight;
-    // }
     return ret;
   },
   addEventListeners(vm, el, alignLeft) {
@@ -44,8 +41,7 @@ const MyPlugin = {
       inserted(el, binding, vnode) {
         vnode.context.$nextTick(() => {
           const DropdownGenerator = Vue.extend(DropdownMenu);
-          const position = that.getPosition(el, binding.value.alignLeft,
-            binding.value.options.length);
+          const position = that.getPosition(el, binding.value.alignLeft);
           let vm = new DropdownGenerator({
             propsData: {
               x: position.x,
@@ -61,8 +57,7 @@ const MyPlugin = {
 
 
           el.addEventListener('dropdown-reload', ({ detail: value = binding.value }) => {
-            const newPos = that.getPosition(el, value.alignLeft,
-              value.options.length);
+            const newPos = that.getPosition(el, value.alignLeft);
             el.removeChild(vm.$el);
             vm.$destroy();
             vm = new DropdownGenerator({
@@ -80,7 +75,7 @@ const MyPlugin = {
           });
 
           el.addEventListener('dropdown-show', () => {
-            vm.$emit('show', that.getPosition(el, binding.value.alignLeft, binding.value.options.length));
+            vm.$emit('show', that.getPosition(el, binding.value.alignLeft));
           });
           el.addEventListener('dropdown-hide', () => {
             el.dispatchEvent(new Event('dropdownHidden'));
@@ -89,7 +84,7 @@ const MyPlugin = {
           });
 
           el.addEventListener('click', () => {
-            vm.$emit('show', that.getPosition(el, binding.value.alignLeft, binding.value.options.length));
+            vm.$emit('show', that.getPosition(el, binding.value.alignLeft));
             that.addEventListeners(vm, el, binding.value.alignLeft);
           });
         });
