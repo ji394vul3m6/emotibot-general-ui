@@ -403,6 +403,8 @@ export default {
       key: '',
       msg: '$global{}',
       type: 'string',
+      isInputKeyTooltipShown: false,
+      isInputTemplateTooltipShown: false,
     };
   },
 };

@@ -9,7 +9,7 @@
   </div>
   <div class="block">
     <div class="label-header">{{$t("task_engine_v2.setting_edit_tab.node_name")}}</div>
-    <input class="input-rounded"
+    <input class="input-rounded" ref="input-name" v-tooltip="tooltip" @focus="onInputFocus"
       v-model="nodeName">
     </input>
   </div>
@@ -17,7 +17,7 @@
     <div class="label-header">{{$t("task_engine_v2.restful_setting_edit_tab.restful_data_retrieve")}}</div>
     <div class="row">
       <div class="label-text">{{$t("task_engine_v2.restful_setting_edit_tab.data_save_in_key")}}</div>
-      <input class="input-key" v-model="rtnVarName"></input>
+      <input class="input-key" ref="input-varname" v-tooltip="tooltip" @focus="onInputFocus" v-model="rtnVarName"></input>
     </div>
     <div class="row">
       <div class="label-text">{{$t("task_engine_v2.restful_setting_edit_tab.method")}}</div>
@@ -34,7 +34,7 @@
     </div>
     <div class="row">
       <div class="label-text">{{$t("task_engine_v2.restful_setting_edit_tab.url")}}</div>
-      <input class="input-url" v-model="url"></input>
+      <input class="input-url" ref="input-url" v-tooltip="tooltip" @focus="onInputFocus" v-model="url"></input>
     </div>
     <div class="label-sub-header">Header</div>
     <div class="row">
@@ -51,7 +51,7 @@
       />
     </div>
     <div class="label-sub-header">Body</div>
-    <textarea class="text-body"
+    <textarea class="text-body" ref="input-body" v-tooltip="tooltip" @focus="onInputFocus"
       v-model="body">
     </textarea>
   </div>
@@ -59,6 +59,7 @@
 </template>
 
 <script>
+import event from '@/utils/js/event';
 import DropdownSelect from '@/components/DropdownSelect';
 
 export default {
@@ -67,25 +68,44 @@ export default {
     'dropdown-select': DropdownSelect,
   },
   props: {
+    validateTab: {
+      type: Boolean,
+      default: false,
+    },
     initialRestfulSettingTab: {
       type: Object,
       required: true,
     },
   },
   data() {
+    const restfulSettingTab = this.initialRestfulSettingTab;
+    const nodeType = restfulSettingTab.nodeType;
+    const nodeName = restfulSettingTab.nodeName;
+    const url = restfulSettingTab.url;
+    const method = restfulSettingTab.method;
+    const contentType = restfulSettingTab.contentType;
+    const body = restfulSettingTab.body;
+    const rtnVarName = restfulSettingTab.rtnVarName;
     return {
-      nodeType: '',
-      nodeName: '',
-      url: '',
-      method: '',
-      contentType: '',
-      body: '',
-      rtnVarName: '',
+      nodeType,
+      nodeName,
+      url,
+      method,
+      contentType,
+      body,
+      rtnVarName,
       methodOptions: this.getMethodOptions(),
       contentTypeOptions: this.getContentTypeOptions(),
       selectStyle: {
         height: '36px',
         'border-radius': '5px',
+      },
+      tooltip: {
+        msg: this.$t('task_engine_v2.err_empty'),
+        eventOnly: true,
+        errorType: true,
+        alignLeft: true,
+        absolute: true,
       },
     };
   },
@@ -105,6 +125,18 @@ export default {
     },
   },
   watch: {
+    validateTab(newV, oldV) {
+      if (newV && !oldV) {
+        let valid = true;
+        Object.entries(this.$refs).forEach(([key, el]) => {
+          if (key.indexOf('input-') !== -1 && !el.value) {
+            valid = false;
+            el.dispatchEvent(event.createEvent('tooltip-show'));
+          }
+        });
+        this.$emit('update:valid', valid);
+      }
+    },
     restfulSettingTab: {
       handler() {
         this.$emit('update', this.restfulSettingTab);
@@ -114,16 +146,6 @@ export default {
     },
   },
   methods: {
-    renderTabContent() {
-      const restfulSettingTab = JSON.parse(JSON.stringify(this.initialRestfulSettingTab));
-      this.nodeType = restfulSettingTab.nodeType;
-      this.nodeName = restfulSettingTab.nodeName;
-      this.url = restfulSettingTab.url;
-      this.method = restfulSettingTab.method;
-      this.contentType = restfulSettingTab.contentType;
-      this.body = restfulSettingTab.body;
-      this.rtnVarName = restfulSettingTab.rtnVarName;
-    },
     getMethodOptions() {
       const methods = ['GET', 'POST', 'PUT', 'DELETE'];
       return methods.map(method => ({
@@ -138,11 +160,9 @@ export default {
         value: type,
       }));
     },
-  },
-  beforeMount() {
-    this.renderTabContent();
-  },
-  mounted() {
+    onInputFocus(evt) {
+      evt.target.dispatchEvent(event.createEvent('tooltip-hide'));
+    },
   },
 };
 </script>

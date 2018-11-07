@@ -10,6 +10,7 @@
   <div class="block">
     <div class="label-header">{{$t("task_engine_v2.setting_edit_tab.node_name")}}</div>
     <input class="input-rounded"
+      ref="input-content" v-tooltip="tooltip" @focus="onInputFocus"
       v-model="nodeName">
     </input>
   </div>
@@ -17,19 +18,34 @@
 </template>
 
 <script>
+import event from '@/utils/js/event';
+
 export default {
   name: 'nlu-pc-setting-tab',
-  components: {},
   props: {
-    initialSettingBasicTab: {
+    validateTab: {
+      type: Boolean,
+      default: false,
+    },
+    settingBasicTab: {
       type: Object,
       required: true,
     },
   },
   data() {
+    const settingTab = this.settingBasicTab;
+    const nodeType = settingTab.nodeType;
+    const nodeName = settingTab.nodeName;
     return {
-      nodeType: '',
-      nodeName: '',
+      nodeType,
+      nodeName,
+      tooltip: {
+        msg: this.$t('task_engine_v2.err_empty'),
+        eventOnly: true,
+        errorType: true,
+        alignLeft: true,
+        absolute: true,
+      },
     };
   },
   computed: {
@@ -43,6 +59,12 @@ export default {
     },
   },
   watch: {
+    validateTab(newV, oldV) {
+      if (newV && !oldV) {
+        const valid = this.isValueEmpty(this.$refs['input-content']);
+        this.$emit('update:valid', valid);
+      }
+    },
     settingTab: {
       handler() {
         this.$emit('update', this.settingTab);
@@ -51,16 +73,17 @@ export default {
     },
   },
   methods: {
-    renderTabContent() {
-      const settingTab = JSON.parse(JSON.stringify(this.initialSettingBasicTab));
-      this.nodeType = settingTab.nodeType;
-      this.nodeName = settingTab.nodeName;
+    onInputFocus(evt) {
+      evt.target.dispatchEvent(event.createEvent('tooltip-hide'));
     },
-  },
-  beforeMount() {
-    this.renderTabContent();
-  },
-  mounted() {
+    isValueEmpty(el) {
+      let valid = true;
+      if (!el.value) {
+        valid = false;
+        el.dispatchEvent(event.createEvent('tooltip-show'));
+      }
+      return valid;
+    },
   },
 };
 </script>

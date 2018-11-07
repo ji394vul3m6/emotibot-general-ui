@@ -103,6 +103,10 @@ export default {
     'dropdown-menu': DropdownMenu,
   },
   props: {
+    validateTab: {
+      type: Boolean,
+      default: false,
+    },
     initialEntityCollectorList: {
       type: Array,
       required: true,
@@ -146,6 +150,11 @@ export default {
   },
   computed: {},
   watch: {
+    validateTab(newV, oldV) {
+      if (newV && !oldV) {
+        this.$emit('update:valid', true);
+      }
+    },
     entityCollectorList() {
       this.$emit('update', this.entityCollectorList);
     },
