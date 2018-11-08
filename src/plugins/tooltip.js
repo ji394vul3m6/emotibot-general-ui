@@ -143,7 +143,8 @@ const MyPlugin = {
       },
       unbind(el) {
         if (el.nextSibling) {
-          el.removeChild(el.nextSibling);  // IE 11 do not support Element.remove()
+          el.nextSibling.parentNode.removeChild(el.nextSibling);
+          // IE 11 do not support Element.remove()
         }
       },
     });
