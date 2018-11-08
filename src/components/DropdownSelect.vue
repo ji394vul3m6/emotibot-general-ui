@@ -147,9 +147,6 @@ export default {
     options(options) {
       this.initOptions(options);
     },
-    value(val) {
-      this.selectValue = val;
-    },
   },
   methods: {
     removeOption(opt) {
@@ -233,7 +230,7 @@ export default {
         });
       }
       that.localOptions.forEach((opt) => {
-        if (opt.value === value) {
+        if (value.indexOf(opt.value) >= 0) {
           opt.checked = true;
         }
       });
