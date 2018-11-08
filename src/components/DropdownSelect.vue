@@ -219,6 +219,32 @@ export default {
         this.selectTextStyle['flex-basis'] = 'auto';
       }
     },
+
+    /**
+     * Reset all options to assigned values
+     * Will replace checked values with assigned values
+     * @param {Array} valueToCheck
+     * */
+    resetCheckedValue(valueToCheck) {
+      const that = this;
+      that.localOptions.forEach((option) => {
+        option.checked = false;
+      });
+      if (valueToCheck) {
+        that.localOptions.forEach((opt) => {
+          if (valueToCheck.indexOf(opt.value) !== -1) {
+            opt.checked = true;
+          }
+        });
+      }
+      that.checkedValues = this.localOptions.filter(opt => opt.checked);
+      that.updateValue();
+    },
+
+    /**
+     * Select one option by assigning value
+     * If multi, will select assign value without clearing existing values
+     * */
     selectValue(value) {
       if (value === undefined) {
         return;
@@ -230,7 +256,7 @@ export default {
         });
       }
       that.localOptions.forEach((opt) => {
-        if (value.indexOf(opt.value) >= 0) {
+        if (opt.value === value) {
           opt.checked = true;
         }
       });
@@ -261,6 +287,7 @@ export default {
     const that = this;
     that.initOptions(that.options);
     that.$on('select', that.selectValue);
+    that.$on('reset', that.resetCheckedValue);
     that.$on('updateOptions', that.initOptions);
   },
 };
