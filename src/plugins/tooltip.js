@@ -70,7 +70,7 @@ const MyPlugin = {
           }
 
           el.addEventListener('tooltip-reload', () => {
-            vm.$el.remove();
+            vm.$el.parentNode.removeChild(vm.$el); // IE 11 do not support Element.remove()
             vm.$destroy();
             boundedBox = el.getBoundingClientRect();
             vm = new TooltipGenerator({
@@ -143,7 +143,7 @@ const MyPlugin = {
       },
       unbind(el) {
         if (el.nextSibling) {
-          el.nextSibling.remove();
+          el.removeChild(el.nextSibling);  // IE 11 do not support Element.remove()
         }
       },
     });
