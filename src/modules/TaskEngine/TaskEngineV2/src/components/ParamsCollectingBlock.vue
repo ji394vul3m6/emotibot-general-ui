@@ -318,6 +318,7 @@ export default {
     },
     deleteParser(index) {
       this.parsers.splice(index, 1);
+      this.renderHasRequiredParser();
       this.emitUpdate();
     },
     addRegTargetKey(index) {

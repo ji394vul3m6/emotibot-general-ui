@@ -444,9 +444,9 @@ export default {
     const content = {};
     content.parsers = [];
     content.questions = [];
-    content.enable_confirm_msg = enableConfirmMsg;
-    content.confirm_msg = confirmMsg;
-    content.confirm_msg_parse_fail = confirmMsgParseFail;
+    content.enable_confirm_msg = enableConfirmMsg || false;
+    content.confirm_msg = confirmMsg || '';
+    content.confirm_msg_parse_fail = confirmMsgParseFail || '';
     params.forEach((param) => {
       const conditionRules = [];
       const skipIfKeyExistList = [];
