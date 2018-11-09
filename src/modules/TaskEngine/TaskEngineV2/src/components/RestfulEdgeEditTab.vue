@@ -58,6 +58,10 @@ export default {
     'dropdown-select': DropdownSelect,
   },
   props: {
+    validateTab: {
+      type: Boolean,
+      default: false,
+    },
     nodeId: {
       type: String,
       required: true,
@@ -106,6 +110,11 @@ export default {
     },
   },
   watch: {
+    validateTab(newV, oldV) {
+      if (newV && !oldV) {
+        this.$emit('update:valid', true);
+      }
+    },
     restfulEdgeTab: {
       handler() {
         if (this.restfulSucceedThenGoto === 'add_new_dialogue_node') {

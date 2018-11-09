@@ -310,8 +310,11 @@ export default {
       });
     },
     switchScenario() {
-      api.switchScenario(this.appId, this.scenarioId, this.enable).then(() => {
-      }, (err) => {
+      Promise.all([
+        api.switchScenario(this.appId, this.scenarioId, this.enable),
+        this.enable && api.publishScenario(this.appId, this.scenarioId),
+      ])
+      .catch((err) => {
         general.popErrorWindow(this, 'switchScenario error', err.message);
       });
     },

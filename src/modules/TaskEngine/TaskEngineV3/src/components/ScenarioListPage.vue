@@ -178,8 +178,11 @@ export default {
       });
     },
     switchScenario(scenario) {
-      taskEngineApi.switchScenario(this.appId, scenario.scenarioID, scenario.enable).then(() => {
-      }, (err) => {
+      Promise.all([
+        taskEngineApi.switchScenario(this.appId, scenario.scenarioID, scenario.enable),
+        scenario.enable && taskEngineApi.publishScenario(this.appId, scenario.scenarioID),
+      ])
+      .catch((err) => {
         general.popErrorWindow(this, 'switchScenario error', err.message);
       });
     },

@@ -87,3 +87,10 @@ Type: Array of Objects
 | Event | Callback $event | 說明 |
 |---|---|---|
 | input | Array of checked values | 點選選項時，回傳目前選中的選項
+
+---
+## 可 emit 的 Event
+| Event | params | 說明 |
+|---|---|---|
+| select | checked value | 選取一個選項，若為多選，不會清空已選取的選項
+| reset | Array of checked values | 指定選取傳入的選項，會取代原本的選取

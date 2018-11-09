@@ -79,4 +79,14 @@ export const hasPrivilege = s => (mod, cmd) => {
 
 export const showUserInfoPage = s => s.showUserInfo;
 
-export const showLanguage = s => s.locale;
+export const showLanguage = (s) => {
+  if (s.locale) {
+    return s.locale;
+  }
+
+  let ret = localStorage.getItem('locale');
+  if (!ret) {
+    ret = 'zh-cn';
+  }
+  return ret;
+};

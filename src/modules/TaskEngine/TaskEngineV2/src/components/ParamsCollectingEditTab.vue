@@ -7,6 +7,8 @@
         :nodeId="nodeId"
         :initialParam="param"
         :mapTableOptions="mapTableOptions"
+        :validateParamsCollectingBlock="validateTab"
+        @update:valid="$set(param, 'valid', $event); if ($event) {isAllParamsCollectingBlockValid()}"
         @update="updateParam(index, $event)"
         @deleteParam="deleteParam(index)">
       </params-collecting-block>
@@ -62,7 +64,11 @@ export default {
     'params-collecting-block': ParamsCollectingBlock,
   },
   props: {
-    initialParamsCollectingTab: {
+    validateTab: {
+      type: Boolean,
+      default: false,
+    },
+    paramsCollectingTab: {
       type: Object,
       required: true,
     },
@@ -72,22 +78,37 @@ export default {
     },
   },
   data() {
+    const paramsCollectingTab = this.paramsCollectingTab;
+    const nodeId = paramsCollectingTab.nodeId;
+    // add tmp id for params
+    const params = paramsCollectingTab.params.map((param) => {
+      const obj = { ...param };
+      obj.id = this.$uuid.v1();
+      obj.valid = false;
+      return obj;
+    });
     return {
-      params: [],
-      enableConfirmMsg: false,
-      confirmMsg: '',
-      confirmMsgParseFail: '',
+      enableConfirmMsg: paramsCollectingTab.enableConfirmMsg || false,
+      confirmMsg: paramsCollectingTab.confirmMsg || '',
+      confirmMsgParseFail: paramsCollectingTab.confirmMsgParseFail || '',
+      nodeId,
+      params,
     };
   },
-  computed: {},
-  watch: {},
+  watch: {
+    validateTab(newV, oldV) {
+      if (newV && !oldV && !this.params.length) {
+        this.$emit('update:valid', true);
+      }
+    },
+  },
   methods: {
     emitUpdate() {
       const paramsCollectingTab = {
         params: this.params.map((param) => {
-          const p = JSON.parse(JSON.stringify(param));
-          delete p.id;
-          return p;
+          delete param.id;
+          delete param.valid;
+          return param;
         }),
         enableConfirmMsg: this.enableConfirmMsg,
         confirmMsg: this.confirmMsg,
@@ -96,25 +117,14 @@ export default {
       console.log(paramsCollectingTab);
       this.$emit('update', paramsCollectingTab);
     },
-    renderTabContent() {
-      const paramsCollectingTab = JSON.parse(JSON.stringify(this.initialParamsCollectingTab));
-      this.nodeId = paramsCollectingTab.nodeId;
-      // add tmp id for params
-      this.params = paramsCollectingTab.params.map((param) => {
-        param.id = this.$uuid.v1();
-        return param;
-      });
-      this.enableConfirmMsg = paramsCollectingTab.enableConfirmMsg || false;
-      this.confirmMsg = paramsCollectingTab.confirmMsg || '';
-      this.confirmMsgParseFail = paramsCollectingTab.confirmMsgParseFail || '';
-    },
     updateParam(index, $event) {
-      this.params[index] = $event;
+      this.params[index] = { ...this.params[index], ...$event };
       this.emitUpdate();
     },
     addParam() {
       const param = {};
       param.id = this.$uuid.v1();
+      param.valid = false;
       param.parsers = [];
       const parser = scenarioInitializer.initialParser();
       parser.id = this.$uuid.v1();
@@ -137,6 +147,15 @@ export default {
     onInputConfirmMsgParseFail(newValue) {
       this.confirmMsgParseFail = newValue;
       this.emitUpdate();
+    },
+    isAllParamsCollectingBlockValid() {
+      let valid = true;
+      this.params.forEach((param) => {
+        if (!param.valid) {
+          valid = false;
+        }
+      });
+      this.$emit('update:valid', valid);
     },
   },
   beforeMount() {

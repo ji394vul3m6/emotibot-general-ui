@@ -40,14 +40,14 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_pattern")}}
             </div>
-            <input class="row-content input-content" v-model="parser.content.pattern" @input="emitUpdate"></input>
+            <input ref="input-content" v-tooltip="tooltip" class="row-content input-content" @focus="onInputFocus" v-model="parser.content.pattern" @input="emitUpdate"></input>
           </div>
           <template v-for="(operation, idx) in parser.content.operations">
             <div class="row">
               <div class="label label-start">
                 {{$t("task_engine_v2.condition_block.label_nth_match")}}
               </div>
-              <input class="row-content input-content" 
+              <input ref="input-content" v-tooltip="tooltip" class="row-content input-content" @focus="onInputFocus" 
                 v-model.number="operation.index"
                 oninput="this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(^[0-9]{1,2}).*/g, '$1');"
                 @input="emitUpdate">
@@ -71,7 +71,7 @@
               <div class="label label-start">
                 {{$t("task_engine_v2.condition_block.label_target_key")}}
               </div>
-              <input class="row-content input-content" 
+              <input ref="input-content" v-tooltip="tooltip" class="row-content input-content" @focus="onInputFocus"
                 v-model="operation.key"
                 @input="emitUpdate"
               ></input>
@@ -123,7 +123,7 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_target_key")}}
             </div>
-            <input class="row-content input-content" v-model="parser.content.to_key" @input="emitUpdate"></input>
+            <input ref="input-content" v-tooltip="tooltip" class="row-content input-content" @focus="onInputFocus" v-model="parser.content.to_key" @input="emitUpdate"></input>
           </div>
         </div>
         <!-- 是否判断解析器 -->
@@ -132,7 +132,7 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_target_key")}}
             </div>
-            <input class="row-content input-content" 
+            <input ref="input-content" v-tooltip="tooltip" class="row-content input-content" @focus="onInputFocus" 
               v-model="parser.content.key"
               @input="emitUpdate"
             ></input>
@@ -144,7 +144,7 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_link")}}
             </div>
-            <input class="row-content input-content" v-model="parser.content" @input="emitUpdate"></input>
+            <input ref="input-content" v-tooltip="tooltip" class="row-content input-content" @focus="onInputFocus" v-model="parser.content" @input="emitUpdate"></input>
           </div>
           <div class="row">
             <div class="label label-start label-tooltip">
@@ -153,7 +153,7 @@
                 <icon icon-type="info" :enableHover="true" :size=20 />
               </div>
             </div>
-            <input class="row-content input-content"
+            <input ref="input-content" v-tooltip="tooltip" class="row-content input-content" @focus="onInputFocus"
               :value="getWebApiSkipIfKeyExist(index)"
               @input="onInputWebApiSkipIfKeyExist(index, $event.target.value)"
             ></input>
@@ -182,7 +182,7 @@
           </div>
         </div>
       </div>
-      <textarea class="text-response"
+      <textarea ref="textarea-params" v-tooltip="tooltip" class="text-response" @focus="onInputFocus"
         @input="emitUpdate"
         v-model="msg">
       </textarea>
@@ -191,7 +191,7 @@
           {{$t("task_engine_v2.params_collecting_tab.parse_failed_msg")}}
         </div>
       </div>
-      <textarea class="text-response"
+      <textarea ref="textarea-failure" v-tooltip="tooltip" class="text-response" @focus="onInputFocus"
         @input="emitUpdate"
         v-model="parse_failed_msg">
       </textarea>
@@ -201,6 +201,7 @@
 </template>
 
 <script>
+import event from '@/utils/js/event';
 import DropdownSelect from '@/components/DropdownSelect';
 import scenarioInitializer from '../_utils/scenarioInitializer';
 import optionConfig from '../_utils/optionConfig';
@@ -223,26 +224,60 @@ export default {
       type: Object,
       required: true,
     },
+    validateParamsCollectingBlock: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
+    const param = this.initialParam;
     return {
-      msg: '',
-      parse_failed_msg: '',
-      parsers: [],
+      msg: param.msg,
+      parse_failed_msg: param.parse_failed_msg,
+      parsers: param.parsers,
       selectStyle: {
         height: '36px',
         'border-radius': '5px',
       },
+      tooltip: {
+        msg: this.$t('task_engine_v2.err_empty'),
+        eventOnly: true,
+        errorType: true,
+        alignLeft: true,
+        absolute: true,
+      },
       hasRequiredParser: true,
     };
   },
-  computed: {
+  computed: {},
+  watch: {
+    validateParamsCollectingBlock(newV, oldV) {
+      if (newV && !oldV) {
+        let valid = true;
+        this.$refs['input-content'].forEach((el) => {
+          if (!el.value) {
+            valid = false;
+            el.dispatchEvent(event.createEvent('tooltip-show'));
+          }
+        });
+        if (!this.$refs['textarea-params'].value) {
+          valid = false;
+          this.$refs['textarea-params'].dispatchEvent(event.createEvent('tooltip-show'));
+        }
+        if (!this.$refs['textarea-failure'].value) {
+          valid = false;
+          this.$refs['textarea-failure'].dispatchEvent(event.createEvent('tooltip-show'));
+        }
+        this.$emit('update:valid', valid);
+      }
+    },
   },
-  watch: {},
   methods: {
+    onInputFocus(evt) {
+      evt.target.dispatchEvent(event.createEvent('tooltip-hide'));
+    },
     emitUpdate() {
       const param = {
-        id: this.$uuid.v1(),
         msg: this.msg,
         parse_failed_msg: this.parse_failed_msg,
         parsers: this.parsers,
@@ -333,12 +368,20 @@ export default {
           });
         }
       }
+      this.reloadTooltip();
       this.emitUpdate();
     },
     onInputRequiredCheckbox(index, newValue) {
       this.parsers[index].required = newValue;
       this.renderHasRequiredParser();
       this.emitUpdate();
+    },
+    reloadTooltip() {
+      this.$refs['input-content'].forEach((el) => {
+        el.dispatchEvent(event.createEvent('tooltip-reload'));
+      });
+      this.$refs['textarea-params'].dispatchEvent(event.createEvent('tooltip-reload'));
+      this.$refs['textarea-failure'].dispatchEvent(event.createEvent('tooltip-reload'));
     },
     entityModuleOptions(parser) {
       const entityModuleOptions = optionConfig.getEntityModuleOptionsMap();

@@ -58,6 +58,10 @@ export default {
     'action-group': ActionGroup,
   },
   props: {
+    validateTab: {
+      type: Boolean,
+      default: false,
+    },
     initialActionGroupList: {
       type: Array,
       required: true,
@@ -83,7 +87,13 @@ export default {
     };
   },
   computed: {},
-  watch: {},
+  watch: {
+    validateTab(newV, oldV) {
+      if (newV && !oldV) {
+        this.$emit('update:valid', true);
+      }
+    },
+  },
   methods: {
     addNewDialogueNode(newNodeID) {
       const nodeNames = [

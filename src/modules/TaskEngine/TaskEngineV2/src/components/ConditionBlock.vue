@@ -56,7 +56,7 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_content")}}
             </div>
-            <input class="input-content" v-model="rule.content"></input>
+            <input ref="input-content" class="input-content" v-model="rule.content" v-tooltip="inputTooltip" @focus="onInputFocus"></input>
           </div>
         </div>
         <!-- 正则表示式 -->
@@ -65,16 +65,17 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_pattern")}}
             </div>
-            <input class="input-content" v-model="rule.content.pattern"></input>
+            <input ref="input-content" class="input-content" v-model="rule.content.pattern" v-tooltip="inputTooltip" @focus="onInputFocus"></input>
           </div>
           <template v-for="(operation, idx) in rule.content.operations">
             <div class="row">
               <div class="label label-start">
                 {{$t("task_engine_v2.condition_block.label_nth_match")}}
               </div>
-              <input class="input-content"
+              <input class="input-content" ref="input-content" v-tooltip="inputTooltip"
                 oninput="this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(^[0-9]{1,2}).*/g, '$1');"
-                v-model.number="operation.index">
+                v-model.number="operation.index"
+                @focus="onInputFocus">
               </input>
               <button
                 v-if="idx === 0"
@@ -95,7 +96,7 @@
               <div class="label label-start">
                 {{$t("task_engine_v2.condition_block.label_target_key")}}
               </div>
-              <input class="input-content" v-model="operation.key"></input>
+              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="operation.key" @focus="onInputFocus"></input>
             </div>
           </template>
         </div>
@@ -146,7 +147,7 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_target_key")}}
             </div>
-            <input class="input-content" v-model="rule.content.to_key"></input>
+            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.to_key" @focus="onInputFocus"></input>
           </div>
         </div>
         <!-- 是否判断解析器 -->
@@ -155,7 +156,7 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_target_key")}}
             </div>
-            <input class="input-content" v-model="rule.content.key"></input>
+            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.key" @focus="onInputFocus"></input>
           </div>
         </div>
         <!-- Web API 调用 -->
@@ -164,7 +165,7 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_link")}}
             </div>
-            <input class="input-content" v-model="rule.content"></input>
+            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content" @focus="onInputFocus"></input>
           </div>
         </div>
         <!-- 键值匹配 -->
@@ -189,7 +190,7 @@
               {{$t("task_engine_v2.condition_block.label_key")}}
             </div>
             <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key')">
-              <input class="input-content" v-model="rule.content[0].key">
+              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key" @focus="onInputFocus">
             </div>
           </div>
           <div class="row">
@@ -200,13 +201,19 @@
                          rule.content[0].compare === '>=' ||
                          rule.content[0].compare === '<'  ||
                          rule.content[0].compare === '<=' "
+              ref="input-content" 
+              v-tooltip="inputTooltip"
               class="input-content"
               oninput="this.value = this.value.replace(/[^0-9]/g, '');"
               v-model="rule.content[0].val"
+              @focus="onInputFocus"
             >
             <input v-else
+              ref="input-content" 
               class="input-content"
+              v-tooltip="inputTooltip"
               v-model="rule.content[0].val"
+              @focus="onInputFocus"
             >
           </div>
         </div>
@@ -232,14 +239,14 @@
               {{$t("task_engine_v2.condition_block.label_key")}}
             </div>
             <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key1')">
-              <input class="input-content" v-model="rule.content[0].key1">
+              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key1" @focus="onInputFocus">
             </div>
           </div>
           <div class="row">
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_key")}}
             </div>
-            <input class="input-content" v-model="rule.content[0].key2"></input>
+            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key2" @focus="onInputFocus"></input>
           </div>
         </div>
         <!-- 包含键 -->
@@ -249,7 +256,7 @@
               {{$t("task_engine_v2.condition_block.label_content")}}
             </div>
             <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key')">
-              <input class="input-content" v-model="rule.content[0].key" :key="rule.funcName">
+              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key" :key="rule.funcName" @focus="onInputFocus">
             </div>
           </div>
         </div>
@@ -260,7 +267,7 @@
               {{$t("task_engine_v2.condition_block.label_content")}}
             </div>
             <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key')">
-              <input class="input-content" v-model="rule.content[0].key" :key="rule.funcName">
+              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key" :key="rule.funcName" @focus="onInputFocus">
             </div>
           </div>
         </div>
@@ -286,16 +293,17 @@
               {{$t("task_engine_v2.condition_block.label_key")}}
             </div>
             <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key')">
-              <input class="input-content" v-model="rule.content[0].key">
+              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key" @focus="onInputFocus">
             </div>
           </div>
           <div class="row">
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_value")}}
             </div>
-            <input class="input-content"
+            <input class="input-content" ref="input-content" v-tooltip="inputTooltip"
               oninput="this.value = this.value.replace(/[^0-9]/g, '');"
-              v-model="rule.content[0].val">
+              v-model="rule.content[0].val"
+              @focus="onInputFocus">
             </input>
           </div>
         </div>
@@ -339,14 +347,14 @@
               {{$t("task_engine_v2.condition_block.label_source_key")}}
             </div>
             <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content, 'from_key')">
-              <input class="input-content" v-model="rule.content.from_key">
+              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.from_key" @focus="onInputFocus">
             </div>
           </div>
           <div class="row">
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_target_key")}}
             </div>
-            <input class="input-content" v-model="rule.content.to_key"></input>
+            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.to_key" @focus="onInputFocus"></input>
           </div>
         </div>
         <!-- 正则表示式 -->
@@ -355,14 +363,14 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_pattern")}}
             </div>
-            <input class="input-content" v-model="rule.content.pattern"></input>
+            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.pattern" @focus="onInputFocus"></input>
           </div>
           <div class="row">
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_source_key")}}
             </div>
             <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content, 'from_key')">
-              <input class="input-content" v-model="rule.content.from_key">
+              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.from_key" @focus="onInputFocus">
             </div>
           </div>
           <template v-for="(operation, idx) in rule.content.operations">
@@ -371,9 +379,10 @@
                 <div class="label label-start">
                   {{$t("task_engine_v2.condition_block.label_nth_match")}}
                 </div>
-                <input class="input-content"
+                <input class="input-content" ref="input-content" v-tooltip="inputTooltip"
                   oninput="this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(^[0-9]{1,2}).*/g, '$1');"
                   v-model.number="operation.index"
+                  @focus="onInputFocus"
                 >
                 <button
                   v-if="idx === 0"
@@ -394,7 +403,7 @@
                 <div class="label label-start">
                   {{$t("task_engine_v2.condition_block.label_target_key")}}
                 </div>
-                <input class="input-content" v-model="operation.key">
+                <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="operation.key" @focus="onInputFocus">
               </div>
             </div>
           </template>
@@ -406,14 +415,14 @@
               {{$t("task_engine_v2.condition_block.label_key")}}
             </div>
             <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key')">
-              <input class="input-content" v-model="rule.content[0].key">
+              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key" @focus="onInputFocus">
             </div>
           </div>
           <div class="row">
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_value")}}
             </div>
-            <input class="input-content" v-model="rule.content[0].val"></input>
+            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].val" @focus="onInputFocus"></input>
           </div>
         </div>
         <!-- 语句解析数据提取 -->
@@ -440,7 +449,7 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_content")}}
             </div>
-            <input class="input-content" v-model="rule.content"></input>
+            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content" @focus="onInputFocus"></input>
           </div>
         </div>
       </div>
@@ -495,20 +504,20 @@
         <div class="label label-start">
           {{$t("task_engine_v2.condition_block.label_similarity_threshold")}}
         </div>
-        <input class="input-content" v-model="threshold"></input>
+        <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="threshold" @focus="onInputFocus"></input>
       </div>
       <template v-for="(edge, index) in candidateEdges">
         <div class="row">
           <div class="label label-start">
             {{$t("task_engine_v2.condition_block.label_sentence")}}
           </div>
-          <input class="input-content" v-model="edge.tar_text"></input>
+          <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="edge.tar_text" @focus="onInputFocus"></input>
           <button
             v-if="index===0"
             class="button"
             style="width: 100px;"
             @click="addQQCandidateEdge()">
-            {{`${$t("task_engine_v2.condition_block.button_add")}${$t("task_engine_v2.condition_block.label_sentence")}`}}
+            {{`${$t("task_engine_v2.condition_block.button_add")}${$t("condition_block.label_sentence")}`}}
           </button>
           <button
             v-if="index!==0"
@@ -573,7 +582,7 @@
       <div class="label label-margin-left">
         {{$t("task_engine_v2.params_collecting_edge_tab.failed_description")}}
       </div>
-      <input class="input-limit" v-model="dialogueLimit"></input>
+      <input ref="input-content" v-tooltip="inputTooltip" class="input-limit" v-model="dialogueLimit" @focus="onInputFocus"></input>
       <div class="label">
         {{$t("task_engine_v2.edge_edit_tab.label_time")}}
       </div>
@@ -641,8 +650,12 @@ export default {
       required: true,
     },
     initialDialogueLimit: {
-      tyep: Number,
+      type: Number,
       required: false,
+    },
+    validateConditionBlock: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -666,6 +679,13 @@ export default {
       funcOptionMap: [],
       dialogueLimit: 3,
       varDropdownMap: {},
+      inputTooltip: {
+        msg: this.$t('task_engine_v2.err_empty'),
+        eventOnly: true,
+        errorType: true,
+        alignLeft: true,
+        absolute: true,
+      },
     };
   },
   computed: {},
@@ -709,10 +729,33 @@ export default {
         });
       },
     },
+    validateConditionBlock(newV, oldV) {
+      if (newV && !oldV) {
+        let valid = true;
+        if (this.$refs['input-content']) {
+          let refs = this.$refs['input-content'];
+          if (!Array.isArray(refs)) {
+            refs = [refs];
+          }
+          refs.forEach((el) => {
+            if (!el.value) {
+              valid = false;
+              el.dispatchEvent(event.createEvent('tooltip-show'));
+            }
+          });
+          this.$emit('update:valid', valid);
+        } else {
+          this.$emit('update:valid', true);
+        }
+      }
+    },
   },
   methods: {
+    onInputFocus(evt) {
+      evt.target.dispatchEvent(event.createEvent('tooltip-hide'));
+    },
     renderConditionContent() {
-      this.edge = JSON.parse(JSON.stringify(this.initialEdge));
+      this.edge = this.initialEdge;
       this.dialogueLimit = this.initialDialogueLimit;
       this.edgeType = this.edge.edge_type || 'normal';
       this.sourceOptions = optionConfig.getSourceOptions(this);
@@ -769,6 +812,7 @@ export default {
       this.$emit('deleteEdge');
     },
     addRule() {
+      this.edge.valid = false;
       const rule = scenarioInitializer.initialRule();
       this.andRules.push({
         id: this.$uuid.v1(),
@@ -778,6 +822,7 @@ export default {
       });
     },
     deleteRule(index) {
+      this.edge.valid = false;
       this.andRules.splice(index, 1);
     },
     addRegTargetKey(index) {
@@ -814,6 +859,7 @@ export default {
           this.$refs[selectFunctionRef][0].$emit('select', options[0].value);
         }
       }
+      this.reloadTooltip();
     },
     onSelectFunctionInput(index, newValue) {
       const newFuncName = newValue[0];
@@ -823,6 +869,12 @@ export default {
       } else {
         this.changeToNormalEdge(originalEdgeType, index, newFuncName);
       }
+      this.reloadTooltip();
+    },
+    reloadTooltip() {
+      this.$refs['input-content'].forEach((el) => {
+        el.dispatchEvent(event.createEvent('tooltip-reload'));
+      });
     },
     changeToQQEdge(originalEdgeType) {
       if (originalEdgeType === 'qq') {
@@ -949,7 +1001,6 @@ export default {
           }))],
         };
       }
-      // console.log(conditionBlock);
       this.$emit('update', conditionBlock);
     },
     entityModuleOptions(parser) {
