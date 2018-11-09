@@ -112,6 +112,9 @@ export default {
     delete_category_msg: '確定要刪除分類 {name} 及其子分類嗎？',
   },
   statistics: {
+    search_more: '顯示上限爲1萬筆，顯示更多資料？',
+    search_more_hint: '以最後一筆訪問時間爲啓始點重新搜尋',
+
     tooltip: '系統記錄與用戶的所有對話數據，支持多條件查詢和導出',
     cluster: {
       title: '輔助分類',

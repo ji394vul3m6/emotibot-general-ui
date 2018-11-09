@@ -10,9 +10,9 @@ function getTimestamp() {
 }
 
 export default {
-  createDateObj() {
+  createDateObj(date) {
     return {
-      dateObj: new Date(),
+      dateObj: date || (new Date()),
       timeObj: {
         HH: '00',
         mm: '00',

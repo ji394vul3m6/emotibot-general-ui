@@ -2,6 +2,8 @@ const RECOMMEND_URL = '/sherlock/clusterRecommend';
 const SEARCH_STD_Q_URL = '/sq/info';
 const RECORD_URL = '/api/v1/stats/records';
 const REPORT_URL = '/api/v1/clustering/reports';
+const STATS_RECORD_EXPORT = '/api/v1/stats/record/export';
+
 
 function getRecords(searchParam, page, limit) {
   let queryUrl = `${RECORD_URL}/query?page=${page}`;
@@ -69,6 +71,13 @@ function searchStdQuestion(appid, keyword) {
   return this.$reqPost(url, params).then(response => response.data.data);
 }
 
+function getExportID(params) {
+  return this.$reqPost(STATS_RECORD_EXPORT, params).then(rsp => rsp.data);
+}
+function getExportStatus(id) {
+  return this.$reqGet(`${STATS_RECORD_EXPORT}/${id}/status`).then(rsp => rsp.data);
+}
+
 export default {
   getRecords,
   exportRecords,
@@ -79,4 +88,6 @@ export default {
   pollClusterReport,
   getRecommend,
   searchStdQuestion,
+  getExportID,
+  getExportStatus,
 };
