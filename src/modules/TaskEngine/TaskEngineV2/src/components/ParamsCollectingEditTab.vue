@@ -159,9 +159,9 @@ export default {
     },
   },
   beforeMount() {
-    this.renderTabContent();
   },
   mounted() {
+    this.emitUpdate();
   },
 };
 </script>
