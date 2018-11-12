@@ -198,8 +198,9 @@ export default {
     srcSlotMouseDown() {
       this.isSrcNode = true;
       const edgeSlotFrom = this.$refs.edgeSlotFrom;
-      const x = edgeSlotFrom.offsetLeft + edgeSlotFrom.offsetParent.offsetLeft + 8;
-      const y = edgeSlotFrom.offsetTop + edgeSlotFrom.offsetParent.offsetTop + 8;
+      const halfElementHeight = edgeSlotFrom.offsetHeight / 2;
+      const x = edgeSlotFrom.offsetLeft + edgeSlotFrom.offsetParent.offsetLeft + halfElementHeight;
+      const y = edgeSlotFrom.offsetTop + edgeSlotFrom.offsetParent.offsetTop + halfElementHeight;
       const slot = { x, y };
       this.$emit('linkingStart', slot);
     },
@@ -208,8 +209,9 @@ export default {
     },
     dstSlotMouseEnter() {
       const edgeSlotTo = this.$refs.edgeSlotTo;
-      const x = edgeSlotTo.offsetLeft + edgeSlotTo.offsetParent.offsetLeft + 8;
-      const y = edgeSlotTo.offsetTop + edgeSlotTo.offsetParent.offsetTop + 8;
+      const halfElementHeight = edgeSlotTo.offsetHeightt / 2;
+      const x = edgeSlotTo.offsetLeft + edgeSlotTo.offsetParent.offsetLeft + halfElementHeight;
+      const y = edgeSlotTo.offsetTop + edgeSlotTo.offsetParent.offsetTop + halfElementHeight;
       const slot = { x, y };
       this.$emit('mouseEnterDstSlot', slot);
     },

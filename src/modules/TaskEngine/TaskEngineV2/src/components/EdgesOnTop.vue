@@ -3,7 +3,7 @@
     <svg class="svg">
       <defs>
         <marker id="head" viewBox="0 0 10 10" refX="7" refY="5" markerUnits="strokeWidth" markerWidth="4" markerHeight="3" orient="auto">
-          <path d="M 0 0 L 10 5 L 0 10 z" stroke="none" fill="black"/>
+          <path d="M 0 0 L 10 5 L 0 10 z" stroke="none" fill="#AAAAAA"/>
         </marker>
       </defs>
       <g class="linking-path" v-if="linkingPath.show === true">
@@ -62,12 +62,13 @@ export default {
     // |
     // c -- r -- s
     computeLinkingPathData(edge) {
+      // return `M ${edge.x1} ${edge.y1} L ${edge.x2} ${edge.y2}`;
       const px = edge.x1;
       const py = edge.y1;
       const qx = px;
       let qy = py;
-      const sx = edge.x2;
-      const sy = edge.y2;
+      let sx = edge.x2;
+      let sy = edge.y2;
       let rx = sx;
       const ry = sy;
       const cx = px;
@@ -88,7 +89,24 @@ export default {
         }
       }
 
+      if (rx === sx) {
+        if (px > sx) {
+          sx -= 1;
+        } else {
+          sx += 1;
+        }
+      }
+
+      if (ry === sy) {
+        if (py > sy) {
+          sy -= 1;
+        } else {
+          sy += 1;
+        }
+      }
+
       const data = `M ${px} ${py} L ${qx} ${qy} Q ${cx} ${cy}, ${rx} ${ry} L ${sx} ${sy}`;
+      console.log(data);
       return data;
     },
   },

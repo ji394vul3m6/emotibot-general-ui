@@ -10,43 +10,45 @@
       @mousemove="canvasMouseMove"
       @mouseup="canvasMouseUp"
       @click="canvasClick">
-      <template v-for="(nodeBlock, index) in nodeBlocks">
-        <node-block class="block"
-          :ref="`nodeBlock_${index}`"
-          :key="nodeBlock.data.nodeId"
-          :x="nodeBlock.x"
-          :y="nodeBlock.y"
+      <div :style="{width: '100%', height: '100%', transform: `scale(${zoom})`, transformOrigin: '0 0'}">
+        <template v-for="(nodeBlock, index) in nodeBlocks">
+          <node-block class="block"
+            :ref="`nodeBlock_${index}`"
+            :key="nodeBlock.data.nodeId"
+            :x="nodeBlock.x"
+            :y="nodeBlock.y"
+            :nodeBlockWidth="nodeBlockWidth"
+            :nodeBlockHeight="nodeBlockHeight"
+            :nodeTypeName="getNodeTypeName(nodeBlock.data.nodeType)"
+            :initialNode="nodeBlock.data"
+            :initialGlobalEdges="globalEdges"
+            :toNodeOptions="toNodeOptions"
+            :globalVarOptionsMap="globalVarOptionsMap"
+            :linking="linking"
+            :version="moduleData.version"
+            @updatePosition="updateNodePosition(index, $event)"
+            @savePosition="saveScenario()"
+            @deleteNode="deleteNode(index)"
+            @addTempNodes="addTempNodes(index, $event)"
+            @saveNode="saveNode(index, $event)"
+            @copyNode="copyNode(index)"
+            @linkingStart="linkingStart(index, $event)"
+            @linkingStop="linkingStop(index, $event)"
+            @mouseEnterDstSlot="mouseEnterDstSlot(index, $event)"
+            @mouseLeaveDstSlot="mouseLeaveDstSlot()">
+          </node-block>
+        </template>
+        <edges class="edges"
+          ref="edges"
+          :edges="filteredEdges"
           :nodeBlockWidth="nodeBlockWidth"
           :nodeBlockHeight="nodeBlockHeight"
-          :nodeTypeName="getNodeTypeName(nodeBlock.data.nodeType)"
-          :initialNode="nodeBlock.data"
-          :initialGlobalEdges="globalEdges"
-          :toNodeOptions="toNodeOptions"
-          :globalVarOptionsMap="globalVarOptionsMap"
-          :linking="linking"
-          :version="moduleData.version"
-          @updatePosition="updateNodePosition(index, $event)"
-          @savePosition="saveScenario()"
-          @deleteNode="deleteNode(index)"
-          @addTempNodes="addTempNodes(index, $event)"
-          @saveNode="saveNode(index, $event)"
-          @copyNode="copyNode(index)"
-          @linkingStart="linkingStart(index, $event)"
-          @linkingStop="linkingStop(index, $event)"
-          @mouseEnterDstSlot="mouseEnterDstSlot(index, $event)"
-          @mouseLeaveDstSlot="mouseLeaveDstSlot()">
-        </node-block>
-      </template>
-      <edges class="edges"
-        ref="edges"
-        :edges="filteredEdges"
-        :nodeBlockWidth="nodeBlockWidth"
-        :nodeBlockHeight="nodeBlockHeight"
-      ></edges>
-      <edges-on-top class="edgesOnTop"
-        ref="edgesOnTop"
-        :linkingEdge="linkingEdge"
-      ></edges-on-top>
+        ></edges>
+        <edges-on-top class="edgesOnTop"
+          ref="edgesOnTop"
+          :linkingEdge="linkingEdge"
+        ></edges-on-top>
+     </div>
     </div>
     <div class="addNewEdgeDropdown"
       ref="addNewEdgeDropdown"
@@ -103,6 +105,14 @@
         {{$t("task_engine_v2.scenario_edit_page.back_to_scenario_list")}}
       </text-button>
     </div>
+  </div>
+  <div class="zoom-tool">
+    <text-button button-type='default' width='68px' height='28px' @click="zoom += 0.1; ">
+      Zoom In
+    </text-button>
+    <text-button button-type='default' width='68px' height='28px' @click="zoomOut">
+      Zoom Out
+    </text-button>
   </div>
 </div>
 </template>
@@ -172,6 +182,7 @@ export default {
       enable: false,
       appId: undefined,
       scenarioId: undefined,
+      zoom: 1,
     };
   },
   computed: {
@@ -764,8 +775,8 @@ export default {
       if (!this.linking) return;
       if (this.linkingEdge.dstNodeIndex) return;
       const pageRect = this.$refs.page.getBoundingClientRect();
-      this.linkingEdge.x2 = e.clientX - pageRect.x;
-      this.linkingEdge.y2 = e.clientY - pageRect.y;
+      this.linkingEdge.x2 = (e.clientX - pageRect.x) / this.zoom;
+      this.linkingEdge.y2 = (e.clientY - pageRect.y) / this.zoom;
     },
     canvasMouseUp(e) {
       this.showAddNewEdgeDropdown(e.clientX, e.clientY, undefined);
@@ -980,6 +991,11 @@ export default {
       this.saveScenario();
       return node;
     },
+    zoomOut() {
+      if (this.zoom >= 0.2) {
+        this.zoom -= 0.1;
+      }
+    },
   },
   beforeMount() {
     this.appId = this.$cookie.get('appid');
@@ -1019,6 +1035,11 @@ export default {
     .addNewEdgeDropdown{
       position: absolute;
     }
+  }
+  .zoom-tool {
+    position: absolute;
+    bottom: 0;
+    right: 0;
   }
   .side-panel {
     display: flex;
