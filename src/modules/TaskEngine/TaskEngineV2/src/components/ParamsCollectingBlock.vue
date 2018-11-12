@@ -182,7 +182,7 @@
           </div>
         </div>
       </div>
-      <textarea ref="textarea-params" v-tooltip="tooltip" class="text-response" @focus="onInputFocus"
+      <textarea class="text-response"
         @input="emitUpdate"
         v-model="msg">
       </textarea>
@@ -191,7 +191,7 @@
           {{$t("task_engine_v2.params_collecting_tab.parse_failed_msg")}}
         </div>
       </div>
-      <textarea ref="textarea-failure" v-tooltip="tooltip" class="text-response" @focus="onInputFocus"
+      <textarea class="text-response"
         @input="emitUpdate"
         v-model="parse_failed_msg">
       </textarea>
@@ -260,14 +260,6 @@ export default {
             el.dispatchEvent(event.createEvent('tooltip-show'));
           }
         });
-        if (!this.$refs['textarea-params'].value) {
-          valid = false;
-          this.$refs['textarea-params'].dispatchEvent(event.createEvent('tooltip-show'));
-        }
-        if (!this.$refs['textarea-failure'].value) {
-          valid = false;
-          this.$refs['textarea-failure'].dispatchEvent(event.createEvent('tooltip-show'));
-        }
         this.$emit('update:valid', valid);
       }
     },
@@ -381,8 +373,6 @@ export default {
       this.$refs['input-content'].forEach((el) => {
         el.dispatchEvent(event.createEvent('tooltip-reload'));
       });
-      this.$refs['textarea-params'].dispatchEvent(event.createEvent('tooltip-reload'));
-      this.$refs['textarea-failure'].dispatchEvent(event.createEvent('tooltip-reload'));
     },
     entityModuleOptions(parser) {
       const entityModuleOptions = optionConfig.getEntityModuleOptionsMap();

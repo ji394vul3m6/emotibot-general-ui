@@ -51,7 +51,7 @@
       />
     </div>
     <div class="label-sub-header">Body</div>
-    <textarea class="text-body" ref="input-body" v-tooltip="tooltip" @focus="onInputFocus"
+    <textarea class="text-body"
       v-model="body">
     </textarea>
   </div>
