@@ -171,7 +171,7 @@ export default {
         'border-radius': '5px',
       },
       tooltip: {
-        msg: this.$t('err_empty'),
+        msg: this.$t('task_engine_v2.err_empty'),
         eventOnly: true,
         errorType: true,
         alignLeft: true,
@@ -183,7 +183,7 @@ export default {
     validateTab(newV, oldV) {
       if (newV && !oldV) {
         let valid = true;
-        if (!this.$refs['input-content'].value) {
+        if (this.$refs['input-content'] && !this.$refs['input-content'].value) {
           valid = false;
           this.$refs['input-content'].dispatchEvent(event.createEvent('tooltip-show'));
         }

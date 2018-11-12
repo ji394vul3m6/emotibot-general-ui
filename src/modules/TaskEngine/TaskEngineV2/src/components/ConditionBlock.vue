@@ -517,7 +517,7 @@
             class="button"
             style="width: 100px;"
             @click="addQQCandidateEdge()">
-            {{`${$t("task_engine_v2.condition_block.button_add")}${$t("condition_block.label_sentence")}`}}
+            {{`${$t("task_engine_v2.condition_block.button_add")}${$t("task_engine_v2.condition_block.label_sentence")}`}}
           </button>
           <button
             v-if="index!==0"
@@ -872,9 +872,11 @@ export default {
       this.reloadTooltip();
     },
     reloadTooltip() {
-      this.$refs['input-content'].forEach((el) => {
-        el.dispatchEvent(event.createEvent('tooltip-reload'));
-      });
+      if (this.$refs['input-content']) {
+        this.$refs['input-content'].forEach((el) => {
+          el.dispatchEvent(event.createEvent('tooltip-reload'));
+        });
+      }
     },
     changeToQQEdge(originalEdgeType) {
       if (originalEdgeType === 'qq') {
