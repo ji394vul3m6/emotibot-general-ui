@@ -62,7 +62,6 @@ export default {
     // |
     // c -- r -- s
     computeLinkingPathData(edge) {
-      // return `M ${edge.x1} ${edge.y1} L ${edge.x2} ${edge.y2}`;
       const px = edge.x1;
       const py = edge.y1;
       const qx = px;
@@ -106,7 +105,6 @@ export default {
       }
 
       const data = `M ${px} ${py} L ${qx} ${qy} Q ${cx} ${cy}, ${rx} ${ry} L ${sx} ${sy}`;
-      console.log(data);
       return data;
     },
   },
