@@ -9,5 +9,6 @@ export default {
     notify_fail: '登入失敗',
     notify_input: '请输入帐密',
     validate_fail: '验证码错误',
+    auth_expire: '授权已失效，请重新登入',
   },
 };
