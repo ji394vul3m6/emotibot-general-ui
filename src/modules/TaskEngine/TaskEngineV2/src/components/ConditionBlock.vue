@@ -102,7 +102,8 @@
         </div>
         <!-- 酒店预定语句解析器 / 通用语句解析器 / 场景语句解析器 -->
         <div class="content-parser"
-          v-if="rule.funcName === 'hotel_parser' ||
+          v-if="rule.funcName === 'nlu_parser' ||
+                rule.funcName === 'hotel_parser' ||
                 rule.funcName === 'common_parser' ||
                 rule.funcName === 'task_parser'">
           <div class="row">
@@ -962,7 +963,8 @@ export default {
       this.andRules[index].content = content;
 
       // update parser options
-      if (newFuncName === 'common_parser' ||
+      if (newFuncName === 'nlu_parser' ||
+          newFuncName === 'common_parser' ||
           newFuncName === 'task_parser' ||
           newFuncName === 'hotel_parser') {
         const options = this.entityModuleOptions(newFuncName);

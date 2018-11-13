@@ -251,6 +251,7 @@ export default {
         match: '完全相符',
         contains: '包含文本',
         regular_exp: '正則表示式',
+        nlu_parser: 'NLU解析器',
         hotel_parser: '酒店預定語句解析器',
         common_parser: '通用語句解析器',
         task_parser: '場景語句解析器',

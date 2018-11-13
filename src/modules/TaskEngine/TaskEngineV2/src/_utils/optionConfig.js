@@ -53,6 +53,11 @@ export default {
     };
   },
   getEntityListMap() {
+    const nluEntityOptions = [
+      'ADDRESS', 'QUANTITY', 'PERSON_NUMBER', 'MONEY', 'MOBILE_PHONE',
+      'ORDINAL_NUMBER', 'PERSON_NAME', 'SURNAME', 'ACT', 'TIME_FUTURE',
+      'TIME_PAST',
+    ];
     const commonEntityOptions = [
       'time', 'city', 'landmark', 'money', 'time_period',
       'phone_call', 'adjust_light', 'adjust_volume', 'movie_name', 'song_name',
@@ -66,6 +71,7 @@ export default {
       'Star', 'Price',
     ];
     return {
+      nlu_parser: nluEntityOptions,
       common_parser: commonEntityOptions,
       task_parser: taskEntityOptions,
       hotel_parser: hotelEntityOptions,
@@ -75,6 +81,10 @@ export default {
     const entityListMap = this.getEntityListMap();
     return {
       none: [],
+      nlu_parser: entityListMap.nlu_parser.map(option => ({
+        text: option,
+        value: option,
+      })),
       common_parser: entityListMap.common_parser.map(option => ({
         // 'time_module', 'city_module', 'landmark_module', 'money_module', 'time_period_module',
         text: option,
@@ -231,10 +241,11 @@ export default {
   },
   getFuncOptionMap(context) {
     const textFuncs = [
-      'match', 'contains', 'regular_exp', 'common_parser', 'task_parser',
-      'hotel_parser', 'user_custom_parser', 'polarity_parser', 'api_parser', 'qq', 'intent_parser',
+      'match', 'contains', 'regular_exp', 'nlu_parser', 'common_parser',
+      'task_parser', 'hotel_parser', 'user_custom_parser', 'polarity_parser', 'api_parser',
+      'qq', 'intent_parser',
     ];
-    const globalIngoFuncs = [
+    const globalInfoFuncs = [
       'key_val_match', 'key_key_match', 'contain_key', 'not_contain_key', 'list_length_match',
       'counter_check', 'user_custom_transform', 'regular_exp_from_var', 'assign_value', 'remove_key',
     ];
@@ -247,7 +258,7 @@ export default {
           value: func,
         };
       }),
-      global_info: globalIngoFuncs.map((func) => {
+      global_info: globalInfoFuncs.map((func) => {
         const key = `task_engine_v2.condition_block.func.${func}`;
         return {
           text: context.$t(key),
