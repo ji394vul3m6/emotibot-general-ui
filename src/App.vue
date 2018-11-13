@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div :class="{blur: isBackgroundBlur}">
-      <div id="app-logo"></div>
+      <div id="app-logo" :class="$i18n.locale"></div>
       <page-header v-if="ready"></page-header>
       <!-- if not Manage Module, show robot page -->
       <template v-if="!isManageModule && ready">

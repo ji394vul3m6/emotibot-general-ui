@@ -133,8 +133,14 @@ textarea {
   left: 0;
   width: $page-menu-width;
   height: $page-header-height;
-  background: $page-menu-color url("./assets/images/logo.png") no-repeat center center;
-  background-size: 60px 32px;
+  &.zh-cn {
+    background: $page-menu-color url("/static/emotibot_logo_small_chs.svg") no-repeat center center;
+    background-size: 60px 32px;
+  }
+  &.zh-tw {
+    background: $page-menu-color url("/static/emotibot_logo_small_cht.svg") no-repeat center center;
+    background-size: 60px 32px;
+  }
 }
 
 #app-page {

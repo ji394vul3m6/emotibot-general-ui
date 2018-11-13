@@ -2,7 +2,7 @@
   <div class='login-page'>
     <div class='container'>
       <div class='logo'>
-        <div id="app-logo"></div>
+        <div id="app-logo" :class="$i18n.locale"></div>
       </div>
       <div class="input-row">
         <input ref="user" type="text" v-model="input.account" :placeholder="$t('login.account_place')" @keydown="passwordKey">
@@ -35,7 +35,6 @@
 </template>
 
 <script>
-import misc from '@/utils/js/misc';
 import Icon from './components/basic/Icon';
 import LoadingButton from './components/basic/LoadingButton';
 import api from './api/system';
@@ -93,21 +92,15 @@ export default {
         } else {
           window.location = '/#/manage/robot-manage';
         }
-
-        // if (that.redirect && that.redirect !== '') {
-        //   window.location = `/#${that.redirect}`;
-        // } else {
-        //
-        // }
       }, (err) => {
         if (err.response.status === 400 && that.useCaptcha) {
-          that.$notify({ text: '验证码错误', type: 'fail' });
+          that.$notify({ text: that.$t('login.validate_fail'), type: 'fail' });
           if (that.$refs.captcha) {
             that.$refs.captcha.focus();
           }
         } else {
           that.reloadCaptcha();
-          that.$notify({ text: '登录失败', type: 'fail' });
+          that.$notify({ text: that.$t('login.notify_fail'), type: 'fail' });
           that.$refs.user.focus();
         }
       })
@@ -140,7 +133,6 @@ export default {
   },
   mounted() {
     const that = this;
-    that.$i18n.locale = misc.getBrowserLanguage();
     that.$refs.user.focus();
     const querys = document.location.search.substr(1).split('&');
     const queryMap = {};
@@ -210,8 +202,14 @@ div {
       #app-logo {
         width: 185px;
         height: 103px;
-        background: transparent url("./assets/images/emotibot_logo_chs.svg") no-repeat center center;
-        background-size: 185px 103px;
+        &.zh-cn {
+          background: transparent url("/static/emotibot_logo_chs.svg") no-repeat center center;
+          background-size: 185px 103px;
+        }
+        &.zh-tw {
+          background: transparent url("/static/emotibot_logo_cht.svg") no-repeat center center;
+          background-size: 185px 103px;
+        }
       }
     }
     .input-row {
