@@ -93,6 +93,7 @@ export default {
       },
       actionTab: {
         actionGroupList: [],
+        waitForResponse: true,
       },
       edgeTab: {
         normalEdges: [],

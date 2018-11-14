@@ -419,11 +419,10 @@ export default {
         uiNode.paramsCollectingTab.confirmMsgParseFail,
       );
     } else if (uiNode.nodeType === 'action') {
-      node.content = JSON.parse(JSON.stringify(uiNode.actionTab.actionGroupList));
-      node.content.forEach((actionGroup) => {
-        actionGroup.conditionList =
-          scenarioConvertorV3.convertConditionList(actionGroup.conditionList);
-      });
+      node.content = this.composeActionContent(
+        uiNode.actionTab.actionGroupList,
+        uiNode.actionTab.waitForResponse,
+      );
     }
     return node;
   },
@@ -438,6 +437,17 @@ export default {
     });
     return {
       is_last_node: isLastNode,
+    };
+  },
+  composeActionContent(initialActionGroupList, waitForResponse) {
+    const actionGroupList = JSON.parse(JSON.stringify(initialActionGroupList));
+    actionGroupList.forEach((actionGroup) => {
+      actionGroup.conditionList =
+          scenarioConvertorV3.convertConditionList(actionGroup.conditionList);
+    });
+    return {
+      action_group_list: actionGroupList,
+      wait_for_response: waitForResponse,
     };
   },
   composePCContent(params, enableConfirmMsg, confirmMsg, confirmMsgParseFail) {

@@ -152,6 +152,9 @@ export default {
       fail: '調用失敗',
       label_then_goto: '則前往',
     },
+    action_edit_tab: {
+      wait_for_response: '等待用戶回復：',
+    },
     condition_block: {
       label_content: '內容',
       button_add: '＋增加',

@@ -54,13 +54,13 @@
       ></entity-collecting-edit-tab>
       <action-edit-tab ref="actionTab"
         v-if="currentTab === 'actionTab'"
-        :initialActionGroupList="actionTab.actionGroupList"
+        :actionTab="actionTab"
         :initialEntityCollectorList="globalVarOptions"
-        :initialSkillNameList="toNodeOptions"
+        :initialToNodeOptions="toNodeOptions"
         :version="extData.version"
         :validateTab="validateTab"
         @update:valid="valid = $event"
-        @update="actionTab.actionGroupList = $event"
+        @update="actionTab = $event"
         @updateNewNodeOptions="updateNewNodeOptions"
       ></action-edit-tab>
       <params-collecting-edit-tab ref="paramsCollectingTab"
@@ -120,16 +120,16 @@
 import general from '@/modules/TaskEngine/_utils/general';
 import mappingtable from '@/modules/TaskEngine/_api/taskEngine_mappingtable';
 import EntityCollectingEditTab from '@/modules/TaskEngine/TaskEngineV3/src/components/EntityCollectingPage';
-import ActionEditTab from '@/modules/TaskEngine/TaskEngineV3/src/components/ActionPage';
 import TriggerEditTab from './TriggerEditTab';
 import SettingEditTab from './SettingEditTab';
 import EdgeEditTab from './EdgeEditTab';
 import ParamsCollectingEditTab from './ParamsCollectingEditTab';
 import ParamsCollectingEdgeEditTab from './ParamsCollectingEdgeEditTab';
-// import scenarioConvertor from '../_utils/scenarioConvertor';
 import SettingBasicEditTab from './SettingBasicEditTab';
 import RestfulSettingEditTab from './RestfulSettingEditTab';
 import RestfulEdgeEditTab from './RestfulEdgeEditTab';
+// import ActionEditTab from '@/modules/TaskEngine/TaskEngineV3/src/components/ActionPage';
+import ActionEditTab from './ActionEditTab';
 import optionConfig from '../_utils/optionConfig';
 import scenarioConvertor from '../_utils/scenarioConvertor';
 import scenarioInitializer from '../_utils/scenarioInitializer';
