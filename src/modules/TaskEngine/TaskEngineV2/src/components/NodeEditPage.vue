@@ -526,13 +526,8 @@ export default {
             msg: that.$t('task_engine_v2.node_edit_page.confirm_to_save_changes'),
           },
           callback: {
-            ok() {
-              if (that.validResult(nodeResult)) {
-                that.$emit(
-                  'validateSuccess',
-                  { nodeResult, newNodeOptions: this.newNodeOptions },
-                );
-              }
+            ok: () => {
+              this.validate();
             },
             cancel() {
               that.$emit('cancelValidateSuccess');
