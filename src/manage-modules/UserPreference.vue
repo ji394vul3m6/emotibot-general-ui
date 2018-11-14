@@ -242,7 +242,9 @@ export default {
         return;
       }
       this.setLanguage(language);
-      location.reload();
+      this.$api.setBF2Locale(this.userInfo.id, language).then(() => {
+        location.reload();
+      });
     },
   },
   mounted() {
