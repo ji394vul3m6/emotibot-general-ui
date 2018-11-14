@@ -132,6 +132,7 @@ import RestfulSettingEditTab from './RestfulSettingEditTab';
 import RestfulEdgeEditTab from './RestfulEdgeEditTab';
 import optionConfig from '../_utils/optionConfig';
 import scenarioConvertor from '../_utils/scenarioConvertor';
+import scenarioInitializer from '../_utils/scenarioInitializer';
 
 export default {
   name: 'node-edit-page',
@@ -186,6 +187,11 @@ export default {
         settingTab = node.settingTab;
         settingTab.nodeType = nodeType;
       } else if (tab === 'edgeTab') {
+        if (node.edgeTab === undefined) {
+          // only happen to old action node
+          // initial edgeTab to action node
+          node.edgeTab = scenarioInitializer.initialEdgeTab(nodeType);
+        }
         edgeTab = node.edgeTab;
         edgeTab.nodeType = nodeType;
         edgeTab.nodeId = node.nodeId;

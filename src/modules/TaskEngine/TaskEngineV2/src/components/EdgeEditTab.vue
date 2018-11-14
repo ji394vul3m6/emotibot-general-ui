@@ -27,7 +27,7 @@
     @click="addEdge()">
     {{$t("task_engine_v2.edge_edit_tab.button_add_edge")}}
   </button>
-  <div class="exceed_limit block" v-if="nodeType !== 'entry' && nodeType !== 'nlu_pc'">
+  <div class="exceed_limit block" v-if="exceedThenGoto !== null">
     <div class="condition-row">
       <div class="label label-bold">
         {{$t("task_engine_v2.edge_edit_tab.label_exceed_limit")}}
@@ -128,9 +128,9 @@ export default {
     const edgeTab = this.edgeTab;
     const nodeId = edgeTab.nodeId;
     const nodeType = edgeTab.nodeType;
-    const exceedThenGoto = edgeTab.exceedThenGoto;
+    const exceedThenGoto = edgeTab.exceedThenGoto || null;
     const elseInto = edgeTab.elseInto;
-    const dialogueLimit = edgeTab.dialogueLimit;
+    const dialogueLimit = edgeTab.dialogueLimit || null;
 
     // add tmp id for edges
     const normalEdges = edgeTab.normalEdges.map((edge) => {
@@ -311,14 +311,18 @@ export default {
     },
     emitUpdate() {
       const edgeTab = {
-        dialogueLimit: parseInt(this.dialogueLimit, 10) || null,
-        exceedThenGoto: this.exceedThenGoto,
         elseInto: this.elseInto || null,
         normalEdges: this.normalEdges.map((edge) => {
           const { id, valid, ...rest } = edge;
           return rest;
         }),
       };
+      if (this.dialogueLimit !== null) {
+        edgeTab.dialogueLimit = parseInt(this.dialogueLimit, 10) || null;
+      }
+      if (this.exceedThenGoto !== null) {
+        edgeTab.exceedThenGoto = this.exceedThenGoto;
+      }
       // console.log(edgeTab);
       this.$emit('update', edgeTab);
     },

@@ -630,8 +630,18 @@ export default {
         ...normalEdges,
       ];
     } else if (uiNode.nodeType === 'action') {
-      const elseInto = this.edgeElseInto(uiNode.nodeId, '0');
-      edges = [elseInto];
+      if (uiNode.edgeTab === undefined) {
+        // only happen to old action node
+        // initial edgeTab to action node
+        uiNode.edgeTab = scenarioInitializer.initialEdgeTab(uiNode.nodeType);
+      }
+      const elseInto = this.edgeElseInto(uiNode.nodeId, uiNode.edgeTab.elseInto);
+      const normalEdges = this.addResetDialogueCntAndParseFailedAction(uiNode.edgeTab.normalEdges);
+      edges = [
+        ...normalEdges,
+        ...globalEdges,
+        elseInto,
+      ];
     }
     return edges;
   },
