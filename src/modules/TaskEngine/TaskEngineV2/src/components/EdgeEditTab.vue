@@ -140,8 +140,8 @@ export default {
       return obj;
     });
 
-    this.doNothingEdge = { text: 'do nothing', value: null };
-    this.exitEdge = { text: 'Exit (ID: 0)', value: '0' };
+    this.doNothingEdge = { text: this.$t('task_engine_v2.to_node_option.do_nothing'), value: null };
+    this.exitEdge = { text: `${this.$t('task_engine_v2.to_node_option.exit')} (ID: 0)`, value: '0' };
     this.parseFailedEdge = {
       text: this.$t('task_engine_v2.to_node_option.parse_fail'),
       value: nodeId,
@@ -256,6 +256,7 @@ export default {
       let exceedThenGotoOptions;
       let elseIntoOptions;
       const options = fullOptions.filter(option => option.value !== this.nodeId);
+      // console.log(this.nodeType);
       if (this.nodeType === 'entry') {
         toNodeOptions = [
           this.addNewDialogueNodeEdge,
@@ -265,18 +266,7 @@ export default {
         elseIntoOptions = [
           this.addNewDialogueNodeEdge,
         ].concat(options);
-      } else if (this.nodeType === 'nlu_pc') {
-        toNodeOptions = [
-          this.addNewDialogueNodeEdge,
-          this.doNothingEdge,
-          this.exitEdge,
-        ].concat(options);
-        exceedThenGotoOptions = [];
-        elseIntoOptions = [
-          this.addNewDialogueNodeEdge,
-          this.exitEdge,
-        ].concat(options);
-      } else {
+      } else if (this.nodeType === 'dialogue') {
         toNodeOptions = [
           this.addNewDialogueNodeEdge,
           this.doNothingEdge,
@@ -289,6 +279,18 @@ export default {
         elseIntoOptions = [
           this.addNewDialogueNodeEdge,
           this.parseFailedEdge,
+          this.exitEdge,
+        ].concat(options);
+        console.log(exceedThenGotoOptions);
+      } else { // nodeType = nlu_pc or action
+        toNodeOptions = [
+          this.addNewDialogueNodeEdge,
+          this.doNothingEdge,
+          this.exitEdge,
+        ].concat(options);
+        exceedThenGotoOptions = [];
+        elseIntoOptions = [
+          this.addNewDialogueNodeEdge,
           this.exitEdge,
         ].concat(options);
       }

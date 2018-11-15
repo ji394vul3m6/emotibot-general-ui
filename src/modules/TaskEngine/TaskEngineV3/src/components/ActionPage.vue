@@ -1,7 +1,13 @@
 <template lang="html">
 <div id="action-page" class="page action-page">
   <div class="add-action-container">
-    <div class="row">
+    <div class="row" v-if="version === '2.0'">
+      <div class="label-add-action">{{$t("task_engine_v3.action_page.label_add_action_2_0")}}</div>
+      <div class="icon-container" v-tooltip="{ msg: $t('task_engine_v3.action_page.description_2_0')}">
+        <icon icon-type="info" :enableHover="true" :size=18 />
+      </div>
+    </div>
+    <div class="row"  v-if="version !== '2.0'">
       <div class="label-add-action">{{$t("task_engine_v3.action_page.label_add_action")}}</div>
       <div class="icon-container" v-tooltip="{ msg: $t('task_engine_v3.action_page.description')}">
         <icon icon-type="info" :enableHover="true" :size=18 />
@@ -20,11 +26,17 @@
         @click="addNewActionGroup('webhook')">
         {{$t("task_engine_v3.action_page.button_add_new_webhook")}}
       </text-button>
-      <text-button
+      <text-button v-if="version==='2.0'"
         class="button-add-action-group"
         button-type='primary'
         @click="addNewActionGroup('goto')">
         {{$t("task_engine_v3.action_page.button_add_new_goto")}}
+      </text-button>
+      <text-button v-if="version!=='2.0'"
+        class="button-add-action-group"
+        button-type='primary'
+        @click="addNewActionGroup('goto')">
+        {{$t("task_engine_v3.action_page.button_add_new_edge")}}
       </text-button>
     </div>
   </div>
@@ -147,6 +159,8 @@ export default {
           url: '',
           contentTypes: 'application/json',
           body: '',
+          webhookSuccessThenGoto: null,
+          webhookFailThenGoto: null,
         });
       } else if (type === 'goto') {
         actionGroup.actionList.push({
