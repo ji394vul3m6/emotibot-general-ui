@@ -27,7 +27,7 @@
     @click="addEdge()">
     {{$t("task_engine_v2.edge_edit_tab.button_add_edge")}}
   </button>
-  <div class="exceed_limit block" v-if="nodeType !== 'entry' && nodeType !== 'nlu_pc'">
+  <div class="exceed_limit block" v-if="exceedThenGoto !== null">
     <div class="condition-row">
       <div class="label label-bold">
         {{$t("task_engine_v2.edge_edit_tab.label_exceed_limit")}}
@@ -128,9 +128,9 @@ export default {
     const edgeTab = this.edgeTab;
     const nodeId = edgeTab.nodeId;
     const nodeType = edgeTab.nodeType;
-    const exceedThenGoto = edgeTab.exceedThenGoto;
+    const exceedThenGoto = edgeTab.exceedThenGoto || null;
     const elseInto = edgeTab.elseInto;
-    const dialogueLimit = edgeTab.dialogueLimit;
+    const dialogueLimit = edgeTab.dialogueLimit || null;
 
     // add tmp id for edges
     const normalEdges = edgeTab.normalEdges.map((edge) => {
@@ -140,8 +140,8 @@ export default {
       return obj;
     });
 
-    this.doNothingEdge = { text: 'do nothing', value: null };
-    this.exitEdge = { text: 'Exit (ID: 0)', value: '0' };
+    this.doNothingEdge = { text: this.$t('task_engine_v2.to_node_option.do_nothing'), value: null };
+    this.exitEdge = { text: `${this.$t('task_engine_v2.to_node_option.exit')} (ID: 0)`, value: '0' };
     this.parseFailedEdge = {
       text: this.$t('task_engine_v2.to_node_option.parse_fail'),
       value: nodeId,
@@ -154,7 +154,11 @@ export default {
 
     // render toNodeOptions, exceedThenGotoOptions, elseIntoOptions
     const options = this.initialToNodeOptions.filter(option => option.value !== this.nodeId);
-    const { toNodeOptions, exceedThenGotoOptions, elseIntoOptions } = this.composeOptions(options);
+    const {
+      toNodeOptions,
+      exceedThenGotoOptions,
+      elseIntoOptions,
+    } = this.composeOptions(options, nodeType);
     return {
       nodeId,
       nodeType,
@@ -240,23 +244,26 @@ export default {
       this.updateOptions();
     },
     updateOptions() {
-      const { toNodeOptions, exceedThenGotoOptions, elseIntoOptions } = this.composeOptions([
-        ...this.initialToNodeOptions,
-        ...this.newNodeOptions.map(option => ({
-          text: `${option.nodeName} (ID: ${option.nodeId})`,
-          value: option.nodeId,
-        })),
-      ]);
+      const { toNodeOptions, exceedThenGotoOptions, elseIntoOptions } = this.composeOptions(
+        [
+          ...this.initialToNodeOptions,
+          ...this.newNodeOptions.map(option => ({
+            text: `${option.nodeName} (ID: ${option.nodeId})`,
+            value: option.nodeId,
+          })),
+        ],
+        this.nodeType,
+      );
       this.toNodeOptions = toNodeOptions;
       this.exceedThenGotoOptions = exceedThenGotoOptions;
       this.elseIntoOptions = elseIntoOptions;
     },
-    composeOptions(fullOptions) {
+    composeOptions(fullOptions, nodeType) {
       let toNodeOptions;
       let exceedThenGotoOptions;
       let elseIntoOptions;
       const options = fullOptions.filter(option => option.value !== this.nodeId);
-      if (this.nodeType === 'entry') {
+      if (nodeType === 'entry') {
         toNodeOptions = [
           this.addNewDialogueNodeEdge,
           this.doNothingEdge,
@@ -265,18 +272,7 @@ export default {
         elseIntoOptions = [
           this.addNewDialogueNodeEdge,
         ].concat(options);
-      } else if (this.nodeType === 'nlu_pc') {
-        toNodeOptions = [
-          this.addNewDialogueNodeEdge,
-          this.doNothingEdge,
-          this.exitEdge,
-        ].concat(options);
-        exceedThenGotoOptions = [];
-        elseIntoOptions = [
-          this.addNewDialogueNodeEdge,
-          this.exitEdge,
-        ].concat(options);
-      } else {
+      } else if (nodeType === 'dialogue') {
         toNodeOptions = [
           this.addNewDialogueNodeEdge,
           this.doNothingEdge,
@@ -289,6 +285,17 @@ export default {
         elseIntoOptions = [
           this.addNewDialogueNodeEdge,
           this.parseFailedEdge,
+          this.exitEdge,
+        ].concat(options);
+      } else { // nodeType = nlu_pc or action
+        toNodeOptions = [
+          this.addNewDialogueNodeEdge,
+          this.doNothingEdge,
+          this.exitEdge,
+        ].concat(options);
+        exceedThenGotoOptions = [];
+        elseIntoOptions = [
+          this.addNewDialogueNodeEdge,
           this.exitEdge,
         ].concat(options);
       }
@@ -311,14 +318,18 @@ export default {
     },
     emitUpdate() {
       const edgeTab = {
-        dialogueLimit: parseInt(this.dialogueLimit, 10) || null,
-        exceedThenGoto: this.exceedThenGoto,
         elseInto: this.elseInto || null,
         normalEdges: this.normalEdges.map((edge) => {
           const { id, valid, ...rest } = edge;
           return rest;
         }),
       };
+      if (this.dialogueLimit !== null) {
+        edgeTab.dialogueLimit = parseInt(this.dialogueLimit, 10) || null;
+      }
+      if (this.exceedThenGoto !== null) {
+        edgeTab.exceedThenGoto = this.exceedThenGoto;
+      }
       // console.log(edgeTab);
       this.$emit('update', edgeTab);
     },

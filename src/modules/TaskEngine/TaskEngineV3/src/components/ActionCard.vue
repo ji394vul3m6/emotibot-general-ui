@@ -17,8 +17,6 @@
     <div class="row">
       <div class="label-method label-webhook">{{$t("task_engine_v3.action_card.webhook.label_method")}}</div>
       <dropdown-select
-        class="select-skill"
-        ref="selectSkill"
         v-model="methodModel"
         :options="methodOptions"
         width="180px"
@@ -35,8 +33,6 @@
     <div class="row" v-if="action.method!='GET'">
       <div class="label-content-type label-webhook">{{$t("task_engine_v3.action_card.webhook.label_content_type")}}</div>
       <dropdown-select
-        class="select-skill"
-        ref="selectSkill"
         v-model="contentTypeModel"
         :options="contentTypeOptions"
         width="300px"
@@ -44,11 +40,29 @@
     </div>
     <div class="row" v-if="action.method!='GET'">
       <div class="label-body label-webhook">{{$t("task_engine_v3.action_card.webhook.label_body")}}</div>
-      <input
-        class="input-body
-        input-webhook"
+      <textarea class="textarea-body"
         v-model="action.body"
-        :placeholder="$t('task_engine_v3.action_card.webhook.placeholder_input_body')"
+        :placeholder="$t('task_engine_v3.action_card.webhook.placeholder_input_body')">
+      </textarea>
+    </div>
+    <div class="row" v-if="version!=='2.0'">
+      <div class="label-body label-webhook">{{$t("task_engine_v3.action_card.webhook.label_webhook_success")}}</div>
+      <dropdown-select
+        :value="[action.webhookSuccessThenGoto]"
+        @input="onSelectGoto($event[0], 'webhookSuccessThenGoto')"
+        :options="skillOptions"
+        :fixedListWidth="false"
+        width="180px"
+      />
+    </div>
+    <div class="row" v-if="version!=='2.0'">
+      <div class="label-body label-webhook">{{$t("task_engine_v3.action_card.webhook.label_webhook_fail")}}</div>
+      <dropdown-select
+        :value="[action.webhookFailThenGoto]"
+        @input="onSelectGoto($event[0], 'webhookFailThenGoto')"
+        :options="skillOptions"
+        :fixedListWidth="false"
+        width="180px"
       />
     </div>
   </div>
@@ -59,10 +73,10 @@
       class="select-skill"
       ref="selectSkill"
       :value="[action.targetSkillId]"
-      @input="onSelectGoto($event[0])"
+      @input="onSelectGoto($event[0], 'targetSkillId')"
       :options="skillOptions"
       :fixedListWidth="false"
-      width="160px"
+      width="180px"
     />
   </div>
 </div>
@@ -90,9 +104,16 @@ export default {
     },
   },
   data() {
+    const action = JSON.parse(JSON.stringify(this.initialAction));
+    if (action.webhookSuccessThenGoto === undefined) {
+      action.webhookSuccessThenGoto = null;
+    }
+    if (action.webhookFailThenGoto === undefined) {
+      action.webhookFailThenGoto = null;
+    }
     return {
       i18n: {},
-      action: JSON.parse(JSON.stringify(this.initialAction)),
+      action,
       methods: ['GET', 'POST', 'PUT', 'DELETE'],
       contentTypes: ['application/json', 'application/x-www-form-urlencoded'],
       skills: [],
@@ -103,22 +124,29 @@ export default {
       const skillNameList = [];
       if (this.version === '2.0') {
         skillNameList.push({
-          text: '创建新任务',
+          text: this.$t('task_engine_v3.action_card.goto.button_add_new_skill'),
           value: 'add_new_skill',
           isButton: true,
         });
-      } else if (this.version === '1.1') {
+        skillNameList.push({
+          text: this.$t('task_engine_v3.action_card.goto.option_finish_scenario'),
+          value: '0',
+        });
+      } else {
         skillNameList.push({
           text: this.$t('task_engine_v2.to_node_option.add_new_dialogue_node'),
           value: 'add_new_dialogue_node',
           isButton: true,
         });
+        skillNameList.push({
+          text: this.$t('task_engine_v2.to_node_option.do_nothing'),
+          value: null,
+        });
+        skillNameList.push({
+          text: `${this.$t('task_engine_v2.to_node_option.exit')} (ID: 0)`,
+          value: '0',
+        });
       }
-      // add finish_scenario_option
-      skillNameList.push({
-        text: this.i18n.task_engine_v3.action_card.goto.option_finish_scenario,
-        value: 'exit',
-      });
       skillNameList.push(...JSON.parse(JSON.stringify(this.initialSkillNameList)));
       return skillNameList;
     },
@@ -168,15 +196,15 @@ export default {
     },
   },
   methods: {
-    onSelectGoto(toNode) {
+    onSelectGoto(toNode, key) {
       if (toNode === 'add_new_skill') {
         this.addNewSkill();
       } else if (toNode === 'add_new_dialogue_node') {
         const newNodeID = scenarioInitializer.guid_sort();
         this.$emit('addNewDialogueNode', newNodeID);
-        this.action.targetSkillId = newNodeID;
+        this.action[key] = newNodeID;
       } else {
-        this.action.targetSkillId = toNode;
+        this.action[key] = toNode;
       }
       this.$emit('update', this.action);
     },
@@ -241,6 +269,12 @@ export default {
       }
       .input-url, .input-body{
         flex: 1 1 auto;
+      }
+      .textarea-body{
+        flex: 1 1 auto;
+        width: 180px;
+        height: 100px;
+        color: $color-font-normal;
       }
     }
   }

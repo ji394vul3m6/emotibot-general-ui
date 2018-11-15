@@ -6,7 +6,7 @@ export default {
       nlu_pc: ['settingBasicTab', 'entityCollectingTab', 'edgeTab'],
       restful: ['restfulSettingTab', 'restfulEdgeTab'],
       parameter_collecting: ['settingBasicTab', 'paramsCollectingTab', 'paramsCollectingEdgeTab'],
-      action: ['settingBasicTab', 'actionTab'],
+      action: ['settingBasicTab', 'actionTab', 'edgeTab'],
     };
   },
   getEntityListMap() {

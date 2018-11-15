@@ -90,7 +90,11 @@ export default {
         label = this.$t('task_engine_v3.action_card.label_webhook_type');
       }
       if (this.firstActionType === 'goto') {
-        label = this.$t('task_engine_v3.action_card.label_goto_type');
+        if (this.version === '2.0') {
+          label = this.$t('task_engine_v3.action_card.label_goto_type_2_0');
+        } else {
+          label = this.$t('task_engine_v3.action_card.label_goto_type');
+        }
       }
       return label;
     },
