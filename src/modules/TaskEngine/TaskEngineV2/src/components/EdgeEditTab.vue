@@ -154,7 +154,11 @@ export default {
 
     // render toNodeOptions, exceedThenGotoOptions, elseIntoOptions
     const options = this.initialToNodeOptions.filter(option => option.value !== this.nodeId);
-    const { toNodeOptions, exceedThenGotoOptions, elseIntoOptions } = this.composeOptions(options);
+    const {
+      toNodeOptions,
+      exceedThenGotoOptions,
+      elseIntoOptions,
+    } = this.composeOptions(options, nodeType);
     return {
       nodeId,
       nodeType,
@@ -240,24 +244,26 @@ export default {
       this.updateOptions();
     },
     updateOptions() {
-      const { toNodeOptions, exceedThenGotoOptions, elseIntoOptions } = this.composeOptions([
-        ...this.initialToNodeOptions,
-        ...this.newNodeOptions.map(option => ({
-          text: `${option.nodeName} (ID: ${option.nodeId})`,
-          value: option.nodeId,
-        })),
-      ]);
+      const { toNodeOptions, exceedThenGotoOptions, elseIntoOptions } = this.composeOptions(
+        [
+          ...this.initialToNodeOptions,
+          ...this.newNodeOptions.map(option => ({
+            text: `${option.nodeName} (ID: ${option.nodeId})`,
+            value: option.nodeId,
+          })),
+        ],
+        this.nodeType,
+      );
       this.toNodeOptions = toNodeOptions;
       this.exceedThenGotoOptions = exceedThenGotoOptions;
       this.elseIntoOptions = elseIntoOptions;
     },
-    composeOptions(fullOptions) {
+    composeOptions(fullOptions, nodeType) {
       let toNodeOptions;
       let exceedThenGotoOptions;
       let elseIntoOptions;
       const options = fullOptions.filter(option => option.value !== this.nodeId);
-      // console.log(this.nodeType);
-      if (this.nodeType === 'entry') {
+      if (nodeType === 'entry') {
         toNodeOptions = [
           this.addNewDialogueNodeEdge,
           this.doNothingEdge,
@@ -266,7 +272,7 @@ export default {
         elseIntoOptions = [
           this.addNewDialogueNodeEdge,
         ].concat(options);
-      } else if (this.nodeType === 'dialogue') {
+      } else if (nodeType === 'dialogue') {
         toNodeOptions = [
           this.addNewDialogueNodeEdge,
           this.doNothingEdge,
@@ -281,7 +287,6 @@ export default {
           this.parseFailedEdge,
           this.exitEdge,
         ].concat(options);
-        console.log(exceedThenGotoOptions);
       } else { // nodeType = nlu_pc or action
         toNodeOptions = [
           this.addNewDialogueNodeEdge,
