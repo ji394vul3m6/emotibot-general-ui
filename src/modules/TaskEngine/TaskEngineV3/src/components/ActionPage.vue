@@ -165,7 +165,7 @@ export default {
       } else if (type === 'goto') {
         actionGroup.actionList.push({
           type: 'goto',
-          targetSkillId: 'exit',
+          targetSkillId: '0',
         });
       }
       this.actionGroupList.push(actionGroup);

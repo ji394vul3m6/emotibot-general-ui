@@ -190,7 +190,6 @@ export default {
   watch: {
     action: {
       handler() {
-        console.log(this.action);
         this.$emit('update', this.action);
       },
       deep: true,

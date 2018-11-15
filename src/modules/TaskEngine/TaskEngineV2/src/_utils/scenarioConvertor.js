@@ -1219,8 +1219,42 @@ export default {
           nodeInfo = this.traverseEdge(nodeId, edge, edgeType, nodeInfo);
         }
       });
+      if (node.node_type === 'action') {
+        let actionGroupList = [];
+        if (node.content instanceof Object) {
+          actionGroupList = node.content.action_group_list;
+        } else if (node.content instanceof Array) {
+          actionGroupList = node.content;
+        }
+        nodeInfo = this.traverseActionGroupList(nodeId, actionGroupList, nodeInfo);
+      }
     });
     return nodeInfo;
+  },
+  traverseActionGroupList(nodeId, actionGroupList, nodeInfo) {
+    actionGroupList.forEach((actionGroup) => {
+      actionGroup.actionList.forEach((action) => {
+        if (action.type === 'webhook') {
+          let toNodeId = action.webhookSuccessThenGoto;
+          this.setNodeInfo(nodeInfo, nodeId, toNodeId);
+          toNodeId = action.webhookFailThenGoto;
+          this.setNodeInfo(nodeInfo, nodeId, toNodeId);
+        } else if (action.type === 'goto') {
+          const toNodeId = action.targetSkillId;
+          this.setNodeInfo(nodeInfo, nodeId, toNodeId);
+        }
+      });
+    });
+    return nodeInfo;
+  },
+  setNodeInfo(nodeInfo, nodeId, toNodeId) {
+    if (toNodeId === null || toNodeId === nodeId || nodeInfo[toNodeId] === undefined) return;
+    if (toNodeId === '0') {
+      nodeInfo[nodeId].hasExitConnection = true;
+    } else {
+      nodeInfo[toNodeId].hasInboundConnection = true;
+      nodeInfo[nodeId].hasOutboundConnection = true;
+    }
   },
   traverseQQEdge(nodeId, edge, nodeInfo) {
     if (!edge.candidate_edges) return nodeInfo;

@@ -228,7 +228,7 @@ export default {
       ).then(() => {
         window.moduleData = content;
         // TODO use toast instead
-        console.log('场景已更新');
+        // console.log('场景已更新');
       }, (err) => {
         general.popErrorWindow(this, 'saveScenario error', err.message);
       });
@@ -276,7 +276,7 @@ export default {
       const convertedContent = scenarioConvertor.convertToNodes(content);
       this.saveScenario(convertedContent).then(() => {
         api.publishScenario(this.appId, this.scenarioId).then(() => {
-          console.log('场景已发布');
+          // console.log('场景已发布');
           this.enableScenario();
         }, (err) => {
           general.popErrorWindow(this, 'publishScenario error', err.message);
@@ -285,7 +285,7 @@ export default {
     },
     enableScenario() {
       api.switchScenario(this.appId, this.scenarioId, true).then(() => {
-        console.log('场景已开启');
+        // console.log('场景已开启');
       }, (err) => {
         general.popErrorWindow(this, 'enableScenario error', err.message);
       });
