@@ -105,11 +105,13 @@ export default {
   },
   data() {
     const action = JSON.parse(JSON.stringify(this.initialAction));
-    if (action.webhookSuccessThenGoto === undefined) {
-      action.webhookSuccessThenGoto = null;
-    }
-    if (action.webhookFailThenGoto === undefined) {
-      action.webhookFailThenGoto = null;
+    if (action.type === 'webhook') {
+      if (action.webhookSuccessThenGoto === undefined) {
+        action.webhookSuccessThenGoto = null;
+      }
+      if (action.webhookFailThenGoto === undefined) {
+        action.webhookFailThenGoto = null;
+      }
     }
     return {
       i18n: {},

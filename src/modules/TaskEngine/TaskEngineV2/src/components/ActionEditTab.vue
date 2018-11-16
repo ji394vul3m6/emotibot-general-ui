@@ -2,7 +2,7 @@
 <div id="action-edit-tab">
   <action-page
     :initialActionGroupList="actionGroupList"
-    :initialEntityCollectorList="initialEntityCollectorList"
+    :initialEntityCollectorList="initialEntityCollectorList"  
     :initialSkillNameList="initialToNodeOptions"
     :version="version"
     :validateTab="validateTab"

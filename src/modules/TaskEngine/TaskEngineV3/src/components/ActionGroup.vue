@@ -16,7 +16,7 @@
     </div>
     <template v-for="(condition, index) in actionGroup.conditionList">
       <condition-card class="condition-card"
-        :key="randIndex('condition')"
+        :key="condition.conditionId"
         :initialCondition="condition"
         :index="index"
         :initialEntityCollectorList="initialEntityCollectorList"
@@ -27,7 +27,7 @@
     </template>
     <template v-for="(action, index) in actionGroup.actionList">
       <action-card
-        :key="randIndex('action')"
+        :key="action.actionId"
         :initialAction="action"
         :initialSkillNameList="initialSkillNameList"
         :version="version"
@@ -69,9 +69,20 @@ export default {
     },
   },
   data() {
+    const actionGroup = JSON.parse(JSON.stringify(this.initialActionGroup));
+    actionGroup.conditionList.forEach((condition) => {
+      if (condition.conditionId === undefined) {
+        condition.conditionId = this.$uuid.v1();
+      }
+    });
+    actionGroup.actionList.forEach((action) => {
+      if (action.actionId === undefined) {
+        action.actionId = this.$uuid.v1();
+      }
+    });
     return {
       i18n: {},
-      actionGroup: JSON.parse(JSON.stringify(this.initialActionGroup)),
+      actionGroup,
     };
   },
   computed: {
@@ -104,10 +115,6 @@ export default {
     addNewDialogueNode(newNodeID) {
       this.$emit('addNewDialogueNode', newNodeID);
     },
-    randIndex(name) {
-      const rand = Math.floor(Math.random() * 1000);
-      return `${name}-${rand}`;
-    },
     updateCondition(index, newCondition) {
       this.actionGroup.conditionList[index] = newCondition;
       this.$emit('update', this.actionGroup);
@@ -133,6 +140,7 @@ export default {
           needContent: false,
         },
         content: '',
+        conditionId: this.$uuid.v1(),
       });
     },
     deleteCondition(index) {

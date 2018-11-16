@@ -783,6 +783,17 @@ export default {
     });
     return globalVars;
   },
+  getGlobalVarsFromActionGroup(actionGroupList) {
+    const globalVars = [];
+    actionGroupList.forEach((actionGroup) => {
+      actionGroup.actionList.forEach((action) => {
+        if (action.type === 'webhook') {
+          globalVars.push(action.variable_name);
+        }
+      });
+    });
+    return globalVars;
+  },
   changeSuffixOfGlobalEdges(nodeId, globalEdges) {
     return globalEdges.map((edge) => {
       if (edge.condition_rules &&

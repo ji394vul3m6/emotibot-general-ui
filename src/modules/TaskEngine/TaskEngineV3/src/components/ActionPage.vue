@@ -150,6 +150,7 @@ export default {
         actionGroup.actionList.push({
           type: 'msg',
           msg: '',
+          actionId: this.$uuid.v1(),
         });
       } else if (type === 'webhook') {
         actionGroup.actionList.push({
@@ -161,11 +162,13 @@ export default {
           body: '',
           webhookSuccessThenGoto: null,
           webhookFailThenGoto: null,
+          actionId: this.$uuid.v1(),
         });
       } else if (type === 'goto') {
         actionGroup.actionList.push({
           type: 'goto',
           targetSkillId: '0',
+          actionId: this.$uuid.v1(),
         });
       }
       this.actionGroupList.push(actionGroup);

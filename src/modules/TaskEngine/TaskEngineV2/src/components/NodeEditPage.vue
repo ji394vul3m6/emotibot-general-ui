@@ -308,6 +308,11 @@ export default {
         this.collectGlobalVarOptions();
       },
     },
+    actionTab: {
+      handler() {
+        this.collectGlobalVarOptions();
+      },
+    },
   },
   methods: {
     updateNewNodeOptions(newNodeOptions) {
@@ -390,6 +395,11 @@ export default {
             nodeResult.entityCollectingTab.register_json,
           ).entities.map(entity => entity.entityName),
         );
+      } else if (this.nodeType === 'action') {
+        const vars = scenarioConvertor.getGlobalVarsFromActionGroup(
+          nodeResult.actionTab.actionGroupList,
+        );
+        nodeVars.push(...vars);
       }
       nodeVars = [...new Set(nodeVars)];
       const nodeVarsOptions = nodeVars.map(v => ({
