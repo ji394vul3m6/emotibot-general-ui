@@ -168,6 +168,17 @@
             <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content" @focus="onInputFocus"></input>
           </div>
         </div>
+        <!-- Intent -->
+        <div class="content-api-parser" v-if="rule.funcName === 'intent_parser'">
+          <div class="row">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_block.label_content")}}
+            </div>
+            <div :key="intentDropdown.options.length ? `${index}_has_options`: index" class="input-with-dropdown-container" v-dropdown="renderIntentDropdown(index)" :data-index="index">
+              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.intentName" :key="rule.funcName" @focus="onInputFocus">
+            </div>
+          </div>
+        </div>
         <!-- 键值匹配 -->
         <div class="content-api-parser" v-if="rule.funcName === 'key_val_match'">
           <div class="row">
@@ -620,11 +631,13 @@
 <script>
 import event from '@/utils/js/event';
 import DropdownSelect from '@/components/DropdownSelect';
+import intentApi from '@/modules/IntentEngine/_api/intent';
 import scenarioInitializer from '../_utils/scenarioInitializer';
 import optionConfig from '../_utils/optionConfig';
 
 export default {
   name: 'condition-block',
+  api: intentApi,
   components: {
     'dropdown-select': DropdownSelect,
   },
@@ -685,6 +698,10 @@ export default {
         errorType: true,
         alignLeft: true,
         absolute: true,
+      },
+      intentDropdown: {
+        width: '450px',
+        options: [],
       },
     };
   },
@@ -1034,11 +1051,36 @@ export default {
         this.candidateEdges[index].to_node_id = toNode;
       }
     },
+    renderIntentDropdown(index) {
+      const options = this.intentDropdown.options.map((option) => {
+        const onclick = () => {
+          this.andRules[index].content = {
+            module: 'intent_engine_2.0',
+            intentName: option.name,
+          };
+        };
+        return {
+          ...option,
+          onclick,
+        };
+      });
+      return {
+        ...this.intentDropdown,
+        options,
+      };
+    },
   },
   beforeMount() {
     this.renderConditionContent();
   },
-  mounted() {},
+  mounted() {
+    this.$api.getIntentsDetail().then((intents) => {
+      this.intentDropdown.options = intents.map(intent => ({
+        ...intent,
+        text: intent.name,
+      }));
+    });
+  },
 };
 </script>
 

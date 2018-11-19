@@ -330,6 +330,10 @@ export default {
       ],
       cu_parser: 'Intent',
       custom_cu_parser: '',
+      intent_parser: {
+        module: 'intent_engine_2.0',
+        intentName: '',
+      },
     };
     return map[funcName];
   },

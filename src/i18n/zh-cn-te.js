@@ -201,6 +201,7 @@ export default {
         assign_value: '赋值',
         cu_parser: '语句解析数据提取',
         custom_cu_parser: '自定义语句解析数据提取',
+        intent_parser: 'Intent',
       },
       operator: {
         equal_to: '等于',
@@ -213,6 +214,7 @@ export default {
         reg_exp: '正则表示式',
         in: '包含于',
       },
+      intent: 'Intent',
     },
     warnings: {
       has_exit_connection: '出口节点',
