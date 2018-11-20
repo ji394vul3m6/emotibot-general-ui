@@ -328,6 +328,11 @@ export default {
           val: '',
         },
       ],
+      remove_key: [
+        {
+          key: '',
+        },
+      ],
       cu_parser: 'Intent',
       custom_cu_parser: '',
       intent_parser: {

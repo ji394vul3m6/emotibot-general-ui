@@ -129,7 +129,7 @@ export default {
     ];
     const globalIngoFuncs = [
       'key_val_match', 'key_key_match', 'contain_key', 'not_contain_key', 'list_length_match',
-      'counter_check', 'user_custom_transform', 'regular_exp_from_var', 'assign_value',
+      'counter_check', 'user_custom_transform', 'regular_exp_from_var', 'assign_value', 'remove_key',
     ];
     const cuFuncs = ['cu_parser', 'custom_cu_parser'];
     return {

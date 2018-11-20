@@ -436,6 +436,17 @@
             <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].val" @focus="onInputFocus"></input>
           </div>
         </div>
+        <!-- 删除键 -->
+        <div class="content-api-parser" v-if="rule.funcName === 'remove_key'">
+          <div class="row">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_block.label_key")}}
+            </div>
+            <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key')">
+              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key" @focus="onInputFocus">
+            </div>
+          </div>
+        </div>
         <!-- 语句解析数据提取 -->
         <div class="content-api-parser" v-if="rule.funcName === 'cu_parser'">
           <div class="row">

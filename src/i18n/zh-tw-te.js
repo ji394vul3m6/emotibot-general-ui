@@ -199,6 +199,7 @@ export default {
         user_custom_transform: '轉換數據',
         regular_exp_from_var: '正則表示式',
         assign_value: '賦值',
+        remove_key: '刪除鍵',
         cu_parser: '語句解析數據提取',
         custom_cu_parser: '自定義語句解析數據提取',
         intent_parser: 'Intent',
