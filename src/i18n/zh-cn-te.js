@@ -202,7 +202,7 @@ export default {
         remove_key: '删除键',
         cu_parser: '语句解析数据提取',
         custom_cu_parser: '自定义语句解析数据提取',
-        intent_parser: 'Intent',
+        intent_parser: '意图',
       },
       operator: {
         equal_to: '等于',
