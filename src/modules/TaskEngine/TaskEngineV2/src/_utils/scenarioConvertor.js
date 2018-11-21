@@ -419,11 +419,10 @@ export default {
         uiNode.paramsCollectingTab.confirmMsgParseFail,
       );
     } else if (uiNode.nodeType === 'action') {
-      node.content = JSON.parse(JSON.stringify(uiNode.actionTab.actionGroupList));
-      node.content.forEach((actionGroup) => {
-        actionGroup.conditionList =
-          scenarioConvertorV3.convertConditionList(actionGroup.conditionList);
-      });
+      node.content = this.composeActionContent(
+        uiNode.actionTab.actionGroupList,
+        uiNode.actionTab.waitForResponse,
+      );
     }
     return node;
   },
@@ -440,13 +439,24 @@ export default {
       is_last_node: isLastNode,
     };
   },
+  composeActionContent(initialActionGroupList, waitForResponse) {
+    const actionGroupList = JSON.parse(JSON.stringify(initialActionGroupList));
+    actionGroupList.forEach((actionGroup) => {
+      actionGroup.conditionList =
+          scenarioConvertorV3.convertConditionList(actionGroup.conditionList);
+    });
+    return {
+      action_group_list: actionGroupList,
+      wait_for_response: waitForResponse,
+    };
+  },
   composePCContent(params, enableConfirmMsg, confirmMsg, confirmMsgParseFail) {
     const content = {};
     content.parsers = [];
     content.questions = [];
-    content.enable_confirm_msg = enableConfirmMsg;
-    content.confirm_msg = confirmMsg;
-    content.confirm_msg_parse_fail = confirmMsgParseFail;
+    content.enable_confirm_msg = enableConfirmMsg || false;
+    content.confirm_msg = confirmMsg || '';
+    content.confirm_msg_parse_fail = confirmMsgParseFail || '';
     params.forEach((param) => {
       const conditionRules = [];
       const skipIfKeyExistList = [];
@@ -630,8 +640,18 @@ export default {
         ...normalEdges,
       ];
     } else if (uiNode.nodeType === 'action') {
-      const elseInto = this.edgeElseInto(uiNode.nodeId, '0');
-      edges = [elseInto];
+      if (uiNode.edgeTab === undefined) {
+        // only happen to old action node
+        // initial edgeTab to action node
+        uiNode.edgeTab = scenarioInitializer.initialEdgeTab(uiNode.nodeType);
+      }
+      const elseInto = this.edgeElseInto(uiNode.nodeId, uiNode.edgeTab.elseInto);
+      const normalEdges = this.addResetDialogueCntAndParseFailedAction(uiNode.edgeTab.normalEdges);
+      edges = [
+        ...normalEdges,
+        ...globalEdges,
+        elseInto,
+      ];
     }
     return edges;
   },
@@ -759,6 +779,17 @@ export default {
             globalVars.push(...vars);
           });
         });
+      });
+    });
+    return globalVars;
+  },
+  getGlobalVarsFromActionGroup(actionGroupList) {
+    const globalVars = [];
+    actionGroupList.forEach((actionGroup) => {
+      actionGroup.actionList.forEach((action) => {
+        if (action.type === 'webhook') {
+          globalVars.push(action.variable_name);
+        }
       });
     });
     return globalVars;
@@ -1199,8 +1230,42 @@ export default {
           nodeInfo = this.traverseEdge(nodeId, edge, edgeType, nodeInfo);
         }
       });
+      if (node.node_type === 'action') {
+        let actionGroupList = [];
+        if (node.content instanceof Object) {
+          actionGroupList = node.content.action_group_list;
+        } else if (node.content instanceof Array) {
+          actionGroupList = node.content;
+        }
+        nodeInfo = this.traverseActionGroupList(nodeId, actionGroupList, nodeInfo);
+      }
     });
     return nodeInfo;
+  },
+  traverseActionGroupList(nodeId, actionGroupList, nodeInfo) {
+    actionGroupList.forEach((actionGroup) => {
+      actionGroup.actionList.forEach((action) => {
+        if (action.type === 'webhook') {
+          let toNodeId = action.webhookSuccessThenGoto;
+          this.setNodeInfo(nodeInfo, nodeId, toNodeId);
+          toNodeId = action.webhookFailThenGoto;
+          this.setNodeInfo(nodeInfo, nodeId, toNodeId);
+        } else if (action.type === 'goto') {
+          const toNodeId = action.targetSkillId;
+          this.setNodeInfo(nodeInfo, nodeId, toNodeId);
+        }
+      });
+    });
+    return nodeInfo;
+  },
+  setNodeInfo(nodeInfo, nodeId, toNodeId) {
+    if (toNodeId === null || toNodeId === nodeId || nodeInfo[toNodeId] === undefined) return;
+    if (toNodeId === '0') {
+      nodeInfo[nodeId].hasExitConnection = true;
+    } else {
+      nodeInfo[toNodeId].hasInboundConnection = true;
+      nodeInfo[nodeId].hasOutboundConnection = true;
+    }
   },
   traverseQQEdge(nodeId, edge, nodeInfo) {
     if (!edge.candidate_edges) return nodeInfo;

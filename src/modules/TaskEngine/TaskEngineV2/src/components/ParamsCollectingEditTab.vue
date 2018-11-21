@@ -114,7 +114,7 @@ export default {
         confirmMsg: this.confirmMsg,
         confirmMsgParseFail: this.confirmMsgParseFail,
       };
-      console.log(paramsCollectingTab);
+      // console.log(paramsCollectingTab);
       this.$emit('update', paramsCollectingTab);
     },
     updateParam(index, $event) {
@@ -159,9 +159,9 @@ export default {
     },
   },
   beforeMount() {
-    this.renderTabContent();
   },
   mounted() {
+    this.emitUpdate();
   },
 };
 </script>

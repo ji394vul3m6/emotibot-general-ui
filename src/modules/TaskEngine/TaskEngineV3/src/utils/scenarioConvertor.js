@@ -176,7 +176,11 @@ export default {
       actionGroup.conditionList = this.convertConditionList(actionGroup.conditionList);
       actionGroup.actionList = actionGroup.actionList.map((action) => {
         if (action.type === 'goto') {
-          action.targetSkillId = `wizard_mode_nlu_pc_node_${action.targetSkillId}`;
+          if (action.targetSkillId === '0' || action.targetSkillId === 'exit') {
+            action.targetSkillId = '0';
+          } else {
+            action.targetSkillId = `wizard_mode_nlu_pc_node_${action.targetSkillId}`;
+          }
         }
         return action;
       });

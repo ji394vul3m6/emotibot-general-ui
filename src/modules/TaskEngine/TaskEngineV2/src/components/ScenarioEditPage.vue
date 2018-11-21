@@ -310,6 +310,21 @@ export default {
                     edge_type: 'normal',
                   });
                 }
+              } else if (action.type === 'webhook') {
+                if (this.idToNodeBlock[action.webhookSuccessThenGoto]) {
+                  edgeList.push({
+                    from_id: nodeBlock.data.nodeId,
+                    to_id: action.webhookSuccessThenGoto,
+                    edge_type: 'normal',
+                  });
+                }
+                if (this.idToNodeBlock[action.webhookFailThenGoto]) {
+                  edgeList.push({
+                    from_id: nodeBlock.data.nodeId,
+                    to_id: action.webhookFailThenGoto,
+                    edge_type: 'normal',
+                  });
+                }
               }
             });
           });

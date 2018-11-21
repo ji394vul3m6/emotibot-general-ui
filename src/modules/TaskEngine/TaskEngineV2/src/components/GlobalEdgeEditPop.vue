@@ -199,8 +199,8 @@ export default {
     },
   },
   beforeCreate() {
-    this.doNothingEdge = { text: 'do nothing', value: null };
-    this.exitEdge = { text: 'Exit (ID: 0)', value: '0' };
+    this.doNothingEdge = { text: this.$t('task_engine_v2.to_node_option.do_nothing'), value: null };
+    this.exitEdge = { text: `${this.$t('task_engine_v2.to_node_option.exit')} (ID: 0)`, value: '0' };
     this.addNewDialogueNodeEdge = {
       text: this.$t('task_engine_v2.to_node_option.add_new_dialogue_node'),
       value: 'add_new_dialogue_node',

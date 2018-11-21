@@ -16,7 +16,7 @@
     </div>
     <template v-for="(condition, index) in actionGroup.conditionList">
       <condition-card class="condition-card"
-        :key="randIndex('condition')"
+        :key="condition.conditionId"
         :initialCondition="condition"
         :index="index"
         :initialEntityCollectorList="initialEntityCollectorList"
@@ -27,7 +27,7 @@
     </template>
     <template v-for="(action, index) in actionGroup.actionList">
       <action-card
-        :key="randIndex('action')"
+        :key="action.actionId"
         :initialAction="action"
         :initialSkillNameList="initialSkillNameList"
         :version="version"
@@ -69,9 +69,20 @@ export default {
     },
   },
   data() {
+    const actionGroup = JSON.parse(JSON.stringify(this.initialActionGroup));
+    actionGroup.conditionList.forEach((condition) => {
+      if (condition.conditionId === undefined) {
+        condition.conditionId = this.$uuid.v1();
+      }
+    });
+    actionGroup.actionList.forEach((action) => {
+      if (action.actionId === undefined) {
+        action.actionId = this.$uuid.v1();
+      }
+    });
     return {
       i18n: {},
-      actionGroup: JSON.parse(JSON.stringify(this.initialActionGroup)),
+      actionGroup,
     };
   },
   computed: {
@@ -90,7 +101,11 @@ export default {
         label = this.$t('task_engine_v3.action_card.label_webhook_type');
       }
       if (this.firstActionType === 'goto') {
-        label = this.$t('task_engine_v3.action_card.label_goto_type');
+        if (this.version === '2.0') {
+          label = this.$t('task_engine_v3.action_card.label_goto_type_2_0');
+        } else {
+          label = this.$t('task_engine_v3.action_card.label_goto_type');
+        }
       }
       return label;
     },
@@ -99,10 +114,6 @@ export default {
   methods: {
     addNewDialogueNode(newNodeID) {
       this.$emit('addNewDialogueNode', newNodeID);
-    },
-    randIndex(name) {
-      const rand = Math.floor(Math.random() * 1000);
-      return `${name}-${rand}`;
     },
     updateCondition(index, newCondition) {
       this.actionGroup.conditionList[index] = newCondition;
@@ -129,6 +140,7 @@ export default {
           needContent: false,
         },
         content: '',
+        conditionId: this.$uuid.v1(),
       });
     },
     deleteCondition(index) {

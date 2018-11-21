@@ -33,6 +33,8 @@ export default {
       hotel_parser: '酒店預定語句解析器',
     },
     to_node_option: {
+      exit: 'Exit',
+      do_nothing: 'do nothing',
       parse_fail: '解析失敗處理',
       add_new_dialogue_node: '新增對話節點',
     },
@@ -152,6 +154,9 @@ export default {
       fail: '調用失敗',
       label_then_goto: '則前往',
     },
+    action_edit_tab: {
+      wait_for_response: '等待用戶回復：',
+    },
     condition_block: {
       label_content: '內容',
       button_add: '＋增加',
@@ -194,8 +199,10 @@ export default {
         user_custom_transform: '轉換數據',
         regular_exp_from_var: '正則表示式',
         assign_value: '賦值',
+        remove_key: '刪除鍵',
         cu_parser: '語句解析數據提取',
         custom_cu_parser: '自定義語句解析數據提取',
+        intent_parser: '意圖',
       },
       operator: {
         equal_to: '等於',
@@ -208,6 +215,7 @@ export default {
         reg_exp: '正則表示式',
         in: '包含於',
       },
+      intent: 'Intent',
     },
     warnings: {
       has_exit_connection: '出口節點',
@@ -331,18 +339,22 @@ export default {
       button_upload_batch_phrases: '上傳批量測試資料(TBA)',
     },
     action_page: {
-      description: '蒐集所有必要的訊息後，你需要執行什麼動作來完成任務？',
-      label_add_action: '蒐集所有必要的訊息後，你需要執行什麼動作來完成任務？',
-      button_add_new_msg: '新增文字迴應',
+      description_2_0: '蒐集所有必要的訊息後，你需要執行什麼動作來完成任務？',
+      label_add_action_2_0: '蒐集所有必要的訊息後，你需要執行什麼動作來完成任務？',
+      description: '進入此節點後，你需要執行什麼動作來完成任務？',
+      label_add_action: '進入此節點後，你需要執行什麼動作來完成任務？',
+      button_add_new_msg: '新增文字回應',
       button_add_new_webhook: '新增外部服務連接',
       button_add_new_goto: '新增下一個任務連接',
+      button_add_new_edge: '新增連線',
     },
     action_card: {
       label_msg_type: '文字迴應',
       label_webhook_type: '外部服務連接',
-      label_goto_type: '下一個任務連接',
+      label_goto_type_2_0: '下一個任務連接',
+      label_goto_type: '連線至下一個節點',
       msg: {
-        label_response: '迴應',
+        label_response: '回應',
       },
       webhook: {
         label_variable: 'API回傳值存放位置',
@@ -350,14 +362,15 @@ export default {
         label_url: '服務提供位址(URL)',
         label_content_type: 'Content-Type',
         label_body: 'Body',
+        label_webhook_success: '成功時前往',
+        label_webhook_fail: '失敗時前往',
         placeholder_input_variable: '請為變量取名',
         placeholder_input_url: 'http://api.server.com/webhook',
         placeholder_input_body: '{"parameter":"value"}',
       },
       goto: {
         label_goto: '前往',
-        label_goto_next_skill: '連接下一個任務',
-        button_add_new_task: '建立新任務',
+        button_add_new_skill: '創建新任務',
         option_finish_scenario: '結束場景',
       },
     },

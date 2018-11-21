@@ -54,13 +54,13 @@
       ></entity-collecting-edit-tab>
       <action-edit-tab ref="actionTab"
         v-if="currentTab === 'actionTab'"
-        :initialActionGroupList="actionTab.actionGroupList"
+        :actionTab="actionTab"
         :initialEntityCollectorList="globalVarOptions"
-        :initialSkillNameList="toNodeOptions"
+        :initialToNodeOptions="toNodeOptions"
         :version="extData.version"
         :validateTab="validateTab"
         @update:valid="valid = $event"
-        @update="actionTab.actionGroupList = $event"
+        @update="actionTab = $event"
         @updateNewNodeOptions="updateNewNodeOptions"
       ></action-edit-tab>
       <params-collecting-edit-tab ref="paramsCollectingTab"
@@ -120,18 +120,19 @@
 import general from '@/modules/TaskEngine/_utils/general';
 import mappingtable from '@/modules/TaskEngine/_api/taskEngine_mappingtable';
 import EntityCollectingEditTab from '@/modules/TaskEngine/TaskEngineV3/src/components/EntityCollectingPage';
-import ActionEditTab from '@/modules/TaskEngine/TaskEngineV3/src/components/ActionPage';
 import TriggerEditTab from './TriggerEditTab';
 import SettingEditTab from './SettingEditTab';
 import EdgeEditTab from './EdgeEditTab';
 import ParamsCollectingEditTab from './ParamsCollectingEditTab';
 import ParamsCollectingEdgeEditTab from './ParamsCollectingEdgeEditTab';
-// import scenarioConvertor from '../_utils/scenarioConvertor';
 import SettingBasicEditTab from './SettingBasicEditTab';
 import RestfulSettingEditTab from './RestfulSettingEditTab';
 import RestfulEdgeEditTab from './RestfulEdgeEditTab';
+// import ActionEditTab from '@/modules/TaskEngine/TaskEngineV3/src/components/ActionPage';
+import ActionEditTab from './ActionEditTab';
 import optionConfig from '../_utils/optionConfig';
 import scenarioConvertor from '../_utils/scenarioConvertor';
+import scenarioInitializer from '../_utils/scenarioInitializer';
 
 export default {
   name: 'node-edit-page',
@@ -186,6 +187,11 @@ export default {
         settingTab = node.settingTab;
         settingTab.nodeType = nodeType;
       } else if (tab === 'edgeTab') {
+        if (node.edgeTab === undefined) {
+          // only happen to old action node
+          // initial edgeTab to action node
+          node.edgeTab = scenarioInitializer.initialEdgeTab(nodeType);
+        }
         edgeTab = node.edgeTab;
         edgeTab.nodeType = nodeType;
         edgeTab.nodeId = node.nodeId;
@@ -302,6 +308,11 @@ export default {
         this.collectGlobalVarOptions();
       },
     },
+    actionTab: {
+      handler() {
+        this.collectGlobalVarOptions();
+      },
+    },
   },
   methods: {
     updateNewNodeOptions(newNodeOptions) {
@@ -384,6 +395,11 @@ export default {
             nodeResult.entityCollectingTab.register_json,
           ).entities.map(entity => entity.entityName),
         );
+      } else if (this.nodeType === 'action') {
+        const vars = scenarioConvertor.getGlobalVarsFromActionGroup(
+          nodeResult.actionTab.actionGroupList,
+        );
+        nodeVars.push(...vars);
       }
       nodeVars = [...new Set(nodeVars)];
       const nodeVarsOptions = nodeVars.map(v => ({
@@ -526,13 +542,8 @@ export default {
             msg: that.$t('task_engine_v2.node_edit_page.confirm_to_save_changes'),
           },
           callback: {
-            ok() {
-              if (that.validResult(nodeResult)) {
-                that.$emit(
-                  'validateSuccess',
-                  { nodeResult, newNodeOptions: this.newNodeOptions },
-                );
-              }
+            ok: () => {
+              this.validate();
             },
             cancel() {
               that.$emit('cancelValidateSuccess');

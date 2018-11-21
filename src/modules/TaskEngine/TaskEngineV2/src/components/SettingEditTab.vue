@@ -26,9 +26,7 @@
     </div>
     <textarea class="text-response"
       ref="defaultQ"
-      v-tooltip="tooltip"
-      v-model="initialResponse"
-      @focus="onInputFocus">
+      v-model="initialResponse">
     </textarea>
   </div>
   <div class="block">
@@ -83,9 +81,8 @@
   </div>
   <div class="block">
     <div class="label-header">{{$t("task_engine_v2.setting_edit_tab.parse_fail_q")}}</div>
-    <textarea class="text-response" ref="fail-textarea" v-tooltip="tooltip"
-      v-model="failureResponse"
-      @focus="onInputFocus">
+    <textarea class="text-response" ref="fail-textarea"
+      v-model="failureResponse">
     </textarea>
   </div>
 </div>
@@ -166,7 +163,7 @@ export default {
     validateTab(newV, oldV) {
       if (newV && !oldV) {
         const valid =
-        [this.isValueEmpty(this.$refs['input-content']), this.isValueEmpty(this.$refs.defaultQ), this.isValueEmpty(this.$refs['fail-textarea'])]
+        [this.isValueEmpty(this.$refs['input-content'])]
         .indexOf(false) === -1;
         this.$emit('update:valid', valid);
       }
