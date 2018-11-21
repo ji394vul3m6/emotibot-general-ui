@@ -38,6 +38,7 @@ export default {
     if (!('global_edges' in jsonData.moduleData)) {
       jsonData.moduleData.global_edges = [];
     }
+    jsonData.moduleData.version = '1.1';
     return jsonData;
   },
   convertNode(initialNode) {
