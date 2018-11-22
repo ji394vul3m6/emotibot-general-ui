@@ -7,6 +7,8 @@
         :nodeId="nodeId"
         :initialParam="param"
         :mapTableOptions="mapTableOptions"
+        :validateParamsCollectingBlock="validateTab"
+        @update:valid="$set(param, 'valid', $event); if ($event) {isAllParamsCollectingBlockValid()}"
         @update="updateParam(index, $event)"
         @deleteParam="deleteParam(index)">
       </params-collecting-block>
@@ -17,6 +19,34 @@
     @click="addParam()">
     {{$t("task_engine_v2.params_collecting_tab.button_add_params")}}
   </button>
+  <div class="confirm-params-block block">
+    <div class="condition-row">
+      <div class="label">
+        {{$t("task_engine_v2.params_collecting_tab.label_enable_confirm_msg")}}
+      </div>
+      <input class="checkbox-content"
+        type="checkbox"
+        :checked="enableConfirmMsg"
+        @input="onInputEnableConfirmMsg($event.target.checked)"
+      ></input>
+    </div>
+    <div class="confim-msgs" v-if="enableConfirmMsg===true">
+      <textarea class="text-response"
+        :value="confirmMsg"
+        @input="onInputConfirmMsg($event.target.value)">
+      </textarea>
+      <div class="condition-row">
+        <div class="label">
+          {{$t("task_engine_v2.params_collecting_tab.parse_failed_msg")}}
+        </div>
+      </div>
+      <textarea class="text-response"
+        :value="confirmMsgParseFail"
+        @input="onInputConfirmMsgParseFail($event.target.value)">
+      </textarea>
+    </div>
+    
+  </div>
 </div>
 </template>
 
@@ -34,7 +64,11 @@ export default {
     'params-collecting-block': ParamsCollectingBlock,
   },
   props: {
-    initialParamsCollectingTab: {
+    validateTab: {
+      type: Boolean,
+      default: false,
+    },
+    paramsCollectingTab: {
       type: Object,
       required: true,
     },
@@ -44,40 +78,53 @@ export default {
     },
   },
   data() {
+    const paramsCollectingTab = this.paramsCollectingTab;
+    const nodeId = paramsCollectingTab.nodeId;
+    // add tmp id for params
+    const params = paramsCollectingTab.params.map((param) => {
+      const obj = { ...param };
+      obj.id = this.$uuid.v1();
+      obj.valid = false;
+      return obj;
+    });
     return {
-      params: [],
+      enableConfirmMsg: paramsCollectingTab.enableConfirmMsg || false,
+      confirmMsg: paramsCollectingTab.confirmMsg || '',
+      confirmMsgParseFail: paramsCollectingTab.confirmMsgParseFail || '',
+      nodeId,
+      params,
     };
   },
-  computed: {},
-  watch: {},
+  watch: {
+    validateTab(newV, oldV) {
+      if (newV && !oldV && !this.params.length) {
+        this.$emit('update:valid', true);
+      }
+    },
+  },
   methods: {
     emitUpdate() {
       const paramsCollectingTab = {
         params: this.params.map((param) => {
-          const p = JSON.parse(JSON.stringify(param));
-          delete p.id;
-          return p;
+          delete param.id;
+          delete param.valid;
+          return param;
         }),
+        enableConfirmMsg: this.enableConfirmMsg,
+        confirmMsg: this.confirmMsg,
+        confirmMsgParseFail: this.confirmMsgParseFail,
       };
       // console.log(paramsCollectingTab);
       this.$emit('update', paramsCollectingTab);
     },
-    renderTabContent() {
-      const paramsCollectingTab = JSON.parse(JSON.stringify(this.initialParamsCollectingTab));
-      this.nodeId = paramsCollectingTab.nodeId;
-      // add tmp id for params
-      this.params = paramsCollectingTab.params.map((param) => {
-        param.id = this.$uuid.v1();
-        return param;
-      });
-    },
     updateParam(index, $event) {
-      this.params[index] = $event;
+      this.params[index] = { ...this.params[index], ...$event };
       this.emitUpdate();
     },
     addParam() {
       const param = {};
       param.id = this.$uuid.v1();
+      param.valid = false;
       param.parsers = [];
       const parser = scenarioInitializer.initialParser();
       parser.id = this.$uuid.v1();
@@ -89,11 +136,32 @@ export default {
       this.params.splice(index, 1);
       this.emitUpdate();
     },
+    onInputEnableConfirmMsg(newValue) {
+      this.enableConfirmMsg = newValue;
+      this.emitUpdate();
+    },
+    onInputConfirmMsg(newValue) {
+      this.confirmMsg = newValue;
+      this.emitUpdate();
+    },
+    onInputConfirmMsgParseFail(newValue) {
+      this.confirmMsgParseFail = newValue;
+      this.emitUpdate();
+    },
+    isAllParamsCollectingBlockValid() {
+      let valid = true;
+      this.params.forEach((param) => {
+        if (!param.valid) {
+          valid = false;
+        }
+      });
+      this.$emit('update:valid', valid);
+    },
   },
   beforeMount() {
-    this.renderTabContent();
   },
   mounted() {
+    this.emitUpdate();
   },
 };
 </script>
@@ -106,6 +174,8 @@ export default {
   flex-direction: column;
   padding: 0px 30px 0px 20px;
   .block{
+    display: flex;
+    flex-direction: column;
     background: #F3F7F9;
     padding: 20px 20px 20px 20px;
     border: 1px solid $color-borderline;
@@ -137,6 +207,18 @@ export default {
         margin-left: 20px;
         border-radius: 5px;
       }
+      input[type=checkbox]{
+        @include general-checkbox();
+      }
+    }
+    .confim-msgs{
+      display: flex;
+      flex-direction: column;
+      .text-response{
+        height: 100px;
+        color: $color-font-normal;
+        margin: 10px 0px 10px 0px;
+      }
     }
   }
   .instruction{
@@ -152,7 +234,7 @@ export default {
     color: white;
     font-size: 18px;
     font-weight: 600;
-    margin: 0px 0px 10px 0px;
+    margin: 0px 0px 20px 0px;
     cursor: pointer;
     &:hover{
       transition: background-color 0.5s ease;

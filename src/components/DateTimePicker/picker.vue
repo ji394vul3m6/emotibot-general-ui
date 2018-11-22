@@ -3,7 +3,7 @@
     <div class='picker' id="date-picker">
       <date-picker
         ref="datepicker"
-        v-model="datetime.dateObj"
+        :value="datetime.dateObj"
         :readonly="false"
         :disabled="disableDate"
         :placeholder="'yyyy/mm/dd'"
@@ -19,7 +19,7 @@
       <time-picker
         ref="timepicker"
         hide-clear-button
-        v-model="datetime.timeObj"
+        :value="datetime.timeObj"
         :readonly="false"
         :currentDate="datetime.dateObj"
         :disabled="disableDate"
@@ -63,11 +63,6 @@ export default {
     },
   },
   computed: {
-    datetime() {
-      const timeString = datePickerUtil.toTimeString(this.value);
-      const d = datePickerUtil.createPickerByTimeStr(timeString);
-      return d;
-    },
     validity() {
       if (this.allowEmpty) {
         return this.emptyValidity && (this.dateValidity && this.timeValidity);
@@ -105,9 +100,7 @@ export default {
   methods: {
     onDateSelected(d) {
       this.datetime.dateObj = d;
-      const syncedDate = new Date(this.datetime.getTimestamp() * 1000);
-      this.$emit('dateChanged', syncedDate);
-      this.$emit('input', syncedDate);
+      this.emitUpdate();
     },
     onTimeSelected(t) {
       const obj = {};
@@ -115,9 +108,24 @@ export default {
         obj[key] = t.data[key];
       });
       this.datetime.timeObj = obj;
+      this.emitUpdate();
+    },
+    emitUpdate() {
       const syncedDate = new Date(this.datetime.getTimestamp() * 1000);
       this.$emit('dateChanged', syncedDate);
       this.$emit('input', syncedDate);
+    },
+    setValue(date) {
+      this.datetime.dateObj = date;
+      const hour = date.getHours();
+      const minutes = date.getMinutes();
+      this.datetime.timeObj = {
+        HH: hour >= 10 ? `${hour}` : `0${hour}`,
+        mm: minutes >= 10 ? `${minutes}` : `0${minutes}`,
+        ss: '00',
+      };
+      this.$refs.timepicker.$emit('setTime', date);
+      this.$refs.datepicker.$emit('setDate', date);
     },
   },
   components: {
@@ -137,9 +145,15 @@ export default {
         errorType: true,
         alignLeft: true,
       },
+      datetime: undefined,
     };
   },
   mounted() {
+    const timeString = datePickerUtil.toTimeString(this.value);
+    this.datetime = datePickerUtil.createPickerByTimeStr(timeString);
+    this.$on('setValue', (val) => {
+      this.setValue(val);
+    });
   },
 };
 </script>

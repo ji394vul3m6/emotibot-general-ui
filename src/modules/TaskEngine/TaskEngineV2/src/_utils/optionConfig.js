@@ -6,7 +6,7 @@ export default {
       nlu_pc: ['settingBasicTab', 'entityCollectingTab', 'edgeTab'],
       restful: ['restfulSettingTab', 'restfulEdgeTab'],
       parameter_collecting: ['settingBasicTab', 'paramsCollectingTab', 'paramsCollectingEdgeTab'],
-      action: ['settingBasicTab', 'actionTab'],
+      action: ['settingBasicTab', 'actionTab', 'edgeTab'],
     };
   },
   getEntityListMap() {
@@ -116,20 +116,20 @@ export default {
         text: context.$t('task_engine_v2.condition_block.source.global_info'),
         value: 'global_info',
       },
-      {
-        text: context.$t('task_engine_v2.condition_block.source.cu'),
-        value: 'cu',
-      },
+      // {
+      //   text: context.$t('task_engine_v2.condition_block.source.cu'),
+      //   value: 'cu',
+      // },
     ];
   },
   getFuncOptionMap(context) {
     const textFuncs = [
       'match', 'contains', 'regular_exp', 'common_parser', 'task_parser',
-      'hotel_parser', 'user_custom_parser', 'polarity_parser', 'api_parser', 'qq',
+      'hotel_parser', 'user_custom_parser', 'polarity_parser', 'api_parser', 'qq', 'intent_parser',
     ];
     const globalIngoFuncs = [
       'key_val_match', 'key_key_match', 'contain_key', 'not_contain_key', 'list_length_match',
-      'counter_check', 'user_custom_transform', 'regular_exp_from_var', 'assign_value',
+      'counter_check', 'user_custom_transform', 'regular_exp_from_var', 'assign_value', 'remove_key',
     ];
     const cuFuncs = ['cu_parser', 'custom_cu_parser'];
     return {

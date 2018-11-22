@@ -1,8 +1,6 @@
 <template lang="html">
 <div id="global-edge-edit-pop">
-  <div class="instruction block">
-    {{$t("task_engine_v2.global_edge_edit_pop.instruction")}}
-  </div>
+  <div class="instruction block" v-t="'task_engine_v2.global_edge_edit_pop.instruction'"></div>
   <div class="block-list-container">
     <draggable v-model="globalEdges" :options="{ghostClass:'ghost'}" @start="drag=true" @end="drag=false">
       <template v-for="(edge, index) in globalEdges">
@@ -14,6 +12,8 @@
           :toNodeOptions="toNodeOptions"
           :globalVarOptions="globalVarOptions"
           :mapTableOptions="mapTableOptions"
+          :validateConditionBlock="validateConditionBlock"
+          :valid.sync="edge.valid"
           @update="updateEdge(index, $event)"
           @deleteEdge="deleteEdge(index)"
           @addNewDialogueNode="addNewDialogueNode">
@@ -40,7 +40,7 @@ export default {
   name: 'global-edge-edit-pop',
   components: {
     draggable,
-    'condition-block': ConditionBlock,
+    ConditionBlock,
   },
   props: {
     extData: {
@@ -49,43 +49,49 @@ export default {
     },
   },
   data() {
+    // render globalEdges
+    const globalEdges = this.extData.globalEdges.map((edge) => {
+      const obj = { ...edge };
+      obj.id = this.$uuid.v1();
+      obj.valid = false;
+      return obj;
+    });
+    const originalGlobalEdgesStr =
+      JSON.stringify(globalEdges, general.JSONStringifyReplacer);
+
+    // render toNodeOptions
+    const toNodeOptions = [
+      this.addNewDialogueNodeEdge,
+      this.doNothingEdge,
+      this.exitEdge,
+    ].concat(this.extData.toNodeOptions);
+
+    // render globalVarOptions
+    const globalVarOptionsMap = this.extData.globalVarOptionsMap;
+    const globalVarOptions = Object.values(globalVarOptionsMap)
+    .reduce((acc, globalVarOption) => {
+      acc.push(...globalVarOption);
+      return acc;
+    }, []);
     return {
       nodeId: '',
-      originalGlobalEdgesStr: '',
-      globalEdges: [],
-      toNodeOptions: [],
-      globalVarOptions: [],
+      originalGlobalEdgesStr,
+      globalEdges,
+      toNodeOptions,
+      globalVarOptions,
       mapTableOptions: [],
-      newNodeOptions: undefined,
+      newNodeOptions: [],
+      validateConditionBlock: false,
     };
   },
-  computed: {
-    doNothingEdge() {
-      return { text: 'do nothing', value: null };
-    },
-    exitEdge() {
-      return { text: 'Exit (ID: 0)', value: '0' };
-    },
-    addNewDialogueNodeEdge() {
-      return {
-        text: this.$t('task_engine_v2.to_node_option.add_new_dialogue_node'),
-        value: 'add_new_dialogue_node',
-        isButton: true,
-      };
-    },
-  },
-  watch: {},
   methods: {
     addNewDialogueNode(newNodeID) {
-      if (this.newNodeOptions === undefined) {
-        this.newNodeOptions = [];
-      }
       const nodeNames = [
         ...window.moduleData.ui_data.nodes.map(node => node.nodeName),
         ...this.newNodeOptions.map(option => option.nodeName),
       ];
       const newNodeName = general.suffixIndexToNodeName(
-                            this.$t('task_engine_v2.node_type.dialogue'),
+                            this.$t('task_engine_v2.global_edge_edit_pop.dialogue'),
                             nodeNames,
                           );
       this.newNodeOptions.push({
@@ -111,29 +117,10 @@ export default {
         this.exitEdge,
       ].concat(options);
     },
-    renderData() {
-      // render globalEdges
-      const edges = JSON.parse(JSON.stringify(this.extData.globalEdges));
-      this.globalEdges = edges.map((edge) => {
-        edge.id = this.$uuid.v1();
-        return edge;
-      });
-      this.originalGlobalEdgesStr =
-        JSON.stringify(this.globalEdges, general.JSONStringifyReplacer);
-
-      // render toNodeOptions
-      this.composeOptions(this.extData.toNodeOptions);
-
-      // render globalVarOptions
-      const globalVarOptionsMap = JSON.parse(JSON.stringify(this.extData.globalVarOptionsMap));
-      this.globalVarOptions = [];
-      Object.values(globalVarOptionsMap).forEach((globalVarOption) => {
-        this.globalVarOptions.push(...globalVarOption);
-      });
-    },
     addEdge() {
       const edge = scenarioInitializer.initialEdge();
       edge.id = this.$uuid.v1();
+      edge.valid = false;
       this.globalEdges.push(edge);
     },
     deleteEdge(index) {
@@ -156,16 +143,26 @@ export default {
       });
     },
     validate() {
-      const edges = this.globalEdges.map(edge => ({
-        edge_type: edge.edge_type,
-        to_node_id: edge.to_node_id,
-        condition_rules: edge.condition_rules,
-        actions: [],
-      }));
-      this.$emit(
-        'validateSuccess',
-        { edges, newNodeOptions: this.newNodeOptions },
-      );
+      this.validateConditionBlock = true;
+      this.$nextTick(() => {
+        this.validateConditionBlock = false;
+        let valid = true;
+        const edges = this.globalEdges.map((edge) => {
+          if (!edge.valid) valid = false;
+          return {
+            edge_type: edge.edge_type,
+            to_node_id: edge.to_node_id,
+            condition_rules: edge.condition_rules,
+            actions: [],
+          };
+        });
+        if (valid) {
+          this.$emit(
+            'validateSuccess',
+            { edges, newNodeOptions: this.newNodeOptions },
+          );
+        }
+      });
     },
     cancelValidate() {
       const newGlobalEdgesStr = JSON.stringify(this.globalEdges, general.JSONStringifyReplacer);
@@ -201,11 +198,17 @@ export default {
       }
     },
   },
-  beforeMount() {
-    this.loadMappingTableOptions();
-    this.renderData();
+  beforeCreate() {
+    this.doNothingEdge = { text: this.$t('task_engine_v2.to_node_option.do_nothing'), value: null };
+    this.exitEdge = { text: `${this.$t('task_engine_v2.to_node_option.exit')} (ID: 0)`, value: '0' };
+    this.addNewDialogueNodeEdge = {
+      text: this.$t('task_engine_v2.to_node_option.add_new_dialogue_node'),
+      value: 'add_new_dialogue_node',
+      isButton: true,
+    };
   },
   mounted() {
+    this.loadMappingTableOptions();
     this.$on('validate', this.validate);
     this.$on('cancelValidate', this.cancelValidate);
   },

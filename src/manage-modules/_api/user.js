@@ -82,6 +82,16 @@ function updateBFUserRole(enterprise, id, roleID) {
   });
 }
 
+const BF2_CONFIG_URL = '/config/save';
+function setBF2Locale(userid, locale) {
+  return this.$reqPostForm(BF2_CONFIG_URL, {
+    appId: '',
+    name: 'lang',
+    value: locale.replace('-', ''),
+    userId: userid,
+  });
+}
+
 export default {
   getEnterpriseUsers,
   getEnterpriseUser,
@@ -89,4 +99,5 @@ export default {
   addEnterpriseUser,
   deleteEnterpriseUser,
   updateBFUserRole,
+  setBF2Locale,
 };

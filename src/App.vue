@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div :class="{blur: isBackgroundBlur}">
-      <div id="app-logo"></div>
+      <div id="app-logo" :class="$i18n.locale"></div>
       <page-header v-if="ready"></page-header>
       <!-- if not Manage Module, show robot page -->
       <template v-if="!isManageModule && ready">
@@ -61,6 +61,13 @@ const debugCodeArr = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft
   'ArrowLeft', 'ArrowRight', 'KeyB', 'KeyA'];
 let debugCodeIdx = 0;
 let debugTimer;
+
+function forceUpdate(vueObj) {
+  vueObj.$children.forEach((child) => {
+    forceUpdate(child);
+  });
+  vueObj.$forceUpdate();
+}
 
 export default {
   name: 'app',
@@ -137,7 +144,7 @@ export default {
     },
     showLanguage(val) {
       this.$i18n.locale = val;
-      this.$root.$forceUpdate();
+      forceUpdate(this.$root);
     },
   },
   methods: {
@@ -155,6 +162,7 @@ export default {
       'setUserInfo',
       'setRobot',
       'setEnterprise',
+      'setLanguage',
     ]),
     checkAuditRoute() {
       const that = this;

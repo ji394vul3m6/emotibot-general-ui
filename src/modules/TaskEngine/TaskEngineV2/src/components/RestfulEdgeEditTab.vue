@@ -58,6 +58,10 @@ export default {
     'dropdown-select': DropdownSelect,
   },
   props: {
+    validateTab: {
+      type: Boolean,
+      default: false,
+    },
     nodeId: {
       type: String,
       required: true,
@@ -86,7 +90,7 @@ export default {
   },
   computed: {
     exitEdge() {
-      return { text: 'Exit (ID: 0)', value: '0' };
+      return { text: `${this.$t('task_engine_v2.to_node_option.exit')} (ID: 0)`, value: '0' };
     },
     addNewDialogueNodeEdge() {
       return {
@@ -106,6 +110,11 @@ export default {
     },
   },
   watch: {
+    validateTab(newV, oldV) {
+      if (newV && !oldV) {
+        this.$emit('update:valid', true);
+      }
+    },
     restfulEdgeTab: {
       handler() {
         if (this.restfulSucceedThenGoto === 'add_new_dialogue_node') {

@@ -2,7 +2,7 @@
   <div class='login-page'>
     <div class='container'>
       <div class='logo'>
-        <div id="app-logo"></div>
+        <div id="app-logo" :class="$i18n.locale"></div>
       </div>
       <div class="input-row">
         <input ref="user" type="text" v-model="input.account" :placeholder="$t('login.account_place')" @keydown="passwordKey">
@@ -66,7 +66,7 @@ export default {
       that.$refs.user.blur();
       that.$refs.password.blur();
       if (!that.input.account || !that.input.password) {
-        that.$notify({ text: '请输入帐密', type: 'fail' });
+        that.$notify({ text: that.$t('login.notify_input'), type: 'fail' });
         if (!that.input.account) {
           that.$refs.user.focus();
         } else {
@@ -92,21 +92,15 @@ export default {
         } else {
           window.location = '/#/manage/robot-manage';
         }
-
-        // if (that.redirect && that.redirect !== '') {
-        //   window.location = `/#${that.redirect}`;
-        // } else {
-        //
-        // }
       }, (err) => {
         if (err.response.status === 400 && that.useCaptcha) {
-          that.$notify({ text: '验证码错误', type: 'fail' });
+          that.$notify({ text: that.$t('login.validate_fail'), type: 'fail' });
           if (that.$refs.captcha) {
             that.$refs.captcha.focus();
           }
         } else {
           that.reloadCaptcha();
-          that.$notify({ text: '登录失败', type: 'fail' });
+          that.$notify({ text: that.$t('login.notify_fail'), type: 'fail' });
           that.$refs.user.focus();
         }
       })
@@ -147,7 +141,7 @@ export default {
       queryMap[query.substr(0, idx)] = query.substr(idx + 1);
     });
     if (Object.keys(queryMap).indexOf('invalid') >= 0) {
-      that.$notifyFail(that.$t('error_msg.auth_expire'));
+      that.$notifyFail(that.$t('login.auth_expire'));
     }
     if (Object.keys(queryMap).indexOf('redirect') >= 0) {
       that.redirect = decodeURIComponent(queryMap.redirect);
@@ -208,8 +202,14 @@ div {
       #app-logo {
         width: 185px;
         height: 103px;
-        background: transparent url("./assets/images/emotibot_logo_chs.svg") no-repeat center center;
-        background-size: 185px 103px;
+        &.zh-cn {
+          background: transparent url("/static/emotibot_logo_chs.svg") no-repeat center center;
+          background-size: 185px 103px;
+        }
+        &.zh-tw {
+          background: transparent url("/static/emotibot_logo_cht.svg") no-repeat center center;
+          background-size: 185px 103px;
+        }
       }
     }
     .input-row {

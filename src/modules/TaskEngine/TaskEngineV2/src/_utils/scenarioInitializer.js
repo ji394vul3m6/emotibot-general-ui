@@ -29,7 +29,6 @@ export default {
               ],
               nodeId: entryNodeId,
               edgeTab: {
-                dialogueLimit: 3,
                 elseInto: null,
                 normalEdges: [],
               },
@@ -94,6 +93,11 @@ export default {
       },
       actionTab: {
         actionGroupList: [],
+        waitForResponse: true,
+      },
+      edgeTab: {
+        normalEdges: [],
+        elseInto: '0',
       },
     };
   },
@@ -177,9 +181,7 @@ export default {
       },
       edgeTab: {
         normalEdges: [],
-        exceedThenGoto: '0',
         elseInto: '0',
-        dialogueLimit: nodeDialogueCntLimit,
       },
     };
   },
@@ -224,6 +226,17 @@ export default {
         restfulSucceedThenGoto: '0',
       },
     };
+  },
+  initialEdgeTab(nodeType) {
+    const edgeTab = {
+      normalEdges: [],
+      elseInto: '0',
+    };
+    if (nodeType === 'dialogue') {
+      edgeTab.exceedThenGoto = 0;
+      edgeTab.dialogueLimit = 0;
+    }
+    return edgeTab;
   },
   initialFunctionContent(funcName, nodeId) {
     const map = {
@@ -315,8 +328,17 @@ export default {
           val: '',
         },
       ],
+      remove_key: [
+        {
+          key: '',
+        },
+      ],
       cu_parser: 'Intent',
       custom_cu_parser: '',
+      intent_parser: {
+        module: 'intent_engine_2.0',
+        intentName: '',
+      },
     };
     return map[funcName];
   },
@@ -396,6 +418,7 @@ export default {
         ],
         pattern: '',
       },
+      required: true,
     };
   },
   initialVarTemplate() {
@@ -403,6 +426,8 @@ export default {
       key: '',
       msg: '$global{}',
       type: 'string',
+      isInputKeyTooltipShown: false,
+      isInputTemplateTooltipShown: false,
     };
   },
 };

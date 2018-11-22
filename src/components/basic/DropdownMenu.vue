@@ -69,10 +69,13 @@ export default {
         }
         if (that.alignLeft) {
           that.showX = (that.x + 10) - that.$el.clientWidth;
-          that.showY = that.y;
         } else {
           that.showX = that.x - 10;
           // we keep 10px padding to show box-shadow, shift left for 10px to pretty align elems
+        }
+        if (that.y + that.$el.clientHeight > window.innerHeight) {
+          that.showY = that.y - that.$el.clientHeight - pos.anchorRect.height;
+        } else {
           that.showY = that.y;
         }
       });

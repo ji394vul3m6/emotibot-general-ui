@@ -38,6 +38,7 @@ export default {
     if (!('global_edges' in jsonData.moduleData)) {
       jsonData.moduleData.global_edges = [];
     }
+    jsonData.moduleData.version = '1.1';
     return jsonData;
   },
   convertNode(initialNode) {
@@ -351,7 +352,11 @@ export default {
     return tab;
   },
   parseParamsCollectingTab(node) {
-    const tab = {};
+    const tab = {
+      enableConfirmMsg: false,
+      confirmMsg: '',
+      confirmMsgParseFail: '',
+    };
     tab.params = [];
     node.content.questions.forEach((q, index) => {
       const param = {};
@@ -410,13 +415,15 @@ export default {
     } else if (uiNode.nodeType === 'parameter_collecting') {
       node.content = this.composePCContent(
         uiNode.paramsCollectingTab.params,
+        uiNode.paramsCollectingTab.enableConfirmMsg,
+        uiNode.paramsCollectingTab.confirmMsg,
+        uiNode.paramsCollectingTab.confirmMsgParseFail,
       );
     } else if (uiNode.nodeType === 'action') {
-      node.content = JSON.parse(JSON.stringify(uiNode.actionTab.actionGroupList));
-      node.content.forEach((actionGroup) => {
-        actionGroup.conditionList =
-          scenarioConvertorV3.convertConditionList(actionGroup.conditionList);
-      });
+      node.content = this.composeActionContent(
+        uiNode.actionTab.actionGroupList,
+        uiNode.actionTab.waitForResponse,
+      );
     }
     return node;
   },
@@ -433,51 +440,76 @@ export default {
       is_last_node: isLastNode,
     };
   },
-  composePCContent(params) {
+  composeActionContent(initialActionGroupList, waitForResponse) {
+    const actionGroupList = JSON.parse(JSON.stringify(initialActionGroupList));
+    actionGroupList.forEach((actionGroup) => {
+      actionGroup.conditionList =
+          scenarioConvertorV3.convertConditionList(actionGroup.conditionList);
+    });
+    return {
+      action_group_list: actionGroupList,
+      wait_for_response: waitForResponse,
+    };
+  },
+  composePCContent(params, enableConfirmMsg, confirmMsg, confirmMsgParseFail) {
     const content = {};
     content.parsers = [];
     content.questions = [];
+    content.enable_confirm_msg = enableConfirmMsg || false;
+    content.confirm_msg = confirmMsg || '';
+    content.confirm_msg_parse_fail = confirmMsgParseFail || '';
     params.forEach((param) => {
       const conditionRules = [];
+      const skipIfKeyExistList = [];
       param.parsers.forEach((parser) => {
-        conditionRules.push([{
-          source: 'text',
-          functions: [{
-            content: parser.content,
-            function_name: parser.funcName,
-            skipIfKeyExist: parser.skipIfKeyExist,
-          }],
-        }]);
+        const rule = this.composePCNodeParserRule(parser);
+        conditionRules.push([rule]);
+
+        let required = true;
+        if (parser.required !== undefined) {
+          required = parser.required;
+        }
+        // add the vars to skipIfKeyExistList if their required checkbox is set to true
+        if (required === true) {
+          rule.functions.forEach((func) => {
+            const vars = this.getGlobalVarsFromFunction(func);
+            skipIfKeyExistList.push(...vars);
+          });
+        }
       });
       content.parsers.push({ condition_rules: conditionRules });
-    });
-    params.forEach((param, index) => {
-      const skipIfKeyExist = [];
-      content.parsers[index].condition_rules.forEach((rules) => {
-        rules.forEach((rule) => {
-          let functions = [];
-          if (rule.functions && rule.functions instanceof Array) {
-            functions = rule.functions;
-          }
-          functions.forEach((func) => {
-            const vars = this.getGlobalVarsFromFunction(func);
-            skipIfKeyExist.push(...vars);
-          });
-        });
-      });
-      content.questions.push({
-        msg: param.msg,
-        parse_failed_msg: param.parse_failed_msg,
-        condition_rules: [[{
-          source: 'global_info',
-          functions: [{
-            content: skipIfKeyExist.map(key => ({ key })),
-            function_name: 'not_contain_key',
-          }],
-        }]],
-      });
+      const question = this.composePCNodeQuestion(param, skipIfKeyExistList);
+      content.questions.push(question);
     });
     return content;
+  },
+  composePCNodeParserRule(parser) {
+    const rule = {
+      source: 'text',
+      functions: [{
+        content: parser.content,
+        function_name: parser.funcName,
+      }],
+    };
+    // set skipIfKeyExist if exist
+    if (parser.skipIfKeyExist !== undefined) {
+      rule.functions[0].skipIfKeyExist = parser.skipIfKeyExist;
+    }
+    return rule;
+  },
+  composePCNodeQuestion(param, skipIfKeyExistList) {
+    const question = {
+      msg: param.msg,
+      parse_failed_msg: param.parse_failed_msg,
+      condition_rules: [[{
+        source: 'global_info',
+        functions: [{
+          content: skipIfKeyExistList.map(key => ({ key })),
+          function_name: 'not_contain_key',
+        }],
+      }]],
+    };
+    return question;
   },
   composeNLUPCContent(entityCollectorList, reParsers, registerJson) {
     let entities;
@@ -609,8 +641,18 @@ export default {
         ...normalEdges,
       ];
     } else if (uiNode.nodeType === 'action') {
-      const elseInto = this.edgeElseInto(uiNode.nodeId, '0');
-      edges = [elseInto];
+      if (uiNode.edgeTab === undefined) {
+        // only happen to old action node
+        // initial edgeTab to action node
+        uiNode.edgeTab = scenarioInitializer.initialEdgeTab(uiNode.nodeType);
+      }
+      const elseInto = this.edgeElseInto(uiNode.nodeId, uiNode.edgeTab.elseInto);
+      const normalEdges = this.addResetDialogueCntAndParseFailedAction(uiNode.edgeTab.normalEdges);
+      edges = [
+        ...normalEdges,
+        ...globalEdges,
+        elseInto,
+      ];
     }
     return edges;
   },
@@ -738,6 +780,17 @@ export default {
             globalVars.push(...vars);
           });
         });
+      });
+    });
+    return globalVars;
+  },
+  getGlobalVarsFromActionGroup(actionGroupList) {
+    const globalVars = [];
+    actionGroupList.forEach((actionGroup) => {
+      actionGroup.actionList.forEach((action) => {
+        if (action.type === 'webhook') {
+          globalVars.push(action.variable_name);
+        }
       });
     });
     return globalVars;
@@ -1178,8 +1231,42 @@ export default {
           nodeInfo = this.traverseEdge(nodeId, edge, edgeType, nodeInfo);
         }
       });
+      if (node.node_type === 'action') {
+        let actionGroupList = [];
+        if (node.content instanceof Object) {
+          actionGroupList = node.content.action_group_list;
+        } else if (node.content instanceof Array) {
+          actionGroupList = node.content;
+        }
+        nodeInfo = this.traverseActionGroupList(nodeId, actionGroupList, nodeInfo);
+      }
     });
     return nodeInfo;
+  },
+  traverseActionGroupList(nodeId, actionGroupList, nodeInfo) {
+    actionGroupList.forEach((actionGroup) => {
+      actionGroup.actionList.forEach((action) => {
+        if (action.type === 'webhook') {
+          let toNodeId = action.webhookSuccessThenGoto;
+          this.setNodeInfo(nodeInfo, nodeId, toNodeId);
+          toNodeId = action.webhookFailThenGoto;
+          this.setNodeInfo(nodeInfo, nodeId, toNodeId);
+        } else if (action.type === 'goto') {
+          const toNodeId = action.targetSkillId;
+          this.setNodeInfo(nodeInfo, nodeId, toNodeId);
+        }
+      });
+    });
+    return nodeInfo;
+  },
+  setNodeInfo(nodeInfo, nodeId, toNodeId) {
+    if (toNodeId === null || toNodeId === nodeId || nodeInfo[toNodeId] === undefined) return;
+    if (toNodeId === '0') {
+      nodeInfo[nodeId].hasExitConnection = true;
+    } else {
+      nodeInfo[toNodeId].hasInboundConnection = true;
+      nodeInfo[nodeId].hasOutboundConnection = true;
+    }
   },
   traverseQQEdge(nodeId, edge, nodeInfo) {
     if (!edge.candidate_edges) return nodeInfo;

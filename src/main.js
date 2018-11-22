@@ -35,6 +35,7 @@ import api from './plugins/api';
 import Tooltip from './plugins/tooltip';
 import Dropdown from './plugins/dropdown';
 import './plugins/Polyfill';
+import misc from './utils/js/misc';
 
 Vue.config.productionTip = false;
 Vue.use(Tooltip);
@@ -65,8 +66,13 @@ Vue.component('tag', Tag);
 Vue.component('loading-line', LoadingLine);
 Vue.component('loading-dot', LoadingDot);
 
+let locale = localStorage.getItem('locale');
+if (!locale) {
+  locale = misc.getBrowserLanguage();
+}
+
 const i18n = new VueI18n({
-  locale: 'zh-cn',
+  locale,
   messages,
 });
 

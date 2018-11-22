@@ -10,6 +10,7 @@ const STATS_AUDIT_PATH = '/api/v1/statistic/audit';
 // const STATS_RECORD_LIST = '/stats/record';
 
 const STATS_RECORD_LIST = '/api/v1/stats/record';
+const STATS_RECORD_EXPORT = '/api/v1/stats/record/export';
 
 const STATS_DETAIL_RECORD_LIST = '/stats/detail_record';
 
@@ -118,8 +119,17 @@ export default {
       return res;
     });
   },
-  getRecords(params) {
-    return this.$reqPost(STATS_RECORD_LIST, params);
+
+  getRecords(searchParam, page, limit) {
+    let queryUrl = `${STATS_RECORD_LIST}/query?page=${page}`;
+    queryUrl = limit ? `${queryUrl}&limit=${limit}` : queryUrl;
+    return this.$reqPost(queryUrl, searchParam)
+    .then(response => response.data);
+  },
+  exportRecords(searchParam) {
+    const queryUrl = `${STATS_RECORD_LIST}/download`;
+    return this.$reqPost(queryUrl, searchParam)
+    .then(response => response.data);
   },
 
   getContinueRecords(params) {
@@ -151,5 +161,12 @@ export default {
 
   getAuditLog(params) {
     return this.$reqPost(STATS_AUDIT_PATH, params);
+  },
+
+  getExportID(params) {
+    return this.$reqPost(STATS_RECORD_EXPORT, params).then(rsp => rsp.data);
+  },
+  getExportStatus(id) {
+    return this.$reqGet(`${STATS_RECORD_EXPORT}/${id}/status`).then(rsp => rsp.data);
   },
 };

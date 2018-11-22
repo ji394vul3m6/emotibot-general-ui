@@ -310,6 +310,21 @@ export default {
                     edge_type: 'normal',
                   });
                 }
+              } else if (action.type === 'webhook') {
+                if (this.idToNodeBlock[action.webhookSuccessThenGoto]) {
+                  edgeList.push({
+                    from_id: nodeBlock.data.nodeId,
+                    to_id: action.webhookSuccessThenGoto,
+                    edge_type: 'normal',
+                  });
+                }
+                if (this.idToNodeBlock[action.webhookFailThenGoto]) {
+                  edgeList.push({
+                    from_id: nodeBlock.data.nodeId,
+                    to_id: action.webhookFailThenGoto,
+                    edge_type: 'normal',
+                  });
+                }
               }
             });
           });
@@ -1014,7 +1029,7 @@ export default {
     // z-index: 100;
     width: 420px;
     // height: calc(100% - 8px);
-    max-height: calc(100% - 100px);
+    height: calc(100% - 100px);
     background: white;
     border: 1px solid $color-borderline;
     border-radius: 4px;
@@ -1049,13 +1064,15 @@ export default {
     }
     .node-options{
       display: flex;
+      flex: 1;
       flex-direction: column;
       margin: 20px 0px 0px 0px;
       .node-option{
         display: flex;
+        flex: 1;
         flex-direction: row;
         align-items: center;
-        height: 150px;
+        min-height: 120px;
         padding: 20px 40px 20px 40px;
         cursor: move;
         &.odd-option{

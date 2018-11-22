@@ -1,7 +1,13 @@
 <template lang="html">
 <div id="action-page" class="page action-page">
   <div class="add-action-container">
-    <div class="row">
+    <div class="row" v-if="version === '2.0'">
+      <div class="label-add-action">{{$t("task_engine_v3.action_page.label_add_action_2_0")}}</div>
+      <div class="icon-container" v-tooltip="{ msg: $t('task_engine_v3.action_page.description_2_0')}">
+        <icon icon-type="info" :enableHover="true" :size=18 />
+      </div>
+    </div>
+    <div class="row"  v-if="version !== '2.0'">
       <div class="label-add-action">{{$t("task_engine_v3.action_page.label_add_action")}}</div>
       <div class="icon-container" v-tooltip="{ msg: $t('task_engine_v3.action_page.description')}">
         <icon icon-type="info" :enableHover="true" :size=18 />
@@ -20,11 +26,17 @@
         @click="addNewActionGroup('webhook')">
         {{$t("task_engine_v3.action_page.button_add_new_webhook")}}
       </text-button>
-      <text-button
+      <text-button v-if="version==='2.0'"
         class="button-add-action-group"
         button-type='primary'
         @click="addNewActionGroup('goto')">
         {{$t("task_engine_v3.action_page.button_add_new_goto")}}
+      </text-button>
+      <text-button v-if="version!=='2.0'"
+        class="button-add-action-group"
+        button-type='primary'
+        @click="addNewActionGroup('goto')">
+        {{$t("task_engine_v3.action_page.button_add_new_edge")}}
       </text-button>
     </div>
   </div>
@@ -58,6 +70,10 @@ export default {
     'action-group': ActionGroup,
   },
   props: {
+    validateTab: {
+      type: Boolean,
+      default: false,
+    },
     initialActionGroupList: {
       type: Array,
       required: true,
@@ -83,7 +99,13 @@ export default {
     };
   },
   computed: {},
-  watch: {},
+  watch: {
+    validateTab(newV, oldV) {
+      if (newV && !oldV) {
+        this.$emit('update:valid', true);
+      }
+    },
+  },
   methods: {
     addNewDialogueNode(newNodeID) {
       const nodeNames = [
@@ -128,6 +150,7 @@ export default {
         actionGroup.actionList.push({
           type: 'msg',
           msg: '',
+          actionId: this.$uuid.v1(),
         });
       } else if (type === 'webhook') {
         actionGroup.actionList.push({
@@ -137,11 +160,15 @@ export default {
           url: '',
           contentTypes: 'application/json',
           body: '',
+          webhookSuccessThenGoto: null,
+          webhookFailThenGoto: null,
+          actionId: this.$uuid.v1(),
         });
       } else if (type === 'goto') {
         actionGroup.actionList.push({
           type: 'goto',
-          targetSkillId: 'exit',
+          targetSkillId: '0',
+          actionId: this.$uuid.v1(),
         });
       }
       this.actionGroupList.push(actionGroup);
@@ -214,9 +241,9 @@ export default {
       &:active{
         box-shadow: none;
       }
-      &:last-child{
-        margin-bottom: 80px;
-      }
+      // &:last-child{
+      //   margin-bottom: 80px;
+      // }
       &.ghost{
         background-color: #f8f8f8;
       }

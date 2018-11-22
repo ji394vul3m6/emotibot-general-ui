@@ -1,5 +1,6 @@
 export default {
   task_engine_v2: {
+    err_empty: '不可为空',
     scenario_list_page: {
       button_create_new_scenario: '创建场景',
       button_import_scenario: '导入',
@@ -32,6 +33,8 @@ export default {
       hotel_parser: '酒店预定语句解析器',
     },
     to_node_option: {
+      exit: 'Exit',
+      do_nothing: 'do nothing',
       parse_fail: '解析失败处理',
       add_new_dialogue_node: '新增对话节点',
     },
@@ -79,12 +82,15 @@ export default {
     var_template_edit_pop: {
       instruction: '为每个变量设定显示模版',
       label_key: '键',
+      err_empty_label_key: '键不可为空',
       label_template: '模版',
+      err_empty_label_template: '模版不可为空',
       button_add_template: '＋增加模版',
       confirm_to_save_changes: '变量模版设置已被更动，请问是否需要保存？',
     },
     global_edge_edit_pop: {
       instruction: '为每个节点增加通用的连线',
+      add_new_dialogue_node: '新增对话节点',
       button_add_edge: '＋增加连线',
       confirm_to_save_changes: '通用连线设置已被更动，请问是否需要保存？',
     },
@@ -110,11 +116,14 @@ export default {
     params_collecting_tab: {
       button_add_params: '＋增加参数',
       parser: '解析器',
+      required: '必要',
       button_add_parser: '＋增加解析器',
       msg: '参数询问文本（询问使用者参数的语句）',
+      msg_description: '当收集框中所有被勾选为必要的参数『全部都还没有』收集到时，才会使用此参数询问文本做询问。如果已经收集到其中一个必要参数，则会跳过此收集框。建议为每一个必要参数都另外设置一个单独的收集框，以确保有任何一个必要参数时缺少时都有相对应的询问话术。',
       parse_failed_msg: '解析失败文本（参数解析失败时，回复给使用者的语句）',
       skip_if_key_exit: '参数检查',
       skip_if_key_exit_info: '当收集到以下参数则跳过问句，请使用逗号分隔参数名称',
+      label_enable_confirm_msg: '收集完成确认文本：',
     },
     params_collecting_edge_tab: {
       succeed: '成功',
@@ -144,6 +153,9 @@ export default {
       success: '调用成功',
       fail: '调用失败',
       label_then_goto: '则前往',
+    },
+    action_edit_tab: {
+      wait_for_response: '等待用户回复：',
     },
     condition_block: {
       label_content: '内容',
@@ -187,8 +199,10 @@ export default {
         user_custom_transform: '转换数据',
         regular_exp_from_var: '正则表示式',
         assign_value: '赋值',
+        remove_key: '删除键',
         cu_parser: '语句解析数据提取',
         custom_cu_parser: '自定义语句解析数据提取',
+        intent_parser: '意图',
       },
       operator: {
         equal_to: '等于',
@@ -201,6 +215,7 @@ export default {
         reg_exp: '正则表示式',
         in: '包含于',
       },
+      intent: 'Intent',
     },
     warnings: {
       has_exit_connection: '出口节点',
@@ -324,16 +339,20 @@ export default {
       button_upload_batch_phrases: '上传批量测试资料(TBA)',
     },
     action_page: {
-      description: '蒐集所有必要的讯息后，你需要执行什么动作来完成任务？',
-      label_add_action: '蒐集所有必要的讯息后，你需要执行什么动作来完成任务？',
+      description_2_0: '蒐集所有必要的讯息后，你需要执行什么动作来完成任务？',
+      label_add_action_2_0: '蒐集所有必要的讯息后，你需要执行什么动作来完成任务？',
+      description: '进入此节点后，你需要执行什么动作来完成任务？',
+      label_add_action: '进入此节点后，你需要执行什么动作来完成任务？',
       button_add_new_msg: '新增文字回应',
       button_add_new_webhook: '新增外部服务连接',
       button_add_new_goto: '新增下一个任务连接',
+      button_add_new_edge: '新增连线',
     },
     action_card: {
       label_msg_type: '文字回应',
       label_webhook_type: '外部服务连接',
-      label_goto_type: '下一个任务连接',
+      label_goto_type_2_0: '下一个任务连接',
+      label_goto_type: '连线至下一个节点',
       msg: {
         label_response: '回应',
       },
@@ -343,14 +362,15 @@ export default {
         label_url: '服务提供位址(URL)',
         label_content_type: 'Content-Type',
         label_body: 'Body',
+        label_webhook_success: '成功时前往',
+        label_webhook_fail: '失败时前往',
         placeholder_input_variable: '请为变量取名',
         placeholder_input_url: 'http://api.server.com/webhook',
         placeholder_input_body: '{"parameter":"value"}',
       },
       goto: {
         label_goto: '前往',
-        label_goto_next_skill: '连接下一个任务',
-        button_add_new_task: '建立新任务',
+        button_add_new_skill: '创建新任务',
         option_finish_scenario: '结束场景',
       },
     },

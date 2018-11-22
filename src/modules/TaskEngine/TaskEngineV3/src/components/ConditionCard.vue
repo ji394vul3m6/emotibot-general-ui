@@ -132,12 +132,14 @@ export default {
     },
     operatorModel: {
       get() {
-        return [this.condition.comparisonOperator.displayText];
+        const value = this.composeOperatorValue(this.condition.comparisonOperator);
+        return [value];
       },
       set(newSelected) {
-        this.condition.comparisonOperator = this.operators.find(
-          operator => operator.displayText === newSelected[0],
-        );
+        this.condition.comparisonOperator = this.operators.find((operator) => {
+          const value = this.composeOperatorValue(operator);
+          return value === newSelected[0];
+        });
       },
     },
     needOperator() {
@@ -168,6 +170,10 @@ export default {
     deleteThisCondition() {
       this.$emit('deleteConditionButtonClick');
     },
+    composeOperatorValue(operator) {
+      const compare = operator.compare || '';
+      return `${operator.functionName}_${compare}`;
+    },
   },
   activated() {},
   beforeMount() {
@@ -175,7 +181,7 @@ export default {
     this.operators.forEach((operator) => {
       this.operatorOptions.push({
         text: operator.displayText,
-        value: operator.displayText,
+        value: this.composeOperatorValue(operator),
       });
     });
     this.contextTargets = selectOptions.getContextTargets.call(this);

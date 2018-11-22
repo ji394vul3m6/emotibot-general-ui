@@ -9,6 +9,11 @@ function createEvent(eventname) {
   return event;
 }
 
+function createCustomEvent(eventname, detail) {
+  return new CustomEvent(eventname, { detail });
+}
+
 export default {
   createEvent,
+  createCustomEvent,
 };

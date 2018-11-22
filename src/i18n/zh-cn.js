@@ -88,14 +88,6 @@ export default {
       },
     },
   },
-  login: {
-    title: '用户登陆',
-    login: '登入',
-    account_place: '输入帐号',
-    password_place: '输入密码',
-    captcha_place: '输入验证码',
-    contact_sm: '无法登入？请联络管理人员',
-  },
   category: {
     title: '分类',
     setting: '设置',
@@ -110,6 +102,9 @@ export default {
     delete_category_msg: '确定要删除分类 {name} 及其子分类吗？',
   },
   statistics: {
+    search_more: '显示上限为1万笔，显示更多资料？',
+    search_more_hint: '以最后一笔访问时间为启始点重新搜寻',
+
     tooltip: '系统记录与用户的所有对话数据，支持多条件查询和导出',
     cluster: {
       title: '辅助分类',

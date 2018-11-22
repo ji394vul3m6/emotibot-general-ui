@@ -9,8 +9,9 @@
   </div>
   <div class="block">
     <div class="label-header">{{$t("task_engine_v2.setting_edit_tab.node_name")}}</div>
-    <input class="input-rounded"
-      v-model="nodeName">
+    <input class="input-rounded" ref="input-content" v-tooltip="tooltip"
+      v-model="nodeName"
+      @focus="onInputFocus">
     </input>
   </div>
   <div class="block">
@@ -80,7 +81,7 @@
   </div>
   <div class="block">
     <div class="label-header">{{$t("task_engine_v2.setting_edit_tab.parse_fail_q")}}</div>
-    <textarea class="text-response"
+    <textarea class="text-response" ref="fail-textarea"
       v-model="failureResponse">
     </textarea>
   </div>
@@ -98,7 +99,11 @@ export default {
     'dropdown-select': DropdownSelect,
   },
   props: {
-    initialSettingTab: {
+    validateTab: {
+      type: Boolean,
+      default: false,
+    },
+    settingTab: {
       type: Object,
       required: true,
     },
@@ -108,27 +113,39 @@ export default {
     },
   },
   data() {
+    const settingTab = this.settingTab;
+
+    // render entityModuleOptions, entityKeyNameOptions
+    const entityModuleOptionsMap = optionConfig.getEntityModuleOptionsMap();
+    const entityKeyNameOptionsMap = this.getEntityKeyNameOptionsMap();
     return {
-      nodeType: '',
-      nodeName: '',
-      parser: undefined,
+      nodeType: settingTab.nodeType,
+      nodeName: settingTab.nodeName,
+      parser: settingTab.parser,
       parserOptions: this.getParserOptions(),
-      targetEntities: [],
-      skipIfKeyExist: [],
-      initialResponse: '',
-      failureResponse: '',
-      parseFromThisNode: false,
-      entityModuleOptions: [],
-      entityKeyNameOptions: [],
+      targetEntities: settingTab.targetEntities,
+      skipIfKeyExist: settingTab.skipIfKeyExist,
+      initialResponse: settingTab.initialResponse,
+      failureResponse: settingTab.failureResponse,
+      parseFromThisNode: settingTab.parseFromThisNode,
+      entityModuleOptions: entityModuleOptionsMap[this.parser],
+      entityKeyNameOptions: entityKeyNameOptionsMap[this.parser],
       selectStyle: {
         height: '36px',
         'border-radius': '5px',
       },
       varDropdown: undefined,
+      tooltip: {
+        msg: this.$t('task_engine_v2.err_empty'),
+        eventOnly: true,
+        errorType: true,
+        alignLeft: true,
+        absolute: true,
+      },
     };
   },
   computed: {
-    settingTab() {
+    result() {
       const result = {
         nodeName: this.nodeName,
         parser: this.parser,
@@ -143,9 +160,17 @@ export default {
     },
   },
   watch: {
-    settingTab: {
+    validateTab(newV, oldV) {
+      if (newV && !oldV) {
+        const valid =
+        [this.isValueEmpty(this.$refs['input-content'])]
+        .indexOf(false) === -1;
+        this.$emit('update:valid', valid);
+      }
+    },
+    result: {
       handler() {
-        this.$emit('update', this.settingTab);
+        this.$emit('update', this.result);
       },
       deep: true,
     },
@@ -160,22 +185,16 @@ export default {
     },
   },
   methods: {
-    renderTabContent() {
-      const settingTab = JSON.parse(JSON.stringify(this.initialSettingTab));
-      this.nodeType = settingTab.nodeType;
-      this.nodeName = settingTab.nodeName;
-      this.parser = settingTab.parser;
-      this.targetEntities = settingTab.targetEntities;
-      this.skipIfKeyExist = settingTab.skipIfKeyExist;
-      this.initialResponse = settingTab.initialResponse;
-      this.failureResponse = settingTab.failureResponse;
-      this.parseFromThisNode = settingTab.parseFromThisNode;
-
-      // render entityModuleOptions, entityKeyNameOptions
-      const entityModuleOptionsMap = optionConfig.getEntityModuleOptionsMap();
-      this.entityModuleOptions = entityModuleOptionsMap[this.parser];
-      const entityKeyNameOptionsMap = this.getEntityKeyNameOptionsMap();
-      this.entityKeyNameOptions = entityKeyNameOptionsMap[this.parser];
+    onInputFocus(evt) {
+      evt.target.dispatchEvent(event.createEvent('tooltip-hide'));
+    },
+    isValueEmpty(el) {
+      let valid = true;
+      if (!el.value) {
+        valid = false;
+        el.dispatchEvent(event.createEvent('tooltip-show'));
+      }
+      return valid;
     },
     onSelectParserInput(newValue) {
       const newParser = newValue[0];
@@ -275,11 +294,6 @@ export default {
         })),
       };
     },
-  },
-  beforeMount() {
-    this.renderTabContent();
-  },
-  mounted() {
   },
 };
 </script>

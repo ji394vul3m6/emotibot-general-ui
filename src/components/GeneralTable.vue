@@ -306,6 +306,7 @@ $table-header-background: $color-disabled;
 $table-data-background: #fcfcfc;
 $table-color-borderline: $color-borderline-disabled;
 $table-row-height: 50px;
+$table-cell-min-width: 80px;
 
 .general-table-container {
   &.show-empty {
@@ -317,6 +318,17 @@ $table-row-height: 50px;
   background-color: #fcfcfc;
   .general-table-header {
     flex: 0 0 auto;
+    .auto-height {
+      thead {
+        tr {
+          height: auto;
+          max-height: 90px;
+          td {
+            min-width: $table-cell-min-width;
+          }
+        }
+      }
+    }
     .table-header-item {
       display: flex;
       align-items: center;
@@ -380,7 +392,7 @@ $table-row-height: 50px;
             overflow: unset;
             white-space: unset;
             word-break: break-all;
-
+            min-width: $table-cell-min-width;
             &.table-body-item {
               div {
                 text-overflow: unset;
@@ -476,10 +488,13 @@ table {
       .table-col-action {
         flex: 0 0 60px;
         max-width: 60px;  // IE11 Hack: Apply max-width on flex children so box-sizing would work
+        display: flex;
+        align-items: center;
         &.multi-action {
           flex: 0 0 110px;
           max-width: 110px;  // IE11 Hack: Apply max-width on flex children so box-sizing would work
           display: flex;  // IE11 need flex to grow the width
+          align-items: center;
         }
       }
     }
@@ -544,10 +559,13 @@ table {
       .table-col-action {
         flex: 0 0 60px;
         max-width: 60px;  // IE11 Hack: Apply max-width on flex children so box-sizing would work
+        display: flex;
+        align-items: center;
         &.multi-action {
           flex: 0 0 110px;
           max-width: 110px;  // IE11 Hack: Apply max-width on flex children so box-sizing would work
           display: flex;
+          align-items: center;
           justify-content: space-between;
         }
         .actions {

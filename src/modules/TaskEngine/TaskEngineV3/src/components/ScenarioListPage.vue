@@ -93,7 +93,7 @@ export default {
     },
     listAllScenarios() {
       taskEngineApi.listScenarios(this.appId).then((data) => {
-        console.log(data);
+        // console.log(data);
         if (typeof (data) === 'object' && 'msg' in data) {
           this.scenarioList = data.msg.filter(scenario => scenario.version === '2.0')
                                       .map((scenario) => {
@@ -178,8 +178,11 @@ export default {
       });
     },
     switchScenario(scenario) {
-      taskEngineApi.switchScenario(this.appId, scenario.scenarioID, scenario.enable).then(() => {
-      }, (err) => {
+      Promise.all([
+        taskEngineApi.switchScenario(this.appId, scenario.scenarioID, scenario.enable),
+        scenario.enable && taskEngineApi.publishScenario(this.appId, scenario.scenarioID),
+      ])
+      .catch((err) => {
         general.popErrorWindow(this, 'switchScenario error', err.message);
       });
     },

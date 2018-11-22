@@ -20,6 +20,7 @@
               :disableDate="startDisableDate"
               @dateChanged="handleStartDateChanged"
               @validityChange="value => {startValidity = value}"
+              ref="start"
             ></datetime-picker>
             ～
             <datetime-picker
@@ -27,6 +28,7 @@
               :disableDate="endDisableDate"
               @dateChanged="handleEndDateChanged"
               @validityChange="value => {endValidity = value}"
+              ref="end"
             ></datetime-picker>
           </div>
         </div>
@@ -119,6 +121,9 @@
       <icon iconType="info" :size="16" v-tooltip="clusterTooltip" enableHover></icon>
       <div v-if="totalCount > 0" class="total-show">
         {{ $t('statistics.total_records', {num: totalCount, count: checkedDataRowCount }) }}
+          <span v-if="totalCount > tableMaxRecord" @click="searchForMore" v-tooltip="searchTooltip" class="search-more">
+            {{ $t('statistics.search_more') }}
+          </span>
       </div>
     </div>
     <template v-if="showTable">
@@ -139,7 +144,7 @@
           :pageSizeOption="[25, 50, 100, 200, 500, 1000]"
           v-on:page-change="doSearch"
           @page-size-change="handlePageSizeChange" 
-          :total="totalCount"
+          :total="totalCount > tableMaxRecord ? tableMaxRecord : totalCount"
           :page-size="pageLimit"
           :layout="['prev', 'pager', 'next', 'sizer', 'jumper']">
         </v-pagination>
@@ -158,12 +163,13 @@ import DatetimePicker from '@/components/DateTimePicker';
 import DropdownSelect from '@/components/DropdownSelect';
 import pickerUtil from '@/utils/vue/DatePickerUtil';
 
-import misc from '@/utils/js/misc';
 import tagAPI from '@/api/tagType';
 import auditAPI from '@/api/audit';
 import api from './_api/selflearn';
 import VIEW from './_data/dailyView';
 import dailyMixin from './_store/dailyMixin';
+
+const STATS_RECORD_EXPORT = '/api/v1/stats/record/export';
 
 export default {
   path: 'statistic-daily',
@@ -286,6 +292,10 @@ export default {
         ],
       },
       clusterMsg: '',
+      tableMaxRecord: 10000,
+      searchTooltip: {
+        msg: this.$t('statistics.search_more_hint'),
+      },
     };
   },
   watch: {
@@ -300,6 +310,15 @@ export default {
       'setClusterReport',
       'setDailySearchParams',
     ]),
+    searchForMore() {
+      const that = this;
+      const lastData = that.tableData[that.tableData.length - 1];
+      const lastTime = new Date(lastData.log_time);
+      that.$refs.end.$emit('setValue', lastTime);
+      that.$nextTick(() => {
+        that.doSearch(1);
+      });
+    },
     escapeRegExp(str) {
       return str.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
     },
@@ -491,14 +510,23 @@ export default {
         module,
         filename,
       })
-      .then(() => that.$api.exportRecords(that.searchParams))
-      .then((data) => {
-        const csvData = data;
-        const blobData = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvData], { type: 'text/csv' });
-        misc.downloadRawFile(blobData, filename);
-        that.$emit('endLoading');
-      }, () => {
-        that.$emit('endLoading');
+      .then(() => that.$api.getExportID(that.searchParams).then(data => data.export_id))
+      .then((exportID) => {
+        const checkStatus = () => {
+          that.$api.getExportStatus(exportID).then((data) => {
+            if (data.status === 'RUNNING') {
+              setTimeout(() => { checkStatus(); }, 1000);
+              return;
+            }
+            if (data.status === 'COMPLETED') {
+              window.open(`${STATS_RECORD_EXPORT}/${exportID}`);
+            } else {
+              that.$notifyFail(`${that.$t('general.export')}${that.$t('general.fail')}`);
+            }
+            that.$emit('endLoading');
+          });
+        };
+        checkStatus();
       });
     },
     doSearch(page) {
@@ -507,9 +535,7 @@ export default {
       that.searchParams = this.getSearchParam();
       that.setDailySearchParams(that.searchParams);
       that.isTableLoading = true;
-      that.$api.getRecords(that.searchParams, page, this.pageLimit)
-      .then((data) => {
-        const res = data;
+      that.$api.getRecords(that.searchParams, page, that.pageLimit).then((res) => {
         that.tableData = that.appendTableDataAction(res.data);
         that.headerInfo = that.receiveAPIHeader(res.table_header);
         that.totalCount = res.total_size;
@@ -549,6 +575,10 @@ export default {
       const startDate = new Date();
       endDate.setDate(now.getDate());
       startDate.setDate(now.getDate() - day);
+
+      that.$refs.start.$emit('setValue', startDate);
+      that.$refs.end.$emit('setValue', endDate);
+
       const startDateObj = that.setStartDateObj(startDate);
       const endDateObj = that.setEndDateObj(endDate);
       that.start = startDateObj;
@@ -769,6 +799,10 @@ export default {
   .total-show:not(:first-child) {
     margin-left: 10px;
     @include font-14px();
+  }
+  .search-more {
+    @include click-button();
+    color: $color-primary; 
   }
   .text-button {
     &:not(:first-child) {

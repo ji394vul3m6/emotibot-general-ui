@@ -11,6 +11,8 @@
         :toNodeOptions="toNodeOptions"
         :mapTableOptions="mapTableOptions"
         :globalVarOptions="globalVarOptions"
+        :validateConditionBlock="validateTab"
+        @update:valid="$set(edge, 'valid', $event); if ($event) {isAllConditionBlockValid()}"
         @update="updateNormalEdge(index, $event)"
         @deleteEdge="deleteEdge(index)"
         @addNewDialogueNode="addNewDialogueNode">
@@ -40,7 +42,11 @@ export default {
     'condition-block': ConditionBlock,
   },
   props: {
-    initialPCEdgeTab: {
+    validateTab: {
+      type: Boolean,
+      default: false,
+    },
+    paramsCollectingEdgeTab: {
       type: Object,
       required: true,
     },
@@ -58,34 +64,40 @@ export default {
     },
   },
   data() {
+    const pcEdgeTab = this.paramsCollectingEdgeTab;
+    const nodeId = pcEdgeTab.nodeId;
+    const nodeType = pcEdgeTab.nodeType;
+    const dialogueLimit = pcEdgeTab.dialogueLimit;
+
+    // add tmp id for edges
+    const normalEdges = pcEdgeTab.normalEdges.map((edge) => {
+      const obj = { ...edge };
+      obj.id = this.$uuid.v1();
+      obj.valid = false;
+      return obj;
+    });
+
+    // render toNodeOptions
+    const options = this.initialToNodeOptions.filter(option => option.value !== this.nodeId);
+    const toNodeOptions = [
+      this.addNewDialogueNodeEdge,
+      this.doNothingEdge,
+      this.exitEdge,
+    ].concat(options);
+
     return {
-      nodeId: '',
-      nodeType: '',
-      normalEdges: [],
-      dialogueLimit: null,
+      nodeId,
+      nodeType,
+      normalEdges,
+      dialogueLimit,
       newNodeOptions: undefined,
-      toNodeOptions: [],
+      toNodeOptions,
       satisfiedThenGotoOptions: [],
       selectStyle: {
         height: '36px',
         'border-radius': '5px',
       },
     };
-  },
-  computed: {
-    doNothingEdge() {
-      return { text: 'do nothing', value: null };
-    },
-    exitEdge() {
-      return { text: 'Exit (ID: 0)', value: '0' };
-    },
-    addNewDialogueNodeEdge() {
-      return {
-        text: this.$t('task_engine_v2.to_node_option.add_new_dialogue_node'),
-        value: 'add_new_dialogue_node',
-        isButton: true,
-      };
-    },
   },
   watch: {
     dialogueLimit: {
@@ -137,21 +149,6 @@ export default {
         this.exitEdge,
       ].concat(options);
     },
-    renderTabContent() {
-      const pcEdgeTab = JSON.parse(JSON.stringify(this.initialPCEdgeTab));
-      this.nodeId = pcEdgeTab.nodeId;
-      this.nodeType = pcEdgeTab.nodeType;
-      this.dialogueLimit = pcEdgeTab.dialogueLimit;
-
-      // add tmp id for edges
-      this.normalEdges = pcEdgeTab.normalEdges.map((edge) => {
-        edge.id = this.$uuid.v1();
-        return edge;
-      });
-
-      // render toNodeOptions
-      this.composeOptions(this.initialToNodeOptions);
-    },
     updateNormalEdge(index, $event) {
       this.normalEdges[index] = $event;
       if (this.normalEdges[index].edge_type === 'pc_failed') {
@@ -163,6 +160,7 @@ export default {
     addEdge() {
       const edge = scenarioInitializer.initialEdge();
       edge.id = this.$uuid.v1();
+      edge.valid = false;
       this.normalEdges.push(edge);
       this.emitUpdate();
     },
@@ -174,19 +172,31 @@ export default {
       const pcEdgeTab = {
         dialogueLimit: parseInt(this.dialogueLimit, 10) || null,
         normalEdges: this.normalEdges.map((edge) => {
-          const e = JSON.parse(JSON.stringify(edge));
-          delete e.id;
-          return e;
+          const { id, valid, ...rest } = edge;
+          return rest;
         }),
         newNodeOptions: this.newNodeOptions,
       };
       this.$emit('update', pcEdgeTab);
     },
+    isAllConditionBlockValid() {
+      let valid = true;
+      this.normalEdges.forEach((rule) => {
+        if (!rule.valid) {
+          valid = false;
+        }
+      });
+      this.$emit('update:valid', valid);
+    },
   },
-  beforeMount() {
-    this.renderTabContent();
-  },
-  mounted() {
+  beforeCreate() {
+    this.doNothingEdge = { text: this.$t('task_engine_v2.to_node_option.do_nothing'), value: null };
+    this.exitEdge = { text: `${this.$t('task_engine_v2.to_node_option.exit')} (ID: 0)`, value: '0' };
+    this.addNewDialogueNodeEdge = {
+      text: this.$t('task_engine_v2.to_node_option.add_new_dialogue_node'),
+      value: 'add_new_dialogue_node',
+      isButton: true,
+    };
   },
 };
 </script>
