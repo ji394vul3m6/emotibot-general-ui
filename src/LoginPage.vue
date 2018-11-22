@@ -141,7 +141,7 @@ export default {
       queryMap[query.substr(0, idx)] = query.substr(idx + 1);
     });
     if (Object.keys(queryMap).indexOf('invalid') >= 0) {
-      that.$notifyFail(that.$t('error_msg.auth_expire'));
+      that.$notifyFail(that.$t('login.auth_expire'));
     }
     if (Object.keys(queryMap).indexOf('redirect') >= 0) {
       that.redirect = decodeURIComponent(queryMap.redirect);
