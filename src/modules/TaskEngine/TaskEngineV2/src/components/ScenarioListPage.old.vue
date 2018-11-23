@@ -1,30 +1,6 @@
 <template lang="html">
 <div id="scenario-list-page-v2">
-  <input type="file" ref="uploadScenarioJSONInput" style="visibility: hidden; display: none;" @change="changeScenarioJSONFile()" accept=".json">
-  <div class="content card h-fill w-fill no-scenario" v-if="filteredScenarioList.length === 0">
-    <div class="center-msg">
-      <div class="title">{{ $t('task_engine_v2.scenario_list_page.start_scenario') }}</div>
-      <div class="model-help" v-if="false">
-        <div class="help-video">
-          <icon :size=14 icon-type="start_hover"></icon>
-          {{ $t('task_engine_v2.scenario_list_page.help_video') }}
-        </div>
-        <div class="upload-data">
-          <icon :size=14 icon-type="scenario_upload"></icon>
-          {{ $t('task_engine_v2.scenario_list_page.upload_transfor_data') }}
-        </div>
-      </div>
-      <div class="start-scenario">
-        <text-button button-type='primary' width='140px' height='46px' @click="createNewScenario">
-          {{$t("task_engine_v2.scenario_list_page.button_create_new_scenario")}}
-        </text-button>
-        <text-button button-type='default' :iconSize=15 width='140px' height='46px' @click="importScenarioJSON">
-          {{$t("task_engine_v2.scenario_list_page.button_import_scenario")}}
-        </text-button>
-      </div>
-    </div>
-  </div>
-  <div class="content card h-fill w-fill" v-else>
+  <div class="content card h-fill w-fill">
     <div class="row title">
       {{$t("task_engine_v2.scenario_list_page.scenario_list")}}
       <search-input v-model="filteredKeyWord" ></search-input>
@@ -42,6 +18,7 @@
             <text-button button-type='default' width='100px' height='28px' @click="exportAllScenarios">
               {{$t("task_engine_v2.scenario_list_page.button_export_all_scenarios")}}
             </text-button>
+            <input type="file" ref="uploadScenarioJSONInput" @change="changeScenarioJSONFile()" accept=".json">
           </div>
         </div>
       </div>
@@ -146,10 +123,10 @@ export default {
     createNewScenario() {
       const that = this;
       that.$pop({
-        title: that.$t('task_engine_v3.create_scenario_pop.create_scenario'),
+        title: that.$t('task_engine_v3.create_scenario_pop.label_create_new_scenario'),
         component: CreateScenarioPop,
         validate: true,
-        ok_msg: that.$t('task_engine_v3.create_scenario_pop.comfire_create'),
+        ok_msg: that.$t('general.add'),
         data: {
           scenarioName: '',
         },
@@ -279,15 +256,6 @@ $row-height: $default-line-height;
   .content {
     display: flex;
     flex-direction: column;
-    &.no-scenario {
-      justify-content: center;
-      background: {
-        image: url('../../../../../assets/images/scenario_bg.svg');
-        position: center right;
-        repeat: no-repeat;
-        size: 665px 501px;
-      }
-    }
     .page{
       flex: 1;
       @include auto-overflow();
@@ -383,38 +351,6 @@ $row-height: $default-line-height;
           }
         }
       }
-    }
-  }
-}
-$marginLeft: 80px;
-$textWidth: 378px;
-$titleFontSize: 38px;
-$helpFontSize: 16px;
-$btnMarginTop: 43px;
-.center-msg {
-  margin-left: $marginLeft;
-  width: $textWidth;
-  
-  .title {
-    color: $color-font-active;
-    width: $textWidth;
-    font-size: $titleFontSize;
-  }
-  .model-help {
-    display: flex;
-    width: 100%;
-    color: $color-primary;
-    font-size: $helpFontSize;
-    margin-top: 20px;
-    line-height: 24px;
-  }
-  .upload-data {
-    padding-left: 32px;
-  }
-  .start-scenario {
-    margin-top: $btnMarginTop;
-    & > * {
-      margin-right: 20px;
     }
   }
 }

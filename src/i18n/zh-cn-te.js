@@ -12,6 +12,9 @@ export default {
       publish_succeed: '场景发布成功',
       publish_failed: '场景发布失败',
       create_new_scenario_failed: '场景建立失败',
+      start_scenario: '开始创建您的第一个多轮场景吧！',
+      help_video: '教学视频',
+      upload_transfor_data: '上传转换数据',
     },
     node_type: {
       entry: '入口节点',
@@ -308,6 +311,11 @@ export default {
       label_create_new_scenario: '创建场景',
       label_name_the_scenario: '场景名称：',
       placeholder_enter_scenario_name: '输入场景名称',
+      placeholder_enter_template: '请选择场景模版',
+      create_scenario: '场景创建',
+      scenario_name: '场景名称',
+      scenario_temp: '场景模版',
+      comfire_create: '确定创建',
     },
     create_skill_pop: {
       label_title: '创建新任务',
