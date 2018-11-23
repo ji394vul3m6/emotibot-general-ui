@@ -244,7 +244,7 @@ export default {
   @include iconType("month_right_white");
   
   @include iconType("scenario_upload");
-  @include iconType("start_hover");
+  @include iconType("te_help_video");
 
   // robot icon should a little bit larger than other icons
   .white_robot_icon {

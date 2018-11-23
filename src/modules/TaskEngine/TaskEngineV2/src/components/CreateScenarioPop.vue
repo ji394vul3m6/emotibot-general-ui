@@ -86,9 +86,8 @@ export default {
         this.$refs.scenarioName.dispatchEvent(event.createEvent('tooltip-show'));
         this.$refs.scenarioName.focus();
       } else {
-        console.log(111, this.filterTemplate);
-        // this.$emit('validateSuccess', { scenarioName: this.scenarioName,
-        // templateID: this.templateID });
+        const templateID = this.filterTemplate[0] || '';
+        this.$emit('validateSuccess', { scenarioName: this.scenarioName, templateID });
       }
     },
     setTemplateImage(templateItem) {

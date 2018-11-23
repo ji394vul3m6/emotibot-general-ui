@@ -6,7 +6,7 @@
       <div class="title">{{ $t('task_engine_v2.scenario_list_page.start_scenario') }}</div>
       <div class="model-help" v-if="false">
         <div class="help-video">
-          <icon :size=14 icon-type="start_hover"></icon>
+          <icon :size=14 icon-type="te_help_video"></icon>
           {{ $t('task_engine_v2.scenario_list_page.help_video') }}
         </div>
         <div class="upload-data">
@@ -33,15 +33,25 @@
       <div class="row">
         <div id="toolbar">
           <div id="left-buttons">
-            <text-button button-type='primary' width='68px' height='28px' @click="createNewScenario">
+            <text-button button-type='primary' width='100px' height='32px' @click="createNewScenario">
               {{$t("task_engine_v2.scenario_list_page.button_create_new_scenario")}}
             </text-button>
-            <text-button button-type='default' :iconSize=15 width='68px' height='28px' @click="importScenarioJSON">
+            <text-button button-type='default' :iconSize=15 width='100px' height='32px' @click="importScenarioJSON">
               {{$t("task_engine_v2.scenario_list_page.button_import_scenario")}}
             </text-button>
-            <text-button button-type='default' width='100px' height='28px' @click="exportAllScenarios">
+            <text-button button-type='default' width='120px' height='32px' @click="exportAllScenarios">
               {{$t("task_engine_v2.scenario_list_page.button_export_all_scenarios")}}
             </text-button>
+          </div>
+          <div class="model-help top" v-if="true">
+            <div class="help-video">
+              <icon :size=14 icon-type="te_help_video"></icon>
+              {{ $t('task_engine_v2.scenario_list_page.help_video') }}
+            </div>
+            <div class="upload-data">
+              <icon :size=14 icon-type="scenario_upload"></icon>
+              {{ $t('task_engine_v2.scenario_list_page.upload_transfor_data') }}
+            </div>
           </div>
         </div>
       </div>
@@ -298,15 +308,16 @@ $row-height: $default-line-height;
       padding: 0px 20px 0px 20px;
       &.title {
         @include font-16px();
+        font-size: 18px;
         color: $color-font-active;
         flex: 0 0 60px;
-        border-bottom: 1px solid $color-borderline;
+        // border-bottom: 1px solid $color-borderline;
         display: flex;
         align-items: center;
         justify-content: space-between;
       }
       &:not(.title) {
-        margin-top: 20px;
+        // margin-top: 20px;
       }
 
       .text-button {
@@ -324,7 +335,8 @@ $row-height: $default-line-height;
       #toolbar {
         display: flex;
         align-items: center;
-        margin-right: 20px;
+        justify-content: space-between;
+        // margin-right: 20px;
         #left-buttons{
           display: flex;
           align-items: center;
@@ -400,22 +412,29 @@ $btnMarginTop: 43px;
     width: $textWidth;
     font-size: $titleFontSize;
   }
-  .model-help {
-    display: flex;
-    width: 100%;
-    color: $color-primary;
-    font-size: $helpFontSize;
-    margin-top: 20px;
-    line-height: 24px;
-  }
-  .upload-data {
-    padding-left: 32px;
-  }
   .start-scenario {
     margin-top: $btnMarginTop;
     & > * {
       margin-right: 20px;
     }
+  }
+}
+.model-help {
+  display: flex;
+  width: 100%;
+  color: $color-primary;
+  font-size: $helpFontSize;
+  margin-top: 20px;
+  line-height: 24px;
+
+  .upload-data {
+    padding-left: 32px;
+  }
+
+  &.top {
+    width: auto;
+    margin: 0;
+    font-size: 14px;
   }
 }
 </style>
