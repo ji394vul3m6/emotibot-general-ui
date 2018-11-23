@@ -169,7 +169,7 @@ import api from './_api/selflearn';
 import VIEW from './_data/dailyView';
 import dailyMixin from './_store/dailyMixin';
 
-const STATS_RECORD_EXPORT = '/api/v1/stats/record/export';
+const STATS_RECORD_EXPORT = '/api/v1/stats/records/export';
 
 export default {
   path: 'statistic-daily',
