@@ -27,7 +27,7 @@
   <div class="content card h-fill w-fill" v-else>
     <div class="row title">
       {{$t("task_engine_v2.scenario_list_page.scenario_list")}}
-      <search-input v-model="filteredKeyWord" ></search-input>
+      <search-input v-model="filteredKeyWord" style="width: 220px;" ></search-input>
     </div>
     <div class="page">
       <div class="row">
@@ -43,7 +43,7 @@
               {{$t("task_engine_v2.scenario_list_page.button_export_all_scenarios")}}
             </text-button>
           </div>
-          <div class="model-help top" v-if="true">
+          <div class="model-help top" v-if="false">
             <div class="help-video">
               <icon :size=14 icon-type="te_help_video"></icon>
               {{ $t('task_engine_v2.scenario_list_page.help_video') }}
@@ -64,21 +64,35 @@
           @mouseleave="scenario.show = false"
         >
           <div class="scenario-title">
-            <div class="name-label" @click="editScenario(scenario.scenarioID)">
-              {{scenario.scenarioName}}
+            <div class="name-box">
+            <!-- <div class="name-box" @click="editScenario(scenario.scenarioID)"> -->
+              <div class="name-label" v-if="!scenario.editScenarioName">
+              <!-- <div class="name-label" v-if="!scenario.editScenarioName" :title="scenario.scenarioName"> -->
+                {{scenario.scenarioName}}
+              </div>
+              <textarea 
+                class="name-label"
+                ref="scenarioName"
+                v-focus
+                v-if="scenario.editScenarioName"
+                wrap="soft"
+                v-model.trim="scenario.oldScenarioName"
+                @blur="cancelEditScenarioName(scenario)"
+                @keyup.enter="setScenarioName(scenario)"
+                v-tooltip="scenarioNameTooltip">
+              </textarea>
+              <div class="icon-box" v-show="scenario.show && !scenario.editScenarioName" @click="startEditScenarioName(scenario)">
+                <icon :size=12 icon-type="edit_pen" enableHover></icon>
+              </div>
             </div>
             <toggle v-model="scenario.enable" @change="switchScenario(scenario)" :big="false"></toggle>
           </div>
-          <div class="scenario-content" v-if="scenario.show  === true">
-            <text-button button-type='default' iconType="edit_thin" width='72px' height='28px' @click="editScenario(scenario.scenarioID)">
+          <div class="scenario-content">
+            <text-button class="txt-btn" :button-type="scenario.show ? 'primary' : 'default'" width='100px' height='38px' @click="editScenario(scenario.scenarioID)">
               {{$t("task_engine_v2.scenario_list_page.edit")}}
             </text-button>
-            <text-button button-type='default' iconType="export" width='72px' height='28px' @click="exportScenario(scenario.scenarioID)">
-              {{$t("general.export")}}
-            </text-button>
-            <text-button button-type='default' iconType="trash_can" width='72px' height='28px' @click="deleteScenario(scenario)">
-              {{$t("general.delete")}}
-            </text-button>
+            <div class="txt-btn" @click="exportScenario(scenario.scenarioID)">{{$t("general.export")}}</div>
+            <div class="txt-btn" @click="deleteScenario(scenario)">{{$t("general.delete")}}</div>
           </div>
         </div>
       </div>
@@ -90,6 +104,7 @@
 <script>
 import taskEngineApi from '@/modules/TaskEngine/_api/taskEngine';
 import general from '@/modules/TaskEngine/_utils/general';
+// import event from '@/utils/js/event';
 import CreateScenarioPop from './CreateScenarioPop';
 import scenarioInitializer from '../_utils/scenarioInitializer';
 import scenarioConvertor from '../_utils/scenarioConvertor';
@@ -102,6 +117,12 @@ export default {
       appId: '',
       scenarioList: [],
       filteredKeyWord: '',
+      scenarioNameTooltip: {
+        msg: this.$t('task_engine_v2.scenario_settings_edit_pop.err_empty_scenario_name'),
+        eventOnly: true,
+        errorType: true,
+        alignLeft: true,
+      },
     };
   },
   computed: {
@@ -112,6 +133,13 @@ export default {
     },
   },
   watch: {},
+  directives: {
+    focus: {
+      inserted(el) {
+        el.focus();
+      },
+    },
+  },
   methods: {
     exportScenario(scenarioID) {
       taskEngineApi.exportScenario(scenarioID);
@@ -144,6 +172,8 @@ export default {
           this.scenarioList = data.msg.filter(scenario => scenario.version !== '2.0')
                                       .map((scenario) => {
                                         scenario.show = false;
+                                        scenario.editScenarioName = false;
+                                        scenario.oldScenarioName = scenario.scenarioName;
                                         return scenario;
                                       });
         } else {
@@ -238,6 +268,7 @@ export default {
       });
     },
     importScenarioJSON() {
+      console.log(this.$refs);
       this.$refs.uploadScenarioJSONInput.click();
     },
     changeScenarioJSONFile() {
@@ -269,6 +300,40 @@ export default {
         that.$refs.uploadScenarioJSONInput.value = '';
         that.$notifyFail(`${that.$t('error_msg.save_fail')}:${err.message}`);
       });
+    },
+    startEditScenarioName(scenario) {
+      scenario.editScenarioName = true;
+    },
+    cancelEditScenarioName(scenario) {
+      scenario.editScenarioName = false;
+      scenario.oldScenarioName = scenario.scenarioName;
+    },
+    setScenarioName(scenario) {
+      scenario.editScenarioName = false;
+      scenario.oldScenarioName = scenario.oldScenarioName.replace(/[\r\n]/g, '');
+      if (scenario.oldScenarioName.trim() !== '' && scenario.oldScenarioName !== scenario.scenarioName) {
+        scenario.scenarioName = scenario.oldScenarioName;
+        const that = this;
+        taskEngineApi.loadScenario(scenario.scenarioID).then((data) => {
+          const moduleData = JSON.parse(data.result.editingContent);
+          const layout = JSON.parse(data.result.editingLayout);
+          console.log();
+          moduleData.metadata.scenario_name = scenario.scenarioName;
+          taskEngineApi.saveScenario(
+            that.appId,
+            scenario.scenarioID,
+            JSON.stringify(moduleData),
+            JSON.stringify(layout),
+          ).then(() => {
+            that.listAllScenarios();
+          }, (err) => {
+            that.$notifyFail(`${that.$t('task_engine_v2.scenario_list_page.create_new_scenario_failed')}:${err.message}`);
+          });
+        }, (err) => {
+          this.$popError('loadScenario error', err.message);
+        });
+      }
+      scenario.oldScenarioName = scenario.scenarioName;
     },
   },
   beforeMount() {
@@ -356,12 +421,12 @@ $row-height: $default-line-height;
         flex-direction: column;
         flex: 0 0 360px;
         max-width: 360px;
-        height: 112px;
+        height: 164px;
         border-radius: 4px;
         border: 1px solid $color-borderline;
         margin-right: 30px;
         margin-bottom: 20px;
-        padding: 20px;
+        padding: 30px;
         transition: all .2s ease-in-out;
         
         &:hover {
@@ -377,21 +442,50 @@ $row-height: $default-line-height;
           flex: 1 1 auto;
           display: flex;
           justify-content: space-between;
+          .name-box {
+            display: flex;
+            flex-flow: row nowrap;
+            width: calc(100% - 28px);
+          }
+          .icon-box {
+            display: flex;
+            margin-top: 2px;
+            margin-left: 5px;
+          }
           .name-label {
-            max-width: 270px;
+            flex: 1 1 auto;
+            max-width: calc(100% - 24px);
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
             font-size: 16px;
             @include click-button();
           }
+          textarea.name-label {
+            padding: 4px;
+            white-space: inherit;
+            line-height: 25px;
+            max-height: 50px;
+            width: calc(100% - 24px);
+            overflow-y: auto;
+            font-size: 16px;
+            color: #333333;
+            border-radius: 3px;
+            border-color: #dbdbdb;
+            // background-color: #f4f7fd;
+          }
         }
         .scenario-content {
           display: flex;
           flex-direction: row;
           flex-wrap: wrap;
+          align-items: center;
           .text-button{
             margin-right: 10px;
+          }
+          .txt-btn {
+            font-size: 14px;
+            margin-right: 30px;
           }
         }
       }
