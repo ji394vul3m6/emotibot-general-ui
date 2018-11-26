@@ -813,7 +813,7 @@ export default {
       fail: '意圖導入失敗',
       download_template: '下載意圖範本',
       download_test_template: '下載測試題範本',
-      support_format: '支援格式 .xlsx',
+      support_format: '支援格式 .xlsx, 檔案大小需介於 0 ~ 2M',
       upload_file: '上傳檔案',
       upload_file_undefined: '檔案無法辨識',
       upload_file_size_error: '檔案大小需介於 0 ~ 2M',
