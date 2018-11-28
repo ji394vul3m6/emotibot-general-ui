@@ -189,7 +189,6 @@ export default {
         title: that.$t('task_engine_v3.create_scenario_pop.create_scenario'),
         component: CreateScenarioPop,
         validate: true,
-        popWarn: true,
         ok_msg: that.$t('task_engine_v3.create_scenario_pop.comfire_create'),
         data: {
           scenarioName: '',
