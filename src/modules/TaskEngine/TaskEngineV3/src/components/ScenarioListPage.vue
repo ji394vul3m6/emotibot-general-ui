@@ -178,12 +178,37 @@ export default {
       });
     },
     switchScenario(scenario) {
-      Promise.all([
-        taskEngineApi.switchScenario(this.appId, scenario.scenarioID, scenario.enable),
-        scenario.enable && taskEngineApi.publishScenario(this.appId, scenario.scenarioID),
-      ])
-      .catch((err) => {
-        general.popErrorWindow(this, 'switchScenario error', err.message);
+      const scenarioId = scenario.scenarioID;
+      if (!scenario.enable) {
+        taskEngineApi.switchScenario(this.appId, scenarioId, scenario.enable)
+        .catch((err) => {
+          general.popErrorWindow(this, 'switchScenario error', err.message);
+        });
+        return;
+      }
+      taskEngineApi.loadScenario(scenarioId)
+      .then((data) => {
+        const moduleData = JSON.parse(data.result.editingContent);
+        const content = {
+          version: '2.0',
+          skills: moduleData.skills,
+        };
+        Promise.all([
+          taskEngineApi.switchScenario(this.appId, scenarioId, scenario.enable),
+          Object.keys(content.skills).map((skillId) => {
+            const skill = content.skills[skillId];
+            if (skill.entityCollectorList.length > 0 ||
+                (skill.register_json && Object.keys(skill.register_json).length > 0)) {
+              const registryData = scenarioConvertor.convertToRegistryData(scenarioId, skill, skillId); // eslint-disable-line
+              return taskEngineApi.registerNluTdeScenario(registryData);
+            }
+            return Promise.resolve();
+          }),
+          taskEngineApi.publishScenario(this.appId, scenarioId),
+        ])
+        .catch((err) => {
+          general.popErrorWindow(this, 'switchScenario error', err.message);
+        });
       });
     },
     showImportPop() {
