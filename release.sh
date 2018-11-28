@@ -51,7 +51,7 @@ BFOP_ISSUES=`echo $RAW_LOG | grep -o "BFOP-[0-9]\+" | paste -sd "," -`;
 OTHER_ISSUES=`echo $RAW_LOG | grep -o "[A-Z]\+-[0-9]\+" | grep -v BFOP | paste -sd "," -`;
 
 echo "API version" > ./.release_tmp;
-cat docker/Dockerfile | grep docker-reg | grep -v base | sed -e 's/FROM docker-reg.emotibot.com.cn:55688\/\(.*\) AS .*/\1/g' >> ./.release_tmp;
+cat docker/runtime/build.env | grep ARG | grep -v '\$' >> ./.release_tmp
 echo "" >> ./.release_tmp;
 
 echo "Release Note" >> ./.release_tmp;
