@@ -155,7 +155,7 @@ export default {
       label_then_goto: '則前往',
     },
     action_edit_tab: {
-      wait_for_response: '等待用戶回復：',
+      wait_for_response: '等待用戶回覆：',
     },
     condition_block: {
       label_content: '內容',
@@ -264,7 +264,7 @@ export default {
       },
       toast_save_success: '儲存成功！',
       button_save_and_next_step: '儲存並下一步',
-      switch_on: '啟動',
+      switch_on: '啓動',
       switch_off: '停用',
       tooltip_skill_edit: '場景的任務管理',
     },
@@ -349,7 +349,7 @@ export default {
       button_add_new_edge: '新增連線',
     },
     action_card: {
-      label_msg_type: '文字迴應',
+      label_msg_type: '文字回應',
       label_webhook_type: '外部服務連接',
       label_goto_type_2_0: '下一個任務連接',
       label_goto_type: '連線至下一個節點',

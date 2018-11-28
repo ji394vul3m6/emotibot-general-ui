@@ -169,7 +169,7 @@ import api from './_api/selflearn';
 import VIEW from './_data/dailyView';
 import dailyMixin from './_store/dailyMixin';
 
-const STATS_RECORD_EXPORT = '/api/v1/stats/record/export';
+const STATS_RECORD_EXPORT = '/api/v1/stats/records/export';
 
 export default {
   path: 'statistic-daily',
@@ -296,6 +296,7 @@ export default {
       searchTooltip: {
         msg: this.$t('statistics.search_more_hint'),
       },
+      searching: false,
     };
   },
   watch: {
@@ -312,11 +313,20 @@ export default {
     ]),
     searchForMore() {
       const that = this;
-      const lastData = that.tableData[that.tableData.length - 1];
-      const lastTime = new Date(lastData.log_time);
-      that.$refs.end.$emit('setValue', lastTime);
-      that.$nextTick(() => {
-        that.doSearch(1);
+
+      if (that.searching) {
+        return;
+      }
+      that.searching = true;
+      that.$api.getRecords(that.searchParams, that.tableMaxRecord, 1).then((res) => {
+        const lastData = res.data[0];
+        const lastTime = new Date(lastData.log_time);
+        that.$refs.end.$emit('setValue', lastTime);
+        that.$nextTick(() => {
+          that.doSearch(1).then(() => {
+            that.searching = false;
+          });
+        });
       });
     },
     escapeRegExp(str) {
@@ -535,7 +545,7 @@ export default {
       that.searchParams = this.getSearchParam();
       that.setDailySearchParams(that.searchParams);
       that.isTableLoading = true;
-      that.$api.getRecords(that.searchParams, page, that.pageLimit).then((res) => {
+      return that.$api.getRecords(that.searchParams, page, that.pageLimit).then((res) => {
         that.tableData = that.appendTableDataAction(res.data);
         that.headerInfo = that.receiveAPIHeader(res.table_header);
         that.totalCount = res.total_size;

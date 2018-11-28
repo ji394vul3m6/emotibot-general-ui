@@ -194,13 +194,13 @@ http {
         location /robots {
             proxy_pass http://${BF_IP};
         }
-        location = version {
+        location /version/fe {
             proxy_pass http://${BF_IP};
         }
         location /chatlog {
             proxy_pass http://${BF_IP};
         }
-        location /solution_stage_status/set {
+        location /solution_stage_status {
             proxy_pass http://${BF_IP};
         }
         location /robot {
@@ -209,7 +209,16 @@ http {
         location /sentenceAccociation {
             proxy_pass http://${BF_IP};
         }
+        location /dimension {
+            proxy_pass http://${BF_IP};
+        }
         location /task_engine {
+            proxy_pass http://${BF_IP};
+        }
+        location /Files/sq/images {
+            proxy_pass http://${BF_IP};
+        }
+        location /Files/ssm {
             proxy_pass http://${BF_IP};
         }
         location /im-admin {

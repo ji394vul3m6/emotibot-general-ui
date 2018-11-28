@@ -272,7 +272,7 @@ http {
         location /robots {
             proxy_pass http://$bf_server_url;
         }
-        location = /version {
+        location /version/fe {
             proxy_pass http://$bf_server_url;
         }
         location /chatlog {

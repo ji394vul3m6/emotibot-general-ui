@@ -81,6 +81,9 @@ export default {
       }
     },
   },
+  mounted() {
+    this.setEnterprise('');
+  },
   methods: {
     ...mapMutations([
       'setEnterprise',

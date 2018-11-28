@@ -134,6 +134,7 @@ export default {
       // no using context.$cookie because of it will encoded cookie value
       document.cookie = `robotDataJson=${str}; expires=${expires.toGMTString()};path=/`;
       this.setupPages();
+      this.closeChatTest();
     },
     userID() {
       this.$cookie.set('userid', this.userID, { expires: constant.cookieTimeout });

@@ -33,13 +33,13 @@
       <div v-if="!hasSearchResult" id="no-category-search-result">
         {{ $t('category.empty_search_result') }}
       </div>
-      <category-tree-item v-for="(child, idx) in categoryTree.children" 
+      <category-tree-item v-for="child in categoryTree.children" 
         v-if="child.visible"
         :treeItem="child"
         :editMode="isEditMode"
         :curLayer="1"
-        :ref="`${child.cid}-${child.name}`"
-        :key="`${child.name}-${idx}`"
+        :ref="`${child.cid}`"
+        :key="`${child.cid}-${child.name}`"
         :canEdit="canEdit"
         @activeItemChange="handleActiveItemChange"
         @itemNameChange="handleItemNameChange"
@@ -224,15 +224,10 @@ export default {
       }
     },
     handleSetActiveToAll() {
-      try {
-        const allRefName = `-3-${this.$t('category.all')}`;
-        const allRef = this.$refs[allRefName][0];
-        allRef.$refs.treeItem.click();
-      } catch (err) { // some pages do not have category ALL
-        const allRefName = `-3-${this.$t('category.no_category')}`;
-        const allRef = this.$refs[allRefName][0];
-        allRef.$refs.treeItem.click();
-      }
+      console.log(this.$refs);
+      const allRefName = '-3';
+      const allRef = this.$refs[allRefName][0];
+      allRef.$refs.treeItem.click();
     },
 
     /** Recursive Find Item */
@@ -354,7 +349,7 @@ export default {
     },
 
     /** Handle DELETE */
-    popDeleteCategory() { // v
+    popDeleteCategory() {
       if (!this.currentActiveItem.deletable) {
         return;
       }
