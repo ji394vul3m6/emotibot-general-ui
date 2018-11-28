@@ -77,7 +77,7 @@
                 v-if="scenario.editScenarioName"
                 wrap="soft"
                 v-model.trim="scenario.oldScenarioName"
-                @blur="cancelEditScenarioName(scenario)"
+                @blur="setScenarioName(scenario)"
                 @keyup.enter="setScenarioName(scenario)"
                 v-tooltip="scenarioNameTooltip">
               </textarea>
@@ -189,6 +189,7 @@ export default {
         title: that.$t('task_engine_v3.create_scenario_pop.create_scenario'),
         component: CreateScenarioPop,
         validate: true,
+        popWarn: true,
         ok_msg: that.$t('task_engine_v3.create_scenario_pop.comfire_create'),
         data: {
           scenarioName: '',
