@@ -34,4 +34,5 @@ COPY ./entrypoint.sh entrypoint.sh
 ARG ARG_GIT_TAG
 RUN echo ${ARG_GIT_TAG} > /build/dist/uiversion.html
 
+HEALTHCHECK CMD curl -f http://localhost/ || exit 1
 ENTRYPOINT ["./entrypoint.sh"]
