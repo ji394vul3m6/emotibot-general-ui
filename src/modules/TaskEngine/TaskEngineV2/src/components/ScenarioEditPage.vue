@@ -115,6 +115,7 @@ import Edges from './Edges';
 import EdgesOnTop from './EdgesOnTop';
 import GlobalEdgeEditPop from './GlobalEdgeEditPop';
 import VarTemplateEditPop from './VarTemplateEditPop';
+import JSCodeEditPop from './JSCodeEditPop';
 import ScenarioSettingsEditPop from './ScenarioSettingsEditPop';
 import scenarioConvertor from '../_utils/scenarioConvertor';
 import scenarioInitializer from '../_utils/scenarioInitializer';
@@ -183,6 +184,9 @@ export default {
         }, {
           text: this.$t('task_engine_v2.scenario_edit_page.global_edge'),
           onclick: this.editGlobalEdge,
+        }, {
+          text: this.$t('task_engine_v2.scenario_edit_page.global_js_code'),
+          onclick: this.editJSCode,
         }],
         alignLeft: true,
       };
@@ -689,6 +693,27 @@ export default {
           ok: (resultObj) => {
             this.globalEdges = resultObj.edges;
             this.addTempNodes(this.nodeBlocks.length - 1, resultObj.newNodeOptions);
+            this.saveScenario();
+          },
+        },
+      });
+    },
+    editJSCode() {
+      const that = this;
+      that.$pop({
+        title: '脚本设置',
+        component: JSCodeEditPop,
+        validate: true,
+        cancelValidate: true,
+        extData: {
+          // globalEdges: this.globalEdges,
+          // toNodeOptions: this.toNodeOptions,
+          // globalVarOptionsMap: this.globalVarOptionsMap,
+        },
+        callback: {
+          ok: () => {
+            // this.globalEdges = resultObj.edges;
+            // this.addTempNodes(this.nodeBlocks.length - 1, resultObj.newNodeOptions);
             this.saveScenario();
           },
         },

@@ -49,6 +49,7 @@ export default {
       setting: '设置',
       global_var_template: '变量模版',
       global_edge: '通用连线',
+      global_js_code: 'JS脚本',
       export: '导出',
       publish: '发布',
       add_node: '新增节点',
@@ -206,6 +207,7 @@ export default {
         cu_parser: '语句解析数据提取',
         custom_cu_parser: '自定义语句解析数据提取',
         intent_parser: '意图',
+        js_code: 'JS脚本',
       },
       operator: {
         equal_to: '等于',
