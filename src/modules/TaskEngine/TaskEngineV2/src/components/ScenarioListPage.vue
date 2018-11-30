@@ -66,8 +66,7 @@
           <div class="scenario-title">
             <div class="name-box">
             <!-- <div class="name-box" @click="editScenario(scenario.scenarioID)"> -->
-              <div class="name-label" v-if="!scenario.editScenarioName">
-              <!-- <div class="name-label" v-if="!scenario.editScenarioName" :title="scenario.scenarioName"> -->
+              <div class="name-label" v-if="!scenario.editScenarioName" @click="editScenario(scenario.scenarioID)">
                 {{scenario.scenarioName}}
               </div>
               <textarea 
