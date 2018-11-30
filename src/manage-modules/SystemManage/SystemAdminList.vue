@@ -108,7 +108,7 @@ export default {
       ],
       actions: [
         {
-          text: '編輯',
+          text: '编辑',
           type: 'primary',
           onclick: this.popEditUser,
         },
