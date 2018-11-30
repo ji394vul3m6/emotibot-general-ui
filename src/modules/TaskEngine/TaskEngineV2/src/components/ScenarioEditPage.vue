@@ -107,12 +107,17 @@
     </div>
   </div>
   <div class="zoom-tool">
-    <text-button button-type='default' width='68px' height='28px' @click="zoom += 0.1; ">
-      Zoom In
-    </text-button>
-    <text-button button-type='default' width='68px' height='28px' @click="zoomOut">
-      Zoom Out
-    </text-button>
+    <button class="wrapper" @click="zoom += 0.1;">
+      <img src="@/assets/icons/zoom_in.svg"/>
+    </button>
+    <div class="divide"></div>
+    <button class="wrapper" @click="zoomOut">
+      <img src="@/assets/icons/zoom_out.svg"/>
+    </button>
+    <div class="divide"></div>
+    <button class="wrapper" @click="zoom = 1;">
+      <img src="@/assets/icons/recover_origin.svg"/>
+    </button>
   </div>
 </div>
 </template>
@@ -1039,7 +1044,33 @@ export default {
   .zoom-tool {
     position: absolute;
     bottom: 0;
-    right: 0;
+    right: 400px;
+    height: 50px;
+    border-radius: 2px;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.12);
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    background-color: white;
+    .wrapper {
+      border: none;
+      background-color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0;
+      outline: none;
+      img {
+        width: 27px;
+        height: 27px;
+        margin: 0 20px;
+      }
+    }
+    .divide {
+      width: 1px;
+      height: 100%;
+      background-color: #eeeeee;
+    }
   }
   .side-panel {
     display: flex;
