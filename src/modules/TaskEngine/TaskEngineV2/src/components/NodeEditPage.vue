@@ -31,6 +31,14 @@
         @update:valid="valid = $event"
         @update="settingTab = $event"
       ></setting-edit-tab>
+      <setting-edit-tab2 ref="dialogue2SettingTab"
+        v-if="currentTab === 'dialogue2SettingTab'"
+        :settingTab="dialogue2SettingTab"
+        :globalVarOptions="globalVarOptions"
+        :validateTab="validateTab"
+        @update:valid="valid = $event"
+        @update="dialogue2SettingTab = $event"
+      ></setting-edit-tab2>
       <setting-basic-edit-tab ref="settingBasicTab"
         v-if="currentTab === 'settingBasicTab'"
         :settingBasicTab="settingBasicTab"
@@ -133,6 +141,7 @@ import RestfulSettingEditTab from './RestfulSettingEditTab';
 import RestfulEdgeEditTab from './RestfulEdgeEditTab';
 // import ActionEditTab from '@/modules/TaskEngine/TaskEngineV3/src/components/ActionPage';
 import ActionEditTab from './ActionEditTab';
+import SettingEditTab2 from './SettingEditTab2';
 import optionConfig from '../_utils/optionConfig';
 import scenarioConvertor from '../_utils/scenarioConvertor';
 import scenarioInitializer from '../_utils/scenarioInitializer';
@@ -150,6 +159,7 @@ export default {
     'restful-edge-edit-tab': RestfulEdgeEditTab,
     'params-collecting-edit-tab': ParamsCollectingEditTab,
     'params-collecting-edge-edit-tab': ParamsCollectingEdgeEditTab,
+    SettingEditTab2,
   },
   props: {
     extData: {
@@ -182,6 +192,7 @@ export default {
     let restfulSettingTab;
     let restfulEdgeTab;
     let actionTab;
+    let dialogue2SettingTab;
     tabs.forEach((tab) => {
       if (tab === 'triggerTab') {
         triggerTab = node.triggerTab;
@@ -215,6 +226,9 @@ export default {
         restfulEdgeTab = node.restfulEdgeTab;
       } else if (tab === 'actionTab') {
         actionTab = node.actionTab;
+      } else if (tab === 'dialogue2SettingTab') {
+        dialogue2SettingTab = node.dialogue2SettingTab;
+        dialogue2SettingTab.nodeType = node.nodeType;
       }
     });
     const jsCodeAlias = this.extData.jsCodeAlias || [];
@@ -238,6 +252,7 @@ export default {
       restfulSettingTab,
       restfulEdgeTab,
       actionTab,
+      dialogue2SettingTab,
       newNodeOptions: undefined,
       pageStyle: {
         width: '880px',
@@ -318,61 +333,15 @@ export default {
         this.collectGlobalVarOptions();
       },
     },
+    dialogue2SettingTab: {
+      handler() {
+        this.collectGlobalVarOptions();
+      },
+    },
   },
   methods: {
     updateNewNodeOptions(newNodeOptions) {
       this.newNodeOptions = newNodeOptions;
-    },
-    renderData() {
-      // reserve original node json string
-      const { warnings, ...nodeWithoutWarnings } = this.extData.node;
-      this.originalNodeString = JSON.stringify(nodeWithoutWarnings, general.JSONStringifyReplacer);
-      // parse node
-      this.node = JSON.parse(JSON.stringify(this.extData.node));
-      this.toNodeOptions = JSON.parse(JSON.stringify(this.extData.toNodeOptions));
-      this.globalVarOptionsMap = JSON.parse(JSON.stringify(this.extData.globalVarOptionsMap));
-      this.nodeType = this.node.nodeType;
-      // render tab data
-      let tabs = [];
-      const nodeType2TabsMap = optionConfig.nodeType2Tabs();
-      if (this.nodeType in nodeType2TabsMap) {
-        tabs = nodeType2TabsMap[this.nodeType];
-      }
-      tabs.forEach((tab) => {
-        if (tab === 'triggerTab') {
-          this.triggerTab = this.node.triggerTab;
-          this.triggerTab.nodeId = this.node.nodeId;
-        } else if (tab === 'settingTab') {
-          this.settingTab = this.node.settingTab;
-          this.initialSettingTab = JSON.parse(JSON.stringify(this.settingTab));
-          this.initialSettingTab.nodeType = this.nodeType;
-        } else if (tab === 'edgeTab') {
-          this.edgeTab = this.node.edgeTab;
-          this.initialEdgeTab = JSON.parse(JSON.stringify(this.edgeTab));
-          this.initialEdgeTab.nodeType = this.nodeType;
-          this.initialEdgeTab.nodeId = this.node.nodeId;
-        } else if (tab === 'entityCollectingTab') {
-          this.entityCollectingTab = this.node.entityCollectingTab;
-        } else if (tab === 'settingBasicTab') {
-          this.settingBasicTab = this.node.settingBasicTab;
-        } else if (tab === 'paramsCollectingTab') {
-          this.paramsCollectingTab = this.node.paramsCollectingTab;
-          this.initialParamsCollectingTab = JSON.parse(JSON.stringify(this.paramsCollectingTab));
-          this.initialParamsCollectingTab.nodeId = this.node.nodeId;
-        } else if (tab === 'paramsCollectingEdgeTab') {
-          this.paramsCollectingEdgeTab = this.node.paramsCollectingEdgeTab;
-          this.initialParamsCollectingEdgeTab
-            = JSON.parse(JSON.stringify(this.paramsCollectingEdgeTab));
-          this.initialParamsCollectingEdgeTab.nodeType = this.nodeType;
-          this.initialParamsCollectingEdgeTab.nodeId = this.node.nodeId;
-        } else if (tab === 'restfulSettingTab') {
-          this.restfulSettingTab = this.node.restfulSettingTab;
-        } else if (tab === 'restfulEdgeTab') {
-          this.restfulEdgeTab = this.node.restfulEdgeTab;
-        } else if (tab === 'actionTab') {
-          this.actionTab = this.node.actionTab;
-        }
-      });
     },
     collectGlobalVarOptions() {
       const nodeResult = this.composeNodeResult();
@@ -473,6 +442,11 @@ export default {
           name: this.$t('task_engine_v2.node_edit_page.tabs.action'),
           icon: 'setting',
         },
+        dialogue2SettingTab: {
+          type: 'dialogue2SettingTab',
+          name: this.$t('task_engine_v2.node_edit_page.tabs.setting'),
+          icon: 'setting',
+        },
       };
     },
     loadMappingTableOptions() {
@@ -505,6 +479,7 @@ export default {
         restfulEdgeTab: this.restfulEdgeTab,
         paramsCollectingTab: this.paramsCollectingTab,
         paramsCollectingEdgeTab: this.paramsCollectingEdgeTab,
+        dialogue2SettingTab: this.dialogue2SettingTab,
         actionTab: this.actionTab,
       };
       if (this.node.nodeType === 'entry' ||
@@ -514,6 +489,8 @@ export default {
         nodeResult.nodeName = this.settingBasicTab.nodeName;
       } else if (this.node.nodeType === 'restful') {
         nodeResult.nodeName = this.restfulSettingTab.nodeName;
+      } else if (this.node.nodeType === 'dialogue_2.0') {
+        nodeResult.nodeName = this.dialogue2SettingTab.nodeName;
       } else {
         nodeResult.nodeName = this.settingTab.nodeName;
       }
@@ -560,7 +537,6 @@ export default {
   },
   beforeMount() {
     this.loadMappingTableOptions();
-    // this.renderData();
     this.collectGlobalVarOptions();
   },
   mounted() {

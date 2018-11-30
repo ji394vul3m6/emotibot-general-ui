@@ -9,6 +9,7 @@ export default {
     return {
       entry: ['settingBasicTab', 'triggerTab', 'edgeTab'],
       dialogue: ['settingTab', 'edgeTab'],
+      'dialogue_2.0': ['dialogue2SettingTab', 'edgeTab'],
       nlu_pc: ['settingBasicTab', 'entityCollectingTab', 'edgeTab'],
       restful: ['restfulSettingTab', 'restfulEdgeTab'],
       parameter_collecting: ['settingBasicTab', 'paramsCollectingTab', 'paramsCollectingEdgeTab'],
@@ -71,6 +72,12 @@ export default {
         type: 'dialogue',
         name: context.$t('task_engine_v2.node_type.dialogue'),
         image: DialogueIcon,
+        description: context.$t('task_engine_v2.node_type.dialogue_description'),
+      },
+      {
+        type: 'dialogue_2.0',
+        name: context.$t('task_engine_v2.node_type.dialogue2'),
+        image: 'te_dialoague.png',
         description: context.$t('task_engine_v2.node_type.dialogue_description'),
       },
       {

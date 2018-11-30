@@ -424,6 +424,9 @@ export default {
         uiNode.actionTab.actionGroupList,
         uiNode.actionTab.waitForResponse,
       );
+    } else if (uiNode.nodeType === 'dialogue_2.0') {
+      node.content = this.composeDialogue2Content(uiNode);
+      node.node_dialogue_cnt_limit = uiNode.edgeTab.dialogueLimit;
     }
     return node;
   },
@@ -554,6 +557,32 @@ export default {
     questions.push(initialQ);
     return {
       questions,
+    };
+  },
+  composeDialogue2Content(uiNode) {
+    const skipDialogue = uiNode.dialogue2SettingTab.skipDialogue;
+    // insert failure_response
+    const failureResponse = {
+      msg: uiNode.dialogue2SettingTab.failureResponse,
+    };
+    // insert initial_response
+    const initialResponse = {
+      msg: uiNode.dialogue2SettingTab.initialResponse,
+    };
+    const repeatResponse = {
+      msg: uiNode.dialogue2SettingTab.repeatResponse,
+    };
+    const rewindResponse = {
+      msg: uiNode.dialogue2SettingTab.rewindResponse,
+    };
+    return {
+      skip_dialogue: skipDialogue,
+      questions: {
+        failure_response: failureResponse,
+        initial_response: initialResponse,
+        repeat_response: repeatResponse,
+        rewind_response: rewindResponse,
+      },
     };
   },
   composeRestfulContent(uiNode) {

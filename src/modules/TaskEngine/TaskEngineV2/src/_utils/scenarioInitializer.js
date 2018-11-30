@@ -79,6 +79,8 @@ export default {
       return this.initialPCNode(nodeName, nodeDialogueCntLimit);
     } else if (nodeType === 'action') {
       return this.initialActionNode(nodeName);
+    } else if (nodeType === 'dialogue_2.0') {
+      return this.initialDialogueNode2(nodeName, nodeDialogueCntLimit, nodeId);
     }
     return {};
   },
@@ -196,6 +198,30 @@ export default {
         targetEntities: [],
         skipIfKeyExist: [],
         initialResponse: '',
+        failureResponse: '',
+        parseFromThisNode: false,
+      },
+      edgeTab: {
+        normalEdges: [],
+        exceedThenGoto: '0',
+        elseInto: '0',
+        dialogueLimit: nodeDialogueCntLimit,
+      },
+    };
+  },
+  initialDialogueNode2(nodeName, nodeDialogueCntLimit, nodeId) {
+    return {
+      nodeId: nodeId || this.guid_sort(),
+      nodeName,
+      nodeType: 'dialogue_2.0',
+      dialogue2SettingTab: {
+        nodeName,
+        parser: 'none',
+        targetEntities: [],
+        skipIfKeyExist: [],
+        initialResponse: '',
+        repeatResponse: '',
+        rewindResponse: '',
         failureResponse: '',
         parseFromThisNode: false,
       },

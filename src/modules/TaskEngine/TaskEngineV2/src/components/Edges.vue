@@ -11,7 +11,7 @@
 <script>
 
 export default {
-  name: 'scenario-edit-page',
+  name: 'edges',
   components: {},
   props: {
     edges: {
