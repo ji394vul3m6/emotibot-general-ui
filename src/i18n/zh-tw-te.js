@@ -46,10 +46,10 @@ export default {
       setting: '設置',
       global_var_template: '變量模版',
       global_edge: '通用連線',
+      scenario_info: '場景信息',
       export: '導出',
       publish: '發佈',
-      add_node: '新增節點',
-      add_node_instruction: '拖拉下方的節點至場景中',
+      add_node_instruction: '您可以將以下場景節點長按拖至左側任務板',
       new_edge_exceed_then_goto: '當出話超過上限',
       new_edge_else_into: '當所有規則都無法符合時',
       new_edge_normal: '自定義',
@@ -59,6 +59,10 @@ export default {
       new_edge_pc_fail: '連續解析失敗超過上限',
       back_to_scenario_list: '返回',
       advanced_config: '更多操作',
+      switch: '開關',
+      on: '開',
+      off: '關',
+      more: '更多',
     },
     node_edit_page: {
       tabs: {
@@ -78,6 +82,13 @@ export default {
       default_node_dialogue_cnt_limit: '預設節點對話數',
       err_empty_default_node_dialogue_cnt_limit: '預設節點對話數不可為空',
       confirm_to_save_changes: '場景基本設置已被更動，請問是否需要保存？',
+    },
+    scenario_info: {
+      scenario_dialogue_cnt_limit: '全場景對話數',
+      default_node_dialogue_cnt_limit: '預設節點對話數',
+      robot_id: '機器人ID',
+      scenario_id: '場景ID',
+      scenario_last_update_time: '場景最後修改時間',
     },
     var_template_edit_pop: {
       instruction: '為每個變量設定顯示模版',

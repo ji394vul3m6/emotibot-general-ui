@@ -57,53 +57,53 @@
       @dropdownHidden="dropdownHidden()">
     </div>
   </div>
-  <div class="side-panel">
-    <div class="node-option-nav-bar">
-      <div class="node-option-title">{{$t("task_engine_v2.scenario_edit_page.add_node")}}</div>
-      <div class="node-option-instruction">{{$t("task_engine_v2.scenario_edit_page.add_node_instruction")}}</div>
-      <div class="side-panel-toggle" @click="toggleSidePanel()">{{sidePanelTogleIcon}}</div>
-    </div>
-    <div class="node-options" v-if="showNodeOptions">
-      <template v-for="(nodeOption, index) in nodeOptions">
-        <div class="node-option"
-          :class="{ 'odd-option': index % 2 === 0 }"
-          draggable="true"
-          @dragstart="nodeOptionDragStart(nodeOption.type, nodeOption.name, $event);">
-          <img class="node-icon" :src="`/static/images/${nodeOption.image}`" alt="...">
-          <div class="node-label">
-            <div class="node-name">{{nodeOption.name}}</div>
-            <div class="node-description">{{nodeOption.description}}</div>
-          </div>
-        </div>
-      </template>
-    </div>
-  </div>
-  <div class="top-panel">
-    <div class="breadcrumb">
-      <div class="back-to-list" @click="$router.replace('/task-engine-scenario-v2');">{{$t("task_engine_v2.scenario_list_page.scenario_list")}}</div>
-      <icon iconType="month_right" :size="20"></icon>
-      <div v-if="moduleData.metadata" class="scenario-name">
-        {{moduleData.metadata.scenario_name}}
+  <div v-if="moduleData.metadata" class="side-panel" :class="{collapse: !showNodeOptions}">
+    <div class="first-row">
+      <icon class="icon" iconType="back_light" :size="12" @click="$router.replace('/task-engine-scenario-v2')"></icon>
+      <div class="input-wrapper">
+        <input 
+          ref="scenarioName" 
+          class="scenario-name" 
+          :value="moduleData.metadata.scenario_name" 
+          @blur="saveScenario()" 
+          @input="setting.scenarioName = $event.target.value"/>
+        <icon class="icon visibility" :size="24" icon-type="edit_pen_1" @click="$refs.scenarioName.focus()"></icon>
       </div>
-      <div class="scenario-name-edit" @click="editScenarioSettings()">
-        <icon :size=12 icon-type="edit_pen" enableHover></icon>
+      <div class="divide"></div>
+      <icon class="icon" :iconType="showNodeOptions ? 'collapse' : 'expand_rect'" :size="12" @click="showNodeOptions = !showNodeOptions"></icon>
+    </div>
+    <div class="second-row" v-if="showNodeOptions">
+      <div class="group">
+        <span v-t="'task_engine_v2.scenario_edit_page.switch'"></span>
+        <toggle v-model="enable" @change="switchScenario()" size="medium" :showLabel="true" :label="toggleLabel"></toggle>
+      </div>
+      <div class="group">
+        <span v-t="'general.export'"></span>
+        <button class="export" @click="exportScenario">
+          <img iconType="export_1" src="@/assets/icons/export_1_icon.svg" alt=" "></icon>
+        </button>
+      </div>
+      <div class="group">
+        <span v-t="'task_engine_v2.scenario_edit_page.more'"></span>
+        <icon class="icon" :size="28" icon-type="more_v" v-dropdown="advancedConfigOptions"></icon>
       </div>
     </div>
-    <div class="header-buttons">
-      <div class="label-switch-off label-switch">{{$t("task_engine_v3.scenario_edit_page.switch_off")}}</div>
-      <toggle class="button-switch-enable" v-model="enable" @change="switchScenario()" :big="false"></toggle>
-      <div class="label-switch-on label-switch">{{$t("task_engine_v3.scenario_edit_page.switch_on")}}</div>
-      <text-button button-type='default' width='68px' height='28px' @click="exportScenario()">
-        {{$t("general.export")}}
-      </text-button>
-      <div class="advanced-config" v-dropdown="advancedConfigOptions">
-        <text-button iconType="header_dropdown_gray" :iconSize="8" iconAlign="right" width="91px" height="28px">
-          {{$t("task_engine_v2.scenario_edit_page.advanced_config")}}
-        </text-button>
-      </div>
-      <text-button button-type='default' width='68px' height='28px' @click="$router.replace('/task-engine-scenario-v2')">
-        {{$t("task_engine_v2.scenario_edit_page.back_to_scenario_list")}}
-      </text-button>
+    <div class="third-row" v-if="showNodeOptions">
+      <span class="instruction" v-t="'task_engine_v2.scenario_edit_page.add_node_instruction'"></span>
+      <ul class="node-options">
+        <template v-for="nodeOption in nodeOptions">
+          <li 
+            class="node-option"
+            draggable="true"
+            @dragstart="nodeOptionDragStart(nodeOption.type, nodeOption.name, $event);">
+            <img class="node-icon" :src="nodeOption.image" alt="...">
+            <div class="node-label">
+              <div class="node-name">{{nodeOption.name}}</div>
+              <div class="node-description">{{nodeOption.description}}</div>
+            </div>
+          </li>
+        </template>
+      </ul>
     </div>
   </div>
   <div class="zoom-tool">
@@ -130,7 +130,7 @@ import Edges from './Edges';
 import EdgesOnTop from './EdgesOnTop';
 import GlobalEdgeEditPop from './GlobalEdgeEditPop';
 import VarTemplateEditPop from './VarTemplateEditPop';
-import ScenarioSettingsEditPop from './ScenarioSettingsEditPop';
+import ScenarioInfoPop from './ScenarioInfoPop';
 import scenarioConvertor from '../_utils/scenarioConvertor';
 import scenarioInitializer from '../_utils/scenarioInitializer';
 import optionConfig from '../_utils/optionConfig';
@@ -166,7 +166,6 @@ export default {
         publish: false,
       },
       nodeTypes: [],
-      sidePanelTogleIcon: '-',
       showNodeOptions: true,
       linking: false,
       addNewEdgeDropdown: {
@@ -188,18 +187,27 @@ export default {
       appId: undefined,
       scenarioId: undefined,
       zoom: 1,
+      toggleLabel: {
+        on: this.$t('task_engine_v2.scenario_edit_page.on'),
+        off: this.$t('task_engine_v2.scenario_edit_page.off'),
+      },
     };
   },
   computed: {
     advancedConfigOptions() {
       const options = {
-        options: [{
-          text: this.$t('task_engine_v2.scenario_edit_page.global_var_template'),
-          onclick: this.editVarTemplate,
-        }, {
-          text: this.$t('task_engine_v2.scenario_edit_page.global_edge'),
-          onclick: this.editGlobalEdge,
-        }],
+        options: [
+          {
+            text: this.$t('task_engine_v2.scenario_edit_page.global_var_template'),
+            onclick: this.editVarTemplate,
+          }, {
+            text: this.$t('task_engine_v2.scenario_edit_page.global_edge'),
+            onclick: this.editGlobalEdge,
+          }, {
+            text: this.$t('task_engine_v2.scenario_edit_page.scenario_info'),
+            onclick: this.scenarioInfoClick,
+          },
+        ],
         alignLeft: true,
       };
       return options;
@@ -582,7 +590,6 @@ export default {
         this.saveScenario();
       });
     },
-
     copyNode(index) {
       const srcNodeId = this.nodeBlocks[index].data.nodeId;
       const newNodeId = scenarioInitializer.guid_sort();
@@ -652,24 +659,6 @@ export default {
         this.canvasHeight *= 1.1;
       }
     },
-    editScenarioSettings() {
-      const that = this;
-      that.$pop({
-        title: '',
-        component: ScenarioSettingsEditPop,
-        validate: true,
-        cancelValidate: true,
-        extData: {
-          setting: this.setting,
-        },
-        callback: {
-          ok: (setting) => {
-            this.setting = setting;
-            this.saveScenario();
-          },
-        },
-      });
-    },
     editVarTemplate() {
       const that = this;
       that.$pop({
@@ -724,14 +713,6 @@ export default {
       }, (err) => {
         that.$notifyFail(`${that.$t('task_engine_v2.scenario_list_page.publish_failed')}:${err.message}`);
       });
-    },
-    toggleSidePanel() {
-      this.showNodeOptions = !this.showNodeOptions;
-      if (this.showNodeOptions) {
-        this.sidePanelTogleIcon = '-';
-      } else {
-        this.sidePanelTogleIcon = '+';
-      }
     },
     getPanelTabOptions() {
       const tabs = [
@@ -1001,6 +982,23 @@ export default {
         this.zoom -= 0.1;
       }
     },
+    scenarioInfoClick() {
+      this.$pop({
+        title: this.$t('task_engine_v2.scenario_edit_page.scenario_info'),
+        component: ScenarioInfoPop,
+        data: {
+          setting: this.setting,
+          metadata: this.moduleData.metadata,
+        },
+        validate: true,
+        callback: {
+          ok: (setting) => {
+            this.setting = setting;
+            this.saveScenario();
+          },
+        },
+      });
+    },
   },
   beforeMount() {
     this.appId = this.$cookie.get('appid');
@@ -1020,11 +1018,19 @@ export default {
 <style lang="scss" scoped>
 @import 'styles/variable.scss';
 
-#scenario-edit-page{
+#scenario-edit-page {
   position: relative;
   box-sizing: border-box;
   width: 100%;
   height: 100%;
+  .icon {
+    cursor: pointer;
+  }
+  .divide {
+    width: 1px;
+    height: 100%;
+    background-color: #eeeeee;
+  }
   .browse-window{
     position: relative;
     width: 100%;
@@ -1044,7 +1050,7 @@ export default {
   .zoom-tool {
     position: absolute;
     bottom: 0;
-    right: 400px;
+    right: 370px;
     height: 50px;
     border-radius: 2px;
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.12);
@@ -1066,140 +1072,125 @@ export default {
         margin: 0 20px;
       }
     }
-    .divide {
-      width: 1px;
-      height: 100%;
-      background-color: #eeeeee;
-    }
   }
   .side-panel {
     display: flex;
     flex-direction: column;
     position: absolute;
-    right: 20px;
-    top: 100px;
-    // z-index: 100;
-    width: 420px;
-    // height: calc(100% - 8px);
-    height: calc(100% - 100px);
+    top: 0;
+    right: 0;
+    width: 350px;
+    height: 100%;
     background: white;
-    border: 1px solid $color-borderline;
-    border-radius: 4px;
-    padding: 24px;
-    // margin-right: 8px;
+    box-shadow: 0 0 5px 0 rgba(102, 102, 102, 0.08);
     @include auto-overflow();
     @include customScrollbar();
-    .node-option-nav-bar{
-      position: relative;
+    &.collapse {
+      height: initial;
+    }
+    .first-row {
       display: flex;
-      flex-direction: column;
-      height: 70px;
-      border-bottom: 2px solid $color-borderline;
-      .node-option-title{
-        font-size: 20px;
-        font-weight: 600;
-        line-height: 24px;
+      align-items: center;
+      background-color: #f7f7f7;
+      padding: 13px 0;
+      height: 50px;
+      box-shadow: inset 0 -1px 0 0 #e9e9e9;
+      .input-wrapper {
+        display: flex;
+        align-items: center;
+        flex: 1;
+        .scenario-name {
+          border: none;
+          background-color: #f7f7f7;
+          @include font-16px();
+          color: $color-font-active;
+          text-overflow: ellipsis;
+          flex: 1;
+        }
+        &:hover {
+          .visibility {
+            visibility: visible;
+          }
+        }
       }
-      .node-option-instruction{
-        font-size: 16px;
-        line-height: 16px;
-        margin: 10px 0px 0px 0px;
+      .icon {
+        margin: 0 10px;
       }
-      .side-panel-toggle{
-        position: absolute;
-        right: 10px;
-        top: 10px;
-        font-size: 36px;
-        font-weight: 600;
-        cursor: pointer;
+      .visibility {
+        visibility: hidden;
       }
     }
-    .node-options{
+    .second-row {
+      @include font-14px();
+      color: $color-font-active;
       display: flex;
-      flex: 1;
-      flex-direction: column;
-      margin: 20px 0px 0px 0px;
-      .node-option{
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      box-shadow: inset 0 -1px 0 0 #e9e9e9;
+      .group {
         display: flex;
-        flex: 1;
-        flex-direction: row;
         align-items: center;
-        min-height: 120px;
-        padding: 20px 40px 20px 40px;
+        span {
+          margin-right: 10px;
+        }
+        .export {
+          width: 64px;
+          height: 28px;
+          border: none;
+          outline: none;
+          cursor: pointer;
+        }
+      }
+    }
+    .third-row {
+      @include font-14px();
+      color: $color-font-normal;
+      padding: 10px 20px;
+      display: flex;
+      flex-flow: column;
+      align-items: center;
+      flex: 1;
+      .instruction {
+        margin: 10px 0;
+      }
+    }
+    .node-options {
+      flex: 1;
+      .node-option {
+        width: 310px;
+        height: 94px;
+        margin: 10px 0 20px;
+        display: flex;
+        align-items: center;
+        padding: 20px;
+        border-radius: 2px;
+        background-color: #fcfcfc;
+        border: #e9e9e9 solid 1px;
         cursor: move;
-        &.odd-option{
-          background: darken(#F7FBFC, 2%)
+        transition: all .2s ease-in-out;
+        &:hover {
+          box-shadow: 0 4px 9px 0 rgba(115, 115, 115, 0.2), 0 5px 8px 0 rgba(228, 228, 228, 0.5);
+          background-color: #ffffff;
         }
-        &:hover{
-          background: darken(#F7FBFC, 5%);
+        .node-icon {
+          width: 40px;
+          height: 60px;
         }
-        img{
-          width: 80px;
-          height: 80px;
-        }
-        .node-label{
+        .node-label {
           display: flex;
           flex-direction: column;
-          margin: 0px 0px 0px 20px;
-          .node-name{
-            font-size: 16px;
-            font-weight: 600;
-            color: #333333;
+          margin-left: 20px;
+          .node-name {
+            @include font-16px();
+            color: $color-font-active;
           }
-          .node-description{
-            font-size: 12px;
-            margin: 10px 0px 0px 0px;
+          .node-description {
+            @include font-14px();
+            color: $color-font-normal;
+            margin-top: 8px;
           }
         }
-      }
-    }
-  }
-  .top-panel{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    position: absolute;
-    left: 20px;
-    top: 20px;
-    min-width: 539px;
-    width: calc(100% - 40px);
-    height: 60px;
-    background: white;
-    box-shadow: 0 0 5px 0 rgba(102,102,102,0.08);
-    border-radius: 4px;
-    padding: 0px 20px;
-    .breadcrumb{
-      @include font-16px();
-      flex: 1 0 136px;
-      display: flex;
-      min-width: 0;
-      flex-direction: row;
-      align-items: center;
-      .back-to-list{
-        flex: 0 0 64px;
-        cursor: pointer;
-      }
-      .scenario-name{
-        flex: 0 1 auto;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-      }
-      .scenario-name-edit{
-        flex: 1 0 22px;
-      }
-      div{
-        margin-right: 10px;
-      }
-    }
-    .header-buttons {
-      flex: 0 0 363px;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      &>div {
-        margin-left: 10px;
       }
     }
   }
