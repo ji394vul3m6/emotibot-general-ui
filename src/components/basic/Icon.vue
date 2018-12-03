@@ -194,6 +194,11 @@ export default {
   @include iconType("publish");
   @include iconType("export");
   @include iconType("trash_can");
+  @include iconType("edit_pen_1");
+  @include iconType("collapse");
+  @include iconType("back_light");
+  @include iconType("expand_rect");
+  @include iconType("more_v");
   @include iconTypeHover("edit_pen");
   @include iconType("red_arrow");
 
