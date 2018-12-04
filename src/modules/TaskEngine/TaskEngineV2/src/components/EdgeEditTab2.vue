@@ -1,12 +1,12 @@
 <template>
 <div id="edge-edit-tab">
   <div class="title">
-    {{ this.$t('task_engine_v2.edge_edit_tab2.instruction')}}
+    {{ $t('task_engine_v2.edge_edit_tab2.instruction') }}
     <span class="instruction" v-t="'task_engine_v2.edge_edit_tab2.instruction_hint'"></span>
   </div>
   <draggable v-model="normalEdges" :options="{ghostClass:'ghost'}" @start="drag=true" @end="drag=false; emitUpdate();">
     <template v-for="(edge, index) in normalEdges">
-      <condition-block
+      <condition-action-block
         class="condition-block"
         ref="conditionBlock"
         :key="edge.id"
@@ -20,27 +20,27 @@
         @update="updateNormalEdge(index, $event)"
         @deleteEdge="deleteEdge(index)"
         @addNewDialogueNode="addNewDialogueNode">
-      </condition-block>
+      </condition-action-block>
     </template>
   </draggable>
   <button class="button-add-edge" @click="addEdge">
-    {{$t("task_engine_v2.edge_edit_tab2.button_add_edge")}}
+    {{ $t("task_engine_v2.edge_edit_tab2.button_add_edge") }}
   </button>
   <div class="title" v-t="'task_engine_v2.edge_edit_tab2.exception_handle'"></div>
   <div class="section">
     <div class="block" v-if="exceedThenGoto !== null">
       <div class="label">
-        {{$t("task_engine_v2.edge_edit_tab2.label_exceed_limit")}}
+        {{ $t("task_engine_v2.edge_edit_tab2.label_exceed_limit") }}
       </div>
       <div class="condition-row">
-        {{$t("task_engine_v2.edge_edit_tab2.instruction_exeed_limit")}}
+        {{ $t("task_engine_v2.edge_edit_tab2.instruction_exeed_limit")}}
         <input class="input-limit" ref="input-content" v-tooltip="tooltip" @focus="onInputFocus"
           oninput="this.value = this.value.replace(/^0$/g, ''); this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(^[0-9]{1,2}).*/g, '$1');"
           v-model="dialogueLimit"/>
-        {{$t("task_engine_v2.edge_edit_tab2.label_time")}}
-        {{$t("task_engine_v2.edge_edit_tab2.label_then_goto")}}
+        {{ $t("task_engine_v2.edge_edit_tab2.label_time") }}
+        {{ $t("task_engine_v2.edge_edit_tab2.label_then_goto") }}
         <dropdown-select
-          class="select select-goto"
+          class="select"
           ref="selectExceedThenGoto"
           :value="[exceedThenGoto]"
           @input="exceedThenGoto = $event[0]"
@@ -54,13 +54,13 @@
     </div>
     <div class="block">
       <div class="label">
-        {{$t("task_engine_v2.edge_edit_tab2.label_default_goto")}}
+        {{ $t("task_engine_v2.edge_edit_tab2.label_default_goto") }}
       </div>
       <div class="condition-row">
-        {{$t("task_engine_v2.edge_edit_tab2.instruction_default_goto")}}
-        {{$t("task_engine_v2.edge_edit_tab2.label_then_goto")}}
+        {{ $t("task_engine_v2.edge_edit_tab2.instruction_default_goto") }}
+        {{ $t("task_engine_v2.edge_edit_tab2.label_then_goto") }}
         <dropdown-select
-          class="select select-goto"
+          class="select"
           ref="selectElseThenGoto"
           :value="[elseInto]"
           @input="elseInto = $event[0]"
@@ -81,14 +81,14 @@ import event from '@/utils/js/event';
 import draggable from 'vuedraggable';
 import DropdownSelect from '@/components/DropdownSelect';
 import general from '@/modules/TaskEngine/_utils/general';
-import ConditionBlock from './ConditionBlock';
+import ConditionActionBlock from './ConditionActionBlock';
 import scenarioInitializer from '../_utils/scenarioInitializer';
 
 export default {
   components: {
     draggable,
-    'dropdown-select': DropdownSelect,
-    'condition-block': ConditionBlock,
+    DropdownSelect,
+    ConditionActionBlock,
   },
   props: {
     validateTab: {
