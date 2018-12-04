@@ -468,8 +468,6 @@ export default {
       this.scenarioName = this.moduleData.metadata.scenario_name;
       this.globalEdges = this.moduleData.global_edges;
       this.varTemplates = this.moduleData.msg_confirm;
-      this.jsCode = this.moduleData.js_code || {};
-      this.jsCodeAlias = this.jsCode.alias || [];
       this.setting = {
         scenarioName: this.moduleData.metadata.scenario_name,
         scenarioDialogueCntLimit: this.moduleData.setting.sys_scenario_dialogue_cnt_limit,
@@ -489,7 +487,21 @@ export default {
           data: node,
         };
       });
+      this.renderJsCode();
       this.renderGlobalVarOptionsMap();
+    },
+    renderJsCode() {
+      const jsCode = this.moduleData.js_code || {};
+      this.jsCodeAlias = jsCode.alias || [];
+      if (jsCode.text_type && jsCode.text_type === 'plain') {
+        this.jsCode = {
+          alias: jsCode.alias,
+          text_type: jsCode.text_type,
+          main: JSON.parse(jsCode.main),
+        };
+      } else {
+        this.jsCode = {};
+      }
     },
     renderGlobalVarOptionsMap() {
       this.globalVarOptionsMap = {};
@@ -524,6 +536,11 @@ export default {
       scenarioConvertor.generateWarnings(uiNodes, nodeInfo);
       // scenarioConvertor.addBackContentTextArray(this, nodes, this.globalEdges);
       // update data
+      const jsCode = {
+        alias: this.jsCode.alias,
+        text_type: this.jsCode.text_type,
+        main: JSON.stringify(this.jsCode.main),
+      };
       const data = {
         version: '1.1',
         metadata: {
@@ -542,7 +559,7 @@ export default {
         ui_data: {
           nodes: uiNodes,
         },
-        js_code: this.jsCode,
+        js_code: jsCode,
       };
       // update layout
       const layout = {};

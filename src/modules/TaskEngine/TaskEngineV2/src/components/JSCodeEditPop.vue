@@ -291,6 +291,7 @@
         const alias = this.callable.map(item => item.alias) || [];
         this.jsCode = {
           alias,
+          text_type: 'plain',
           main: {
             private: this.privateFun || '',
             callable,
