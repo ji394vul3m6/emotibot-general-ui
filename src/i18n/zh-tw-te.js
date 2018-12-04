@@ -199,6 +199,18 @@ export default {
       label_default_goto: '預設前往',
       instruction_default_goto: '當所有規則都無法符合時',
     },
+    edge_edit_tab2: {
+      instruction: '連線設定',
+      instruction_hint: '（通過連線鏈接此節點與其他節點）',
+      button_add_edge: '＋新增連線',
+      exception_handle: '異常情況處理',
+      label_exceed_limit: '超過輪次',
+      instruction_exeed_limit: '當此節點出話超過',
+      label_time: '次',
+      label_default_goto: '預設前往',
+      instruction_default_goto: '當所有規則都無法符合時',
+      label_then_goto: '，則前往',
+    },
     restful_setting_edit_tab: {
       restful_data_retrieve: 'RESTful數據調用',
       data_save_in_key: '數據存放變量（key）：',

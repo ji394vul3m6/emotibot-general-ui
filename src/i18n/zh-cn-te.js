@@ -199,6 +199,18 @@ export default {
       label_default_goto: '预设前往',
       instruction_default_goto: '当所有规则都无法符合时',
     },
+    edge_edit_tab2: {
+      instruction: '连线设定',
+      instruction_hint: '（通过连线链接此节点与其他节点）',
+      button_add_edge: '＋新增连线',
+      exception_handle: '异常情况处理',
+      label_exceed_limit: '超过轮次',
+      instruction_exeed_limit: '当此节点出话超过',
+      label_time: '次',
+      label_default_goto: '预设前往',
+      instruction_default_goto: '当所有规则都无法符合时',
+      label_then_goto: '，则前往',
+    },
     restful_setting_edit_tab: {
       restful_data_retrieve: 'RESTful数据调用',
       data_save_in_key: '数据存放变量（key）：',

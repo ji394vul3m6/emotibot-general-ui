@@ -9,7 +9,7 @@ export default {
     return {
       entry: ['settingBasicTab', 'triggerTab', 'edgeTab'],
       dialogue: ['settingTab', 'edgeTab'],
-      'dialogue_2.0': ['dialogue2SettingTab', 'edgeTab'],
+      'dialogue_2.0': ['dialogue2SettingTab', 'edgeTab2'],
       nlu_pc: ['settingBasicTab', 'entityCollectingTab', 'edgeTab'],
       restful: ['restfulSettingTab', 'restfulEdgeTab'],
       parameter_collecting: ['settingBasicTab', 'paramsCollectingTab', 'paramsCollectingEdgeTab'],

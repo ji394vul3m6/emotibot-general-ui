@@ -104,6 +104,17 @@
         @update="edgeTab = $event"
         @updateNewNodeOptions="updateNewNodeOptions"
       ></edge-edit-tab>
+      <edge-edit-tab2 ref="edgeTab2"
+        v-if="currentTab === 'edgeTab2'"
+        :edgeTab="edgeTab2"
+        :initialToNodeOptions="toNodeOptions"
+        :globalVarOptions="globalVarOptions"
+        :mapTableOptions="mapTableOptions"
+        :validateTab="validateTab"
+        @update:valid="valid = $event"
+        @update="edgeTab2 = $event"
+        @updateNewNodeOptions="updateNewNodeOptions"
+      ></edge-edit-tab2>
       <restful-setting-edit-tab ref="restfulSettingTab"
         v-if="currentTab === 'restfulSettingTab'"
         :initialRestfulSettingTab="restfulSettingTab"
@@ -134,6 +145,7 @@ import EntityCollectingEditTab from '@/modules/TaskEngine/TaskEngineV3/src/compo
 import TriggerEditTab from './TriggerEditTab';
 import SettingEditTab from './SettingEditTab';
 import EdgeEditTab from './EdgeEditTab';
+import EdgeEditTab2 from './EdgeEditTab2';
 import ParamsCollectingEditTab from './ParamsCollectingEditTab';
 import ParamsCollectingEdgeEditTab from './ParamsCollectingEdgeEditTab';
 import SettingBasicEditTab from './SettingBasicEditTab';
@@ -160,6 +172,7 @@ export default {
     'params-collecting-edit-tab': ParamsCollectingEditTab,
     'params-collecting-edge-edit-tab': ParamsCollectingEdgeEditTab,
     SettingEditTab2,
+    EdgeEditTab2,
   },
   props: {
     extData: {
@@ -193,6 +206,7 @@ export default {
     let restfulEdgeTab;
     let actionTab;
     let dialogue2SettingTab;
+    let edgeTab2;
     tabs.forEach((tab) => {
       if (tab === 'triggerTab') {
         triggerTab = node.triggerTab;
@@ -229,6 +243,15 @@ export default {
       } else if (tab === 'dialogue2SettingTab') {
         dialogue2SettingTab = node.dialogue2SettingTab;
         dialogue2SettingTab.nodeType = node.nodeType;
+      } else if (tab === 'edgeTab2') {
+        if (node.edgeTab === undefined) {
+          // only happen to old action node
+          // initial edgeTab to action node
+          node.edgeTab = scenarioInitializer.initialEdgeTab(nodeType);
+        }
+        edgeTab2 = node.edgeTab;
+        edgeTab2.nodeType = nodeType;
+        edgeTab2.nodeId = node.nodeId;
       }
     });
     const jsCodeAlias = this.extData.jsCodeAlias || [];
@@ -249,6 +272,7 @@ export default {
       paramsCollectingTab,
       paramsCollectingEdgeTab,
       edgeTab,
+      edgeTab2,
       restfulSettingTab,
       restfulEdgeTab,
       actionTab,
@@ -314,6 +338,11 @@ export default {
       },
     },
     edgeTab: {
+      handler() {
+        this.collectGlobalVarOptions();
+      },
+    },
+    edgeTab2: {
       handler() {
         this.collectGlobalVarOptions();
       },
@@ -412,6 +441,11 @@ export default {
           name: this.$t('task_engine_v2.node_edit_page.tabs.edge'),
           icon: 'setting',
         },
+        edgeTab2: {
+          type: 'edgeTab2',
+          name: this.$t('task_engine_v2.node_edit_page.tabs.edge'),
+          icon: 'setting',
+        },
         entityCollectingTab: {
           type: 'entityCollectingTab',
           name: this.$t('task_engine_v3.scenario_edit_page.tab.entity_collecting'),
@@ -473,6 +507,7 @@ export default {
         triggerTab: this.triggerTab,
         settingTab: this.settingTab,
         edgeTab: this.edgeTab,
+        edgeTab2: this.edgeTab2,
         entityCollectingTab: this.entityCollectingTab,
         settingBasicTab: this.settingBasicTab,
         restfulSettingTab: this.restfulSettingTab,
