@@ -127,6 +127,10 @@ export default {
       type: String,
       required: true,
     },
+    jsCodeAlias: {
+      type: Array,
+      default: () => [],
+    },
   },
   data() {
     return {
@@ -230,6 +234,7 @@ export default {
         validate: true,
         cancelValidate: true,
         extData: {
+          jsCodeAlias: this.jsCodeAlias,
           node: that.node,
           globalEdges: that.initialGlobalEdges,
           toNodeOptions: that.toNodeOptions,

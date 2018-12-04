@@ -246,6 +246,11 @@ export default {
   @include iconType("scenario_upload");
   @include iconType("te_help_video");
 
+  @include iconType("edit_pencil");
+  @include iconType("edit_pencil_hover");
+  @include iconType("edit_delete");
+  @include iconType("edit_delete_hover");
+
   // robot icon should a little bit larger than other icons
   .white_robot_icon {
     background-size: 25px 25px;

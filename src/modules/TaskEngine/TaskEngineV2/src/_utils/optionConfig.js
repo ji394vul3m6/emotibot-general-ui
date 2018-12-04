@@ -125,7 +125,7 @@ export default {
   getFuncOptionMap(context) {
     const textFuncs = [
       'match', 'contains', 'regular_exp', 'common_parser', 'task_parser',
-      'hotel_parser', 'user_custom_parser', 'polarity_parser', 'api_parser', 'qq', 'intent_parser', 'js_code',
+      'hotel_parser', 'user_custom_parser', 'polarity_parser', 'api_parser', 'qq', 'intent_parser',
     ];
     const globalIngoFuncs = [
       'key_val_match', 'key_key_match', 'contain_key', 'not_contain_key', 'list_length_match',

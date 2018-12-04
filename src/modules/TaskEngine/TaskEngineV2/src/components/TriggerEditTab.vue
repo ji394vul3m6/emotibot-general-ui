@@ -12,6 +12,7 @@
         :globalVarOptions="globalVarOptions"
         :mapTableOptions="mapTableOptions"
         :validateConditionBlock="validateTab"
+        :jsCodeAlias="jsCodeAlias"
         @update:valid="$set(rule, 'valid', $event); if ($event) {isAllConditionBlockValid()}"
         @update="updateRule(index, $event)"
         @deleteEdge="deleteRule(index)">
@@ -54,6 +55,10 @@ export default {
     mapTableOptions: {
       type: Array,
       required: true,
+    },
+    jsCodeAlias: {
+      type: Array,
+      default: () => [],
     },
   },
   data() {

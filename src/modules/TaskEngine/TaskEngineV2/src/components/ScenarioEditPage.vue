@@ -25,6 +25,7 @@
           :globalVarOptionsMap="globalVarOptionsMap"
           :linking="linking"
           :version="moduleData.version"
+          :jsCodeAlias="jsCodeAlias"
           @updatePosition="updateNodePosition(index, $event)"
           @savePosition="saveScenario()"
           @deleteNode="deleteNode(index)"
@@ -173,6 +174,9 @@ export default {
       enable: false,
       appId: undefined,
       scenarioId: undefined,
+      jsCode: {},
+      jsCodeAlias: [],
+      hadJsCode: true,
     };
   },
   computed: {
@@ -184,12 +188,15 @@ export default {
         }, {
           text: this.$t('task_engine_v2.scenario_edit_page.global_edge'),
           onclick: this.editGlobalEdge,
-        }, {
-          text: this.$t('task_engine_v2.scenario_edit_page.global_js_code'),
-          onclick: this.editJSCode,
         }],
         alignLeft: true,
       };
+      if (this.hadJsCode) {
+        options.options.push({
+          text: this.$t('task_engine_v2.scenario_edit_page.global_js_code'),
+          onclick: this.editJSCode,
+        });
+      }
       return options;
     },
     idToNodeBlock() {
@@ -437,6 +444,8 @@ export default {
       this.scenarioName = this.moduleData.metadata.scenario_name;
       this.globalEdges = this.moduleData.global_edges;
       this.varTemplates = this.moduleData.msg_confirm;
+      this.jsCode = this.moduleData.js_code || {};
+      this.jsCodeAlias = this.jsCode.alias || [];
       this.setting = {
         scenarioName: this.moduleData.metadata.scenario_name,
         scenarioDialogueCntLimit: this.moduleData.setting.sys_scenario_dialogue_cnt_limit,
@@ -509,6 +518,7 @@ export default {
         ui_data: {
           nodes: uiNodes,
         },
+        js_code: this.jsCode,
       };
       // update layout
       const layout = {};
@@ -521,7 +531,6 @@ export default {
           },
         };
       });
-      // console.log(JSON.stringify(data, general.JSONStringifyReplacer));
       return taskEngineApi.saveScenario(
         this.appId,
         this.scenarioId,
@@ -685,6 +694,7 @@ export default {
         validate: true,
         cancelValidate: true,
         extData: {
+          jsCodeAlias: this.jsCodeAlias,
           globalEdges: this.globalEdges,
           toNodeOptions: this.toNodeOptions,
           globalVarOptionsMap: this.globalVarOptionsMap,
@@ -701,19 +711,18 @@ export default {
     editJSCode() {
       const that = this;
       that.$pop({
-        title: '脚本设置',
+        // title: '',
         component: JSCodeEditPop,
         validate: true,
         cancelValidate: true,
         extData: {
-          // globalEdges: this.globalEdges,
-          // toNodeOptions: this.toNodeOptions,
-          // globalVarOptionsMap: this.globalVarOptionsMap,
+          title: this.$t('task_engine_v2.js_code_edit_pop.title'),
+          jsCode: this.jsCode,
         },
         callback: {
-          ok: () => {
-            // this.globalEdges = resultObj.edges;
-            // this.addTempNodes(this.nodeBlocks.length - 1, resultObj.newNodeOptions);
+          ok: (jsCode) => {
+            this.jsCodeAlias = jsCode.alias;
+            this.jsCode = jsCode;
             this.saveScenario();
           },
         },

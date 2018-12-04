@@ -71,17 +71,25 @@
               </div>
               <textarea 
                 class="name-label"
-                ref="scenarioName"
+                :ref="`scenarioName`"
                 v-focus
                 v-if="scenario.editScenarioName"
                 wrap="soft"
                 v-model.trim="scenario.oldScenarioName"
-                @blur="setScenarioName(scenario)"
-                @keyup.enter="setScenarioName(scenario)"
+                @blur="cancelEditScenarioName(scenario)"
+                @keyup.enter="setScenarioName(scenario, index)"
                 v-tooltip="scenarioNameTooltip">
               </textarea>
-              <div class="icon-box" v-show="scenario.show && !scenario.editScenarioName" @click="startEditScenarioName(scenario)">
-                <icon :size=12 icon-type="edit_pen" enableHover></icon>
+              <div class="icon-box" 
+                :ref="`editScenarioIcon_${index}`" 
+                v-show="scenario.show && !scenario.editScenarioName">
+                <icon 
+                  :size=12 
+                  icon-type="edit_pen" 
+                  @click="startEditScenarioName(scenario, index)"  
+                  v-tooltip="tipsEditScenario" 
+                  enableHover>
+                </icon>
               </div>
             </div>
             <toggle v-model="scenario.enable" @change="switchScenario(scenario)" :big="false"></toggle>
@@ -103,7 +111,7 @@
 <script>
 import taskEngineApi from '@/modules/TaskEngine/_api/taskEngine';
 import general from '@/modules/TaskEngine/_utils/general';
-// import event from '@/utils/js/event';
+import event from '@/utils/js/event';
 import CreateScenarioPop from './CreateScenarioPop';
 import scenarioInitializer from '../_utils/scenarioInitializer';
 import scenarioConvertor from '../_utils/scenarioConvertor';
@@ -116,6 +124,13 @@ export default {
       appId: '',
       scenarioList: [],
       filteredKeyWord: '',
+      tipsEditScenario: {
+        msg: this.$t('task_engine_v2.scenario_list_page.tips_edit_scenario_name'),
+        eventOnly: false,
+        clickShow: false,
+        // errorType: true,
+        alignLeft: true,
+      },
       scenarioNameTooltip: {
         msg: this.$t('task_engine_v2.scenario_settings_edit_pop.err_empty_scenario_name'),
         eventOnly: true,
@@ -267,7 +282,6 @@ export default {
       });
     },
     importScenarioJSON() {
-      console.log(this.$refs);
       this.$refs.uploadScenarioJSONInput.click();
     },
     changeScenarioJSONFile() {
@@ -301,38 +315,48 @@ export default {
       });
     },
     startEditScenarioName(scenario) {
-      scenario.editScenarioName = true;
+      const checkShow = this.filteredScenarioList.findIndex(item => item.editScenarioName === true);
+      if (checkShow === -1) {
+        scenario.editScenarioName = true;
+      } else {
+        this.$refs[`scenarioName_${checkShow}`].classList.add('error');
+      }
     },
     cancelEditScenarioName(scenario) {
+      this.$refs.scenarioName[0].dispatchEvent(event.createEvent('tooltip-hide'));
       scenario.editScenarioName = false;
       scenario.oldScenarioName = scenario.scenarioName;
     },
     setScenarioName(scenario) {
-      scenario.editScenarioName = false;
       scenario.oldScenarioName = scenario.oldScenarioName.replace(/[\r\n]/g, '');
-      if (scenario.oldScenarioName.trim() !== '' && scenario.oldScenarioName !== scenario.scenarioName) {
+      if (scenario.oldScenarioName.trim() === '') {
+        this.$refs.scenarioName[0].dispatchEvent(event.createEvent('tooltip-show'));
+      } else if (scenario.oldScenarioName.trim() !== '') {
+        this.$refs.scenarioName[0].dispatchEvent(event.createEvent('tooltip-hide'));
+        scenario.editScenarioName = false;
         scenario.scenarioName = scenario.oldScenarioName;
         const that = this;
-        taskEngineApi.loadScenario(scenario.scenarioID).then((data) => {
-          const moduleData = JSON.parse(data.result.editingContent);
-          const layout = JSON.parse(data.result.editingLayout);
-          console.log();
-          moduleData.metadata.scenario_name = scenario.scenarioName;
-          taskEngineApi.saveScenario(
-            that.appId,
-            scenario.scenarioID,
-            JSON.stringify(moduleData),
-            JSON.stringify(layout),
-          ).then(() => {
-            that.listAllScenarios();
+        if (scenario.oldScenarioName !== scenario.scenarioName) {
+          taskEngineApi.loadScenario(scenario.scenarioID).then((data) => {
+            const moduleData = JSON.parse(data.result.editingContent);
+            const layout = JSON.parse(data.result.editingLayout);
+            moduleData.metadata.scenario_name = scenario.scenarioName;
+            taskEngineApi.saveScenario(
+              that.appId,
+              scenario.scenarioID,
+              JSON.stringify(moduleData),
+              JSON.stringify(layout),
+            ).then(() => {
+              that.listAllScenarios();
+            }, (err) => {
+              that.$notifyFail(`${that.$t('task_engine_v2.scenario_list_page.create_new_scenario_failed')}:${err.message}`);
+            });
           }, (err) => {
-            that.$notifyFail(`${that.$t('task_engine_v2.scenario_list_page.create_new_scenario_failed')}:${err.message}`);
+            this.$popError('loadScenario error', err.message);
           });
-        }, (err) => {
-          this.$popError('loadScenario error', err.message);
-        });
+        }
+        scenario.oldScenarioName = scenario.scenarioName;
       }
-      scenario.oldScenarioName = scenario.scenarioName;
     },
   },
   beforeMount() {
@@ -418,8 +442,8 @@ $row-height: $default-line-height;
       .scenario-grid {
         display: flex;
         flex-direction: column;
-        flex: 0 0 360px;
-        max-width: 360px;
+        flex: 0 0 350px;
+        max-width: 350px;
         height: 164px;
         border-radius: 4px;
         border: 1px solid $color-borderline;
@@ -483,6 +507,7 @@ $row-height: $default-line-height;
             margin-right: 10px;
           }
           .txt-btn {
+            cursor: pointer;
             font-size: 14px;
             margin-right: 30px;
           }

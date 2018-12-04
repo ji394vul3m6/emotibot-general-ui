@@ -19,6 +19,7 @@
         :globalVarOptions="globalVarOptions"
         :mapTableOptions="mapTableOptions"
         :validateTab="validateTab"
+        :jsCodeAlias="jsCodeAlias"
         @update:valid="valid = $event"
         @update="triggerTab = $event"
       ></trigger-edit-tab>
@@ -78,6 +79,7 @@
         :globalVarOptions="globalVarOptions"
         :mapTableOptions="mapTableOptions"
         :validateTab="validateTab"
+        :jsCodeAlias="jsCodeAlias"
         @update:valid="valid = $event"
         @update="paramsCollectingEdgeTab = $event"
         @updateNewNodeOptions="updateNewNodeOptions"
@@ -89,6 +91,7 @@
         :globalVarOptions="globalVarOptions"
         :mapTableOptions="mapTableOptions"
         :validateTab="validateTab"
+        :jsCodeAlias="jsCodeAlias"
         @update:valid="valid = $event"
         @update="edgeTab = $event"
         @updateNewNodeOptions="updateNewNodeOptions"
@@ -214,6 +217,7 @@ export default {
         actionTab = node.actionTab;
       }
     });
+    const jsCodeAlias = this.extData.jsCodeAlias || [];
     return {
       currentTab: 'settingTab',
       originalNodeString,
@@ -240,6 +244,7 @@ export default {
       },
       validateTab: false,
       valid: false,
+      jsCodeAlias,
     };
   },
   computed: {
