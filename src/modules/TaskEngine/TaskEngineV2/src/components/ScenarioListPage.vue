@@ -65,7 +65,6 @@
         >
           <div class="scenario-title">
             <div class="name-box">
-            <!-- <div class="name-box" @click="editScenario(scenario.scenarioID)"> -->
               <div class="name-label" v-if="!scenario.editScenarioName" @click="editScenario(scenario.scenarioID)">
                 {{scenario.scenarioName}}
               </div>
@@ -92,7 +91,8 @@
                 </icon>
               </div>
             </div>
-            <toggle v-model="scenario.enable" @change="switchScenario(scenario)" :big="false"></toggle>
+            <!-- <toggle v-model="scenario.enable" @change="switchScenario(scenario)" :big="false"></toggle> -->
+            <toggle v-model="scenario.enable" @change="switchScenario(scenario)" size="small" :showLabel="true" :label="toggleLabel"></toggle>
           </div>
           <div class="scenario-content">
             <text-button class="txt-btn" :button-type="scenario.show ? 'primary' : 'default'" width='100px' height='38px' @click="editScenario(scenario.scenarioID)">
@@ -111,7 +111,7 @@
 <script>
 import taskEngineApi from '@/modules/TaskEngine/_api/taskEngine';
 import general from '@/modules/TaskEngine/_utils/general';
-import event from '@/utils/js/event';
+// import event from '@/utils/js/event';
 import CreateScenarioPop from './CreateScenarioPop';
 import scenarioInitializer from '../_utils/scenarioInitializer';
 import scenarioConvertor from '../_utils/scenarioConvertor';
@@ -136,6 +136,10 @@ export default {
         eventOnly: true,
         errorType: true,
         alignLeft: true,
+      },
+      toggleLabel: {
+        on: this.$t('task_engine_v2.scenario_edit_page.on'),
+        off: this.$t('task_engine_v2.scenario_edit_page.off'),
       },
     };
   },
@@ -323,40 +327,40 @@ export default {
       }
     },
     cancelEditScenarioName(scenario) {
-      this.$refs.scenarioName[0].dispatchEvent(event.createEvent('tooltip-hide'));
+      // this.$refs.scenarioName[0].dispatchEvent(event.createEvent('tooltip-hide'));
       scenario.editScenarioName = false;
       scenario.oldScenarioName = scenario.scenarioName;
     },
     setScenarioName(scenario) {
       scenario.oldScenarioName = scenario.oldScenarioName.replace(/[\r\n]/g, '');
-      if (scenario.oldScenarioName.trim() === '') {
-        this.$refs.scenarioName[0].dispatchEvent(event.createEvent('tooltip-show'));
-      } else if (scenario.oldScenarioName.trim() !== '') {
-        this.$refs.scenarioName[0].dispatchEvent(event.createEvent('tooltip-hide'));
-        scenario.editScenarioName = false;
+      // if (scenario.oldScenarioName.trim() === '') {
+      //   this.$refs.scenarioName[0].dispatchEvent(event.createEvent('tooltip-show'));
+      // } else if (scenario.oldScenarioName.trim() !== '') {
+      //   this.$refs.scenarioName[0].dispatchEvent(event.createEvent('tooltip-hide'));
+      scenario.editScenarioName = false;
+      if (scenario.oldScenarioName !== scenario.scenarioName) {
         scenario.scenarioName = scenario.oldScenarioName;
         const that = this;
-        if (scenario.oldScenarioName !== scenario.scenarioName) {
-          taskEngineApi.loadScenario(scenario.scenarioID).then((data) => {
-            const moduleData = JSON.parse(data.result.editingContent);
-            const layout = JSON.parse(data.result.editingLayout);
-            moduleData.metadata.scenario_name = scenario.scenarioName;
-            taskEngineApi.saveScenario(
-              that.appId,
-              scenario.scenarioID,
-              JSON.stringify(moduleData),
-              JSON.stringify(layout),
-            ).then(() => {
-              that.listAllScenarios();
-            }, (err) => {
-              that.$notifyFail(`${that.$t('task_engine_v2.scenario_list_page.create_new_scenario_failed')}:${err.message}`);
-            });
+        taskEngineApi.loadScenario(scenario.scenarioID).then((data) => {
+          const moduleData = JSON.parse(data.result.editingContent);
+          const layout = JSON.parse(data.result.editingLayout);
+          moduleData.metadata.scenario_name = scenario.scenarioName;
+          taskEngineApi.saveScenario(
+            that.appId,
+            scenario.scenarioID,
+            JSON.stringify(moduleData),
+            JSON.stringify(layout),
+          ).then(() => {
+            that.listAllScenarios();
           }, (err) => {
-            this.$popError('loadScenario error', err.message);
+            that.$notifyFail(`${that.$t('task_engine_v2.scenario_list_page.create_new_scenario_failed')}:${err.message}`);
           });
-        }
-        scenario.oldScenarioName = scenario.scenarioName;
+        }, (err) => {
+          this.$popError('loadScenario error', err.message);
+        });
       }
+      scenario.oldScenarioName = scenario.scenarioName;
+      // }
     },
   },
   beforeMount() {
@@ -482,10 +486,12 @@ $row-height: $default-line-height;
             white-space: nowrap;
             text-overflow: ellipsis;
             font-size: 16px;
+            padding: 2px;
+            box-sizing: border-box;
             @include click-button();
           }
           textarea.name-label {
-            padding: 4px;
+            padding: 0px 2px;
             white-space: inherit;
             line-height: 25px;
             max-height: 50px;

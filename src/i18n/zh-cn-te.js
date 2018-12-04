@@ -50,11 +50,11 @@ export default {
       setting: '设置',
       global_var_template: '变量模版',
       global_edge: '通用连线',
+      scenario_info: '场景信息',
       global_js_code: '脚本设置',
       export: '导出',
       publish: '发布',
-      add_node: '新增节点',
-      add_node_instruction: '拖拉下方的节点至场景中',
+      add_node_instruction: '您可以将以下场景节点长按拖至左侧任务板',
       new_edge_exceed_then_goto: '当出话超过上限',
       new_edge_else_into: '当所有规则都无法符合时',
       new_edge_normal: '自定义',
@@ -64,6 +64,10 @@ export default {
       new_edge_pc_fail: '连续解析失败超过上限',
       back_to_scenario_list: '返回',
       advanced_config: '更多操作',
+      switch: '开关',
+      on: '开',
+      off: '关',
+      more: '更多',
     },
     node_edit_page: {
       tabs: {
@@ -83,6 +87,13 @@ export default {
       default_node_dialogue_cnt_limit: '预设节点对话数',
       err_empty_default_node_dialogue_cnt_limit: '预设节点对话数不可为空',
       confirm_to_save_changes: '场景基本设置已被更动，请问是否需要保存？',
+    },
+    scenario_info: {
+      scenario_dialogue_cnt_limit: '全场景对话数',
+      default_node_dialogue_cnt_limit: '预设节点对话数',
+      robot_id: '机器人ID',
+      scenario_id: '场景ID',
+      scenario_last_update_time: '场景最后修改时间',
     },
     var_template_edit_pop: {
       instruction: '为每个变量设定显示模版',
