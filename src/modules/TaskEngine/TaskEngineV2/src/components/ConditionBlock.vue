@@ -176,7 +176,7 @@
             </div>
             <dropdown-select
               class="select"
-              :value="[rule.content || jsCodeOptions[0].text]"
+              :value="[rule.content = rule.content || jsCodeOptions[0].text]"
               @input="onSelectContentInput(index, $event)"
               :options="jsCodeOptions"
               :showCheckedIcon="false"
