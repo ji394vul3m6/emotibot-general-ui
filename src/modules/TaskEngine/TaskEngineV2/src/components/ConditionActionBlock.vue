@@ -1,5 +1,5 @@
-<template lang="html">
-<div id="condition-block">
+<template>
+<div class="condition-block">
   <div
     class="button-delete-condition"
     v-if="edgeType!=='pc_succeed' && edgeType!=='pc_failed' && edgeType!=='virtual_global_edges'">
@@ -56,7 +56,7 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_content")}}
             </div>
-            <input ref="input-content" class="input-content" v-model="rule.content" v-tooltip="inputTooltip" @focus="onInputFocus"></input>
+            <input ref="input-content" class="input-content" v-model="rule.content" v-tooltip="inputTooltip" @focus="onInputFocus"/>
           </div>
         </div>
         <!-- 正则表示式 -->
@@ -65,9 +65,10 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_pattern")}}
             </div>
-            <input ref="input-content" class="input-content" v-model="rule.content.pattern" v-tooltip="inputTooltip" @focus="onInputFocus"></input>
+            <input ref="input-content" class="input-content" v-model="rule.content.pattern" v-tooltip="inputTooltip" @focus="onInputFocus"/>
           </div>
           <template v-for="(operation, idx) in rule.content.operations">
+            <div :key="idx">
             <div class="row">
               <div class="label label-start">
                 {{$t("task_engine_v2.condition_block.label_nth_match")}}
@@ -75,8 +76,7 @@
               <input class="input-content" ref="input-content" v-tooltip="inputTooltip"
                 oninput="this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(^[0-9]{1,2}).*/g, '$1');"
                 v-model.number="operation.index"
-                @focus="onInputFocus">
-              </input>
+                @focus="onInputFocus"/>
               <button
                 v-if="idx === 0"
                 class="button"
@@ -96,7 +96,8 @@
               <div class="label label-start">
                 {{$t("task_engine_v2.condition_block.label_target_key")}}
               </div>
-              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="operation.key" @focus="onInputFocus"></input>
+              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="operation.key" @focus="onInputFocus"/>
+            </div>
             </div>
           </template>
         </div>
@@ -147,7 +148,7 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_target_key")}}
             </div>
-            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.to_key" @focus="onInputFocus"></input>
+            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.to_key" @focus="onInputFocus"/>
           </div>
         </div>
         <!-- 是否判断解析器 -->
@@ -156,7 +157,7 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_target_key")}}
             </div>
-            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.key" @focus="onInputFocus"></input>
+            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.key" @focus="onInputFocus"/>
           </div>
         </div>
         <!-- Web API 调用 -->
@@ -165,7 +166,7 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_link")}}
             </div>
-            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content" @focus="onInputFocus"></input>
+            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content" @focus="onInputFocus"/>
           </div>
         </div>
         <!-- Intent -->
@@ -257,7 +258,7 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_key")}}
             </div>
-            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key2" @focus="onInputFocus"></input>
+            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key2" @focus="onInputFocus"/>
           </div>
         </div>
         <!-- 包含键 -->
@@ -314,8 +315,7 @@
             <input class="input-content" ref="input-content" v-tooltip="inputTooltip"
               oninput="this.value = this.value.replace(/[^0-9]/g, '');"
               v-model="rule.content[0].val"
-              @focus="onInputFocus">
-            </input>
+              @focus="onInputFocus"/>
           </div>
         </div>
         <!-- 轮次检查 -->
@@ -365,7 +365,7 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_target_key")}}
             </div>
-            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.to_key" @focus="onInputFocus"></input>
+            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.to_key" @focus="onInputFocus"/>
           </div>
         </div>
         <!-- 正则表示式 -->
@@ -374,7 +374,7 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_pattern")}}
             </div>
-            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.pattern" @focus="onInputFocus"></input>
+            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.pattern" @focus="onInputFocus"/>
           </div>
           <div class="row">
             <div class="label label-start">
@@ -385,7 +385,7 @@
             </div>
           </div>
           <template v-for="(operation, idx) in rule.content.operations">
-            <div>
+            <div :key="idx">
               <div class="row">
                 <div class="label label-start">
                   {{$t("task_engine_v2.condition_block.label_nth_match")}}
@@ -433,7 +433,7 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_value")}}
             </div>
-            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].val" @focus="onInputFocus"></input>
+            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].val" @focus="onInputFocus"/>
           </div>
         </div>
         <!-- 删除键 -->
@@ -471,7 +471,7 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_content")}}
             </div>
-            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content" @focus="onInputFocus"></input>
+            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content" @focus="onInputFocus"/>
           </div>
         </div>
       </div>
@@ -526,14 +526,15 @@
         <div class="label label-start">
           {{$t("task_engine_v2.condition_block.label_similarity_threshold")}}
         </div>
-        <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="threshold" @focus="onInputFocus"></input>
+        <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="threshold" @focus="onInputFocus"/>
       </div>
       <template v-for="(edge, index) in candidateEdges">
+        <div :key="index">
         <div class="row">
           <div class="label label-start">
             {{$t("task_engine_v2.condition_block.label_sentence")}}
           </div>
-          <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="edge.tar_text" @focus="onInputFocus"></input>
+          <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="edge.tar_text" @focus="onInputFocus"/>
           <button
             v-if="index===0"
             class="button"
@@ -565,6 +566,7 @@
             width="200px"
             :inputBarStyle="selectStyle"
           />
+        </div>
         </div>
       </template>
     </div>
@@ -604,7 +606,7 @@
       <div class="label label-margin-left">
         {{$t("task_engine_v2.params_collecting_edge_tab.failed_description")}}
       </div>
-      <input ref="input-content" v-tooltip="inputTooltip" class="input-limit" v-model="dialogueLimit" @focus="onInputFocus"></input>
+      <input ref="input-content" v-tooltip="inputTooltip" class="input-limit" v-model="dialogueLimit" @focus="onInputFocus"/>
       <div class="label">
         {{$t("task_engine_v2.edge_edit_tab.label_time")}}
       </div>
@@ -1096,9 +1098,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'styles/variable.scss';
-
-#condition-block{
+.condition-block{
   position: relative;
   display: flex;
   flex-direction: column;
