@@ -23,7 +23,7 @@
             ref="start"
             :disabled="{to: earliestDate, from: latestDate}"
           ></date-picker>
-          &nbsp;～&nbsp; 
+          &nbsp;～&nbsp;
           <date-picker
             v-model="endDate"
             :readonly="false"
@@ -42,7 +42,8 @@
           :height=200
           :handler="chartHandler"
           :keyMap="currentKeyMap"
-          :name-key="currentNameKey"></chart>
+          :name-key="currentNameKey"
+          :dayRangeType="dayRange"></chart>
       </div>
       <div class="table-container">
         <general-table

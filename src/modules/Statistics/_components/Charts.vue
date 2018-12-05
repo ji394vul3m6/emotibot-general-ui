@@ -43,6 +43,10 @@ export default {
       type: Number,
       default: 150,
     },
+    dayRangeType: {
+      type: Number,
+      default: 1,
+    },
   },
   data() {
     return {
@@ -64,6 +68,7 @@ export default {
           showKeys.push(keyMaps[key]);
         });
       }
+      const rightPad = (this.dayRangeType === -1) ? 60 : 20;
       let options = {};
       if (this.type === 'line') {
         options = {
@@ -84,7 +89,7 @@ export default {
           },
           padding: {
             left: 50,
-            right: 30,
+            right: rightPad,
           },
         };
       } else if (this.type === 'bar') {
@@ -101,6 +106,10 @@ export default {
             x: {
               type: 'category',
             },
+          },
+          padding: {
+            left: 50,
+            right: rightPad,
           },
         };
       }
