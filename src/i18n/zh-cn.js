@@ -783,6 +783,7 @@ export default {
       notify: {
         add_intent_success: '新增意图成功',
         add_intent_fail: '新增意图失败',
+        delete_intent_success: '删除意图成功',
         delete_intent_fail: '删除意图失败',
         update_intent_success: '编辑意图成功',
         update_intent_fail: '编辑意图失败',
