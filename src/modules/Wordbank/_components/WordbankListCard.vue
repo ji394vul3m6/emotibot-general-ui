@@ -13,19 +13,19 @@
       <div id="toolbar">
         <text-button v-if="canCreate" button-type="primary" @click="popAddWordbank">{{ $t('wordbank.add_wordbank') }}</text-button>
         <text-button
-          v-if="canDelete" 
+          v-if="canDelete"
           @click="deleteMultiWordbank"
           :button-type="this.checkedWordbank.length === 0 ? 'disable' : 'error'">
           {{ $t('wordbank.delete') }}
         </text-button>
         <text-button
-          v-if="canEdit" 
+          v-if="canEdit"
           @click="popMoveToCategory"
           :button-type="this.checkedWordbank.length === 0 ? 'disable' : 'default'">
           {{ $t('wordbank.moveto') }}
         </text-button>
       </div>
-      <general-table id="content-table" 
+      <general-table id="content-table"
         :tableHeader="tableHeader" :tableData="tableData" :action="tableAction"
         @checkedChange="handleCheckedChange" checkbox
         showEmpty></general-table>
@@ -369,6 +369,7 @@ export default {
                 });
               } else {
                 this.$notify({ text: this.$t('robot_command.movetopop.move_command_success') });
+                this.checkedWordbank = [];
               }
               response.forEach((rsp) => {
                 if (rsp.status === 'success') {
