@@ -1,11 +1,11 @@
 <template>
 <div class="condition-action-block">
   <div class="header">
-    <button class="add" @click="toggleAddCondition = !toggleAddCondition" v-dropdown="sourceDropdown">
+    <button class="add" @click="toggleAddCondition = !toggleAddCondition" v-dropdown="sourceDropdown" @blur="toggleAddCondition = !toggleAddCondition">
       {{ $t('task_engine_v2.condition_action_block.add_condition')}}
       <img class="arrow" :class="{rotate180: toggleAddCondition}" src="@/assets/icons/expand_blue_icon.svg"/>
     </button>
-    <button class="add" @click="toggleAddAction = !toggleAddAction" v-dropdown="actionDropdown">
+    <button class="add" @click="toggleAddAction = !toggleAddAction" v-dropdown="actionDropdown" @blur="toggleAddAction = !toggleAddAction">
       {{ $t('task_engine_v2.condition_action_block.add_action')}}
       <img class="arrow" :class="{rotate180: toggleAddAction}" src="@/assets/icons/expand_blue_icon.svg"/>
     </button>
@@ -513,6 +513,7 @@ export default {
       ...option,
       onclick: () => {
         this.addRule(option.value);
+        this.toggleAddCondition = false;
       },
     }));
     const sourceDropdown = {
@@ -525,6 +526,7 @@ export default {
       ...option,
       onclick: () => {
         this.addAction(option.value);
+        this.toggleAddAction = false;
       },
     }));
     const actionDropdown = {
