@@ -26,7 +26,7 @@ function deleteEnterprise(id) {
   .then(() => result);
 }
 
-function addEnterprise(info) {
+function addEnterprise(info, enableIM) {
   // basic check of input parameter
   if (!info.name || !info.modules || !info.admin) {
     return new Promise((_, reject) => {
@@ -53,12 +53,14 @@ function addEnterprise(info) {
       return {};
     })
     .then((admin) => {
-      this.$reqPost(IM_ENTERPRISE_URL, {
-        username: info.admin.account,
-        ent_code: enterprise.id,
-        display_name: info.admin.account,
-        user_type: 1,
-      });
+      if (enableIM) {
+        this.$reqPost(IM_ENTERPRISE_URL, {
+          username: info.admin.account,
+          ent_code: enterprise.id,
+          display_name: info.admin.account,
+          user_type: 1,
+        });
+      }
       return this.$reqPostForm(BF2_USER_URL, {
         id: admin.id,
         account: info.admin.account,

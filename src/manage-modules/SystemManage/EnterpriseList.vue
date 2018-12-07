@@ -197,8 +197,12 @@ export default {
     },
     addEnterprise(data) {
       const that = this;
+      let imEnable = false;
       that.$emit('startLoading');
-      that.$api.addEnterprise(data)
+      that.$api.getEnv().then((rspData) => {
+        imEnable = !(rspData.IM_ENABLE === '1' || rspData.IM_ENABLE === 'true');
+      })
+      .then(() => that.$api.addEnterprise(data, !imEnable))
       .then(() => that.reloadEnterprise())
       .catch((err) => {
         window.logerr = err;

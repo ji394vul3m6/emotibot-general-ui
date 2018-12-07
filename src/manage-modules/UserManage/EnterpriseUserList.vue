@@ -296,8 +296,13 @@ export default {
         },
         callback: {
           ok(retData) {
+            let imEnable = false;
             retData.type = userType;
-            that.$api.addEnterpriseUser(that.enterpriseID, retData).then(() => {
+            that.$api.getEnv().then((rspData) => {
+              imEnable = !(rspData.IM_ENABLE === '1' || rspData.IM_ENABLE === 'true');
+            })
+            .then(() => that.$api.addEnterpriseUser(that.enterpriseID, retData, imEnable))
+            .then(() => {
               that.$notify({ text: that.$t('management.add_user_success') });
               that.loadUsers();
             });
