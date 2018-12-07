@@ -369,6 +369,7 @@ export default {
                 });
               } else {
                 this.$notify({ text: this.$t('wordbank.success.moved') });
+                this.checkedWordbank = [];
               }
               response.forEach((rsp) => {
                 if (rsp.status === 'success') {
