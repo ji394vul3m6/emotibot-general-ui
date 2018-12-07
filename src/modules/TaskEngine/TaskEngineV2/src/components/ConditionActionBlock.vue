@@ -13,7 +13,7 @@
       {{ $t('task_engine_v2.condition_action_block.to') }}
       {{ $t('task_engine_v2.condition_action_block.colon') }}
       <div class="to-node">{{ toNodeText }}</div>
-      {{ $t('task_engine_v2.condition_action_block.condition_action', { condition: andRules.length, action: actions.length + 1}) }}
+      {{ $t('task_engine_v2.condition_action_block.condition_action', { condition: rules.length, action: actions.length + 1}) }}
     </span>
     <button 
       class="delete"
@@ -27,7 +27,7 @@
   </div>
   <template v-if="showConditionsAndActions">
     <!-- 条件设置 -->
-    <div class="normal-edge" v-if="(edgeType==='normal' || edgeType==='trigger' || edgeType==='normal_2.0') && andRules.length">
+    <div class="normal-edge" v-if="(edgeType==='normal' || edgeType==='trigger' || edgeType==='normal_2.0') && rules.length">
       <div class="title" v-t="'task_engine_v2.condition_action_block.condition_setup'"></div>
       <div class="dropdown-select-container">
         {{ $t('task_engine_v2.condition_action_block.match') }}
@@ -42,7 +42,7 @@
           </dropdown-select>
         {{ $t('task_engine_v2.condition_action_block.below_conditions')}}
       </div>
-      <template v-for="(rule, index) in andRules">
+      <template v-for="(rule, index) in rules">
         <div :key="rule.id" class="block">
           <div class="row">
             <span class="label" v-if="index === 0" v-t="'task_engine_v2.condition_action_block.if'"></span>
@@ -543,7 +543,7 @@ export default {
     const cuParserOptions = optionConfig.getCuParserOptions(this);
     let threshold;
     let candidateEdges;
-    let andRules;
+    let rules;
     let toNode;
     let actions;
     if (edgeType === 'qq') {
@@ -552,7 +552,7 @@ export default {
       candidateEdges = obj.candidateEdges;
     } else {
       const obj = this.renderNormalEdge(edge);
-      andRules = obj.andRules;
+      rules = obj.rules;
       toNode = obj.toNode;
       actions = obj.actions;
     }
@@ -563,7 +563,7 @@ export default {
     return {
       edge,
       edgeType,
-      andRules,
+      rules,
       actions,
       toNode,
       selectStyle: {
@@ -588,10 +588,6 @@ export default {
         alignLeft: true,
         absolute: true,
       },
-      intentDropdown: {
-        width: '450px',
-        options: [],
-      },
       toggleAddCondition: false,
       toggleAddAction: false,
       showConditionsAndActions: true,
@@ -611,7 +607,7 @@ export default {
     },
   },
   watch: {
-    andRules: {
+    rules: {
       handler() {
         this.emitUpdate();
       },
@@ -692,9 +688,9 @@ export default {
     renderNormalEdge(edge) {
       // render andRules
       const rules = edge.condition_rules || [];
-      let andRules;
+      let mappedRules;
       if (rules.length > 0) {
-        andRules = rules[0].map((rule) => {
+        mappedRules = rules[0].map((rule) => {
           if (rule.source && rule.functions && rule.functions.length > 0) {
             return {
               id: this.$uuid.v1(),
@@ -720,7 +716,7 @@ export default {
       }));
       // render toNode
       const toNode = edge.to_node_id;
-      return { andRules, toNode, actions };
+      return { rules: mappedRules, toNode, actions };
     },
     deleteEdge() {
       this.$emit('deleteEdge');
@@ -728,7 +724,7 @@ export default {
     addRule(source = 'text') {
       this.edge.valid = false;
       const rule = scenarioInitializer.initialRule(source);
-      this.andRules.push({
+      this.rules.push({
         id: this.$uuid.v1(),
         source: rule.source,
         funcName: rule.functions[0].function_name,
@@ -748,7 +744,7 @@ export default {
     },
     deleteRule(index) {
       this.edge.valid = false;
-      this.andRules.splice(index, 1);
+      this.rules.splice(index, 1);
     },
     deleteAction(index) {
       this.edge.valid = false;
@@ -756,10 +752,10 @@ export default {
     },
     addRegTargetKey(index) {
       const operation = scenarioInitializer.initialRegularOperation();
-      this.andRules[index].content.operations.push(operation);
+      this.rules[index].content.operations.push(operation);
     },
     deleteRegTargetKey(index, idx) {
-      this.andRules[index].content.operations.splice(idx, 1);
+      this.rules[index].content.operations.splice(idx, 1);
     },
     addQQCandidateEdge() {
       this.candidateEdges.push(scenarioInitializer.initialCandidateEdge());
@@ -773,15 +769,15 @@ export default {
       if (this.edgeType === 'qq') {
         this.edgeType = 'normal';
         this.toNode = null;
-        this.andRules = [{
+        this.rules = [{
           id: this.$uuid.v1(),
           source: newSource,
           funcName: options[0].value,
           content: scenarioInitializer.initialFunctionContentV2(options[0].value, this.nodeId),
         }];
       } else {
-        if (this.andRules[index].source === newSource) return;
-        this.andRules[index].source = newSource;
+        if (this.rules[index].source === newSource) return;
+        this.rules[index].source = newSource;
         const selectFunctionRef = `selectFunction_${index}`;
         if (this.$refs[selectFunctionRef]) {
           this.$refs[selectFunctionRef][0].$emit('updateOptions', options);
@@ -839,19 +835,19 @@ export default {
       if (originalEdgeType === 'qq') {
         this.edgeType = 'normal';
         this.toNode = null;
-        this.andRules = [{
+        this.rules = [{
           id: this.$uuid.v1(),
           source: 'text',
           funcName: newFuncName,
           content: {},
         }];
       } else {  // originalEdgeType === 'normal'
-        if (this.andRules[index].funcName === newFuncName) return;
-        this.andRules[index].funcName = newFuncName;
+        if (this.rules[index].funcName === newFuncName) return;
+        this.rules[index].funcName = newFuncName;
       }
       // initial content
       const content = scenarioInitializer.initialFunctionContentV2(newFuncName, this.nodeId);
-      this.andRules[index].content = content;
+      this.rules[index].content = content;
 
       // update parser options
       if (newFuncName === 'common_parser' ||
@@ -868,13 +864,13 @@ export default {
       }
     },
     onSelectTargetEntity(index, newValue) {
-      this.andRules[index].content.tags = newValue.join(',');
+      this.rules[index].content.tags = newValue.join(',');
       // this.emitUpdate();
     },
     onSelectMapTableInput(index, newValue) {
       const newMapTable = newValue[0];
-      if (this.andRules[index].content.trans === newMapTable) return;
-      this.andRules[index].content.trans = newMapTable;
+      if (this.rules[index].content.trans === newMapTable) return;
+      this.rules[index].content.trans = newMapTable;
       // this.emitUpdate();
     },
     insertVarDropdown(id, obj, key) {
@@ -943,7 +939,7 @@ export default {
           edge_type: this.edgeType,
           to_node_id: this.toNode,
           actions: [],
-          condition_rules: [this.andRules.map(rule => ({
+          condition_rules: [this.rules.map(rule => ({
             source: rule.source,
             functions: [{
               function_name: rule.funcName,
@@ -983,24 +979,6 @@ export default {
         this.candidateEdges[index].to_node_id = toNode;
       }
     },
-    renderIntentDropdown(index) {
-      const options = this.intentDropdown.options.map((option) => {
-        const onclick = () => {
-          this.andRules[index].content = {
-            module: 'intent_engine_2.0',
-            intentName: option.name,
-          };
-        };
-        return {
-          ...option,
-          onclick,
-        };
-      });
-      return {
-        ...this.intentDropdown,
-        options,
-      };
-    },
   },
   mounted() {
     this.$api.getIntentsDetail().then((intents) => {
@@ -1011,10 +989,6 @@ export default {
           module: 'intent_engine_2.0',
           intentName: intent.name,
         },
-      }));
-      this.intentDropdown.options = intents.map(intent => ({
-        ...intent,
-        text: intent.name,
       }));
     });
   },
