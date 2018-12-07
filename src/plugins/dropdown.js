@@ -80,7 +80,6 @@ const MyPlugin = {
           el.addEventListener('dropdown-hide', () => {
             el.dispatchEvent(new Event('dropdownHidden'));
             vm.$emit('hide');
-            that.removeEventListeners(vm, el, binding.value.alignLeft);
           });
 
           el.addEventListener('click', () => {
