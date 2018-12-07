@@ -22,10 +22,10 @@
           </div>
           <div v-else class="intent-action-tool">
             <div v-if="intent.isHover || intent.expand" class="intent-action-icon" :ref="`${idx}_intentAction`" @click.stop="showDropdown(intent, idx)" v-dropdown="intentActionDropdown">
-              <icon icon-type="more_blue" :size="24"></icon> 
+              <icon icon-type="more_blue" :size="24"></icon>
             </div>
             <div v-if="intent.expand" class="intent-action-icon close" @click.stop="closeExpandIntent(intent, idx)">
-              <icon icon-type="close_expand" :size="18"></icon> 
+              <icon icon-type="close_expand" :size="18"></icon>
             </div>
           </div>
         </div>
@@ -34,7 +34,7 @@
       <div v-if="intent.expand">
         <div class="intent-block-content">
           <div class="corpus-tools">
-            <label-switch 
+            <label-switch
               :options="corpusTypeOption"
               v-model="intent.viewCorpusType"
               @change="changeCorpusViewType($event, intent)"/>
@@ -67,7 +67,7 @@
                 <input v-if="corpus.isEdit" type="text" v-model="editCorpusContent"
                   ref="editCorpus"
                   v-tooltip="editCorpusTooltip"
-                  :placeholder="$t('intent_engine.manage.placeholder.edit_corpus')" 
+                  :placeholder="$t('intent_engine.manage.placeholder.edit_corpus')"
                   @compositionstart="setCompositionState(true)"
                   @compositionend="setCompositionState(false)"
                   @keydown.enter="detectCompositionState"
@@ -83,8 +83,8 @@
                 <div class="corpus-action-delete" @click="deleteCorpus(intent, corpus)">{{ $t('general.delete')}}</div>
               </div>
             </div>
-          </div> 
-        </div> 
+          </div>
+        </div>
         <div v-if="getCurTotal(intent) > LIST_PAGE_SIZE" class="intent-block-footer">
           <v-pagination size="small" :total="getCurTotal(intent)" :pageIndex="intent.curPage" :pageSize="LIST_PAGE_SIZE" :layout="['prev', 'pager', 'next', 'jumper']" @page-change="handlePageChange($event, intent)"></v-pagination>
         </div>
@@ -113,7 +113,7 @@
       </div>
       <div class="intent-block-content">
         <div class="corpus-tools">
-          <label-switch 
+          <label-switch
             :options="corpusTypeOption"
             v-model="newIntent.viewCorpusType"
             @change="changeCorpusViewType($event, newIntent)"/>
@@ -145,7 +145,7 @@
             <div class="corpus">
               <input v-if="corpus.isEdit" type="text" v-model="editCorpusContent"
                 ref="editCorpus"
-                :placeholder="$t('intent_engine.manage.placeholder.edit_corpus')" 
+                :placeholder="$t('intent_engine.manage.placeholder.edit_corpus')"
                 @compositionstart="setCompositionState(true)"
                 @compositionend="setCompositionState(false)"
                 @keydown.enter="detectCompositionState"
@@ -400,6 +400,7 @@ export default {
       that.$api.deleteIntent(intent.id)
       .then(() => {
         that.$emit('deleteIntentDone');
+        that.$notify({ text: that.$t('intent_engine.manage.notify.delete_intent_success') });
       })
       .catch((err) => {
         console.log(err);
@@ -900,7 +901,7 @@ export default {
     }
     .intent-content-enter-to, .intent-content-leave {
       max-height: 1000px;
-      
+
     }
 
     .intent-block-header {
@@ -1037,7 +1038,7 @@ export default {
       align-items: center;
       justify-content: flex-end;
       padding-right: 12px;
-    }  
+    }
   }
 }
 </style>
