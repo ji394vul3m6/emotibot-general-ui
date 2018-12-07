@@ -341,7 +341,7 @@ export default {
         not_contain_key: '不包含鍵',
         list_length_match: '序列長度匹配',
         counter_check: '輪次檢查',
-        user_custom_transform: '轉換數據',
+        user_custom_transform: '數據轉換解析匹配',
         regular_exp_from_var: '正則表達式匹配',
         assign_value: '賦值',
         remove_key: '刪除鍵',

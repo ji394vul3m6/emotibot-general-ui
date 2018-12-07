@@ -236,7 +236,7 @@ export default {
     ];
     const globalIngoFuncs = [
       'key_val_match', 'key_key_match', 'contain_key', 'not_contain_key', 'list_length_match',
-      'counter_check', 'user_custom_parser', 'regular_exp_from_var',
+      'counter_check', 'user_custom_transform', 'regular_exp_from_var',
     ];
     return {
       text: textFuncs.map((func) => {

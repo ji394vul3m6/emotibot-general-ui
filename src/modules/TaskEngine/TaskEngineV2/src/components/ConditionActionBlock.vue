@@ -75,39 +75,6 @@
           <div class="row" v-if="rule.funcName === 'regular_exp'">
             <span class="label" v-t="'task_engine_v2.condition_action_block.label_pattern'"></span>
             <input ref="input-content" class="input-content" v-model="rule.content.pattern" v-tooltip="inputTooltip" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus"/>
-            <!-- <template v-for="(operation, idx) in rule.content.operations">
-              <div :key="idx">
-                <div class="row">
-                  <div class="label label-start">
-                    {{$t("task_engine_v2.condition_block.label_nth_match")}}
-                  </div>
-                  <input class="input-content" ref="input-content" v-tooltip="inputTooltip"
-                    oninput="this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(^[0-9]{1,2}).*/g, '$1');"
-                    v-model.number="operation.index"
-                    @focus="onInputFocus"/>
-                  <button
-                    v-if="idx === 0"
-                    class="button"
-                    style="width: 70px;"
-                    @click="addRegTargetKey(index)">
-                    {{$t("task_engine_v2.condition_block.button_add")}}
-                  </button>
-                  <button
-                    v-if="idx !== 0"
-                    class="button"
-                    style="width: 60px;"
-                    @click="deleteRegTargetKey(index, idx)">
-                    {{$t("task_engine_v2.condition_block.button_remove")}}
-                  </button>
-                </div>
-                <div class="row">
-                  <div class="label label-start">
-                    {{$t("task_engine_v2.condition_block.label_target_key")}}
-                  </div>
-                  <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="operation.key" @focus="onInputFocus"/>
-                </div>
-              </div>
-            </template> -->
           </div>
           <!-- Intent -->
           <div class="row" v-if="rule.funcName === 'intent_parser'">
@@ -122,101 +89,98 @@
               :inputBarStyle="selectStyle"/>
           </div>
           <!-- 键值匹配 -->
-          <template v-if="rule.funcName === 'key_val_match'">
+          <div :key="rule.funcName" v-if="rule.funcName === 'key_val_match'">
             <div class="row">
               <span class="label" v-t="'task_engine_v2.condition_action_block.label_compare_operator'"></span>
               <dropdown-select
                 class="dropdown-select"
                 :key="rule.funcName"
-                :value="[rule.content[0].compare]"
-                @input="rule.content[0].compare = $event[0]"
+                :value="[rule.content.compare]"
+                @input="rule.content.compare = $event[0]"
                 :options="keyValMatchCompareOptions"
                 :showCheckedIcon="false"
                 :inputBarStyle="selectStyle"/>
             </div>
-            <div class="row" v-if="rule.funcName === 'key_val_match'">
+            <div class="row">
               <span class="label" v-t="'task_engine_v2.condition_action_block.label_key'"></span>
-              <div ref="insertVarDropdown" class="dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key')">
-                <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus">
+              <div ref="insertVarDropdown" class="dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content, 'key')">
+                <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.key" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus">
               </div>
             </div>
             <div class="row">
               <span class="label" v-t="'task_engine_v2.condition_action_block.label_value'"></span>
-              <input v-if="rule.content[0].compare === '>'  ||
-                          rule.content[0].compare === '>=' ||
-                          rule.content[0].compare === '<'  ||
-                          rule.content[0].compare === '<=' "
+              <input v-if="rule.content.compare === '>' || rule.content.compare === '>=' || rule.content.compare === '<' || rule.content.compare === '<='"
                 ref="input-content" 
                 v-tooltip="inputTooltip"
                 class="input-content"
                 oninput="this.value = this.value.replace(/[^0-9]/g, '');"
-                v-model="rule.content[0].val"
+                v-model="rule.content.val"
                 :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')"
                 @focus="onInputFocus"/>
               <input v-else
                 ref="input-content" 
                 class="input-content"
                 v-tooltip="inputTooltip"
-                v-model="rule.content[0].val"
+                v-model="rule.content.val"
                 :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')"
                 @focus="onInputFocus"/>
             </div>
-          </template>
+          </div>
           <!-- 键键匹配 -->
-          <template v-if="rule.funcName === 'key_key_match'">
+          <div :key="rule.funcName" v-if="rule.funcName === 'key_key_match'">
             <div class="row">
               <span class="label" v-t="'task_engine_v2.condition_action_block.label_compare_operator'"></span>
               <dropdown-select
                 class="dropdown-select"
                 :key="rule.funcName"
-                :value="[rule.content[0].compare]"
-                @input="rule.content[0].compare = $event[0]"
+                :value="[rule.content.compare]"
+                @input="rule.content.compare = $event[0]"
                 :options="keyKeyMatchCompareOptions"
                 :showCheckedIcon="false"
                 :inputBarStyle="selectStyle"/>
             </div>
             <div class="row">
               <span class="label" v-t="'task_engine_v2.condition_action_block.label_key'"></span>
-              <div ref="insertVarDropdown" class="dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key1')">
-                <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key1" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus">
+              <div ref="insertVarDropdown" class="dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.initialFunctionContentV2, 'key1')">
+                <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.key1" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus">
               </div>
             </div>
             <div class="row">
               <span class="label" v-t="'task_engine_v2.condition_action_block.label_key'"></span>
-              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key2" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus"/>
+              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.key2" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus"/>
             </div>
-          </template>
+          </div>
           <!-- 包含键 -->
-          <div class="row" v-if="rule.funcName === 'contain_key'">
+          <div :key="rule.funcName" class="row" v-if="rule.funcName === 'contain_key'">
             <span class="label" v-t="'task_engine_v2.condition_action_block.label_key'"></span>
-            <div ref="insertVarDropdown" class="dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key')">
-              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key" :key="rule.funcName" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus">
+            <div ref="insertVarDropdown" class="dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content, 'key')">
+              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.key" :key="rule.funcName" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus">
             </div>
           </div>
           <!-- 不包含键 -->
-          <div class="row" v-if="rule.funcName === 'not_contain_key'">
+          <div :key="rule.funcName" class="row" v-if="rule.funcName === 'not_contain_key'">
             <span class="label" v-t="'task_engine_v2.condition_action_block.label_key'"></span>
-            <div ref="insertVarDropdown" class="dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key')">
-              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key" :key="rule.funcName" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus">
+            <div ref="insertVarDropdown" class="dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content, 'key')">
+              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.key" :key="rule.funcName" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus">
             </div>
           </div>
            <!-- 序列长度匹配 -->
-           <template v-if="rule.funcName === 'list_length_match'">
+           <div :key="rule.funcName" v-if="rule.funcName === 'list_length_match'">
             <div class="row">
               <span class="label" v-t="'task_engine_v2.condition_action_block.label_compare_operator'"></span>
               <dropdown-select
                 class="dropdown-select"
                 :key="rule.funcName"
-                :value="[rule.content[0].compare]"
-                @input="rule.content[0].compare = $event[0]"
+                :value="[rule.content.compare]"
+                @input="rule.content.compare = $event[0]"
                 :options="listLengthMatchCompareOptions"
                 :showCheckedIcon="false"
                 :inputBarStyle="selectStyle"/>
             </div>
             <div class="row">
               <span class="label" v-t="'task_engine_v2.condition_action_block.label_key'"></span>
-              <div ref="insertVarDropdown" class="dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key')">
-                <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus">
+              <div ref="insertVarDropdown" class="dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content, 'key')">
+                <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.key" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus">
               </div>
             </div>
             <div class="row">
@@ -226,11 +190,11 @@
                 ref="input-content" 
                 v-tooltip="inputTooltip"
                 oninput="this.value = this.value.replace(/[^0-9]/g, '');"
-                v-model="rule.content[0].val"
+                v-model="rule.content.val"
                 :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')"
                 @focus="onInputFocus"/>
             </div>
-          </template>
+          </div>
           <!-- 轮次检查 -->
           <div class="row" v-if="rule.funcName === 'counter_check'">
             <span class="label" v-t="'task_engine_v2.condition_action_block.label_content'"></span>
@@ -256,6 +220,26 @@
               </div>
             </div>
           </template>
+          <!-- 数据转换解析匹配 -->
+          <div :key="rule.funcName" v-if="rule.funcName === 'user_custom_transform'">
+            <div class="row">
+              <span class="label" v-t="'task_engine_v2.condition_action_block.label_mapping_table'"></span>
+              <dropdown-select
+                class="dropdown-select"
+                :value="[rule.content.trans]"
+                @input="rule.content.trans = $event[0]"
+                :options="mapTableOptions"
+                :showCheckedIcon="false"
+                :showSearchBar="true"
+                :inputBarStyle="selectStyle"/>
+            </div>
+            <div class="row">
+              <span class="label" v-t="'task_engine_v2.condition_action_block.label_source_key'"></span>
+              <div ref="insertVarDropdown" class="dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content, 'from_key')">
+                <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.from_key" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus"/>
+              </div>
+            </div>
+          </div>
         </div>
       </template>
     </div>
@@ -413,6 +397,42 @@
                   :inputBarStyle="selectStyle"/>
               </div>
             </div>
+            <!-- 转换数据解析器 -->
+            <div :key="action.parser" v-if="action.parser === 'user_custom_parser'">
+              <div class="row">
+                <span class="label" v-t="'task_engine_v2.condition_action_block.label_source'"></span>
+                <dropdown-select
+                  class="dropdown-select"
+                  :ref="`selectSource_${index}`"
+                  :value="[action.source]"
+                  @input="parserInput(action, {source: $event[0], parser: action.parser})"
+                  :options="sourceOptions"
+                  :showCheckedIcon="false"
+                  :inputBarStyle="selectStyle"/>
+              </div>
+              <div class="row">
+                <span class="label" v-t="'task_engine_v2.condition_action_block.label_mapping_table'"></span>
+                <dropdown-select
+                  :key="action.source"
+                  class="dropdown-select"
+                  :value="[action.content.trans]"
+                  @input="action.content.trans = $event[0]"
+                  :options="mapTableOptions"
+                  :showCheckedIcon="false"
+                  :showSearchBar="true"
+                  :inputBarStyle="selectStyle"/>
+              </div>
+              <div class="row" v-if="action.source === 'global_info'">
+                <span class="label" v-t="'task_engine_v2.condition_action_block.label_source_key'"></span>
+                <div ref="insertVarDropdown" class="dropdown-container" v-dropdown="insertVarDropdown(action.id, action.content, 'from_key')">
+                  <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="action.content.from_key" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus"/>
+                </div>
+              </div>
+              <div class="row">
+                <span class="label" v-t="'task_engine_v2.condition_action_block.label_target_key'"></span>
+                <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="action.content.to_key" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus"/>
+              </div>
+            </div>
           </template>
         </div>
       </template>
@@ -433,639 +453,6 @@
       </div>
     </div>
   </template>
-  <div class="normal-edge" v-if="edgeType==='normal' || edgeType==='trigger' || edgeType==='normal_2.0'">
-    <template v-for="(rule, index) in andRules">
-      <div class="rule-block" :key="rule.id">
-        <div class="row row-function" v-bind:class="{'not-first': index !== 0}">
-          <div class="label label-start" v-if="index === 0">
-            if
-          </div>
-          <div class="label label-start" v-if="index !== 0">
-            and if
-          </div>
-          <dropdown-select
-            class="select select-source"
-            :ref="`selectSource_${index}`"
-            :value="[rule.source]"
-            @input="onSelectSourceInput(index, $event)"
-            :options="sourceOptions"
-            :showCheckedIcon="false"
-            width="250px"
-            :inputBarStyle="selectStyle"
-          />
-          <dropdown-select
-            class="select select-function"
-            :ref="`selectFunction_${index}`"
-            :value="[rule.funcName]"
-            @input="onSelectFunctionInput(index, $event)"
-            :options="getFuncOptions(rule.source, index)"
-            :showCheckedIcon="false"
-            :fixedListWidth="false"
-            width="160px"
-            :inputBarStyle="selectStyle"
-          />
-          <button
-            class="button button-add-if"
-            v-if="index === 0"
-            @click="addRule()">
-            ＋and if
-          </button>
-          <button
-            class="button"
-            style="width: 60px;"
-            v-if="index !== 0"
-            @click="deleteRule(index)">
-            {{$t("task_engine_v2.condition_block.button_remove")}}
-          </button>
-        </div>
-        <!-- 完全相符 / 包含文本 -->
-        <div class="content-contain" v-if="rule.funcName === 'match' || rule.funcName == 'contains'">
-          <div class="row row-content">
-            <div class="label label-start">
-              {{$t("task_engine_v2.condition_block.label_content")}}
-            </div>
-            <input ref="input-content" class="input-content" v-model="rule.content" v-tooltip="inputTooltip" @focus="onInputFocus"/>
-          </div>
-        </div>
-        <!-- 正则表示式 -->
-        <div class="content-regular-exp" v-if="rule.funcName === 'regular_exp'">
-          <div class="row">
-            <div class="label label-start">
-              {{$t("task_engine_v2.condition_block.label_pattern")}}
-            </div>
-            <input ref="input-content" class="input-content" v-model="rule.content.pattern" v-tooltip="inputTooltip" @focus="onInputFocus"/>
-          </div>
-          <template v-for="(operation, idx) in rule.content.operations">
-            <div :key="idx">
-            <div class="row">
-              <div class="label label-start">
-                {{$t("task_engine_v2.condition_block.label_nth_match")}}
-              </div>
-              <input class="input-content" ref="input-content" v-tooltip="inputTooltip"
-                oninput="this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(^[0-9]{1,2}).*/g, '$1');"
-                v-model.number="operation.index"
-                @focus="onInputFocus"/>
-              <button
-                v-if="idx === 0"
-                class="button"
-                style="width: 70px;"
-                @click="addRegTargetKey(index)">
-                {{$t("task_engine_v2.condition_block.button_add")}}
-              </button>
-              <button
-                v-if="idx !== 0"
-                class="button"
-                style="width: 60px;"
-                @click="deleteRegTargetKey(index, idx)">
-                {{$t("task_engine_v2.condition_block.button_remove")}}
-              </button>
-            </div>
-            <div class="row">
-              <div class="label label-start">
-                {{$t("task_engine_v2.condition_block.label_target_key")}}
-              </div>
-              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="operation.key" @focus="onInputFocus"/>
-            </div>
-            </div>
-          </template>
-        </div>
-        <!-- 酒店预定语句解析器 / 通用语句解析器 / 场景语句解析器 -->
-        <div class="content-parser"
-          v-if="rule.funcName === 'hotel_parser' ||
-                rule.funcName === 'common_parser' ||
-                rule.funcName === 'task_parser'">
-          <div class="row">
-            <div class="label label-start">
-              {{$t("task_engine_v2.condition_block.label_content")}}
-            </div>
-            <dropdown-select
-              class="select select-target-entity"
-              :key="rule.funcName"
-              :ref="`selectTargetEntity_${index}`"
-              :multi="true"
-              :value="rule.content.tags.split(',')"
-              @input="onSelectTargetEntity(index, $event)"
-              :options="entityModuleOptions(rule.funcName)"
-              :showCheckedIcon="true"
-              :showSearchBar="true"
-              width="200px"
-              :inputBarStyle="selectStyle"
-            />
-          </div>
-        </div>
-        <!-- 转换数据解析器 -->
-        <div class="content-map-table" v-if="rule.funcName === 'user_custom_parser'">
-          <div class="row">
-            <div class="label label-start">
-              {{$t("task_engine_v2.condition_block.label_mapping_table")}}
-            </div>
-            <dropdown-select
-              class="select"
-              :key="rule.funcName"
-              :ref="`selectMapTable_${index}`"
-              :value="[rule.content.trans]"
-              @input="onSelectMapTableInput(index, $event)"
-              :options="mapTableOptions"
-              :showCheckedIcon="false"
-              :showSearchBar="true"
-              width="420px"
-              :inputBarStyle="selectStyle"
-            />
-          </div>
-          <div class="row">
-            <div class="label label-start">
-              {{$t("task_engine_v2.condition_block.label_target_key")}}
-            </div>
-            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.to_key" @focus="onInputFocus"/>
-          </div>
-        </div>
-        <!-- 是否判断解析器 -->
-        <div class="content-polarity-parser" v-if="rule.funcName === 'polarity_parser'">
-          <div class="row">
-            <div class="label label-start">
-              {{$t("task_engine_v2.condition_block.label_target_key")}}
-            </div>
-            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.key" @focus="onInputFocus"/>
-          </div>
-        </div>
-        <!-- Web API 调用 -->
-        <div class="content-api-parser" v-if="rule.funcName === 'api_parser'">
-          <div class="row">
-            <div class="label label-start">
-              {{$t("task_engine_v2.condition_block.label_link")}}
-            </div>
-            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content" @focus="onInputFocus"/>
-          </div>
-        </div>
-        <!-- Intent -->
-        <div class="content-api-parser" v-if="rule.funcName === 'intent_parser'">
-          <div class="row">
-            <div class="label label-start">
-              {{$t("task_engine_v2.condition_block.label_content")}}
-            </div>
-            <div :key="intentDropdown.options.length ? `${index}_has_options`: index" class="input-with-dropdown-container" v-dropdown="renderIntentDropdown(index)" :data-index="index">
-              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.intentName" :key="rule.funcName" @focus="onInputFocus">
-            </div>
-          </div>
-        </div>
-        <!-- 键值匹配 -->
-        <div class="content-api-parser" v-if="rule.funcName === 'key_val_match'">
-          <div class="row">
-            <div class="label label-start">
-              {{$t("task_engine_v2.condition_block.label_compare_operator")}}
-            </div>
-            <dropdown-select
-              class="select"
-              :key="rule.funcName"
-              :value="[rule.content[0].compare]"
-              @input="rule.content[0].compare = $event[0]"
-              :options="keyValMatchCompareOptions"
-              :showCheckedIcon="false"
-              width="420px"
-              :inputBarStyle="selectStyle"
-            />
-          </div>
-          <div class="row">
-            <div class="label label-start">
-              {{$t("task_engine_v2.condition_block.label_key")}}
-            </div>
-            <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key')">
-              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key" @focus="onInputFocus">
-            </div>
-          </div>
-          <div class="row">
-            <div class="label label-start">
-              {{$t("task_engine_v2.condition_block.label_value")}}
-            </div>
-            <input v-if="rule.content[0].compare === '>'  ||
-                         rule.content[0].compare === '>=' ||
-                         rule.content[0].compare === '<'  ||
-                         rule.content[0].compare === '<=' "
-              ref="input-content" 
-              v-tooltip="inputTooltip"
-              class="input-content"
-              oninput="this.value = this.value.replace(/[^0-9]/g, '');"
-              v-model="rule.content[0].val"
-              @focus="onInputFocus"
-            >
-            <input v-else
-              ref="input-content" 
-              class="input-content"
-              v-tooltip="inputTooltip"
-              v-model="rule.content[0].val"
-              @focus="onInputFocus"
-            >
-          </div>
-        </div>
-        <!-- 键键匹配 -->
-        <div class="content-api-parser" v-if="rule.funcName === 'key_key_match'">
-          <div class="row">
-            <div class="label label-start">
-              {{$t("task_engine_v2.condition_block.label_compare_operator")}}
-            </div>
-            <dropdown-select
-              class="select"
-              :key="rule.funcName"
-              :value="[rule.content[0].compare]"
-              @input="rule.content[0].compare = $event[0]"
-              :options="keyKeyMatchCompareOptions"
-              :showCheckedIcon="false"
-              width="420px"
-              :inputBarStyle="selectStyle"
-            />
-          </div>
-          <div class="row">
-            <div class="label label-start">
-              {{$t("task_engine_v2.condition_block.label_key")}}
-            </div>
-            <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key1')">
-              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key1" @focus="onInputFocus">
-            </div>
-          </div>
-          <div class="row">
-            <div class="label label-start">
-              {{$t("task_engine_v2.condition_block.label_key")}}
-            </div>
-            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key2" @focus="onInputFocus"/>
-          </div>
-        </div>
-        <!-- 包含键 -->
-        <div class="content-api-parser" v-if="rule.funcName === 'contain_key'">
-          <div class="row">
-            <div class="label label-start">
-              {{$t("task_engine_v2.condition_block.label_content")}}
-            </div>
-            <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key')">
-              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key" :key="rule.funcName" @focus="onInputFocus">
-            </div>
-          </div>
-        </div>
-        <!-- 不包含键 -->
-        <div class="content-api-parser" v-if="rule.funcName === 'not_contain_key'">
-          <div class="row">
-            <div class="label label-start">
-              {{$t("task_engine_v2.condition_block.label_content")}}
-            </div>
-            <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key')">
-              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key" :key="rule.funcName" @focus="onInputFocus">
-            </div>
-          </div>
-        </div>
-        <!-- 序列长度匹配 -->
-        <div class="content-api-parser" v-if="rule.funcName === 'list_length_match'">
-          <div class="row">
-            <div class="label label-start">
-              {{$t("task_engine_v2.condition_block.label_compare_operator")}}
-            </div>
-            <dropdown-select
-              class="select"
-              :key="rule.funcName"
-              :value="[rule.content[0].compare]"
-              @input="rule.content[0].compare = $event[0]"
-              :options="listLengthMatchCompareOptions"
-              :showCheckedIcon="false"
-              width="420px"
-              :inputBarStyle="selectStyle"
-            />
-          </div>
-          <div class="row">
-            <div class="label label-start">
-              {{$t("task_engine_v2.condition_block.label_key")}}
-            </div>
-            <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key')">
-              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key" @focus="onInputFocus">
-            </div>
-          </div>
-          <div class="row">
-            <div class="label label-start">
-              {{$t("task_engine_v2.condition_block.label_value")}}
-            </div>
-            <input class="input-content" ref="input-content" v-tooltip="inputTooltip"
-              oninput="this.value = this.value.replace(/[^0-9]/g, '');"
-              v-model="rule.content[0].val"
-              @focus="onInputFocus"/>
-          </div>
-        </div>
-        <!-- 轮次检查 -->
-        <div class="content-api-parser" v-if="rule.funcName === 'counter_check'">
-          <div class="row">
-            <div class="label label-start">
-              {{$t("task_engine_v2.condition_block.label_content")}}
-            </div>
-            <dropdown-select
-              class="select"
-              :key="rule.funcName"
-              :value="[rule.content]"
-              @input="rule.content = $event[0]"
-              :options="counterCheckOptions"
-              :showCheckedIcon="false"
-              width="420px"
-              :inputBarStyle="selectStyle"
-            />
-          </div>
-        </div>
-        <!-- 转换数据 -->
-        <div class="content-api-parser" v-if="rule.funcName === 'user_custom_transform'">
-          <div class="row">
-            <div class="label label-start">
-              {{$t("task_engine_v2.condition_block.label_mapping_table")}}
-            </div>
-            <dropdown-select
-              class="select"
-              :value="[rule.content.trans]"
-              @input="rule.content.trans = $event[0]"
-              :options="mapTableOptions"
-              :showCheckedIcon="false"
-              :showSearchBar="true"
-              width="420px"
-              :inputBarStyle="selectStyle"
-            />
-          </div>
-          <div class="row">
-            <div class="label label-start">
-              {{$t("task_engine_v2.condition_block.label_source_key")}}
-            </div>
-            <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content, 'from_key')">
-              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.from_key" @focus="onInputFocus">
-            </div>
-          </div>
-          <div class="row">
-            <div class="label label-start">
-              {{$t("task_engine_v2.condition_block.label_target_key")}}
-            </div>
-            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.to_key" @focus="onInputFocus"/>
-          </div>
-        </div>
-        <!-- 正则表示式 -->
-        <div class="content-api-parser" v-if="rule.funcName === 'regular_exp_from_var'">
-          <div class="row">
-            <div class="label label-start">
-              {{$t("task_engine_v2.condition_block.label_pattern")}}
-            </div>
-            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.pattern" @focus="onInputFocus"/>
-          </div>
-          <div class="row">
-            <div class="label label-start">
-              {{$t("task_engine_v2.condition_block.label_source_key")}}
-            </div>
-            <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content, 'from_key')">
-              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.from_key" @focus="onInputFocus">
-            </div>
-          </div>
-          <template v-for="(operation, idx) in rule.content.operations">
-            <div :key="idx">
-              <div class="row">
-                <div class="label label-start">
-                  {{$t("task_engine_v2.condition_block.label_nth_match")}}
-                </div>
-                <input class="input-content" ref="input-content" v-tooltip="inputTooltip"
-                  oninput="this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(^[0-9]{1,2}).*/g, '$1');"
-                  v-model.number="operation.index"
-                  @focus="onInputFocus"
-                >
-                <button
-                  v-if="idx === 0"
-                  class="button"
-                  style="width: 70px;"
-                  @click="addRegTargetKey(index)">
-                  {{$t("task_engine_v2.condition_block.button_add")}}
-                </button>
-                <button
-                  v-if="idx !== 0"
-                  class="button"
-                  style="width: 60px;"
-                  @click="deleteRegTargetKey(index, idx)">
-                  {{$t("task_engine_v2.condition_block.button_remove")}}
-                </button>
-              </div>
-              <div class="row">
-                <div class="label label-start">
-                  {{$t("task_engine_v2.condition_block.label_target_key")}}
-                </div>
-                <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="operation.key" @focus="onInputFocus">
-              </div>
-            </div>
-          </template>
-        </div>
-        <!-- 赋值 -->
-        <div class="content-api-parser" v-if="rule.funcName === 'assign_value'">
-          <div class="row">
-            <div class="label label-start">
-              {{$t("task_engine_v2.condition_block.label_key")}}
-            </div>
-            <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key')">
-              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key" @focus="onInputFocus">
-            </div>
-          </div>
-          <div class="row">
-            <div class="label label-start">
-              {{$t("task_engine_v2.condition_block.label_value")}}
-            </div>
-            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].val" @focus="onInputFocus"/>
-          </div>
-        </div>
-        <!-- 删除键 -->
-        <div class="content-api-parser" v-if="rule.funcName === 'remove_key'">
-          <div class="row">
-            <div class="label label-start">
-              {{$t("task_engine_v2.condition_block.label_key")}}
-            </div>
-            <div ref="insertVarDropdown" class="input-with-dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key')">
-              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key" @focus="onInputFocus">
-            </div>
-          </div>
-        </div>
-        <!-- 语句解析数据提取 -->
-        <div class="content-api-parser" v-if="rule.funcName === 'cu_parser'">
-          <div class="row">
-            <div class="label label-start">
-              {{$t("task_engine_v2.condition_block.label_content")}}
-            </div>
-            <dropdown-select
-              class="select"
-              :key="rule.funcName"
-              :value="[rule.content]"
-              @input="rule.content = $event[0]"
-              :options="cuParserOptions"
-              :showCheckedIcon="false"
-              width="420px"
-              :inputBarStyle="selectStyle"
-            />
-          </div>
-        </div>
-        <!-- 自定义语句解析数据提取 -->
-        <div class="content-api-parser" v-if="rule.funcName === 'custom_cu_parser'">
-          <div class="row">
-            <div class="label label-start">
-              {{$t("task_engine_v2.condition_block.label_content")}}
-            </div>
-            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content" @focus="onInputFocus"/>
-          </div>
-        </div>
-      </div>
-    </template>
-    <div class="row row-no-bottom-margin" v-if="edgeType!=='trigger'">
-      <div class="label label-start">
-        {{$t("task_engine_v2.edge_edit_tab.label_then_goto")}}
-      </div>
-      <dropdown-select
-        class="select select-goto"
-        ref="selectGoto"
-        :value="[toNode]"
-        @input="onSelectGoto($event[0])"
-        :options="toNodeOptions"
-        :fixedListWidth="false"
-        :showCheckedIcon="false"
-        :showSearchBar="true"
-        width="200px"
-        :inputBarStyle="selectStyle"
-      />
-    </div>
-  </div>
-  <!-- 语句相似度 -->
-  <div class="qq-edge" v-if="edgeType==='qq'">
-    <div class="rule-block">
-      <div class="row row-function">
-        <div class="label label-start">
-          if
-        </div>
-        <dropdown-select
-          class="select select-source"
-          ref="selectSource_0"
-          :value="['text']"
-          @input="onSelectSourceInput(0, $event)"
-          :options="sourceOptions"
-          :showCheckedIcon="false"
-          width="250px"
-          :inputBarStyle="selectStyle"
-        />
-        <dropdown-select
-          class="select select-function"
-          ref="selectFunction_0"
-          :value="['qq']"
-          @input="onSelectFunctionInput(0, $event)"
-          :options="getFuncOptions('text', 0)"
-          :showCheckedIcon="false"
-          width="160px"
-          :inputBarStyle="selectStyle"
-        />
-      </div>
-      <div class="row">
-        <div class="label label-start">
-          {{$t("task_engine_v2.condition_block.label_similarity_threshold")}}
-        </div>
-        <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="threshold" @focus="onInputFocus"/>
-      </div>
-      <template v-for="(edge, index) in candidateEdges">
-        <div :key="index">
-        <div class="row">
-          <div class="label label-start">
-            {{$t("task_engine_v2.condition_block.label_sentence")}}
-          </div>
-          <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="edge.tar_text" @focus="onInputFocus"/>
-          <button
-            v-if="index===0"
-            class="button"
-            style="width: 100px;"
-            @click="addQQCandidateEdge()">
-            {{`${$t("task_engine_v2.condition_block.button_add")}${$t("task_engine_v2.condition_block.label_sentence")}`}}
-          </button>
-          <button
-            v-if="index!==0"
-            class="button"
-            style="width: 60px;"
-            @click="deleteQQCandidateEdge(index)">
-            {{$t("task_engine_v2.condition_block.button_remove")}}
-          </button>
-        </div>
-        <div class="row">
-          <div class="label label-start">
-            {{$t("task_engine_v2.edge_edit_tab.label_then_goto")}}
-          </div>
-          <dropdown-select
-            class="select select-goto"
-            :ref="`qqSelectGoto_${index}`"
-            :value="[edge.to_node_id]"
-            @input="onQQSelectGoto($event[0], index)"
-            :options="toNodeOptions"
-            :fixedListWidth="false"
-            :showCheckedIcon="false"
-            :showSearchBar="true"
-            width="200px"
-            :inputBarStyle="selectStyle"
-          />
-        </div>
-        </div>
-      </template>
-    </div>
-  </div>
-  <!--[参数收集节点]取得所有必要参数-->
-  <div class="succeed_then_goto pc_block" v-if="edgeType==='pc_succeed'">
-    <div class="row row-no-bottom-margin">
-      <div class="label label-bold">
-        {{$t("task_engine_v2.params_collecting_edge_tab.succeed")}}
-      </div>
-      <div class="label label-margin-left">
-        {{$t("task_engine_v2.params_collecting_edge_tab.succeed_description")}}
-      </div>
-      <div class="label label-margin-left">
-        {{$t("task_engine_v2.edge_edit_tab.label_then_goto")}}
-      </div>
-      <dropdown-select
-        class="select select-goto"
-        ref="selectExceedThenGoto"
-        :value="[toNode]"
-        @input="onSelectGoto($event[0])"
-        :options="toNodeOptions.filter(option => option.text !== 'do nothing')"
-        :fixedListWidth="false"
-        :showCheckedIcon="false"
-        :showSearchBar="true"
-        width="200px"
-        :inputBarStyle="selectStyle"
-      />
-    </div>
-  </div>
-  <!--[参数收集节点]解析失败-->
-  <div class="exceed_limit pc_block" v-if="edgeType==='pc_failed'">
-    <div class="row row-no-bottom-margin">
-      <div class="label label-bold">
-        {{$t("task_engine_v2.params_collecting_edge_tab.failed")}}
-      </div>
-      <div class="label label-margin-left">
-        {{$t("task_engine_v2.params_collecting_edge_tab.failed_description")}}
-      </div>
-      <input ref="input-content" v-tooltip="inputTooltip" class="input-limit" v-model="dialogueLimit" @focus="onInputFocus"/>
-      <div class="label">
-        {{$t("task_engine_v2.edge_edit_tab.label_time")}}
-      </div>
-      <div class="label label-margin-left">
-        {{$t("task_engine_v2.edge_edit_tab.label_then_goto")}}
-      </div>
-      <dropdown-select
-        class="select select-goto"
-        :value="[toNode]"
-        ref="selectSucceedThenGoto"
-        @input="onSelectGoto($event[0])"
-        :options="toNodeOptions.filter(option => option.text !== 'do nothing')"
-        :fixedListWidth="false"
-        :showCheckedIcon="false"
-        :showSearchBar="true"
-        width="200px"
-        :inputBarStyle="selectStyle"
-      />
-    </div>
-  </div>
-  <!--[参数收集节点]虚拟通用连线-->
-  <div class="virtual_global_edges pc_block" v-if="edgeType==='virtual_global_edges'">
-    <div class="row row-no-bottom-margin">
-      <div class="label label-bold">
-        {{$t("task_engine_v2.params_collecting_edge_tab.virtual_global_edges")}}
-      </div>
-      <div class="label label-margin-left">
-        {{$t("task_engine_v2.params_collecting_edge_tab.virtual_global_edges_description")}}
-      </div>
-    </div>
-  </div>
 </div>
 </template>
 
@@ -1388,7 +775,7 @@ export default {
           id: this.$uuid.v1(),
           source: newSource,
           funcName: options[0].value,
-          content: scenarioInitializer.initialFunctionContent(options[0].value, this.nodeId),
+          content: scenarioInitializer.initialFunctionContentV2(options[0].value, this.nodeId),
         }];
       } else {
         if (this.andRules[index].source === newSource) return;
@@ -1421,8 +808,14 @@ export default {
         } else if (source === 'global_info') {
           action.funcName = 'regular_exp_from_var';
         }
+      } else if (parser === 'user_custom_parser') {
+        if (source === 'text') {
+          action.funcName = 'user_custom_parser';
+        } else if (source === 'global_info') {
+          action.funcName = 'user_custom_transform';
+        }
       }
-      action.content = scenarioInitializer.initialFunctionContent(action.funcName, this.nodeId);
+      action.content = scenarioInitializer.initialFunctionContentV2(action.funcName, this.nodeId);
       this.$forceUpdate();
     },
     reloadTooltip() {
@@ -1455,7 +848,7 @@ export default {
         this.andRules[index].funcName = newFuncName;
       }
       // initial content
-      const content = scenarioInitializer.initialFunctionContent(newFuncName, this.nodeId);
+      const content = scenarioInitializer.initialFunctionContentV2(newFuncName, this.nodeId);
       this.andRules[index].content = content;
 
       // update parser options
@@ -1633,6 +1026,7 @@ export default {
   border-radius: 2px;
   @include font-14px();
   cursor: move;
+  padding-bottom: 10px;
   .dropdown-select {
     background-color: white;
   }
