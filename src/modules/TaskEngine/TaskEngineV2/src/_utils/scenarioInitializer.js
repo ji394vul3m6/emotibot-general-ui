@@ -455,6 +455,11 @@ export default {
         module: 'intent_engine_2.0',
         intentName: '',
       },
+      nlu_parser: {
+        tags: '',
+        key_suffix: `_${nodeId}`,
+        has_context: false,
+      },
     };
     return map[funcName];
   },

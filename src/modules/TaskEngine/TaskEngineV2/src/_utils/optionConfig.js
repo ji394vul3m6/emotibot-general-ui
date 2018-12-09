@@ -12,6 +12,34 @@ const ActionType = {
   ResponseText: 'response_text',
 };
 const Parsers = ['common_parser', 'task_parser', 'hotel_parser', 'user_custom_parser', 'polarity_parser', 'nlu_parser', 'reg_parser'];
+const NLUParserMap = {
+  ADDRESS: 'ADDRESS',
+  QUANTITY: 'QUANTITY',
+  PERSON_NUMBER: 'PERSON_NUMBER',
+  MONEY: 'MONEY',
+  MOBILE_PHONE: 'MOBILE_PHONE',
+  ORDINAL_NUMBER: 'ORDINAL_NUMBER',
+  PERSON_NAME: 'PERSON_NAME',
+  SURNAME: 'SURNAME',
+  ACT: 'ACT',
+  TIME_FUTURE: 'TIME_FUTURE',
+  TIME_PAST: 'TIME_PAST',
+  SELECT: 'SELECT',
+  KEY: 'KEY',
+  LOGIC: 'LOGIC',
+};
+const NLUTypeMap = {
+  ADDRESS: 'address',
+  TIME: 'time',
+  MONEY: 'money',
+  MOBILE_PHONE: 'mobile_phone',
+  PERSON_NAME: 'person_name',
+  SELECT: 'select',
+  LOGIC: 'logic',
+};
+const NLUTypeOptions = Object.values(NLUTypeMap);
+const NLUTimeParsers = [NLUParserMap.TIME_FUTURE, NLUParserMap.TIME_PAST];
+const NLUSelectParsers = [NLUParserMap.SELECT, NLUParserMap.KEY];
 export default {
   nodeType2Tabs() {
     return {
@@ -177,6 +205,11 @@ export default {
     }];
   },
   Parsers,
+  NLUParserMap,
+  NLUTypeMap,
+  NLUTypeOptions,
+  NLUTimeParsers,
+  NLUSelectParsers,
   getActionOptionMap(context) {
     const assignValue = ['set_key_to_value', 'set_key_to_key'];
     return {

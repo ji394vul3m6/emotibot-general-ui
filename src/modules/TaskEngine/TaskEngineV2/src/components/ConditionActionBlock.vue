@@ -1,11 +1,11 @@
 <template>
 <div class="condition-action-block">
   <div class="header">
-    <button class="add" @click="toggleAddCondition = !toggleAddCondition" v-dropdown="sourceDropdown" @blur="toggleAddCondition = !toggleAddCondition">
+    <button class="add" @click="addConditionActionClick($event, 'toggleAddCondition')" v-dropdown="sourceDropdown" @blur="toggleAddCondition = false">
       {{ $t('task_engine_v2.condition_action_block.add_condition')}}
       <img class="arrow" :class="{rotate180: toggleAddCondition}" src="@/assets/icons/expand_blue_icon.svg"/>
     </button>
-    <button class="add" @click="toggleAddAction = !toggleAddAction" v-dropdown="actionDropdown" @blur="toggleAddAction = !toggleAddAction">
+    <button class="add" @click="addConditionActionClick($event, 'toggleAddAction')" v-dropdown="actionDropdown" @blur="toggleAddAction = false">
       {{ $t('task_engine_v2.condition_action_block.add_action')}}
       <img class="arrow" :class="{rotate180: toggleAddAction}" src="@/assets/icons/expand_blue_icon.svg"/>
     </button>
@@ -332,7 +332,7 @@
               <div class="row">
                 <span class="label"></span>
                 <button 
-                  class="add-target-key" 
+                  class="add-new-row" 
                   v-t="'task_engine_v2.condition_action_block.add_target_key'"
                   @click="action.content.operations.push({index: 0, key: '', operation: 'set_to_global_info'})">
                 </button>
@@ -346,7 +346,7 @@
                       @focus="onInputFocus"/>
                   <span class="label" v-t="'task_engine_v2.condition_action_block.label_target_key'"></span>
                   <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="operation.key" @focus="onInputFocus">
-                  <button class="grey-delete" v-t="'task_engine_v2.condition_action_block.delete'" @click="action.content.operations.splice(idx, 1)"></button>
+                  <button class="delete-button" v-t="'task_engine_v2.condition_action_block.delete'" @click="action.content.operations.splice(idx, 1)"></button>
                 </div>
               </template>
             </div>
@@ -362,6 +362,12 @@
                   :options="sourceOptions"
                   :showCheckedIcon="false"
                   :inputBarStyle="selectStyle"/>
+              </div>
+              <div class="row" v-if="action.source === 'global_info'">
+                <span class="label" v-t="'task_engine_v2.condition_action_block.label_source_key'"></span>
+                <div ref="insertVarDropdown" class="dropdown-container" v-dropdown="insertVarDropdown(action.id, action.content, 'from_key')">
+                  <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="action.content.from_key" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus">
+                </div>
               </div>
               <div class="row">
                 <span class="label" v-t="'task_engine_v2.condition_action_block.label_target_key'"></span>
@@ -395,6 +401,12 @@
                   :showSearchBar="true"
                   :placeholder="$t('task_engine_v2.condition_action_block.multi_placeholder')"
                   :inputBarStyle="selectStyle"/>
+              </div>
+              <div class="row" v-if="action.source === 'global_info'">
+                <span class="label" v-t="'task_engine_v2.condition_action_block.label_source_key'"></span>
+                <div ref="insertVarDropdown" class="dropdown-container" v-dropdown="insertVarDropdown(action.id, action.content, 'from_key')">
+                  <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="action.content.from_key" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus">
+                </div>
               </div>
             </div>
             <!-- 转换数据解析器 -->
@@ -433,6 +445,90 @@
                 <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="action.content.to_key" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus"/>
               </div>
             </div>
+            <!-- NLU解析器 -->
+            <div :key="action.parser" v-if="action.parser === 'nlu_parser'">
+              <div class="row">
+                <span class="label" v-t="'task_engine_v2.condition_action_block.label_type'"></span>
+                <dropdown-select
+                  class="dropdown-select"
+                  :ref="`selectSource_${index}`"
+                  :value="[action.nluType]"
+                  :placeholder="$t('task_engine_v2.condition_action_block.nlu_placeholder')"
+                  @input="nluParserInput(action, { nluType: $event[0], source: 'text'})"
+                  :options="nluTypeOptions"
+                  :showCheckedIcon="false"
+                  :inputBarStyle="selectStyle"/>
+              </div>
+              <div class="row" v-if="action.nluType === NLUTypeMap.TIME">
+                <span class="label" v-t="'task_engine_v2.condition_action_block.label_default'"></span>
+                <dropdown-select
+                  class="dropdown-select"
+                  :ref="`selectSource_${index}`"
+                  :value="[action.content.tags.split(',')[0]]"
+                  @input="action.content.tags = $event[0]"
+                  :options="nluTimeOptions"
+                  :showCheckedIcon="false"
+                  :inputBarStyle="selectStyle"/>
+              </div>
+              <template v-if="action.nluType === NLUTypeMap.SELECT">
+                <div class="row">
+                  <span class="label" v-t="'task_engine_v2.condition_action_block.label_select_mode'"></span>
+                  <dropdown-select
+                    class="dropdown-select"
+                    :ref="`selectSource_${index}`"
+                    :value="[action.content.tags.split(',')[0]]"
+                    @input="action.content.tags = $event[0]; delete action.content.options; delete action.content.option_key"
+                    :options="nluSelectOptions"
+                    :showCheckedIcon="false"
+                    :inputBarStyle="selectStyle"/>
+                </div>
+                <template v-if="action.content.tags === NLUParserMap.SELECT">
+                  <div class="row">
+                    <span class="label"></span>
+                    <button 
+                      class="add-new-row" 
+                      v-t="'task_engine_v2.condition_action_block.add_option'"
+                      @click="addNLUSelectOption(action)">
+                    </button>
+                  </div>
+                  <div class="row" v-for="(option, index) in action.content.options" :key="index">
+                    <span class="label">{{`${$t('task_engine_v2.condition_action_block.label_option')}${index + 1}`}}</span>
+                    <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="action.content.options[index]" @focus="onInputFocus">
+                    <button class="delete-button red" v-t="'task_engine_v2.condition_action_block.delete'" @click="action.content.options.splice(index, 1)"></button>
+                  </div>
+                </template>
+                <div class="row" v-if="action.content.tags === NLUParserMap.KEY">
+                  <span class="label" v-t="'task_engine_v2.condition_action_block.label_option_key'"></span>
+                  <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="action.content.option_key" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus">
+                </div>
+              </template>
+              <div class="row">
+                <span class="label" v-t="'task_engine_v2.condition_action_block.label_source'"></span>
+                <dropdown-select
+                  :key="action.source"
+                  class="dropdown-select"
+                  :ref="`selectSource_${index}`"
+                  :value="[action.source]"
+                  @input="action.source = $event[0]; delete action.content.from_key"
+                  :options="sourceOptions"
+                  :showCheckedIcon="false"
+                  :inputBarStyle="selectStyle"/>
+              </div>
+              <div class="row" v-if="action.source === 'global_info'">
+                <span class="label" v-t="'task_engine_v2.condition_action_block.label_source_key'"></span>
+                <div ref="insertVarDropdown" class="dropdown-container" v-dropdown="insertVarDropdown(action.id, action.content, 'from_key')">
+                  <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="action.content.from_key" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus">
+                </div>
+              </div>
+              <div class="row" v-if="action.nluType === NLUTypeMap.PERSON_NAME">
+                <span class="label" v-t="'task_engine_v2.condition_action_block.label_get_surname'"></span>
+                <toggle v-model="action.nluPersionName" :size="'medium'" @change="nluPersonNameChange(action)"></toggle>               
+              </div>
+              <div class="row">
+                <span class="label" v-t="'task_engine_v2.condition_action_block.label_has_context'"></span>
+                <toggle v-model="action.content.has_context" :size="'medium'"></toggle>
+              </div>
+            </div>
           </template>
         </div>
       </template>
@@ -460,19 +556,26 @@
 import event from '@/utils/js/event';
 import DropdownSelect from '@/components/DropdownSelect';
 import intentApi from '@/modules/IntentEngine/_api/intent';
+import Toggle from '@/components/basic/Toggle';
 import scenarioInitializer from '../_utils/scenarioInitializer';
 import optionConfig from '../_utils/optionConfig';
 
 const ActionType = optionConfig.ActionType;
+const NLUParserMap = optionConfig.NLUParserMap;
+const NLUTypeMap = optionConfig.NLUTypeMap;
+const NLUTypeOptions = optionConfig.NLUTypeOptions;
 const ConditionOption = {
   ALL: 0,
   ANY: 1,
 };
+const NLUTimeParsers = optionConfig.NLUTimeParsers;
+const NLUSelectParsers = optionConfig.NLUSelectParsers;
 
 export default {
   api: intentApi,
   components: {
     DropdownSelect,
+    Toggle,
   },
   props: {
     nodeId: {
@@ -599,6 +702,20 @@ export default {
       ActionType,
       assignValueOptions: actionOptionMap[ActionType.AssignValue],
       parserOptions: actionOptionMap[ActionType.Parser],
+      nluTypeOptions: NLUTypeOptions.map(parser => ({
+        text: this.$t(`task_engine_v2.condition_action_block.nlu_options.${parser}`),
+        value: parser,
+      })),
+      NLUTypeMap,
+      nluTimeOptions: NLUTimeParsers.map(parser => ({
+        text: this.$t(`task_engine_v2.condition_action_block.nlu_time_options.${parser}`),
+        value: parser,
+      })),
+      nluSelectOptions: NLUSelectParsers.map(parser => ({
+        text: this.$t(`task_engine_v2.condition_action_block.nlu_select_options.${parser}`),
+        value: parser,
+      })),
+      NLUParserMap,
     };
   },
   computed: {
@@ -607,6 +724,12 @@ export default {
     },
   },
   watch: {
+    actions: {
+      handler() {
+        this.emitUpdate();
+      },
+      deep: true,
+    },
     rules: {
       handler() {
         this.emitUpdate();
@@ -816,6 +939,47 @@ export default {
       action.content = scenarioInitializer.initialFunctionContentV2(action.funcName, this.nodeId);
       this.$forceUpdate();
     },
+    nluParserInput(action, { nluType, source }) {
+      action.nluType = nluType;
+      action.source = source;
+      action.content = scenarioInitializer.initialFunctionContentV2(action.funcName, this.nodeId);
+      switch (nluType) {
+        case NLUTypeMap.ADDRESS: {
+          action.content.tags = NLUParserMap.ADDRESS;
+          break;
+        }
+        case NLUTypeMap.TIME: {
+          action.content.tags = NLUParserMap.TIME_FUTURE;
+          break;
+        }
+        case NLUTypeMap.MONEY: {
+          action.content.tags = NLUParserMap.MONEY;
+          break;
+        }
+        case NLUTypeMap.MOBILE_PHONE: {
+          action.content.tags = NLUParserMap.MOBILE_PHONE;
+          break;
+        }
+        case NLUTypeMap.PERSON_NAME: {
+          action.content.tags = NLUParserMap.PERSON_NAME;
+          break;
+        }
+        case NLUTypeMap.SELECT: {
+          action.content.tags = NLUParserMap.SELECT;
+          break;
+        }
+        case NLUTypeMap.LOGIC: {
+          action.content.tags = NLUParserMap.LOGIC;
+          break;
+        }
+        default:
+          break;
+      }
+      this.$forceUpdate();
+    },
+    nluPersonNameChange(action) {
+      action.content.tags = action.nluPersionName ? NLUParserMap.SURNAME : NLUParserMap.PERSON_NAME;
+    },
     reloadTooltip() {
       if (this.$refs['input-content']) {
         this.$refs['input-content'].forEach((el) => {
@@ -886,6 +1050,7 @@ export default {
     },
     insertVarSelect(obj, key, value) {
       obj[key] = value;
+      this.$forceUpdate();
     },
     emitUpdate() {
       let conditionBlock = {};
@@ -977,6 +1142,19 @@ export default {
         this.candidateEdges[index].to_node_id = newNodeID;
       } else {
         this.candidateEdges[index].to_node_id = toNode;
+      }
+    },
+    addConditionActionClick(e, flag) {
+      // if (this[flag]) {
+      //   e.target.dispatchEvent(new Event('dropdown-hide'));
+      // }
+      this[flag] = true;
+    },
+    addNLUSelectOption(action) {
+      if (action.content.options) {
+        action.content.options.push('');
+      } else {
+        this.$set(action.content, 'options', ['']);
       }
     },
   },
@@ -1131,14 +1309,15 @@ export default {
       flex: 1;
     }
   }
-  .add-target-key {
+  .add-new-row {
     color: $color-primary;
     border: none;
     background-color: transparent;
     padding: 0;
     @include font-14px();
+    cursor: pointer;
   }
-  .grey-delete {
+  .delete-button {
     width: 70px;
     height: 32px;
     background-color: $color-font-disabled;
@@ -1147,6 +1326,10 @@ export default {
     font-size: 12px;
     margin-left: 8px;
     color: white;
+    cursor: pointer;
+    &.red {
+      background-color: $color-error;
+    }
   }
 }
 </style>
