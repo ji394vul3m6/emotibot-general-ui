@@ -195,7 +195,7 @@ export default {
       },
       jsCode: {},
       jsCodeAlias: [],
-      hadJsCode: true,
+      hadJsCode: false,
     };
   },
   computed: {
@@ -1051,6 +1051,13 @@ export default {
         },
       });
     },
+    getTaskConfigInfo() {
+      const that = this;
+      taskEngineApi.taskConfig()
+        .then((data) => {
+          that.hadJsCode = data.task_engine_v2.enable_js_code;
+        });
+    },
   },
   beforeMount() {
     this.appId = this.$cookie.get('appid');
@@ -1059,6 +1066,7 @@ export default {
     this.nodeTypes = optionConfig.getNodeTypes(this);
     this.nodeOptions = this.getNodeOptions();
     this.rainbowColors = optionConfig.getRainbowColors();
+    this.getTaskConfigInfo();
     this.loadScenario(this.scenarioId);
     this.setSwitchToggle(this.appId, this.scenarioId);
   },

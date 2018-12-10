@@ -9,8 +9,15 @@ const TASK_ENGINE_SCENARIO_PATH = `${BASE_URL}task_engine_scenario.php`;
 const NLU_TDE_REGISTER_PATH = `${BASE_URL}tde_register.php`;
 const UPLOAD_SPREADSHEET_PATH = `${BASE_URL}spreadsheet.php`;
 const UPLOAD_SCENARIO_JSON_PATH = `${BASE_URL}scenario_json_upload.php`;
+const TASK_CONFIG = '/api/v1/task/config';
 
 export default {
+  taskConfig() {
+    return axios({
+      method: 'GET',
+      url: TASK_CONFIG,
+    }).then(resp => resp.data);
+  },
   listScenarios(appId) {
     return axios({
       method: 'GET',
