@@ -244,12 +244,7 @@ export default {
         dialogue2SettingTab = node.dialogue2SettingTab;
         dialogue2SettingTab.nodeType = node.nodeType;
       } else if (tab === 'edgeTab2') {
-        if (node.edgeTab === undefined) {
-          // only happen to old action node
-          // initial edgeTab to action node
-          node.edgeTab = scenarioInitializer.initialEdgeTab(nodeType);
-        }
-        edgeTab2 = node.edgeTab;
+        edgeTab2 = node.edgeTab2;
         edgeTab2.nodeType = nodeType;
         edgeTab2.nodeId = node.nodeId;
       }

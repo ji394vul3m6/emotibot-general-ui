@@ -136,7 +136,7 @@ export default {
       rewindQTooltip: {
         msg: this.$t('task_engine_v2.setting_edit_tab2.rewind_q_hint'),
       },
-      isUsingResponse: true,
+      isUsingResponse: !settingTab.skipDialogue,
     };
   },
   computed: {
@@ -160,11 +160,11 @@ export default {
   watch: {
     validateTab(newV, oldV) {
       if (newV && !oldV) {
-        const valid =
+        const valid = this.isUsingResponse ?
         [this.isValueEmpty(this.$refs['input-content']),
           this.isValueEmpty(this.$refs.defaultQ),
           this.isValueEmpty(this.$refs['fail-textarea'])]
-        .indexOf(false) === -1;
+        .indexOf(false) === -1 : true;
         this.$emit('update:valid', valid);
       }
     },

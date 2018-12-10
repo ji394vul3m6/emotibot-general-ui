@@ -60,7 +60,7 @@
               :ref="`selectFunction_${index}`"
               :value="[rule.funcName]"
               @input="onSelectFunctionInput(index, $event)"
-              :options="getFuncOptions(rule.source, index)"
+              :options="getFuncOptions(rule.source)"
               :showCheckedIcon="false"
               :fixedListWidth="false"
               :inputBarStyle="selectStyle"/>
@@ -565,8 +565,8 @@ const NLUParserMap = optionConfig.NLUParserMap;
 const NLUTypeMap = optionConfig.NLUTypeMap;
 const NLUTypeOptions = optionConfig.NLUTypeOptions;
 const ConditionOption = {
-  ALL: 0,
-  ANY: 1,
+  AND: 'AND',
+  OR: 'OR',
 };
 const NLUTimeParsers = optionConfig.NLUTimeParsers;
 const NLUSelectParsers = optionConfig.NLUSelectParsers;
@@ -598,10 +598,6 @@ export default {
       type: Array,
       required: true,
     },
-    initialDialogueLimit: {
-      type: Number,
-      required: false,
-    },
     validateConditionBlock: {
       type: Boolean,
       default: false,
@@ -609,7 +605,6 @@ export default {
   },
   data() {
     const edge = this.initialEdge;
-    const dialogueLimit = this.initialDialogueLimit;
     const edgeType = edge.edge_type || 'normal';
     const sourceOptions = optionConfig.getSourceOptionsV2(this);
     const sourceDropdownOptions = sourceOptions.map(option => ({
@@ -643,25 +638,13 @@ export default {
     const keyKeyMatchCompareOptions = optionConfig.getKeyKeyMatchCompareOptions(this);
     const listLengthMatchCompareOptions = optionConfig.getListLengthMatchCompareOptions(this);
     const counterCheckOptions = optionConfig.getCounterCheckOptions(this);
-    const cuParserOptions = optionConfig.getCuParserOptions(this);
-    let threshold;
-    let candidateEdges;
-    let rules;
-    let toNode;
-    let actions;
-    if (edgeType === 'qq') {
-      const obj = this.renderQQEdge(edge);
-      threshold = obj.threshold;
-      candidateEdges = obj.candidateEdges;
-    } else {
-      const obj = this.renderNormalEdge(edge);
-      rules = obj.rules;
-      toNode = obj.toNode;
-      actions = obj.actions;
-    }
+    const obj = this.renderNormalEdge(edge);
+    const rules = obj.rules;
+    const toNode = obj.toNode;
+    const actions = obj.actions;
     const conditionOptions = [
-      { text: this.$t('task_engine_v2.condition_action_block.condition_options.all'), value: ConditionOption.ALL },
-      { text: this.$t('task_engine_v2.condition_action_block.condition_options.any'), value: ConditionOption.ANY },
+      { text: this.$t('task_engine_v2.condition_action_block.condition_options.all'), value: ConditionOption.AND },
+      { text: this.$t('task_engine_v2.condition_action_block.condition_options.any'), value: ConditionOption.OR },
     ];
     return {
       edge,
@@ -673,16 +656,12 @@ export default {
         height: '32px',
         'border-radius': '2px',
       },
-      threshold,
-      candidateEdges,
       keyValMatchCompareOptions,
       keyKeyMatchCompareOptions,
       listLengthMatchCompareOptions,
       counterCheckOptions,
-      cuParserOptions,
       sourceOptions,
       funcOptionMap,
-      dialogueLimit,
       varDropdownMap: {},
       inputTooltip: {
         msg: this.$t('task_engine_v2.err_empty'),
@@ -697,7 +676,7 @@ export default {
       sourceDropdown,
       actionDropdown,
       conditionOptions,
-      selectedOption: [conditionOptions[0].value],
+      selectedOption: [edge.logic || conditionOptions[0].value],
       intentOptions: [],
       ActionType,
       assignValueOptions: actionOptionMap[ActionType.AssignValue],
@@ -724,6 +703,9 @@ export default {
     },
   },
   watch: {
+    selectedOption() {
+      this.emitUpdate();
+    },
     actions: {
       handler() {
         this.emitUpdate();
@@ -736,27 +718,11 @@ export default {
       },
       deep: true,
     },
-    candidateEdges: {
-      handler() {
-        this.emitUpdate();
-      },
-      deep: true,
-    },
     toNode: {
       handler() {
         this.emitUpdate();
       },
       deep: true,
-    },
-    threshold: {
-      handler() {
-        this.emitUpdate();
-      },
-    },
-    dialogueLimit: {
-      handler() {
-        this.emitUpdate();
-      },
     },
     globalVarOptions: {
       handler() {
@@ -794,52 +760,27 @@ export default {
     onInputFocus(evt) {
       evt.target.dispatchEvent(event.createEvent('tooltip-hide'));
     },
-    renderQQEdge(edge) {
-      const threshold = edge.threshold;
-      const candidateEdges = edge.candidate_edges.map((_edge) => {
-        let toNodeId = _edge.to_node_id;
-        if (toNodeId === 'null') {
-          toNodeId = null;
-        }
-        return {
-          to_node_id: toNodeId,
-          tar_text: _edge.tar_text,
-        };
-      });
-      return { threshold, candidateEdges };
-    },
     renderNormalEdge(edge) {
       // render andRules
-      const rules = edge.condition_rules || [];
-      let mappedRules;
-      if (rules.length > 0) {
-        mappedRules = rules[0].map((rule) => {
-          if (rule.source && rule.functions && rule.functions.length > 0) {
-            return {
-              id: this.$uuid.v1(),
-              source: rule.source,
-              funcName: rule.functions[0].function_name,
-              content: rule.functions[0].content,
-            };
-          }
-          return {
-            id: this.$uuid.v1(),
-            source: 'text',
-            funcName: null,
-            content: {},
-          };
-        });
-      }
+      const rules = edge.condition_rules.map(rule => ({
+        id: this.$uuid.v1(),
+        source: rule.source,
+        funcName: rule.function.function_name,
+        content: rule.function.content,
+      }));
       // render Actions
       const actions = edge.actions.map(action => ({
         id: this.$uuid.v1(),
         source: action.source,
         funcName: action.function.function_name,
         content: action.function.content,
+        type: action.type,
+        parser: action.parser,
+        nluType: action.nluType,
       }));
       // render toNode
       const toNode = edge.to_node_id;
-      return { rules: mappedRules, toNode, actions };
+      return { rules, toNode, actions };
     },
     deleteEdge() {
       this.$emit('deleteEdge');
@@ -873,50 +814,22 @@ export default {
       this.edge.valid = false;
       this.actions.splice(index, 1);
     },
-    addRegTargetKey(index) {
-      const operation = scenarioInitializer.initialRegularOperation();
-      this.rules[index].content.operations.push(operation);
-    },
-    deleteRegTargetKey(index, idx) {
-      this.rules[index].content.operations.splice(idx, 1);
-    },
-    addQQCandidateEdge() {
-      this.candidateEdges.push(scenarioInitializer.initialCandidateEdge());
-    },
-    deleteQQCandidateEdge(index) {
-      this.candidateEdges.splice(index, 1);
-    },
     onSelectSourceInput(index, newValue) {
       const newSource = newValue[0];
       const options = this.funcOptionMap[newSource];
-      if (this.edgeType === 'qq') {
-        this.edgeType = 'normal';
-        this.toNode = null;
-        this.rules = [{
-          id: this.$uuid.v1(),
-          source: newSource,
-          funcName: options[0].value,
-          content: scenarioInitializer.initialFunctionContentV2(options[0].value, this.nodeId),
-        }];
-      } else {
-        if (this.rules[index].source === newSource) return;
-        this.rules[index].source = newSource;
-        const selectFunctionRef = `selectFunction_${index}`;
-        if (this.$refs[selectFunctionRef]) {
-          this.$refs[selectFunctionRef][0].$emit('updateOptions', options);
-          this.$refs[selectFunctionRef][0].$emit('select', options[0].value);
-        }
+      if (this.rules[index].source === newSource) return;
+      this.rules[index].source = newSource;
+      const selectFunctionRef = `selectFunction_${index}`;
+      if (this.$refs[selectFunctionRef]) {
+        this.$refs[selectFunctionRef][0].$emit('updateOptions', options);
+        this.$refs[selectFunctionRef][0].$emit('select', options[0].value);
       }
       this.reloadTooltip();
     },
     onSelectFunctionInput(index, newValue) {
       const newFuncName = newValue[0];
       const originalEdgeType = this.edgeType;
-      if (newFuncName === 'qq') {
-        this.changeToQQEdge(originalEdgeType);
-      } else {
-        this.changeToNormalEdge(originalEdgeType, index, newFuncName);
-      }
+      this.changeToNormalEdge(originalEdgeType, index, newFuncName);
       this.reloadTooltip();
     },
     parserInput(action, { parser, source }) {
@@ -987,28 +900,9 @@ export default {
         });
       }
     },
-    changeToQQEdge(originalEdgeType) {
-      if (originalEdgeType === 'qq') {
-        return;
-      }
-      this.edgeType = 'qq';
-      this.threshold = '0';
-      this.candidateEdges = [scenarioInitializer.initialCandidateEdge()];
-    },
     changeToNormalEdge(originalEdgeType, index, newFuncName) {
-      if (originalEdgeType === 'qq') {
-        this.edgeType = 'normal';
-        this.toNode = null;
-        this.rules = [{
-          id: this.$uuid.v1(),
-          source: 'text',
-          funcName: newFuncName,
-          content: {},
-        }];
-      } else {  // originalEdgeType === 'normal'
-        if (this.rules[index].funcName === newFuncName) return;
-        this.rules[index].funcName = newFuncName;
-      }
+      if (this.rules[index].funcName === newFuncName) return;
+      this.rules[index].funcName = newFuncName;
       // initial content
       const content = scenarioInitializer.initialFunctionContentV2(newFuncName, this.nodeId);
       this.rules[index].content = content;
@@ -1053,77 +947,36 @@ export default {
       this.$forceUpdate();
     },
     emitUpdate() {
-      let conditionBlock = {};
-      if (this.edgeType === 'qq') {
-        conditionBlock = {
-          id: this.edge.id,
-          edge_type: this.edgeType,
-          threshold: this.threshold,
-          candidate_edges: this.candidateEdges,
-        };
-      } else if (this.edgeType === 'pc_succeed') {
-        conditionBlock = {
-          id: this.edge.id,
-          edge_type: 'pc_succeed',
-          to_node_id: this.toNode,
-          actions: [{
-            operation: 'set_to_global_info',
-            key: 'sys_node_dialogue_cnt',
-            val: 0,
-          }],
-          condition_rules: [[{
-            source: 'global_info',
-            functions: [{
-              content: [],
-              function_name: 'all_parameters_are_collected',
-            }],
-          }]],
-        };
-      } else if (this.edgeType === 'pc_failed') {
-        conditionBlock = {
-          id: this.edge.id,
-          edge_type: 'pc_failed',
-          to_node_id: this.toNode,
-          actions: [{
-            operation: 'set_to_global_info',
-            key: 'sys_node_dialogue_cnt',
-            val: 0,
-          }],
-          condition_rules: [[{
-            source: 'global_info',
-            functions: [{
-              content: 'node_counter',
-              function_name: 'counter_check',
-            }],
-          }]],
-          dialogueLimit: this.dialogueLimit,
-        };
-      } else {
-        conditionBlock = {
-          id: this.edge.id,
-          edge_type: this.edgeType,
-          to_node_id: this.toNode,
-          actions: [],
-          condition_rules: [this.rules.map(rule => ({
-            source: rule.source,
-            functions: [{
-              function_name: rule.funcName,
-              content: rule.content,
-            }],
-          }))],
-        };
-      }
+      const conditionBlock = {
+        id: this.edge.id,
+        edge_type: this.edgeType,
+        to_node_id: this.toNode,
+        logic: this.selectedOption[0],
+        actions: this.actions.map(action => ({
+          source: action.source,
+          function: {
+            function_name: action.funcName,
+            content: action.content,
+          },
+          type: action.type,
+          parser: action.parser,
+          nluType: action.nluType,
+        })),
+        condition_rules: this.rules.map(rule => ({
+          source: rule.source,
+          function: {
+            function_name: rule.funcName,
+            content: rule.content,
+          },
+        })),
+      };
       this.$emit('update', conditionBlock);
     },
     entityModuleOptions(parser) {
       const entityModuleOptions = optionConfig.getEntityModuleOptionsMap();
       return entityModuleOptions[parser];
     },
-    getFuncOptions(source, ruleIndex) {
-      // hide qq option when it is not the first rule
-      if (source === 'text' && ruleIndex !== 0) {
-        return this.funcOptionMap[source].filter((option => option.value !== 'qq'));
-      }
+    getFuncOptions(source) {
       return this.funcOptionMap[source];
     },
     onSelectGoto(toNode) {
@@ -1133,15 +986,6 @@ export default {
         this.toNode = newNodeID;
       } else {
         this.toNode = toNode;
-      }
-    },
-    onQQSelectGoto(toNode, index) {
-      if (toNode === 'add_new_dialogue_node') {
-        const newNodeID = scenarioInitializer.guid_sort();
-        this.$emit('addNewDialogueNode', newNodeID);
-        this.candidateEdges[index].to_node_id = newNodeID;
-      } else {
-        this.candidateEdges[index].to_node_id = toNode;
       }
     },
     addConditionActionClick(e, flag) {

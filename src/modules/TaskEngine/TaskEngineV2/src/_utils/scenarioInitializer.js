@@ -229,7 +229,7 @@ export default {
         failureResponse: '',
         parseFromThisNode: false,
       },
-      edgeTab: {
+      edgeTab2: {
         normalEdges: [],
         exceedThenGoto: '0',
         elseInto: '0',
@@ -480,6 +480,22 @@ export default {
             ],
           },
         ],
+      ],
+    };
+  },
+  initialNormalEdge2(edgeType) {
+    return {
+      edge_type: edgeType,
+      to_node_id: null,
+      actions: [],
+      condition_rules: [
+        {
+          source: 'text',
+          function: {
+            function_name: 'match',
+            content: '',
+          },
+        },
       ],
     };
   },
