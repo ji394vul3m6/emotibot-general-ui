@@ -33,6 +33,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import NavBar from '@/components/NavigationBar';
+import sysAPI from '@/api/system';
 import CommandRow from '../_components/CommandRow';
 import userAPI from '../_api/user';
 import groupAPI from '../_api/group';
@@ -50,7 +51,7 @@ export default {
     NavBar,
     CommandRow,
   },
-  api: [userAPI, groupAPI, roleAPI, robotAPI],
+  api: [userAPI, groupAPI, roleAPI, robotAPI, sysAPI],
   computed: {
     ...mapGetters([
       'enterpriseID',

@@ -32,6 +32,7 @@
 <script>
 import { mapGetters, mapMutations } from 'vuex';
 import NavBar from '@/components/NavigationBar';
+import sysAPI from '@/api/system';
 import EnterpriseAddForm from './_components/EnterpriseAddForm';
 import EnterpriseEditForm from './_components/EnterpriseEditForm';
 import EnterpriseDeleteForm from './_components/EnterpriseDeleteForm';
@@ -49,7 +50,7 @@ export default {
     NavBar,
     CommandRow,
   },
-  api: [enterpriseAPI, systemAPI],
+  api: [enterpriseAPI, systemAPI, sysAPI],
   computed: {
     ...mapGetters([
       'userInfo',
