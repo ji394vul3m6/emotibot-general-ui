@@ -178,6 +178,15 @@
               <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.intentName" :key="rule.funcName" @focus="onInputFocus">
             </div>
           </div>
+          <div class="row">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_block.label_target_key")}}
+            </div>
+            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" @focus="onInputFocus"
+              :value="getIntentToKey(index)"
+              @input="setIntentToKey(index, $event.target.value)"
+            >
+          </div>
         </div>
         <!-- 键值匹配 -->
         <div class="content-api-parser" v-if="rule.funcName === 'key_val_match'">
@@ -1031,6 +1040,7 @@ export default {
           }))],
         };
       }
+      // console.log(conditionBlock);
       this.$emit('update', conditionBlock);
     },
     entityModuleOptions(parser) {
@@ -1079,6 +1089,18 @@ export default {
         ...this.intentDropdown,
         options,
       };
+    },
+    getIntentToKey(index) {
+      const toKey = this.andRules[index].content.to_key;
+      if (toKey !== undefined) {
+        return toKey;
+      }
+      this.andRules[index].content.to_key = 'Intent';
+      return 'Intent';
+    },
+    setIntentToKey(index, newValue) {
+      this.andRules[index].content.to_key = newValue;
+      this.emitUpdate();
     },
   },
   beforeMount() {
