@@ -127,7 +127,7 @@ export default {
       add_callable_script: '新增脚本模版',
       empty_private_script: '暂无私有脚本内容',
       empty_callable_script: '暂无任务脚本模版内容',
-      confirm_to_save_changes: 'JS脚本设置已被更动，请问是否需要保存？',
+      confirm_to_save_changes: 'JS脚本设置已被修改，请问是否需要保存？',
     },
     trigger_edit_tab: {
       instruction: '设置触发此场景的条件',
