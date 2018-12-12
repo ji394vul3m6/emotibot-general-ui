@@ -20,11 +20,11 @@
 ---
 ## Props
 
-| Prop | required | Type | Accepted Values | Default | 說明 |
-|---|---|---|---|---|---|
-| value<br>(v-model) | false | Boolean | true / false | false | 開關按鈕預設開關狀態
-| big | false | Boolean | true / false | false | 開關按鈕是否放大
-| disabled | false | Boolean | true / false | false | 開關按鈕樣式是否為 disabled， disabled 樣式禁止操作開關
+| Prop | required | Type | Default | 說明 |
+|---|---|---|---|---|
+| value<br>(v-model) | - | Boolean | false | 開關按鈕預設狀態
+| big | - | Boolean | false | 開關按鈕是否放大
+| disabled | - | Boolean | false | 開關按鈕樣式是否為 disabled， disabled 樣式禁止操作開關
 
 ---
 ## Events

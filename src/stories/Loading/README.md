@@ -28,6 +28,6 @@
 ---
 ## Props
 
-| Prop | required | Type | Accepted Values | Default | 說明 |
-|---|---|---|---|---|---|
-| magnify | false | Number | - | 1 | Loading 動畫放大/縮小倍數
+| Prop | required | Type | Default | 說明 |
+|---|---|---|---|---|
+| magnify | false | Number | 1 | Loading 動畫放大/縮小倍數
