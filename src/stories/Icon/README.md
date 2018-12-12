@@ -28,33 +28,35 @@
 ---
 ## Props
 
-| Prop | required | Type | Accepted Values | Default | 說明 |
-|---|---|---|---|---|---|
-| iconType | true | String | 見下方可用 Icons | - | Icon 樣式
-| size | false | Number | - | 0 | icon 大小，單位為 px
-| enableHover | false | Boolean | true / false | false | Icon 是否允許 Hover 樣式，對名稱為 'info' 的 Icon 使用enableHover，hover 時 icon 會替換成 'info_hover' 名稱的 Icon
-| button | false | Boolean | true / false | false | Hover Icon 時 cursor 是否使用 pointer
+| Prop | required | Type | Default | 說明 |
+|---|---|---|---|---|
+| iconType | true | One of 下方[可用 Icons](#myIcons) |  - | Icon 樣式
+| size | - | Number | 0 | Icon 大小，單位為 px
+| enableHover | - | Boolean | false | Icon 是否允許 Hover 樣式<br>對名稱為 'info' 的 Icon 使用enableHover，hover 時 icon 會替換成 'info_hover' Icon
+| button | - | Boolean | false | Hover Icon 時 cursor 是否使用 pointer
 
 ---
-## Events
+## Emit Events
 
 | Event | Callback $event | 說明 |
 |---|---|---|
-| click | onclick event | 點擊Icon事件 |
+| click | onclick event | 點擊 Icon 事件 |
 
 ---
+<a id="myIcons"></a>
+
 ## 可用 Icons
-* [General Icons](#generalIcons)
-* [Tool Control Icons](#toolControlIcons)
-* [Arrow Icons](#arrowIcons)
-* [Menu Icons](#menuIcons)
-* [Header Icons](#headerIcons)
-* [Notification & Info Icons](#notificationAndInfoIcons)
-* [Category Tree Icons](#categoryTreeIcons)
-* [Intent Page Icons](#intentPageIcons)
-* [Robot Profile Icons](#robotProfileIcons)
-* [TaskEngineV2 Icons](#taskEngineV2Icons)
-* [Other Icons](#otherIcons)
+* <h3>[General Icons](#generalIcons)</h3>
+* <h3>[Tool Control Icons](#toolControlIcons)</h3>
+* <h3>[Arrow Icons](#arrowIcons)</h3>
+* <h3>[Menu Icons](#menuIcons)</h3>
+* <h3>[Header Icons](#headerIcons)</h3>
+* <h3>[Notification & Info Icons](#notificationAndInfoIcons)</h3>
+* <h3>[Category Tree Icons](#categoryTreeIcons)</h3>
+* <h3>[Intent Page Icons](#intentPageIcons)</h3>
+* <h3>[Robot Profile Icons](#robotProfileIcons)</h3>
+* <h3>[TaskEngineV2 Icons](#taskEngineV2Icons)</h3>
+* <h3>[Other Icons](#otherIcons)</h3>
 
 
 <a id="generalIcons"></a>
