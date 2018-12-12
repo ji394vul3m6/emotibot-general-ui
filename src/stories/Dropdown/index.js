@@ -23,21 +23,150 @@ export default [{
     const width = text('width', '150px');
     const option = object('options', options);
     const fixedListWidth = boolean('fixedListWidth', true);
+    const placeholder = text('placeholder', '請選擇');
+
+    const flatOptions = [
+      {
+        value: 'option1',
+        text: '選項 1',
+      },
+      {
+        value: 'option2',
+        text: '選項 2',
+      },
+      {
+        value: 'option3',
+        text: '選項 3',
+      },
+      {
+        value: 'option4',
+        text: '選項 4',
+      },
+      {
+        value: 'option5',
+        text: '選項 5',
+      },
+    ];
+    const groupOptions = [
+      {
+        isGroup: true,
+        text: '選項群組 1',
+      },
+      {
+        inGroup: true,
+        value: 'option2',
+        text: '群組1 選項A',
+      },
+      {
+        inGroup: true,
+        value: 'option3',
+        text: '群組1 選項B',
+      },
+      {
+        isGroup: true,
+        text: '選項群組 2',
+      },
+      {
+        inGroup: true,
+        value: 'option5',
+        text: '群組2 選項C',
+      },
+    ];
 
     const template = `
-      <div>
-        <div style="height:500px">
-          <dropdown-select
-            :options=option
-            :multi=multiChoice
-            :showCheck=showCheck
-            :width=width
-            :fixedListWidth="fixedListWidth"
-            v-model="checkValues"
-            @input="input"
-          />
+      <div class="div-block">
+        <div class="headline">DropdownSelect</div>
+        <dropdown-select
+          :options=option
+          :multi=multiChoice
+          :showCheckedIcon=showCheck
+          :width=width
+          :fixedListWidth="fixedListWidth"
+          v-model="checkValues"
+          :placeholder="placeholder"
+          @input="input"
+        />
+      </div>
+      <div class="div-block">
+        <div class="headline">DropdownSelect 單選</div>
+        <div class="line">
+        <dropdown-select
+          :options=flatOptions
+          width="300px"
+          v-model="checkValues"
+          placeholder="DropdownSelect 單選"
+          @input="input"
+        />
         </div>
-      </div>`;
+        <div class="headline">DropdownSelect 單選 無勾選Icon</div>
+        <div class="line">
+        <dropdown-select
+          :options=flatOptions
+          width="300px"
+          v-model="checkValues"
+          :showCheckedIcon="false"
+          placeholder="DropdownSelect 單選 無勾選Icon"
+          @input="input"
+        />
+        </div>
+        <div class="headline">DropdownSelect 單選 可搜尋選項</div>
+        <div class="line">
+        <dropdown-select
+          :options=flatOptions
+          width="300px"
+          v-model="checkValues"
+          placeholder="DropdownSelect 單選 可搜尋選項"
+          :showSearchBar="true"
+          @input="input"
+        />
+        </div>
+        <div class="headline">DropdownSelect 單選 error樣式</div>
+        <div class="line">
+        <dropdown-select
+          :options=flatOptions
+          width="300px"
+          v-model="checkValues"
+          placeholder="DropdownSelect 單選 可搜尋選項"
+          :showError="true"
+          @input="input"
+        />
+        </div>
+        <div class="headline">DropdownSelect 多選</div>
+        <div class="line">
+        <dropdown-select
+          :options=flatOptions
+          multi
+          width="300px"
+          v-model="checkValues"
+          placeholder="DropdownSelect 多選"
+          @input="input"
+        />
+        </div>
+      </div>
+      <div class="div-block">
+        <div class="headline">DropdownSelect 選項分組 單選</div>
+        <div class="line">
+        <dropdown-select
+          :options=groupOptions
+          width="300px"
+          :fixedListWidth="fixedListWidth"
+          v-model="checkValues"
+          placeholder="DropdownSelect 選項分組 單選"
+          @input="input"
+        />
+        </div>
+        <div class="headline">DropdownSelect 選項分組 多選</div>
+        <dropdown-select
+          :options=groupOptions
+          multi
+          width="300px"
+          :fixedListWidth="fixedListWidth"
+          v-model="checkValues"
+          placeholder="DropdownSelect 選項分組 多選"
+          @input="input"
+        />
+      </div>
+      `;
 
     return {
       components: {
@@ -51,6 +180,10 @@ export default [{
           checkValues,
           width,
           fixedListWidth,
+          placeholder,
+
+          flatOptions,
+          groupOptions,
         };
       },
       methods: {
@@ -58,7 +191,7 @@ export default [{
           action('input')(val);
         },
       },
-      template,
+      template: `<div>${template}</div>`,
     };
   }),
 },
@@ -136,8 +269,8 @@ export default [{
     const placeholder = text('placeholder', '請選擇');
 
     const template = `
-      <div>
-        <div style="height:700px">
+      <div class="div-block">
+        <div class="headline">Dropdown Cascader</div>
           <dropdown-cascader
             :options=option
             :width=width
