@@ -1,11 +1,439 @@
 <template>
-<div class="condition-block">
-  <div
-    class="button-delete-condition"
-    v-if="edgeType!=='pc_succeed' && edgeType!=='pc_failed' && edgeType!=='virtual_global_edges'">
-    <icon icon-type="delete" :enableHover="true" :size=24 @click="deleteEdge()"/>
+<div class="condition-action-block">
+  <div class="header">
+    <button class="add" @click="toggleAddCondition = !toggleAddCondition" v-dropdown="sourceDropdown">
+      {{ $t('task_engine_v2.condition_action_block.add_condition')}}
+      <img class="arrow" :class="{rotate180: toggleAddCondition}" src="@/assets/icons/expand_blue_icon.svg"/>
+    </button>
+    <button class="add" @click="toggleAddAction = !toggleAddAction" v-dropdown="actionDropdown">
+      {{ $t('task_engine_v2.condition_action_block.add_action')}}
+      <img class="arrow" :class="{rotate180: toggleAddAction}" src="@/assets/icons/expand_blue_icon.svg"/>
+    </button>
+    <span class="info">
+      {{ $t('task_engine_v2.condition_action_block.to') }}
+      {{ $t('task_engine_v2.condition_action_block.colon') }}
+      <div class="to-node">{{ toNodeText }}</div>
+      {{ $t('task_engine_v2.condition_action_block.condition_action', { condition: andRules.length, action: actions.length + 1}) }}
+    </span>
+    <button 
+      class="delete"
+      v-if="edgeType!=='pc_succeed' && edgeType!=='pc_failed' && edgeType!=='virtual_global_edges'"
+      @click="deleteEdge">
+      {{ $t('task_engine_v2.condition_action_block.delete') }}
+    </button>
+    <button class="toggle" :class="{collapse: !showConditionsAndActions}" @click="showConditionsAndActions = !showConditionsAndActions">
+      <img src="@/assets/icons/month_left_icon.svg"/>
+    </button>
   </div>
-  <div class="normal-edge" v-if="edgeType==='normal' || edgeType==='trigger'">
+  <template v-if="showConditionsAndActions">
+    <!-- 条件设置 -->
+    <div class="normal-edge" v-if="(edgeType==='normal' || edgeType==='trigger' || edgeType==='normal_2.0') && andRules.length">
+      <div class="title" v-t="'task_engine_v2.condition_action_block.condition_setup'"></div>
+      <div class="dropdown-select-container">
+        {{ $t('task_engine_v2.condition_action_block.match') }}
+        <dropdown-select 
+          class="dropdown-select"
+          :options="conditionOptions"
+          :showCheckedIcon="false"
+          width="100px"
+          @input="selectedOption = [conditionOptions.find(option => option.value === $event[0]).value]"
+          :value="selectedOption"
+          :inputBarStyle="selectStyle">
+          </dropdown-select>
+        {{ $t('task_engine_v2.condition_action_block.below_conditions')}}
+      </div>
+      <template v-for="(rule, index) in andRules">
+        <div :key="rule.id" class="block">
+          <div class="row">
+            <span class="label" v-if="index === 0" v-t="'task_engine_v2.condition_action_block.if'"></span>
+            <span class="label" v-if="index !== 0" v-t="'task_engine_v2.condition_action_block.and_if'"></span>
+            <dropdown-select
+              class="dropdown-select"
+              :ref="`selectSource_${index}`"
+              :value="[rule.source]"
+              @input="onSelectSourceInput(index, $event)"
+              :options="sourceOptions"
+              :showCheckedIcon="false"
+              :inputBarStyle="selectStyle"/>
+            <dropdown-select
+              class="dropdown-select"
+              :ref="`selectFunction_${index}`"
+              :value="[rule.funcName]"
+              @input="onSelectFunctionInput(index, $event)"
+              :options="getFuncOptions(rule.source, index)"
+              :showCheckedIcon="false"
+              :fixedListWidth="false"
+              :inputBarStyle="selectStyle"/>
+            <icon class="trash" :size="14" iconType="trash" @click="deleteRule(index)"></icon>
+          </div>
+          <!-- 完全相符 / 包含文本 -->
+          <div class="row" v-if="rule.funcName === 'match' || rule.funcName == 'contains'">
+            <span class="label" v-t="'task_engine_v2.condition_action_block.label_content'"></span>
+            <input ref="input-content" class="input-content" v-model="rule.content" v-tooltip="inputTooltip" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus"/>
+          </div>
+          <!-- 正则表示式 -->
+          <div class="row" v-if="rule.funcName === 'regular_exp'">
+            <span class="label" v-t="'task_engine_v2.condition_action_block.label_pattern'"></span>
+            <input ref="input-content" class="input-content" v-model="rule.content.pattern" v-tooltip="inputTooltip" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus"/>
+            <!-- <template v-for="(operation, idx) in rule.content.operations">
+              <div :key="idx">
+                <div class="row">
+                  <div class="label label-start">
+                    {{$t("task_engine_v2.condition_block.label_nth_match")}}
+                  </div>
+                  <input class="input-content" ref="input-content" v-tooltip="inputTooltip"
+                    oninput="this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(^[0-9]{1,2}).*/g, '$1');"
+                    v-model.number="operation.index"
+                    @focus="onInputFocus"/>
+                  <button
+                    v-if="idx === 0"
+                    class="button"
+                    style="width: 70px;"
+                    @click="addRegTargetKey(index)">
+                    {{$t("task_engine_v2.condition_block.button_add")}}
+                  </button>
+                  <button
+                    v-if="idx !== 0"
+                    class="button"
+                    style="width: 60px;"
+                    @click="deleteRegTargetKey(index, idx)">
+                    {{$t("task_engine_v2.condition_block.button_remove")}}
+                  </button>
+                </div>
+                <div class="row">
+                  <div class="label label-start">
+                    {{$t("task_engine_v2.condition_block.label_target_key")}}
+                  </div>
+                  <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="operation.key" @focus="onInputFocus"/>
+                </div>
+              </div>
+            </template> -->
+          </div>
+          <!-- Intent -->
+          <div class="row" v-if="rule.funcName === 'intent_parser'">
+            <span class="label" v-t="'task_engine_v2.condition_action_block.label_content'"></span>
+            <dropdown-select
+              class="dropdown-select"
+              :value="[rule.content]"
+              @input="rule.content = $event[0]"
+              :options="intentOptions"
+              :fixedListWidth="false"
+              :showCheckedIcon="false"
+              :inputBarStyle="selectStyle"/>
+          </div>
+          <!-- 键值匹配 -->
+          <template v-if="rule.funcName === 'key_val_match'">
+            <div class="row">
+              <span class="label" v-t="'task_engine_v2.condition_action_block.label_compare_operator'"></span>
+              <dropdown-select
+                class="dropdown-select"
+                :key="rule.funcName"
+                :value="[rule.content[0].compare]"
+                @input="rule.content[0].compare = $event[0]"
+                :options="keyValMatchCompareOptions"
+                :showCheckedIcon="false"
+                :inputBarStyle="selectStyle"/>
+            </div>
+            <div class="row" v-if="rule.funcName === 'key_val_match'">
+              <span class="label" v-t="'task_engine_v2.condition_action_block.label_key'"></span>
+              <div ref="insertVarDropdown" class="dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key')">
+                <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus">
+              </div>
+            </div>
+            <div class="row">
+              <span class="label" v-t="'task_engine_v2.condition_action_block.label_value'"></span>
+              <input v-if="rule.content[0].compare === '>'  ||
+                          rule.content[0].compare === '>=' ||
+                          rule.content[0].compare === '<'  ||
+                          rule.content[0].compare === '<=' "
+                ref="input-content" 
+                v-tooltip="inputTooltip"
+                class="input-content"
+                oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+                v-model="rule.content[0].val"
+                :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')"
+                @focus="onInputFocus"/>
+              <input v-else
+                ref="input-content" 
+                class="input-content"
+                v-tooltip="inputTooltip"
+                v-model="rule.content[0].val"
+                :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')"
+                @focus="onInputFocus"/>
+            </div>
+          </template>
+          <!-- 键键匹配 -->
+          <template v-if="rule.funcName === 'key_key_match'">
+            <div class="row">
+              <span class="label" v-t="'task_engine_v2.condition_action_block.label_compare_operator'"></span>
+              <dropdown-select
+                class="dropdown-select"
+                :key="rule.funcName"
+                :value="[rule.content[0].compare]"
+                @input="rule.content[0].compare = $event[0]"
+                :options="keyKeyMatchCompareOptions"
+                :showCheckedIcon="false"
+                :inputBarStyle="selectStyle"/>
+            </div>
+            <div class="row">
+              <span class="label" v-t="'task_engine_v2.condition_action_block.label_key'"></span>
+              <div ref="insertVarDropdown" class="dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key1')">
+                <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key1" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus">
+              </div>
+            </div>
+            <div class="row">
+              <span class="label" v-t="'task_engine_v2.condition_action_block.label_key'"></span>
+              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key2" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus"/>
+            </div>
+          </template>
+          <!-- 包含键 -->
+          <div class="row" v-if="rule.funcName === 'contain_key'">
+            <span class="label" v-t="'task_engine_v2.condition_action_block.label_key'"></span>
+            <div ref="insertVarDropdown" class="dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key')">
+              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key" :key="rule.funcName" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus">
+            </div>
+          </div>
+          <!-- 不包含键 -->
+          <div class="row" v-if="rule.funcName === 'not_contain_key'">
+            <span class="label" v-t="'task_engine_v2.condition_action_block.label_key'"></span>
+            <div ref="insertVarDropdown" class="dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key')">
+              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key" :key="rule.funcName" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus">
+            </div>
+          </div>
+           <!-- 序列长度匹配 -->
+           <template v-if="rule.funcName === 'list_length_match'">
+            <div class="row">
+              <span class="label" v-t="'task_engine_v2.condition_action_block.label_compare_operator'"></span>
+              <dropdown-select
+                class="dropdown-select"
+                :key="rule.funcName"
+                :value="[rule.content[0].compare]"
+                @input="rule.content[0].compare = $event[0]"
+                :options="listLengthMatchCompareOptions"
+                :showCheckedIcon="false"
+                :inputBarStyle="selectStyle"/>
+            </div>
+            <div class="row">
+              <span class="label" v-t="'task_engine_v2.condition_action_block.label_key'"></span>
+              <div ref="insertVarDropdown" class="dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content[0], 'key')">
+                <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content[0].key" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus">
+              </div>
+            </div>
+            <div class="row">
+              <span class="label" v-t="'task_engine_v2.condition_action_block.label_value'"></span>
+              <input 
+                class="input-content" 
+                ref="input-content" 
+                v-tooltip="inputTooltip"
+                oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+                v-model="rule.content[0].val"
+                :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')"
+                @focus="onInputFocus"/>
+            </div>
+          </template>
+          <!-- 轮次检查 -->
+          <div class="row" v-if="rule.funcName === 'counter_check'">
+            <span class="label" v-t="'task_engine_v2.condition_action_block.label_content'"></span>
+            <dropdown-select
+              class="dropdown-select"
+              :key="rule.funcName"
+              :value="[rule.content]"
+              @input="rule.content = $event[0]"
+              :options="counterCheckOptions"
+              :showCheckedIcon="false"
+              :inputBarStyle="selectStyle"/>
+          </div>
+          <!-- 正则表示式 -->
+          <template v-if="rule.funcName === 'regular_exp_from_var'">
+            <div class="row">
+              <span class="label" v-t="'task_engine_v2.condition_action_block.label_pattern'"></span>
+              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.pattern" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus"/>
+            </div>
+            <div class="row">
+              <span class="label" v-t="'task_engine_v2.condition_action_block.label_source_key'"></span>
+              <div ref="insertVarDropdown" class="dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content, 'from_key')">
+                <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.from_key" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus">
+              </div>
+            </div>
+          </template>
+        </div>
+      </template>
+    </div>
+    <!-- 执行动作 -->
+    <div class="normal-edge" v-if="(edgeType==='normal' || edgeType==='trigger' || edgeType==='normal_2.0')">
+      <div class="title" v-t="'task_engine_v2.condition_action_block.action_setup'"></div>
+      <template v-for="(action, index) in actions">
+        <div :key="action.id" class="block">
+          <!-- 键值赋值 / 键键赋值-->
+          <template v-if="action.type === ActionType.AssignValue">
+            <div class="row">
+              <span class="label" v-t="'task_engine_v2.condition_action_block.label_assign_value'"></span>
+              <dropdown-select
+                class="dropdown-select"
+                :ref="`selectSource_${index}`"
+                :value="[action.content.operation]"
+                @input="action.content.operation = $event[0];"
+                :options="assignValueOptions"
+                :showCheckedIcon="false"
+                :inputBarStyle="selectStyle"/>
+              <icon class="trash" :size="14" iconType="trash" @click="deleteAction(index)"></icon>
+            </div>
+            <div class="row" v-if="action.content.operation === 'set_key_to_value'">
+              <span class="label" v-t="'task_engine_v2.condition_action_block.label_exec'"></span>
+              <div ref="insertVarDropdown" class="dropdown-container" v-dropdown="insertVarDropdown(action.id, action.content, 'key')">
+                <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="action.content.key" :placeholder="$t('task_engine_v2.condition_action_block.key_placeholder')" @focus="onInputFocus">
+              </div>
+              <span class="label" v-t="'task_engine_v2.condition_action_block.label_equal'"></span>
+              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="action.content.val" :placeholder="$t('task_engine_v2.condition_action_block.value_placeholder')" @focus="onInputFocus"/>
+            </div>
+            <div class="row" v-if="action.content.operation === 'set_key_to_key'">
+              <span class="label" v-t="'task_engine_v2.condition_action_block.label_exec'"></span>
+              <div ref="insertVarDropdown" class="dropdown-container" v-dropdown="insertVarDropdown(action.id, action.content, 'key')">
+                <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="action.content.key" :placeholder="$t('task_engine_v2.condition_action_block.key_placeholder')" @focus="onInputFocus">
+              </div>
+              <span class="label" v-t="'task_engine_v2.condition_action_block.label_equal'"></span>
+              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="action.content.val" :placeholder="$t('task_engine_v2.condition_action_block.key_placeholder')" @focus="onInputFocus"/>
+            </div>
+          </template>
+          <!-- Web API 调用 -->
+          <div class="row" v-if="action.type === ActionType.WebAPI">
+            <span class="label" v-t="'task_engine_v2.condition_action_block.label_web_api'"></span>
+            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="action.content" :placeholder="$t('task_engine_v2.condition_action_block.http_placeholder')" @focus="onInputFocus"/>
+            <icon class="trash" :size="14" iconType="trash" @click="deleteAction(index)"></icon>
+          </div>
+          <!-- 文字回复 -->
+          <div class="row" v-if="action.type === ActionType.ResponseText">
+            <span class="label" v-t="'task_engine_v2.condition_action_block.label_text_response'"></span>
+            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="action.content" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus"/>
+            <icon class="trash" :size="14" iconType="trash" @click="deleteAction(index)"></icon>
+          </div>
+          <!-- 解析器 -->
+          <template v-if="action.type === ActionType.Parser">
+            <div class="row">
+              <span class="label" v-t="'task_engine_v2.condition_action_block.label_parser'"></span>
+              <dropdown-select
+                class="dropdown-select"
+                :ref="`selectSource_${index}`"
+                :value="[action.parser]"
+                @input="parserInput(action, {parser: $event[0], source: 'text'})"
+                :options="parserOptions"
+                :placeholder="$t('task_engine_v2.condition_action_block.parser_placeholder')"
+                :showCheckedIcon="false"
+                :inputBarStyle="selectStyle"/>
+              <icon class="trash" :size="14" iconType="trash" @click="deleteAction(index)"></icon>
+            </div>
+            <!-- 规则解析器 -->
+            <div :key="action.parser" v-if="action.parser === 'reg_parser'">
+              <div class="row">
+                <span class="label" v-t="'task_engine_v2.condition_action_block.label_source'"></span>
+                <dropdown-select
+                  class="dropdown-select"
+                  :ref="`selectSource_${index}`"
+                  :value="[action.source]"
+                  @input="parserInput(action, {source: $event[0], parser: action.parser})"
+                  :options="sourceOptions"
+                  :showCheckedIcon="false"
+                  :inputBarStyle="selectStyle"/>
+              </div>
+              <div class="row">
+                <span class="label" v-t="'task_engine_v2.condition_action_block.label_pattern'"></span>
+                <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="action.content.pattern" :placeholder="$t('task_engine_v2.condition_action_block.reg_placeholder')" @focus="onInputFocus"/>
+              </div>
+              <div class="row" v-if="action.source === 'global_info'">
+                <span class="label" v-t="'task_engine_v2.condition_action_block.label_source_key'"></span>
+                <div ref="insertVarDropdown" class="dropdown-container" v-dropdown="insertVarDropdown(action.id, action.content, 'from_key')">
+                  <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="action.content.from_key" @focus="onInputFocus">
+                </div>
+              </div>
+              <div class="row">
+                <span class="label"></span>
+                <button 
+                  class="add-target-key" 
+                  v-t="'task_engine_v2.condition_action_block.add_target_key'"
+                  @click="action.content.operations.push({index: 0, key: '', operation: 'set_to_global_info'})">
+                </button>
+              </div>
+              <template v-for="(operation, idx) in action.content.operations">
+                <div class="row" :key="idx">
+                  <span class="label" v-t="'task_engine_v2.condition_action_block.label_match'"></span>
+                  <input class="input-content" ref="input-content" v-tooltip="inputTooltip"
+                      oninput="this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(^[0-9]{1,2}).*/g, '$1');"
+                      v-model.number="operation.index"
+                      @focus="onInputFocus"/>
+                  <span class="label" v-t="'task_engine_v2.condition_action_block.label_target_key'"></span>
+                  <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="operation.key" @focus="onInputFocus">
+                  <button class="grey-delete" v-t="'task_engine_v2.condition_action_block.delete'" @click="action.content.operations.splice(idx, 1)"></button>
+                </div>
+              </template>
+            </div>
+            <!-- 是否解析器 -->
+            <div :key="action.parser" v-if="action.parser === 'polarity_parser'">
+              <div class="row">
+                <span class="label" v-t="'task_engine_v2.condition_action_block.label_source'"></span>
+                <dropdown-select
+                  class="dropdown-select"
+                  :ref="`selectSource_${index}`"
+                  :value="[action.source]"
+                  @input="parserInput(action, {source: $event[0], parser: action.parser})"
+                  :options="sourceOptions"
+                  :showCheckedIcon="false"
+                  :inputBarStyle="selectStyle"/>
+              </div>
+              <div class="row">
+                <span class="label" v-t="'task_engine_v2.condition_action_block.label_target_key'"></span>
+                <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="action.content.key" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus"/>
+              </div>
+            </div>
+            <!-- 酒店预定语句解析器 / 通用语句解析器 / 场景语句解析器 -->
+            <div :key="action.parser" v-if="action.parser === 'common_parser' || action.parser === 'hotel_parser' || action.parser === 'task_parser'">
+              <div class="row">
+                <span class="label" v-t="'task_engine_v2.condition_action_block.label_source'"></span>
+                <dropdown-select
+                  class="dropdown-select"
+                  :ref="`selectSource_${index}`"
+                  :value="[action.source]"
+                  @input="parserInput(action, {source: $event[0], parser: action.parser})"
+                  :options="sourceOptions"
+                  :showCheckedIcon="false"
+                  :inputBarStyle="selectStyle"/>
+              </div>
+              <div class="row">
+                <span class="label" v-t="'task_engine_v2.condition_action_block.label_content'"></span>
+                <dropdown-select
+                  class="dropdown-select"
+                  :key="action.funcName"
+                  :ref="`selectTargetEntity_${index}`"
+                  :multi="true"
+                  :value="action.content.tags.split(',')"
+                  @input="action.content.tags = $event.join(',')"
+                  :options="entityModuleOptions(action.funcName)"
+                  :showCheckedIcon="true"
+                  :showSearchBar="true"
+                  :placeholder="$t('task_engine_v2.condition_action_block.multi_placeholder')"
+                  :inputBarStyle="selectStyle"/>
+              </div>
+            </div>
+          </template>
+        </div>
+      </template>
+      <div class="block">
+        <div class="row" v-if="edgeType!=='trigger'">
+          <span class="label" v-t="'task_engine_v2.condition_action_block.to'"></span>
+          <dropdown-select
+            class="dropdown-select"
+            ref="selectGoto"
+            :value="[toNode]"
+            @input="onSelectGoto($event[0])"
+            :options="toNodeOptions"
+            :fixedListWidth="false"
+            :showCheckedIcon="false"
+            :showSearchBar="true"
+            :inputBarStyle="selectStyle"/>
+        </div>
+      </div>
+    </div>
+  </template>
+  <div class="normal-edge" v-if="edgeType==='normal' || edgeType==='trigger' || edgeType==='normal_2.0'">
     <template v-for="(rule, index) in andRules">
       <div class="rule-block" :key="rule.id">
         <div class="row row-function" v-bind:class="{'not-first': index !== 0}">
@@ -648,11 +1076,16 @@ import intentApi from '@/modules/IntentEngine/_api/intent';
 import scenarioInitializer from '../_utils/scenarioInitializer';
 import optionConfig from '../_utils/optionConfig';
 
+const ActionType = optionConfig.ActionType;
+const ConditionOption = {
+  ALL: 0,
+  ANY: 1,
+};
+
 export default {
-  name: 'condition-block',
   api: intentApi,
   components: {
-    'dropdown-select': DropdownSelect,
+    DropdownSelect,
   },
   props: {
     nodeId: {
@@ -685,25 +1118,79 @@ export default {
     },
   },
   data() {
-    return {
-      edge: {},
-      edgeType: 'normal',
-      andRules: [],
-      toNode: [],
-      selectStyle: {
-        height: '36px',
-        'border-radius': '5px',
+    const edge = this.initialEdge;
+    const dialogueLimit = this.initialDialogueLimit;
+    const edgeType = edge.edge_type || 'normal';
+    const sourceOptions = optionConfig.getSourceOptionsV2(this);
+    const sourceDropdownOptions = sourceOptions.map(option => ({
+      ...option,
+      onclick: () => {
+        this.addRule(option.value);
       },
-      threshold: '0',
-      candidateEdges: [],
-      keyValMatchCompareOptions: [],
-      keyKeyMatchCompareOptions: [],
-      listLengthMatchCompareOptions: [],
-      counterCheckOptions: [],
-      cuParserOptions: [],
-      sourceOptions: [],
-      funcOptionMap: [],
-      dialogueLimit: 3,
+    }));
+    const sourceDropdown = {
+      width: '150px',
+      alignLeft: true,
+      options: sourceDropdownOptions,
+    };
+    const actionOptions = optionConfig.getActionOptions(this);
+    const actionDropdownOptions = actionOptions.map(option => ({
+      ...option,
+      onclick: () => {
+        this.addAction(option.value);
+      },
+    }));
+    const actionDropdown = {
+      width: '150px',
+      alignLeft: true,
+      options: actionDropdownOptions,
+    };
+    const funcOptionMap = optionConfig.getFuncOptionMapV2(this);
+    const actionOptionMap = optionConfig.getActionOptionMap(this);
+    const keyValMatchCompareOptions = optionConfig.getKeyValMatchCompareOptions(this);
+    const keyKeyMatchCompareOptions = optionConfig.getKeyKeyMatchCompareOptions(this);
+    const listLengthMatchCompareOptions = optionConfig.getListLengthMatchCompareOptions(this);
+    const counterCheckOptions = optionConfig.getCounterCheckOptions(this);
+    const cuParserOptions = optionConfig.getCuParserOptions(this);
+    let threshold;
+    let candidateEdges;
+    let andRules;
+    let toNode;
+    let actions;
+    if (edgeType === 'qq') {
+      const obj = this.renderQQEdge(edge);
+      threshold = obj.threshold;
+      candidateEdges = obj.candidateEdges;
+    } else {
+      const obj = this.renderNormalEdge(edge);
+      andRules = obj.andRules;
+      toNode = obj.toNode;
+      actions = obj.actions;
+    }
+    const conditionOptions = [
+      { text: this.$t('task_engine_v2.condition_action_block.condition_options.all'), value: ConditionOption.ALL },
+      { text: this.$t('task_engine_v2.condition_action_block.condition_options.any'), value: ConditionOption.ANY },
+    ];
+    return {
+      edge,
+      edgeType,
+      andRules,
+      actions,
+      toNode,
+      selectStyle: {
+        height: '32px',
+        'border-radius': '2px',
+      },
+      threshold,
+      candidateEdges,
+      keyValMatchCompareOptions,
+      keyKeyMatchCompareOptions,
+      listLengthMatchCompareOptions,
+      counterCheckOptions,
+      cuParserOptions,
+      sourceOptions,
+      funcOptionMap,
+      dialogueLimit,
       varDropdownMap: {},
       inputTooltip: {
         msg: this.$t('task_engine_v2.err_empty'),
@@ -716,9 +1203,24 @@ export default {
         width: '450px',
         options: [],
       },
+      toggleAddCondition: false,
+      toggleAddAction: false,
+      showConditionsAndActions: true,
+      sourceDropdown,
+      actionDropdown,
+      conditionOptions,
+      selectedOption: [conditionOptions[0].value],
+      intentOptions: [],
+      ActionType,
+      assignValueOptions: actionOptionMap[ActionType.AssignValue],
+      parserOptions: actionOptionMap[ActionType.Parser],
     };
   },
-  computed: {},
+  computed: {
+    toNodeText() {
+      return this.toNodeOptions.find(option => option.value === this.toNode).text;
+    },
+  },
   watch: {
     andRules: {
       handler() {
@@ -784,41 +1286,26 @@ export default {
     onInputFocus(evt) {
       evt.target.dispatchEvent(event.createEvent('tooltip-hide'));
     },
-    renderConditionContent() {
-      this.edge = this.initialEdge;
-      this.dialogueLimit = this.initialDialogueLimit;
-      this.edgeType = this.edge.edge_type || 'normal';
-      this.sourceOptions = optionConfig.getSourceOptions(this);
-      this.funcOptionMap = optionConfig.getFuncOptionMap(this);
-      this.keyValMatchCompareOptions = optionConfig.getKeyValMatchCompareOptions(this);
-      this.keyKeyMatchCompareOptions = optionConfig.getKeyKeyMatchCompareOptions(this);
-      this.listLengthMatchCompareOptions = optionConfig.getListLengthMatchCompareOptions(this);
-      this.counterCheckOptions = optionConfig.getCounterCheckOptions(this);
-      this.cuParserOptions = optionConfig.getCuParserOptions(this);
-      if (this.edgeType === 'qq') {
-        this.renderQQEdge();
-      } else {
-        this.renderNormalEdge();
-      }
-    },
-    renderQQEdge() {
-      this.threshold = this.edge.threshold;
-      this.candidateEdges = this.edge.candidate_edges.map((edge) => {
-        let toNodeId = edge.to_node_id;
+    renderQQEdge(edge) {
+      const threshold = edge.threshold;
+      const candidateEdges = edge.candidate_edges.map((_edge) => {
+        let toNodeId = _edge.to_node_id;
         if (toNodeId === 'null') {
           toNodeId = null;
         }
         return {
           to_node_id: toNodeId,
-          tar_text: edge.tar_text,
+          tar_text: _edge.tar_text,
         };
       });
+      return { threshold, candidateEdges };
     },
-    renderNormalEdge() {
+    renderNormalEdge(edge) {
       // render andRules
-      const rules = this.edge.condition_rules || [];
+      const rules = edge.condition_rules || [];
+      let andRules;
       if (rules.length > 0) {
-        this.andRules = rules[0].map((rule) => {
+        andRules = rules[0].map((rule) => {
           if (rule.source && rule.functions && rule.functions.length > 0) {
             return {
               id: this.$uuid.v1(),
@@ -835,15 +1322,23 @@ export default {
           };
         });
       }
+      // render Actions
+      const actions = edge.actions.map(action => ({
+        id: this.$uuid.v1(),
+        source: action.source,
+        funcName: action.function.function_name,
+        content: action.function.content,
+      }));
       // render toNode
-      this.toNode = this.edge.to_node_id;
+      const toNode = edge.to_node_id;
+      return { andRules, toNode, actions };
     },
     deleteEdge() {
       this.$emit('deleteEdge');
     },
-    addRule() {
+    addRule(source = 'text') {
       this.edge.valid = false;
-      const rule = scenarioInitializer.initialRule();
+      const rule = scenarioInitializer.initialRule(source);
       this.andRules.push({
         id: this.$uuid.v1(),
         source: rule.source,
@@ -851,9 +1346,24 @@ export default {
         content: rule.functions[0].content,
       });
     },
+    addAction(actionType = 'parser') {
+      this.edge.valid = false;
+      const action = scenarioInitializer.initialAction(actionType);
+      this.actions.push({
+        id: this.$uuid.v1(),
+        source: action.source,
+        funcName: action.function.function_name,
+        content: action.function.content,
+        type: actionType,
+      });
+    },
     deleteRule(index) {
       this.edge.valid = false;
       this.andRules.splice(index, 1);
+    },
+    deleteAction(index) {
+      this.edge.valid = false;
+      this.actions.splice(index, 1);
     },
     addRegTargetKey(index) {
       const operation = scenarioInitializer.initialRegularOperation();
@@ -900,6 +1410,20 @@ export default {
         this.changeToNormalEdge(originalEdgeType, index, newFuncName);
       }
       this.reloadTooltip();
+    },
+    parserInput(action, { parser, source }) {
+      action.parser = parser;
+      action.source = source;
+      action.funcName = parser;
+      if (parser === 'reg_parser') {
+        if (source === 'text') {
+          action.funcName = 'regular_exp';
+        } else if (source === 'global_info') {
+          action.funcName = 'regular_exp_from_var';
+        }
+      }
+      action.content = scenarioInitializer.initialFunctionContent(action.funcName, this.nodeId);
+      this.$forceUpdate();
     },
     reloadTooltip() {
       if (this.$refs['input-content']) {
@@ -1083,11 +1607,16 @@ export default {
       };
     },
   },
-  beforeMount() {
-    this.renderConditionContent();
-  },
   mounted() {
     this.$api.getIntentsDetail().then((intents) => {
+      this.intentOptions = intents.map(intent => ({
+        ...intent,
+        text: intent.name,
+        value: {
+          module: 'intent_engine_2.0',
+          intentName: intent.name,
+        },
+      }));
       this.intentDropdown.options = intents.map(intent => ({
         ...intent,
         text: intent.name,
@@ -1098,90 +1627,156 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.condition-block{
+.condition-action-block {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  background: #F3F7F9;
-  padding: 20px 20px 20px 20px;
-  border: 1px solid $color-borderline;
-  border-radius: 5px;
-  &:not(:last-child){
-    margin: 0px 0px 20px 0px;
-  }
+  background: #f7f7f7;
+  border-radius: 2px;
+  @include font-14px();
   cursor: move;
-  .button-delete-condition{
-    position: absolute;
-    top: 10px;
-    right: 10px;
+  .dropdown-select {
+    background-color: white;
   }
-  .rule-block{
-    &:not(:first-child){
-      margin: 30px 0px 0px 0px;
-    }
-  }
-  .pc_block{
-    .label-bold{
-      font-weight: 600;
-    }
-    .label-margin-left{
-      margin-left: 20px;
-    }
-    .input-limit{
-      height: 36px;
-      margin: 0px 10px 0px 10px;
-      width: 40px;
-    }
-    .select{
-      background: white;
-      margin-left: 20px;
-      border-radius: 5px;
-    }
-  }
-  .row{
+  .header {
+    padding: 10px 20px;
+    color: $color-font-mark;
     display: flex;
-    flex-direction: row;
     align-items: center;
-    height: 36px;
-    margin: 0px 0px 10px 0px;
-    &.row-no-bottom-margin{
-      margin: 0px 0px 0px 0px;
+    box-shadow: inset 0 -1px 0 0 #dbdbdb;
+    background-color: #eeeeee;
+    button {
+      border: none;
+      outline: none;
+      background-color: transparent;
+      display: flex;
+      align-items: center;
+      @include font-14px();
+      cursor: pointer;
+      padding: 0;
     }
-    .label{
-      height: 36px;
-      line-height: 36px;
-      font-size: 16px;
+    .add {
+      color: #3d80ff;
+      &:not(:last-child) {
+        margin-right: 20px;
+      }
+      .arrow {
+        width: 12px;
+        height: 12px;
+        margin-left: 6px;
+        transition: transform .5s ease-in-out;
+        &.rotate180 {
+          transform: rotate(180deg);
+        }
+      }
     }
-    .label-start{
-      width: 84px;
+    .info {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      .to-node {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        display: inline-block;
+        max-width: 120px;
+        white-space: nowrap;
+      }
     }
-    .select{
-      background: white;
+    .delete {
+      color: #f25c62;
+      margin: 0 20px;
     }
-    .select-function{
-      margin-left: 10px;
+    .toggle {
+      transform: rotate(90deg);
+      transition: transform .5s ease-in-out;
+      &.collapse {
+        transform: rotate(270deg);
+      }
+      img {
+        width: 24px;
+        height: 24px;
+      }
     }
-    input{
-      height: 36px;
+  }
+  .normal-edge {
+    padding: 0 20px;
+    margin: 10px 0;
+    .title {
+      padding-top: 10px;
+      color: $color-font-active;
     }
-    .input-content{
-      width: 420px;
+    .dropdown-select-container {
+      color: $color-font-normal;
+      margin: 10px 38px;
+      display: flex;
+      align-items: center;
+      .dropdown-select {
+        margin: 0 10px;
+      }
     }
-    .input-with-dropdown-container{
-      position: relative;
+  }
+  .block {
+    border-radius: 1px;
+    background-color: #eeeeee;
+    color: $color-font-normal;
+    position: relative;
+    padding: 5px 0;
+    margin: 10px 0;
+    &:last-of-type {
+      margin-bottom: 0;
     }
-    .button{
-      background: #57C7D4;
-      height: 36px;
-      margin-left: 15px;
-      border-radius: 5px;
-      color: white;
-      font-size: 14px;
-      font-weight: 600;
+    .row {
+      padding: 5px 42px 5px 0;
+      display: flex;
+      align-items: center;
+      .label {
+        text-align: right;
+        width: 66px;
+        margin-right: 10px;
+        &:not(:first-of-type) {
+          margin-left: 10px;
+          width: auto;
+        }
+      }
+      .dropdown-select {
+        &:not(:first-of-type) {
+          margin-left: 10px;
+        }
+        flex: 1;
+        background-color: white;
+      }
+      .trash {
+        align-self: flex-start;
+        position: absolute;
+        right: 10px;
+        cursor: pointer;
+      }
+      .dropdown-container {
+        flex: 1;
+        .input-content {
+          width: 100%;
+        }
+      }
     }
-    .button-add-if{
-      width: 80px;
+    .input-content {
+      flex: 1;
     }
+  }
+  .add-target-key {
+    color: $color-primary;
+    border: none;
+    background-color: transparent;
+    padding: 0;
+    @include font-14px();
+  }
+  .grey-delete {
+    width: 70px;
+    height: 32px;
+    background-color: $color-font-disabled;
+    padding: 0;
+    border: none;
+    font-size: 12px;
+    margin-left: 8px;
+    color: white;
   }
 }
 </style>

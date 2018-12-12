@@ -1,3 +1,7 @@
+import optionConfig from './optionConfig';
+
+const ActionType = optionConfig.ActionType;
+
 export default {
   s4_sort() { return Math.floor((1 + Math.random()) * 0x10000).toString(10).substring(1); },
   guid_sort() { return this.s4_sort() + this.s4_sort() + this.s4_sort(); },
@@ -368,9 +372,9 @@ export default {
     };
     return map[funcName];
   },
-  initialEdge() {
+  initialEdge(edgeType = 'normal') {
     return {
-      edge_type: 'normal',
+      edge_type: edgeType,
       to_node_id: null,
       actions: [],
       condition_rules: [
@@ -407,16 +411,80 @@ export default {
       ],
     };
   },
-  initialRule() {
-    return {
-      source: 'text',
-      functions: [
-        {
+  initialRule(source = 'text') {
+    if (source === 'text') {
+      return {
+        source,
+        functions: [{
           function_name: 'match',
           content: '',
-        },
-      ],
-    };
+        }],
+      };
+    } else if (source === 'global_info') {
+      return {
+        source,
+        functions: [
+          {
+            function_name: 'key_val_match',
+            content: [{
+              compare: '==',
+              key: '',
+              val: '',
+            }],
+          },
+        ],
+      };
+    }
+    return {};
+  },
+  initialAction(actionType = 'parser') {
+    switch (actionType) {
+      case ActionType.Parser: {
+        return {
+          source: '',
+          function: {
+            function_name: '',
+            content: {},
+          },
+        };
+      }
+      case ActionType.AssignValue: {
+        return {
+          source: 'global_info',
+          function: {
+            function_name: ActionType.AssignValue,
+            content: {
+              operation: 'set_key_to_value',
+              key: '',
+              val: '',
+            },
+          },
+        };
+      }
+      case ActionType.WebAPI: {
+        return {
+          source: 'text',
+          function: {
+            function_name: 'api_parser',
+            content: '',
+          },
+        };
+      }
+      case ActionType.JSScript: {
+        return {};
+      }
+      case ActionType.ResponseText: {
+        return {
+          source: 'text',
+          function: {
+            function_name: 'response_text',
+            content: '',
+          },
+        };
+      }
+      default:
+        return {};
+    }
   },
   initialRegularOperation() {
     return {

@@ -4,6 +4,14 @@ import RestfulIcon from '@/assets/icons/restful_icon.svg';
 import TDEParameterCollectingIcon from '@/assets/icons/tde_parameter_collecting_icon.svg';
 import ActionIcon from '@/assets/icons/action_icon.svg';
 
+const ActionType = {
+  Parser: 'parser',
+  AssignValue: 'assign_value',
+  WebAPI: 'web_api',
+  JSScript: 'js_script',
+  ResponseText: 'response_text',
+};
+const Parsers = ['common_parser', 'task_parser', 'hotel_parser', 'user_custom_parser', 'polarity_parser', 'nlu_parser', 'reg_parser'];
 export default {
   nodeType2Tabs() {
     return {
@@ -135,6 +143,59 @@ export default {
       // },
     ];
   },
+  getSourceOptionsV2(context) {
+    return [{
+      text: context.$t('task_engine_v2.condition_action_block.source.text'),
+      value: 'text',
+    },
+    {
+      text: context.$t('task_engine_v2.condition_action_block.source.global_info'),
+      value: 'global_info',
+    }];
+  },
+  ActionType,
+  getActionOptions(context) {
+    return [{
+      text: context.$t('task_engine_v2.condition_action_block.action.parser'),
+      value: ActionType.Parser,
+    },
+    {
+      text: context.$t('task_engine_v2.condition_action_block.action.assign_value'),
+      value: ActionType.AssignValue,
+    },
+    {
+      text: context.$t('task_engine_v2.condition_action_block.action.api_parser'),
+      value: ActionType.WebAPI,
+    },
+    {
+      text: context.$t('task_engine_v2.condition_action_block.action.exec_script'),
+      value: ActionType.JSScript,
+    },
+    {
+      text: context.$t('task_engine_v2.condition_action_block.action.response_text'),
+      value: ActionType.ResponseText,
+    }];
+  },
+  Parsers,
+  getActionOptionMap(context) {
+    const assignValue = ['set_key_to_value', 'set_key_to_key'];
+    return {
+      [ActionType.AssignValue]: assignValue.map((func) => {
+        const key = `task_engine_v2.condition_action_block.func.${func}`;
+        return {
+          text: context.$t(key),
+          value: func,
+        };
+      }),
+      [ActionType.Parser]: Parsers.map((parser) => {
+        const key = `task_engine_v2.condition_action_block.func.${parser}`;
+        return {
+          text: context.$t(key),
+          value: parser,
+        };
+      }),
+    };
+  },
   getFuncOptionMap(context) {
     const textFuncs = [
       'match', 'contains', 'regular_exp', 'common_parser', 'task_parser',
@@ -162,6 +223,31 @@ export default {
       }),
       cu: cuFuncs.map((func) => {
         const key = `task_engine_v2.condition_block.func.${func}`;
+        return {
+          text: context.$t(key),
+          value: func,
+        };
+      }),
+    };
+  },
+  getFuncOptionMapV2(context) {
+    const textFuncs = [
+      'match', 'contains', 'regular_exp', 'intent_parser',
+    ];
+    const globalIngoFuncs = [
+      'key_val_match', 'key_key_match', 'contain_key', 'not_contain_key', 'list_length_match',
+      'counter_check', 'user_custom_parser', 'regular_exp_from_var',
+    ];
+    return {
+      text: textFuncs.map((func) => {
+        const key = `task_engine_v2.condition_action_block.func.${func}`;
+        return {
+          text: context.$t(key),
+          value: func,
+        };
+      }),
+      global_info: globalIngoFuncs.map((func) => {
+        const key = `task_engine_v2.condition_action_block.func.${func}`;
         return {
           text: context.$t(key),
           value: func,

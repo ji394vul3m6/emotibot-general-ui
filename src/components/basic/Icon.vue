@@ -201,6 +201,7 @@ export default {
   @include iconType("more_v");
   @include iconTypeHover("edit_pen");
   @include iconType("red_arrow");
+  @include iconType("trash");
 
   /** used on TaskEngineV2 top panel*/
   @include iconType("save");

@@ -4,6 +4,9 @@
     {{ $t('task_engine_v2.edge_edit_tab2.instruction') }}
     <span class="instruction" v-t="'task_engine_v2.edge_edit_tab2.instruction_hint'"></span>
   </div>
+  <button class="button-add-edge" @click="addEdge">
+    {{ $t("task_engine_v2.edge_edit_tab2.button_add_edge") }}
+  </button>
   <draggable v-model="normalEdges" :options="{ghostClass:'ghost'}" @start="drag=true" @end="drag=false; emitUpdate();">
     <template v-for="(edge, index) in normalEdges">
       <condition-action-block
@@ -23,9 +26,6 @@
       </condition-action-block>
     </template>
   </draggable>
-  <button class="button-add-edge" @click="addEdge">
-    {{ $t("task_engine_v2.edge_edit_tab2.button_add_edge") }}
-  </button>
   <div class="title" v-t="'task_engine_v2.edge_edit_tab2.exception_handle'"></div>
   <div class="section">
     <div class="block" v-if="exceedThenGoto !== null">
@@ -159,8 +159,8 @@ export default {
       elseInto,
       elseIntoOptions,
       selectStyle: {
-        height: '36px',
-        'border-radius': '5px',
+        height: '32px',
+        'border-radius': '2px',
       },
       tooltip: {
         msg: this.$t('task_engine_v2.err_empty'),
@@ -294,7 +294,7 @@ export default {
       this.emitUpdate();
     },
     addEdge() {
-      const edge = scenarioInitializer.initialEdge();
+      const edge = scenarioInitializer.initialEdge('normal_2.0');
       edge.id = this.$uuid.v1();
       edge.valid = false;
       this.normalEdges.push(edge);
@@ -341,16 +341,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
 #edge-edit-tab {
-  padding: 20px;
+  padding: 0 20px;
   @include font-14px();
   color: $color-font-active;
   .instruction {
     color: $color-font-mark;
   }
   .title {
-    margin-bottom: 10px;
+    margin: 20px 0 10px;
   }
   .section {
     background-color: $color-disabled;
