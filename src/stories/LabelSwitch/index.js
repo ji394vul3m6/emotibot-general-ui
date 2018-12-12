@@ -23,7 +23,11 @@ export default [{
     ];
     const value = text('value', '1');
     const labelItems = object('options', items);
-    const template = '<label-switch v-model="value" :options="labelItems" @change="chooseLabel"></label-switch>';
+    const template = `
+      <div class="div-block">
+        <div class="headline">Label Switch</div>
+        <label-switch v-model="value" :options="labelItems" @change="chooseLabel"></label-switch>
+      </div>`;
 
     return {
       components: {
