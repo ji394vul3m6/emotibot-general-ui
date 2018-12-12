@@ -1099,9 +1099,12 @@ export default {
     @include customScrollbar();  
     .canvas-page{
       position: relative;
-      background: #F1F4F5;
-      background-size: 20px 20px;
-      background-image: linear-gradient(to right, #DDDDDD 1px, transparent 1px), linear-gradient(to bottom, #DDDDDD 1px, transparent 1px);
+      background: url('data:image/svg+xml, \
+      <svg xmlns="http://www.w3.org/2000/svg" \
+        width="40" height="40" fill-opacity=".05"> \
+        <rect x="20" width="20" height="20"/> \
+        <rect y="20" width="20" height="20"/> \
+      </svg>');
     }
     .addNewEdgeDropdown{
       position: absolute;
