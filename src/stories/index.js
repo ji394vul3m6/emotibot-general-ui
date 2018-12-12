@@ -34,7 +34,7 @@ const i18n = new VueI18n({
 });
 
 /** Basic Components */
-const welcomeStory = storiesOf('Welcome', module).addDecorator(withKnobs);
+const welcomeStory = storiesOf('General Style', module).addDecorator(withKnobs);
 WelcomeStory.forEach((story) => {
   welcomeStory.add(story.name, story.func);
 });
