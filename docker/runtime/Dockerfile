@@ -8,7 +8,7 @@ FROM harbor.emotibot.com/bfop/admin-api-build:${ARG_admin_api} AS api-server
 FROM centos:centos7.4.1708
 RUN yum makecache --disableplugin=fastestmirror \
     && yum install --disableplugin=fastestmirror -y epel-release \
-    && yum install --disableplugin=fastestmirror -y nginx cronie gettext \
+    && yum install --disableplugin=fastestmirror -y nginx cronie gettext supervisor\
     && yum clean all \
     && rm -rf /var/cache/yum
 
@@ -17,7 +17,7 @@ RUN yum makecache --disableplugin=fastestmirror \
 #     && chmod +x envsubst \
 #     && mv envsubst /usr/bin
 
-
+COPY ./conf/supervisord.conf /etc/supervisord.conf
 COPY ./conf/nginx.conf.template /etc/nginx/nginx.conf.template
 
 COPY --from=api-server /usr/bin/app /api
@@ -30,8 +30,11 @@ WORKDIR /build/dist
 
 COPY ./file_init.sh file_init.sh
 COPY ./entrypoint.sh entrypoint.sh
+COPY ./run_nginx.sh run_nginx.sh
+COPY ./kill-supervisor.sh kill-supervisor.sh
 
 ARG ARG_GIT_TAG
 RUN echo ${ARG_GIT_TAG} > /build/dist/uiversion.html
 
+HEALTHCHECK CMD curl -f http://localhost/ || exit 1
 ENTRYPOINT ["./entrypoint.sh"]

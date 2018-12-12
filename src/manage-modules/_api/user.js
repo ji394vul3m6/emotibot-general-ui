@@ -41,7 +41,7 @@ function updateEnterpriseUser(enterprise, id, user) {
     });
   });
 }
-function addEnterpriseUser(enterprise, user) {
+function addEnterpriseUser(enterprise, user, enableIM) {
   const userURL = getUserURL(enterprise);
   let userID = '';
   return this.$reqPost(userURL, qs.stringify(user), {
@@ -49,12 +49,14 @@ function addEnterpriseUser(enterprise, user) {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
   }).then((rsp) => {
-    this.$reqPost(IM_USER_URL, {
-      username: user.username,
-      ent_code: enterprise,
-      display_name: user.username,
-      user_type: 1,
-    });
+    if (enableIM) {
+      this.$reqPost(IM_USER_URL, {
+        username: user.username,
+        ent_code: enterprise,
+        display_name: user.username,
+        user_type: 1,
+      });
+    }
     userID = rsp.data.result.id;
     user.id = userID;
     user.account = user.username;

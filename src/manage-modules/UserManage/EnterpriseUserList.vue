@@ -33,6 +33,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import NavBar from '@/components/NavigationBar';
+import sysAPI from '@/api/system';
 import CommandRow from '../_components/CommandRow';
 import userAPI from '../_api/user';
 import groupAPI from '../_api/group';
@@ -50,7 +51,7 @@ export default {
     NavBar,
     CommandRow,
   },
-  api: [userAPI, groupAPI, roleAPI, robotAPI],
+  api: [userAPI, groupAPI, roleAPI, robotAPI, sysAPI],
   computed: {
     ...mapGetters([
       'enterpriseID',
@@ -116,7 +117,7 @@ export default {
       ],
       actions: [
         {
-          text: '編輯',
+          text: '编辑',
           type: 'primary',
           onclick: this.popEditUser,
         },
@@ -296,8 +297,13 @@ export default {
         },
         callback: {
           ok(retData) {
+            let imEnable = false;
             retData.type = userType;
-            that.$api.addEnterpriseUser(that.enterpriseID, retData).then(() => {
+            that.$api.getEnv().then((rspData) => {
+              imEnable = !(rspData.IM_ENABLE === '1' || rspData.IM_ENABLE === 'true');
+            })
+            .then(() => that.$api.addEnterpriseUser(that.enterpriseID, retData, imEnable))
+            .then(() => {
               that.$notify({ text: that.$t('management.add_user_success') });
               that.loadUsers();
             });

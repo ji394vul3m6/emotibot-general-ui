@@ -112,7 +112,7 @@
         @click="popSelfLearnMark(checkedDataRow)">
         {{ $t('statistics.mark.batch_mark') }}</text-button>
       <div id="clusterBtn" ref="clusterBtn" :class="{'disabled': totalCount <= 0}" v-dropdown="clusterDropdown">
-        <text-button  
+        <text-button
           icon-type="header_dropdown_white" :icon-size="8" icon-align="right"
           :button-type="totalCount > 0 ? 'primary' : 'disable'"
           >
@@ -143,7 +143,7 @@
           :pageIndex="pageIndex"
           :pageSizeOption="[25, 50, 100, 200, 500, 1000]"
           v-on:page-change="doSearch"
-          @page-size-change="handlePageSizeChange" 
+          @page-size-change="handlePageSizeChange"
           :total="totalCount > tableMaxRecord ? tableMaxRecord : totalCount"
           :page-size="pageLimit"
           :layout="['prev', 'pager', 'next', 'sizer', 'jumper']">
@@ -545,6 +545,7 @@ export default {
       that.searchParams = this.getSearchParam();
       that.setDailySearchParams(that.searchParams);
       that.isTableLoading = true;
+      that.showTable = true;
       return that.$api.getRecords(that.searchParams, page, that.pageLimit).then((res) => {
         that.tableData = that.appendTableDataAction(res.data);
         that.headerInfo = that.receiveAPIHeader(res.table_header);
@@ -554,7 +555,7 @@ export default {
         that.checkedDataRow = []; // clear all checked
         that.reloadClusterDropdown();
         that.isTableLoading = false;
-        that.showTable = true;
+        // that.showTable = true;
       })
       .catch((err) => {
         console.log({ err });
@@ -812,7 +813,7 @@ export default {
   }
   .search-more {
     @include click-button();
-    color: $color-primary; 
+    color: $color-primary;
   }
   .text-button {
     &:not(:first-child) {

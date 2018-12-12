@@ -1,5 +1,5 @@
 #!/bin/bash
-REPO=docker-reg.emotibot.com.cn:55688
+REPO=harbor.emotibot.com/bfop
 CONTAINER=admin-ui
 
 TAG=$2

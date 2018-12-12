@@ -30,3 +30,4 @@ do
     done
   fi
 done
+exit 0;
