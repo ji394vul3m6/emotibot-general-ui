@@ -209,6 +209,7 @@ $border-color: $color-borderline;
   height: 28px;
   border: 1px solid $border-color;
   border-radius: 2px;
+  background: $color-white;
   @include click-button();
 
   &:hover {
