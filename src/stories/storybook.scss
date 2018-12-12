@@ -1,10 +1,14 @@
 @import '../assets/styles/variable';
 
 html {
+  height: 100%;
   padding: 50px 20px;
   font-family: PingFangHK-Regular, 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+body {
+  height: 100%;
 }
 .div-block {
   background-color: #eeeeee;
@@ -19,5 +23,5 @@ html {
   margin-bottom: 10px;
 }
 .line {
-  margin-bottom: 5px;
+  margin-bottom: 10px;
 }

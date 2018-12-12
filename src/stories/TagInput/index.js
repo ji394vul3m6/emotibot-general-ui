@@ -18,8 +18,9 @@ export default [
       const tagsList = object('tagsList(可供選擇的tag)', tagslist);
 
       const template = `
-      <div>
-        <div style="height:500px">
+      <div class="div-block">
+        <div class="headline">Tag Input</div>
+        <div>
           <tag-input
             :allowTagErrorTooltip="allowTagErrorTooltip"
             :origTags="origTags"
