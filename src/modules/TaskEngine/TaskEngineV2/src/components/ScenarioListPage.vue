@@ -80,19 +80,19 @@
                 v-tooltip="scenarioNameTooltip">
               </textarea>
               <div class="icon-box" 
-                :ref="`editScenarioIcon_${index}`" 
+                :ref="`editScenarioIcon_${index}`"
                 v-show="scenario.show && !scenario.editScenarioName">
                 <icon 
-                  :size=12 
-                  icon-type="edit_pen" 
+                  :size=24
+                  icon-type="edit_pen_1" 
                   @click="startEditScenarioName(scenario, index)"  
                   v-tooltip="tipsEditScenario" 
-                  enableHover>
+                  >
                 </icon>
               </div>
             </div>
-            <!-- <toggle v-model="scenario.enable" @change="switchScenario(scenario)" :big="false"></toggle> -->
-            <toggle v-model="scenario.enable" @change="switchScenario(scenario)" size="small" :showLabel="true" :label="toggleLabel"></toggle>
+            <toggle class="toggle" v-model="scenario.enable" @change="switchScenario(scenario)" :big="false"></toggle>
+            <!-- <toggle v-model="scenario.enable" @change="switchScenario(scenario)" size="small" :showLabel="true" :label="toggleLabel"></toggle> -->
           </div>
           <div class="scenario-content">
             <text-button class="txt-btn" :button-type="scenario.show ? 'primary' : 'default'" width='100px' height='38px' @click="editScenario(scenario.scenarioID)">
@@ -465,6 +465,10 @@ $row-height: $default-line-height;
           }
         }
 
+        .toggle {
+          margin-top: 5px;
+        }
+
         .scenario-title {
           flex: 1 1 auto;
           display: flex;
@@ -476,8 +480,7 @@ $row-height: $default-line-height;
           }
           .icon-box {
             display: flex;
-            margin-top: 2px;
-            margin-left: 5px;
+            margin-right: 5px;
           }
           .name-label {
             flex: 1 1 auto;
@@ -486,7 +489,7 @@ $row-height: $default-line-height;
             white-space: nowrap;
             text-overflow: ellipsis;
             font-size: 16px;
-            padding: 2px;
+            padding: 5px 2px;
             box-sizing: border-box;
             @include click-button();
           }

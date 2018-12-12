@@ -33,9 +33,9 @@
       </div>
     </div>
     <div class="callable js-script" v-if="scriptType[0] === 'callable'">
-      <div class="empty-script" v-if="callable.length === 0 && !editScript">
+      <div class="empty-script" v-if="callable.length === 0 || listNone">
         <p>{{ $t('task_engine_v2.js_code_edit_pop.empty_callable_script') }}</p>
-        <text-button button-type='primary' width='100px' height='28px' @click="editScript = true; addFun()">
+        <text-button button-type='primary' width='100px' height='28px' @click="addFun()">
           {{$t("task_engine_v2.js_code_edit_pop.add_callable_script")}}
         </text-button>
       </div>
@@ -49,7 +49,7 @@
             </text-button>
           </div>
         </div>
-        <div class="script-box" v-if="!listNone">
+        <div class="script-box">
           <div class="script-list">
             <div class="list" ref="alias" v-for="(item, index) in callable" :class="{hover: item.hover}" @click="changeHover(index)" v-tooltip="errEmptyAlias" :key="index">
               <input 
@@ -63,7 +63,7 @@
               <div class="icon">
                 <icon :size="16" :iconType="`${item.hover ? 'edit_pencil_hover' : 'edit_pencil'}`" 
                   @click="item.editAlias=true; editAlias(index);" v-tooltip="tipsEditAlias" />
-                <icon :size="16" :icon-type="`${item.hover ? 'edit_delete_hover' : 'edit_delete'}`" @click="deleteFun(index)" v-tooltip="tipsDeleteFunc" />
+                <icon :size="16" :icon-type="`${item.hover ? 'edit_delete_hover' : 'edit_delete'}`" @click.stop="deleteFun(index)" v-tooltip="tipsDeleteFunc" />
               </div>
             </div>
           </div>
@@ -272,15 +272,20 @@
         this.listNone = false;
       },
       deleteFun(index) {
-        if (this.callable[index].hover && index < this.callable.length - 1) {
-          this.callable[index + 1].hover = true;
+        const len = this.callable.length;
+        if (this.callable[index].hover && len !== 1) {
+          let i = index - 1;
+          if (index < this.callable.length - 1) {
+            i = index;
+          }
+          this.hoverIndex = i;
+          const data = this.callable[i];
+          this.$set(this.callable, i, { ...data, hover: true });
         }
-        if (this.callable.length === 1) {
+        if (len === 1) {
           this.listNone = true;
         }
-        this.$nextTick(() => {
-          this.callable.splice(index, 1);
-        });
+        this.callable.splice(index, 1);
       },
       setJsCode() {
         const callable = this.callable.map(item => ({
