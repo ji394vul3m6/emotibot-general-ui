@@ -113,7 +113,7 @@ export default {
       {
         type: 'dialogue_2.0',
         name: context.$t('task_engine_v2.node_type.dialogue2'),
-        image: 'te_dialoague.png',
+        image: DialogueIcon,
         description: context.$t('task_engine_v2.node_type.dialogue_description'),
       },
       {

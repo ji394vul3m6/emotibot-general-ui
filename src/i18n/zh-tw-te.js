@@ -414,6 +414,8 @@ export default {
       reg_placeholder: '輸入正則表達式',
       multi_placeholder: '請選擇（支持多選）',
       nlu_placeholder: '請選擇解析器類型',
+      on: '開',
+      off: '關',
     },
     warnings: {
       has_exit_connection: '出口節點',

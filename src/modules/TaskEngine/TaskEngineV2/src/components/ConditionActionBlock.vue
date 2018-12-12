@@ -522,11 +522,11 @@
               </div>
               <div class="row" v-if="action.nluType === NLUTypeMap.PERSON_NAME">
                 <span class="label" v-t="'task_engine_v2.condition_action_block.label_get_surname'"></span>
-                <toggle v-model="action.nluPersionName" :size="'medium'" @change="nluPersonNameChange(action)"></toggle>               
+                <toggle v-model="action.nluPersionName" :size="'medium'" @change="nluPersonNameChange(action)" :showLabel="true" :label="toggleLabel"></toggle>               
               </div>
               <div class="row">
                 <span class="label" v-t="'task_engine_v2.condition_action_block.label_has_context'"></span>
-                <toggle v-model="action.content.has_context" :size="'medium'"></toggle>
+                <toggle v-model="action.content.has_context" :size="'medium'" :showLabel="true" :label="toggleLabel"></toggle>
               </div>
             </div>
           </template>
@@ -695,6 +695,10 @@ export default {
         value: parser,
       })),
       NLUParserMap,
+      toggleLabel: {
+        on: this.$t('task_engine_v2.condition_action_block.on'),
+        off: this.$t('task_engine_v2.condition_action_block.off'),
+      },
     };
   },
   computed: {

@@ -1109,7 +1109,7 @@ export default {
   }
   .zoom-tool {
     position: absolute;
-    bottom: 0;
+    bottom: 20px;
     right: 370px;
     height: 50px;
     border-radius: 2px;

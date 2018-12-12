@@ -314,6 +314,7 @@ export default {
   background: white;
   position: absolute;
   box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
   padding: 20px;
   justify-content: space-between;
   cursor: move;
