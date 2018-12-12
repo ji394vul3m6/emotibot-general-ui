@@ -1,3 +1,5 @@
+@import '../assets/styles/variable';
+
 html {
   padding: 50px 20px;
   font-family: PingFangHK-Regular, 'Avenir', Helvetica, Arial, sans-serif;
@@ -9,4 +11,10 @@ html {
   border-radius: 4px;
   padding: 10px;
   margin: 20px 0px;
+}
+.headline {
+  font-size: 20px;
+  line-height: 24px;
+  color: $color-font-active;
+  margin-bottom: 10px;
 }
