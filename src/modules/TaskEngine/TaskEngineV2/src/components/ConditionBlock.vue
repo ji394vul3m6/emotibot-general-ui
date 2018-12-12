@@ -168,6 +168,22 @@
             <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content" @focus="onInputFocus"></input>
           </div>
         </div>
+        <!-- JS 脚本使用 -->
+        <div class="content-api-parser" v-if="rule.funcName === 'js_code'">
+          <div class="row">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_block.label_link")}}
+            </div>
+            <dropdown-select
+              class="select"
+              :value="[rule.content = rule.content || jsCodeOptions[0].text]"
+              @input="onSelectContentInput(index, $event)"
+              :options="jsCodeOptions"
+              :showCheckedIcon="false"
+              width="420px"
+            />
+          </div>
+        </div>
         <!-- Intent -->
         <div class="content-api-parser" v-if="rule.funcName === 'intent_parser'">
           <div class="row">
@@ -681,6 +697,11 @@ export default {
       type: Boolean,
       default: false,
     },
+    jsCodeAlias: {
+      type: Array,
+      // required: false,
+      default: () => [],
+    },
   },
   data() {
     return {
@@ -703,6 +724,7 @@ export default {
       funcOptionMap: [],
       dialogueLimit: 3,
       varDropdownMap: {},
+      jsCodeOptions: [],
       inputTooltip: {
         msg: this.$t('task_engine_v2.err_empty'),
         eventOnly: true,
@@ -797,6 +819,13 @@ export default {
         this.renderQQEdge();
       } else {
         this.renderNormalEdge();
+      }
+      if (this.jsCodeAlias && this.jsCodeAlias.length > 0) {
+        this.funcOptionMap.text.push({
+          value: 'js_code',
+          text: this.$t('task_engine_v2.condition_block.func.js_code'),
+        });
+        this.jsCodeOptions = this.jsCodeAlias.map(item => ({ value: item, text: item }));
       }
     },
     renderQQEdge() {
@@ -945,6 +974,9 @@ export default {
           });
         }
       }
+    },
+    onSelectContentInput(index, newValue) {
+      this.andRules[index].content = newValue[0];
     },
     onSelectTargetEntity(index, newValue) {
       this.andRules[index].content.tags = newValue.join(',');

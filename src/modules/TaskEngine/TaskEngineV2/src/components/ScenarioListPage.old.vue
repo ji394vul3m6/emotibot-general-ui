@@ -1,57 +1,24 @@
 <template lang="html">
 <div id="scenario-list-page-v2">
-  <input type="file" ref="uploadScenarioJSONInput" style="visibility: hidden; display: none;" @change="changeScenarioJSONFile()" accept=".json">
-  <div class="content card h-fill w-fill no-scenario" v-if="filteredScenarioList.length === 0">
-    <div class="center-msg">
-      <div class="title">{{ $t('task_engine_v2.scenario_list_page.start_scenario') }}</div>
-      <div class="model-help" v-if="false">
-        <div class="help-video">
-          <icon :size=14 icon-type="te_help_video"></icon>
-          {{ $t('task_engine_v2.scenario_list_page.help_video') }}
-        </div>
-        <div class="upload-data">
-          <icon :size=14 icon-type="scenario_upload"></icon>
-          {{ $t('task_engine_v2.scenario_list_page.upload_transfor_data') }}
-        </div>
-      </div>
-      <div class="start-scenario">
-        <text-button button-type='primary' width='140px' height='46px' @click="createNewScenario">
-          {{$t("task_engine_v2.scenario_list_page.button_create_new_scenario")}}
-        </text-button>
-        <text-button button-type='default' :iconSize=15 width='140px' height='46px' @click="importScenarioJSON">
-          {{$t("task_engine_v2.scenario_list_page.button_import_scenario")}}
-        </text-button>
-      </div>
-    </div>
-  </div>
-  <div class="content card h-fill w-fill" v-else>
+  <div class="content card h-fill w-fill">
     <div class="row title">
       {{$t("task_engine_v2.scenario_list_page.scenario_list")}}
-      <search-input v-model="filteredKeyWord" style="width: 220px;" ></search-input>
+      <search-input v-model="filteredKeyWord" ></search-input>
     </div>
     <div class="page">
       <div class="row">
         <div id="toolbar">
           <div id="left-buttons">
-            <text-button button-type='primary' width='100px' height='32px' @click="createNewScenario">
+            <text-button button-type='primary' width='68px' height='28px' @click="createNewScenario">
               {{$t("task_engine_v2.scenario_list_page.button_create_new_scenario")}}
             </text-button>
-            <text-button button-type='default' :iconSize=15 width='100px' height='32px' @click="importScenarioJSON">
+            <text-button button-type='default' :iconSize=15 width='68px' height='28px' @click="importScenarioJSON">
               {{$t("task_engine_v2.scenario_list_page.button_import_scenario")}}
             </text-button>
-            <text-button button-type='default' width='120px' height='32px' @click="exportAllScenarios">
+            <text-button button-type='default' width='100px' height='28px' @click="exportAllScenarios">
               {{$t("task_engine_v2.scenario_list_page.button_export_all_scenarios")}}
             </text-button>
-          </div>
-          <div class="model-help top" v-if="false">
-            <div class="help-video">
-              <icon :size=14 icon-type="te_help_video"></icon>
-              {{ $t('task_engine_v2.scenario_list_page.help_video') }}
-            </div>
-            <div class="upload-data">
-              <icon :size=14 icon-type="scenario_upload"></icon>
-              {{ $t('task_engine_v2.scenario_list_page.upload_transfor_data') }}
-            </div>
+            <input type="file" ref="uploadScenarioJSONInput" @change="changeScenarioJSONFile()" accept=".json">
           </div>
         </div>
       </div>
@@ -64,42 +31,21 @@
           @mouseleave="scenario.show = false"
         >
           <div class="scenario-title">
-            <div class="name-box">
-              <div class="name-label" v-if="!scenario.editScenarioName" @click="editScenario(scenario.scenarioID)">
-                {{scenario.scenarioName}}
-              </div>
-              <textarea 
-                class="name-label"
-                :ref="`scenarioName`"
-                v-focus
-                v-if="scenario.editScenarioName"
-                wrap="soft"
-                v-model.trim="scenario.oldScenarioName"
-                @blur="cancelEditScenarioName(scenario)"
-                @keyup.enter="setScenarioName(scenario, index)"
-                v-tooltip="scenarioNameTooltip">
-              </textarea>
-              <div class="icon-box" 
-                :ref="`editScenarioIcon_${index}`" 
-                v-show="scenario.show && !scenario.editScenarioName">
-                <icon 
-                  :size=12 
-                  icon-type="edit_pen" 
-                  @click="startEditScenarioName(scenario, index)"  
-                  v-tooltip="tipsEditScenario" 
-                  enableHover>
-                </icon>
-              </div>
+            <div class="name-label" @click="editScenario(scenario.scenarioID)">
+              {{scenario.scenarioName}}
             </div>
-            <!-- <toggle v-model="scenario.enable" @change="switchScenario(scenario)" :big="false"></toggle> -->
-            <toggle v-model="scenario.enable" @change="switchScenario(scenario)" size="small" :showLabel="true" :label="toggleLabel"></toggle>
+            <toggle v-model="scenario.enable" @change="switchScenario(scenario)" :big="false"></toggle>
           </div>
-          <div class="scenario-content">
-            <text-button class="txt-btn" :button-type="scenario.show ? 'primary' : 'default'" width='100px' height='38px' @click="editScenario(scenario.scenarioID)">
+          <div class="scenario-content" v-if="scenario.show  === true">
+            <text-button button-type='default' iconType="edit_thin" width='72px' height='28px' @click="editScenario(scenario.scenarioID)">
               {{$t("task_engine_v2.scenario_list_page.edit")}}
             </text-button>
-            <div class="txt-btn" @click="exportScenario(scenario.scenarioID)">{{$t("general.export")}}</div>
-            <div class="txt-btn" @click="deleteScenario(scenario)">{{$t("general.delete")}}</div>
+            <text-button button-type='default' iconType="export" width='72px' height='28px' @click="exportScenario(scenario.scenarioID)">
+              {{$t("general.export")}}
+            </text-button>
+            <text-button button-type='default' iconType="trash_can" width='72px' height='28px' @click="deleteScenario(scenario)">
+              {{$t("general.delete")}}
+            </text-button>
           </div>
         </div>
       </div>
@@ -111,7 +57,6 @@
 <script>
 import taskEngineApi from '@/modules/TaskEngine/_api/taskEngine';
 import general from '@/modules/TaskEngine/_utils/general';
-// import event from '@/utils/js/event';
 import CreateScenarioPop from './CreateScenarioPop';
 import scenarioInitializer from '../_utils/scenarioInitializer';
 import scenarioConvertor from '../_utils/scenarioConvertor';
@@ -124,23 +69,6 @@ export default {
       appId: '',
       scenarioList: [],
       filteredKeyWord: '',
-      tipsEditScenario: {
-        msg: this.$t('task_engine_v2.scenario_list_page.tips_edit_scenario_name'),
-        eventOnly: false,
-        clickShow: false,
-        // errorType: true,
-        alignLeft: true,
-      },
-      scenarioNameTooltip: {
-        msg: this.$t('task_engine_v2.scenario_settings_edit_pop.err_empty_scenario_name'),
-        eventOnly: true,
-        errorType: true,
-        alignLeft: true,
-      },
-      toggleLabel: {
-        on: this.$t('task_engine_v2.scenario_edit_page.on'),
-        off: this.$t('task_engine_v2.scenario_edit_page.off'),
-      },
     };
   },
   computed: {
@@ -151,13 +79,6 @@ export default {
     },
   },
   watch: {},
-  directives: {
-    focus: {
-      inserted(el) {
-        el.focus();
-      },
-    },
-  },
   methods: {
     exportScenario(scenarioID) {
       taskEngineApi.exportScenario(scenarioID);
@@ -190,8 +111,6 @@ export default {
           this.scenarioList = data.msg.filter(scenario => scenario.version !== '2.0')
                                       .map((scenario) => {
                                         scenario.show = false;
-                                        scenario.editScenarioName = false;
-                                        scenario.oldScenarioName = scenario.scenarioName;
                                         return scenario;
                                       });
         } else {
@@ -204,10 +123,10 @@ export default {
     createNewScenario() {
       const that = this;
       that.$pop({
-        title: that.$t('task_engine_v3.create_scenario_pop.create_scenario'),
+        title: that.$t('task_engine_v3.create_scenario_pop.label_create_new_scenario'),
         component: CreateScenarioPop,
         validate: true,
-        ok_msg: that.$t('task_engine_v3.create_scenario_pop.comfire_create'),
+        ok_msg: that.$t('general.add'),
         data: {
           scenarioName: '',
         },
@@ -318,50 +237,6 @@ export default {
         that.$notifyFail(`${that.$t('error_msg.save_fail')}:${err.message}`);
       });
     },
-    startEditScenarioName(scenario) {
-      const checkShow = this.filteredScenarioList.findIndex(item => item.editScenarioName === true);
-      if (checkShow === -1) {
-        scenario.editScenarioName = true;
-      } else {
-        this.$refs[`scenarioName_${checkShow}`].classList.add('error');
-      }
-    },
-    cancelEditScenarioName(scenario) {
-      // this.$refs.scenarioName[0].dispatchEvent(event.createEvent('tooltip-hide'));
-      scenario.editScenarioName = false;
-      scenario.oldScenarioName = scenario.scenarioName;
-    },
-    setScenarioName(scenario) {
-      scenario.oldScenarioName = scenario.oldScenarioName.replace(/[\r\n]/g, '');
-      // if (scenario.oldScenarioName.trim() === '') {
-      //   this.$refs.scenarioName[0].dispatchEvent(event.createEvent('tooltip-show'));
-      // } else if (scenario.oldScenarioName.trim() !== '') {
-      //   this.$refs.scenarioName[0].dispatchEvent(event.createEvent('tooltip-hide'));
-      scenario.editScenarioName = false;
-      if (scenario.oldScenarioName !== scenario.scenarioName) {
-        scenario.scenarioName = scenario.oldScenarioName;
-        const that = this;
-        taskEngineApi.loadScenario(scenario.scenarioID).then((data) => {
-          const moduleData = JSON.parse(data.result.editingContent);
-          const layout = JSON.parse(data.result.editingLayout);
-          moduleData.metadata.scenario_name = scenario.scenarioName;
-          taskEngineApi.saveScenario(
-            that.appId,
-            scenario.scenarioID,
-            JSON.stringify(moduleData),
-            JSON.stringify(layout),
-          ).then(() => {
-            that.listAllScenarios();
-          }, (err) => {
-            that.$notifyFail(`${that.$t('task_engine_v2.scenario_list_page.create_new_scenario_failed')}:${err.message}`);
-          });
-        }, (err) => {
-          this.$popError('loadScenario error', err.message);
-        });
-      }
-      scenario.oldScenarioName = scenario.scenarioName;
-      // }
-    },
   },
   beforeMount() {
     this.appId = this.$cookie.get('appid');
@@ -381,15 +256,6 @@ $row-height: $default-line-height;
   .content {
     display: flex;
     flex-direction: column;
-    &.no-scenario {
-      justify-content: center;
-      background: {
-        image: url('../../../../../assets/images/scenario_bg.svg');
-        position: center right;
-        repeat: no-repeat;
-        size: 665px 501px;
-      }
-    }
     .page{
       flex: 1;
       @include auto-overflow();
@@ -400,16 +266,15 @@ $row-height: $default-line-height;
       padding: 0px 20px 0px 20px;
       &.title {
         @include font-16px();
-        font-size: 18px;
         color: $color-font-active;
         flex: 0 0 60px;
-        // border-bottom: 1px solid $color-borderline;
+        border-bottom: 1px solid $color-borderline;
         display: flex;
         align-items: center;
         justify-content: space-between;
       }
       &:not(.title) {
-        // margin-top: 20px;
+        margin-top: 20px;
       }
 
       .text-button {
@@ -427,8 +292,7 @@ $row-height: $default-line-height;
       #toolbar {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        // margin-right: 20px;
+        margin-right: 20px;
         #left-buttons{
           display: flex;
           align-items: center;
@@ -446,14 +310,14 @@ $row-height: $default-line-height;
       .scenario-grid {
         display: flex;
         flex-direction: column;
-        flex: 0 0 350px;
-        max-width: 350px;
-        height: 164px;
+        flex: 0 0 360px;
+        max-width: 360px;
+        height: 112px;
         border-radius: 4px;
         border: 1px solid $color-borderline;
         margin-right: 30px;
         margin-bottom: 20px;
-        padding: 30px;
+        padding: 20px;
         transition: all .2s ease-in-out;
         
         &:hover {
@@ -469,96 +333,25 @@ $row-height: $default-line-height;
           flex: 1 1 auto;
           display: flex;
           justify-content: space-between;
-          .name-box {
-            display: flex;
-            flex-flow: row nowrap;
-            width: calc(100% - 28px);
-          }
-          .icon-box {
-            display: flex;
-            margin-top: 2px;
-            margin-left: 5px;
-          }
           .name-label {
-            flex: 1 1 auto;
-            max-width: calc(100% - 24px);
+            max-width: 270px;
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
             font-size: 16px;
-            padding: 2px;
-            box-sizing: border-box;
             @include click-button();
-          }
-          textarea.name-label {
-            padding: 0px 2px;
-            white-space: inherit;
-            line-height: 25px;
-            max-height: 50px;
-            width: calc(100% - 24px);
-            overflow-y: auto;
-            font-size: 16px;
-            color: #333333;
-            border-radius: 3px;
-            border-color: #dbdbdb;
-            // background-color: #f4f7fd;
           }
         }
         .scenario-content {
           display: flex;
           flex-direction: row;
           flex-wrap: wrap;
-          align-items: center;
           .text-button{
             margin-right: 10px;
-          }
-          .txt-btn {
-            cursor: pointer;
-            font-size: 14px;
-            margin-right: 30px;
           }
         }
       }
     }
-  }
-}
-$marginLeft: 80px;
-$textWidth: 378px;
-$titleFontSize: 38px;
-$helpFontSize: 16px;
-$btnMarginTop: 43px;
-.center-msg {
-  margin-left: $marginLeft;
-  width: $textWidth;
-  
-  .title {
-    color: $color-font-active;
-    width: $textWidth;
-    font-size: $titleFontSize;
-  }
-  .start-scenario {
-    margin-top: $btnMarginTop;
-    & > * {
-      margin-right: 20px;
-    }
-  }
-}
-.model-help {
-  display: flex;
-  width: 100%;
-  color: $color-primary;
-  font-size: $helpFontSize;
-  margin-top: 20px;
-  line-height: 24px;
-
-  .upload-data {
-    padding-left: 32px;
-  }
-
-  &.top {
-    width: auto;
-    margin: 0;
-    font-size: 14px;
   }
 }
 </style>

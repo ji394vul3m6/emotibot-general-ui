@@ -14,6 +14,7 @@
           :mapTableOptions="mapTableOptions"
           :validateConditionBlock="validateConditionBlock"
           :valid.sync="edge.valid"
+          :jsCodeAlias="jsCodeAlias"
           @update="updateEdge(index, $event)"
           @deleteEdge="deleteEdge(index)"
           @addNewDialogueNode="addNewDialogueNode">
@@ -73,8 +74,10 @@ export default {
       acc.push(...globalVarOption);
       return acc;
     }, []);
+    const jsCodeAlias = this.extData.jsCodeAlias || [];
     return {
       nodeId: '',
+      jsCodeAlias,
       originalGlobalEdgesStr,
       globalEdges,
       toNodeOptions,

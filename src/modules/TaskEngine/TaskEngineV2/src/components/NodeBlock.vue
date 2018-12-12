@@ -2,49 +2,42 @@
 <div id="node-block" :style="style"
   @mouseover="mouseOverNode = true"
   @mouseout="mouseOverNode = false">
-  <div class="warning-row">
-    <div class="warning-icon"
+  <div class="label-node-name-container">
+    {{node.nodeName}}
+  </div>
+  <div class="info-row">
+    <div class="rounded">
+      {{nodeTypeName}}
+    </div>
+    <div class="rounded"
       ref="exitIcon"
       v-if="hasExitConnection"
       v-tooltip="{ msg: $t('task_engine_v2.warnings.has_exit_connection')}">
-      <img class="exit-icon"
-        src="/static/images/exit_icon.png"
-        width="32px">
-      </img>
+      END
     </div>
-    <div class="warning-icon"
+    <div
+      class="warning-icon"
       ref="warningIcon"
       v-if="warningTooltipValue.msgs && warningTooltipValue.msgs.length > 0"
       v-tooltip="warningTooltipValue">
       <icon icon-type="info_warning" :size=22></icon>
     </div>
   </div>
-  <div v-if="node.nodeType !== 'entry'" class="button-delete-node">
-    <icon icon-type="delete" :enableHover="true" :size=24 @click="deleteNode()"/>
-  </div>
-  <div class="node-type-row">
-    <div class="label-node-type">
-      {{nodeTypeName}}
-    </div>
-  </div>
-  <div class="label-node-name-container">
-    <div class="label-node-name">
-      {{node.nodeName}}
-    </div>
-  </div>
   <div class="button-row">
+    <div v-if="node.nodeType !== 'entry'" class="transparent-button" @click="deleteNode()">
+      <span>{{deleteText}}</span>
+    </div>
+    <span
+      class="transparent-button"
+      v-if="node.nodeType !== 'entry'"
+      @click="copyNode()">
+      {{copyText}}
+    </span>
     <text-button
       class="button button-edit-node"
       button-type='primary'
       @click="editNode()">
       {{$t("general.edit")}}
-    </text-button>
-    <text-button
-      v-if="node.nodeType !== 'entry'"
-      class="button button-copy-node"
-      button-type='primary'
-      @click="copyNode()">
-      {{$t("general.copy")}}
     </text-button>
   </div>
   <div class="edge-slot edge-slot-from"
@@ -127,6 +120,10 @@ export default {
       type: String,
       required: true,
     },
+    jsCodeAlias: {
+      type: Array,
+      default: () => [],
+    },
   },
   data() {
     return {
@@ -153,8 +150,12 @@ export default {
         'min-height': `${this.nodeBlockHeight}px`,
       };
     },
-  },
-  watch: {
+    deleteText() {
+      return this.$t('general.delete').split('').join(' ');
+    },
+    copyText() {
+      return this.$t('general.copy').split('').join(' ');
+    },
   },
   methods: {
     onMouseDown(e) {
@@ -201,8 +202,9 @@ export default {
     srcSlotMouseDown() {
       this.isSrcNode = true;
       const edgeSlotFrom = this.$refs.edgeSlotFrom;
-      const x = edgeSlotFrom.offsetLeft + edgeSlotFrom.offsetParent.offsetLeft + 8;
-      const y = edgeSlotFrom.offsetTop + edgeSlotFrom.offsetParent.offsetTop + 8;
+      const halfElementHeight = edgeSlotFrom.offsetHeight / 2;
+      const x = edgeSlotFrom.offsetLeft + edgeSlotFrom.offsetParent.offsetLeft + halfElementHeight;
+      const y = edgeSlotFrom.offsetTop + edgeSlotFrom.offsetParent.offsetTop + halfElementHeight;
       const slot = { x, y };
       this.$emit('linkingStart', slot);
     },
@@ -211,8 +213,9 @@ export default {
     },
     dstSlotMouseEnter() {
       const edgeSlotTo = this.$refs.edgeSlotTo;
-      const x = edgeSlotTo.offsetLeft + edgeSlotTo.offsetParent.offsetLeft + 8;
-      const y = edgeSlotTo.offsetTop + edgeSlotTo.offsetParent.offsetTop + 8;
+      const halfElementHeight = edgeSlotTo.offsetHeightt / 2;
+      const x = edgeSlotTo.offsetLeft + edgeSlotTo.offsetParent.offsetLeft + halfElementHeight;
+      const y = edgeSlotTo.offsetTop + edgeSlotTo.offsetParent.offsetTop + halfElementHeight;
       const slot = { x, y };
       this.$emit('mouseEnterDstSlot', slot);
     },
@@ -230,6 +233,7 @@ export default {
         validate: true,
         cancelValidate: true,
         extData: {
+          jsCodeAlias: this.jsCodeAlias,
           node: that.node,
           globalEdges: that.initialGlobalEdges,
           toNodeOptions: that.toNodeOptions,
@@ -309,76 +313,49 @@ export default {
   flex-direction: column;
   background: white;
   position: absolute;
-  border: 1px solid $color-borderline;
-  border-radius: 10px;
+  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  justify-content: space-between;
   cursor: move;
-  .button-delete-node{
-    position: absolute;
-    top: 5px;
-    right: 5px;
-  }
-  .node-type-row{
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    margin: 12px 0px 0px 0px;
-    .label-node-type{
-      height: 24px;
-      border: 1px solid $color-borderline;
-      border-radius: 2px;
-      color: #888888;
-      background: #F3F7F9;
-      font-size: 14px;
-      line-height: 24px;
-      padding: 0px 4px 0px 4px;
-    }
-  }
   .label-node-name-container{
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    .label-node-name{
-      text-align: center;
-      height: 36px;
-      line-height: 36px;
-      font-size: 16px;
-      font-weight: 600;
-      color: #333333;
-      width: 200px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
+    @include font-16px();
+    color: $color-font-active;
   }
-  .warning-row{
-    position: absolute;
-    top: 5px;
-    left: 5px;
+  .info-row {
     display: flex;
-    flex-direction: column;
-    .exit-icon{
-      margin: 0px 0px 0px 3px;
+    align-items: center;
+    @include font-12px();
+    color: $color-font-active;
+    .rounded {
+      background-color: #eeeeee;
+      border-radius: 10px;
+      padding: 2px 10px;
+      margin-right: 10px;
     }
-    .warning-icon{
-      height: 20px;
+    .warning-icon {
       display: flex;
+      justify-content: center;
       align-items: center;
     }
   }
-  .button-row{
+  .button-row {
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: center;
-    height: 36px;
-    .button{
-      height: 28px;
+    justify-content: flex-end;
+    @include font-12px();
+    color: $color-button;
+    cursor: pointer;
+    height: 32px;
+    .button {
+      width: 80px;
+      height: 32px;
     }
-    .button-copy-node{
-      margin: 0px 0px 0px 3px;
-    }
-    .exit-icon{
-      margin: 0px 0px 0px 3px;
+    .transparent-button {
+      height: 32px;
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
     }
   }
   .edge-slot{
@@ -389,7 +366,7 @@ export default {
   .edge-slot-from{
     position: absolute;
     bottom: -8px;
-    left: 107px;
+    left: 132px;
   }
   .mouse-over-node{
     border: 2px solid #AAAAAA;
@@ -404,7 +381,7 @@ export default {
     z-index: 100;
     position: absolute;
     top: -8px;
-    left: 107px;
+    left: 132px;
     border: 2px solid #AAAAAA;
     border-radius: 100%;
     &:hover{

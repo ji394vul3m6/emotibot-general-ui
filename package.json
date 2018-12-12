@@ -17,6 +17,7 @@
   "dependencies": {
     "axios": "~0.18.0",
     "babel-polyfill": "~6.26.0",
+    "codemirror": "^5.42.0",
     "es6-promise": "~4.2.4",
     "html-loader": "~0.5.5",
     "lrz": "~4.9.40",
@@ -29,6 +30,7 @@
     "url-search-params-polyfill": "~4.0.1",
     "vue": "~2.5.17",
     "vue-c3": "1.1.1",
+    "vue-codemirror": "^4.0.6",
     "vue-cookie": "~1.1.4",
     "vue-easytable": "~1.7.1",
     "vue-i18n": "~8.0.0",

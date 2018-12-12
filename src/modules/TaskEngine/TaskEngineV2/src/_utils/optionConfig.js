@@ -1,3 +1,9 @@
+import DialogueIcon from '@/assets/icons/dialogue_icon.svg';
+import ParameterCollectingIcon from '@/assets/icons/parameter_collecting_icon.svg';
+import RestfulIcon from '@/assets/icons/restful_icon.svg';
+import TDEParameterCollectingIcon from '@/assets/icons/tde_parameter_collecting_icon.svg';
+import ActionIcon from '@/assets/icons/action_icon.svg';
+
 export default {
   nodeType2Tabs() {
     return {
@@ -58,37 +64,37 @@ export default {
       {
         type: 'entry',
         name: context.$t('task_engine_v2.node_type.entry'),
-        image: 'te_dialoague.png',
+        image: '@/assets/icons/dialogue_icon.svg',
         description: '',
       },
       {
         type: 'dialogue',
         name: context.$t('task_engine_v2.node_type.dialogue'),
-        image: 'te_dialoague.png',
+        image: DialogueIcon,
         description: context.$t('task_engine_v2.node_type.dialogue_description'),
       },
       {
         type: 'parameter_collecting',
         name: context.$t('task_engine_v2.node_type.parameter_collecting'),
-        image: 'te_dialoague.png',
+        image: ParameterCollectingIcon,
         description: context.$t('task_engine_v2.node_type.parameter_collecting_description'),
       },
       {
         type: 'restful',
         name: context.$t('task_engine_v2.node_type.restful'),
-        image: 'te_dialoague.png',
+        image: RestfulIcon,
         description: context.$t('task_engine_v2.node_type.restful_description'),
       },
       {
         type: 'nlu_pc',
         name: context.$t('task_engine_v2.node_type.nlu_pc'),
-        image: 'te_dialoague.png',
+        image: TDEParameterCollectingIcon,
         description: context.$t('task_engine_v2.node_type.nlu_pc_description'),
       },
       {
         type: 'action',
         name: context.$t('task_engine_v2.node_type.action'),
-        image: 'te_dialoague.png',
+        image: ActionIcon,
         description: context.$t('task_engine_v2.node_type.action_description'),
       },
     ];
