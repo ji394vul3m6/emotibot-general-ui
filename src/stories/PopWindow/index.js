@@ -9,9 +9,10 @@ export default [
     func: withMarkdownNotes(README)(() => {
       const template = `
         <div>
-          <div :style="divBlockStyle">
-            <div style="font-size: 18px">確認彈窗：$popCheck</div>
-            <div :style="tipBlockStyle"> 
+          <pop-windows id="popwindow"></pop-windows>
+          <div class="div-block">
+            <div class="headline">確認彈窗：$popCheck</div>
+            <div class="line"> 
               <text-button
                 button-type='primary'
                 @click="showCheckPop">
@@ -19,9 +20,9 @@ export default [
               </text-button>
             </div>
           </div>
-          <div :style="divBlockStyle">
-            <div style="font-size: 18px">自訂彈窗：$pop</div> 
-            <div :style="tipBlockStyle"> 
+          <div class="div-block">
+            <div class="headline">自訂彈窗：$pop</div> 
+            <div class="line"> 
               <text-button
                 button-type='primary'
                 @click="showPop">
@@ -29,9 +30,9 @@ export default [
               </text-button>
             </div>
           </div>
-          <div :style="divBlockStyle">
-            <div style="font-size: 18px">警示彈窗：$popWarn</div>
-            <div :style="tipBlockStyle">  
+          <div class="div-block">
+            <div class="headline">警示彈窗：$popWarn</div>
+            <div class="line">  
               <text-button
                 button-type='error'
                 @click="showWarnPop">
@@ -39,9 +40,9 @@ export default [
               </text-button>
             </div>
           </div>
-          <div :style="divBlockStyle">
-            <div style="font-size: 18px">錯誤彈窗：$popError</div> 
-            <div :style="tipBlockStyle"> 
+          <div class="div-block">
+            <div class="headline">錯誤彈窗：$popError</div> 
+            <div class="line"> 
               <text-button
                 button-type='error'
                 @click="showErrorPop">
@@ -49,9 +50,9 @@ export default [
               </text-button>
             </div>
           </div>
-          <div :style="divBlockStyle">
-            <div style="font-size: 18px">說明彈窗：$popDescription</div> 
-            <div :style="tipBlockStyle"> 
+          <div class="div-block">
+            <div class="headline">說明彈窗：$popDescription</div> 
+            <div class="line"> 
               <text-button
                 button-type='error'
                 @click="showDescriptionPop">
@@ -59,26 +60,24 @@ export default [
               </text-button>
             </div>
           </div>
-          <pop-windows></pop-windows>
         </div>`;
 
       return {
         components: { TextButton },
-        data() {
-          return {
-            tipBlockStyle: {
-              margin: '20px 0px 0px 50px',
-            },
-            divBlockStyle: {
-              backgroundColor: '#eeeeee',
-              borderRadius: '4px',
-              padding: '10px',
-              margin: '20px 0px',
-            },
-          };
-        },
         methods: {
           showCheckPop() {
+            const that = this;
+            const option = {
+              data: {
+                msg: '我是一個確認彈窗',
+              },
+              callback: {
+                ok: () => {
+                  action('check pop callOK');
+                },
+              },
+            };
+            that.$popCheck(option);
           },
           showErrorPop() {
           },
@@ -93,7 +92,7 @@ export default [
                 msg: '我是一個警示彈窗內容！！！！！',
               },
               callback: {
-                ok() {
+                ok: () => {
                   action('warn pop CallOK');
                 },
               },
