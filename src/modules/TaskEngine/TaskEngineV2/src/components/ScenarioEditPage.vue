@@ -250,8 +250,10 @@ export default {
       const edgeList = [];
       Object.keys(this.idToNodeBlock).forEach((key) => {
         const nodeBlock = this.idToNodeBlock[key];
-        if (nodeBlock.data.edgeTab && nodeBlock.data.edgeTab.normalEdges) {
-          nodeBlock.data.edgeTab.normalEdges.forEach((edge) => {
+        // normal edge and normal edge 2.0
+        const edgeTabKey = nodeBlock.data.edgeTab ? 'edgeTab' : 'edgeTab2';
+        if (nodeBlock.data[edgeTabKey] && nodeBlock.data[edgeTabKey].normalEdges) {
+          nodeBlock.data[edgeTabKey].normalEdges.forEach((edge) => {
             if (edge.edge_type && edge.edge_type === 'qq') {
               edge.candidate_edges.forEach((e) => {
                 if (!this.idToNodeBlock[e.to_node_id]) return;
@@ -272,25 +274,24 @@ export default {
             }
           });
         }
-        if (nodeBlock.data.edgeTab &&
-            nodeBlock.data.edgeTab.exceedThenGoto &&
-            this.idToNodeBlock[nodeBlock.data.edgeTab.exceedThenGoto]) {
+        if (nodeBlock.data[edgeTabKey] &&
+            nodeBlock.data[edgeTabKey].exceedThenGoto &&
+            this.idToNodeBlock[nodeBlock.data[edgeTabKey].exceedThenGoto]) {
           edgeList.push({
             from_id: nodeBlock.data.nodeId,
-            to_id: nodeBlock.data.edgeTab.exceedThenGoto,
+            to_id: nodeBlock.data[edgeTabKey].exceedThenGoto,
             edge_type: 'exceedThenGoTo',
           });
         }
-        if (nodeBlock.data.edgeTab &&
-            nodeBlock.data.edgeTab.elseInto &&
-            this.idToNodeBlock[nodeBlock.data.edgeTab.elseInto]) {
+        if (nodeBlock.data[edgeTabKey] &&
+            nodeBlock.data[edgeTabKey].elseInto &&
+            this.idToNodeBlock[nodeBlock.data[edgeTabKey].elseInto]) {
           edgeList.push({
             from_id: nodeBlock.data.nodeId,
-            to_id: nodeBlock.data.edgeTab.elseInto,
+            to_id: nodeBlock.data[edgeTabKey].elseInto,
             edge_type: 'else_into',
           });
         }
-
         // push pc_node edges
         if (nodeBlock.data.paramsCollectingEdgeTab) {
           nodeBlock.data.paramsCollectingEdgeTab.normalEdges.forEach((edge) => {
@@ -1076,8 +1077,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'styles/variable.scss';
-
 #scenario-edit-page {
   position: relative;
   box-sizing: border-box;
