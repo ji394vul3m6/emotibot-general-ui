@@ -34,7 +34,7 @@
 ### Simple Usage: 由 Event 觸發顯示的 tooltip
 ```
   // template
-  <div id="needTooltip" v-tooltip="tooltip"></div>
+  <div id="needTooltip" ref="needTooltip" v-tooltip="tooltip"></div>
 
   // script
   tooltip: {
@@ -46,17 +46,17 @@
 ---
 ## Tooltip Object Options
 
-| Object key | required | Type | Accepted Values | Default | 說明 |
-|---|---|---|---|---|---|
-| msg | false | String | - | - | Tooltip 顯示的內容
-| errorType | false | Boolean | true / false | false | Tooltip 樣式<br> false: 黑底一般 tooltip<br> true: 紅底錯誤 tooltip
-| alignLeft | false | Boolean | true / false | false | Tooltip 顯示位置，<br> false: 元素右上角往右延伸<br>true: 元素右上角往左延伸
-| left | false | Number | - | 0 | 自訂 Tooltip 離左方 offset (px)
-| top | false | Number | - | 0 | 自訂 Tooltip 離上方 offset (px)
-| animateShow | false | Boolean | true / false | false | Tooltip 是否會在一段時間後自動消失
-| animateTime | false | Number | 單位 ms | 3000 | Tooltip 出現時長，會自動消失
-| clickShow | false | Boolean | true / false | false | 點擊元素觸發 Tooltip 出現，點擊元素外觸發 Tooltip 消失
-| eventOnly | false | Boolean | true / false | false | Tooltip 是否僅由 Event 控制出現 / 消失，可觸發 Event，見下方 Tooltip Events
+| Object key | required | Type | Default | 說明 |
+|---|---|---|---|---|
+| msg | - | String | - | - | Tooltip 顯示的內容
+| errorType | - | Boolean | false | Tooltip 樣式<br> false: 黑底一般 tooltip<br> true: 紅底錯誤 tooltip
+| alignLeft | - | Boolean | false | Tooltip 顯示位置，<br> false: 元素右上角往右延伸<br>true: 元素右上角往左延伸
+| left | - | Number | 0 | 自訂 Tooltip 離左方 offset (px)
+| top | - | Number | 0 | 自訂 Tooltip 離上方 offset (px)
+| animateShow | - | Boolean | false | Tooltip 是否會在一段時間後自動消失
+| animateTime | - | Number 單位 ms | 3000 | Tooltip 出現時長，會自動消失
+| clickShow | - | Boolean | false | 點擊元素觸發 Tooltip 出現，點擊元素外觸發 Tooltip 消失
+| eventOnly | - | Boolean | false | Tooltip 是否僅由 Event 控制出現 / 消失，可觸發 Event，見下方 Tooltip Events
 
 * 若 clickShow 和 eventOnly 皆為 false，Tooltip 預設為 Hover 出現
 
