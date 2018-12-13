@@ -9,7 +9,37 @@ export default [{
     const value = boolean('value', true);
     const big = boolean('big', false);
     const disabled = boolean('disabled', false);
-    const template = '<toggle v-model="value" :big="big" :disabled="disabled"></toggle>';
+
+    const falseValue = false;
+    const trueValue = true;
+    const template = `
+      <div>
+      <div class="div-block">
+        <div class="headline">Toggle</div>
+        <toggle v-model="value" :big="big" :disabled="disabled"></toggle>
+      </div>
+      <div>
+        <div class="headline">Toggle 樣式</div>
+        <div class="line">
+          <toggle v-model="falseValue" ></toggle>
+          <toggle v-model="trueValue" ></toggle>
+        </div>
+        <div class="line">
+          <toggle v-model="falseValue" disabled></toggle>
+          <toggle v-model="trueValue" disabled></toggle>
+        </div>
+        <div class="headline">Toggle 樣式: big</div>
+        <div class="line">
+          <toggle v-model="falseValue" big></toggle>
+          <toggle v-model="trueValue" big></toggle>
+        </div>
+        <div class="line">
+          <toggle v-model="falseValue" big disabled></toggle>
+          <toggle v-model="trueValue" big disabled></toggle>
+        </div>
+      </div>
+      </div>
+    `;
 
     return {
       components: {
@@ -18,6 +48,8 @@ export default [{
       data() {
         return {
           value,
+          falseValue,
+          trueValue,
           big,
           disabled,
         };

@@ -302,6 +302,7 @@ $border-color: $color-borderline;
   height: 28px;
   border: 1px solid $border-color;
   border-radius: 2px;
+  background: $color-white;
   &.error {
     border: 1px solid #f25c62;
   }

@@ -34,7 +34,7 @@ const i18n = new VueI18n({
 });
 
 /** Basic Components */
-const welcomeStory = storiesOf('Welcome', module).addDecorator(withKnobs);
+const welcomeStory = storiesOf('General Style', module).addDecorator(withKnobs);
 WelcomeStory.forEach((story) => {
   welcomeStory.add(story.name, story.func);
 });
@@ -112,5 +112,5 @@ NotifyStory.forEach((story) => {
 });
 const popStory = storiesOf('Extensions|PopWindow', module).addDecorator(withKnobs);
 PopStory.forEach((story) => {
-  popStory.add(story.name, story.func);
+  popStory.add(story.name, story.func.bind(null, i18n));
 });

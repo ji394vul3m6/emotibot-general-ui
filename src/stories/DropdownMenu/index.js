@@ -46,17 +46,23 @@ export default [{
     const option2 = object('alignLeft options', dropdown2);
 
     const template = `
-      <div style="height: 500px">
-        <div :style="divBlockStyle">
-          <div style="font-size: 18px">Dropdown Menu 自訂寬度</div> 
-          <div :style="menuBlockStyle">
+      <div style="position: relative; height: 100%;">
+        <div class="div-block">
+          <div class="headline">Dropdown Menu 自訂寬度</div> 
+          <div class="line">
             <text-button v-dropdown="option1" style="position:relative;">點我</text-button>
           </div>
         </div>
-        <div :style="divBlockStyle">
-          <div style="font-size: 18px">Dropdown Menu 往左延伸</div> 
-          <div :style="menuBlockStyle">
+        <div class="div-block">
+          <div class="headline">Dropdown Menu 往左延伸</div> 
+          <div class="line" style="margin-left: 300px">
             <text-button v-dropdown="option2" style="position:relative;">點我</text-button>
+          </div>
+        </div>
+        <div class="div-block" style="position:absolute; bottom: 0; left: 0; right: 0;">
+          <div class="headline">Dropdown Menu 高度超出視窗邊界自動往上</div> 
+          <div class="line">
+            <text-button v-dropdown="option1" style="position:relative;">點我</text-button>
           </div>
         </div>
       </div>`;
@@ -68,15 +74,6 @@ export default [{
         return {
           option1,
           option2,
-          menuBlockStyle: {
-            margin: '20px 0px 0px 80px',
-          },
-          divBlockStyle: {
-            backgroundColor: '#eeeeee',
-            borderRadius: '4px',
-            padding: '10px',
-            margin: '20px 0px',
-          },
         };
       },
       template,

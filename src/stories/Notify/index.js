@@ -8,9 +8,9 @@ export default [
     func: withMarkdownNotes(README)(() => {
       const template = `
         <div>
-          <div :style="divBlockStyle">
-            <div style="font-size: 18px">一般通知：$notifyInfo</div>
-            <div :style="tipBlockStyle"> 
+          <div class="div-block">
+            <div class="headline">一般通知：$notifyInfo</div>
+            <div class="line"> 
               <text-button
                 button-type='primary'
                 @click="showNotify">
@@ -18,9 +18,9 @@ export default [
               </text-button>
             </div>
           </div>
-          <div :style="divBlockStyle">
-            <div style="font-size: 18px">成功通知：$notify</div> 
-            <div :style="tipBlockStyle"> 
+          <div class="div-block">
+            <div class="headline">成功通知：$notify</div> 
+            <div class="line"> 
               <text-button
                 button-type='primary'
                 @click="showNotifySuccess">
@@ -28,9 +28,9 @@ export default [
               </text-button>
             </div>
           </div>
-          <div :style="divBlockStyle">
-            <div style="font-size: 18px">警示通知：$notifyWarn</div>
-            <div :style="tipBlockStyle">  
+          <div class="div-block">
+            <div class="headline">警示通知：$notifyWarn</div>
+            <div class="line">  
               <text-button
                 button-type='error'
                 @click="showNotifyWarning">
@@ -38,9 +38,9 @@ export default [
               </text-button>
             </div>
           </div>
-          <div :style="divBlockStyle">
-            <div style="font-size: 18px">錯誤通知：$notifyError</div> 
-            <div :style="tipBlockStyle"> 
+          <div class="div-block">
+            <div class="headline">錯誤通知：$notifyError</div> 
+            <div class="line"> 
               <text-button
                 button-type='error'
                 @click="showNotifyError">
@@ -53,19 +53,6 @@ export default [
 
       return {
         components: { TextButton },
-        data() {
-          return {
-            tipBlockStyle: {
-              margin: '20px 0px 0px 50px',
-            },
-            divBlockStyle: {
-              backgroundColor: '#eeeeee',
-              borderRadius: '4px',
-              padding: '10px',
-              margin: '20px 0px',
-            },
-          };
-        },
         methods: {
           showNotify() {
             this.$notifyInfo('注意系統維修');

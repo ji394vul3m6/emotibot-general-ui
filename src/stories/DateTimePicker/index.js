@@ -20,34 +20,41 @@ export default [
       const startDate = new Date(latestDate);
       const startDateObj = pickerUtil.createDateObj();
       const template = `
-      <div style="height: 800px;"><div>
-        <div :style="divBlockStyle">
-          <div style="font-size: 18px">DatePicker</div>
-            <div :style="tipBlockStyle">
-              <date-picker
-                v-model="startDate"
-                :readonly="false"
-                :disabled="{to: earliestDate}"
-                format="yyyy/MM/dd"
-                language="zh"
-                @selected="handleSelectDate"
-              ></date-picker>
-            </div>
+      <div v-if="startDate && startDateObj">
+        <div class="div-block">
+          <div class="headline">DatePicker</div>
+            <date-picker
+              v-model="startDate"
+              :readonly="false"
+              :disabled="{to: earliestDate}"
+              format="yyyy/MM/dd"
+              language="zh"
+              @selected="handleSelectDate"
+            ></date-picker>
           </div>
         </div>
-        <div :style="divBlockStyle">  
-          <div style="font-size: 18px">DatetimePicker</div>
-            <div :style="tipBlockStyle">
-              <datetime-picker
-                :value="startDateObj"
-                :disableDate="{to: earliestDate}"
-                @dateChanged="handleDateChanged"
-                @validityChange="handleDateValidityChanged"
-              ></datetime-picker>
-            </div>
+        <div class="div-block">  
+          <div class="headline">DatetimePicker</div>
+          <div class="line">
+            <datetime-picker
+              :value="startDateObj"
+              :disableDate="{to: earliestDate}"
+              @dateChanged="handleDateChanged"
+              @validityChange="handleDateValidityChanged"
+            ></datetime-picker>
+          </div>
+          <div class="headline">DatetimePicker: second format</div>
+          <div class="line">
+            <datetime-picker
+              :value="startDateObj"
+              :disableDate="{to: earliestDate}"
+              :secondFormat="true"
+              @dateChanged="handleDateChanged"
+              @validityChange="handleDateValidityChanged"
+            ></datetime-picker>
           </div>
         </div>
-      </div></div>
+      </div>
         `;
 
       return {
@@ -61,24 +68,12 @@ export default [
             startDate,
             startDateObj,
             earliestDate,
-            tipBlockStyle: {
-              margin: '20px 0px 0px 50px',
-            },
-            divBlockStyle: {
-              backgroundColor: '#eeeeee',
-              borderRadius: '4px',
-              padding: '10px',
-              margin: '20px 0px',
-            },
           };
         },
         methods: {
-          handleSelectDate(date) {
-            action('select date', date);
-          },
-          handleDateValidityChanged(date) {
-            action('validity change', date);
-          },
+          handleSelectDate: action('select date'),
+          handleDateValidityChanged: action('validity change'),
+          handleDateChanged: action('date changed'),
         },
         template: `<div>
         ${template}

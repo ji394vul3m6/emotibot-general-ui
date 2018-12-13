@@ -75,18 +75,18 @@
 | ok_msg | String | - | '確認' | ok 按鈕顯示文字
 | cancel_msg | String | - | '取消' | cancel 按鈕顯示文字
 | component | Component | - | - | 自訂彈窗內容，以component置入
-| bindValue | Boolean | true / false | true | 傳入 component 的 data 是否以 v-model 傳入
+| bindValue | Boolean | - | true | 傳入 component 的 data 是否以 v-model 傳入
 | data | Object | - | - | 傳入綁定 component 的 prop<br>如果 bindValue=true：在 prop value取得<br>如果bindValue=false：在 prop origData取得
 | extData | Object | - | - | 傳入綁定 component 的 prop<br> 在 prop extData 取得<br><font color=red>Duplicated，盡量使用上方的 data 來傳值</font>
-| disable_ok | Boolean | true / false | false | ok 按鈕是否預設為不可點擊
-| validate | Boolean | true / false | false | 點擊 ok 按鈕後，傳入 'validate' 事件至綁定的 component
-| custom_button | Array | - | [] | 自訂按鈕，按鈕位置在彈窗右下角預設按鈕的左邊
-| left_button | Object | {<br>&nbsp;&nbsp;msg: that.$t('general.delete'), // 按鈕文字<br>&nbsp;&nbsp;type: 'error',   // textButton type<br>&nbsp;&nbsp;closeAfterClick: // Boolean, 點擊後是否關閉彈窗<br>&nbsp;&nbsp;callback: // Function，點擊按鈕後執行<br>} | undefined | 自訂按鈕，按鈕位置在彈窗左下角
+| disable_ok | Boolean | - | false | ok 按鈕是否預設為不可點擊
+| validate | Boolean | - | false | 點擊 ok 按鈕後，傳入 'validate' 事件至綁定的 component
+| custom_button | Array | [{<br>&nbsp;&nbsp;msg: that.$t('general.delete), // 按鈕文字<br>&nbsp;&nbsp;type: 'error',   // textButton type<br>&nbsp;&nbsp;closeAfterClick: // Boolean, 點擊後是否關閉彈窗<br>&nbsp;&nbsp;callback: // Function，點擊按鈕後執行<br>&nbsp;&nbsp;event: 'event-name' // String，要emit的事件名<br>&nbsp;&nbsp;payload: // emit event帶的payload}] | [] | 自訂按鈕，按鈕位置在彈窗右下角預設按鈕的左邊
+| left_button | Object | {<br>&nbsp;&nbsp;msg: that.$t('general.delete'), // 按鈕文字<br>&nbsp;&nbsp;type: 'error',   // textButton type<br>&nbsp;&nbsp;closeAfterClick: // Boolean, 點擊後是否關閉彈窗<br>&nbsp;&nbsp;callback: // Function，點擊按鈕後執行<br>&nbsp;&nbsp;event: 'event-name' // String，要emit的事件名<br>&nbsp;&nbsp;payload: // emit event帶的payload} | undefined | 自訂按鈕，按鈕位置在彈窗左下角
 | callback | Object | {<br>&nbsp;&nbsp;ok: // Function，點擊 ok 按鈕後執行<br>&nbsp;&nbsp;cancel: // Function，點擊 cancel 按鈕後執行<br>}
 
 
 ---
-## 由綁定的 component 觸發的 popWindow Events
+## popWindow Events
 
 ```
   // in Component somePop

@@ -26,17 +26,17 @@
 ---
 ## Props
 
-| Prop | required | Type | Accepted Values | Default | 說明 |
-|---|---|---|---|---|---|
-| buttonType | false | String | 'default' / 'fill' / 'primary' / 'disable' / 'error' | 'default' | 按鈕的樣式類型<br>**'default'**: 預設樣式，通常用於導入、導出及其他一般操作按鈕上<br>**'fill'**: 一般樣式<br>**'primary'**: 主要樣式，通常用於新增、搜尋、儲存等按鈕上<br>**'disable'**: 失效按鈕<br>**'error'**: 錯誤按鈕，通常用於刪除等按鈕上|
-| width | false | String | - | '60px' | 按鈕寬度，若沒給固定值，會自動依按鈕文字長度變寬
-| height | false | String | - | '28px' | 按鈕高度
-| iconType | false | String | components/basic/Icon.vue 裡<br>有iconType 的 icons | - | 給予 iconType 以使用有 icon 的按鈕
-| iconSize | false | Number | - | 16 | icon 大小
-| iconAlign | false | String | 'left' / 'right' | 'left' | 指定icon 位置在按鈕內左方或右方
+| Prop | required | Type | Default | 說明 |
+|---|---|---|---|---|
+| buttonType | - | One of ['default', 'fill', 'primary', 'disable', 'error'] | 'default' | 按鈕的樣式類型<br>**'default'**: 預設樣式，通常用於導入、導出及其他一般操作按鈕上<br>**'fill'**: 一般樣式<br>**'primary'**: 主要樣式，通常用於新增、搜尋、儲存等按鈕上<br>**'disable'**: 失效按鈕<br>**'error'**: 錯誤按鈕，通常用於刪除等按鈕上|
+| width | - | String | '60px' | 按鈕寬度，若沒給固定值，會自動依按鈕文字長度變寬
+| height | - | String | '28px' | 按鈕高度
+| iconType | - | One of IconTypes | - | 給予 iconType 以使用有 icon 的按鈕
+| iconSize | - | Number | 16 | icon 大小
+| iconAlign | - | One of ['left', 'right'] | 'left' | 指定icon 位置在按鈕內左方或右方
 
 ---
-## Events
+## Emit Events
 
 | Event | Callback $event | 說明 |
 |---|---|---|

@@ -73,7 +73,7 @@ export default [{
     const click = object('action', actionType);
 
     const template = `
-    <div width="100%">
+    <div class="headline">General Table</div> 
       <general-table
         :fontClass="fontType"
         :autoHeight="autoHeight"
@@ -82,7 +82,7 @@ export default [{
         :checkbox="checkbox"
         :action="click"
         :showEmpty="showEmpty" />
-    </div>`;
+    `;
 
     return {
       components: {
@@ -101,7 +101,7 @@ export default [{
       },
       methods: {
       },
-      template,
+      template: `<div>${template}</div>`,
       i18n,
     };
   }),

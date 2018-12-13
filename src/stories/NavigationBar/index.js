@@ -15,6 +15,7 @@ export default [{
     const currentPage = text('currentPage', '');
     const template = `
     <div>
+      <div class="headline">NavigationBar</div>
       <nav-bar v-model=currentPage :options="pageMap"/>
       <br>
       current page: {{ currentPage }}
