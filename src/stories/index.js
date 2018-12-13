@@ -112,5 +112,5 @@ NotifyStory.forEach((story) => {
 });
 const popStory = storiesOf('Extensions|PopWindow', module).addDecorator(withKnobs);
 PopStory.forEach((story) => {
-  popStory.add(story.name, story.func);
+  popStory.add(story.name, story.func.bind(null, i18n));
 });
