@@ -128,11 +128,17 @@ export default {
       type: Array,
       default: () => [],
     },
+    nodeId: {
+      type: String,
+      required: true,
+    },
+    nodeType: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     const edgeTab = this.edgeTab;
-    const nodeId = edgeTab.nodeId;
-    const nodeType = edgeTab.nodeType;
     const exceedThenGoto = edgeTab.exceedThenGoto || null;
     const elseInto = edgeTab.elseInto;
     const dialogueLimit = edgeTab.dialogueLimit || null;
@@ -149,7 +155,7 @@ export default {
     this.exitEdge = { text: `${this.$t('task_engine_v2.to_node_option.exit')} (ID: 0)`, value: '0' };
     this.parseFailedEdge = {
       text: this.$t('task_engine_v2.to_node_option.parse_fail'),
-      value: nodeId,
+      value: this.nodeId,
     };
     this.addNewDialogueNodeEdge = {
       text: this.$t('task_engine_v2.to_node_option.add_new_dialogue_node'),
@@ -163,10 +169,8 @@ export default {
       toNodeOptions,
       exceedThenGotoOptions,
       elseIntoOptions,
-    } = this.composeOptions(options, nodeType);
+    } = this.composeOptions(options, this.nodeType);
     return {
-      nodeId,
-      nodeType,
       normalEdges,
       dialogueLimit,
       newNodeOptions: undefined,

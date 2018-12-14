@@ -98,13 +98,16 @@ export default {
       type: Array,
       required: true,
     },
+    nodeType: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     const settingTab = this.settingTab;
     // render entityModuleOptions
     const entityModuleOptionsMap = optionConfig.getEntityModuleOptionsMap();
     return {
-      nodeType: settingTab.nodeType,
       nodeName: settingTab.nodeName,
       parser: settingTab.parser,
       targetEntities: settingTab.targetEntities,

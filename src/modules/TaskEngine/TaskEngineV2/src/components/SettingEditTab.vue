@@ -110,6 +110,10 @@ export default {
       type: Array,
       required: true,
     },
+    nodeType: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     const settingTab = this.settingTab;
@@ -118,7 +122,6 @@ export default {
     const entityModuleOptionsMap = optionConfig.getEntityModuleOptionsMap();
     const entityKeyNameOptionsMap = this.getEntityKeyNameOptionsMap();
     return {
-      nodeType: settingTab.nodeType,
       nodeName: settingTab.nodeName,
       parser: settingTab.parser,
       parserOptions: this.getParserOptions(),

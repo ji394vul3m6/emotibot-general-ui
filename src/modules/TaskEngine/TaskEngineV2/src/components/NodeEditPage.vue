@@ -20,6 +20,7 @@
         :mapTableOptions="mapTableOptions"
         :validateTab="validateTab"
         :jsCodeAlias="jsCodeAlias"
+        :nodeId="nodeId"
         @update:valid="valid = $event"
         @update="triggerTab = $event"
       ></trigger-edit-tab>
@@ -28,6 +29,7 @@
         :settingTab="settingTab"
         :globalVarOptions="globalVarOptions"
         :validateTab="validateTab"
+        :nodeType="nodeType"
         @update:valid="valid = $event"
         @update="settingTab = $event"
       ></setting-edit-tab>
@@ -36,6 +38,7 @@
         :settingTab="dialogue2SettingTab"
         :globalVarOptions="globalVarOptions"
         :validateTab="validateTab"
+        :nodeType="nodeType"
         @update:valid="valid = $event"
         @update="dialogue2SettingTab = $event"
       ></setting-edit-tab2>
@@ -77,6 +80,7 @@
         :paramsCollectingTab="paramsCollectingTab"
         :mapTableOptions="mapTableOptions"
         :validateTab="validateTab"
+        :nodeId="nodeId"
         @update:valid="valid = $event"
         @update="paramsCollectingTab = $event"
       ></params-collecting-edit-tab>
@@ -88,6 +92,8 @@
         :mapTableOptions="mapTableOptions"
         :validateTab="validateTab"
         :jsCodeAlias="jsCodeAlias"
+        :nodeId="nodeId"
+        :nodeType="nodeType"
         @update:valid="valid = $event"
         @update="paramsCollectingEdgeTab = $event"
         @updateNewNodeOptions="updateNewNodeOptions"
@@ -100,6 +106,8 @@
         :mapTableOptions="mapTableOptions"
         :validateTab="validateTab"
         :jsCodeAlias="jsCodeAlias"
+        :nodeId="nodeId"
+        :nodeType="nodeType"
         @update:valid="valid = $event"
         @update="edgeTab = $event"
         @updateNewNodeOptions="updateNewNodeOptions"
@@ -111,6 +119,8 @@
         :globalVarOptions="globalVarOptions"
         :mapTableOptions="mapTableOptions"
         :validateTab="validateTab"
+        :nodeId="nodeId"
+        :nodeType="nodeType"
         @update:valid="valid = $event"
         @update="edgeTab2 = $event"
         @updateNewNodeOptions="updateNewNodeOptions"
@@ -210,10 +220,8 @@ export default {
     tabs.forEach((tab) => {
       if (tab === 'triggerTab') {
         triggerTab = node.triggerTab;
-        triggerTab.nodeId = node.nodeId;
       } else if (tab === 'settingTab') {
         settingTab = node.settingTab;
-        settingTab.nodeType = nodeType;
       } else if (tab === 'edgeTab') {
         if (node.edgeTab === undefined) {
           // only happen to old action node
@@ -221,19 +229,14 @@ export default {
           node.edgeTab = scenarioInitializer.initialEdgeTab(nodeType);
         }
         edgeTab = node.edgeTab;
-        edgeTab.nodeType = nodeType;
-        edgeTab.nodeId = node.nodeId;
       } else if (tab === 'entityCollectingTab') {
         entityCollectingTab = node.entityCollectingTab;
       } else if (tab === 'settingBasicTab') {
         settingBasicTab = node.settingBasicTab;
       } else if (tab === 'paramsCollectingTab') {
         paramsCollectingTab = node.paramsCollectingTab;
-        paramsCollectingTab.nodeId = node.nodeId;
       } else if (tab === 'paramsCollectingEdgeTab') {
         paramsCollectingEdgeTab = node.paramsCollectingEdgeTab;
-        paramsCollectingEdgeTab.nodeType = nodeType;
-        paramsCollectingEdgeTab.nodeId = node.nodeId;
       } else if (tab === 'restfulSettingTab') {
         restfulSettingTab = node.restfulSettingTab;
       } else if (tab === 'restfulEdgeTab') {
@@ -242,11 +245,8 @@ export default {
         actionTab = node.actionTab;
       } else if (tab === 'dialogue2SettingTab') {
         dialogue2SettingTab = node.dialogue2SettingTab;
-        dialogue2SettingTab.nodeType = node.nodeType;
       } else if (tab === 'edgeTab2') {
         edgeTab2 = node.edgeTab2;
-        edgeTab2.nodeType = nodeType;
-        edgeTab2.nodeId = node.nodeId;
       }
     });
     const jsCodeAlias = this.extData.jsCodeAlias || [];
@@ -255,6 +255,7 @@ export default {
       originalNodeString,
       node,
       nodeType,
+      nodeId: node.nodeId,
       toNodeOptions,
       globalVarOptions: [],
       globalVarOptionsMap,
@@ -577,9 +578,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'styles/variable.scss';
-
-#node-edit-page{
+#node-edit-page {
   height: 70vh;
   display: flex;
   flex-direction: row;

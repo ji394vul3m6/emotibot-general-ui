@@ -60,10 +60,13 @@ export default {
       type: Array,
       default: () => [],
     },
+    nodeId: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {
-      nodeId: this.triggerTab.nodeId,
       rules: this.triggerTab.rules.map(rule => ({
         id: this.$uuid.v1(),
         to_node_id: null,
