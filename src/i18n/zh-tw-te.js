@@ -312,6 +312,7 @@ export default {
       label_text_response: '文字回覆',
       label_type: '類型',
       label_has_context: '話術關聯',
+      label_fuzzy_match: '模糊匹配',
       label_default: '默認',
       label_get_surname: '只取姓氏',
       label_select_mode: '選項模式',
@@ -335,8 +336,8 @@ export default {
         TIME_PAST: '過去時間',
       },
       nlu_select_options: {
-        SELECT: '自定義添加',
-        KEY: '鍵',
+        SELECT_CUSTOMIZE_OPTIONS: '自定義添加',
+        SELECT_OPTIONS_IN_KEY: '鍵',
       },
       source: {
         text: '用戶輸入文本',

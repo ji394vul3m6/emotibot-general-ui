@@ -21,11 +21,11 @@ const NLUParserMap = {
   ORDINAL_NUMBER: 'ORDINAL_NUMBER',
   PERSON_NAME: 'PERSON_NAME',
   SURNAME: 'SURNAME',
-  ACT: 'ACT',
+  POLARITY: 'POLARITY',
   TIME_FUTURE: 'TIME_FUTURE',
   TIME_PAST: 'TIME_PAST',
-  SELECT: 'SELECT',
-  KEY: 'KEY',
+  SELECT_CUSTOMIZE_OPTIONS: 'SELECT_CUSTOMIZE_OPTIONS',
+  SELECT_OPTIONS_IN_KEY: 'SELECT_OPTIONS_IN_KEY',
   LOGIC: 'LOGIC',
 };
 const NLUTypeMap = {
@@ -39,7 +39,10 @@ const NLUTypeMap = {
 };
 const NLUTypeOptions = Object.values(NLUTypeMap);
 const NLUTimeParsers = [NLUParserMap.TIME_FUTURE, NLUParserMap.TIME_PAST];
-const NLUSelectParsers = [NLUParserMap.SELECT, NLUParserMap.KEY];
+const NLUSelectParsers = [
+  NLUParserMap.SELECT_CUSTOMIZE_OPTIONS,
+  NLUParserMap.SELECT_OPTIONS_IN_KEY,
+];
 export default {
   nodeType2Tabs() {
     return {
@@ -53,11 +56,6 @@ export default {
     };
   },
   getEntityListMap() {
-    const nluEntityOptions = [
-      'ADDRESS', 'QUANTITY', 'PERSON_NUMBER', 'MONEY', 'MOBILE_PHONE',
-      'ORDINAL_NUMBER', 'PERSON_NAME', 'SURNAME', 'ACT', 'TIME_FUTURE',
-      'TIME_PAST',
-    ];
     const commonEntityOptions = [
       'time', 'city', 'landmark', 'money', 'time_period',
       'phone_call', 'adjust_light', 'adjust_volume', 'movie_name', 'song_name',
@@ -71,7 +69,6 @@ export default {
       'Star', 'Price',
     ];
     return {
-      nlu_parser: nluEntityOptions,
       common_parser: commonEntityOptions,
       task_parser: taskEntityOptions,
       hotel_parser: hotelEntityOptions,
