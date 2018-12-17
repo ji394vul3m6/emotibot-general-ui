@@ -709,6 +709,8 @@ export default {
   },
   computed: {
     toNodeText() {
+      const isNodeOptionExist = this.toNodeOptions.find(option => option.value === this.toNode);
+      if (!isNodeOptionExist) { this.toNode = null; }
       return this.toNodeOptions.find(option => option.value === this.toNode).text;
     },
   },
