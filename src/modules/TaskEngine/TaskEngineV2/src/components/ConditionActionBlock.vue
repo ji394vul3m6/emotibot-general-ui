@@ -479,12 +479,12 @@
                     class="dropdown-select"
                     :ref="`selectSource_${index}`"
                     :value="[action.content.tags.split(',')[0]]"
-                    @input="action.content.tags = $event[0]; delete action.content.options; delete action.content.option_key"
+                    @input="setNluSelectOptionType(action, $event[0])"
                     :options="nluSelectOptions"
                     :showCheckedIcon="false"
                     :inputBarStyle="selectStyle"/>
                 </div>
-                <template v-if="action.content.tags === NLUParserMap.SELECT">
+                <template v-if="action.content.tags === NLUParserMap.SELECT_CUSTOMIZE_OPTIONS">
                   <div class="row">
                     <span class="label"></span>
                     <button 
@@ -499,9 +499,13 @@
                     <button class="delete-button red" v-t="'task_engine_v2.condition_action_block.delete'" @click="action.content.options.splice(index, 1)"></button>
                   </div>
                 </template>
-                <div class="row" v-if="action.content.tags === NLUParserMap.KEY">
+                <div class="row" v-if="action.content.tags === NLUParserMap.SELECT_OPTIONS_IN_KEY">
                   <span class="label" v-t="'task_engine_v2.condition_action_block.label_option_key'"></span>
                   <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="action.content.option_key" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus">
+                </div>
+                <div class="row">
+                  <span class="label" v-t="'task_engine_v2.condition_action_block.label_fuzzy_match'"></span>
+                  <toggle v-model="action.content.fuzzy_match" :size="'medium'" :showLabel="true" :label="toggleLabel"></toggle>
                 </div>
               </template>
               <div class="row">
@@ -884,7 +888,9 @@ export default {
           break;
         }
         case NLUTypeMap.SELECT: {
-          action.content.tags = NLUParserMap.SELECT;
+          action.content.tags = NLUParserMap.SELECT_CUSTOMIZE_OPTIONS;
+          action.content.options = [''];
+          action.content.fuzzy_match = true;
           break;
         }
         case NLUTypeMap.LOGIC: {
@@ -895,6 +901,18 @@ export default {
           break;
       }
       this.$forceUpdate();
+    },
+    setNluSelectOptionType(action, type) {
+      const content = action.content;
+      content.tags = type;
+      delete content.options;
+      delete content.option_key;
+      if (type === NLUParserMap.SELECT_CUSTOMIZE_OPTIONS) {
+        this.$set(content, 'options', ['']);
+      }
+      if (type === NLUParserMap.SELECT_OPTIONS_IN_KEY) {
+        this.$set(content, 'option_key', '');
+      }
     },
     nluPersonNameChange(action) {
       action.content.tags = action.nluPersionName ? NLUParserMap.SURNAME : NLUParserMap.PERSON_NAME;

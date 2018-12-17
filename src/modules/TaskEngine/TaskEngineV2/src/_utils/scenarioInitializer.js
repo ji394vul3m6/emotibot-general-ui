@@ -282,6 +282,11 @@ export default {
           },
         ],
       },
+      nlu_parser: {
+        tags: '',
+        key_suffix: `_${nodeId}`,
+        has_context: false,
+      },
       common_parser: {
         tags: '',
         key_suffix: `_${nodeId}`,

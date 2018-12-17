@@ -251,6 +251,7 @@ export default {
         match: '完全相符',
         contains: '包含文本',
         regular_exp: '正則表示式',
+        nlu_parser: 'NLU解析器',
         hotel_parser: '酒店預定語句解析器',
         common_parser: '通用語句解析器',
         task_parser: '場景語句解析器',
@@ -311,6 +312,7 @@ export default {
       label_text_response: '文字回覆',
       label_type: '類型',
       label_has_context: '話術關聯',
+      label_fuzzy_match: '模糊匹配',
       label_default: '默認',
       label_get_surname: '只取姓氏',
       label_select_mode: '選項模式',
@@ -334,8 +336,8 @@ export default {
         TIME_PAST: '過去時間',
       },
       nlu_select_options: {
-        SELECT: '自定義添加',
-        KEY: '鍵',
+        SELECT_CUSTOMIZE_OPTIONS: '自定義添加',
+        SELECT_OPTIONS_IN_KEY: '鍵',
       },
       source: {
         text: '用戶輸入文本',

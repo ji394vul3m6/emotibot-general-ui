@@ -21,11 +21,11 @@ const NLUParserMap = {
   ORDINAL_NUMBER: 'ORDINAL_NUMBER',
   PERSON_NAME: 'PERSON_NAME',
   SURNAME: 'SURNAME',
-  ACT: 'ACT',
+  POLARITY: 'POLARITY',
   TIME_FUTURE: 'TIME_FUTURE',
   TIME_PAST: 'TIME_PAST',
-  SELECT: 'SELECT',
-  KEY: 'KEY',
+  SELECT_CUSTOMIZE_OPTIONS: 'SELECT_CUSTOMIZE_OPTIONS',
+  SELECT_OPTIONS_IN_KEY: 'SELECT_OPTIONS_IN_KEY',
   LOGIC: 'LOGIC',
 };
 const NLUTypeMap = {
@@ -39,7 +39,10 @@ const NLUTypeMap = {
 };
 const NLUTypeOptions = Object.values(NLUTypeMap);
 const NLUTimeParsers = [NLUParserMap.TIME_FUTURE, NLUParserMap.TIME_PAST];
-const NLUSelectParsers = [NLUParserMap.SELECT, NLUParserMap.KEY];
+const NLUSelectParsers = [
+  NLUParserMap.SELECT_CUSTOMIZE_OPTIONS,
+  NLUParserMap.SELECT_OPTIONS_IN_KEY,
+];
 export default {
   nodeType2Tabs() {
     return {
@@ -231,10 +234,11 @@ export default {
   },
   getFuncOptionMap(context) {
     const textFuncs = [
-      'match', 'contains', 'regular_exp', 'common_parser', 'task_parser',
-      'hotel_parser', 'user_custom_parser', 'polarity_parser', 'api_parser', 'qq', 'intent_parser',
+      'match', 'contains', 'regular_exp', 'nlu_parser', 'common_parser',
+      'task_parser', 'hotel_parser', 'user_custom_parser', 'polarity_parser', 'api_parser',
+      'qq', 'intent_parser',
     ];
-    const globalIngoFuncs = [
+    const globalInfoFuncs = [
       'key_val_match', 'key_key_match', 'contain_key', 'not_contain_key', 'list_length_match',
       'counter_check', 'user_custom_transform', 'regular_exp_from_var', 'assign_value', 'remove_key',
     ];
@@ -247,7 +251,7 @@ export default {
           value: func,
         };
       }),
-      global_info: globalIngoFuncs.map((func) => {
+      global_info: globalInfoFuncs.map((func) => {
         const key = `task_engine_v2.condition_block.func.${func}`;
         return {
           text: context.$t(key),
