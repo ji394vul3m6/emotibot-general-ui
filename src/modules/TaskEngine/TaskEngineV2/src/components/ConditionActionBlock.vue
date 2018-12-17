@@ -272,11 +272,13 @@
             </div>
             <div class="row" v-if="action.content.operation === 'set_key_to_key'">
               <span class="label" v-t="'task_engine_v2.condition_action_block.label_exec'"></span>
-              <div ref="insertVarDropdown" class="dropdown-container" v-dropdown="insertVarDropdown(action.id, action.content, 'key')">
-                <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="action.content.key" :placeholder="$t('task_engine_v2.condition_action_block.key_placeholder')" @focus="onInputFocus">
+              <div ref="insertVarDropdown" class="dropdown-container" v-dropdown="insertVarDropdown(action.id, action.content, 'key1')">
+                <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="action.content.key1" :placeholder="$t('task_engine_v2.condition_action_block.key_placeholder')" @focus="onInputFocus">
               </div>
               <span class="label" v-t="'task_engine_v2.condition_action_block.label_equal'"></span>
-              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="action.content.val" :placeholder="$t('task_engine_v2.condition_action_block.key_placeholder')" @focus="onInputFocus"/>
+              <div ref="insertVarDropdown" class="dropdown-container" v-dropdown="insertVarDropdown(action.id, action.content, 'key2')">
+                <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="action.content.key2" :placeholder="$t('task_engine_v2.condition_action_block.key_placeholder')" @focus="onInputFocus">
+              </div>
             </div>
           </template>
           <!-- Web API 调用 -->
