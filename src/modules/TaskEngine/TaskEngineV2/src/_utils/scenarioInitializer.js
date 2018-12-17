@@ -583,7 +583,13 @@ export default {
         };
       }
       case ActionType.JSScript: {
-        return {};
+        return {
+          source: 'text',
+          function: {
+            function_name: 'js_code',
+            content: '',
+          },
+        };
       }
       case ActionType.ResponseText: {
         return {

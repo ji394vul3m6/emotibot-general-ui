@@ -119,6 +119,7 @@
         :globalVarOptions="globalVarOptions"
         :mapTableOptions="mapTableOptions"
         :validateTab="validateTab"
+        :jsCodeAlias="jsCodeAlias"
         :nodeId="nodeId"
         :nodeType="nodeType"
         @update:valid="valid = $event"

@@ -318,6 +318,7 @@ export default {
       label_select_mode: '选项模式',
       label_option: '选项',
       label_option_key: '选项键',
+      label_script: '脚本',
       add_target_key: '+新增一组目的键',
       add_option: '+新增选项',
       node_counter: '若超过节点对话轮数限制',
@@ -379,6 +380,7 @@ export default {
         set_key_to_key: '键键赋值',
         nlu_parser: 'NLU解析器',
         reg_parser: '正则解析器',
+        js_code: 'JS脚本执行',
       },
       operator: {
         equal_to: '等于',
@@ -416,6 +418,7 @@ export default {
       reg_placeholder: '输入正则表达式',
       multi_placeholder: '请选择（支持多选）',
       nlu_placeholder: '请选择解析器类型',
+      script_placeholder: '选择执行脚本',
       on: '开',
       off: '关',
     },

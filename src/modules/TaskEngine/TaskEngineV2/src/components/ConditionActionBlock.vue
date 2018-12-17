@@ -536,6 +536,20 @@
               </div>
             </div>
           </template>
+          <!-- JS 脚本使用 -->
+          <template v-if="action.type === ActionType.JSScript">
+            <div class="row">
+              <span class="label" v-t="'task_engine_v2.condition_action_block.label_script'"></span>
+              <dropdown-select
+                class="dropdown-select"
+                :value="[action.content]"
+                @input="action.content = $event[0]"
+                :options="jsCodeOptions"
+                :placeholder="$t('task_engine_v2.condition_action_block.script_placeholder')"
+                :showCheckedIcon="false"/>
+              <icon class="trash" :size="14" iconType="trash" @click="deleteAction(index)"></icon>
+            </div>
+          </template>
         </div>
       </template>
       <div class="block">
@@ -607,6 +621,10 @@ export default {
     validateConditionBlock: {
       type: Boolean,
       default: false,
+    },
+    jsCodeAlias: {
+      type: Array,
+      default: () => [],
     },
   },
   data() {
@@ -712,6 +730,9 @@ export default {
       const isNodeOptionExist = this.toNodeOptions.find(option => option.value === this.toNode);
       if (!isNodeOptionExist) { this.toNode = null; }
       return this.toNodeOptions.find(option => option.value === this.toNode).text;
+    },
+    jsCodeOptions() {
+      return this.jsCodeAlias.map(item => ({ value: item, text: item }));
     },
   },
   watch: {

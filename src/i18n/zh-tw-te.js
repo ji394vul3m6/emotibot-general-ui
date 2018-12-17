@@ -318,6 +318,7 @@ export default {
       label_select_mode: '選項模式',
       label_option: '選項',
       label_option_key: '選項鍵',
+      label_script: '腳本',
       add_target_key: '+新增一組目的鍵',
       add_option: '+新增選項',
       node_counter: '若超過節點對話輪數限制',
@@ -379,6 +380,7 @@ export default {
         set_key_to_key: '鍵鍵賦值',
         nlu_parser: 'NLU解析器',
         reg_parser: '正則解析器',
+        js_code: 'JS腳本執行',
       },
       operator: {
         equal_to: '等於',
@@ -416,6 +418,7 @@ export default {
       reg_placeholder: '輸入正則表達式',
       multi_placeholder: '請選擇（支持多選）',
       nlu_placeholder: '請選擇解析器類型',
+      script_placeholder: '選擇執行腳本',
       on: '開',
       off: '關',
     },
