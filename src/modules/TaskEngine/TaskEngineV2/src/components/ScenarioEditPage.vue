@@ -92,7 +92,7 @@
     <div class="third-row" v-if="showNodeOptions">
       <span class="instruction" v-t="'task_engine_v2.scenario_edit_page.add_node_instruction'"></span>
       <ul class="node-options">
-        <template v-for="nodeOption in nodeOptions">
+        <template v-for="nodeOption in nodeOptions" v-if="enable_node[nodeOption.type]">
           <li
             class="node-option"
             draggable="true"
@@ -196,6 +196,7 @@ export default {
       jsCode: {},
       jsCodeAlias: [],
       hadJsCode: false,
+      enable_node: {},
     };
   },
   computed: {
@@ -1057,6 +1058,7 @@ export default {
       taskEngineApi.taskConfig()
         .then((data) => {
           that.hadJsCode = data.task_engine_v2.enable_js_code;
+          Object.assign(this.enable_node, data.task_engine_v2.enable_node);
         });
     },
   },
@@ -1065,6 +1067,10 @@ export default {
     this.scenarioId = this.$route.params.id;
     this.panelTabOptions = this.getPanelTabOptions();
     this.nodeTypes = optionConfig.getNodeTypes(this);
+    this.enable_node = this.nodeTypes.reduce((acc, nodeInfo) => {
+      acc[nodeInfo.type] = true;
+      return acc;
+    }, {});
     this.nodeOptions = this.getNodeOptions();
     this.rainbowColors = optionConfig.getRainbowColors();
     this.getTaskConfigInfo();
