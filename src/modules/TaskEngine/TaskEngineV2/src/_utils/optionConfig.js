@@ -78,10 +78,6 @@ export default {
     const entityListMap = this.getEntityListMap();
     return {
       none: [],
-      nlu_parser: entityListMap.nlu_parser.map(option => ({
-        text: option,
-        value: option,
-      })),
       common_parser: entityListMap.common_parser.map(option => ({
         // 'time_module', 'city_module', 'landmark_module', 'money_module', 'time_period_module',
         text: option,
