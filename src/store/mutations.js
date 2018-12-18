@@ -17,6 +17,10 @@ export const state = {
   userInfo: {},
   showUserInfo: false,
   locale: '',
+  env: {
+    IM_ENABLE: false,
+    ENABLE_TDE_MODULE: false,
+  },
 };
 
 export const mutations = {
@@ -135,5 +139,8 @@ export const mutations = {
   [types.SET_LANGUAGE]: (s, language) => {
     s.locale = language;
     localStorage.setItem('locale', language);
+  },
+  [types.SET_ENV]: (s, env) => {
+    s.env = env;
   },
 };
