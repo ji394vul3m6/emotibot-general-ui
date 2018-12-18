@@ -660,7 +660,9 @@ export default {
       });
     },
     nodeOptionDragStart(nodeType, name, e) {
-      e.dataTransfer.setData('text', JSON.stringify({ nodeType, name }));
+      const widthRatio = e.offsetX / e.target.offsetWidth;
+      const heightRatio = e.offsetY / e.target.offsetHeight;
+      e.dataTransfer.setData('text', JSON.stringify({ nodeType, name, widthRatio, heightRatio }));
     },
     nodeOptionDragOver(e) {
       e.preventDefault();
@@ -670,7 +672,11 @@ export default {
       const eObj = JSON.parse(e.dataTransfer.getData('text'));
       const nodeType = eObj.nodeType;
       const nodeName = eObj.name;
-      this.addNewNode(nodeType, nodeName, e.offsetX, e.offsetY);
+      const widthRatio = Number.isNaN(+eObj.widthRatio) ? 1 : +eObj.widthRatio;
+      const heightRatio = Number.isNaN(+eObj.heightRatio) ? 1 : +eObj.heightRatio;
+      const x = e.offsetX - (this.nodeBlockWidth * widthRatio);
+      const y = e.offsetY - (this.nodeBlockHeight * heightRatio);
+      this.addNewNode(nodeType, nodeName, x, y);
     },
     onPageWheel() {
       // expand canvas width and height
