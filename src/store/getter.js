@@ -33,7 +33,23 @@ export const enterpriseList = (s) => {
 };
 
 export const privilegeList = s => s.privilegeList;
-export const menuPages = s => s.pageInfos;
+export const menuPages = (s) => {
+  const env = s.env;
+  const TDEEnable = !(env.ENABLE_TDE_MODULE === '0' || env.ENABLE_TDE_MODULE === 'false');
+  if (!TDEEnable) {
+    const indexOfTaskEngine = s.pageInfos.findIndex(menuPage => menuPage.name === 'task_engine.module_name');
+    if (indexOfTaskEngine !== -1) {
+      const newPageInfos = [...s.pageInfos];
+      const newTaskEngineModule = {
+        ...s.pageInfos[indexOfTaskEngine],
+        pages: s.pageInfos[indexOfTaskEngine].pages.filter(page => page.path !== 'task-engine-scenario-v3'),
+      };
+      newPageInfos[indexOfTaskEngine] = newTaskEngineModule;
+      return newPageInfos;
+    }
+  }
+  return s.pageInfos;
+};
 export const privilegeMap = (s) => {
   const map = {};
   s.privilegeList.forEach((priv) => {
