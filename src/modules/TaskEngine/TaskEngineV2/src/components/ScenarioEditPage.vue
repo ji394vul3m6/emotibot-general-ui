@@ -159,7 +159,6 @@ export default {
       canvasHeight: 2000,
       nodeBlockWidth: 280,
       nodeBlockHeight: 140,
-      rainbowColors: [],
       showTopPanelButtonLabel: {
         setting: false,
         varTemplate: false,
@@ -384,7 +383,6 @@ export default {
     filteredEdges() {
       const edgeMap = {};
       const filteredEdges = [];
-      let idx = 0;
       this.allEdges.filter(edge =>
         edge.edge_type !== 'hidden' &&
         edge.from_id !== '0' &&
@@ -402,13 +400,7 @@ export default {
           y1: nodeBlockMap[edge.from_id].y + this.halfBlockHeight,
           x2: nodeBlockMap[edge.to_id].x + this.halfBlockWidth,
           y2: nodeBlockMap[edge.to_id].y + this.halfBlockHeight,
-          style: {
-            stroke: this.rainbowColors[idx % this.rainbowColors.length],
-            strokeWidth: 5,
-            fill: 'none',
-          },
         });
-        idx += 1;
       });
       return filteredEdges;
     },
@@ -1078,7 +1070,6 @@ export default {
       return acc;
     }, {});
     this.nodeOptions = this.getNodeOptions();
-    this.rainbowColors = optionConfig.getRainbowColors();
     this.getTaskConfigInfo();
     this.loadScenario(this.scenarioId);
     this.setSwitchToggle(this.appId, this.scenarioId);

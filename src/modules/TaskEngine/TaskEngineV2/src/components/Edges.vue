@@ -1,18 +1,22 @@
 <template lang="html">
   <div id="edges" class="edges"> 
     <svg class="svg">
-      <g class="paths" v-for="p in paths" >
-        <path :d="p.data" :style="p.style"></path>
+      <g class="paths" v-for="p, idx in paths" >
+        <path 
+          :d="p.data" 
+          stroke-width="5" 
+          :stroke="rainbowColors[idx % rainbowColors.length]"
+          fill="none">
+        </path>
       </g>
     </svg>
   </div>
 </template>
 
 <script>
+import optionConfig from '../_utils/optionConfig';
 
 export default {
-  name: 'edges',
-  components: {},
   props: {
     edges: {
       type: Array,
@@ -30,6 +34,7 @@ export default {
   data() {
     return {
       radius: 60,
+      rainbowColors: optionConfig.getRainbowColors(),
     };
   },
   computed: {
@@ -100,19 +105,14 @@ export default {
       return Math.sqrt(((x2 - x1) * (x2 - x1)) + ((y2 - y1) * (y2 - y1)));
     },
   },
-  beforeMount() {},
-  mounted() {
-  },
 };
 </script>
 
 <style lang="scss" scoped>
-@import 'styles/variable.scss';
-
-#edges{
+#edges {
   width: 100%;
   height: 100%;
-  .svg{
+  .svg {
     width: 100%;
     height: 100%;
   }
