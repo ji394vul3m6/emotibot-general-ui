@@ -303,7 +303,7 @@ export default {
       this.emitUpdate();
     },
     addEdge() {
-      const edge = scenarioInitializer.initialNormalEdge2('normal_2.0');
+      const edge = scenarioInitializer.initialNormalEdge2();
       edge.id = this.$uuid.v1();
       edge.valid = false;
       this.normalEdges.push(edge);

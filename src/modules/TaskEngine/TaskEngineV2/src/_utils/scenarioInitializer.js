@@ -488,9 +488,9 @@ export default {
       ],
     };
   },
-  initialNormalEdge2(edgeType) {
+  initialNormalEdge2() {
     return {
-      edge_type: edgeType,
+      edge_type: 'normal_2.0',
       to_node_id: null,
       actions: [],
       condition_rules: [

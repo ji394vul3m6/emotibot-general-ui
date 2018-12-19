@@ -408,10 +408,6 @@ $row-height: $default-line-height;
         align-items: center;
         justify-content: space-between;
       }
-      &:not(.title) {
-        // margin-top: 20px;
-      }
-
       .text-button {
         margin-right: 10px;
       }

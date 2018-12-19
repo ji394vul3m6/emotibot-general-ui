@@ -885,13 +885,18 @@ export default {
         text: this.$t('task_engine_v2.scenario_edit_page.new_edge_normal'),
         onclick: () => {
           if (dstNodeId === undefined) {
-            const newNode = this.addNewLinkingNode(this.linkingEdge);
+            const newNode = this.addNewLinkingNode(this.linkingEdge, sourceNodeType);
             dstNodeId = newNode.nodeId;
           }
-          const newEdge = scenarioInitializer.initialEdge();
+          let newEdge = scenarioInitializer.initialEdge();
+          let edgeTabKey = 'edgeTab';
+          if (sourceNodeType === 'dialogue_2.0') {
+            newEdge = scenarioInitializer.initialNormalEdge2();
+            edgeTabKey = 'edgeTab2';
+          }
           newEdge.id = this.$uuid.v1();
           newEdge.to_node_id = dstNodeId;
-          sourceNode.edgeTab.normalEdges.push(newEdge);
+          sourceNode[edgeTabKey].normalEdges.push(newEdge);
           this.saveScenario();
           this.dropdownHidden();
         },
@@ -1008,8 +1013,7 @@ export default {
       this.addNewEdgeDropdown.options = options;
       this.$refs.addNewEdgeDropdown.dispatchEvent(new Event('dropdown-reload'));
     },
-    addNewLinkingNode(linkingEdge) {
-      const nodeType = 'dialogue';
+    addNewLinkingNode(linkingEdge, nodeType = 'dialogue') {
       const nodeName = this.getNodeTypeName(nodeType);
       const x = linkingEdge.x2 - this.halfBlockWidth;
       const y = linkingEdge.y2 - this.halfBlockHeight;
