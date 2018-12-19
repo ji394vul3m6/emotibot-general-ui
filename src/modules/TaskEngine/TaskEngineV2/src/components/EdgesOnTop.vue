@@ -35,14 +35,6 @@ export default {
       },
     };
   },
-  computed: {
-    halfBlockWidth() {
-      return this.nodeBlockWidth / 2;
-    },
-    halfBlockHeight() {
-      return this.nodeBlockHeight / 2;
-    },
-  },
   watch: {
     linkingEdge: {
       handler() {

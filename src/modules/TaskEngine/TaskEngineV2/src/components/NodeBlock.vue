@@ -213,7 +213,7 @@ export default {
     },
     dstSlotMouseEnter() {
       const edgeSlotTo = this.$refs.edgeSlotTo;
-      const halfElementHeight = edgeSlotTo.offsetHeightt / 2;
+      const halfElementHeight = edgeSlotTo.offsetHeight / 2;
       const x = edgeSlotTo.offsetLeft + edgeSlotTo.offsetParent.offsetLeft + halfElementHeight;
       const y = edgeSlotTo.offsetTop + edgeSlotTo.offsetParent.offsetTop + halfElementHeight;
       const slot = { x, y };
