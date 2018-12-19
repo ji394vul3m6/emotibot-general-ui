@@ -15,20 +15,13 @@
 
 <script>
 import optionConfig from '../_utils/optionConfig';
+import { NodeBlock } from '../_utils/componentConfig';
 
 export default {
   props: {
     edges: {
       type: Array,
       default: [],
-    },
-    nodeBlockWidth: {
-      type: Number,
-      default: 230,
-    },
-    nodeBlockHeight: {
-      type: Number,
-      default: 120,
     },
   },
   data() {
@@ -49,12 +42,6 @@ export default {
       });
       return pathList;
     },
-    halfBlockWidth() {
-      return this.nodeBlockWidth / 2;
-    },
-    halfBlockHeight() {
-      return this.nodeBlockHeight / 2;
-    },
   },
   watch: {},
   methods: {
@@ -69,12 +56,12 @@ export default {
       let sx = edge.x2;
       let sy = edge.y2;
 
-      if (Math.abs(sx - px) <= this.halfBlockWidth) {
+      if (Math.abs(sx - px) <= (NodeBlock.nodeBlockWidth / 2)) {
         const meanX = (px + sx) / 2;
         px = meanX;
         sx = meanX;
       }
-      if (Math.abs(sy - py) <= this.halfBlockHeight) {
+      if (Math.abs(sy - py) <= (NodeBlock.nodeBlockHeight / 2)) {
         const meanY = (py + sy) / 2;
         py = meanY;
         sy = meanY;

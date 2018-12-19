@@ -42,8 +42,6 @@
         <edges class="edges"
           ref="edges"
           :edges="filteredEdges"
-          :nodeBlockWidth="nodeBlockWidth"
-          :nodeBlockHeight="nodeBlockHeight"
         ></edges>
         <edges-on-top class="edgesOnTop"
           ref="edgesOnTop"
@@ -136,6 +134,7 @@ import JSCodeEditPop from './JSCodeEditPop';
 import scenarioConvertor from '../_utils/scenarioConvertor';
 import scenarioInitializer from '../_utils/scenarioInitializer';
 import optionConfig from '../_utils/optionConfig';
+import { NodeBlock as NodeBlockConfig } from '../_utils/componentConfig';
 
 export default {
   name: 'scenario-edit-page',
@@ -157,8 +156,8 @@ export default {
       nodeOptions: [],
       canvasWidth: 2000,
       canvasHeight: 2000,
-      nodeBlockWidth: 280,
-      nodeBlockHeight: 140,
+      nodeBlockWidth: NodeBlockConfig.nodeBlockWidth,
+      nodeBlockHeight: NodeBlockConfig.nodeBlockHeight,
       showTopPanelButtonLabel: {
         setting: false,
         varTemplate: false,
