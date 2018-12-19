@@ -88,16 +88,6 @@ export default {
       },
     },
   },
-  login: {
-    title: '用戶登陸',
-    login: '登入',
-    account_place: '輸入帳號',
-    password_place: '輸入密碼',
-    captcha_place: '輸入驗證碼',
-    contact_sm: '無法登入？請聯絡管理人員',
-    notify_fail: '登入失敗',
-    notify_input: '請輸入帳密',
-  },
   category: {
     title: '分類',
     setting: '設置',
@@ -155,6 +145,10 @@ export default {
     question_first_time: '首次提問時間',
     question_last_time: '末次提問時間',
     audit_record_filename: '操作日誌',
+    label: '標籤',
+    category: '標準問題分類',
+    min_score: '最低分',
+    max_score: '最高分',
 
     keyword_search: '關鍵詞',
     time_range: '訪問時間',
@@ -239,6 +233,19 @@ export default {
       other: '其他',
       all: '全部',
     },
+    modules: {
+      title: '問答模組',
+      backfill: '未知回覆',
+      chat: '閒聊',
+      keyword: '其他',
+      function: '機器人技能',
+      faq: '常用標準問題',
+      task_engine: '多輪對話引擎',
+      to_human: '轉人工',
+      knowledge: '知識圖譜',
+      command: '機器人話術',
+      emotion: '情緒話術',
+    },
     platform: {
       title: '平臺',
       wechat: '微信',
@@ -282,6 +289,12 @@ export default {
       result: '動作結果',
       create_time: '發生時間',
       ip_source: 'IP地址',
+    },
+
+    confidence_score: {
+      title: '信心分數',
+      low: '低信心問題',
+      range: '分數區間',
     },
 
     user_say: '用戶提問',
@@ -793,7 +806,7 @@ export default {
       notify: {
         add_intent_success: '新增意圖成功',
         add_intent_fail: '新增意圖失敗',
-        delete_intent_success: '删除意圖成功',
+        delete_intent_success: '刪除意圖成功',
         delete_intent_fail: '刪除意圖失敗',
         update_intent_success: '編輯意圖成功',
         update_intent_fail: '編輯意圖失敗',
@@ -986,6 +999,7 @@ export default {
     save_change: '儲存變更',
     go_back: '返回',
     please_choose: '請選擇',
+    intent: '意圖',
   },
   dimension: {
     categories: {

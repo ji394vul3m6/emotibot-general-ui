@@ -447,7 +447,6 @@ export default {
   mounted() {
     const that = this;
     const token = that.$getToken();
-
     if (!token) {
       that.goLoginPage(false);
     }

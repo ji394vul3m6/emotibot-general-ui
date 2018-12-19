@@ -145,6 +145,10 @@ export default {
     question_first_time: '首次提问时间',
     question_last_time: '末次提问时间',
     audit_record_filename: '操作日志',
+    label: '标签',
+    category: '标准问题分类',
+    min_score: '最低分',
+    max_score: '最高分',
 
     keyword_search: '关键词',
     time_range: '访问时间',
@@ -229,6 +233,19 @@ export default {
       other: '其他',
       all: '全部',
     },
+    modules: {
+      title: '问答模組',
+      backfill: '未知回复',
+      chat: '闲聊',
+      keyword: '其他',
+      function: '机器人技能',
+      faq: '常用标准问题',
+      task_engine: '多轮对话引擎',
+      to_human: '转人工',
+      knowledge: '知识图谱',
+      command: '机器人话术',
+      emotion: '情绪话术',
+    },
     platform: {
       title: '平台',
       wechat: '微信',
@@ -272,6 +289,12 @@ export default {
       result: '动作结果',
       create_time: '发生时间',
       ip_source: 'IP地址',
+    },
+
+    confidence_score: {
+      title: '信心分数',
+      low: '低信心问题',
+      range: '分数区间',
     },
 
     user_say: '用户提问',
@@ -976,6 +999,7 @@ export default {
     save_change: '储存变更',
     go_back: '返回',
     please_choose: '请选择',
+    intent: '意图',
   },
   dimension: {
     categories: {

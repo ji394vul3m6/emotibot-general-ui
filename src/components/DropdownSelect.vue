@@ -6,7 +6,7 @@
         <template v-if="multi">
         <tag class="input-tag" v-for="value in checkedValues" :key="value.value" font-class="font-12">
           {{ value.text }}
-          <icon icon-type="close" :size="8" class="close-icon" @click.stop="removeOption(value)"/>
+          <icon v-if="!hideClose" icon-type="close" :size="8" class="close-icon" @click.stop="removeOption(value)"/>
         </tag>
         </template>
         <template v-else-if="checkedValues.length > 0">
@@ -112,6 +112,10 @@ export default {
     showError: {
       type: Boolean,
       default: false,
+    },
+    hideClose: {
+      type: Boolean,
+      default: true,
     },
   },
   computed: {
