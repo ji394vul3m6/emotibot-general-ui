@@ -136,6 +136,8 @@ import scenarioInitializer from '../_utils/scenarioInitializer';
 import optionConfig from '../_utils/optionConfig';
 import { NodeBlock as NodeBlockConfig } from '../_utils/componentConfig';
 
+const NodeToEdgeMap = optionConfig.NodeToEdgeMap;
+
 export default {
   name: 'scenario-edit-page',
   components: {
@@ -195,6 +197,7 @@ export default {
       jsCodeAlias: [],
       hadJsCode: false,
       enable_node: {},
+      saveScenarioCallback: undefined,
     };
   },
   computed: {
@@ -577,6 +580,10 @@ export default {
         this.renderData();
         this.updateWindowModuleData();
         this.publishScenario();
+        if (this.saveScenarioCallback) {
+          this.saveScenarioCallback();
+          this.saveScenarioCallback = undefined;
+        }
         // this.$notify({ text: this.$t('error_msg.save_success') });
       }, (err) => {
         this.$notifyFail(`saveScenario failed, error:${err.message}`);
@@ -854,7 +861,9 @@ export default {
       }
       // source node
       const sourceNode = this.nodeBlocks[sourceIndex].data;
+      const nodeBlockRef = this.$refs[`nodeBlock_${sourceIndex}`][0];
       const sourceNodeType = sourceNode.nodeType;
+      const edgeTabKey = NodeToEdgeMap[sourceNodeType];
       let dstNodeId = toNodeId;
       const exceedThenGotoOption = {
         text: this.$t('task_engine_v2.scenario_edit_page.new_edge_exceed_then_goto'),
@@ -888,16 +897,17 @@ export default {
             dstNodeId = newNode.nodeId;
           }
           let newEdge = scenarioInitializer.initialEdge();
-          let edgeTabKey = 'edgeTab';
           if (sourceNodeType === 'dialogue_2.0') {
             newEdge = scenarioInitializer.initialNormalEdge2();
-            edgeTabKey = 'edgeTab2';
           }
           newEdge.id = this.$uuid.v1();
           newEdge.to_node_id = dstNodeId;
           sourceNode[edgeTabKey].normalEdges.push(newEdge);
           this.saveScenario();
           this.dropdownHidden();
+          this.saveScenarioCallback = () => {
+            this.showNodeEditPageByTabType(nodeBlockRef, edgeTabKey);
+          };
         },
       };
       let options = [];
@@ -920,6 +930,9 @@ export default {
               });
               this.saveScenario();
               this.dropdownHidden();
+              this.saveScenarioCallback = () => {
+                this.showNodeEditPageByTabType(nodeBlockRef, edgeTabKey);
+              };
             },
           },
         ];
@@ -997,6 +1010,9 @@ export default {
               sourceNode.paramsCollectingEdgeTab.normalEdges.push(newEdge);
               this.saveScenario();
               this.dropdownHidden();
+              this.saveScenarioCallback = () => {
+                this.showNodeEditPageByTabType(nodeBlockRef, edgeTabKey);
+              };
             },
           },
         ];
@@ -1012,7 +1028,8 @@ export default {
       this.addNewEdgeDropdown.options = options;
       this.$refs.addNewEdgeDropdown.dispatchEvent(new Event('dropdown-reload'));
     },
-    addNewLinkingNode(linkingEdge, nodeType = 'dialogue') {
+    addNewLinkingNode(linkingEdge, sourceType) {
+      const nodeType = sourceType === 'dialogue_2.0' ? 'dialogue_2.0' : 'dialogue';
       const nodeName = this.getNodeTypeName(nodeType);
       const x = linkingEdge.x2 - this.halfBlockWidth;
       const y = linkingEdge.y2 - this.halfBlockHeight;
@@ -1061,6 +1078,9 @@ export default {
           that.hadJsCode = data.task_engine_v2.enable_js_code;
           Object.assign(this.enable_node, data.task_engine_v2.enable_node);
         });
+    },
+    showNodeEditPageByTabType(nodeBlockRef, tabType) {
+      nodeBlockRef.editNode(tabType);
     },
   },
   beforeMount() {

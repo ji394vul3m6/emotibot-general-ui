@@ -225,7 +225,7 @@ export default {
     deleteNode() {
       this.$emit('deleteNode');
     },
-    editNode() {
+    editNode(tabType) {
       const that = this;
       that.$pop({
         title: `${that.node.nodeName}（${that.node.nodeId}）`,
@@ -233,6 +233,7 @@ export default {
         validate: true,
         cancelValidate: true,
         extData: {
+          currentTab: tabType,
           jsCodeAlias: this.jsCodeAlias,
           node: that.node,
           globalEdges: that.initialGlobalEdges,

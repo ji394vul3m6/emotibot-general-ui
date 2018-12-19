@@ -250,9 +250,13 @@ export default {
         edgeTab2 = node.edgeTab2;
       }
     });
+    const currentTab = this.extData.currentTab || tabs[0];
+    const allTabs = this.getAllTabs();
+    tabs = tabs.map(tab => allTabs[tab]);
     const jsCodeAlias = this.extData.jsCodeAlias || [];
     return {
-      currentTab: 'settingTab',
+      currentTab,
+      tabs,
       originalNodeString,
       node,
       nodeType,
@@ -261,7 +265,6 @@ export default {
       globalVarOptions: [],
       globalVarOptionsMap,
       mapTableOptions: [],
-      allTabs: this.getAllTabs(),
       triggerTab,
       settingTab,
       settingBasicTab,
@@ -282,19 +285,6 @@ export default {
       valid: false,
       jsCodeAlias,
     };
-  },
-  computed: {
-    tabs() {
-      const nodeType = this.node.nodeType;
-      const nodeType2TabsMap = optionConfig.nodeType2Tabs();
-      if (nodeType in nodeType2TabsMap) {
-        const nodeTabs = nodeType2TabsMap[this.node.nodeType];
-        this.currentTab = nodeTabs[0];
-        return nodeTabs.map(tab => this.allTabs[tab]);
-      }
-      this.currentTab = 'settingTab';
-      return ['settingTab', 'edgeTab'].map(tab => this.allTabs[tab]);
-    },
   },
   watch: {
     nodeType() {

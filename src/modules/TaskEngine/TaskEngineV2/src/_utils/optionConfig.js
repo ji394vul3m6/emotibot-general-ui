@@ -146,6 +146,14 @@ export default {
     ];
     return nodeTypes;
   },
+  NodeToEdgeMap: {
+    entry: 'edgeTab',
+    dialogue: 'edgeTab',
+    'dialogue_2.0': 'edgeTab2',
+    parameter_collecting: 'paramsCollectingEdgeTab',
+    nlu_pc: 'edgeTab',
+    action: 'edgeTab',
+  },
   getWarningMsgMap(context) {
     return {
       has_exit_connection: context.$t('task_engine_v2.warnings.has_exit_connection'),
