@@ -137,6 +137,9 @@ http {
         location /auth {
             proxy_pass http://${AUTH_IP};
         }
+        location /sso {
+            proxy_pass http://${SELF_IP}:8888;
+        }
         location /login.html {
             proxy_pass http://${SELF_IP}:8080;
         }
