@@ -1116,14 +1116,12 @@ export default {
     height: 100%;
     background-color: #eeeeee;
   }
-  .browse-window{
-    position: relative;
+  .browse-window {
     width: 100%;
     height: 100%;
     @include auto-overflow();
     @include customScrollbar();  
-    .canvas-page{
-      position: relative;
+    .canvas-page {
       background: url('data:image/svg+xml, \
       <svg xmlns="http://www.w3.org/2000/svg" \
         width="40" height="40" fill-opacity=".05"> \
@@ -1131,7 +1129,7 @@ export default {
         <rect y="20" width="20" height="20"/> \
       </svg>');
     }
-    .addNewEdgeDropdown{
+    .addNewEdgeDropdown {
       position: absolute;
     }
   }

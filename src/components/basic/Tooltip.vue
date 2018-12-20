@@ -68,7 +68,7 @@ export default {
 
     buttons: {
       type: Array,
-      default: [],
+      default() { return []; },
     },
     tooltipType: {
       type: String,

@@ -1,5 +1,5 @@
 <template lang="html">
-<div id="node-block" :style="style"
+<div class="node-block" :style="style"
   @mouseover="mouseOverNode = true"
   @mouseout="mouseOverNode = false">
   <div class="label-node-name-container">
@@ -9,18 +9,33 @@
     <div class="rounded">
       {{nodeTypeName}}
     </div>
-    <div class="rounded"
+    <div 
+      class="rounded relative"
       ref="exitIcon"
       v-if="hasExitConnection"
-      v-tooltip="{ msg: $t('task_engine_v2.warnings.has_exit_connection')}">
+      @mouseover="tooltipMouseover($event, 'endStyle')"
+      @mouseleave="endStyle.visibility = 'hidden'">
       END
+      <div class="tooltip" :style="endStyle">
+        <div class="text">
+          {{ endTooltip.msg }}
+        </div>
+      </div>
     </div>
     <div
       class="warning-icon"
       ref="warningIcon"
       v-if="warningTooltipValue.msgs && warningTooltipValue.msgs.length > 0"
-      v-tooltip="warningTooltipValue">
+      @mouseover="tooltipMouseover($event, 'warningIconStyle')"
+      @mouseleave="warningIconStyle.visibility = 'hidden'">
       <icon icon-type="info_warning" :size=22></icon>
+      <div class="tooltip" :style="warningIconStyle">
+        <div class="text">
+          <p v-for="(m, i) in warningTooltipValue.msgs" :key="i">
+            {{ m }}
+          </p>
+        </div>
+      </div>
     </div>
   </div>
   <div class="button-row">
@@ -64,7 +79,6 @@ import optionConfig from '../_utils/optionConfig';
 
 export default {
   name: 'node-block',
-  components: {},
   props: {
     x: {
       type: Number,
@@ -134,9 +148,18 @@ export default {
       hasMoved: false,
       hasExitConnection: false,
       warningTooltipValue: {},
+      endTooltip: {
+        msg: this.$t('task_engine_v2.warnings.has_exit_connection'),
+      },
       warningMsgMap: {},
       isSrcNode: false,
       mouseOverNode: false,
+      warningIconStyle: {
+        visibility: 'hidden',
+      },
+      endStyle: {
+        visibility: 'hidden',
+      },
     };
   },
   computed: {
@@ -158,6 +181,14 @@ export default {
     },
   },
   methods: {
+    tooltipMouseover(e, key) {
+      const rect = e.target.getBoundingClientRect();
+      this[key] = {
+        left: `${rect.width}px`,
+        bottom: `${rect.height}px`,
+        visibility: 'visible',
+      };
+    },
     onMouseDown(e) {
       const target = e.target || e.srcElement;
       if (target.id === 'edgeSlotFrom' || target.id === 'edgeSlotTo') {
@@ -306,20 +337,32 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'styles/variable.scss';
-
-#node-block{
-  position: relative;
+.node-block {
+  position: absolute;
   display: flex;
   flex-direction: column;
   background: white;
-  position: absolute;
   box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2);
   border-radius: 4px;
   padding: 20px;
   justify-content: space-between;
   cursor: move;
-  .label-node-name-container{
+  .tooltip {
+    width: 300px;
+    position: absolute;
+    word-break: break-all;
+    white-space: normal;
+    font-size: 12px;
+    line-height: 18px;
+    border-radius: 2px;
+    color: #FFFFFF;
+    .text {
+      background-color: rgba(0, 0, 0, 0.85);
+      padding: 5px 8px;
+      display: inline-block;
+    }
+  }
+  .label-node-name-container {
     @include font-16px();
     color: $color-font-active;
   }
@@ -333,11 +376,15 @@ export default {
       border-radius: 10px;
       padding: 2px 10px;
       margin-right: 10px;
+      &.relative {
+        position: relative;
+      }
     }
     .warning-icon {
       display: flex;
       justify-content: center;
       align-items: center;
+      position: relative;
     }
   }
   .button-row {
