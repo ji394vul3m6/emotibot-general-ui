@@ -5,22 +5,23 @@ import constant from '@/utils/js/constant';
 
 const LOGIN_PATH = '/auth/v3/login';
 const ENTERPRISE_PATH = '/auth/v3/enterprise';
-const TOKEN_PATH = '/auth/v2/token';
+const TOKEN_PATH = '/auth/v3/token';
 
 const ENV_PATH = '/api/v1/ui/envs';
 
-const BF_LOGIN = '/BF_login';
+// const BF_LOGIN = '/BF_login';
+const BF_TOKEN_PATH = '/api/v1/bf/access-token';
 
-function failPromise(msg) {
-  return new Promise((resolve, reject) => {
-    reject(msg);
-  });
-}
-function successPromise(msg) {
-  return new Promise((resolve) => {
-    resolve(msg);
-  });
-}
+// function failPromise(msg) {
+//   return new Promise((resolve, reject) => {
+//     reject(msg);
+//   });
+// }
+// function successPromise(msg) {
+//   return new Promise((resolve) => {
+//     resolve(msg);
+//   });
+// }
 
 function parseJwt(token) {
   const base64Url = token.split('.')[1];
@@ -82,12 +83,9 @@ function getRobots(userInfo) {
 
 function setInfoWithToken(token) {
   const that = this;
-  if (token === undefined || token === '' || token === null) {
-    return new Promise((r, j) => { j('Invalid token'); });
-  }
-  const jwt = parseJwt(token);
-  const userInfo = jwt.custom;
-  const enterprise = userInfo.enterprise;
+  let useToken = token;
+  let userInfo = {};
+  let enterprise;
   let enterpriseInfos = [];
   let modules = [];
   const userRoleMap = {};
@@ -95,7 +93,16 @@ function setInfoWithToken(token) {
 
   that.$setReqToken(token);
   let promise = that.$reqGet(`${TOKEN_PATH}`)
-  .then(() => {
+  .then((response) => {
+    if (token === undefined || token === '' || token === null || token === 'null') {
+      useToken = response.data.result;
+      that.$setReqToken(useToken);
+    }
+
+    const jwt = parseJwt(useToken);
+    userInfo = jwt.custom;
+    enterprise = userInfo.enterprise;
+
     if (userInfo.type === 0) {
       return that.$reqGet(`${ENTERPRISE_PATH}s`);
     }
@@ -150,66 +157,46 @@ function login(input) {
     account: input.account,
     passwd: md5(input.password),
   };
-  let imUser = false;
+  // let imUser = false;
   const retObj = {};
   that.$cookie.set('verify', md5(input.password), { expires: constant.cookieTimeout });
 
   let token;
   return that.$reqGet(ENV_PATH).then((envRsp) => {
-    let authTypes = ['all'];
+    // let authTypes = ['all'];
     const res = envRsp.data;
-    if (res.result.AUTH_TYPE) {
-      authTypes = res.result.AUTH_TYPE.split(',');
-    }
+    // if (res.result.AUTH_TYPE) {
+    //   authTypes = res.result.AUTH_TYPE.split(',');
+    // }
 
     if (res.result.USE_CAPTCHA) {
       params.captcha = input.captcha;
       params.captchaID = input.captchaID;
     }
 
-    let promise;
-    if (authTypes.indexOf('all') >= 0 || authTypes.indexOf('authV2') >= 0) {
-      promise = that.$reqPost(LOGIN_PATH, qs.stringify(params), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      })
-      .then((rsp) => {
-        const data = rsp.data;
-        token = data.result.token;
-        localStorage.setItem('token', token);
-        retObj.authV2 = data.result;
-        if (data.result.info.product && data.result.info.product.indexOf('IM') >= 0) {
-          imUser = true;
-        }
-        return data.result;
-      });
-    }
-    if (authTypes.indexOf('all') >= 0 || authTypes.indexOf('authBF') >= 0) {
-      promise = promise.then(() => {
-        if (imUser) {
-          return successPromise('');
-        }
-        return that.$reqPost(BF_LOGIN, {
-          email: input.account,
-          password: md5(input.password),
-        })
-        .then((rsp) => {
-          const data = rsp.data;
-          if (data.error_code !== 0) {
-            return failPromise('bf logging fail');
-          }
-          const accessToken = data.data.access_token;
-          that.$cookie.set('access_token', accessToken, { expires: constant.cookieTimeout });
-          retObj.authBF = data.data;
-          return data.data;
-        });
-      });
-    }
-    if (!promise) {
-      return failPromise('no valid auth set');
-    }
-    return promise.then(() => retObj);
+    return that.$reqPost(LOGIN_PATH, qs.stringify(params), {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    })
+    .then((rsp) => {
+      const data = rsp.data;
+      token = data.result.token;
+      that.$setReqToken(token);
+      that.$cookie.set('userid', data.result.info.id);
+
+      localStorage.setItem('token', token);
+      retObj.authV2 = data.result;
+      // if (data.result.info.product && data.result.info.product.indexOf('IM') >= 0) {
+      //   imUser = true;
+      // }
+      return data.result;
+    })
+    .then(() => that.$reqGet(BF_TOKEN_PATH))
+    .then((result) => {
+      that.$cookie.set('access_token', result.data.result, { expires: constant.cookieTimeout });
+    })
+    .then(() => retObj);
   });
 }
 
@@ -248,8 +235,15 @@ function clearAuth() {
 }
 
 function logout() {
-  clearAuth.bind(this)();
-  window.location = '/login.html';
+  const that = this;
+  clearAuth.bind(that)();
+  return that.$reqGet(ENV_PATH).then((envRsp) => {
+    if (envRsp.data.result.SSO_LOGOUT_URL) {
+      window.location = `${envRsp.data.result.SSO_LOGOUT_URL}?redirect=${window.location}`;
+    } else {
+      window.location = '/login.html';
+    }
+  });
 }
 
 function getToken() {
