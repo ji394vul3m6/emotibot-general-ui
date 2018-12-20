@@ -54,6 +54,7 @@ import constant from '@/utils/js/constant';
 import UserPreference from '@/manage-modules/UserPreference';
 import userAPI from '@/manage-modules/_api/user';
 import adminAPI from '@/manage-modules/SystemManage/_api/system';
+import systemAPI from '@/api/system';
 
 const defaultPath = '/statistic-dash';
 
@@ -76,7 +77,7 @@ export default {
     'page-menu': PageMenu,
     'user-preference': UserPreference,
   },
-  api: [userAPI, adminAPI],
+  api: [userAPI, adminAPI, systemAPI],
   computed: {
     pageName() {
       return this.$t(this.currentPage.display);
@@ -111,6 +112,7 @@ export default {
       testComponent: QATest,
       checkCookieMs: 5000,
       checkCookieLoop: undefined,
+      environment: {},
     };
   },
   watch: {
@@ -415,6 +417,12 @@ export default {
     goLoginPage(notification) {
       const that = this;
       const fullPath = that.$route.fullPath;
+
+      const ssoLoginPath = that.environment.SSO_LOGIN_URL;
+      if (ssoLoginPath) {
+        window.location = `${ssoLoginPath}?redirect=${window.location}`;
+        return;
+      }
       if (notification) {
         window.location = `/login.html?invalid=1&redirect=${encodeURIComponent(fullPath)}`;
       } else {
@@ -447,13 +455,13 @@ export default {
   mounted() {
     const that = this;
     const token = that.$getToken();
-    if (!token) {
-      that.goLoginPage(false);
-    }
-
-    that.checkCookie();
+    // that.checkCookie();
     that.$setReqToken(token);
-    that.$setIntoWithToken(token).then(() => {
+    that.$api.getEnv().then((env) => {
+      that.environment = env;
+    })
+    .then(() => that.$setIntoWithToken(token))
+    .then(() => {
       const userInfo = JSON.parse(localStorage.getItem('userInfo'));
 
       let getUserInfoPromise;
@@ -483,8 +491,7 @@ export default {
     })
     .catch((err) => {
       console.log(err);
-      const fullPath = that.$route.fullPath;
-      window.location = `/login.html?invalid=1&redirect=${encodeURIComponent(fullPath)}`;
+      that.goLoginPage();
     });
 
     that.$root.$on('pop-window', () => {

@@ -306,7 +306,7 @@ $table-header-background: $color-disabled;
 $table-data-background: #fcfcfc;
 $table-color-borderline: $color-borderline-disabled;
 $table-row-height: 50px;
-$table-cell-min-width: 80px;
+$table-cell-min-width: 0px;
 
 .general-table-container {
   &.show-empty {
