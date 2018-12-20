@@ -1,5 +1,5 @@
 <template>
-  <div class="general-table-container" :class="[showEmpty ? 'show-empty': '']">
+  <div class="general-table-container" :class="[showEmpty ? 'show-empty': '']" :style="{'min-width': tableMinWidth+'px'}">
     <div class="general-table-header">
     <table ref="tableHeader" class="general-table" :class="[autoHeight ? 'auto-height': '', fontClass]">
       <thead>
@@ -199,6 +199,9 @@ export default {
       }
       return false;
     },
+    tableMinWidth() {
+      return (80 * this.tableHeader.length) + 176;
+    },
   },
   watch: {
     tableData() {
@@ -306,7 +309,7 @@ $table-header-background: $color-disabled;
 $table-data-background: #fcfcfc;
 $table-color-borderline: $color-borderline-disabled;
 $table-row-height: 50px;
-$table-cell-min-width: 0px;
+$table-cell-min-width: 80px;
 
 .general-table-container {
   &.show-empty {

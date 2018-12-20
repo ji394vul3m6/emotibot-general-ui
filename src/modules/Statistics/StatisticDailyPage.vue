@@ -238,7 +238,7 @@ export default {
       clusteringCnt: 0,
       clusterTimer: undefined,
 
-      expertMode: true,
+      expertMode: false,
       start: pickerUtil.createDateObj(),
       end: pickerUtil.createDateObj(),
 
