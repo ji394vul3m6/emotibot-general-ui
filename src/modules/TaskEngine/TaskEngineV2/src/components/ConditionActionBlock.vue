@@ -679,6 +679,8 @@ export default {
       selectStyle: {
         height: '32px',
         'border-radius': '2px',
+        flex: true,
+        width: '522px',
       },
       keyValMatchCompareOptions,
       keyKeyMatchCompareOptions,

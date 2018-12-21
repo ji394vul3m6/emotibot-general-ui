@@ -322,8 +322,10 @@ $border-color: $color-borderline;
   }
 
   .input-block {
+    @include customScrollbar();
+    @include auto-overflow-X();
     flex: 1;
-    overflow: hidden;
+    overflow-y: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     border: none;
