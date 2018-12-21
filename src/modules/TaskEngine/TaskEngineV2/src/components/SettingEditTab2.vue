@@ -15,7 +15,7 @@
           <span v-t="'task_engine_v2.setting_edit_tab2.enable_response'"></span>
         </label>
       </div>
-      <div class="skip-response fill-h" v-if="!isUsingResponse" v-t="'task_engine_v2.setting_edit_tab2.skip_response'"></div>
+      <span class="skip-response" v-if="!isUsingResponse" v-t="'task_engine_v2.setting_edit_tab2.skip_response'"></span>
       <template v-else>
         <div class="block">
           <div class="title-wrapper">
@@ -201,16 +201,18 @@ export default {
   padding: 0 20px;
   height: 100%;
   .skip-response {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    position: absolute;
     color: $color-font-normal;
     @include font-14px();
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
   .fill-h {
     height: 100%;
   }
   .response-setting {
+    position: relative;
     background-color: $color-disabled;
     flex: 1;
     padding: 20px;
