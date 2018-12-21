@@ -46,7 +46,7 @@
         <div :key="rule.id" class="block">
           <div class="row">
             <span class="label" v-if="index === 0" v-t="'task_engine_v2.condition_action_block.if'"></span>
-            <span class="label" v-if="index !== 0" v-t="'task_engine_v2.condition_action_block.and_if'"></span>
+            <span class="label" v-if="index !== 0">{{ andOrIfText }}</span>
             <dropdown-select
               class="dropdown-select"
               :ref="`selectSource_${index}`"
@@ -629,7 +629,7 @@ export default {
   },
   data() {
     const edge = this.initialEdge;
-    const edgeType = edge.edge_type || 'normal';
+    const edgeType = edge.edge_type;
     const sourceOptions = optionConfig.getSourceOptionsV2(this);
     const sourceDropdownOptions = sourceOptions.map(option => ({
       ...option,
@@ -733,6 +733,10 @@ export default {
     },
     jsCodeOptions() {
       return this.jsCodeAlias.map(item => ({ value: item, text: item }));
+    },
+    andOrIfText() {
+      return this.selectedOption[0] === ConditionOption.AND ?
+        this.$t('task_engine_v2.condition_action_block.and_if') : this.$t('task_engine_v2.condition_action_block.or_if');
     },
   },
   watch: {
