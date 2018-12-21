@@ -10,8 +10,8 @@
   <draggable v-model="normalEdges" :options="{ghostClass:'ghost'}" @start="drag=true" @end="drag=false; emitUpdate();">
     <template v-for="(edge, index) in normalEdges">
       <condition-action-block
-        class="condition-block"
-        ref="conditionBlock"
+        class="condition-action-block"
+        :ref="`conditionActionBlock`"
         :key="edge.id"
         :nodeId="nodeId"
         :initialEdge="edge"
@@ -193,6 +193,13 @@ export default {
         }
       }
     },
+    'normalEdges.length': function (newV, oldV) { // eslint-disable-line
+      if (newV > oldV) {
+        this.$nextTick(() => {
+          this.$refs.conditionActionBlock[newV - 1].$el.scrollIntoView();
+        });
+      }
+    },
     dialogueLimit: {
       handler() {
         this.emitUpdate();
@@ -360,7 +367,7 @@ export default {
   .title {
     margin: 20px 0 10px;
   }
-  .condition-block:not(:last-of-type) {
+  .condition-action-block:not(:last-of-type) {
     margin-bottom: 10px;
   }
   .section {
