@@ -360,6 +360,9 @@ export default {
   .title {
     margin: 20px 0 10px;
   }
+  .condition-block:not(:last-of-type) {
+    margin-bottom: 10px;
+  }
   .section {
     background-color: $color-disabled;
     padding: 20px;
