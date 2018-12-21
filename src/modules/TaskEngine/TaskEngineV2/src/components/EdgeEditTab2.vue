@@ -388,6 +388,9 @@ export default {
     }
   }
   .button-add-edge {
+    position: sticky;
+    z-index: 1;
+    top: 0;
     width: 100%;
     height: 32px;
     background: $color-primary;
