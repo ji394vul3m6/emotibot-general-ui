@@ -1,7 +1,7 @@
 <template>
   <div class="dropdown-select" :style="styleObj">
     <div class="input-bar" :class="{'is-focus': show, error: showError}" :style="inputBarStyle" ref="input" @click="showSelection">
-      <div class="input-block">
+      <div class="input-block" :class="{multi}">
         <span v-if="!checkedValues.length" class="placeholder">{{ placeholder }}</span>
         <template v-if="multi">
         <tag class="input-tag" v-for="value in checkedValues" :key="value.value" font-class="font-12">
@@ -322,10 +322,13 @@ $border-color: $color-borderline;
   }
 
   .input-block {
-    @include customScrollbar();
-    @include auto-overflow-X();
+    &.multi {
+      @include customScrollbar();
+      @include auto-overflow-X();
+      overflow-y: hidden;
+    }
     flex: 1;
-    overflow-y: hidden;
+    overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     border: none;

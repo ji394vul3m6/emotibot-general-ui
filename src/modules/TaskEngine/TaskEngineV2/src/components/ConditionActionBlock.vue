@@ -402,7 +402,7 @@
                   :showCheckedIcon="true"
                   :showSearchBar="true"
                   :placeholder="$t('task_engine_v2.condition_action_block.multi_placeholder')"
-                  :inputBarStyle="selectStyle"/>
+                  :inputBarStyle="selectFixedStyle"/>
               </div>
               <div class="row" v-if="action.source === 'global_info'">
                 <span class="label" v-t="'task_engine_v2.condition_action_block.label_source_key'"></span>
@@ -677,6 +677,10 @@ export default {
       actions,
       toNode,
       selectStyle: {
+        height: '32px',
+        'border-radius': '2px',
+      },
+      selectFixedStyle: {
         height: '32px',
         'border-radius': '2px',
         flex: true,
@@ -986,7 +990,7 @@ export default {
     },
     insertVarDropdown(id, obj, key) {
       if (this.varDropdownMap[id] === undefined) {
-        this.varDropdownMap[id] = { width: '542px' };
+        this.varDropdownMap[id] = { width: '542px' }; // TODO: fix hard code in the furture
       }
       const rtnObj = this.varDropdownMap[id];
       rtnObj.options = this.globalVarOptions.map(option => ({
