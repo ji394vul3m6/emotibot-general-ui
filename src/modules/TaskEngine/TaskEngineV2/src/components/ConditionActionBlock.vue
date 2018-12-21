@@ -980,7 +980,7 @@ export default {
     },
     insertVarDropdown(id, obj, key) {
       if (this.varDropdownMap[id] === undefined) {
-        this.varDropdownMap[id] = { width: '450px' };
+        this.varDropdownMap[id] = { width: '542px' };
       }
       const rtnObj = this.varDropdownMap[id];
       rtnObj.options = this.globalVarOptions.map(option => ({
