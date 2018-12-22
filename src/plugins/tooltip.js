@@ -23,7 +23,7 @@ const MyPlugin = {
     Vue.directive('tooltip', {
       inserted(el, binding, vnode) {
         const parent = el.parentElement;
-        if (binding.value.absolute && !getComputedStyle(parent).position) {
+        if (binding.value.absolute && !getComputedStyle(parent).position !== 'static') {
           parent.style.position = 'relative';
         }
 

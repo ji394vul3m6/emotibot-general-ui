@@ -8,7 +8,7 @@
   </div>
   <div class="block fill-h reset-margin">
     <div class="label-header">{{$t('task_engine_v2.setting_edit_tab2.response_setting')}}</div>
-    <div class="response-setting">
+    <div class="response-setting" :class="{'fill-h': !isUsingResponse}">
       <div class="block">
         <label>
           <input type="checkbox" v-model="isUsingResponse"/>
