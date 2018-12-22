@@ -226,11 +226,11 @@
               <span class="label" v-t="'task_engine_v2.condition_action_block.label_mapping_table'"></span>
               <dropdown-select
                 class="dropdown-select"
+                filterable
                 :value="[rule.content.trans]"
                 @input="rule.content.trans = $event[0]"
                 :options="mapTableOptions"
                 :showCheckedIcon="false"
-                :showSearchBar="true"
                 :inputBarStyle="selectStyle"/>
             </div>
             <div class="row">
@@ -429,11 +429,11 @@
                 <dropdown-select
                   :key="action.source"
                   class="dropdown-select"
+                  filterable
                   :value="[action.content.trans]"
                   @input="action.content.trans = $event[0]"
                   :options="mapTableOptions"
                   :showCheckedIcon="false"
-                  :showSearchBar="true"
                   :inputBarStyle="selectStyle"/>
               </div>
               <div class="row" v-if="action.source === 'global_info'">
@@ -558,12 +558,12 @@
           <dropdown-select
             class="dropdown-select"
             ref="selectGoto"
+            filterable
             :value="[toNode]"
             @input="onSelectGoto($event[0])"
             :options="toNodeOptions"
             :fixedListWidth="false"
             :showCheckedIcon="false"
-            :showSearchBar="true"
             :inputBarStyle="selectStyle"/>
         </div>
       </div>

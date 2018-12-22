@@ -1,6 +1,6 @@
 <template>
   <div class="dropdown-select" :style="styleObj">
-    <div class="input-bar" :class="{'is-focus': show, error: showError}" :style="inputBarStyle" ref="input" @click="showSelection">
+    <div class="input-bar" :class="{'is-focus': show, error: showError}" :style="inputBarStyle" ref="input" @click.stop="showSelection">
       <div class="input-block" :class="{multi}">
         <span v-if="!checkedValues.length" class="placeholder">{{ placeholder }}</span>
         <template v-if="multi">
@@ -8,6 +8,14 @@
           {{ value.text }}
           <icon icon-type="close" :size="8" class="close-icon" @click.stop="removeOption(value)"/>
         </tag>
+        </template>
+        <template v-else-if="filterable">
+          <input
+            class="input-search" 
+            ref="searchInput"
+            :value="filtering ? searchKeyWord : checkedValues[0] && checkedValues[0].text" 
+            @input="filterInput"
+            @focus="$event.target.select()"/>
         </template>
         <template v-else-if="checkedValues.length > 0">
           <div class="input-text">{{checkedValues[0].text}}</div>
@@ -24,7 +32,7 @@
       <template v-if="filteredLocalOptions.length === 0">
         <div class="select-item item">
           <div class="select-text not-selectable" :style="selectTextStyle">
-            {{ $t('general.no_option') }}
+            {{ filterable ? $t('general.no_filterable_option') : $t('general.no_option') }}
           </div>
         </div>
       </template>
@@ -33,7 +41,8 @@
         :class="{
           checked: option.checked && showCheckedIcon,
           'in-group': option.inGroup,
-          'is-button': option.isButton
+          'is-button': option.isButton,
+          filterable: option.checked && filterable,
         }"
         @click="selectOption(idx)"
         @mouseover="toggleHover(option, true)" @mouseout="toggleHover(option, false)">
@@ -113,6 +122,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    filterable: {
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {
     styleObj() {
@@ -126,7 +139,7 @@ export default {
       };
     },
     filteredLocalOptions() {
-      if (this.searchKeyWord === '') {
+      if ((this.filterable && !this.filtering) || this.searchKeyWord === '') {
         return this.localOptions;
       }
       return this.localOptions.filter(option => option.text.indexOf(this.searchKeyWord) !== -1);
@@ -141,6 +154,7 @@ export default {
       checkedValues: [],
       detectClickListener: undefined,
       searchKeyWord: '',
+      filtering: false,
     };
   },
   watch: {
@@ -149,6 +163,12 @@ export default {
     },
   },
   methods: {
+    filterInput(e) {
+      if (e.target.value.length) {
+        this.filtering = true;
+      }
+      this.searchKeyWord = e.target.value;
+    },
     removeOption(opt) {
       opt.checked = false;
       this.updateValue();
@@ -179,10 +199,14 @@ export default {
         that.show = false;
         this.removEventListeners();
       }
+      this.filtering = false;
       that.updateValue();
     },
     updateValue() {
       this.checkedValues = this.localOptions.filter(opt => opt.checked);
+      if (this.filterable) {
+        this.searchKeyWord = this.checkedValues[0].text;
+      }
       this.$emit('input', this.checkedValues.map(opt => opt.value));
     },
     showSelection() {
@@ -190,6 +214,10 @@ export default {
       if (that.show) {
         that.show = false;
         return;
+      }
+      if (that.filterable) {
+        const searchInput = that.$refs.searchInput;
+        searchInput.focus();
       }
       that.show = true;
 
@@ -200,6 +228,7 @@ export default {
     hideListWhenEventTriggeredOutside(e) {
       if (this.$refs.list && !this.$refs.list.contains(e.target)) {
         this.show = false;
+        this.filtering = false;
         this.removEventListeners();
       }
     },
@@ -342,9 +371,16 @@ $border-color: $color-borderline;
         @include click-button();
       }
     }
-    .input-text {
+    .input-text, .input-search {
       @include font-14px();
       color: $color-font-normal;
+    }
+    .input-search {
+      width: 100%;
+      border: none;
+      &:focus {
+        box-shadow: none;
+      }
     }
   }
   .icon-block {
@@ -400,6 +436,9 @@ $border-color: $color-borderline;
         &:hover {
           color: $color-white;
         }
+      }
+      &.filterable {
+        background: $color-select-hover;
       }
     }
     &.group {
