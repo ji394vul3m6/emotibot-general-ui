@@ -613,7 +613,6 @@ export default {
 <style lang="scss">
 #node-edit-page {
   button {
-    border-color: $color-primary;
     outline: none;
   }
 }

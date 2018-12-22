@@ -398,6 +398,7 @@ export default {
     }
   }
   .button-add-edge {
+    border-color: $color-primary;
     position: sticky;
     z-index: 1;
     top: 0;
