@@ -91,8 +91,9 @@ function setInfoWithToken(token) {
   const userRoleMap = {};
   let robots = [];
 
+  debugger;
   that.$setReqToken(token);
-  let promise = that.$reqGet(`${TOKEN_PATH}`)
+  const promise = that.$reqGet(`${TOKEN_PATH}`)
   .then((response) => {
     if (window.localStorage.getItem('DEBUGGERMODE')) {
       debugger;
@@ -118,27 +119,29 @@ function setInfoWithToken(token) {
     } else {
       enterpriseInfos = [data.result];
     }
-  });
-
-  if (userInfo.type !== 0) {
-    promise = promise
-    .then(() => getRobots.bind(that)(userInfo))
-    .then((result) => {
-      robots = result;
-      robots.forEach((robot) => {
-        if (userRoleMap[robot.id] === undefined) {
-          userRoleMap[robot.id] = [];
-        }
-        userRoleMap[robot.id].push(robot.role);
+  })
+  .then(() => {
+    if (userInfo.type !== 0) {
+      return getRobots.bind(that)(userInfo)
+      .then((result) => {
+        robots = result;
+        robots.forEach((robot) => {
+          if (userRoleMap[robot.id] === undefined) {
+            userRoleMap[robot.id] = [];
+          }
+          userRoleMap[robot.id].push(robot.role);
+        });
+      })
+      .then(() => that.$reqGet(`${ENTERPRISE_PATH}/${enterprise}/modules`))
+      .then((rsp) => {
+        const data = rsp.data;
+        modules = data.result.filter(mod => mod.status);
       });
-    })
-    .then(() => that.$reqGet(`${ENTERPRISE_PATH}/${enterprise}/modules`))
-    .then((rsp) => {
-      const data = rsp.data;
-      modules = data.result.filter(mod => mod.status);
+    }
+    return new Promise((r) => {
+      r();
     });
-  }
-  promise = promise
+  })
   .then(() => new Promise((r) => {
     localStorage.setItem('userInfo', JSON.stringify(userInfo));
     localStorage.setItem('token', token);
