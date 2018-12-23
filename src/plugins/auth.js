@@ -94,6 +94,9 @@ function setInfoWithToken(token) {
   that.$setReqToken(token);
   let promise = that.$reqGet(`${TOKEN_PATH}`)
   .then((response) => {
+    if (window.localStorage.getItem('DEBUGGERMODE')) {
+      debugger;
+    }
     if (token === undefined || token === '' || token === null || token === 'null') {
       useToken = response.data.result;
       that.$setReqToken(useToken);
@@ -234,11 +237,13 @@ function clearAuth() {
   localStorage.removeItem('role');
 }
 
-function logout() {
+function logout(backToLogin) {
   const that = this;
   clearAuth.bind(that)();
   return that.$reqGet(ENV_PATH).then((envRsp) => {
-    if (envRsp.data.result.SSO_LOGOUT_URL) {
+    if (backToLogin && envRsp.data.result.SSO_LOGIN_URL) {
+      window.location = `${envRsp.data.result.SSO_LOGIN_URL}?redirect=${window.location}`;
+    } else if (envRsp.data.result.SSO_LOGOUT_URL) {
       window.location = `${envRsp.data.result.SSO_LOGOUT_URL}?redirect=${window.location}`;
     } else {
       window.location = '/login.html';
@@ -254,7 +259,7 @@ function getUserEnterprises() {
   try {
     return JSON.parse(localStorage.getItem('enterpriseInfo'));
   } catch (e) {
-    logout();
+    logout(true);
     return {};
   }
 }

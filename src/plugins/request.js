@@ -28,7 +28,7 @@ function addCustomHeader(config) {
 }
 
 function handleUnAuthenticated() {
-  this.$logout();
+  this.$logout(true);
   const fullPath = this.$route.fullPath;
   window.location = `/login.html?invalid=1&redirect=${encodeURIComponent(fullPath)}`;
 }

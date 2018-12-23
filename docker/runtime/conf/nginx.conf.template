@@ -105,7 +105,7 @@ http {
             proxy_pass http://127.0.0.1:8088; 
         }
 
-        location /sso { 
+        location /login/ { 
             proxy_pass http://$sso_server_url;
         }
         

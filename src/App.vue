@@ -406,7 +406,7 @@ export default {
       const that = this;
       that.checkCookieLoop = undefined;
       if (!that.$cookie.get('verify')) {
-        that.$logout();
+        that.$logout(true);
         that.goLoginPage();
       } else if (that.checkCookieLoop === undefined) {
         that.checkCookieLoop = setTimeout(() => {
@@ -491,6 +491,9 @@ export default {
     })
     .catch((err) => {
       console.log(err);
+      if (window.localStorage.getItem('DEBUGGERMODE')) {
+        debugger;
+      }
       that.goLoginPage();
     });
 
