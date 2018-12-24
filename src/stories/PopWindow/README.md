@@ -86,6 +86,18 @@
 
 
 ---
+## Reminder Options
+| Option | Type | Accepted Values | Default |Required| 說明 |
+|---|---|---|---|---|---|
+|buttonRef|String|'cancelBtn' or 'okBtn'|-|true|要讓小彈窗顯示在哪個button上|
+|content|String|-|-|-|小彈窗的內容訊息|
+|ok_msg|String|-|'確認'|-|ok 按鈕顯示文字|
+|cancel_msg|String|-|'取消'|-|cancel 按鈕顯示文字|
+|cancel|Function|-|-|-|預設會關掉彈窗|
+|ok|Function|-|-|-|點擊 ok 按鈕後執行|
+
+
+---
 ## popWindow Events
 
 ```
@@ -94,4 +106,12 @@
   this.$emit('disableOK');  // disable 彈窗 ok 按鈕
   this.$emit('enableOK');   // enable 彈窗 ok 按鈕
   this.$emit('cancel');  // 關閉彈窗
+  this.$emit('showReminder', { // 顯示二次確認小彈窗
+          buttonRef: 'cancelBtn', // 要讓小彈窗顯示在哪個button上面 ex: cancelBtn, okBtn
+          content: '', // 小彈窗的內容訊息
+          ok_msg: 'ok' // ok 按鈕顯示文字,
+          cancel_msg: 'cancel' // cancel 按鈕顯示文字,
+          cancel: () => { }, // cancel的callback，預設會關掉彈窗
+          ok: () => { this.$emit('cancelValidateSuccess'); // ok的callback },
+        });
 ```

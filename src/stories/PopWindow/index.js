@@ -2,6 +2,7 @@ import action from '@storybook/addon-actions';
 import { withMarkdownNotes } from '@storybook/addon-notes';
 import TextButton from '../../components/basic/TextButton';
 import DescriptionContent from './DescriptionContent';
+import ReminderExample from './ReminderExample';
 import CustomContent from './CustomContent';
 import README from './README.md';
 
@@ -18,6 +19,14 @@ export default [
               <text-button
                 button-type='primary'
                 @click="showPop">
+                點我出現 自訂 POP
+              </text-button>
+            </div>
+            <div class="headline">自訂彈窗，顯示小彈窗：$pop</div> 
+            <div class="line"> 
+              <text-button
+                button-type='primary'
+                @click="showPopWithReminder">
                 點我出現 自訂 POP
               </text-button>
             </div>
@@ -157,6 +166,14 @@ export default [
               },
             };
             that.$popWarn(option);
+          },
+          showPopWithReminder() {
+            this.$pop({
+              title: 'reminder',
+              component: ReminderExample,
+              validate: true,
+              cancelValidate: true,
+            });
           },
         },
         template: `<div>
