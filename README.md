@@ -1,6 +1,13 @@
 # 檔案庫內容
 > BFOP 的 UI 標準本
 
+# 開發守則，若在 development 上是`必須遵守`                                             
+1. `禁止使用其他的 chart library`，除非需要圖表功能 c3.js 無提供
+2. `禁止直接使用任何額外的 UI Framework library`，以目前已經有的元件為主，若目前無元件則可以設計新的元件
+3. `禁止關閉 eslint`，除了特殊情況下，所有的 coding style 必須符合 eslint 限制
+4. `commit 訊息必須描寫完整`，說明改動了什麼，如果有的話需提及 JIRA Issue
+5. `客製的 branch 必須開成 project-<project name>`的形式
+
 # 開發環境設定
 > 請使用以下指令設定 commit 的模板
 ```
