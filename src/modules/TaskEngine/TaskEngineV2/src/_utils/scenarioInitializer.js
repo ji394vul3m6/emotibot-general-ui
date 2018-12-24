@@ -493,15 +493,7 @@ export default {
       edge_type: 'normal_2.0',
       to_node_id: null,
       actions: [],
-      condition_rules: [
-        {
-          source: 'text',
-          function: {
-            function_name: 'match',
-            content: '',
-          },
-        },
-      ],
+      condition_rules: [],
     };
   },
   initialTriggerRule() {

@@ -953,6 +953,7 @@ export default {
     no_data: '暫無數據',
     no_search_data: '暫無搜尋結果',
     no_option: '無選項',
+    no_filterable_option: '无筛选结果',
     reset: '重置',
     chat_test: '對話測試',
     custom: '自訂',

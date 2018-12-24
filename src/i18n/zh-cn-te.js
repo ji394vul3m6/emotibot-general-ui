@@ -39,7 +39,9 @@ export default {
     },
     to_node_option: {
       exit: 'Exit',
+      exit_zh: '退出场景',
       do_nothing: 'do nothing',
+      do_nothing_zh: '不执行跳转',
       parse_fail: '解析失败处理',
       add_new_dialogue_node: '新增对话节点',
     },
@@ -79,6 +81,11 @@ export default {
         action: '动作',
       },
       confirm_to_save_changes: '节点内容已被更动，请问是否需要保存？',
+      popup: {
+        content: '您有内容还处于编辑状态，您确定要直接退出不保存吗？',
+        cancel: '再想想',
+        confirm: '放弃保存并退出',
+      },
     },
     scenario_settings_edit_pop: {
       scenario_name: '场景名称',
@@ -406,10 +413,11 @@ export default {
       below_conditions: '以下条件',
       condition_options: {
         all: '全部',
-        any: '任一',
+        any: '任意',
       },
       if: '如果',
       and_if: '并且',
+      or_if: '或者',
       input_placeholder: '输入内容',
       key_placeholder: '输入键',
       value_placeholder: '输入值',

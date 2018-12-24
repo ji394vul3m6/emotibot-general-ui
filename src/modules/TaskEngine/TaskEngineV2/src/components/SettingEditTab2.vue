@@ -8,14 +8,14 @@
   </div>
   <div class="block fill-h reset-margin">
     <div class="label-header">{{$t('task_engine_v2.setting_edit_tab2.response_setting')}}</div>
-    <div class="response-setting">
+    <div class="response-setting" :class="{'fill-h': !isUsingResponse}">
       <div class="block">
         <label>
           <input type="checkbox" v-model="isUsingResponse"/>
           <span v-t="'task_engine_v2.setting_edit_tab2.enable_response'"></span>
         </label>
       </div>
-      <div class="skip-response fill-h" v-if="!isUsingResponse" v-t="'task_engine_v2.setting_edit_tab2.skip_response'"></div>
+      <span class="skip-response" v-if="!isUsingResponse" v-t="'task_engine_v2.setting_edit_tab2.skip_response'"></span>
       <template v-else>
         <div class="block">
           <div class="title-wrapper">
@@ -195,24 +195,25 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-#setting-edit-tab{
+#setting-edit-tab {
   display: flex;
   flex-direction: column;
   padding: 0 20px;
   height: 100%;
   .skip-response {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    position: absolute;
     color: $color-font-normal;
     @include font-14px();
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
   .fill-h {
     height: 100%;
   }
   .response-setting {
+    position: relative;
     background-color: $color-disabled;
-    flex: 1;
     padding: 20px;
     .advanced_setting {
       color: $color-primary;
@@ -238,71 +239,28 @@ export default {
       @include font-14px();
     }
   }
-  .block{
+  .block {
     &.reset-margin {
       margin: 0;
     }
     display: flex;
     flex-direction: column;
     margin: 0px 0px 20px 0px;
-    .label-header{
+    .label-header {
       @include font-14px();
       color: $color-font-active;
       margin-bottom: 10px;
     }
-    .input-rounded{
+    .input-rounded {
       height: 32px;
       background: white;
       &:disabled{
         background: #F3F7F9;
       }
     }
-    .insert-var-button-row{
-      display: flex;
-      flex-direction: row;
-      .button-insert{
-        position: relative;
-        display: flex;
-        flex-direction: row;
-        height: 36px;
-        background: #E4EAEC;
-        font-size: 14px;
-        line-height: 36px;
-        justify-content: center;
-        border-radius: 2px;
-        cursor: pointer;
-        &:not(:first-child){
-          margin: 0px 0px 0px 3px;
-        }
-        &:hover{
-          background: lighten(#E4EAEC, 3%);
-        }
-      }
-      .var{
-        width: 100px;
-      }
-      .sys-var{
-        width: 120px;
-      }
-    }
-    .text-response{
+    .text-response {
       height: 100px;
       color: $color-font-normal;
-    }
-    .row{
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      &:not(:first-child){
-        margin: 5px 0px 0px 0px;
-      }
-      .label-text{
-        height: 36px;
-        font-size: 14px;
-        line-height: 36px;
-        color: $color-font-normal;
-        margin: 0px 10px 0px 0px;
-      }
     }
   }
   input[type=checkbox]{

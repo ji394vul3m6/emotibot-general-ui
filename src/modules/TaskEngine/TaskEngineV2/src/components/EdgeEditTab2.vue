@@ -10,8 +10,8 @@
   <draggable v-model="normalEdges" :options="{ghostClass:'ghost'}" @start="drag=true" @end="drag=false; emitUpdate();">
     <template v-for="(edge, index) in normalEdges">
       <condition-action-block
-        class="condition-block"
-        ref="conditionBlock"
+        class="condition-action-block"
+        :ref="`conditionActionBlock`"
         :key="edge.id"
         :nodeId="nodeId"
         :initialEdge="edge"
@@ -139,8 +139,8 @@ export default {
       return obj;
     });
 
-    this.doNothingEdge = { text: this.$t('task_engine_v2.to_node_option.do_nothing'), value: null };
-    this.exitEdge = { text: `${this.$t('task_engine_v2.to_node_option.exit')} (ID: 0)`, value: '0' };
+    this.doNothingEdge = { text: this.$t('task_engine_v2.to_node_option.do_nothing_zh'), value: null };
+    this.exitEdge = { text: this.$t('task_engine_v2.to_node_option.exit_zh'), value: '0' };
     this.parseFailedEdge = {
       text: this.$t('task_engine_v2.to_node_option.parse_fail'),
       value: this.nodeId,
@@ -190,6 +190,13 @@ export default {
         if (!this.normalEdges.length) {
           this.$emit('update:valid', valid);
         }
+      }
+    },
+    'normalEdges.length': function (newV, oldV) { // eslint-disable-line
+      if (newV > oldV) {
+        this.$nextTick(() => {
+          this.$refs.conditionActionBlock[newV - 1].$el.scrollIntoView();
+        });
       }
     },
     dialogueLimit: {
@@ -358,6 +365,9 @@ export default {
   .title {
     margin: 20px 0 10px;
   }
+  .condition-action-block:not(:last-of-type) {
+    margin-bottom: 10px;
+  }
   .section {
     background-color: $color-disabled;
     padding: 20px;
@@ -386,6 +396,10 @@ export default {
     }
   }
   .button-add-edge {
+    border-color: $color-primary;
+    position: sticky;
+    z-index: 1;
+    top: 0;
     width: 100%;
     height: 32px;
     background: $color-primary;

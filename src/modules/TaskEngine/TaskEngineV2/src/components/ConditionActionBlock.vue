@@ -46,7 +46,7 @@
         <div :key="rule.id" class="block">
           <div class="row">
             <span class="label" v-if="index === 0" v-t="'task_engine_v2.condition_action_block.if'"></span>
-            <span class="label" v-if="index !== 0" v-t="'task_engine_v2.condition_action_block.and_if'"></span>
+            <span class="label" v-if="index !== 0">{{ andOrIfText }}</span>
             <dropdown-select
               class="dropdown-select"
               :ref="`selectSource_${index}`"
@@ -226,11 +226,11 @@
               <span class="label" v-t="'task_engine_v2.condition_action_block.label_mapping_table'"></span>
               <dropdown-select
                 class="dropdown-select"
+                filterable
                 :value="[rule.content.trans]"
                 @input="rule.content.trans = $event[0]"
                 :options="mapTableOptions"
                 :showCheckedIcon="false"
-                :showSearchBar="true"
                 :inputBarStyle="selectStyle"/>
             </div>
             <div class="row">
@@ -402,7 +402,7 @@
                   :showCheckedIcon="true"
                   :showSearchBar="true"
                   :placeholder="$t('task_engine_v2.condition_action_block.multi_placeholder')"
-                  :inputBarStyle="selectStyle"/>
+                  :inputBarStyle="selectFixedStyle"/>
               </div>
               <div class="row" v-if="action.source === 'global_info'">
                 <span class="label" v-t="'task_engine_v2.condition_action_block.label_source_key'"></span>
@@ -429,11 +429,11 @@
                 <dropdown-select
                   :key="action.source"
                   class="dropdown-select"
+                  filterable
                   :value="[action.content.trans]"
                   @input="action.content.trans = $event[0]"
                   :options="mapTableOptions"
                   :showCheckedIcon="false"
-                  :showSearchBar="true"
                   :inputBarStyle="selectStyle"/>
               </div>
               <div class="row" v-if="action.source === 'global_info'">
@@ -558,12 +558,12 @@
           <dropdown-select
             class="dropdown-select"
             ref="selectGoto"
+            filterable
             :value="[toNode]"
             @input="onSelectGoto($event[0])"
             :options="toNodeOptions"
             :fixedListWidth="false"
             :showCheckedIcon="false"
-            :showSearchBar="true"
             :inputBarStyle="selectStyle"/>
         </div>
       </div>
@@ -629,7 +629,7 @@ export default {
   },
   data() {
     const edge = this.initialEdge;
-    const edgeType = edge.edge_type || 'normal';
+    const edgeType = edge.edge_type;
     const sourceOptions = optionConfig.getSourceOptionsV2(this);
     const sourceDropdownOptions = sourceOptions.map(option => ({
       ...option,
@@ -679,6 +679,12 @@ export default {
       selectStyle: {
         height: '32px',
         'border-radius': '2px',
+      },
+      selectFixedStyle: {
+        height: '32px',
+        'border-radius': '2px',
+        flex: true,
+        width: '522px',
       },
       keyValMatchCompareOptions,
       keyKeyMatchCompareOptions,
@@ -733,6 +739,10 @@ export default {
     },
     jsCodeOptions() {
       return this.jsCodeAlias.map(item => ({ value: item, text: item }));
+    },
+    andOrIfText() {
+      return this.selectedOption[0] === ConditionOption.AND ?
+        this.$t('task_engine_v2.condition_action_block.and_if') : this.$t('task_engine_v2.condition_action_block.or_if');
     },
   },
   watch: {
@@ -980,7 +990,7 @@ export default {
     },
     insertVarDropdown(id, obj, key) {
       if (this.varDropdownMap[id] === undefined) {
-        this.varDropdownMap[id] = { width: '450px' };
+        this.varDropdownMap[id] = { width: '542px' }; // TODO: fix hard code in the furture
       }
       const rtnObj = this.varDropdownMap[id];
       rtnObj.options = this.globalVarOptions.map(option => ({

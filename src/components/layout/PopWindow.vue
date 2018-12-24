@@ -15,6 +15,7 @@
           @disableOK="disableOK"
           @enableOK="enableOK"
           @cancel="close"
+          @showReminder="showReminder"
           :is="currentView" v-model="data" :extData="extData" ref="content"></component>
         <component v-else
           @validateSuccess="validatePass"
@@ -22,6 +23,7 @@
           @disableOK="disableOK"
           @enableOK="enableOK"
           @cancel="close"
+          @showReminder="showReminder"
           :is="currentView" :origData="data" :extData="extData" ref="content"></component>
       </div>
       <div v-if="!popDescription" class="pop-button" :class="{'center-align': popWarn}">
@@ -44,6 +46,22 @@
           v-on:click="click(true)"
           ref="okBtn"
           v-if="buttons.indexOf('ok') != -1">{{ ok_msg }}</text-button>
+        </div>
+        <div
+          v-if="isReminderShow" 
+          class="reminder" 
+          :style="reminderStyle">
+          <div class="container">
+            <p>{{ reminderObj.content }}</p>
+            <div class="panel">
+              <button class="btn" @click="reminderCancel">
+                {{ reminderObj.cancel_msg || cancel_msg }}
+              </button>
+              <button class="btn" @click="reminderOk">
+                {{ reminderObj.ok_msg || ok_msg }}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -181,6 +199,35 @@ export default {
     disableOK() {
       this.disable_ok = true;
     },
+    showReminder({ buttonRef, ok = () => {}, cancel = () => {}, content, ok_msg, cancel_msg }) {
+      this.isReminderShow = true;
+      if (this.$refs[buttonRef]) {
+        this.reminderCallbacks = {
+          ok,
+          cancel,
+        };
+        this.reminderObj = {
+          content,
+          ok_msg,
+          cancel_msg,
+        };
+        this.$nextTick(() => {
+          const rect = this.$refs[buttonRef].$el.getBoundingClientRect();
+          this.reminderStyle = {
+            right: `${innerWidth - ((rect.right + (rect.width / 2)) - 10)}px`,
+            bottom: `${innerHeight - (rect.top - 6)}px`,
+          };
+        });
+      }
+    },
+    reminderCancel() {
+      this.isReminderShow = false;
+      this.$nextTick(this.reminderCallbacks.cancel);
+    },
+    reminderOk() {
+      this.isReminderShow = false;
+      this.$nextTick(this.reminderCallbacks.ok);
+    },
   },
   data() {
     return {
@@ -205,6 +252,17 @@ export default {
       popWarn: false,
       popDescription: false,
       isBackgroundDark: false,
+      isReminderShow: false,
+      reminderStyle: {},
+      reminderObj: {
+        content: '',
+        ok_msg: '',
+        cancel_msg: '',
+      },
+      reminderCallbacks: {
+        ok: this.validatePass,
+        cancel: this.cancelValidatePass,
+      },
     };
   },
 };
@@ -358,6 +416,48 @@ $pop-spacing: 24px;
     display: flex;
       align-items: center;
       justify-content: center;
+  }
+  .reminder {
+    font-size: 12px;
+    line-height: 1.5;
+    color: white;
+    position: fixed;
+    &::after {
+      content: ' ';
+      position: absolute;
+      width: 0;
+      height: 0;
+      border-width: 6px 6px 0 6px;
+      border-color: #5c5c5c transparent transparent;
+      border-style: solid;
+      right: 40px;
+    }
+    .container {
+      text-align: left;
+      width: 188px;
+      background-color: #5c5c5c;
+      border-radius: 4px;
+      box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2);
+      padding: 10px;
+      .panel {
+        margin-top: 10px;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        .btn {
+          border: none;
+          outline: none;
+          cursor: pointer;
+          font-size: 12px;
+          line-height: 1.5;
+          color: #666666;
+          border-radius: 2px;
+          &:first-of-type {
+            margin-right: 10px;
+          }
+        }
+      }
+    }
   }
 }
 </style>

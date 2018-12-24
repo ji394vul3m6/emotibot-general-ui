@@ -39,7 +39,9 @@ export default {
     },
     to_node_option: {
       exit: 'Exit',
+      exit_zh: '退出場景',
       do_nothing: 'do nothing',
+      do_nothing_zh: '不執行跳轉',
       parse_fail: '解析失敗處理',
       add_new_dialogue_node: '新增對話節點',
     },
@@ -79,6 +81,11 @@ export default {
         action: '動作',
       },
       confirm_to_save_changes: '節點內容已被更動，請問是否需要保存？',
+      popup: {
+        content: '您有內容還處於編輯狀態，您確定要直接退出不保存嗎？',
+        cancel: '再想想',
+        confirm: '放棄保存並退出',
+      },
     },
     scenario_settings_edit_pop: {
       scenario_name: '場景名稱',
@@ -406,10 +413,11 @@ export default {
       below_conditions: '以下條件',
       condition_options: {
         all: '全部',
-        any: '任一',
+        any: '任意',
       },
       if: '如果',
       and_if: '並且',
+      or_if: '或者',
       input_placeholder: '輸入內容',
       key_placeholder: '輸入鍵',
       value_placeholder: '輸入值',
