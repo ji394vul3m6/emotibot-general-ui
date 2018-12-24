@@ -1,3 +1,7 @@
+import optionConfig from './optionConfig';
+
+const ActionType = optionConfig.ActionType;
+
 export default {
   s4_sort() { return Math.floor((1 + Math.random()) * 0x10000).toString(10).substring(1); },
   guid_sort() { return this.s4_sort() + this.s4_sort() + this.s4_sort(); },
@@ -79,6 +83,8 @@ export default {
       return this.initialPCNode(nodeName, nodeDialogueCntLimit);
     } else if (nodeType === 'action') {
       return this.initialActionNode(nodeName);
+    } else if (nodeType === 'dialogue_2.0') {
+      return this.initialDialogueNode2(nodeName, nodeDialogueCntLimit, nodeId);
     }
     return {};
   },
@@ -207,6 +213,30 @@ export default {
       },
     };
   },
+  initialDialogueNode2(nodeName, nodeDialogueCntLimit, nodeId) {
+    return {
+      nodeId: nodeId || this.guid_sort(),
+      nodeName,
+      nodeType: 'dialogue_2.0',
+      dialogue2SettingTab: {
+        nodeName,
+        parser: 'none',
+        targetEntities: [],
+        skipIfKeyExist: [],
+        initialResponse: '',
+        repeatResponse: '',
+        rewindResponse: '',
+        failureResponse: '',
+        parseFromThisNode: false,
+      },
+      edgeTab2: {
+        normalEdges: [],
+        exceedThenGoto: '0',
+        elseInto: '0',
+        dialogueLimit: nodeDialogueCntLimit,
+      },
+    };
+  },
   initialRestfulNode(nodeName) {
     return {
       nodeId: this.guid_sort(),
@@ -251,6 +281,11 @@ export default {
             key: '',
           },
         ],
+      },
+      nlu_parser: {
+        tags: '',
+        key_suffix: `_${nodeId}`,
+        has_context: false,
       },
       common_parser: {
         tags: '',
@@ -342,9 +377,100 @@ export default {
     };
     return map[funcName];
   },
-  initialEdge() {
+  initialFunctionContentV2(funcName, nodeId) {
+    const map = {
+      match: '',
+      contains: '',
+      regular_exp: {
+        pattern: '',
+        operations: [{
+          operation: 'set_to_global_info',
+          index: 0,
+          key: '',
+        }],
+      },
+      common_parser: {
+        tags: '',
+        key_suffix: `_${nodeId}`,
+      },
+      task_parser: {
+        tags: '',
+        key_suffix: `_${nodeId}`,
+      },
+      hotel_parser: {
+        tags: '',
+        key_suffix: `_${nodeId}`,
+      },
+      user_custom_parser: {
+        trans: '',
+        to_key: '',
+      },
+      polarity_parser: {
+        key: '',
+        key_suffix: `_${nodeId}`,
+      },
+      api_parser: '',
+      key_val_match: {
+        compare: '==',
+        key: '',
+        val: '',
+      },
+      key_key_match: {
+        key2: '',
+        key1: '',
+        compare: '==',
+      },
+      contain_key: {
+        key: '',
+      },
+      not_contain_key: {
+        key: '',
+      },
+      list_length_match: {
+        compare: '==',
+        key: '',
+        val: '',
+      },
+      counter_check: 'node_counter',
+      user_custom_transform: {
+        trans: '',
+        from_key: '',
+        to_key: '',
+      },
+      regular_exp_from_var: {
+        operations: [{
+          index: 0,
+          operation: 'set_to_global_info',
+          key: '',
+        }],
+        pattern: '',
+        from_key: '',
+      },
+      assign_value: [{
+        operation: 'set_to_global_info',
+        key: '',
+        val: '',
+      }],
+      remove_key: [{
+        key: '',
+      }],
+      cu_parser: 'Intent',
+      custom_cu_parser: '',
+      intent_parser: {
+        module: 'intent_engine_2.0',
+        intentName: '',
+      },
+      nlu_parser: {
+        tags: '',
+        key_suffix: `_${nodeId}`,
+        has_context: false,
+      },
+    };
+    return map[funcName];
+  },
+  initialEdge(edgeType = 'normal') {
     return {
-      edge_type: 'normal',
+      edge_type: edgeType,
       to_node_id: null,
       actions: [],
       condition_rules: [
@@ -359,6 +485,22 @@ export default {
             ],
           },
         ],
+      ],
+    };
+  },
+  initialNormalEdge2() {
+    return {
+      edge_type: 'normal_2.0',
+      to_node_id: null,
+      actions: [],
+      condition_rules: [
+        {
+          source: 'text',
+          function: {
+            function_name: 'match',
+            content: '',
+          },
+        },
       ],
     };
   },
@@ -381,16 +523,86 @@ export default {
       ],
     };
   },
-  initialRule() {
-    return {
-      source: 'text',
-      functions: [
-        {
+  initialRule(source = 'text') {
+    if (source === 'text') {
+      return {
+        source,
+        functions: [{
           function_name: 'match',
           content: '',
-        },
-      ],
-    };
+        }],
+      };
+    } else if (source === 'global_info') {
+      return {
+        source,
+        functions: [
+          {
+            function_name: 'key_val_match',
+            content: [{
+              compare: '==',
+              key: '',
+              val: '',
+            }],
+          },
+        ],
+      };
+    }
+    return {};
+  },
+  initialAction(actionType = 'parser') {
+    switch (actionType) {
+      case ActionType.Parser: {
+        return {
+          source: '',
+          function: {
+            function_name: '',
+            content: {},
+          },
+        };
+      }
+      case ActionType.AssignValue: {
+        return {
+          source: 'global_info',
+          function: {
+            function_name: ActionType.AssignValue,
+            content: {
+              operation: 'set_key_to_value',
+              key: '',
+              val: '',
+            },
+          },
+        };
+      }
+      case ActionType.WebAPI: {
+        return {
+          source: 'text',
+          function: {
+            function_name: 'api_parser',
+            content: '',
+          },
+        };
+      }
+      case ActionType.JSScript: {
+        return {
+          source: 'text',
+          function: {
+            function_name: 'js_code',
+            content: '',
+          },
+        };
+      }
+      case ActionType.ResponseText: {
+        return {
+          source: 'text',
+          function: {
+            function_name: 'response_text',
+            content: '',
+          },
+        };
+      }
+      default:
+        return {};
+    }
   },
   initialRegularOperation() {
     return {

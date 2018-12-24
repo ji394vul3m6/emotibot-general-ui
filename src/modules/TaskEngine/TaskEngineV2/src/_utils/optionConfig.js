@@ -1,8 +1,54 @@
+import DialogueIcon from '@/assets/icons/dialogue_icon.svg';
+import ParameterCollectingIcon from '@/assets/icons/parameter_collecting_icon.svg';
+import RestfulIcon from '@/assets/icons/restful_icon.svg';
+import TDEParameterCollectingIcon from '@/assets/icons/tde_parameter_collecting_icon.svg';
+import ActionIcon from '@/assets/icons/action_icon.svg';
+
+const ActionType = {
+  Parser: 'parser',
+  AssignValue: 'assign_value',
+  WebAPI: 'web_api',
+  JSScript: 'js_script',
+  ResponseText: 'response_text',
+};
+const Parsers = ['common_parser', 'task_parser', 'hotel_parser', 'user_custom_parser', 'polarity_parser', 'nlu_parser', 'reg_parser'];
+const NLUParserMap = {
+  ADDRESS: 'ADDRESS',
+  QUANTITY: 'QUANTITY',
+  PERSON_NUMBER: 'PERSON_NUMBER',
+  MONEY: 'MONEY',
+  MOBILE_PHONE: 'MOBILE_PHONE',
+  ORDINAL_NUMBER: 'ORDINAL_NUMBER',
+  PERSON_NAME: 'PERSON_NAME',
+  SURNAME: 'SURNAME',
+  POLARITY: 'POLARITY',
+  TIME_FUTURE: 'TIME_FUTURE',
+  TIME_PAST: 'TIME_PAST',
+  SELECT_CUSTOMIZE_OPTIONS: 'SELECT_CUSTOMIZE_OPTIONS',
+  SELECT_OPTIONS_IN_KEY: 'SELECT_OPTIONS_IN_KEY',
+  LOGIC: 'LOGIC',
+};
+const NLUTypeMap = {
+  ADDRESS: 'address',
+  TIME: 'time',
+  MONEY: 'money',
+  MOBILE_PHONE: 'mobile_phone',
+  PERSON_NAME: 'person_name',
+  SELECT: 'select',
+  LOGIC: 'logic',
+};
+const NLUTypeOptions = Object.values(NLUTypeMap);
+const NLUTimeParsers = [NLUParserMap.TIME_FUTURE, NLUParserMap.TIME_PAST];
+const NLUSelectParsers = [
+  NLUParserMap.SELECT_CUSTOMIZE_OPTIONS,
+  NLUParserMap.SELECT_OPTIONS_IN_KEY,
+];
 export default {
   nodeType2Tabs() {
     return {
       entry: ['settingBasicTab', 'triggerTab', 'edgeTab'],
       dialogue: ['settingTab', 'edgeTab'],
+      'dialogue_2.0': ['dialogue2SettingTab', 'edgeTab2'],
       nlu_pc: ['settingBasicTab', 'entityCollectingTab', 'edgeTab'],
       restful: ['restfulSettingTab', 'restfulEdgeTab'],
       parameter_collecting: ['settingBasicTab', 'paramsCollectingTab', 'paramsCollectingEdgeTab'],
@@ -58,41 +104,55 @@ export default {
       {
         type: 'entry',
         name: context.$t('task_engine_v2.node_type.entry'),
-        image: 'te_dialoague.png',
+        image: '@/assets/icons/dialogue_icon.svg',
         description: '',
       },
       {
         type: 'dialogue',
         name: context.$t('task_engine_v2.node_type.dialogue'),
-        image: 'te_dialoague.png',
+        image: DialogueIcon,
+        description: context.$t('task_engine_v2.node_type.dialogue_description'),
+      },
+      {
+        type: 'dialogue_2.0',
+        name: context.$t('task_engine_v2.node_type.dialogue2'),
+        image: DialogueIcon,
         description: context.$t('task_engine_v2.node_type.dialogue_description'),
       },
       {
         type: 'parameter_collecting',
         name: context.$t('task_engine_v2.node_type.parameter_collecting'),
-        image: 'te_dialoague.png',
+        image: ParameterCollectingIcon,
         description: context.$t('task_engine_v2.node_type.parameter_collecting_description'),
       },
       {
         type: 'restful',
         name: context.$t('task_engine_v2.node_type.restful'),
-        image: 'te_dialoague.png',
+        image: RestfulIcon,
         description: context.$t('task_engine_v2.node_type.restful_description'),
       },
       {
         type: 'nlu_pc',
         name: context.$t('task_engine_v2.node_type.nlu_pc'),
-        image: 'te_dialoague.png',
+        image: TDEParameterCollectingIcon,
         description: context.$t('task_engine_v2.node_type.nlu_pc_description'),
       },
       {
         type: 'action',
         name: context.$t('task_engine_v2.node_type.action'),
-        image: 'te_dialoague.png',
+        image: ActionIcon,
         description: context.$t('task_engine_v2.node_type.action_description'),
       },
     ];
     return nodeTypes;
+  },
+  NodeToEdgeMap: {
+    entry: 'edgeTab',
+    dialogue: 'edgeTab',
+    'dialogue_2.0': 'edgeTab2',
+    parameter_collecting: 'paramsCollectingEdgeTab',
+    nlu_pc: 'edgeTab',
+    action: 'edgeTab',
   },
   getWarningMsgMap(context) {
     return {
@@ -122,12 +182,71 @@ export default {
       // },
     ];
   },
+  getSourceOptionsV2(context) {
+    return [{
+      text: context.$t('task_engine_v2.condition_action_block.source.text'),
+      value: 'text',
+    },
+    {
+      text: context.$t('task_engine_v2.condition_action_block.source.global_info'),
+      value: 'global_info',
+    }];
+  },
+  ActionType,
+  getActionOptions(context) {
+    return [{
+      text: context.$t('task_engine_v2.condition_action_block.action.parser'),
+      value: ActionType.Parser,
+    },
+    {
+      text: context.$t('task_engine_v2.condition_action_block.action.assign_value'),
+      value: ActionType.AssignValue,
+    },
+    {
+      text: context.$t('task_engine_v2.condition_action_block.action.api_parser'),
+      value: ActionType.WebAPI,
+    },
+    {
+      text: context.$t('task_engine_v2.condition_action_block.action.exec_script'),
+      value: ActionType.JSScript,
+    },
+    {
+      text: context.$t('task_engine_v2.condition_action_block.action.response_text'),
+      value: ActionType.ResponseText,
+    }];
+  },
+  Parsers,
+  NLUParserMap,
+  NLUTypeMap,
+  NLUTypeOptions,
+  NLUTimeParsers,
+  NLUSelectParsers,
+  getActionOptionMap(context) {
+    const assignValue = ['set_key_to_value', 'set_key_to_key'];
+    return {
+      [ActionType.AssignValue]: assignValue.map((func) => {
+        const key = `task_engine_v2.condition_action_block.func.${func}`;
+        return {
+          text: context.$t(key),
+          value: func,
+        };
+      }),
+      [ActionType.Parser]: Parsers.map((parser) => {
+        const key = `task_engine_v2.condition_action_block.func.${parser}`;
+        return {
+          text: context.$t(key),
+          value: parser,
+        };
+      }),
+    };
+  },
   getFuncOptionMap(context) {
     const textFuncs = [
-      'match', 'contains', 'regular_exp', 'common_parser', 'task_parser',
-      'hotel_parser', 'user_custom_parser', 'polarity_parser', 'api_parser', 'qq', 'intent_parser',
+      'match', 'contains', 'regular_exp', 'nlu_parser', 'common_parser',
+      'task_parser', 'hotel_parser', 'user_custom_parser', 'polarity_parser', 'api_parser',
+      'qq', 'intent_parser',
     ];
-    const globalIngoFuncs = [
+    const globalInfoFuncs = [
       'key_val_match', 'key_key_match', 'contain_key', 'not_contain_key', 'list_length_match',
       'counter_check', 'user_custom_transform', 'regular_exp_from_var', 'assign_value', 'remove_key',
     ];
@@ -140,7 +259,7 @@ export default {
           value: func,
         };
       }),
-      global_info: globalIngoFuncs.map((func) => {
+      global_info: globalInfoFuncs.map((func) => {
         const key = `task_engine_v2.condition_block.func.${func}`;
         return {
           text: context.$t(key),
@@ -149,6 +268,31 @@ export default {
       }),
       cu: cuFuncs.map((func) => {
         const key = `task_engine_v2.condition_block.func.${func}`;
+        return {
+          text: context.$t(key),
+          value: func,
+        };
+      }),
+    };
+  },
+  getFuncOptionMapV2(context) {
+    const textFuncs = [
+      'match', 'contains', 'regular_exp', 'intent_parser',
+    ];
+    const globalIngoFuncs = [
+      'key_val_match', 'key_key_match', 'contain_key', 'not_contain_key', 'list_length_match',
+      'counter_check', 'user_custom_transform', 'regular_exp_from_var',
+    ];
+    return {
+      text: textFuncs.map((func) => {
+        const key = `task_engine_v2.condition_action_block.func.${func}`;
+        return {
+          text: context.$t(key),
+          value: func,
+        };
+      }),
+      global_info: globalIngoFuncs.map((func) => {
+        const key = `task_engine_v2.condition_action_block.func.${func}`;
         return {
           text: context.$t(key),
           value: func,

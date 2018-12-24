@@ -14,6 +14,7 @@
           :mapTableOptions="mapTableOptions"
           :validateConditionBlock="validateConditionBlock"
           :valid.sync="edge.valid"
+          :jsCodeAlias="jsCodeAlias"
           @update="updateEdge(index, $event)"
           @deleteEdge="deleteEdge(index)"
           @addNewDialogueNode="addNewDialogueNode">
@@ -73,8 +74,10 @@ export default {
       acc.push(...globalVarOption);
       return acc;
     }, []);
+    const jsCodeAlias = this.extData.jsCodeAlias || [];
     return {
       nodeId: '',
+      jsCodeAlias,
       originalGlobalEdgesStr,
       globalEdges,
       toNodeOptions,
@@ -166,8 +169,6 @@ export default {
     },
     cancelValidate() {
       const newGlobalEdgesStr = JSON.stringify(this.globalEdges, general.JSONStringifyReplacer);
-      // console.log(`New Str: ${newGlobalEdgesStr}`);
-      // console.log(`Old Str: ${this.originalGlobalEdgesStr}`);
       if (newGlobalEdgesStr === this.originalGlobalEdgesStr) {
         this.$emit('cancelValidateSuccess');
       } else {
@@ -216,9 +217,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'styles/variable.scss';
-
-#global-edge-edit-pop{
+#global-edge-edit-pop {
   width: 725px;
   height: 70vh;
   display: flex;

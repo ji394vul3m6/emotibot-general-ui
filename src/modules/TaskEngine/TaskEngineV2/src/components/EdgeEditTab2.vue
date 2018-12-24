@@ -1,11 +1,15 @@
-<template lang="html">
+<template>
 <div id="edge-edit-tab">
-  <div class="instruction block">
-    {{$t("task_engine_v2.edge_edit_tab.instruction")}}
+  <div class="title">
+    {{ $t('task_engine_v2.edge_edit_tab2.instruction') }}
+    <span class="instruction" v-t="'task_engine_v2.edge_edit_tab2.instruction_hint'"></span>
   </div>
+  <button class="button-add-edge" @click="addEdge">
+    {{ $t("task_engine_v2.edge_edit_tab2.button_add_edge") }}
+  </button>
   <draggable v-model="normalEdges" :options="{ghostClass:'ghost'}" @start="drag=true" @end="drag=false; emitUpdate();">
     <template v-for="(edge, index) in normalEdges">
-      <condition-block
+      <condition-action-block
         class="condition-block"
         ref="conditionBlock"
         :key="edge.id"
@@ -20,69 +24,54 @@
         @update="updateNormalEdge(index, $event)"
         @deleteEdge="deleteEdge(index)"
         @addNewDialogueNode="addNewDialogueNode">
-      </condition-block>
+      </condition-action-block>
     </template>
   </draggable>
-  <button
-    class="button-add-edge"
-    @click="addEdge()">
-    {{$t("task_engine_v2.edge_edit_tab.button_add_edge")}}
-  </button>
-  <div class="exceed_limit block" v-if="exceedThenGoto !== null">
-    <div class="condition-row">
-      <div class="label label-bold">
-        {{$t("task_engine_v2.edge_edit_tab.label_exceed_limit")}}
-      </div>
-      <div class="label label-margin-left">
-        {{$t("task_engine_v2.edge_edit_tab.instruction_exeed_limit")}}
-      </div>
-      <input class="input-limit" ref="input-content" v-tooltip="tooltip" @focus="onInputFocus"
-        oninput="this.value = this.value.replace(/^0$/g, ''); this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(^[0-9]{1,2}).*/g, '$1');"
-        v-model="dialogueLimit">
-      </input>
+  <div class="title" v-t="'task_engine_v2.edge_edit_tab2.exception_handle'"></div>
+  <div class="section">
+    <div class="block" v-if="exceedThenGoto !== null">
       <div class="label">
-        {{$t("task_engine_v2.edge_edit_tab.label_time")}}
+        {{ $t("task_engine_v2.edge_edit_tab2.label_exceed_limit") }}
       </div>
-      <div class="label label-margin-left">
-        {{$t("task_engine_v2.edge_edit_tab.label_then_goto")}}
+      <div class="condition-row">
+        {{ $t("task_engine_v2.edge_edit_tab2.instruction_exeed_limit")}}
+        <input class="input-limit" ref="input-content" v-tooltip="tooltip" @focus="onInputFocus"
+          oninput="this.value = this.value.replace(/^0$/g, ''); this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(^[0-9]{1,2}).*/g, '$1');"
+          v-model="dialogueLimit"/>
+        {{ $t("task_engine_v2.edge_edit_tab2.label_time") }}
+        {{ $t("task_engine_v2.edge_edit_tab2.label_then_goto") }}
+        <dropdown-select
+          class="select"
+          ref="selectExceedThenGoto"
+          :value="[exceedThenGoto]"
+          @input="exceedThenGoto = $event[0]"
+          :options="exceedThenGotoOptions"
+          :fixedListWidth="false"
+          :showCheckedIcon="false"
+          :showSearchBar="true"
+          width="200px"
+          :inputBarStyle="selectStyle"/>
       </div>
-      <dropdown-select
-        class="select select-goto"
-        ref="selectExceedThenGoto"
-        :value="[exceedThenGoto]"
-        @input="exceedThenGoto = $event[0]"
-        :options="exceedThenGotoOptions"
-        :fixedListWidth="false"
-        :showCheckedIcon="false"
-        :showSearchBar="true"
-        width="200px"
-        :inputBarStyle="selectStyle"
-      />
     </div>
-  </div>
-  <div class="default_goto block">
-    <div class="condition-row">
-      <div class="label label-bold">
-        {{$t("task_engine_v2.edge_edit_tab.label_default_goto")}}
+    <div class="block">
+      <div class="label">
+        {{ $t("task_engine_v2.edge_edit_tab2.label_default_goto") }}
       </div>
-      <div class="label label-margin-left">
-        {{$t("task_engine_v2.edge_edit_tab.instruction_default_goto")}}
+      <div class="condition-row">
+        {{ $t("task_engine_v2.edge_edit_tab2.instruction_default_goto") }}
+        {{ $t("task_engine_v2.edge_edit_tab2.label_then_goto") }}
+        <dropdown-select
+          class="select"
+          ref="selectElseThenGoto"
+          :value="[elseInto]"
+          @input="elseInto = $event[0]"
+          :options="elseIntoOptions"
+          :fixedListWidth="false"
+          :showCheckedIcon="false"
+          :showSearchBar="true"
+          width="200px"
+          :inputBarStyle="selectStyle"/>
       </div>
-      <div class="label label-margin-left">
-        {{$t("task_engine_v2.edge_edit_tab.label_then_goto")}}
-      </div>
-      <dropdown-select
-        class="select select-goto"
-        ref="selectElseThenGoto"
-        :value="[elseInto]"
-        @input="elseInto = $event[0]"
-        :options="elseIntoOptions"
-        :fixedListWidth="false"
-        :showCheckedIcon="false"
-        :showSearchBar="true"
-        width="200px"
-        :inputBarStyle="selectStyle"
-      />
     </div>
   </div>
 </div>
@@ -93,15 +82,14 @@ import event from '@/utils/js/event';
 import draggable from 'vuedraggable';
 import DropdownSelect from '@/components/DropdownSelect';
 import general from '@/modules/TaskEngine/_utils/general';
-import ConditionBlock from './ConditionBlock';
+import ConditionActionBlock from './ConditionActionBlock';
 import scenarioInitializer from '../_utils/scenarioInitializer';
 
 export default {
-  name: 'edge-edit-tab',
   components: {
     draggable,
-    'dropdown-select': DropdownSelect,
-    'condition-block': ConditionBlock,
+    DropdownSelect,
+    ConditionActionBlock,
   },
   props: {
     validateTab: {
@@ -124,10 +112,6 @@ export default {
       type: Array,
       required: true,
     },
-    jsCodeAlias: {
-      type: Array,
-      default: () => [],
-    },
     nodeId: {
       type: String,
       required: true,
@@ -135,6 +119,10 @@ export default {
     nodeType: {
       type: String,
       required: true,
+    },
+    jsCodeAlias: {
+      type: Array,
+      default: () => [],
     },
   },
   data() {
@@ -179,8 +167,8 @@ export default {
       elseInto,
       elseIntoOptions,
       selectStyle: {
-        height: '36px',
-        'border-radius': '5px',
+        height: '32px',
+        'border-radius': '2px',
       },
       tooltip: {
         msg: this.$t('task_engine_v2.err_empty'),
@@ -279,7 +267,7 @@ export default {
         elseIntoOptions = [
           this.addNewDialogueNodeEdge,
         ].concat(options);
-      } else if (nodeType === 'dialogue') {
+      } else if (nodeType === 'dialogue' || nodeType === 'dialogue_2.0') {
         toNodeOptions = [
           this.addNewDialogueNodeEdge,
           this.doNothingEdge,
@@ -313,7 +301,7 @@ export default {
       this.emitUpdate();
     },
     addEdge() {
-      const edge = scenarioInitializer.initialEdge();
+      const edge = scenarioInitializer.initialNormalEdge2();
       edge.id = this.$uuid.v1();
       edge.valid = false;
       this.normalEdges.push(edge);
@@ -360,65 +348,51 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'styles/variable.scss';
-
-#edge-edit-tab{
-  display: flex;
-  flex-direction: column;
-  padding: 0px 30px 0px 20px;
-  .block{
-    background: #F3F7F9;
-    padding: 20px 20px 20px 20px;
-    border: 1px solid $color-borderline;
-    border-radius: 5px;
-    margin: 0px 0px 20px 0px;
-    .condition-row{
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      height: 36px;
-      .label{
-        height: 36px;
-        line-height: 36px;
-        font-size: 16px;
+#edge-edit-tab {
+  padding: 0 20px;
+  @include font-14px();
+  color: $color-font-active;
+  .instruction {
+    color: $color-font-mark;
+  }
+  .title {
+    margin: 20px 0 10px;
+  }
+  .section {
+    background-color: $color-disabled;
+    padding: 20px;
+    .block {
+      &:not(:last-child) {
+        margin-bottom: 20px;
       }
-      .label-bold{
-        font-weight: 600;
+      .label {
+        margin-bottom: 10px;
       }
-      .label-margin-left{
-        margin-left: 20px;
-      }
-      .input-limit{
-        height: 36px;
-        margin: 0px 10px 0px 10px;
-        width: 40px;
-      }
-      .select{
-        background: white;
-        margin-left: 20px;
-        border-radius: 5px;
+      .condition-row {
+        display: flex;
+        align-items: center;
+        color: $color-font-normal;
+        .input-limit {
+          height: 32px;
+          margin: 0px 10px;
+          width: 50px;
+        }
+        .select {
+          background: white;
+          margin-left: 10px;
+          border-radius: 2px;
+        }
       }
     }
   }
-  .instruction{
-    height: 60px;
-    line-height: 20px;
-    color: $color-font-normal;
-    font-size: 14px;
-  }
-  .button-add-edge{
-    height: 40px;
-    background: #46BE8A;
-    border-radius: 5px;
+  .button-add-edge {
+    width: 100%;
+    height: 32px;
+    background: $color-primary;
     color: white;
-    font-size: 18px;
-    font-weight: 600;
-    margin: 20px 0px 10px 0px;
+    margin-bottom: 20px;
     cursor: pointer;
-    &:hover{
-      transition: background-color 0.5s ease;
-      background: lighten(#46BE8A, 10%);
-    }
+    border-radius: 3px;
   }
 }
 </style>

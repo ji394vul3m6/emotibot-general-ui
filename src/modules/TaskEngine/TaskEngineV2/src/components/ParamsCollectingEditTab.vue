@@ -76,10 +76,13 @@ export default {
       type: Array,
       required: true,
     },
+    nodeId: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     const paramsCollectingTab = this.paramsCollectingTab;
-    const nodeId = paramsCollectingTab.nodeId;
     // add tmp id for params
     const params = paramsCollectingTab.params.map((param) => {
       const obj = { ...param };
@@ -91,7 +94,6 @@ export default {
       enableConfirmMsg: paramsCollectingTab.enableConfirmMsg || false,
       confirmMsg: paramsCollectingTab.confirmMsg || '',
       confirmMsgParseFail: paramsCollectingTab.confirmMsgParseFail || '',
-      nodeId,
       params,
     };
   },

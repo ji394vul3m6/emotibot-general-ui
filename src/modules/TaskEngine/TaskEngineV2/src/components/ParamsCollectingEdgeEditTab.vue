@@ -12,6 +12,7 @@
         :mapTableOptions="mapTableOptions"
         :globalVarOptions="globalVarOptions"
         :validateConditionBlock="validateTab"
+        :jsCodeAlias="jsCodeAlias"
         @update:valid="$set(edge, 'valid', $event); if ($event) {isAllConditionBlockValid()}"
         @update="updateNormalEdge(index, $event)"
         @deleteEdge="deleteEdge(index)"
@@ -62,11 +63,21 @@ export default {
       type: Array,
       required: true,
     },
+    jsCodeAlias: {
+      type: Array,
+      default: () => [],
+    },
+    nodeId: {
+      type: String,
+      required: true,
+    },
+    nodeType: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     const pcEdgeTab = this.paramsCollectingEdgeTab;
-    const nodeId = pcEdgeTab.nodeId;
-    const nodeType = pcEdgeTab.nodeType;
     const dialogueLimit = pcEdgeTab.dialogueLimit;
 
     // add tmp id for edges
@@ -86,8 +97,6 @@ export default {
     ].concat(options);
 
     return {
-      nodeId,
-      nodeType,
       normalEdges,
       dialogueLimit,
       newNodeOptions: undefined,

@@ -12,6 +12,7 @@
         :globalVarOptions="globalVarOptions"
         :mapTableOptions="mapTableOptions"
         :validateConditionBlock="validateTab"
+        :jsCodeAlias="jsCodeAlias"
         @update:valid="$set(rule, 'valid', $event); if ($event) {isAllConditionBlockValid()}"
         @update="updateRule(index, $event)"
         @deleteEdge="deleteRule(index)">
@@ -55,10 +56,17 @@ export default {
       type: Array,
       required: true,
     },
+    jsCodeAlias: {
+      type: Array,
+      default: () => [],
+    },
+    nodeId: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {
-      nodeId: this.triggerTab.nodeId,
       rules: this.triggerTab.rules.map(rule => ({
         id: this.$uuid.v1(),
         to_node_id: null,

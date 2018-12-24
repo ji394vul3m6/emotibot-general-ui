@@ -4,8 +4,7 @@
     <div class="label-header">{{$t("task_engine_v2.setting_edit_tab.node_type")}}</div>
     <input class="input-rounded input-readonly"
       disabled
-      :value="$t(`task_engine_v2.node_type.${nodeType}`)">
-    </input>
+      :value="$t(`task_engine_v2.node_type.${nodeType}`)"/>
   </div>
   <div class="block">
     <div class="label-header">{{$t("task_engine_v2.setting_edit_tab.node_name")}}</div>
@@ -111,6 +110,10 @@ export default {
       type: Array,
       required: true,
     },
+    nodeType: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     const settingTab = this.settingTab;
@@ -119,7 +122,6 @@ export default {
     const entityModuleOptionsMap = optionConfig.getEntityModuleOptionsMap();
     const entityKeyNameOptionsMap = this.getEntityKeyNameOptionsMap();
     return {
-      nodeType: settingTab.nodeType,
       nodeName: settingTab.nodeName,
       parser: settingTab.parser,
       parserOptions: this.getParserOptions(),

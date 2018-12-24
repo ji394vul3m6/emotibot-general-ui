@@ -424,6 +424,9 @@ export default {
         uiNode.actionTab.actionGroupList,
         uiNode.actionTab.waitForResponse,
       );
+    } else if (uiNode.nodeType === 'dialogue_2.0') {
+      node.content = this.composeDialogue2Content(uiNode);
+      node.node_dialogue_cnt_limit = uiNode.edgeTab2.dialogueLimit;
     }
     return node;
   },
@@ -556,6 +559,32 @@ export default {
       questions,
     };
   },
+  composeDialogue2Content(uiNode) {
+    const skipDialogue = uiNode.dialogue2SettingTab.skipDialogue;
+    // insert failure_response
+    const failureResponse = {
+      msg: uiNode.dialogue2SettingTab.failureResponse,
+    };
+    // insert initial_response
+    const initialResponse = {
+      msg: uiNode.dialogue2SettingTab.initialResponse,
+    };
+    const repeatResponse = {
+      msg: uiNode.dialogue2SettingTab.repeatResponse,
+    };
+    const rewindResponse = {
+      msg: uiNode.dialogue2SettingTab.rewindResponse,
+    };
+    return {
+      skip_dialogue: skipDialogue,
+      questions: {
+        failure_response: failureResponse,
+        initial_response: initialResponse,
+        repeat_response: repeatResponse,
+        rewind_response: rewindResponse,
+      },
+    };
+  },
   composeRestfulContent(uiNode) {
     if (!uiNode.restfulSettingTab) return {};
     const tab = uiNode.restfulSettingTab;
@@ -651,6 +680,20 @@ export default {
       edges = [
         ...normalEdges,
         ...globalEdges,
+        elseInto,
+      ];
+    } else if (uiNode.nodeType === 'dialogue_2.0') {
+      const hiddenSetCntLimit = this.edgeHiddenSetNodeDialogueCntLimit(
+        uiNode.edgeTab2.dialogueLimit,
+      );
+      const normalEdges = uiNode.edgeTab2.normalEdges;
+      const exceedThenGoto = this.edgeExceedThenGoTo(uiNode.edgeTab2.exceedThenGoto);
+      const elseInto = this.edgeElseInto(uiNode.nodeId, uiNode.edgeTab2.elseInto);
+      edges = [
+        hiddenSetCntLimit,
+        ...normalEdges,
+        ...globalEdges,
+        exceedThenGoto,
         elseInto,
       ];
     }
@@ -823,22 +866,33 @@ export default {
   getGlobalVars(edges) {
     const globalVars = [];
     edges.forEach((edge) => {
-      let andRules = [];
-      if (edge.condition_rules &&
-          edge.condition_rules instanceof Array &&
-          edge.condition_rules.length > 0) {
-        andRules = edge.condition_rules[0];
-      }
-      andRules.forEach((rule) => {
-        let functions = [];
-        if (rule.functions && rule.functions instanceof Array) {
-          functions = rule.functions;
-        }
-        functions.forEach((func) => {
-          const vars = this.getGlobalVarsFromFunction(func);
+      if (edge.edge_type === 'normal_2.0') {
+        edge.condition_rules.forEach((rule) => {
+          const vars = this.getGlobalVarsFromFunction(rule.function);
           globalVars.push(...vars);
         });
-      });
+        edge.actions.forEach((action) => {
+          const vars = this.getGlobalVarsFromFunction(action.function);
+          globalVars.push(...vars);
+        });
+      } else {
+        let andRules = [];
+        if (edge.condition_rules &&
+          edge.condition_rules instanceof Array &&
+          edge.condition_rules.length > 0) {
+          andRules = edge.condition_rules[0];
+        }
+        andRules.forEach((rule) => {
+          let functions = [];
+          if (rule.functions && rule.functions instanceof Array) {
+            functions = rule.functions;
+          }
+          functions.forEach((func) => {
+            const vars = this.getGlobalVarsFromFunction(func);
+            globalVars.push(...vars);
+          });
+        });
+      }
     });
     return globalVars;
   },
