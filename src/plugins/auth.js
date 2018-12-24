@@ -91,7 +91,6 @@ function setInfoWithToken(token) {
   const userRoleMap = {};
   let robots = [];
 
-  debugger;
   that.$setReqToken(token);
   const promise = that.$reqGet(`${TOKEN_PATH}`)
   .then((response) => {
