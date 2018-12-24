@@ -152,12 +152,11 @@ export default {
     };
 
     // render toNodeOptions, exceedThenGotoOptions, elseIntoOptions
-    const options = this.initialToNodeOptions.filter(option => option.value !== this.nodeId);
     const {
       toNodeOptions,
       exceedThenGotoOptions,
       elseIntoOptions,
-    } = this.composeOptions(options, this.nodeType);
+    } = this.composeOptions(this.initialToNodeOptions, this.nodeType);
     return {
       normalEdges,
       dialogueLimit,
@@ -262,11 +261,10 @@ export default {
       this.exceedThenGotoOptions = exceedThenGotoOptions;
       this.elseIntoOptions = elseIntoOptions;
     },
-    composeOptions(fullOptions, nodeType) {
+    composeOptions(options, nodeType) {
       let toNodeOptions;
       let exceedThenGotoOptions;
       let elseIntoOptions;
-      const options = fullOptions.filter(option => option.value !== this.nodeId);
       if (nodeType === 'entry') {
         toNodeOptions = [
           this.addNewDialogueNodeEdge,
