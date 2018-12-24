@@ -81,6 +81,11 @@ export default {
         action: '動作',
       },
       confirm_to_save_changes: '節點內容已被更動，請問是否需要保存？',
+      popup: {
+        content: '您有內容還處於編輯狀態，您確定要直接退出不保存嗎？',
+        cancel: '再想想',
+        confirm: '放棄保存並退出',
+      },
     },
     scenario_settings_edit_pop: {
       scenario_name: '場景名稱',

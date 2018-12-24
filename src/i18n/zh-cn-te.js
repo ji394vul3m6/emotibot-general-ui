@@ -81,6 +81,11 @@ export default {
         action: '动作',
       },
       confirm_to_save_changes: '节点内容已被更动，请问是否需要保存？',
+      popup: {
+        content: '您有内容还处于编辑状态，您确定要直接退出不保存吗？',
+        cancel: '再想想',
+        confirm: '放弃保存并退出',
+      },
     },
     scenario_settings_edit_pop: {
       scenario_name: '场景名称',

@@ -534,25 +534,16 @@ export default {
     cancelValidate() {
       const nodeResult = this.composeNodeResult();
       const newNodeString = JSON.stringify(nodeResult, general.JSONStringifyReplacer);
-      // console.log(`New Str: ${newNodeString}`);
-      // console.log(`Old Str: ${this.originalNodeString}`);
       if (newNodeString === this.originalNodeString) {
         this.$emit('cancelValidateSuccess');
       } else {
-        const that = this;
-        that.$popCheck({
-          bindValue: true,
-          data: {
-            msg: that.$t('task_engine_v2.node_edit_page.confirm_to_save_changes'),
-          },
-          callback: {
-            ok: () => {
-              this.validate();
-            },
-            cancel() {
-              that.$emit('cancelValidateSuccess');
-            },
-          },
+        this.$emit('showReminder', {
+          buttonRef: 'cancelBtn',
+          content: this.$t('task_engine_v2.node_edit_page.popup.content'),
+          ok_msg: this.$t('task_engine_v2.node_edit_page.popup.confirm'),
+          cancel_msg: this.$t('task_engine_v2.node_edit_page.popup.cancel'),
+          cancel: () => { },
+          ok: () => { this.$emit('cancelValidateSuccess'); },
         });
       }
     },
