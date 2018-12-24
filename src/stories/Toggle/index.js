@@ -28,6 +28,17 @@ export default [{
           <toggle v-model="falseValue" disabled></toggle>
           <toggle v-model="trueValue" disabled></toggle>
         </div>
+        <div class="headline">Toggle 樣式: medium</div>
+        <div class="line">
+          <toggle v-model="falseValue" size="medium"></toggle>
+          <toggle v-model="trueValue" size="medium"></toggle>
+          <toggle v-model="trueValue" size="medium" showLabel></toggle>
+          <toggle v-model="trueValue" size="medium" showLabel :label="{on: '開', off: '關'}"></toggle>
+        </div>
+        <div class="line">
+          <toggle v-model="falseValue" size="medium" disabled></toggle>
+          <toggle v-model="trueValue" size="medium" disabled></toggle>
+        </div>
         <div class="headline">Toggle 樣式: big</div>
         <div class="line">
           <toggle v-model="falseValue" big></toggle>
