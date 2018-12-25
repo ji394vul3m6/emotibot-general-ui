@@ -1001,6 +1001,7 @@ export default {
     go_back: '返回',
     please_choose: '请选择',
     intent: '意图',
+    select_all: '全选',
   },
   dimension: {
     categories: {

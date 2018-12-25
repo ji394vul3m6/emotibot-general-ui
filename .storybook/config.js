@@ -8,6 +8,7 @@ import Vuex from 'vuex'; // Vue plugins
 import Icon from '../src/components/basic/Icon';
 import Tag from '../src/components/basic/Tag';
 import Textbutton from '../src/components/basic/TextButton';
+import SearchInput from '../src/components/basic/SearchInput';
 
 // Import self plugins.
 import tooltip from '../src/plugins/tooltip';
@@ -30,6 +31,7 @@ Vue.use(CustomNotification, {
 Vue.component('icon', Icon);
 Vue.component('tag', Tag);
 Vue.component('text-button', Textbutton);
+Vue.component('search-input', SearchInput);
 
 setOptions({
   name: 'BFOP General Components',

@@ -8,7 +8,7 @@ import READMECascader from './README_Cascader.md';
 
 export default [{
   name: 'DropdownSelect',
-  func: withMarkdownNotes(README)(() => {
+  func: withMarkdownNotes(README)((i18n) => {
     const options = [{
       value: 'opt1',
       text: '選項1',
@@ -64,7 +64,7 @@ export default [{
       },
       {
         isGroup: true,
-        text: '選項群組 2',
+        text: '選項群組 2222222222222222222222222',
       },
       {
         inGroup: true,
@@ -155,6 +155,7 @@ export default [{
           @input="input"
         />
         </div>
+        <div class="line">
         <div class="headline">DropdownSelect 選項分組 多選</div>
         <dropdown-select
           :options=groupOptions
@@ -163,6 +164,17 @@ export default [{
           :fixedListWidth="fixedListWidth"
           v-model="checkValues"
           placeholder="DropdownSelect 選項分組 多選"
+          @input="input"
+        />
+        </div>
+        <div class="headline">DropdownSelect 選項分組 多選 可點組別選取</div>
+        <dropdown-select
+          :options=groupOptions
+          multi allowSelectGroup
+          width="300px"
+          :fixedListWidth="fixedListWidth"
+          v-model="checkValues"
+          placeholder="選項分組 多選 可點組別選取"
           @input="input"
         />
       </div>
@@ -192,12 +204,13 @@ export default [{
         },
       },
       template: `<div>${template}</div>`,
+      i18n,
     };
   }),
 },
 {
   name: 'DropdownCascader',
-  func: withMarkdownNotes(READMECascader)(() => {
+  func: withMarkdownNotes(READMECascader)((i18n) => {
     const options = [
       {
         text: '第一層沒選項',
@@ -299,6 +312,7 @@ export default [{
         },
       },
       template,
+      i18n,
     };
   }),
 }];
