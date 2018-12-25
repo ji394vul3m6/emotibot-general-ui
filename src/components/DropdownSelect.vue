@@ -26,41 +26,43 @@
       </div>
     </div>
     <div ref="list" v-if="show" class="select-list" :style="listStyle">
-      <div class="select-item search" v-if="showSearchBar">
-        <input class="search-input" v-model="searchKeyWord" placeholder="Search">
+      <div class="search-bar" v-if="showSearchBar">
+        <search-input v-model="searchKeyWord" fill></search-input>
       </div>
-      <template v-if="filteredLocalOptions.length === 0">
-        <div class="select-item item">
-          <div class="select-text not-selectable" :style="selectTextStyle">
-            {{ filterable ? $t('general.no_filterable_option') : $t('general.no_option') }}
+      <div class="select-item-block">
+        <template v-if="filteredLocalOptions.length === 0">
+          <div class="select-item item">
+            <div class="select-text not-selectable" :style="selectTextStyle">
+              {{ filterable ? $t('general.no_filterable_option') : $t('general.no_option') }}
+            </div>
+          </div>
+        </template>
+        <template v-else  v-for="(option, idx) in filteredLocalOptions">
+        <div class="select-item item" :key="idx" v-if="!option.isGroup"
+          :class="{
+            checked: option.checked && showCheckedIcon,
+            'in-group': option.inGroup,
+            'is-button': option.isButton,
+            filterable: option.checked && filterable,
+          }"
+          @click="selectOption(idx)"
+          @mouseover="toggleHover(option, true)" @mouseout="toggleHover(option, false)">
+          <div class="select-text" :style="selectTextStyle"> {{option.text}} </div>
+          <div class=select-icon-container v-if="showCheckedIcon">
+            <div class="select-icon" v-if="!option.checked && !option.isButton">
+              <icon icon-type="checked" :size=16></icon>
+            </div>
+            <div class="select-icon" v-if="option.checked">
+              <icon v-if="option.hovered" icon-type="checked" :size=16></icon>
+              <icon v-else icon-type="check" :size=16></icon>
+            </div>
           </div>
         </div>
-      </template>
-      <template v-else v-for="(option, idx) in filteredLocalOptions">
-      <div class="select-item item" :key="idx" v-if="!option.isGroup"
-        :class="{
-          checked: option.checked && showCheckedIcon,
-          'in-group': option.inGroup,
-          'is-button': option.isButton,
-          filterable: option.checked && filterable,
-        }"
-        @click="selectOption(idx)"
-        @mouseover="toggleHover(option, true)" @mouseout="toggleHover(option, false)">
-        <div class="select-text" :style="selectTextStyle"> {{option.text}} </div>
-        <div class=select-icon-container v-if="showCheckedIcon">
-          <div class="select-icon" v-if="!option.checked && !option.isButton">
-            <icon icon-type="checked" :size=16></icon>
-          </div>
-          <div class="select-icon" v-if="option.checked">
-            <icon v-if="option.hovered" icon-type="checked" :size=16></icon>
-            <icon v-else icon-type="check" :size=16></icon>
-          </div>
+        <div class="select-item group" v-if="option.isGroup" :key="idx">
+          <div class="select-text"> {{option.text}} </div>
         </div>
+        </template>
       </div>
-      <div class="select-item group" v-if="option.isGroup" :key="idx">
-        <div class="select-text"> {{option.text}} </div>
-      </div>
-      </template>
     </div>
   </div>
 </template>
@@ -164,6 +166,11 @@ export default {
   watch: {
     options(options) {
       this.initOptions(options);
+    },
+    show(show) {
+      if (!show && this.showSearchBar) {
+        this.searchKeyWord = '';
+      }
     },
   },
   methods: {
@@ -415,60 +422,67 @@ $border-color: $color-borderline;
   color: $color-font-normal;
   background: $color-white;
   max-height: calc(4 * 32px);
-  @include auto-overflow();
-  @include customScrollbar();
 
   display: flex;
   flex-direction: column;
-  .select-item {
-    flex: 0 0 32px;
-    &.item {
-      @include click-button();
-      &.checked {
-        background: $color-select;
-      }
-      &:hover {
-        background: $color-select-hover;
-        color: $color-white;
-      }
-      &.in-group {
-        .select-text {
-          padding-left: 24px;
+
+  .search-bar {
+    flex: 0 0 36px;
+    padding: 4px;
+    border: 1px solid $color-borderline;
+  }
+  .select-item-block {
+    display: flex;
+    flex-direction: column;
+    @include auto-overflow();
+    @include customScrollbar();
+    .select-item {
+      flex: 0 0 32px;
+      &.item {
+        @include click-button();
+        &.checked {
+          background: $color-select;
         }
-      }
-      &.is-button {
-        color: $color-primary;
         &:hover {
+          background: $color-select-hover;
           color: $color-white;
         }
+        &.in-group {
+          .select-text {
+            padding-left: 24px;
+          }
+        }
+        &.is-button {
+          color: $color-primary;
+          &:hover {
+            color: $color-white;
+          }
+        }
+        &.filterable {
+          background: $color-select-hover;
+        }
       }
-      &.filterable {
-        background: $color-select-hover;
+      &.group {
+        font-weight: bold;
       }
-    }
-    &.group {
-      font-weight: bold;
-    }
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    .select-text {
-      flex: 1;
-      padding-left: 16px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .select-icon-container{
-      .select-icon {
-        margin-right:16px;
-        flex: 0 0 16px;
-        display: flex;
-        align-items: center;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      .select-text {
+        flex: 1;
+        padding-left: 16px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
-    }
-    .search-input{
-      margin-left: 10px;
+      .select-icon-container{
+        .select-icon {
+          margin-right:16px;
+          flex: 0 0 16px;
+          display: flex;
+          align-items: center;
+        }
+      }
     }
   }
 }
