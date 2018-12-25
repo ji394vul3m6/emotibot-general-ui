@@ -9,6 +9,9 @@
         <div class="line">
           <div class="title">{{$t('integration.robotID')}}：</div><div>{{ robotID }}</div>
         </div>
+        <div class="line">
+          <div class="title">Secret Key：</div><div>{{ secret }}</div>
+        </div>
       </div>
     </div>
   </div>
@@ -17,6 +20,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import NavBar from '@/components/NavigationBar';
+import robotAPI from './_api/robot';
 
 export default {
   path: 'integration',
@@ -27,6 +31,7 @@ export default {
   components: {
     NavBar,
   },
+  api: robotAPI,
   computed: {
     ...mapGetters([
       'enterpriseID',
@@ -39,7 +44,14 @@ export default {
         basic: this.$t('integration.integration'),
       },
       wordsList: [],
+      secret: '',
     };
+  },
+  mounted() {
+    const that = this;
+    that.$api.getRobotSecret(that.enterpriseID, that.robotID).then((data) => {
+      that.secret = data;
+    });
   },
 };
 </script>
