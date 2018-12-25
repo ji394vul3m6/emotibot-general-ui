@@ -1,6 +1,6 @@
 <template>
   <div class="dropdown-select" :style="styleObj">
-    <div class="input-bar" :class="{'is-focus': show, error: showError}" :style="inputBarStyle" ref="input" @click.stop="showSelection">
+    <div class="input-bar" :class="{'is-focus': show, error: showError, disabled}" :style="inputBarStyle" ref="input" @click.stop="showSelection">
       <div class="input-block" :class="{multi}">
         <span v-if="!checkedValues.length" class="placeholder">{{ placeholder }}</span>
         <template v-if="multi">
@@ -139,6 +139,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {
     styleObj() {
@@ -250,6 +254,9 @@ export default {
     },
     showSelection() {
       const that = this;
+      if (that.disabled) {
+        return;
+      }
       if (that.show) {
         that.show = false;
         return;
@@ -376,6 +383,22 @@ $border-color: $color-borderline;
   background: $color-white;
   &.error {
     background: $color-input-error;
+  }
+  &.disabled {
+    background: $color-disabled;
+    border: 1px solid $color-borderline-disabled;
+    cursor: default;
+    &:hover {
+      border-color: $color-borderline-disabled;
+    }
+    .input-block {
+      .input-text{
+        color: $color-font-disabled;
+      }
+    }
+    .icon-block {
+      border-left: 1px solid $color-borderline-disabled;
+    }
   }
   @include click-button();
 
