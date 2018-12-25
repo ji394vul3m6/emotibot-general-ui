@@ -105,6 +105,7 @@ function setInfoWithToken(token) {
     const jwt = parseJwt(useToken);
     userInfo = jwt.custom;
     enterprise = userInfo.enterprise;
+    that.$cookie.set('userid', userInfo.id);
 
     if (userInfo.type === 0) {
       return that.$reqGet(`${ENTERPRISE_PATH}s`);
