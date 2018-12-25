@@ -21,8 +21,8 @@
           <div class="input-text">{{checkedValues[0].text}}</div>
         </template>
       </div>
-      <div class="icon-block" :class="{error: showError}">
-        <icon :icon-type="!showError ? 'drop_down' : 'red_arrow'" :size=10></icon>
+      <div class="icon-block">
+        <icon icon-type="drop_down" :size=10></icon>
       </div>
     </div>
     <div ref="list" v-if="show" class="select-list" :style="listStyle">
@@ -375,7 +375,7 @@ $border-color: $color-borderline;
   border-radius: 2px;
   background: $color-white;
   &.error {
-    border: 1px solid #f25c62;
+    background: $color-input-error;
   }
   @include click-button();
 
@@ -434,9 +434,6 @@ $border-color: $color-borderline;
     justify-content: center;
     margin: 3px 0;
     border-left: 1px solid $border-color;
-    &.error {
-      border-left: 1px solid #f25c62;
-    }
   }
 }
 .select-list {
@@ -460,7 +457,8 @@ $border-color: $color-borderline;
   .search-bar {
     flex: 0 0 36px;
     padding: 4px;
-    border: 1px solid $color-borderline;
+    border-bottom: 1px solid $color-borderline;
+    background: #fafafa;
   }
   .select-item-block {
     display: flex;
