@@ -58,8 +58,11 @@
             </div>
           </div>
         </div>
-        <div class="select-item group" v-if="option.isGroup" :key="idx">
-          <div class="select-text"> {{option.text}} </div>
+        <div class="select-item group" :class="{'group-selectable': groupSelectable}"
+          v-if="option.isGroup" :key="idx"
+          @mouseover="toggleGroupHover(option, true)" @mouseout="toggleGroupHover(option, false)" @click="selectGroup(idx)">
+          <div class="select-text">{{ option.text }}</div>
+          <div v-if="option.hovered && groupSelectable" class="select-all">{{ $t('general.select_all') }}</div>
         </div>
         </template>
       </div>
@@ -132,6 +135,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    allowSelectGroup: {
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {
     styleObj() {
@@ -149,6 +156,9 @@ export default {
         return this.localOptions;
       }
       return this.localOptions.filter(option => option.text.indexOf(this.searchKeyWord) !== -1);
+    },
+    groupSelectable() {
+      return this.multi && this.allowSelectGroup;
     },
   },
   data() {
@@ -193,6 +203,24 @@ export default {
       window.removeEventListener('click', this.hideListWhenEventTriggeredOutside);
       window.removeEventListener('scroll', this.hideListWhenEventTriggeredOutside, true);
       window.removeEventListener('resize', this.reposition);
+    },
+    selectGroup(idx) {
+      const that = this;
+      if (!that.groupSelectable) return;
+
+      let nextGroupIdx = that.localOptions.findIndex(
+        (option, index) => option.isGroup === true && index > idx);
+      nextGroupIdx = nextGroupIdx > 0 ? nextGroupIdx : undefined;
+
+      const selectedValues = that.localOptions
+          .slice(idx + 1, nextGroupIdx).map(option => option.value);
+      selectedValues.forEach((value) => {
+        const option = that.localOptions.find(o => o.value === value);
+        option.checked = true;
+        that.toggleHover(option, false);
+      });
+      this.filtering = false;
+      that.updateValue();
     },
     selectOption(idx) {
       const value = this.filteredLocalOptions[idx].value;
@@ -304,6 +332,9 @@ export default {
       that.updateValue();
     },
     toggleHover(option, bool) {
+      option.hovered = bool;
+    },
+    toggleGroupHover(option, bool) {
       option.hovered = bool;
     },
     initOptions(options) {
@@ -464,6 +495,21 @@ $border-color: $color-borderline;
       }
       &.group {
         font-weight: bold;
+        padding-right: 16px;
+        &.group-selectable {
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          .select-text {
+            flex: 1;
+          }
+          .select-all {
+            flex: 0 0 28px;
+            @include font-12px();
+            font-weight: normal;
+          }
+        }
       }
       display: flex;
       align-items: center;
