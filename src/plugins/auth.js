@@ -141,6 +141,10 @@ function setInfoWithToken(token) {
       r();
     });
   })
+  .then(() => that.$reqGet(BF_TOKEN_PATH))
+  .then((result) => {
+    that.$cookie.set('access_token', result.data.result, { expires: constant.cookieTimeout });
+  })
   .then(() => new Promise((r) => {
     localStorage.setItem('userInfo', JSON.stringify(userInfo));
     localStorage.setItem('token', token);
@@ -196,10 +200,6 @@ function login(input) {
       //   imUser = true;
       // }
       return data.result;
-    })
-    .then(() => that.$reqGet(BF_TOKEN_PATH))
-    .then((result) => {
-      that.$cookie.set('access_token', result.data.result, { expires: constant.cookieTimeout });
     })
     .then(() => retObj);
   });
