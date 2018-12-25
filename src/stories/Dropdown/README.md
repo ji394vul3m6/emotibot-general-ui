@@ -35,13 +35,14 @@
 | options | - | Array | 見下方 [option 格式說明](#option) | - | 下拉選單內的選項
 | multi | - | Boolean | false | 是否支援多選
 | width | - | String | auto | 自訂下拉 Input 框寬度
+| showError | - | Boolean | false | Error 樣式
+| disabled | - | Boolean | false | disabled 樣式
 | flex | - | Boolean | false | 是否讓 DropdownSelect 可使用 flex 排版<br>下拉 Input 框將依 props:width 設為 `flex: 0 0 width`
 | fixedListWidth | - | Boolean | true | 選單寬度是否與下拉 Input 框等寬<br>若為 false，則選單寬度會依選項內容長度變化<br>建議在選項內容較長時使用
 | showCheckedIcon | - | Boolean | true | 下拉選單是否顯示 checked Icon
 | placeholder | - | String | - | 自訂 placeholder
 | showSearchBar | - | Boolean | false | 是否可在下拉選單中搜尋選項
 | filterable | - | Boolean | false | 是否可直接在 Input 框中輸入關鍵字來搜尋選項
-| showError | - | Boolean | false | Error 樣式
 | allowSelectGroup | - | Boolean | false | 在有分組且支援多選時，允許點選分組名，全選組內選項
 
 <a id="option"></a>
