@@ -40,7 +40,9 @@
 | showCheckedIcon | - | Boolean | true | 下拉選單是否顯示 checked Icon
 | placeholder | - | String | - | 自訂 placeholder
 | showSearchBar | - | Boolean | false | 是否可在下拉選單中搜尋選項
+| filterable | - | Boolean | false | 是否可直接在 Input 框中輸入關鍵字來搜尋選項
 | showError | - | Boolean | false | Error 樣式
+| allowSelectGroup | - | Boolean | false | 在有分組且支援多選時，允許點選分組名，全選組內選項
 
 <a id="option"></a>
 ### props: option 格式說明

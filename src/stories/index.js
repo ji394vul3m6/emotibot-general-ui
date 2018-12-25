@@ -71,7 +71,7 @@ TagInputStory.forEach((story) => {
 
 const dropdownSelectStory = storiesOf('Basic|Dropdown', module).addDecorator(withKnobs);
 DropdownSelectStory.forEach((story) => {
-  dropdownSelectStory.add(story.name, story.func);
+  dropdownSelectStory.add(story.name, story.func.bind(null, i18n));
 });
 
 let labelStory = storiesOf('Basic|LabelSwitch', module).addDecorator(withKnobs);
