@@ -108,9 +108,8 @@ export default {
     emitUpdate() {
       const paramsCollectingTab = {
         params: this.params.map((param) => {
-          delete param.id;
-          delete param.valid;
-          return param;
+          const { id, valid, ...rest } = param;
+          return rest;
         }),
         enableConfirmMsg: this.enableConfirmMsg,
         confirmMsg: this.confirmMsg,
