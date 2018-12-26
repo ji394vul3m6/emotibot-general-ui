@@ -109,7 +109,7 @@
               {{$t("task_engine_v2.condition_block.label_content")}}
             </div>
             <dropdown-select
-              class="select select-target-entity"
+              class="select row-content"
               :key="parser.funcName"
               :ref="`selectTargetEntity_${index}`"
               :multi="false"
@@ -128,7 +128,7 @@
               {{$t("task_engine_v2.condition_action_block.label_default")}}
             </div>
             <dropdown-select
-              class="select select-target-entity"
+              class="select row-content"
               :key="parser.funcName"
               :multi="false"
               :value="[parser.content.tags]"
@@ -146,7 +146,7 @@
               {{$t("task_engine_v2.condition_action_block.label_select_mode")}}
             </div>
             <dropdown-select
-              class="select select-target-entity"
+              class="select row-content"
               :key="parser.funcName"
               :multi="false"
               :value="[parser.content.tags]"
@@ -161,7 +161,7 @@
             v-if="parser.content.tags === NLUParserMap.SELECT_CUSTOMIZE_OPTIONS">
             <div class="label label-start"></div>
             <button 
-              class="add-new-option" 
+              class="add-new-option row-content" 
               v-t="'task_engine_v2.condition_action_block.add_option'"
               @click="addNLUSelectOption(parser)">
             </button>
@@ -172,7 +172,7 @@
             <div class="label label-start">
               {{`${$t("task_engine_v2.condition_action_block.label_option")}${index + 1}`}}
             </div>
-            <input ref="input-content" v-tooltip="tooltip" class="input-content" v-model="parser.content.options[index]" @focus="onInputFocus">
+            <input ref="input-content" v-tooltip="tooltip" class="input-content row-content" v-model="parser.content.options[index]" @focus="onInputFocus">
             <button class="button" style="width: 60px;" @click="parser.content.options.splice(index, 1)">{{$t("task_engine_v2.condition_block.button_remove")}}</button>
           </div>
           <div class="row"
@@ -180,7 +180,7 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_action_block.label_option_key")}}
             </div>
-            <input ref="input-content" v-tooltip="tooltip" class="input-content" v-model="parser.content.option_key" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus">
+            <input ref="input-content" v-tooltip="tooltip" class="input-content row-content" v-model="parser.content.option_key" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus">
           </div>
           <div class="row"
             v-if="parser.content.tags === NLUParserMap.SELECT_CUSTOMIZE_OPTIONS ||
@@ -188,13 +188,13 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_action_block.label_fuzzy_match")}}
             </div>
-            <toggle v-model="parser.content.fuzzy_match" :size="'medium'" :showLabel="true" :label="toggleLabel"></toggle>
+            <toggle v-model="parser.content.fuzzy_match" class="row-content" :size="'medium'" :showLabel="true" :label="toggleLabel"></toggle>
           </div>
           <div class="row">
             <div class="label label-start">
               {{$t("task_engine_v2.condition_action_block.label_has_context")}}
             </div>
-            <toggle v-model="parser.content.has_context" :size="'medium'" :showLabel="true" :label="toggleLabel"></toggle>
+            <toggle v-model="parser.content.has_context" class="row-content" :size="'medium'" :showLabel="true" :label="toggleLabel"></toggle>
           </div>
         </div>
         <!-- 转换数据解析器 -->
@@ -669,6 +669,14 @@ export default {
     }
     .button-add-parser{
       width: 100px;
+    }
+    .add-new-option {
+      color: $color-primary;
+      border: none;
+      background-color: transparent;
+      padding: 0;
+      @include font-14px();
+      cursor: pointer;
     }
   }
   .text-response{
