@@ -172,7 +172,7 @@
             <div class="label label-start">
               {{`${$t("task_engine_v2.condition_action_block.label_option")}${index + 1}`}}
             </div>
-            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="parser.content.options[index]" @focus="onInputFocus">
+            <input ref="input-content" v-tooltip="tooltip" class="input-content" v-model="parser.content.options[index]" @focus="onInputFocus">
             <button class="button" style="width: 60px;" @click="parser.content.options.splice(index, 1)">{{$t("task_engine_v2.condition_block.button_remove")}}</button>
           </div>
           <div class="row"
@@ -180,7 +180,7 @@
             <div class="label label-start">
               {{$t("task_engine_v2.condition_action_block.label_option_key")}}
             </div>
-            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="parser.content.option_key" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus">
+            <input ref="input-content" v-tooltip="tooltip" class="input-content" v-model="parser.content.option_key" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus">
           </div>
           <div class="row"
             v-if="parser.content.tags === NLUParserMap.SELECT_CUSTOMIZE_OPTIONS ||
@@ -325,10 +325,6 @@ export default {
       type: Object,
       required: true,
     },
-    validateParamsCollectingBlock: {
-      type: Boolean,
-      default: false,
-    },
   },
   data() {
     const param = this.initialParam;
@@ -369,25 +365,11 @@ export default {
   },
   computed: {},
   watch: {
-    validateParamsCollectingBlock(newV, oldV) {
-      if (newV && !oldV) {
-        let valid = true;
-        if (this.$refs['input-content']) {
-          let refs = this.$refs['input-content'];
-          if (!Array.isArray(refs)) {
-            refs = [refs];
-          }
-          refs.forEach((el) => {
-            if (!el.value) {
-              valid = false;
-              el.dispatchEvent(event.createEvent('tooltip-show'));
-            }
-          });
-          this.$emit('update:valid', valid);
-        } else {
-          this.$emit('update:valid', true);
-        }
-      }
+    parsers: {
+      handler() {
+        this.emitUpdate();
+      },
+      deep: true,
     },
   },
   methods: {
@@ -575,6 +557,25 @@ export default {
       } else {
         this.$set(rule.content, 'options', ['']);
       }
+      // this.emitUpdate();
+    },
+    validate() {
+      if (this.$refs['input-content']) {
+        let valid = true;
+        let refs = this.$refs['input-content'];
+        if (!Array.isArray(refs)) {
+          refs = [refs];
+        }
+        refs.forEach((el) => {
+          if (!el.value) {
+            valid = false;
+            el.dispatchEvent(event.createEvent('tooltip-show'));
+          }
+        });
+        this.$emit('update:valid', valid);
+      } else {
+        this.$emit('update:valid', true);
+      }
     },
   },
   beforeMount() {
@@ -582,6 +583,7 @@ export default {
     this.renderHasRequiredParser();
   },
   mounted() {
+    this.$on('validate', this.validate);
   },
 };
 </script>

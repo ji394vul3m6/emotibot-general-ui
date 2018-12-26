@@ -4,11 +4,11 @@
     <template v-for="(param, index) in params">
       <params-collecting-block
         :key="param.id"
+        :ref="`pc_block_${index}`"
         :nodeId="nodeId"
         :initialParam="param"
         :mapTableOptions="mapTableOptions"
-        :validateParamsCollectingBlock="validateTab"
-        @update:valid="$set(param, 'valid', $event); if ($event) {isAllParamsCollectingBlockValid()}"
+        @update:valid="onValidateResultUpdated($event)"
         @update="updateParam(index, $event)"
         @deleteParam="deleteParam(index)">
       </params-collecting-block>
@@ -64,10 +64,6 @@ export default {
     'params-collecting-block': ParamsCollectingBlock,
   },
   props: {
-    validateTab: {
-      type: Boolean,
-      default: false,
-    },
     paramsCollectingTab: {
       type: Object,
       required: true,
@@ -95,14 +91,10 @@ export default {
       confirmMsg: paramsCollectingTab.confirmMsg || '',
       confirmMsgParseFail: paramsCollectingTab.confirmMsgParseFail || '',
       params,
+      blockValidArray: [],
     };
   },
   watch: {
-    validateTab(newV, oldV) {
-      if (newV && !oldV && !this.params.length) {
-        this.$emit('update:valid', true);
-      }
-    },
   },
   methods: {
     emitUpdate() {
@@ -159,11 +151,36 @@ export default {
       });
       this.$emit('update:valid', valid);
     },
+    validate() {
+      if (this.params.length === 0) {
+        this.$emit('update:valid', true);
+      }
+      this.blockValidArray = [];
+      this.params.forEach((param, index) => {
+        const pcBlockRef = `pc_block_${index}`;
+        if (this.$refs[pcBlockRef]) {
+          this.$refs[pcBlockRef][0].$emit('validate');
+        }
+      });
+    },
+    onValidateResultUpdated(valid) {
+      this.blockValidArray.push(valid);
+      if (this.blockValidArray.length === this.params.length) {
+        let validateResult = true;
+        this.blockValidArray.forEach((v) => {
+          if (v === false) {
+            validateResult = false;
+          }
+        });
+        this.$emit('update:valid', validateResult);
+      }
+    },
   },
   beforeMount() {
   },
   mounted() {
     this.emitUpdate();
+    this.$on('validate', this.validate);
   },
 };
 </script>

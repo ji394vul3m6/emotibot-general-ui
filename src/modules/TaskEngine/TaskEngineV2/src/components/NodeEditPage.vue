@@ -79,9 +79,8 @@
         v-if="currentTab === 'paramsCollectingTab'"
         :paramsCollectingTab="paramsCollectingTab"
         :mapTableOptions="mapTableOptions"
-        :validateTab="validateTab"
         :nodeId="nodeId"
-        @update:valid="valid = $event"
+        @update:valid="onValidateResultUpdated($event)"
         @update="paramsCollectingTab = $event"
       ></params-collecting-edit-tab>
       <params-collecting-edge-edit-tab ref="paramsCollectingEdgeTab"
@@ -519,6 +518,10 @@ export default {
       return nodeResult;
     },
     validate() {
+      if (this.currentTab === 'paramsCollectingTab') {
+        this.$refs[this.currentTab].$emit('validate');
+        return;
+      }
       this.validateTab = true;
       this.$nextTick(() => {
         this.validateTab = false;
@@ -530,6 +533,15 @@ export default {
           );
         }
       });
+    },
+    onValidateResultUpdated(valid) {
+      if (valid) {
+        const nodeResult = this.composeNodeResult();
+        this.$emit(
+          'validateSuccess',
+          { nodeResult, newNodeOptions: this.newNodeOptions },
+        );
+      }
     },
     cancelValidate() {
       const nodeResult = this.composeNodeResult();
