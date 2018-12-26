@@ -254,13 +254,21 @@ export default {
     validateParamsCollectingBlock(newV, oldV) {
       if (newV && !oldV) {
         let valid = true;
-        this.$refs['input-content'].forEach((el) => {
-          if (!el.value) {
-            valid = false;
-            el.dispatchEvent(event.createEvent('tooltip-show'));
+        if (this.$refs['input-content']) {
+          let refs = this.$refs['input-content'];
+          if (!Array.isArray(refs)) {
+            refs = [refs];
           }
-        });
-        this.$emit('update:valid', valid);
+          refs.forEach((el) => {
+            if (!el.value) {
+              valid = false;
+              el.dispatchEvent(event.createEvent('tooltip-show'));
+            }
+          });
+          this.$emit('update:valid', valid);
+        } else {
+          this.$emit('update:valid', true);
+        }
       }
     },
   },
