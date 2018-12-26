@@ -656,7 +656,8 @@ export default {
               return;
             }
             if (data.status === 'COMPLETED') {
-              window.open(`${STATS_RECORD_EXPORT}/${exportID}`);
+              const token = window.localStorage.getItem('token');
+              window.open(`${STATS_RECORD_EXPORT}/${exportID}?token=Bearer%20${token}`);
             } else {
               that.$notifyFail(`${that.$t('general.export')}${that.$t('general.fail')}`);
             }
