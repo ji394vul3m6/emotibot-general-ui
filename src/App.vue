@@ -119,6 +119,7 @@ export default {
     enterpriseID(val) {
       this.setPrivilegeList(this.$getPrivModules());
       this.$cookie.set('enterprise', val, { expires: constant.cookieTimeout });
+      this.loadLogo();
     },
     robotID(val) {
       if (val === '') {
