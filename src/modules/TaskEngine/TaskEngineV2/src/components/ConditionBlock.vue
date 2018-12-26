@@ -1262,7 +1262,7 @@ export default {
       if (optionConfig.NLUSelectParsers.indexOf(tags) > -1) {
         return optionConfig.NLUTypeMap.SELECT;
       }
-      return tags;
+      return tags.toLowerCase();
     },
     setNluTargetEntity(index, newValue) {
       if (newValue[0] === optionConfig.NLUTypeMap.TIME) {
