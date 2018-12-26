@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div :class="{blur: isBackgroundBlur}">
-      <div id="app-logo" :class="$i18n.locale"></div>
+      <div id="app-logo" :class="$i18n.locale" ref="logo"></div>
       <page-header v-if="ready"></page-header>
       <!-- if not Manage Module, show robot page -->
       <template v-if="!isManageModule && ready">
@@ -451,6 +451,14 @@ export default {
         }, 500);
       }
     },
+    loadLogo() {
+      const that = this;
+      this.$api.getIcon('app', that.enterpriseID).then(() => {
+        that.$refs.logo.style.backgroundImage = `url("${that.$api.getIconURL('app', that.enterpriseID)}")`;
+      }, () => {
+        that.$refs.logo.classList.add('default');
+      });
+    },
   },
   mounted() {
     const that = this;
@@ -488,6 +496,9 @@ export default {
       }
       that.checkPrivilege();
       that.ready = true;
+    })
+    .then(() => {
+      that.loadLogo();
     })
     .catch((err) => {
       console.log(err);

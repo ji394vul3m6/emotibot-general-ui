@@ -2,7 +2,7 @@
   <div class='login-page'>
     <div class='container'>
       <div class='logo'>
-        <div id="app-logo" :class="$i18n.locale"></div>
+        <div id="app-logo" :class="$i18n.locale" ref="logo"></div>
       </div>
       <div class="input-row">
         <input ref="user" type="text" v-model="input.account" :placeholder="$t('login.account_place')" @keydown="passwordKey">
@@ -130,6 +130,14 @@ export default {
         });
       });
     },
+    loadLogo() {
+      const that = this;
+      this.$api.getIcon('login').then(() => {
+        that.$refs.logo.style.backgroundImage = `url("${that.$api.getIconURL('login')}")`;
+      }, () => {
+        that.$refs.logo.classList.add('default');
+      });
+    },
   },
   mounted() {
     const that = this;
@@ -147,6 +155,7 @@ export default {
       that.redirect = decodeURIComponent(queryMap.redirect);
     }
     that.reloadCaptcha();
+    that.loadLogo();
   },
 };
 </script>
@@ -202,13 +211,15 @@ div {
       #app-logo {
         width: 185px;
         height: 103px;
-        &.zh-cn {
-          background: transparent url("/static/emotibot_logo_chs.svg") no-repeat center center;
-          background-size: 185px 103px;
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-color: transparent;
+        background-size: 185px 103px;
+        &.default.zh-cn {
+          background-image: url("/static/emotibot_logo_chs.svg");
         }
-        &.zh-tw {
-          background: transparent url("/static/emotibot_logo_cht.svg") no-repeat center center;
-          background-size: 185px 103px;
+        &.default.zh-tw {
+          background-image: url("/static/emotibot_logo_cht.svg");
         }
       }
     }
