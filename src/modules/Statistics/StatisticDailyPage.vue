@@ -667,6 +667,9 @@ export default {
       });
     },
     fillCategoryMap(category) {
+      if (!category) {
+        return;
+      }
       const that = this;
       that.categoryIDMap[category.cat_id] = category;
       if (that.categoryNameMap[category.name]) {
@@ -683,7 +686,9 @@ export default {
       datas.forEach((data) => {
         if (data.faq_cat_name) {
           data.faq_cat_id = data.faq_cat_name;
-          data.faq_cat_name = that.categoryIDMap[data.faq_cat_id].name;
+          if (that.categoryIDMap[data.faq_cat_id]) {
+            data.faq_cat_name = that.categoryIDMap[data.faq_cat_id].name;
+          }
         }
         if (data.emotion) {
           if (that.emotionRevMap[data.emotion]) {
