@@ -1226,7 +1226,7 @@ export default {
       }
     },
     renderIntentDropdown(index) {
-      const options = this.intentDropdown.options.map((option) => {
+      let options = this.intentDropdown.options.map((option) => {
         const onclick = () => {
           this.andRules[index].content = {
             module: 'intent_engine_2.0',
@@ -1238,6 +1238,20 @@ export default {
           onclick,
         };
       });
+      // pre-pend a no intent option, trigger scenario when there is no intent matched
+      const textNoIntent = this.$t('task_engine_v2.condition_block.option.no_intent');
+      options = [
+        {
+          text: textNoIntent,
+          onclick: () => {
+            this.andRules[index].content = {
+              module: 'intent_engine_2.0',
+              intentName: textNoIntent,
+            };
+          },
+        },
+        ...options,
+      ];
       return {
         ...this.intentDropdown,
         options,

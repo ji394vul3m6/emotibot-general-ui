@@ -293,6 +293,9 @@ export default {
         in: '包含于',
       },
       intent: 'Intent',
+      option: {
+        no_intent: '无意图',
+      },
     },
     condition_action_block: {
       label_content: '内容',
