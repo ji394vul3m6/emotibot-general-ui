@@ -689,6 +689,8 @@ export default {
           data.faq_cat_id = data.faq_cat_name;
           if (that.categoryIDMap[data.faq_cat_id]) {
             data.faq_cat_name = that.categoryIDMap[data.faq_cat_id].name;
+          } else {
+            data.faq_cat_name = '';
           }
         }
         if (data.emotion) {
