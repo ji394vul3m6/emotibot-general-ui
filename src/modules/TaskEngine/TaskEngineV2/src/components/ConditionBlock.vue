@@ -333,17 +333,13 @@
                          rule.content[0].compare === '>=' ||
                          rule.content[0].compare === '<'  ||
                          rule.content[0].compare === '<=' "
-              ref="input-content" 
-              v-tooltip="inputTooltip"
               class="input-content"
               oninput="this.value = this.value.replace(/[^0-9]/g, '');"
               v-model="rule.content[0].val"
               @focus="onInputFocus"
             >
             <input v-else
-              ref="input-content" 
               class="input-content"
-              v-tooltip="inputTooltip"
               v-model="rule.content[0].val"
               @focus="onInputFocus"
             >

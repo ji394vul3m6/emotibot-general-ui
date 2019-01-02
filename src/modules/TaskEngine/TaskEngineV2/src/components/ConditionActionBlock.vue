@@ -110,17 +110,13 @@
             <div class="row">
               <span class="label" v-t="'task_engine_v2.condition_action_block.label_value'"></span>
               <input v-if="rule.content.compare === '>' || rule.content.compare === '>=' || rule.content.compare === '<' || rule.content.compare === '<='"
-                ref="input-content" 
-                v-tooltip="inputTooltip"
                 class="input-content"
                 oninput="this.value = this.value.replace(/[^0-9]/g, '');"
                 v-model="rule.content.val"
                 :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')"
                 @focus="onInputFocus"/>
               <input v-else
-                ref="input-content" 
                 class="input-content"
-                v-tooltip="inputTooltip"
                 v-model="rule.content.val"
                 :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')"
                 @focus="onInputFocus"/>
