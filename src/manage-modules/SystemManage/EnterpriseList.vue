@@ -123,8 +123,8 @@ export default {
           description: enterprise.description,
         },
         callback: {
-          ok() {
-            that.$api.deleteEnterprise(enterprise.enterpriseID)
+          ok(reason) {
+            that.$api.deleteEnterprise(enterprise.enterpriseID, reason || '')
               .then(() => that.reloadEnterprise());
           },
           cancel() {

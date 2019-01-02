@@ -16,9 +16,9 @@ function getEnterpriseModules(id) {
   return this.$reqGet(`${ENTERPRISE_URL}/${id}/modules`).then(rsp => rsp.data.result);
 }
 
-function deleteEnterprise(id) {
+function deleteEnterprise(id, reason) {
   let result;
-  return this.$reqDelete(`${ENTERPRISE_URL}/${id}`)
+  return this.$reqDelete(`${ENTERPRISE_URL}/${id}?reason=${reason}`)
   .then((rsp) => {
     result = rsp.data.result;
   })

@@ -1,6 +1,7 @@
 <template>
   <div class="form">
     <div class="row">
+      <template v-if="!ssoEnable">
       <div class="row-title">
         <div class="required">＊</div>
         {{ $t('management.input_personal_pass') }}
@@ -10,6 +11,7 @@
         :placeholder="$t('management.manager_password')"
         v-tooltip="passwordTooltip"
         ref="password">
+      </template>
     </div>
     <div class="row">
       <div class="row-title">
@@ -25,6 +27,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import event from '@/utils/js/event';
 
 export default {
@@ -34,6 +37,17 @@ export default {
       type: Object,
       default: {},
     },
+  },
+  computed: {
+    ...mapState({
+      ssoEnable(state) {
+        const env = state.env;
+        return (env.SSO_LOGIN_URL !== undefined &&
+          env.SSO_LOGIN_URL !== '' &&
+          env.SSO_LOGOUT_URL !== undefined &&
+          env.SSO_LOGOUT_URL !== '');
+      },
+    }),
   },
   data() {
     return {
@@ -71,12 +85,13 @@ export default {
     validate() {
       const that = this;
       let isValid = true;
-      // if (that.$cookie.get('verify') !== md5(that.password)) {
-      if (that.password.length < that.passwordMinlength ||
+      if (!this.ssoEnable) {
+        if (that.password.length < that.passwordMinlength ||
        that.password.length > that.passwordMaxlength) {
-        isValid = false;
-        that.isPasswordTooltipShown = true;
-        that.$refs.password.dispatchEvent(event.createEvent('tooltip-show'));
+          isValid = false;
+          that.isPasswordTooltipShown = true;
+          that.$refs.password.dispatchEvent(event.createEvent('tooltip-show'));
+        }
       }
       that.reason = that.reason.trim();
       if (that.reason === '') {

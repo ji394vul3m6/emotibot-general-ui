@@ -1,12 +1,14 @@
 <template>
   <div class="form">
     <div class="row">
+      <template v-if="!ssoEnable">
       <div class="row-title">{{ $t('management.input_personal_pass') }}</div>
       <input class="row-input" v-model="password" type="password" autocomplete="new-password"
         :placeholder="$t('management.manager_password')"
         v-tooltip="passwordTooltip"
         :class="{'error': isPasswordTooltipShown}"
         ref="password">
+      </template>
     </div>
     <div class="row">
       <div class="row-title">{{ $t('management.reason_description') }}</div>
@@ -18,6 +20,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import md5 from 'md5';
 import event from '@/utils/js/event';
 
@@ -28,6 +31,17 @@ export default {
       type: Object,
       default: {},
     },
+  },
+  computed: {
+    ...mapState({
+      ssoEnable(state) {
+        const env = state.env;
+        return (env.SSO_LOGIN_URL !== undefined &&
+          env.SSO_LOGIN_URL !== '' &&
+          env.SSO_LOGOUT_URL !== undefined &&
+          env.SSO_LOGOUT_URL !== '');
+      },
+    }),
   },
   data() {
     return {
@@ -51,7 +65,7 @@ export default {
   methods: {
     validate() {
       const that = this;
-      if (that.$cookie.get('verify') === md5(that.password)) {
+      if (that.ssoEnable || that.$cookie.get('verify') === md5(that.password)) {
         that.$emit('validateSuccess', that.reason);
       } else {
         that.$refs.password.dispatchEvent(event.createEvent('tooltip-show'));

@@ -155,8 +155,8 @@ export default {
           description: robot.description,
         },
         callback: {
-          ok() {
-            that.$api.deleteRobot(that.enterpriseID, robot.id)
+          ok(reason) {
+            that.$api.deleteRobot(that.enterpriseID, robot.id, reason)
               .then(() => that.updateRobots());
           },
         },
