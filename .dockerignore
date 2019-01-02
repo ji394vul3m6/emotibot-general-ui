@@ -2,3 +2,4 @@ node_modules
 dist
 deploy
 docker/**/Dockerfile
+docker/**/*.env
