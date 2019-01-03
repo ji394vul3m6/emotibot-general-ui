@@ -33,8 +33,10 @@ COPY ./entrypoint.sh entrypoint.sh
 COPY ./run_nginx.sh run_nginx.sh
 COPY ./kill-supervisor.sh kill-supervisor.sh
 
-ARG ARG_GIT_TAG
-RUN echo ${ARG_GIT_TAG} > /build/dist/uiversion.html
+ARG ARG_build_env
+ARG ARG_admin_api
+ARG ARG_token_auth
+RUN echo "${ARG_build_env}: ${ARG_admin_api}, ${ARG_token_auth}" > /build/dist/uiversion.html
 
 HEALTHCHECK CMD curl -f http://localhost/ || exit 1
 ENTRYPOINT ["./entrypoint.sh"]
