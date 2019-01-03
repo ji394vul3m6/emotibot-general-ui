@@ -207,8 +207,10 @@ export default {
         }
         if (robotQA.answers.length > 0) {
           that.newAnswer = robotQA.answers[0].content;
+          robotQA.show_answer = robotQA.answers[0].content;
         } else {
           that.newAnswer = '';
+          robotQA.show_answer = '';
         }
       });
     },
