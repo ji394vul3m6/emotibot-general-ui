@@ -1,6 +1,6 @@
 <template>
   <div class="dropdown-select" :style="styleObj">
-    <div class="input-bar" :class="{'is-focus': show, error: showError}" :style="inputBarStyle" ref="input" @click.stop="showSelection">
+    <div class="input-bar" :class="{'is-focus': show, error: showError, disabled}" :style="inputBarStyle" ref="input" @click.stop="showSelection">
       <div class="input-block" :class="{multi}">
         <span v-if="!checkedValues.length" class="placeholder">{{ placeholder }}</span>
         <template v-if="multi">
@@ -21,8 +21,8 @@
           <div class="input-text">{{checkedValues[0].text}}</div>
         </template>
       </div>
-      <div class="icon-block" :class="{error: showError}">
-        <icon :icon-type="!showError ? 'drop_down' : 'red_arrow'" :size=10></icon>
+      <div class="icon-block">
+        <icon icon-type="drop_down" :size=10></icon>
       </div>
     </div>
     <div ref="list" v-if="show" class="select-list" :style="listStyle">
@@ -139,6 +139,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {
     styleObj() {
@@ -250,6 +254,9 @@ export default {
     },
     showSelection() {
       const that = this;
+      if (that.disabled) {
+        return;
+      }
       if (that.show) {
         that.show = false;
         return;
@@ -375,7 +382,23 @@ $border-color: $color-borderline;
   border-radius: 2px;
   background: $color-white;
   &.error {
-    border: 1px solid #f25c62;
+    background: $color-input-error;
+  }
+  &.disabled {
+    background: $color-disabled;
+    border: 1px solid $color-borderline-disabled;
+    cursor: default;
+    &:hover {
+      border-color: $color-borderline-disabled;
+    }
+    .input-block {
+      .input-text{
+        color: $color-font-disabled;
+      }
+    }
+    .icon-block {
+      border-left: 1px solid $color-borderline-disabled;
+    }
   }
   @include click-button();
 
@@ -434,9 +457,6 @@ $border-color: $color-borderline;
     justify-content: center;
     margin: 3px 0;
     border-left: 1px solid $border-color;
-    &.error {
-      border-left: 1px solid #f25c62;
-    }
   }
 }
 .select-list {
@@ -460,7 +480,8 @@ $border-color: $color-borderline;
   .search-bar {
     flex: 0 0 36px;
     padding: 4px;
-    border: 1px solid $color-borderline;
+    border-bottom: 1px solid $color-borderline;
+    background: #fafafa;
   }
   .select-item-block {
     display: flex;

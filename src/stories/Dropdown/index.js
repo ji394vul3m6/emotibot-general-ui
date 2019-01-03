@@ -10,14 +10,14 @@ export default [{
   name: 'DropdownSelect',
   func: withMarkdownNotes(README)((i18n) => {
     const options = [{
-      value: 'opt1',
+      value: 'option1',
       text: '選項1',
     }, {
-      value: 'opt2',
+      value: 'option2',
       text: '選項2',
     }];
     const multiChoiceDft = false;
-    const checkValues = array('value', []);
+    const checkValues = array('value', ['option2']);
     const multiChoice = boolean('multiChoice', multiChoiceDft);
     const showCheck = boolean('showCheck', true);
     const width = text('width', '150px');
@@ -126,8 +126,19 @@ export default [{
           :options=flatOptions
           width="300px"
           v-model="checkValues"
-          placeholder="DropdownSelect 單選 可搜尋選項"
+          placeholder="DropdownSelect 單選 error樣式"
           :showError="true"
+          @input="input"
+        />
+        </div>
+        <div class="headline">DropdownSelect 單選 disabled樣式</div>
+        <div class="line">
+        <dropdown-select
+          :options=flatOptions
+          width="300px"
+          v-model="checkValues"
+          placeholder="DropdownSelect 單選 disabled樣式"
+          :disabled="true"
           @input="input"
         />
         </div>
@@ -139,6 +150,18 @@ export default [{
           width="300px"
           v-model="checkValues"
           placeholder="DropdownSelect 多選"
+          @input="input"
+        />
+        </div>
+        <div class="headline">DropdownSelect 多選 disabled 樣式</div>
+        <div class="line">
+        <dropdown-select
+          :options=flatOptions
+          multi
+          width="300px"
+          v-model="checkValues"
+          placeholder="DropdownSelect 多選 disabled 樣式"
+          :disabled="true"
           @input="input"
         />
         </div>
@@ -276,7 +299,7 @@ export default [{
       },
     ];
 
-    const checkValues = array('value', []);
+    const checkValues = array('value', ['option2']);
     const option = object('options', options);
     const width = text('width', '300px');
     const placeholder = text('placeholder', '請選擇');
