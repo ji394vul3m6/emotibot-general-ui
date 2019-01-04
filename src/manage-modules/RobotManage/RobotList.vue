@@ -217,10 +217,8 @@ export default {
         const robotMap = {};
         robots.forEach((robot) => {
           robotMap[robot.id] = robot;
-        })
-        .then(() => {
-          that.setRobotList(robots);
         });
+        that.setRobotList(robots);
       })
       .finally(() => {
         that.$emit('endLoading');
