@@ -502,7 +502,10 @@ export default {
       const that = this;
       that.$api.pollClusterReport(reportId)
       .then((report) => {
-        if (report.status === -1) { // cluster fail
+        if (report.status === -2) {
+          that.clearClusterTimer();
+          that.$notifyFail(that.$t('statistics.error.too_few_valid_sentence'));
+        } else if (report.status === -1) { // cluster fail
           that.clearClusterTimer();
           that.$notifyFail(that.$t('statistics.error.cluster_fail'));
         } else if (report.status === 1) { // cluster success
