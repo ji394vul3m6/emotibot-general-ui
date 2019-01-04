@@ -214,22 +214,11 @@ export default {
       const that = this;
       that.$emit('startLoading');
       return that.$loadRobotOfUser(that.userInfo).then((robots) => {
-        const promises = [];
         const robotMap = {};
         robots.forEach((robot) => {
           robotMap[robot.id] = robot;
-          promises.push(
-            this.$api
-            .getRobot(that.enterpriseID, robot.id)
-            .then(rsp => rsp.result));
-        });
-        return Promise.all(promises).then((results) => {
-          results.forEach((result) => {
-            if (robotMap[result.id] !== undefined) {
-              robotMap[result.id].description = result.description;
-            }
-          });
-        }).then(() => {
+        })
+        .then(() => {
           that.setRobotList(robots);
         });
       })
