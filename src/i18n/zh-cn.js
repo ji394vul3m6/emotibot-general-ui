@@ -145,7 +145,7 @@ export default {
     question_first_time: '首次提问时间',
     question_last_time: '末次提问时间',
     audit_record_filename: '操作日志',
-    label: '标签',
+    label: '标准问题标签',
     category: '标准问题分类',
     min_score: '最低分',
     max_score: '最高分',
@@ -191,6 +191,10 @@ export default {
       cluster_fail: '辅助分类失败',
       multi_origin_mark_fail: '尚未为多笔用户问题选择标注问题',
       search_fail: '无法取得对话日志',
+      too_few_valid_sentence: '有效的用户问句不足',
+    },
+    warning: {
+      mark_skip: '{num}个问答已为标准问题，忽略标注',
     },
     categories: {
       title: '维度',

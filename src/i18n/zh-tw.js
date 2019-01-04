@@ -145,7 +145,7 @@ export default {
     question_first_time: '首次提問時間',
     question_last_time: '末次提問時間',
     audit_record_filename: '操作日誌',
-    label: '標籤',
+    label: '標準問題標籤',
     category: '標準問題分類',
     min_score: '最低分',
     max_score: '最高分',
@@ -180,6 +180,9 @@ export default {
       mark_ok: '標註問題成功',
       cluster_ok: '輔助分類完成，請繼續其他操作',
     },
+    warning: {
+      mark_skip: '{num}個問答已為標準問題，忽略標注',
+    },
     error: {
       ignore_fail: '更新忽略狀態失敗',
       mark_fail: '標註問題失敗',
@@ -191,6 +194,7 @@ export default {
       cluster_fail: '輔助分類失敗',
       multi_origin_mark_fail: '尚未爲多筆用戶問題選擇標註問題',
       search_fail: '無法取得對話日誌',
+      too_few_valid_sentence: '有效的用戶問句不足',
     },
     categories: {
       title: '維度',
