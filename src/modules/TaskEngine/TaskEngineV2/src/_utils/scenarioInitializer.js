@@ -530,11 +530,11 @@ export default {
         functions: [
           {
             function_name: 'key_val_match',
-            content: [{
+            content: {
               compare: '==',
               key: '',
               val: '',
-            }],
+            },
           },
         ],
       };
