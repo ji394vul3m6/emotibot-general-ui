@@ -1,26 +1,32 @@
 import optionConfig from './optionConfig';
+import version11To26 from './VersionConvertors/version11To26';
 
 export default {
-  convertJsonToVersion(toVersion, jsonData) {
+  convertJsonToVersion(toVersion, originalJsonData) {
+    let jsonData = originalJsonData;
     let jsonVersion;
     if ('version' in jsonData.moduleData) {
       jsonVersion = jsonData.moduleData.version;
     } else {
       jsonVersion = '1.0';
     }
-    if (toVersion === '1.1') {
-      return this.convertJsonToVersion_1_1(jsonVersion, jsonData);
+    let converted = false;
+    while (jsonVersion !== toVersion || converted !== true) {
+      if (jsonVersion === '1.0') {
+        jsonData = this.convertJson_1_0_to_1_1(jsonData);
+      } else if (jsonVersion === '1.1' || jsonVersion === '2.6') {
+        jsonData = version11To26.convert(jsonData);
+      }
+      converted = true;
+
+      if ('version' in jsonData.moduleData) {
+        jsonVersion = jsonData.moduleData.version;
+      } else {
+        console.error('The version info is missing in json data');
+        return jsonData;
+      }
     }
-    return {};
-  },
-  convertJsonToVersion_1_1(jsonVersion, jsonData) {
-    let newJsonData = {};
-    if (jsonVersion === '1.0') {
-      newJsonData = this.convertJson_1_0_to_1_1(jsonData);
-    } else {
-      newJsonData = jsonData;
-    }
-    return newJsonData;
+    return jsonData;
   },
   convertJson_1_0_to_1_1(initialJsonData) {
     const jsonData = JSON.parse(JSON.stringify(initialJsonData));

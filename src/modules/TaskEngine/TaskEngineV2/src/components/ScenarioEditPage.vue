@@ -448,7 +448,7 @@ export default {
           moduleData: JSON.parse(data.result.editingContent),
           moduleDataLayouts: JSON.parse(data.result.editingLayout),
         };
-        const newJsonData = scenarioVersionConvertor.convertJsonToVersion('1.1', jsonData);
+        const newJsonData = scenarioVersionConvertor.convertJsonToVersion('2.6', jsonData);
         this.moduleData = newJsonData.moduleData;
         this.moduleDataLayouts = newJsonData.moduleDataLayouts;
         this.updateWindowModuleData();
