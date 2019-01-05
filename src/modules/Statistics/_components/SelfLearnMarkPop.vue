@@ -140,11 +140,13 @@ export default {
     cancelMarkedQuestion() {
       const emptyMarkedQuestion = '';
       this.updateMarkedIcon(emptyMarkedQuestion);
+      this.$emit('enableOK');
     },
     setChosenQuestion(datarow) {
       const that = this;
       const chosenQuestion = datarow.question;
       that.updateMarkedIcon(chosenQuestion);
+      that.$emit('enableOK');
     },
     updateTableEmptyMsg(msg) {
       this.emptyMsg = msg;
@@ -267,6 +269,7 @@ export default {
     });
 
     that.$on('validate', that.validate);
+    that.$emit('disableOK');
   },
 };
 </script>
