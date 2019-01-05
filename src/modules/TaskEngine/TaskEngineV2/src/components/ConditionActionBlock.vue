@@ -683,7 +683,6 @@ export default {
       counterCheckOptions,
       sourceOptions,
       funcOptionMap,
-      varDropdownMap: {},
       inputTooltip: {
         msg: this.$t('task_engine_v2.err_empty'),
         eventOnly: true,
@@ -983,15 +982,14 @@ export default {
       // this.emitUpdate();
     },
     insertVarDropdown(id, obj, key) {
-      if (this.varDropdownMap[id] === undefined) {
-        this.varDropdownMap[id] = { width: '542px' }; // TODO: fix hard code in the furture
-      }
-      const rtnObj = this.varDropdownMap[id];
-      rtnObj.options = this.globalVarOptions.map(option => ({
+      const options = this.globalVarOptions.map(option => ({
         text: `${option.text}：${option.value}`,
         onclick: this.insertVarSelect.bind(this, obj, key, option.value),
       }));
-      return rtnObj;
+      return {
+        options,
+        width: '542px',
+      };
     },
     insertVarSelect(obj, key, value) {
       obj[key] = value;
