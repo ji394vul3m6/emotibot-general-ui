@@ -315,7 +315,7 @@ export default {
       that.totalCount = that.clusterReport.results.total_size;
       that.ingoredCount = that.clusterReport.ignored_size;
       that.markedCount = that.clusterReport.marked_size;
-      that.stdCount = that.clusterReport.std_marked_size || 0;
+      that.stdCount = that.clusterReport.skipped_size || 0;
       that.report = that.clusterReport.results;
       that.clusterCount = that.report.clusters.length;
       that.clusterGroupData = that.report.clusters.map(c => ({

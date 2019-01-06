@@ -368,6 +368,13 @@ export default {
           }
         });
       }
+
+      this.robotModuleList.forEach((robotModule) => {
+        if (robotModule.id === 'ssm') {
+          robotModule.privCode.push('2');
+        }
+      });
+
       this.filterModuleOptions = moduleOptions;
       this.filterModule = [moduleOptions[0].value];
       this.setFilterActionType();

@@ -300,7 +300,7 @@ export default {
             let imEnable = false;
             retData.type = userType;
             that.$api.getEnv().then((rspData) => {
-              imEnable = !(rspData.IM_ENABLE === '1' || rspData.IM_ENABLE === 'true');
+              imEnable = (rspData.IM_ENABLE === '1' || rspData.IM_ENABLE === 'true');
             })
             .then(() => that.$api.addEnterpriseUser(that.enterpriseID, retData, imEnable))
             .then(() => {

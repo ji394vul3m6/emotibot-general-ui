@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters } from 'vuex';
+import { mapMutations, mapGetters, mapActions } from 'vuex';
 import modules from '@/modules';
 import PageHeader from '@/components/layout/Header';
 import PageMenu from '@/components/layout/Menu';
@@ -152,6 +152,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions(['getEnv']),
     ...mapMutations([
       'setPrivilegeList',
       'setPageInfos',
@@ -466,6 +467,7 @@ export default {
     const token = that.$getToken();
     // that.checkCookie();
     that.$setReqToken(token);
+    this.getEnv.call(null, this);
     that.$api.getEnv().then((env) => {
       that.environment = env;
     })

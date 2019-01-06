@@ -74,7 +74,7 @@ export default {
     ...mapState({
       imEnable(state) {
         const env = state.env;
-        return !(env.IM_ENABLE === '0' || env.IM_ENABLE === 'false');
+        return (env.IM_ENABLE === '1' || env.IM_ENABLE === 'true');
       },
     }),
     ...mapGetters([
@@ -203,7 +203,7 @@ export default {
     },
   },
   mounted() {
-    this.getEnv.call(null, this);
+    // this.getEnv.call(null, this);
   },
 };
 </script>
