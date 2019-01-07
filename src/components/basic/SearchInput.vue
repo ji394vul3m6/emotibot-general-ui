@@ -4,9 +4,7 @@
       ref="input"
       :placeholder="$t('general.search_placeholder')"
       @keypress.enter="$emit('search', keyword)"
-      @compositionstart="compositionstart"
-      @compositionend="compositionend"
-      @keyup="handleKey"
+      @input="handleInput"
       @focus="toggleFocus(true)"
       @blur="toggleFocus(false)">
     <div class="input-icon"> 
@@ -46,18 +44,8 @@ export default {
     },
   },
   methods: {
-    compositionstart() {
-      this.inComposition = true;
-    },
-    compositionend() {
-      this.inComposition = false;
-    },
-    handleKey() {
-      const that = this;
-      if (that.inComposition) {
-        return;
-      }
-      that.$emit('input', that.keyword);
+    handleInput() {
+      this.$emit('input', this.keyword);
     },
     toggleFocus(bool) {
       this.isFocus = bool;
