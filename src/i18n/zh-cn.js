@@ -1259,8 +1259,9 @@ export default {
       },
       intent_manage: {
         view: '意图管理查看',
-        export: '意图管理导入',
-        import: '意图管理导出',
+        edit: '意图管理编辑',
+        export: '意图管理导出',
+        import: '意图管理导入',
       },
       integration: {
         view: '接入部署查看',
