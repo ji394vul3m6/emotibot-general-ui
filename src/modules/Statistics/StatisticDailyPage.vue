@@ -62,11 +62,13 @@
             v-if="scoreType.length === 1 && scoreType[0] === 'range'">
             <input class="score-input"
               :placeholder="$t('statistics.min_score')"
-              v-model="minScore">
+              v-model="minScore"
+              @keypress.enter="doSearch(1)">
             <span class="range-icon">~</span>
             <input class="score-input"
               :placeholder="$t('statistics.max_score')"
-              v-model="maxScore">
+              v-model="maxScore"
+              @keypress.enter="doSearch(1)">
           </div>
           <div class="row-title">{{ $t('statistics.user_id') }}</div>
           <div class="row-value short">
@@ -606,9 +608,9 @@ export default {
       if (that.scoreType.length > 0) {
         if (that.scoreType[0] === 'low') {
           params.low_confidence_score = 5;
-        } else if (that.scoreType[1] === 'range') {
-          params.min_score = that.minScore;
-          params.max_score = that.maxScore;
+        } else if (that.scoreType[0] === 'range') {
+          params.min_score = parseInt(that.minScore, 10);
+          params.max_score = parseInt(that.maxScore, 10);
         }
       }
       if (that.categoryFilter.length > 0) {
