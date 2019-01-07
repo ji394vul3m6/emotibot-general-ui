@@ -850,6 +850,23 @@ export default {
         from: this.end.dateObj,
       };
     },
+    refreshPlatforms() {
+      const that = this;
+      return that.$api.getTagTypes().then((data) => {
+        data.forEach((d) => {
+          if (d.type === 'platform' && d.values.length > 0) {
+            const newPlatformOptions = [];
+            d.values.forEach((v) => {
+              newPlatformOptions.push({
+                value: v.id,
+                text: v.text,
+              });
+            });
+            that.platformOptions = newPlatformOptions;
+          }
+        });
+      });
+    },
   },
   computed: {
     ...mapGetters([
@@ -918,6 +935,7 @@ export default {
     that.$emit('startLoading');
     that.refreshCategory()
     .then(() => that.refreshLabels())
+    .then(() => that.refreshPlatforms())
     .then(() => {
       that.$emit('endLoading');
     });
