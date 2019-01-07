@@ -558,7 +558,13 @@ export default {
       }
       if (that.emotionFilters.length > 0) {
         const group = that.getFilterValue(that.emotionOptions, that.emotionFilters);
-        params.emotions = group;
+        params.emotions = [];
+        group.forEach((g) => {
+          if (that.emotionMap[g]) {
+            params.emotions.push(...that.emotionMap[g]);
+          }
+          params.emotions.push(g);
+        });
       }
       if (that.modulesFilter.length > 0) {
         const group = that.getFilterValue(that.moduleOptions, that.modulesFilter);
