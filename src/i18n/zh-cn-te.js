@@ -340,7 +340,7 @@ export default {
         mobile_phone: '手机号（数字）',
         person_name: '姓名（人物）',
         select: '选项（逻辑）',
-        logic: '是否（逻辑）',
+        polarity: '是否（逻辑）',
       },
       nlu_time_options: {
         TIME_FUTURE: '未来时间',

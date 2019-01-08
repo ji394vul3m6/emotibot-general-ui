@@ -919,8 +919,8 @@ export default {
           action.content.fuzzy_match = true;
           break;
         }
-        case NLUTypeMap.LOGIC: {
-          action.content.tags = NLUParserMap.LOGIC;
+        case NLUTypeMap.POLARITY: {
+          action.content.tags = NLUParserMap.POLARITY;
           break;
         }
         default:

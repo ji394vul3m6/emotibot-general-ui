@@ -26,7 +26,6 @@ const NLUParserMap = {
   TIME_PAST: 'TIME_PAST',
   SELECT_CUSTOMIZE_OPTIONS: 'SELECT_CUSTOMIZE_OPTIONS',
   SELECT_OPTIONS_IN_KEY: 'SELECT_OPTIONS_IN_KEY',
-  LOGIC: 'LOGIC',
 };
 const NLUTypeMap = {
   ADDRESS: 'address',
@@ -35,7 +34,7 @@ const NLUTypeMap = {
   MOBILE_PHONE: 'mobile_phone',
   PERSON_NAME: 'person_name',
   SELECT: 'select',
-  LOGIC: 'logic',
+  POLARITY: 'polarity',
 };
 const NLUTypeOptions = Object.values(NLUTypeMap);
 const NLUTimeParsers = [NLUParserMap.TIME_FUTURE, NLUParserMap.TIME_PAST];
