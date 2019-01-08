@@ -487,7 +487,7 @@
                   <div class="row" v-for="(option, index) in action.content.options" :key="index">
                     <span class="label">{{`${$t('task_engine_v2.condition_action_block.label_option')}${index + 1}`}}</span>
                     <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="action.content.options[index]" @focus="onInputFocus">
-                    <button class="delete-button red" v-t="'task_engine_v2.condition_action_block.delete'" @click="action.content.options.splice(index, 1)"></button>
+                    <button class="delete-button red" v-t="'task_engine_v2.condition_action_block.delete'" @click="action.content.options.splice(index, 1); $forceUpdate();"></button>
                   </div>
                 </template>
                 <div class="row" v-if="action.content.tags === NLUParserMap.SELECT_OPTIONS_IN_KEY">
@@ -1081,6 +1081,7 @@ export default {
       } else {
         this.$set(action.content, 'options', ['']);
       }
+      this.$forceUpdate();
     },
   },
   mounted() {

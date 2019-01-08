@@ -196,7 +196,7 @@
               {{`${$t("task_engine_v2.condition_action_block.label_option")}${index + 1}`}}
             </div>
             <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.options[index]" @focus="onInputFocus">
-            <button class="button" style="width: 60px;" @click="rule.content.options.splice(index, 1)">{{$t("task_engine_v2.condition_block.button_remove")}}</button>
+            <button class="button" style="width: 60px;" @click="rule.content.options.splice(index, 1); $forceUpdate();">{{$t("task_engine_v2.condition_block.button_remove")}}</button>
           </div>
           <div class="row"
             v-if="rule.content.tags === NLUParserMap.SELECT_OPTIONS_IN_KEY">
@@ -1306,6 +1306,7 @@ export default {
       } else {
         this.$set(rule.content, 'options', ['']);
       }
+      this.$forceUpdate();
     },
   },
   beforeMount() {
