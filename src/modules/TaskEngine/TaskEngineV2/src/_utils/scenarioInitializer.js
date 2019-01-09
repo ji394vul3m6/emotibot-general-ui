@@ -498,7 +498,7 @@ export default {
   },
   initialTriggerRule() {
     return {
-      edge_type: 'trigger',
+      edge_type: 'normal',
       to_node_id: null,
       condition_rules: [
         [
