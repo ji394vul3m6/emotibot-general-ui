@@ -498,7 +498,7 @@ export default {
   },
   initialTriggerRule() {
     return {
-      edge_type: 'trigger',
+      edge_type: 'normal',
       to_node_id: null,
       condition_rules: [
         [
@@ -530,11 +530,11 @@ export default {
         functions: [
           {
             function_name: 'key_val_match',
-            content: [{
+            content: {
               compare: '==',
               key: '',
               val: '',
-            }],
+            },
           },
         ],
       };

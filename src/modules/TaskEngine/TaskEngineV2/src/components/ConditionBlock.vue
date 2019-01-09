@@ -5,7 +5,7 @@
     v-if="edgeType!=='pc_succeed' && edgeType!=='pc_failed' && edgeType!=='virtual_global_edges'">
     <icon icon-type="delete" :enableHover="true" :size=24 @click="deleteEdge()"/>
   </div>
-  <div class="normal-edge" v-if="edgeType==='normal' || edgeType==='trigger'">
+  <div class="normal-edge" v-if="edgeType==='normal'">
     <template v-for="(rule, index) in andRules">
       <div class="rule-block" :key="rule.id">
         <div class="row row-function" v-bind:class="{'not-first': index !== 0}">
@@ -196,7 +196,7 @@
               {{`${$t("task_engine_v2.condition_action_block.label_option")}${index + 1}`}}
             </div>
             <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.options[index]" @focus="onInputFocus">
-            <button class="button" style="width: 60px;" @click="rule.content.options.splice(index, 1)">{{$t("task_engine_v2.condition_block.button_remove")}}</button>
+            <button class="button" style="width: 60px;" @click="rule.content.options.splice(index, 1); $forceUpdate();">{{$t("task_engine_v2.condition_block.button_remove")}}</button>
           </div>
           <div class="row"
             v-if="rule.content.tags === NLUParserMap.SELECT_OPTIONS_IN_KEY">
@@ -593,7 +593,7 @@
         </div>
       </div>
     </template>
-    <div class="row row-no-bottom-margin" v-if="edgeType!=='trigger'">
+    <div class="row row-no-bottom-margin" v-if="tab !== 'TriggerEditTab'">
       <div class="label label-start">
         {{$t("task_engine_v2.edge_edit_tab.label_then_goto")}}
       </div>
@@ -933,6 +933,7 @@ export default {
       this.edge = this.initialEdge;
       this.dialogueLimit = this.initialDialogueLimit;
       this.edgeType = this.edge.edge_type || 'normal';
+      this.tab = this.edge.tab || undefined;
       this.sourceOptions = optionConfig.getSourceOptions(this);
       this.funcOptionMap = optionConfig.getFuncOptionMap(this);
       this.keyValMatchCompareOptions = optionConfig.getKeyValMatchCompareOptions(this);
@@ -1197,11 +1198,20 @@ export default {
       return entityModuleOptions[parser];
     },
     getFuncOptions(source, ruleIndex) {
+      let options = this.funcOptionMap[source];
       // hide qq option when it is not the first rule
       if (source === 'text' && ruleIndex !== 0) {
-        return this.funcOptionMap[source].filter((option => option.value !== 'qq'));
+        options = options.filter(option => option.value !== 'qq');
       }
-      return this.funcOptionMap[source];
+      if (this.tab === 'TriggerEditTab') {
+        options = options.filter((option) => {
+          if (option.value === 'qq' || option.value === 'api_parser') {
+            return false;
+          }
+          return true;
+        });
+      }
+      return options;
     },
     onSelectGoto(toNode) {
       if (toNode === 'add_new_dialogue_node') {
@@ -1306,6 +1316,7 @@ export default {
       } else {
         this.$set(rule.content, 'options', ['']);
       }
+      this.$forceUpdate();
     },
   },
   beforeMount() {

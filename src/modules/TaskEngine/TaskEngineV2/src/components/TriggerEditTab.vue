@@ -70,9 +70,10 @@ export default {
       rules: this.triggerTab.rules.map(rule => ({
         id: this.$uuid.v1(),
         to_node_id: null,
-        edge_type: 'trigger',
+        edge_type: 'normal',
         condition_rules: [rule],
         valid: false,
+        tab: 'TriggerEditTab',
       })),
     };
   },
@@ -88,6 +89,7 @@ export default {
       const rule = scenarioInitializer.initialTriggerRule();
       rule.id = this.$uuid.v1();
       rule.valid = false;
+      rule.tab = 'TriggerEditTab';
       this.rules.push(rule);
       this.emitUpdate();
     },

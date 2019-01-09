@@ -132,6 +132,7 @@ import VarTemplateEditPop from './VarTemplateEditPop';
 import ScenarioInfoPop from './ScenarioInfoPop';
 import JSCodeEditPop from './JSCodeEditPop';
 import scenarioConvertor from '../_utils/scenarioConvertor';
+import scenarioVersionConvertor from '../_utils/scenarioVersionConvertor';
 import scenarioInitializer from '../_utils/scenarioInitializer';
 import optionConfig from '../_utils/optionConfig';
 import { NodeBlock as NodeBlockConfig } from '../_utils/componentConfig';
@@ -447,7 +448,7 @@ export default {
           moduleData: JSON.parse(data.result.editingContent),
           moduleDataLayouts: JSON.parse(data.result.editingLayout),
         };
-        const newJsonData = scenarioConvertor.convertJsonToVersion('1.1', jsonData);
+        const newJsonData = scenarioVersionConvertor.convertJsonToVersion('2.6', jsonData);
         this.moduleData = newJsonData.moduleData;
         this.moduleDataLayouts = newJsonData.moduleDataLayouts;
         this.updateWindowModuleData();

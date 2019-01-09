@@ -115,6 +115,7 @@ import general from '@/modules/TaskEngine/_utils/general';
 import CreateScenarioPop from './CreateScenarioPop';
 import scenarioInitializer from '../_utils/scenarioInitializer';
 import scenarioConvertor from '../_utils/scenarioConvertor';
+import scenarioVersionConvertor from '../_utils/scenarioVersionConvertor';
 
 export default {
   name: 'scenario-list-page-v2',
@@ -174,7 +175,7 @@ export default {
           moduleData: JSON.parse(data.result.editingContent),
           moduleDataLayouts: JSON.parse(data.result.editingLayout),
         };
-        const newJsonData = scenarioConvertor.convertJsonToVersion('1.1', jsonData);
+        const newJsonData = scenarioVersionConvertor.convertJsonToVersion('2.6', jsonData);
         scenarioConvertor.registerNluTdeScenario(
           scenario.scenarioID, newJsonData.moduleData.ui_data.nodes);
       }, (err) => {

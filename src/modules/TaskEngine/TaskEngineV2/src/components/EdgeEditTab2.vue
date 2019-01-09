@@ -146,7 +146,7 @@ export default {
       value: this.nodeId,
     };
     this.addNewDialogueNodeEdge = {
-      text: this.$t('task_engine_v2.to_node_option.add_new_dialogue_node'),
+      text: this.$t('task_engine_v2.to_node_option.add_new_dialogue_node_2'),
       value: 'add_new_dialogue_node',
       isButton: true,
     };
@@ -235,13 +235,13 @@ export default {
         ...this.newNodeOptions.map(option => option.nodeName),
       ];
       const newNodeName = general.suffixIndexToNodeName(
-                            this.$t('task_engine_v2.node_type.dialogue'),
+                            this.$t('task_engine_v2.node_type.dialogue2'),
                             nodeNames,
                           );
       this.newNodeOptions.push({
         nodeName: newNodeName,
         nodeId: newNodeID,
-        nodeType: 'dialogue',
+        nodeType: 'dialogue_2.0',
       });
       this.$emit('updateNewNodeOptions', this.newNodeOptions);
       this.updateOptions();

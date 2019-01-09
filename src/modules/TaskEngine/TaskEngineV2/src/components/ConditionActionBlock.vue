@@ -79,14 +79,9 @@
           <!-- Intent -->
           <div class="row" v-if="rule.funcName === 'intent_parser'">
             <span class="label" v-t="'task_engine_v2.condition_action_block.label_content'"></span>
-            <dropdown-select
-              class="dropdown-select"
-              :value="[rule.content]"
-              @input="rule.content = $event[0]"
-              :options="intentOptions"
-              :fixedListWidth="false"
-              :showCheckedIcon="false"
-              :inputBarStyle="selectStyle"/>
+            <div class="dropdown-container" v-dropdown="renderIntentDropdown(index)">
+              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.intentName" @focus="onInputFocus">
+            </div>
           </div>
           <!-- 键值匹配 -->
           <div :key="rule.funcName" v-if="rule.funcName === 'key_val_match'">
@@ -492,7 +487,7 @@
                   <div class="row" v-for="(option, index) in action.content.options" :key="index">
                     <span class="label">{{`${$t('task_engine_v2.condition_action_block.label_option')}${index + 1}`}}</span>
                     <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="action.content.options[index]" @focus="onInputFocus">
-                    <button class="delete-button red" v-t="'task_engine_v2.condition_action_block.delete'" @click="action.content.options.splice(index, 1)"></button>
+                    <button class="delete-button red" v-t="'task_engine_v2.condition_action_block.delete'" @click="action.content.options.splice(index, 1); $forceUpdate();"></button>
                   </div>
                 </template>
                 <div class="row" v-if="action.content.tags === NLUParserMap.SELECT_OPTIONS_IN_KEY">
@@ -688,7 +683,6 @@ export default {
       counterCheckOptions,
       sourceOptions,
       funcOptionMap,
-      varDropdownMap: {},
       inputTooltip: {
         msg: this.$t('task_engine_v2.err_empty'),
         eventOnly: true,
@@ -703,7 +697,10 @@ export default {
       actionDropdown,
       conditionOptions,
       selectedOption: [edge.logic || conditionOptions[0].value],
-      intentOptions: [],
+      intentDropdown: {
+        width: '450px',
+        options: [],
+      },
       ActionType,
       assignValueOptions: actionOptionMap[ActionType.AssignValue],
       parserOptions: actionOptionMap[ActionType.Parser],
@@ -922,8 +919,8 @@ export default {
           action.content.fuzzy_match = true;
           break;
         }
-        case NLUTypeMap.LOGIC: {
-          action.content.tags = NLUParserMap.LOGIC;
+        case NLUTypeMap.POLARITY: {
+          action.content.tags = NLUParserMap.POLARITY;
           break;
         }
         default:
@@ -985,19 +982,50 @@ export default {
       // this.emitUpdate();
     },
     insertVarDropdown(id, obj, key) {
-      if (this.varDropdownMap[id] === undefined) {
-        this.varDropdownMap[id] = { width: '542px' }; // TODO: fix hard code in the furture
-      }
-      const rtnObj = this.varDropdownMap[id];
-      rtnObj.options = this.globalVarOptions.map(option => ({
+      const options = this.globalVarOptions.map(option => ({
         text: `${option.text}：${option.value}`,
         onclick: this.insertVarSelect.bind(this, obj, key, option.value),
       }));
-      return rtnObj;
+      return {
+        options,
+        width: '542px',
+      };
     },
     insertVarSelect(obj, key, value) {
       obj[key] = value;
       this.$forceUpdate();
+    },
+    renderIntentDropdown(index) {
+      let options = this.intentDropdown.options.map((option) => {
+        const onclick = () => {
+          this.rules[index].content = {
+            module: 'intent_engine_2.0',
+            intentName: option.name,
+          };
+        };
+        return {
+          ...option,
+          onclick,
+        };
+      });
+      // pre-pend a no intent option, trigger scenario when there is no intent matched
+      const textNoIntent = this.$t('task_engine_v2.condition_block.option.no_intent');
+      options = [
+        {
+          text: textNoIntent,
+          onclick: () => {
+            this.rules[index].content = {
+              module: 'intent_engine_2.0',
+              intentName: textNoIntent,
+            };
+          },
+        },
+        ...options,
+      ];
+      return {
+        ...this.intentDropdown,
+        options,
+      };
     },
     emitUpdate() {
       const conditionBlock = {
@@ -1053,17 +1081,24 @@ export default {
       } else {
         this.$set(action.content, 'options', ['']);
       }
+      this.$forceUpdate();
     },
   },
   mounted() {
+    // this.$api.getIntentsDetail().then((intents) => {
+    //   this.intentOptions = intents.map(intent => ({
+    //     ...intent,
+    //     text: intent.name,
+    //     value: {
+    //       module: 'intent_engine_2.0',
+    //       intentName: intent.name,
+    //     },
+    //   }));
+    // });
     this.$api.getIntentsDetail().then((intents) => {
-      this.intentOptions = intents.map(intent => ({
+      this.intentDropdown.options = intents.map(intent => ({
         ...intent,
         text: intent.name,
-        value: {
-          module: 'intent_engine_2.0',
-          intentName: intent.name,
-        },
       }));
     });
   },

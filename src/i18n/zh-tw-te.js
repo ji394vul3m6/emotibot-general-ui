@@ -44,6 +44,7 @@ export default {
       do_nothing_zh: '不執行跳轉',
       parse_fail: '解析失敗處理',
       add_new_dialogue_node: '新增對話節點',
+      add_new_dialogue_node_2: '新增對話節點2.0',
     },
     scenario_edit_page: {
       tabs: {
@@ -340,7 +341,7 @@ export default {
         mobile_phone: '手機號（數字）',
         person_name: '姓名（人物）',
         select: '選項（邏輯）',
-        logic: '是否（邏輯）',
+        polarity: '是否（邏輯）',
       },
       nlu_time_options: {
         TIME_FUTURE: '未來時間',
