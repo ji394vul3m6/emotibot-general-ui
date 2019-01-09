@@ -44,6 +44,7 @@ export default {
       do_nothing_zh: '不执行跳转',
       parse_fail: '解析失败处理',
       add_new_dialogue_node: '新增对话节点',
+      add_new_dialogue_node_2: '新增对话节点2.0',
     },
     scenario_edit_page: {
       tabs: {
