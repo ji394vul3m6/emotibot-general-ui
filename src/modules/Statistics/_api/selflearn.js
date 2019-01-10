@@ -4,6 +4,7 @@ const RECORD_URL = '/api/v1/stats/records';
 const REPORT_URL = '/api/v1/clustering/reports';
 const RECORT_URL_V2 = '/api/v2/stats/records';
 const STATS_RECORD_EXPORT = '/api/v1/stats/records/export';
+const STATS_RECORD_EXPORT_V2 = '/api/v1/stats/records/export';
 
 // getRecordsV2 use page and limit as parameter is for compatibility with v1
 function getRecordsV2(searchParam, page, limit) {
@@ -89,6 +90,13 @@ function getExportStatus(id) {
   return this.$reqGet(`${STATS_RECORD_EXPORT}/${id}/status`).then(rsp => rsp.data);
 }
 
+function getExportIDV2(params) {
+  return this.$reqPost(STATS_RECORD_EXPORT_V2, params).then(rsp => rsp.data);
+}
+function getExportStatusV2(id) {
+  return this.$reqGet(`${STATS_RECORD_EXPORT_V2}/${id}/status`).then(rsp => rsp.data);
+}
+
 export default {
   getRecords,
   exportRecords,
@@ -103,4 +111,6 @@ export default {
   getExportStatus,
 
   getRecordsV2,
+  getExportIDV2,
+  getExportStatusV2,
 };

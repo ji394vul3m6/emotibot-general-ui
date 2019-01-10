@@ -658,10 +658,10 @@ export default {
         module,
         filename,
       })
-      .then(() => that.$api.getExportID(that.searchParams).then(data => data.export_id))
+      .then(() => that.$api.getExportIDV2(that.searchParams).then(data => data.export_id))
       .then((exportID) => {
         const checkStatus = () => {
-          that.$api.getExportStatus(exportID).then((data) => {
+          that.$api.getExportStatusV2(exportID).then((data) => {
             if (data.status === 'RUNNING') {
               setTimeout(() => { checkStatus(); }, 1000);
               return;
