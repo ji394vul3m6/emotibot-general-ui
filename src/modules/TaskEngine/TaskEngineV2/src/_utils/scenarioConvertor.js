@@ -890,6 +890,7 @@ export default {
         hasOutboundConnection: false,
         hasExitConnection: false,
         hasInnerConnection: false,
+        hasConnectionToNotExistNode: false,
       };
     });
 
@@ -953,7 +954,14 @@ export default {
     if (!edge.candidate_edges) return nodeInfo;
     edge.candidate_edges.forEach((e) => {
       const toNodeId = e.to_node_id;
-      if (toNodeId === null || toNodeId === nodeId || nodeInfo[toNodeId] === undefined) return;
+      if (toNodeId === null || toNodeId === nodeId) {
+        return;
+      }
+      if (nodeInfo[toNodeId] === undefined) {
+        nodeInfo[nodeId].hasConnectionToNotExistNode = true;
+        return;
+      }
+
       if (toNodeId === '0') {
         nodeInfo[nodeId].hasExitConnection = true;
       } else {
@@ -965,7 +973,11 @@ export default {
   },
   traverseEdge(nodeId, edge, edgeType, nodeInfo) {
     const toNodeId = edge.to_node_id;
-    if (toNodeId === null || nodeInfo[toNodeId] === undefined) {
+    if (toNodeId === null) {
+      return nodeInfo;
+    }
+    if (nodeInfo[toNodeId] === undefined) {
+      nodeInfo[nodeId].hasConnectionToNotExistNode = true;
       return nodeInfo;
     }
     if (edgeType === 'hidden') { // hidden edge
@@ -1019,6 +1031,13 @@ export default {
           // warning_msg: '请在此节点新增至少一个指向其他节点的连线',
         });
       }
+      // has connection to not exist node
+      if (nodeInfo[nodeId].hasConnectionToNotExistNode === true) {
+        uiNode.warnings.push({
+          type: 'hss_connection_to_not_exist_node',
+        // warning_msg: '存在有问题的连线，连线指向不存在或是已经被删除的节点。',
+        });
+      }
     });
   },
   checkNodeFormat(uiNode, nodeInfo, nodeType, nodeId) {
@@ -1038,6 +1057,21 @@ export default {
       }
       if (nodeInfo[nodeId].hasInnerConnection === true) {
         if (!uiNode.settingTab.failureResponse || uiNode.settingTab.failureResponse === '') {
+          uiNode.warnings.push({
+            type: 'missing_failure_response',
+            // warning_msg: '解析失败文本栏位不能为空白，请填入解析失败时的提示语句。',
+          });
+        }
+      }
+    } else if (nodeType === 'dialogue_2.0') {
+      if (!uiNode.dialogue2SettingTab.initialResponse || uiNode.dialogue2SettingTab.initialResponse === '') {
+        uiNode.warnings.push({
+          type: 'missing_response',
+          // warning_msg: '预设文本栏位不能为空白，请填入询问语句。',
+        });
+      }
+      if (nodeInfo[nodeId].hasInnerConnection === true) {
+        if (!uiNode.dialogue2SettingTab.failureResponse || uiNode.dialogue2SettingTab.failureResponse === '') {
           uiNode.warnings.push({
             type: 'missing_failure_response',
             // warning_msg: '解析失败文本栏位不能为空白，请填入解析失败时的提示语句。',

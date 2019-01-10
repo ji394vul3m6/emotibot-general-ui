@@ -443,6 +443,7 @@ export default {
       missing_failure_response: '解析失敗文本欄位不能為空白，請填入解析失敗時的提示語句。',
       missing_pc_response: '參數詢問文本欄位不能為空白，請填入詢問語句。',
       missing_pc_failure_response: '解析失敗文本欄位不能為空白，請填入解析失敗時的提示語句。',
+      hss_connection_to_not_exist_node: '存在有問題的連線，連線指向不存在或是已經被刪除的節點。',
     },
   },
   task_engine_v3: {

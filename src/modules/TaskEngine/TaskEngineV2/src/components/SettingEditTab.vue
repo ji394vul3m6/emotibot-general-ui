@@ -130,8 +130,8 @@ export default {
       initialResponse: settingTab.initialResponse,
       failureResponse: settingTab.failureResponse,
       parseFromThisNode: settingTab.parseFromThisNode,
-      entityModuleOptions: entityModuleOptionsMap[this.parser],
-      entityKeyNameOptions: entityKeyNameOptionsMap[this.parser],
+      entityModuleOptions: entityModuleOptionsMap[settingTab.parser],
+      entityKeyNameOptions: entityKeyNameOptionsMap[settingTab.parser],
       selectStyle: {
         height: '36px',
         'border-radius': '5px',
