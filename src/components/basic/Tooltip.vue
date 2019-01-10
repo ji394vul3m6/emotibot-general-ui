@@ -110,7 +110,7 @@ export default {
       };
     },
     triangleStyle() {
-      const left = this.leftOffset > 0 ? 0 : (0 - this.leftOffset - 8) + (this.elemWidth / 2);
+      const left = (this.elemWidth / 2);
       return {
         left: `${left}px`,
       };
