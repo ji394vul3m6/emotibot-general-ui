@@ -209,12 +209,12 @@ div {
       display: flex;
       justify-content: center;
       #app-logo {
-        width: 185px;
-        height: 103px;
+        width: 200px;
+        height: 120px;
         background-repeat: no-repeat;
         background-position: center center;
         background-color: transparent;
-        background-size: 185px 103px;
+        background-size: 200px 120px;
         &.default.zh-cn {
           background-image: url("/static/emotibot_logo_chs.svg");
         }
