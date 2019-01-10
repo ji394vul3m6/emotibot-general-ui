@@ -443,6 +443,7 @@ export default {
       missing_failure_response: '解析失败文本栏位不能为空白，请填入解析失败时的提示语句。',
       missing_pc_response: '参数询问文本栏位不能为空白，请填入询问语句。',
       missing_pc_failure_response: '解析失败文本栏位不能为空白，请填入解析失败时的提示语句。',
+      hss_connection_to_not_exist_node: '存在有问题的连线，连线指向不存在或是已经被删除的节点。',
     },
   },
   task_engine_v3: {

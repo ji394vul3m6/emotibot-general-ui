@@ -163,6 +163,7 @@ export default {
       missing_failure_response: context.$t('task_engine_v2.warnings.missing_failure_response'),
       missing_pc_response: context.$t('task_engine_v2.warnings.missing_pc_response'),
       missing_pc_failure_response: context.$t('task_engine_v2.warnings.missing_pc_failure_response'),
+      hss_connection_to_not_exist_node: context.$t('task_engine_v2.warnings.hss_connection_to_not_exist_node'),
     };
   },
   getSourceOptions(context) {
