@@ -1,8 +1,28 @@
 export default {
-  integration: {
-    integration: '整合部署',
-    enterpriseID: '企業 ID',
-    robotID: '機器人 ID / AppID',
+  robot_config: {
+    robot_config: '系統功能配置',
+    chat: {
+      title: '閒聊',
+      'chat-editorial-pre': '信心分數高於',
+      'chat-editorial-suf': '時使用竹間閒聊 I',
+      'chat-editorial-custom-pre': '信心分數高於',
+      'chat-editorial-custom-suf': '時使用客制閒聊',
+      'chat-editorial-domain-pre': '信心分數高於',
+      'chat-editorial-domain-suf': '時使用行業閒聊',
+      'chat-editorial-sport-pre': '信心分數高於',
+      'chat-editorial-sport-suf': '時使用竹間閒聊 II',
+      'chat-robot-pre': '信心分數高於',
+      'chat-robot-suf': '時使用竹間機器人形象',
+      'chat-robot-custom-pre': '信心分數高於',
+      'chat-robot-custom-suf': '時使用客制機器人形象',
+    },
+    robot: {
+      title: '機器人',
+      name: '自稱',
+      language: '出話語系',
+      default: '我',
+    },
+    rule: '規則設置',
   },
   privileges: {
     role: '角色',
@@ -910,6 +930,7 @@ export default {
       robot_chat_skill: '話術設置',
       robot_command: '指令設置',
       integration: '整合部署',
+      robot_config: '系統功能配置',
     },
     wordbank: {
       module_name: '詞庫',
@@ -948,6 +969,9 @@ export default {
     error: '',
   },
   general: {
+    enable: '啟用',
+    disable: '停用',
+    setting: '設置',
     language: '語言',
     zh_tw: '繁體中文',
     zh_cn: '簡體中文',

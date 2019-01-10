@@ -40,10 +40,17 @@ export default {
       this.checked = this.value;
     },
     checked(val) {
-      if (val !== this.value) {
-        this.$emit('input', this.checked);
-        this.$emit('change', this.checked);
+      const that = this;
+      if (that.timer !== undefined) {
+        clearTimeout(that.timer);
       }
+      that.timer = setTimeout(() => {
+        if (val !== that.value) {
+          that.$emit('input', that.checked);
+          that.$emit('change', that.checked);
+          that.timer = undefined;
+        }
+      }, 500);
     },
   },
   computed: {
@@ -64,6 +71,7 @@ export default {
     return {
       id: `toggle_${random}`,
       checked: false,
+      timer: undefined,
     };
   },
   mounted() {

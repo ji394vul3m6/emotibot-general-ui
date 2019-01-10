@@ -1,4 +1,29 @@
 export default {
+  robot_config: {
+    robot_config: '系統功能配置',
+    chat: {
+      title: '闲聊',
+      'chat-editorial-pre': '信心分数高于',
+      'chat-editorial-suf': '时使用竹间闲聊 I',
+      'chat-editorial-custom-pre': '信心分数高于',
+      'chat-editorial-custom-suf': '时使用客制闲聊',
+      'chat-editorial-domain-pre': '信心分数高于',
+      'chat-editorial-domain-suf': '时使用行业闲聊',
+      'chat-editorial-sport-pre': '信心分数高于',
+      'chat-editorial-sport-suf': '时使用竹间闲聊 II',
+      'chat-robot-pre': '信心分数高于',
+      'chat-robot-suf': '时使用竹间机器人形象',
+      'chat-robot-custom-pre': '信心分数高于',
+      'chat-robot-custom-suf': '时使用客制机器人形象',
+    },
+    robot: {
+      title: '机器人',
+      name: '自称',
+      language: '出话语系',
+      default: '我',
+    },
+    rule: '规则设置',
+  },
   integration: {
     integration: '接入部署',
     enterpriseID: '企业 ID',
@@ -910,6 +935,7 @@ export default {
       robot_chat_skill: '话术设置',
       robot_command: '指令设置',
       integration: '接入部署',
+      robot_config: '系统功能配置',
     },
     wordbank: {
       module_name: '词库',
@@ -948,6 +974,9 @@ export default {
     error: '',
   },
   general: {
+    enable: '启用',
+    disable: '停用',
+    setting: '设置',
     language: '语言',
     zh_tw: '繁体中文',
     zh_cn: '简体中文',
