@@ -257,7 +257,7 @@
             </div>
             <div class="row" v-if="action.content.operation === 'set_key_to_value'">
               <span class="label" v-t="'task_engine_v2.condition_action_block.label_exec'"></span>
-              <div ref="insertVarDropdown" class="dropdown-container" v-dropdown="insertVarDropdown(action.id, action.content, 'key')">
+              <div key="set_key_to_value_input1" ref="insertVarDropdown" class="dropdown-container" v-dropdown="insertVarDropdown(action.id, action.content, 'key')">
                 <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="action.content.key" :placeholder="$t('task_engine_v2.condition_action_block.key_placeholder')" @focus="onInputFocus">
               </div>
               <span class="label" v-t="'task_engine_v2.condition_action_block.label_equal'"></span>
@@ -265,7 +265,7 @@
             </div>
             <div class="row" v-if="action.content.operation === 'set_key_to_key'">
               <span class="label" v-t="'task_engine_v2.condition_action_block.label_exec'"></span>
-              <div ref="insertVarDropdown" class="dropdown-container" v-dropdown="insertVarDropdown(action.id, action.content, 'key1')">
+              <div key="set_key_to_key_input1" ref="insertVarDropdown" class="dropdown-container" v-dropdown="insertVarDropdown(action.id, action.content, 'key1')">
                 <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="action.content.key1" :placeholder="$t('task_engine_v2.condition_action_block.key_placeholder')" @focus="onInputFocus">
               </div>
               <span class="label" v-t="'task_engine_v2.condition_action_block.label_equal'"></span>
