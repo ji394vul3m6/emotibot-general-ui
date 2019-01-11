@@ -805,6 +805,7 @@ export default {
     training_fail: '意圖訓練失敗',
     version_not_exist: '意圖版本不存在',
     manage: {
+      delete_intents: '批量刪除',
       add_intent: '新增意圖',
       intent_num: '共有 {inum} 組意圖 / {cnum} 筆語料',
       corpus_num: ' ({pos}筆正例/{neg}筆反例)',

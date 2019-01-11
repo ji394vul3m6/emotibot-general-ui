@@ -1,7 +1,7 @@
 import qs from 'qs';
 
-// TODO: change these to v2 !!!!!!!!!
 const GET_INTENT_URL = 'api/v2/intents';
+const DELETE_INTENTS_URL = 'api/v2/intents/delete';
 const IMPORT_INTENT_URL = 'api/v2/intents/import';
 const TRAIN_URL = 'api/v2/intents/train';
 const GET_TRAINING_STATUS_URL = 'api/v2/intents/status';
@@ -128,6 +128,12 @@ function getTrainingStatus() {
     });
 }
 
+function deleteIntents(IDs) {
+  return this.$reqPost(DELETE_INTENTS_URL, {
+    id: IDs,
+  });
+}
+
 export default {
   getIntents,
   getIntentsDetail,
@@ -138,4 +144,5 @@ export default {
   getCorpus,
   startTraining,
   getTrainingStatus,
+  deleteIntents,
 };

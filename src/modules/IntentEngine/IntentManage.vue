@@ -28,6 +28,7 @@
         <div class="content-tool">
           <div class="content-tool-left">
             <text-button v-if="canAdd" :button-type="allowAdd ? 'primary' : 'disable'" @click="addIntent">{{ $t('intent_engine.manage.add_intent') }}</text-button>
+            <text-button v-if="canEdit && showBatchDelete" :button-type="allowEdit ? 'error' : 'disable'" @click="deleteIntents">{{ $t('intent_engine.manage.delete_intents') }}</text-button>
             <text-button v-if="canImport" :button-type="allowImport ? 'default' : 'disable'" @click="importIntentList">{{ $t('general.import') }}</text-button>
             <text-button v-if="canExport" :button-type="allowExport ? 'default' : 'disable'" @click="exportIntentList(currentVersion)">{{ $t('general.export') }}</text-button>
           </div>
@@ -51,7 +52,9 @@
           :keyword="intentKeyword"
           @addIntentDone="finishAddIntent($event)"
           @deleteIntentDone="refreshIntentPage()"
-          @cancelSearch="setSearchIntent(false)">
+          @cancelSearch="setSearchIntent(false)"
+          @checkedIntent="handleIntentChecked"
+          ref="intents">
         </intent-list>
         </div>
       </div>
@@ -116,6 +119,7 @@ export default {
       pageInfoTooltip: {
         msg: this.$t('intent_engine.manage.tooltip.page_info'),
       },
+      showBatchDelete: false,
     };
   },
   computed: {
@@ -192,6 +196,30 @@ export default {
       if (!this.allowAdd) return;
       this.isAddIntent = true;
       this.intentKeyword = '';
+    },
+    deleteIntents() {
+      const that = this;
+      const deleteIDs = that.$refs.intents.getCheckedIntentIDs();
+      that.$emit('startLoading');
+      that.$api.deleteIntents(deleteIDs).then(() => {
+        that.$notify({ text: that.$t('intent_engine.manage.notify.delete_intent_success') });
+      })
+      .catch((err) => {
+        console.log(err);
+        that.$notifyFail(that.$t('intent_engine.manage.notify.delete_intent_fail'));
+      })
+      .finally(() => {
+        that.$emit('endLoading');
+        that.refreshIntentPage();
+      });
+    },
+    handleIntentChecked() {
+      const deleteIDs = this.$refs.intents.getCheckedIntentIDs();
+      if (deleteIDs.length > 0) {
+        this.showBatchDelete = true;
+      } else {
+        this.showBatchDelete = false;
+      }
     },
     finishAddIntent(done) {
       this.isAddIntent = false;

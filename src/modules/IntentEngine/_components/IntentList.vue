@@ -1,9 +1,10 @@
 <template>
   <div class="intent-list">
     <div v-for="(intent, idx) in intentListShown" :key="idx" class="intent-block" :class="{'active': intent.expand}" @mouseover="hoverIntent(intent, true)" @mouseout="hoverIntent(intent, false)">
-      <div class="intent-block-header" @click="beforeExpandIntent(intent)">
+      <div class="intent-block-header" @click="beforeExpandIntent(intent, $event)">
         <div class="intent-icons">
-          <icon icon-type="intent" :size="16"/>
+          <input @click="updateChecked" type="checkbox" v-if="!oneInEdit" v-model="intent.checked">
+          <icon icon-type="intent" :size="16" v-else/>
         </div>
         <div class="intent-title">
           <input v-if="intent.isEditMode" type="text" ref="intentName" v-model="editIntentName" v-tooltip="intentNameTooltip" :placeholder="$t('intent_engine.manage.placeholder.intent_title')" />
@@ -15,7 +16,7 @@
             {{$t('intent_engine.manage.corpus_num', { pos: intent.positiveCount, neg: intent.negativeCount })}}
           </span>
         </div>
-        <div v-if="hasIntentAction" class="intent-action">
+        <div v-if="hasIntentAction && !anyIsChecked" class="intent-action">
           <div v-if="intent.isEditMode" class="intent-save-tool">
             <text-button button-type="primary" @click="saveEditIntent(intent)">{{ $t('general.save') }}</text-button>
             <text-button @click.stop="cancelEditIntentPop(intent)">{{ $t('general.cancel') }}</text-button>
@@ -284,8 +285,26 @@ export default {
     },
     alreadyEdit() {
       const intentInEditMode = this.intentInEditMode();
-      return this.deletedCorpusIds.length !== 0 || this.updatedCorpus.length !== 0 ||
-        this.addedCorpus.length !== 0 || this.editIntentName !== intentInEditMode.name;
+      return intentInEditMode && (
+        this.deletedCorpusIds.length !== 0 ||
+        this.updatedCorpus.length !== 0 ||
+        this.addedCorpus.length !== 0 ||
+        this.editIntentName !== intentInEditMode.name);
+    },
+    canMultiSelect() {
+      return true;
+    },
+    oneInEdit() {
+      if (this.intentListShown !== undefined) {
+        return this.intentListShown.reduce((val, intent) => intent.isEditMode || val, false);
+      }
+      return false;
+    },
+    anyIsChecked() {
+      if (this.intentListShown !== undefined) {
+        return this.intentListShown.reduce((val, intent) => intent.checked || val, false);
+      }
+      return false;
     },
   },
   watch: {
@@ -420,8 +439,11 @@ export default {
       const that = this;
       return that.intentListShown.find(intent => intent.isEditMode === true);
     },
-    beforeExpandIntent(intent) {
+    beforeExpandIntent(intent, e) {
       const that = this;
+      if (e.target.type === 'checkbox') {
+        return;
+      }
       if (intent.expand) {
         if (that.isAddIntent) return;
         const intentInEditMode = that.intentInEditMode();
@@ -443,6 +465,7 @@ export default {
     },
     expandIntent(intent) {
       const that = this;
+
       that.closeAllIntent();
       return that.callGetCorpus(intent);
     },
@@ -863,7 +886,19 @@ export default {
         viewCorpusType: POSITIVE_CORPUS,
         hasCorpusSelected: false,
         hasCorpusEditing: false,
+        checked: false,
       }));
+    },
+    getCheckedIntentIDs() {
+      return this.intentListShown.map(
+        intent => (intent.checked ? intent.id : undefined),
+      ).filter(x => x !== undefined);
+    },
+    updateChecked() {
+      // emit after value changed
+      this.$nextTick(() => {
+        this.$emit('checkedIntent');
+      });
     },
   },
   mounted() {
