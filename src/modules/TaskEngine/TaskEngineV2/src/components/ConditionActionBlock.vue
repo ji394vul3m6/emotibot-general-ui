@@ -132,13 +132,15 @@
             </div>
             <div class="row">
               <span class="label" v-t="'task_engine_v2.condition_action_block.label_key'"></span>
-              <div ref="insertVarDropdown" class="dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.initialFunctionContentV2, 'key1')">
+              <div ref="insertVarDropdown" class="dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content, 'key1')">
                 <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.key1" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus">
               </div>
             </div>
             <div class="row">
               <span class="label" v-t="'task_engine_v2.condition_action_block.label_key'"></span>
-              <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.key2" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus"/>
+              <div ref="insertVarDropdown" class="dropdown-container" v-dropdown="insertVarDropdown(rule.id, rule.content, 'key2')">
+                <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.key2" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus"/>
+              </div>
             </div>
           </div>
           <!-- 包含键 -->
