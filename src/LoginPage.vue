@@ -39,6 +39,20 @@ import Icon from './components/basic/Icon';
 import LoadingButton from './components/basic/LoadingButton';
 import api from './api/system';
 
+// eslint-disable-next-line
+document.head || (document.head = document.getElementsByTagName('head')[0]);
+function changeFavicon(src) {
+  const link = document.createElement('link');
+  const oldLink = document.getElementById('dynamic-favicon');
+  link.id = 'dynamic-favicon';
+  link.rel = 'shortcut icon';
+  link.href = src;
+  if (oldLink) {
+    document.head.removeChild(oldLink);
+  }
+  document.head.appendChild(link);
+}
+
 export default {
   name: 'login',
   components: {
@@ -132,10 +146,13 @@ export default {
     },
     loadLogo() {
       const that = this;
-      this.$api.getIcon('login').then(() => {
+      that.$api.getIcon('login').then(() => {
         that.$refs.logo.style.backgroundImage = `url("${that.$api.getIconURL('login')}")`;
       }, () => {
         that.$refs.logo.classList.add('default');
+      });
+      that.$api.getIcon('favicon').then(() => {
+        changeFavicon(that.$api.getIconURL('favicon'));
       });
     },
   },

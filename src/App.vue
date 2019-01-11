@@ -70,6 +70,20 @@ function forceUpdate(vueObj) {
   vueObj.$forceUpdate();
 }
 
+// eslint-disable-next-line
+document.head || (document.head = document.getElementsByTagName('head')[0]);
+function changeFavicon(src) {
+  const link = document.createElement('link');
+  const oldLink = document.getElementById('dynamic-favicon');
+  link.id = 'dynamic-favicon';
+  link.rel = 'shortcut icon';
+  link.href = src;
+  if (oldLink) {
+    document.head.removeChild(oldLink);
+  }
+  document.head.appendChild(link);
+}
+
 export default {
   name: 'app',
   components: {
@@ -459,6 +473,11 @@ export default {
         that.$refs.logo.style.backgroundImage = `url("${that.$api.getIconURL('app', that.enterpriseID)}")`;
       }, () => {
         that.$refs.logo.classList.add('default');
+      });
+      that.$api.getIcon('favicon', that.enterpriseID).then(() => {
+        changeFavicon(that.$api.getIconURL('favicon', that.enterpriseID));
+      }, () => {
+        changeFavicon('/static/favicon.png');
       });
     },
   },
