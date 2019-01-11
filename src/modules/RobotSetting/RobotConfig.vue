@@ -158,6 +158,14 @@ export default {
             },
           ],
         },
+        {
+          key: 'context',
+          on: false,
+        },
+        {
+          key: 'human-intent',
+          on: false,
+        },
       ],
       flatConfigMap: {},
       languageOption: [
@@ -202,6 +210,9 @@ export default {
 
         that.configs.forEach((mainConfig) => {
           setConfigWithMap(mainConfig, that.flatConfigMap);
+          if (mainConfig.children === undefined) {
+            return;
+          }
           mainConfig.children.forEach((child) => {
             setConfigWithMap(child, that.flatConfigMap);
           });

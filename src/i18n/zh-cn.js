@@ -22,6 +22,12 @@ export default {
       language: '出话语系',
       default: '我',
     },
+    context: {
+      title: '上下文',
+    },
+    'human-intent': {
+      title: '转人工',
+    },
     rule: '规则设置',
   },
   integration: {
