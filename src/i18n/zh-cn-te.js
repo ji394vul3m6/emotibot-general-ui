@@ -336,7 +336,7 @@ export default {
       scenario_counter: '若超过全场景对话轮数限制',
       nlu_options: {
         address: '地址（地址）',
-        time: '时间点（时间）',
+        time: '时间（时间）',
         money: '金钱（数字）',
         mobile_phone: '手机号（数字）',
         person_name: '姓名（人物）',

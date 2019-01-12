@@ -558,6 +558,19 @@ export default {
           return key + func.content.key_suffix;
         });
       }
+    } else if (funcName === 'nlu_parser') {
+      if (func.content && func.content.tags && func.content.key_suffix) {
+        vars = func.content.tags.split(',').map((tag) => {
+          let key = tag;
+          if (tag === 'TIME_FUTURE' || tag === 'TIME_PAST') {
+            key = 'TIME';
+          }
+          if (tag === 'SELECT_CUSTOMIZE_OPTIONS' || tag === 'SELECT_OPTIONS_IN_KEY') {
+            key = 'SELECT';
+          }
+          return key + func.content.key_suffix;
+        });
+      }
     } else if (funcName === 'user_custom_parser') {
       if (func.content && func.content.to_key) {
         vars = [func.content.to_key];

@@ -240,17 +240,25 @@ export default {
       }),
     };
   },
-  getFuncOptionMap(context) {
-    const textFuncs = [
+  getFuncOptionMap(context, page) {
+    let textFuncs = [
       'match', 'contains', 'regular_exp', 'nlu_parser', 'common_parser',
       'task_parser', 'hotel_parser', 'user_custom_parser', 'polarity_parser', 'api_parser',
       'qq', 'intent_parser',
     ];
-    const globalInfoFuncs = [
+    let globalInfoFuncs = [
       'key_val_match', 'key_key_match', 'contain_key', 'not_contain_key', 'list_length_match',
       'counter_check', 'user_custom_transform', 'regular_exp_from_var', 'assign_value', 'remove_key',
     ];
-    const cuFuncs = ['cu_parser', 'custom_cu_parser'];
+    if (page === 'TriggerEditTab') {
+      textFuncs = [
+        'match', 'contains', 'regular_exp', 'intent_parser',
+      ];
+      globalInfoFuncs = [
+        'key_val_match', 'key_key_match', 'contain_key', 'not_contain_key', 'list_length_match',
+        'regular_exp_from_var',
+      ];
+    }
     return {
       text: textFuncs.map((func) => {
         const key = `task_engine_v2.condition_block.func.${func}`;
@@ -260,13 +268,6 @@ export default {
         };
       }),
       global_info: globalInfoFuncs.map((func) => {
-        const key = `task_engine_v2.condition_block.func.${func}`;
-        return {
-          text: context.$t(key),
-          value: func,
-        };
-      }),
-      cu: cuFuncs.map((func) => {
         const key = `task_engine_v2.condition_block.func.${func}`;
         return {
           text: context.$t(key),
