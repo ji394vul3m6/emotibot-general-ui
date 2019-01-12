@@ -2,7 +2,7 @@
 <div class="node-block" :style="style"
   @mouseover="mouseOverNode = true"
   @mouseout="mouseOverNode = false">
-  <div class="label-node-name-container">
+  <div class="label-node-name">
     {{node.nodeName}}
   </div>
   <div class="info-row">
@@ -362,9 +362,12 @@ export default {
       display: inline-block;
     }
   }
-  .label-node-name-container {
+  .label-node-name {
     @include font-16px();
     color: $color-font-active;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .info-row {
     display: flex;

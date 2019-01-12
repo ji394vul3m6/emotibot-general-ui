@@ -94,7 +94,7 @@ export default {
         ...this.newNodeOptions.map(option => option.nodeName),
       ];
       const newNodeName = general.suffixIndexToNodeName(
-                            this.$t('task_engine_v2.global_edge_edit_pop.dialogue'),
+                            this.$t('task_engine_v2.node_type.dialogue'),
                             nodeNames,
                           );
       this.newNodeOptions.push({
