@@ -161,8 +161,10 @@ export default {
       missing_entry_trigger: context.$t('task_engine_v2.warnings.missing_entry_trigger'),
       missing_response: context.$t('task_engine_v2.warnings.missing_response'),
       missing_failure_response: context.$t('task_engine_v2.warnings.missing_failure_response'),
-      missing_pc_response: context.$t('task_engine_v2.warnings.missing_pc_response'),
-      missing_pc_failure_response: context.$t('task_engine_v2.warnings.missing_pc_failure_response'),
+      missing_response_dialogue_2: context.$t('task_engine_v2.warnings.missing_response_dialogue_2'),
+      missing_failure_response_dialogue_2: context.$t('task_engine_v2.warnings.missing_failure_response_dialogue_2'),
+      missing_response_pc: context.$t('task_engine_v2.warnings.missing_response_pc'),
+      missing_failure_response_pc: context.$t('task_engine_v2.warnings.missing_failure_response_pc'),
       hss_connection_to_not_exist_node: context.$t('task_engine_v2.warnings.hss_connection_to_not_exist_node'),
     };
   },

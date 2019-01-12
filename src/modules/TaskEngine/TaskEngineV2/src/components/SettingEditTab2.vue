@@ -164,9 +164,7 @@ export default {
     validateTab(newV, oldV) {
       if (newV && !oldV) {
         const valid = this.isUsingResponse ?
-        [this.isValueEmpty(this.$refs['input-content']),
-          this.isValueEmpty(this.$refs.defaultQ),
-          this.isValueEmpty(this.$refs['fail-textarea'])]
+        [this.isValueEmpty(this.$refs['input-content'])]
         .indexOf(false) === -1 : true;
         this.$emit('update:valid', valid);
       }

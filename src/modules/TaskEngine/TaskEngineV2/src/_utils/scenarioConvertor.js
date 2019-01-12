@@ -1079,15 +1079,15 @@ export default {
     } else if (nodeType === 'dialogue_2.0') {
       if (!uiNode.dialogue2SettingTab.initialResponse || uiNode.dialogue2SettingTab.initialResponse === '') {
         uiNode.warnings.push({
-          type: 'missing_response',
-          // warning_msg: '预设文本栏位不能为空白，请填入询问语句。',
+          type: 'missing_response_dialogue_2',
+          // warning_msg: '预设话术栏位不能为空白，请填入询问语句。',
         });
       }
       if (nodeInfo[nodeId].hasInnerConnection === true) {
         if (!uiNode.dialogue2SettingTab.failureResponse || uiNode.dialogue2SettingTab.failureResponse === '') {
           uiNode.warnings.push({
-            type: 'missing_failure_response',
-            // warning_msg: '解析失败文本栏位不能为空白，请填入解析失败时的提示语句。',
+            type: 'missing_failure_response_dialogue_2',
+            // warning_msg: '解析失败话术栏位不能为空白，请填入解析失败时的提示语句。',
           });
         }
       }
@@ -1108,13 +1108,13 @@ export default {
       });
       if (missingMsg === true) {
         uiNode.warnings.push({
-          type: 'missing_pc_response',
+          type: 'missing_response_pc',
           // warning_msg: '参数询问文本栏位不能为空白，请填入询问语句。',
         });
       }
       if (missingParseFailedMsg === true) {
         uiNode.warnings.push({
-          type: 'missing_pc_failure_response',
+          type: 'missing_failure_response_pc',
           // warning_msg: '解析失败文本栏位不能为空白，请填入解析失败时的提示语句。',
         });
       }
