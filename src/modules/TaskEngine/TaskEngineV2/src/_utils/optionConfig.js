@@ -161,8 +161,10 @@ export default {
       missing_entry_trigger: context.$t('task_engine_v2.warnings.missing_entry_trigger'),
       missing_response: context.$t('task_engine_v2.warnings.missing_response'),
       missing_failure_response: context.$t('task_engine_v2.warnings.missing_failure_response'),
-      missing_pc_response: context.$t('task_engine_v2.warnings.missing_pc_response'),
-      missing_pc_failure_response: context.$t('task_engine_v2.warnings.missing_pc_failure_response'),
+      missing_response_dialogue_2: context.$t('task_engine_v2.warnings.missing_response_dialogue_2'),
+      missing_failure_response_dialogue_2: context.$t('task_engine_v2.warnings.missing_failure_response_dialogue_2'),
+      missing_response_pc: context.$t('task_engine_v2.warnings.missing_response_pc'),
+      missing_failure_response_pc: context.$t('task_engine_v2.warnings.missing_failure_response_pc'),
       hss_connection_to_not_exist_node: context.$t('task_engine_v2.warnings.hss_connection_to_not_exist_node'),
     };
   },
@@ -240,17 +242,25 @@ export default {
       }),
     };
   },
-  getFuncOptionMap(context) {
-    const textFuncs = [
+  getFuncOptionMap(context, page) {
+    let textFuncs = [
       'match', 'contains', 'regular_exp', 'nlu_parser', 'common_parser',
       'task_parser', 'hotel_parser', 'user_custom_parser', 'polarity_parser', 'api_parser',
       'qq', 'intent_parser',
     ];
-    const globalInfoFuncs = [
+    let globalInfoFuncs = [
       'key_val_match', 'key_key_match', 'contain_key', 'not_contain_key', 'list_length_match',
       'counter_check', 'user_custom_transform', 'regular_exp_from_var', 'assign_value', 'remove_key',
     ];
-    const cuFuncs = ['cu_parser', 'custom_cu_parser'];
+    if (page === 'TriggerEditTab') {
+      textFuncs = [
+        'match', 'contains', 'regular_exp', 'intent_parser',
+      ];
+      globalInfoFuncs = [
+        'key_val_match', 'key_key_match', 'contain_key', 'not_contain_key', 'list_length_match',
+        'regular_exp_from_var',
+      ];
+    }
     return {
       text: textFuncs.map((func) => {
         const key = `task_engine_v2.condition_block.func.${func}`;
@@ -260,13 +270,6 @@ export default {
         };
       }),
       global_info: globalInfoFuncs.map((func) => {
-        const key = `task_engine_v2.condition_block.func.${func}`;
-        return {
-          text: context.$t(key),
-          value: func,
-        };
-      }),
-      cu: cuFuncs.map((func) => {
         const key = `task_engine_v2.condition_block.func.${func}`;
         return {
           text: context.$t(key),

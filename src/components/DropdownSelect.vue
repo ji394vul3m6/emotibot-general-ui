@@ -1,6 +1,6 @@
 <template>
   <div class="dropdown-select" :style="styleObj">
-    <div class="input-bar" :class="{'is-focus': show, error: showError, disabled}" :style="inputBarStyle" ref="input" @click.stop="showSelection">
+    <div class="input-bar" :class="{'is-focus': show, error: showError, disabled}" :style="inputBarStyle" ref="input" @click="showSelection">
       <div class="input-block" :class="{multi}">
         <span v-if="!checkedValues.length" class="placeholder">{{ placeholder }}</span>
         <template v-if="multi">

@@ -935,7 +935,7 @@ export default {
       this.edgeType = this.edge.edge_type || 'normal';
       this.tab = this.edge.tab || undefined;
       this.sourceOptions = optionConfig.getSourceOptions(this);
-      this.funcOptionMap = optionConfig.getFuncOptionMap(this);
+      this.funcOptionMap = optionConfig.getFuncOptionMap(this, this.tab);
       this.keyValMatchCompareOptions = optionConfig.getKeyValMatchCompareOptions(this);
       this.keyKeyMatchCompareOptions = optionConfig.getKeyKeyMatchCompareOptions(this);
       this.listLengthMatchCompareOptions = optionConfig.getListLengthMatchCompareOptions(this);
@@ -1202,14 +1202,6 @@ export default {
       // hide qq option when it is not the first rule
       if (source === 'text' && ruleIndex !== 0) {
         options = options.filter(option => option.value !== 'qq');
-      }
-      if (this.tab === 'TriggerEditTab') {
-        options = options.filter((option) => {
-          if (option.value === 'qq' || option.value === 'api_parser') {
-            return false;
-          }
-          return true;
-        });
       }
       return options;
     },
