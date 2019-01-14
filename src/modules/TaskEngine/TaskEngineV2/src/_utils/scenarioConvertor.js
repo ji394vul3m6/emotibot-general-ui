@@ -896,9 +896,9 @@ export default {
   },
   traverseEdges(nodes, globalEdges) {
     // initial node_info
-    let nodeInfo = {};
+    let nodeConnections = {};
     nodes.forEach((node) => {
-      nodeInfo[node.node_id] = {
+      nodeConnections[node.node_id] = {
         hasInboundConnection: false,
         hasOutboundConnection: false,
         hasExitConnection: false,
@@ -913,17 +913,17 @@ export default {
       node.edges.forEach((edge) => {
         const edgeType = edge.edge_type || 'normal';
         if (edgeType === 'qq') {
-          nodeInfo = this.traverseQQEdge(nodeId, edge, nodeInfo);
+          nodeConnections = this.traverseQQEdge(nodeId, edge, nodeConnections);
         } else {
-          nodeInfo = this.traverseEdge(nodeId, edge, edgeType, nodeInfo);
+          nodeConnections = this.traverseEdge(nodeId, edge, edgeType, nodeConnections);
         }
       });
       globalEdges.forEach((edge) => {
         const edgeType = edge.edge_type || 'normal';
         if (edgeType === 'qq') {
-          nodeInfo = this.traverseQQEdge(nodeId, edge, nodeInfo);
+          nodeConnections = this.traverseQQEdge(nodeId, edge, nodeConnections);
         } else {
-          nodeInfo = this.traverseEdge(nodeId, edge, edgeType, nodeInfo);
+          nodeConnections = this.traverseEdge(nodeId, edge, edgeType, nodeConnections);
         }
       });
       if (node.node_type === 'action') {
@@ -933,119 +933,119 @@ export default {
         } else if (node.content instanceof Array) {
           actionGroupList = node.content;
         }
-        nodeInfo = this.traverseActionGroupList(nodeId, actionGroupList, nodeInfo);
+        nodeConnections = this.traverseActionGroupList(nodeId, actionGroupList, nodeConnections);
       }
     });
-    return nodeInfo;
+    return nodeConnections;
   },
-  traverseActionGroupList(nodeId, actionGroupList, nodeInfo) {
+  traverseActionGroupList(nodeId, actionGroupList, nodeConnections) {
     actionGroupList.forEach((actionGroup) => {
       actionGroup.actionList.forEach((action) => {
         if (action.type === 'webhook') {
           let toNodeId = action.webhookSuccessThenGoto;
-          this.setNodeInfo(nodeInfo, nodeId, toNodeId);
+          this.setNodeConnections(nodeConnections, nodeId, toNodeId);
           toNodeId = action.webhookFailThenGoto;
-          this.setNodeInfo(nodeInfo, nodeId, toNodeId);
+          this.setNodeConnections(nodeConnections, nodeId, toNodeId);
         } else if (action.type === 'goto') {
           const toNodeId = action.targetSkillId;
-          this.setNodeInfo(nodeInfo, nodeId, toNodeId);
+          this.setNodeConnections(nodeConnections, nodeId, toNodeId);
         }
       });
     });
-    return nodeInfo;
+    return nodeConnections;
   },
-  setNodeInfo(nodeInfo, nodeId, toNodeId) {
-    if (toNodeId === null || toNodeId === nodeId || nodeInfo[toNodeId] === undefined) return;
+  setNodeConnections(nodeConnections, nodeId, toNodeId) {
+    if (toNodeId === null || toNodeId === nodeId || nodeConnections[toNodeId] === undefined) return;
     if (toNodeId === '0') {
-      nodeInfo[nodeId].hasExitConnection = true;
+      nodeConnections[nodeId].hasExitConnection = true;
     } else {
-      nodeInfo[toNodeId].hasInboundConnection = true;
-      nodeInfo[nodeId].hasOutboundConnection = true;
+      nodeConnections[toNodeId].hasInboundConnection = true;
+      nodeConnections[nodeId].hasOutboundConnection = true;
     }
   },
-  traverseQQEdge(nodeId, edge, nodeInfo) {
-    if (!edge.candidate_edges) return nodeInfo;
+  traverseQQEdge(nodeId, edge, nodeConnections) {
+    if (!edge.candidate_edges) return nodeConnections;
     edge.candidate_edges.forEach((e) => {
       const toNodeId = e.to_node_id;
       if (toNodeId === null || toNodeId === nodeId) {
         return;
       }
-      if (nodeInfo[toNodeId] === undefined) {
-        nodeInfo[nodeId].hasConnectionToNotExistNode = true;
+      if (nodeConnections[toNodeId] === undefined) {
+        nodeConnections[nodeId].hasConnectionToNotExistNode = true;
         return;
       }
 
       if (toNodeId === '0') {
-        nodeInfo[nodeId].hasExitConnection = true;
+        nodeConnections[nodeId].hasExitConnection = true;
       } else {
-        nodeInfo[toNodeId].hasInboundConnection = true;
-        nodeInfo[nodeId].hasOutboundConnection = true;
+        nodeConnections[toNodeId].hasInboundConnection = true;
+        nodeConnections[nodeId].hasOutboundConnection = true;
       }
     });
-    return nodeInfo;
+    return nodeConnections;
   },
-  traverseEdge(nodeId, edge, edgeType, nodeInfo) {
+  traverseEdge(nodeId, edge, edgeType, nodeConnections) {
     const toNodeId = edge.to_node_id;
     if (toNodeId === null) {
-      return nodeInfo;
+      return nodeConnections;
     }
-    if (nodeInfo[toNodeId] === undefined) {
-      nodeInfo[nodeId].hasConnectionToNotExistNode = true;
-      return nodeInfo;
+    if (nodeConnections[toNodeId] === undefined) {
+      nodeConnections[nodeId].hasConnectionToNotExistNode = true;
+      return nodeConnections;
     }
     if (edgeType === 'hidden') { // hidden edge
       if (toNodeId === nodeId) {
-        nodeInfo[nodeId].hasInnerConnection = true;
+        nodeConnections[nodeId].hasInnerConnection = true;
       }
     } else {
       if (edgeType === 'else_into') {
         if (toNodeId === nodeId) {
           // inner connection: the node connect to itself
-          nodeInfo[nodeId].hasInnerConnection = true;
+          nodeConnections[nodeId].hasInnerConnection = true;
         }
       }
       if (toNodeId === nodeId) {
-        return nodeInfo;
+        return nodeConnections;
       } else if (toNodeId === '0') {
-        nodeInfo[nodeId].hasExitConnection = true;
+        nodeConnections[nodeId].hasExitConnection = true;
       } else {
-        nodeInfo[toNodeId].hasInboundConnection = true;
-        nodeInfo[nodeId].hasOutboundConnection = true;
+        nodeConnections[toNodeId].hasInboundConnection = true;
+        nodeConnections[nodeId].hasOutboundConnection = true;
       }
     }
-    return nodeInfo;
+    return nodeConnections;
   },
-  generateWarnings(uiNodes, nodeInfo) {
+  generateWarnings(uiNodes, nodeConnections) {
     uiNodes.forEach((uiNode) => {
       uiNode.warnings = [];
       const nodeType = uiNode.nodeType || 'normal';
       const nodeId = uiNode.nodeId;
-      this.checkNodeFormat(uiNode, nodeInfo, nodeType, nodeId);
+      this.checkNodeFormat(uiNode, nodeConnections, nodeType, nodeId);
       // has inbound connection or not
       if (nodeType !== 'entry' &&
-          nodeInfo[nodeId].hasInboundConnection === false) {
+          nodeConnections[nodeId].hasInboundConnection === false) {
         uiNode.warnings.push({
           type: 'missing_inbound_connection',
           // warning_msg: '请新增至少一个指向此节点的连线',
         });
       }
       // has exit connection or not
-      if (nodeInfo[nodeId].hasExitConnection === true) {
+      if (nodeConnections[nodeId].hasExitConnection === true) {
         uiNode.warnings.push({
           type: 'has_exit_connection',
           // warning_msg: '出口节点',
         });
       }
       // has outbound connection or not
-      if (nodeInfo[nodeId].hasOutboundConnection === false &&
-          nodeInfo[nodeId].hasExitConnection === false) {
+      if (nodeConnections[nodeId].hasOutboundConnection === false &&
+          nodeConnections[nodeId].hasExitConnection === false) {
         uiNode.warnings.push({
           type: 'missing_outbound_connection',
           // warning_msg: '请在此节点新增至少一个指向其他节点的连线',
         });
       }
       // has connection to not exist node
-      if (nodeInfo[nodeId].hasConnectionToNotExistNode === true) {
+      if (nodeConnections[nodeId].hasConnectionToNotExistNode === true) {
         uiNode.warnings.push({
           type: 'hss_connection_to_not_exist_node',
         // warning_msg: '存在有问题的连线，连线指向不存在或是已经被删除的节点。',
@@ -1053,7 +1053,7 @@ export default {
       }
     });
   },
-  checkNodeFormat(uiNode, nodeInfo, nodeType, nodeId) {
+  checkNodeFormat(uiNode, nodeConnections, nodeType, nodeId) {
     if (nodeType === 'entry') {
       if (!uiNode.triggerTab.rules || uiNode.triggerTab.rules.length === 0) {
         uiNode.warnings.push({
@@ -1068,7 +1068,7 @@ export default {
           // warning_msg: '预设文本栏位不能为空白，请填入询问语句。',
         });
       }
-      if (nodeInfo[nodeId].hasInnerConnection === true) {
+      if (nodeConnections[nodeId].hasInnerConnection === true) {
         if (!uiNode.settingTab.failureResponse || uiNode.settingTab.failureResponse === '') {
           uiNode.warnings.push({
             type: 'missing_failure_response',
@@ -1083,7 +1083,7 @@ export default {
           // warning_msg: '预设话术栏位不能为空白，请填入询问语句。',
         });
       }
-      if (nodeInfo[nodeId].hasInnerConnection === true) {
+      if (nodeConnections[nodeId].hasInnerConnection === true) {
         if (!uiNode.dialogue2SettingTab.failureResponse || uiNode.dialogue2SettingTab.failureResponse === '') {
           uiNode.warnings.push({
             type: 'missing_failure_response_dialogue_2',
