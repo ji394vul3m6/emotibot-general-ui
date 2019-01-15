@@ -10,6 +10,7 @@ const NLU_TDE_REGISTER_PATH = `${BASE_URL}tde_register.php`;
 const UPLOAD_SPREADSHEET_PATH = `${BASE_URL}spreadsheet.php`;
 const UPLOAD_SCENARIO_JSON_PATH = `${BASE_URL}scenario_json_upload.php`;
 const TASK_CONFIG = '/api/v1/task/config';
+const TASK_ENGINE_SCENARIO_INTENT = '/api/v1/task/scenario/intents';
 
 export default {
   taskConfig() {
@@ -139,6 +140,20 @@ export default {
         link.click();
       }
     });
+  },
+  saveTaskEngineIntents(appId, scenarioId, triggerIntents) {
+    const triggerIntentsString = JSON.stringify(triggerIntents);
+    const data = {
+      app_id: appId,
+      scenario_id: scenarioId,
+      trigger_intents: triggerIntentsString,
+    };
+    return axios({
+      method: 'PUT',
+      url: TASK_ENGINE_SCENARIO_INTENT,
+      data: QS.stringify(data),
+      config: { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
+    }).then(resp => resp.data);
   },
   saveScenario(appId, scenarioId, content, layout = '{}') {
     const data = {

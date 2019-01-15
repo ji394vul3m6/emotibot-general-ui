@@ -894,6 +894,20 @@ export default {
       }
     });
   },
+  parseTriggerIntents(uiNodes) {
+    const triggerIntents = {};
+    const entryNode = uiNodes.find(uiNode => uiNode.nodeType === 'entry');
+    entryNode.triggerTab.rules.forEach((andCondtions) => {
+      andCondtions.forEach((condtion) => {
+        if (condtion.functions[0].function_name === 'intent_parser' &&
+            condtion.functions[0].content &&
+            condtion.functions[0].content.intentName) {
+          triggerIntents[condtion.functions[0].content.intentName] = 1;
+        }
+      });
+    });
+    return Object.keys(triggerIntents);
+  },
   traverseEdges(nodes, globalEdges) {
     // initial node_info
     let nodeConnections = {};

@@ -522,6 +522,21 @@ export default {
       }));
     },
     saveScenario() {
+      this.saveTaskEngineScenario();
+      this.saveTaskEngineIntents();
+    },
+    saveTaskEngineIntents() {
+      const uiNodes = this.nodeBlocks.map(nodeBlock => nodeBlock.data);
+      const triggerIntents = scenarioConvertor.parseTriggerIntents(uiNodes);
+      return taskEngineApi.saveTaskEngineIntents(
+        this.appId,
+        this.scenarioId,
+        triggerIntents,
+      ).then(() => {}, (err) => {
+        this.$notifyFail(`saveTaskEngineIntents failed, error:${err.message}`);
+      });
+    },
+    saveTaskEngineScenario() {
       const uiNodes = this.nodeBlocks.map(nodeBlock => nodeBlock.data);
       const nodes = scenarioConvertor.convertUiNodesToNodes(
         uiNodes,
