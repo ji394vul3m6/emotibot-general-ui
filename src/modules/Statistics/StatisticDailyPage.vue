@@ -238,7 +238,6 @@ export default {
 
       isClustering: false,
       clusteringCnt: 0,
-      clusterTimer: undefined,
 
       expertMode: false,
       start: pickerUtil.createDateObj(),
@@ -483,7 +482,7 @@ export default {
       that.$api.startCluster(params)
       .then((reportId) => {
         that.clusterMsg = that.$t('statistics.clustering_msg', { num: that.clusteringCnt });
-        that.clusterTimer = setInterval(() => {
+        that.clusterTimer = setTimeout(() => {
           that.pollClusterReport(reportId);
         }, 5000);
       })
@@ -505,28 +504,22 @@ export default {
       that.$api.pollClusterReport(reportId)
       .then((report) => {
         if (report.status === -2) {
-          that.clearClusterTimer();
           that.$notifyFail(that.$t('statistics.error.too_few_valid_sentence'));
         } else if (report.status === -1) { // cluster fail
-          that.clearClusterTimer();
           that.$notifyFail(that.$t('statistics.error.cluster_fail'));
         } else if (report.status === 1) { // cluster success
           that.$notify({ text: that.$t('statistics.success.cluster_ok') });
-          that.clearClusterTimer();
           that.setDailyCurrentView(VIEW.DAILY_CLUSTER);
           that.setClusterReport(report);
-        } // else cluster in progress, do nothing
+        } else {
+          setTimeout(() => {
+            that.pollClusterReport(reportId);
+          }, 5000);
+        }
       })
       .catch(() => {
-        that.clearClusterTimer();
         that.$notifyFail(that.$t('statistics.error.cluster_fail'));
       });
-    },
-    clearClusterTimer() {
-      const that = this;
-      that.isClustering = false;
-      clearInterval(that.clusterTimer);
-      that.clusterTimer = undefined;
     },
     setMark(markedQuestion, record, tomark) {
       const that = this;

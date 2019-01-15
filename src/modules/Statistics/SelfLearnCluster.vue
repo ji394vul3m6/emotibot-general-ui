@@ -318,11 +318,24 @@ export default {
       that.stdCount = that.clusterReport.skipped_size || 0;
       that.report = that.clusterReport.results;
       that.clusterCount = that.report.clusters.length;
-      that.clusterGroupData = that.report.clusters.map(c => ({
-        tag: c.center_questions[0], // use first center question as cluster name
-        count: c.records.length,
-        records: c.records,
-      }));
+
+      that.clusterGroupData = that.report.clusters.map((c) => {
+        let centerQuestion = '';
+        if (c.center_questions && c.center_questions.length > 0) {
+          centerQuestion = c.center_questions[0];
+        }
+        if (centerQuestion === '' && c.tags && c.tags.length > 0) {
+          centerQuestion = c.tags[0];
+        }
+        if (centerQuestion === '' && c.records && c.records.length > 0) {
+          centerQuestion = c.records[0].value;
+        }
+        return {
+          tag: centerQuestion, // use first center question as cluster name
+          count: c.records.length,
+          records: c.records,
+        };
+      });
       if (that.report.filtered.length > 0) {
         that.clusterCount += 1;
         that.clusterGroupData.push({
