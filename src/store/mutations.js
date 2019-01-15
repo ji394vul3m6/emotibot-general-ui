@@ -21,6 +21,7 @@ export const state = {
     IM_ENABLE: false,
     ENABLE_TDE_MODULE: false,
   },
+  ui_modules: [],
 };
 
 export const mutations = {
@@ -142,5 +143,8 @@ export const mutations = {
   },
   [types.SET_ENV]: (s, env) => {
     s.env = env;
+  },
+  [types.SET_UI_MODULES]: (s, modules) => {
+    s.ui_modules = modules;
   },
 };

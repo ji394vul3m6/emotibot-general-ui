@@ -114,6 +114,8 @@ export default {
       'showUserInfoPage',
       'showLanguage',
       'privilegeList',
+      'environment',
+      'UIModules',
     ]),
   },
   data() {
@@ -126,7 +128,6 @@ export default {
       testComponent: QATest,
       checkCookieMs: 5000,
       checkCookieLoop: undefined,
-      environment: {},
     };
   },
   watch: {
@@ -141,6 +142,7 @@ export default {
       }
       this.$cookie.set('appid', val, { expires: constant.cookieTimeout });
       this.$setReqAppid(val);
+      this.getUIModule.call(null, this);
 
       const robotData = {
         appid: val,
@@ -166,7 +168,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['getEnv']),
+    ...mapActions(['getEnv', 'getUIModule']),
     ...mapMutations([
       'setPrivilegeList',
       'setPageInfos',
@@ -486,9 +488,10 @@ export default {
     const token = that.$getToken();
     // that.checkCookie();
     that.$setReqToken(token);
-    this.getEnv.call(null, this);
-    that.$api.getEnv().then((env) => {
-      that.environment = env;
+    this.getEnv.call(null, this)
+    .then(() => this.getUIModule.call(null, this))
+    .then(() => {}, () => {
+      console.log('Get UI modules Fail');
     })
     .then(() => that.$setIntoWithToken(token))
     .then(() => {

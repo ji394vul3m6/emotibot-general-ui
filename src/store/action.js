@@ -8,4 +8,10 @@ export default {
       commit(types.SET_ENV, data);
     });
   },
+  getUIModule({ commit }, instance) {
+    return api.getUIModule.call(instance)
+    .then((data) => {
+      commit(types.SET_UI_MODULES, data);
+    });
+  },
 };
