@@ -458,10 +458,10 @@ export default {
     empty_category_search_result: '无符合分类',
     all: '全部',
     no_category: '未分类',
-    default: '预设',
-    define: '自订',
+    default: '默认',
+    define: '自定义',
     sensitive_wordbank: '敏感词库',
-    sensitive_word: '敏感词回应',
+    sensitive_word: '敏感词答案',
     batch_import: '批量导入',
     export_all: '全部导出',
     success: {
