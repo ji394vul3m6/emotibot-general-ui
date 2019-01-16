@@ -716,6 +716,9 @@ export default {
         { value: '', text: this.$t('general.all') },
       ];
       return that.$api.getSSMCategories().then((data) => {
+        if (!data) {
+          return;
+        }
         that.categoryRoot = data;
         that.fillCategoryMap(that.categoryRoot);
         that.categoryOption.push({
