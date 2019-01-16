@@ -249,7 +249,7 @@ export default {
       return options;
     },
     allEdges() {
-      // allEdges include normal, qq, else_into and exceedThenGoTo edges, not include hidden edges.
+      // allEdges include normal, else_into and exceedThenGoTo edges, not include hidden edges.
       const edgeList = [];
       Object.keys(this.idToNodeBlock).forEach((key) => {
         const nodeBlock = this.idToNodeBlock[key];
@@ -258,14 +258,7 @@ export default {
         if (nodeBlock.data[edgeTabKey] && nodeBlock.data[edgeTabKey].normalEdges) {
           nodeBlock.data[edgeTabKey].normalEdges.forEach((edge) => {
             if (edge.edge_type && edge.edge_type === 'qq') {
-              edge.candidate_edges.forEach((e) => {
-                if (!this.idToNodeBlock[e.to_node_id]) return;
-                edgeList.push({
-                  from_id: nodeBlock.data.nodeId,
-                  to_id: e.to_node_id,
-                  edge_type: edge.edge_type,
-                });
-              });
+              // qq edge (语句相似度) is no longer supported.
             } else {
               if (!edge.to_node_id) return;
               if (!this.idToNodeBlock[edge.to_node_id]) return;
@@ -299,14 +292,7 @@ export default {
         if (nodeBlock.data.paramsCollectingEdgeTab) {
           nodeBlock.data.paramsCollectingEdgeTab.normalEdges.forEach((edge) => {
             if (edge.edge_type && edge.edge_type === 'qq') {
-              edge.candidate_edges.forEach((e) => {
-                if (!this.idToNodeBlock[e.to_node_id]) return;
-                edgeList.push({
-                  from_id: nodeBlock.data.nodeId,
-                  to_id: e.to_node_id,
-                  edge_type: edge.edge_type,
-                });
-              });
+              // qq edge (语句相似度) is no longer supported.
             } else {
               if (!edge.to_node_id) return;
               if (!this.idToNodeBlock[edge.to_node_id]) return;

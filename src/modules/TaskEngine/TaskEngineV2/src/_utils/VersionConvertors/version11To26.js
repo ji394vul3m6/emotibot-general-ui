@@ -16,12 +16,20 @@ export default {
       return node;
     } else if (nodeType === 'entry' || nodeType === 'dialogue' || nodeType === 'nlu_pc' || nodeType === 'action') {
       node.edgeTab.normalEdges = node.edgeTab.normalEdges.map((edge) => {
+        if (edge.edge_type === 'qq') {
+          console.warn(`qq edge (语句相似度) is no longer supported. Found qq edge in ${node.nodeName}`);
+          return edge;
+        }
         edge.condition_rules = this.convertConditionRules(edge.condition_rules);
         return edge;
       });
       return node;
     } else if (nodeType === 'parameter_collecting') {
       const normalEdges = node.paramsCollectingEdgeTab.normalEdges.map((edge) => {
+        if (edge.edge_type === 'qq') {
+          console.warn(`qq edge (语句相似度) is no longer supported. Found qq edge in ${node.nodeName}`);
+          return edge;
+        }
         edge.condition_rules = this.convertConditionRules(edge.condition_rules);
         return edge;
       });
