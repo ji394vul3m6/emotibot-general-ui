@@ -1,7 +1,6 @@
 // import * as cookie from 'tiny-cookie';
 // import ErrorAlert from '../components/ErrorAlert';
 
-
 export default {
   getAppId() {
     // const robotDataJson = JSON.parse(cookie.getRaw('robotDataJson'));

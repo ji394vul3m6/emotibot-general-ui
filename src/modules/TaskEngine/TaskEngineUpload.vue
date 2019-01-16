@@ -35,6 +35,7 @@
 <script>
 import misc from '@/utils/js/misc';
 import generalTable from '@/components/GeneralTable';
+import config from '@/modules/TaskEngine/_utils/config';
 import api from './_api/taskEngine';
 import importDesc from './_data/taskEngineImportDesc';
 
@@ -85,7 +86,7 @@ export default {
       const file = files[0] || undefined;
       const that = this;
       const appid = that.$cookie.get('appid');
-      if (file.size <= 0 || file.size > 2 * 1024 * 1024) {
+      if (file.size <= 0 || file.size > config.MaximumFileSize) {
         that.$notifyFail(that.$t('error_msg.upload_file_size_error'));
       } else {
         that.$emit('startLoading');
