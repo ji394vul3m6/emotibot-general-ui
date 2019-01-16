@@ -269,7 +269,7 @@ export default {
       all: '全部',
     },
     modules: {
-      title: '问答模組',
+      title: '出话模块',
       backfill: '未知回复',
       chat: '闲聊',
       keyword: '其他',

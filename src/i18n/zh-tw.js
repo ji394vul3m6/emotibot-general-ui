@@ -30,6 +30,11 @@ export default {
     },
     rule: '規則設置',
   },
+  integration: {
+    integration: '接入部署',
+    enterpriseID: '企業 ID',
+    robotID: '機器人 ID / AppID',
+  },
   privileges: {
     role: '角色',
     user: '用戶',
@@ -264,7 +269,7 @@ export default {
       all: '全部',
     },
     modules: {
-      title: '問答模組',
+      title: '出話模塊',
       backfill: '未知回覆',
       chat: '閒聊',
       keyword: '其他',
