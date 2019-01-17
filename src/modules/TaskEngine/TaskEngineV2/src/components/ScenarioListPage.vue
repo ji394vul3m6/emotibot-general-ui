@@ -91,8 +91,7 @@
                 </icon>
               </div>
             </div>
-            <toggle class="toggle" v-model="scenario.enable" @change="switchScenario(scenario)" :big="false"></toggle>
-            <!-- <toggle v-model="scenario.enable" @change="switchScenario(scenario)" size="small" :showLabel="true" :label="toggleLabel"></toggle> -->
+            <toggle class="toggle" v-model="scenario.enable" @change="switchScenario(scenario, $event)" :big="false"></toggle>
           </div>
           <div class="scenario-content">
             <text-button class="txt-btn" :button-type="scenario.show ? 'primary' : 'default'" width='100px' height='38px' @click="editScenario(scenario.scenarioID)">
@@ -163,24 +162,18 @@ export default {
     exportScenario(scenarioID) {
       taskEngineApi.exportScenario(scenarioID);
     },
-    publishScenario(scenario) {
+    publishScenario(scenario, jsonData) {
       const that = this;
       taskEngineApi.publishScenario(that.appId, scenario.scenarioID).then(() => {
         // that.$notify({ text: that.$t('task_engine_v2.scenario_list_page.publish_succeed') });
       }, (err) => {
         that.$notifyFail(`${that.$t('task_engine_v2.scenario_list_page.publish_failed')}:${err.message}`);
       });
-      taskEngineApi.loadScenario(scenario.scenarioID).then((data) => {
-        const jsonData = {
-          moduleData: JSON.parse(data.result.editingContent),
-          moduleDataLayouts: JSON.parse(data.result.editingLayout),
-        };
-        const newJsonData = scenarioVersionConvertor.convertJsonToVersion('2.6', jsonData);
-        scenarioConvertor.registerNluTdeScenario(
-          scenario.scenarioID, newJsonData.moduleData.ui_data.nodes);
-      }, (err) => {
-        general.popErrorWindow(this, 'loadScenario error', err.message);
-      });
+      const newJsonData = scenarioVersionConvertor.convertJsonToVersion('2.6', jsonData);
+      scenarioConvertor.registerNluTdeScenario(
+        scenario.scenarioID,
+        newJsonData.moduleData.ui_data.nodes,
+      );
     },
     exportAllScenarios() {
       taskEngineApi.exportAllScenarios(this.appId);
@@ -277,13 +270,41 @@ export default {
         },
       });
     },
-    switchScenario(scenario) {
+    switchScenario(scenario, enable) {
+      scenario.enable = enable;
+      let triggerIntents = [];
       if (scenario.enable) {
-        this.publishScenario(scenario);
+        this.loadScenario(scenario).then((jsonData) => {
+          this.publishScenario(scenario, jsonData);
+          triggerIntents = scenarioConvertor.parseTriggerIntents(jsonData.moduleData.ui_data.nodes);
+          this.saveTaskEngineIntents(scenario, triggerIntents);
+        });
+      } else {
+        this.saveTaskEngineIntents(scenario, triggerIntents);
       }
       taskEngineApi.switchScenario(this.appId, scenario.scenarioID, scenario.enable).then(() => {
       }, (err) => {
         this.$notifyFail(`switchScenario error:${err.message}`);
+      });
+    },
+    loadScenario(scenario) {
+      return taskEngineApi.loadScenario(scenario.scenarioID).then((data) => {
+        const jsonData = {
+          moduleData: JSON.parse(data.result.editingContent),
+          moduleDataLayouts: JSON.parse(data.result.editingLayout),
+        };
+        return jsonData;
+      }, (err) => {
+        general.popErrorWindow(this, 'loadScenario error', err.message);
+      });
+    },
+    saveTaskEngineIntents(scenario, triggerIntents) {
+      taskEngineApi.saveTaskEngineIntents(
+        this.appId,
+        scenario.scenarioID,
+        triggerIntents,
+      ).then(() => {}, (err) => {
+        this.$notifyFail(`saveTaskEngineIntents failed, error:${err.message}`);
       });
     },
     importScenarioJSON() {
