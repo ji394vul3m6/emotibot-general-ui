@@ -482,9 +482,9 @@ export default {
       that.$api.startCluster(params)
       .then((reportId) => {
         that.clusterMsg = that.$t('statistics.clustering_msg', { num: that.clusteringCnt });
-        that.clusterTimer = setTimeout(() => {
+        setTimeout(() => {
           that.pollClusterReport(reportId);
-        }, 5000);
+        }, 3000);
       })
       .catch((err) => {
         console.log(err);
@@ -503,6 +503,13 @@ export default {
       const that = this;
       that.$api.pollClusterReport(reportId)
       .then((report) => {
+        if (report.status === 0 && report.results === undefined) {
+          setTimeout(() => {
+            that.pollClusterReport(reportId);
+          }, 3000);
+          return;
+        }
+
         if (report.status === -2) {
           that.$notifyFail(that.$t('statistics.error.too_few_valid_sentence'));
         } else if (report.status === -1) { // cluster fail
@@ -511,11 +518,9 @@ export default {
           that.$notify({ text: that.$t('statistics.success.cluster_ok') });
           that.setDailyCurrentView(VIEW.DAILY_CLUSTER);
           that.setClusterReport(report);
-        } else {
-          setTimeout(() => {
-            that.pollClusterReport(reportId);
-          }, 5000);
         }
+        that.$emit('endLoading');
+        that.isClustering = false;
       })
       .catch(() => {
         that.$notifyFail(that.$t('statistics.error.cluster_fail'));
@@ -877,7 +882,10 @@ export default {
       return this.checkedDataRow.length;
     },
     validTimeRange() {
-      return this.end.dateObj > this.start.dateObj;
+      if (this.end !== undefined && this.start !== undefined) {
+        return this.end.dateObj > this.start.dateObj;
+      }
+      return this.end === undefined || this.start === undefined;
     },
     validInputString() {
       return this.startValidity && this.endValidity;
@@ -903,12 +911,12 @@ export default {
   },
   beforeMount() {
     pickerUtil.initTime(this);
-    this.startDisableDate = {
+    this.startDisableDate = this.end ? {
       from: this.end.dateObj,
-    };
-    this.endDisableDate = {
+    } : undefined;
+    this.endDisableDate = this.start ? {
       to: this.start.dateObj,
-    };
+    } : undefined;
     this.$nextTick(() => {
       this.dayRange = 1;  // update lable switch after datepicker is updated
     });
