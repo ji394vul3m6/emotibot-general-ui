@@ -74,7 +74,7 @@
     <div class="second-row" v-if="showNodeOptions">
       <div class="group">
         <span v-t="'task_engine_v2.scenario_edit_page.switch'"></span>
-        <toggle v-model="enable" @change="switchScenario()" size="medium" :showLabel="true" :label="toggleLabel"></toggle>
+        <toggle v-model="enable" @change="switchScenario($event)" size="medium" :showLabel="true" :label="toggleLabel"></toggle>
       </div>
       <div class="group">
         <span v-t="'general.export'"></span>
@@ -419,7 +419,8 @@ export default {
         general.popErrorWindow(this, 'listScenarios error', err.message);
       });
     },
-    switchScenario() {
+    switchScenario(enable) {
+      this.enable = enable;
       if (this.enable) {
         this.publishScenario();
       }
@@ -427,6 +428,7 @@ export default {
       }, (err) => {
         general.popErrorWindow(this, 'switchScenario error', err.message);
       });
+      this.saveTaskEngineIntents();
     },
     loadScenario(scenarioId) {
       return taskEngineApi.loadScenario(scenarioId).then((data) => {
@@ -512,8 +514,13 @@ export default {
       this.saveTaskEngineIntents();
     },
     saveTaskEngineIntents() {
-      const uiNodes = this.nodeBlocks.map(nodeBlock => nodeBlock.data);
-      const triggerIntents = scenarioConvertor.parseTriggerIntents(uiNodes);
+      let triggerIntents = [];
+      if (this.enable) {
+        const uiNodes = this.nodeBlocks.map(nodeBlock => nodeBlock.data);
+        triggerIntents = scenarioConvertor.parseTriggerIntents(uiNodes);
+      } else {
+        triggerIntents = [];
+      }
       return taskEngineApi.saveTaskEngineIntents(
         this.appId,
         this.scenarioId,
