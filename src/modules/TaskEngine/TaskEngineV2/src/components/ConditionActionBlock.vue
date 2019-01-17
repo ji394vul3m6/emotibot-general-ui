@@ -521,7 +521,7 @@
               </div>
               <div class="row" v-if="action.nluType === NLUTypeMap.PERSON_NAME">
                 <span class="label" v-t="'task_engine_v2.condition_action_block.label_get_surname'"></span>
-                <toggle v-model="action.nluPersionName" :size="'medium'" @change="nluPersonNameChange(action)" :showLabel="true" :label="toggleLabel"></toggle>               
+                <toggle :value="renderOnlyParseSurname(action.content.tags)" @change="onlyParseSurnameChange(action, $event)" :size="'medium'" :showLabel="true" :label="toggleLabel"></toggle>               
               </div>
               <div class="row"
                 v-if="action.content.tags!==NLUParserMap.SELECT_CUSTOMIZE_OPTIONS &&
@@ -947,8 +947,14 @@ export default {
         this.$set(content, 'option_key', '');
       }
     },
-    nluPersonNameChange(action) {
-      action.content.tags = action.nluPersionName ? NLUParserMap.SURNAME : NLUParserMap.PERSON_NAME;
+    renderOnlyParseSurname(tags) {
+      if (tags === NLUParserMap.SURNAME) {
+        return true;
+      }
+      return false;
+    },
+    onlyParseSurnameChange(action, onlyParseSurname) {
+      action.content.tags = onlyParseSurname ? NLUParserMap.SURNAME : NLUParserMap.PERSON_NAME;
     },
     reloadTooltip() {
       if (this.$refs['input-content']) {
