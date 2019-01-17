@@ -3,7 +3,7 @@
     <div class='picker' id="date-picker">
       <date-picker
         ref="datepicker"
-        :value="datetime.dateObj"
+        :value="datetime ? datetime.dateObj : undefined"
         :readonly="false"
         :disabled="disableDate"
         :placeholder="'yyyy/mm/dd'"
@@ -19,9 +19,9 @@
       <time-picker
         ref="timepicker"
         hide-clear-button
-        :value="datetime.timeObj"
+        :value="datetime ? datetime.timeObj : undefined"
         :readonly="false"
-        :currentDate="datetime.dateObj"
+        :currentDate="datetime ? datetime.dateObj : undefined"
         :disabled="disableDate"
         :format="secondFormat ? 'HH:mm:ss' : 'HH:mm'"
         :minute-interval="5"
@@ -99,6 +99,9 @@ export default {
   },
   methods: {
     onDateSelected(d) {
+      if (!this.datetime) {
+        return;
+      }
       this.datetime.dateObj = d;
       this.emitUpdate();
     },
@@ -116,6 +119,9 @@ export default {
       this.$emit('input', syncedDate);
     },
     setValue(date) {
+      if (!this.datetime) {
+        return;
+      }
       this.datetime.dateObj = date;
       const hour = date.getHours();
       const minutes = date.getMinutes();
