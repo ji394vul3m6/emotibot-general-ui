@@ -30,6 +30,9 @@
         <search-input v-model="searchKeyWord" fill></search-input>
       </div>
       <div class="select-item-block">
+        <div v-if="action" class="select-item item-action" @click="onClickAction($event, action.onclick)">
+          <div>{{ action.text }}</div>
+        </div>
         <template v-if="filteredLocalOptions.length === 0">
           <div class="select-item item">
             <div class="select-text not-selectable" :style="selectTextStyle">
@@ -143,6 +146,12 @@ export default {
       type: Boolean,
       default: false,
     },
+    action: {
+      type: Object,
+      default() {
+        return undefined;
+      },
+    },
   },
   computed: {
     styleObj() {
@@ -207,6 +216,14 @@ export default {
       window.removeEventListener('click', this.hideListWhenEventTriggeredOutside);
       window.removeEventListener('scroll', this.hideListWhenEventTriggeredOutside, true);
       window.removeEventListener('resize', this.reposition);
+    },
+    onClickAction(e, action) {
+      const that = this;
+      if (action) {
+        action(e);
+      }
+      that.show = false;
+      that.removEventListeners();
     },
     selectGroup(idx) {
       const that = this;
@@ -512,6 +529,17 @@ $border-color: $color-borderline;
         }
         &.filterable {
           background: $color-select-hover;
+        }
+      }
+      &.item-action {
+        color: $color-primary;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        &:hover {
+          text-decoration: underline;
+          cursor: pointer;
         }
       }
       &.group {

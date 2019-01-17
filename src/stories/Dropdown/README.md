@@ -44,6 +44,7 @@
 | showSearchBar | - | Boolean | false | 是否可在下拉選單中搜尋選項
 | filterable | - | Boolean | false | 是否可直接在 Input 框中輸入關鍵字來搜尋選項
 | allowSelectGroup | - | Boolean | false | 在有分組且支援多選時，允許點選分組名，全選組內選項
+| action | - | Object | {<br> text: '顯示的文字', <br>onclick: func()<br>} | 可點擊進行其他自訂的操作，onclick function 接收 click event
 
 <a id="option"></a>
 ### props: option 格式說明

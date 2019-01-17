@@ -76,6 +76,7 @@ export default [{
     const template = `
       <div class="div-block">
         <div class="headline">DropdownSelect</div>
+        <div class="line">
         <dropdown-select
           :options=option
           :multi=multiChoice
@@ -84,6 +85,20 @@ export default [{
           :fixedListWidth="fixedListWidth"
           v-model="checkValues"
           :placeholder="placeholder"
+          @input="input"
+        />
+        </div>
+
+        <div class="headline">DropdownSelect prop:action 傳入其他操作</div>
+        <dropdown-select
+          :options=option
+          :multi=multiChoice
+          :showCheckedIcon=showCheck
+          :width=width
+          :fixedListWidth="fixedListWidth"
+          v-model="checkValues"
+          :placeholder="placeholder"
+          :action="action"
           @input="input"
         />
       </div>
@@ -219,11 +234,20 @@ export default [{
 
           flatOptions,
           groupOptions,
+
+          action: {
+            onclick: this.onclickAction,
+            text: '點我觸發其他動作',
+          },
         };
       },
       methods: {
         input(val) {
           action('input')(val);
+        },
+        onclickAction(val) {
+          action('點擊 action')(val);
+          console.log({ val });
         },
       },
       template: `<div>${template}</div>`,

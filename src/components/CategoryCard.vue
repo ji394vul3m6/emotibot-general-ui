@@ -1,9 +1,9 @@
 
 <template>
-  <div id="card-category">
-    <div id="card-category-header" v-if="!selectOnly">
-      <div id="card-category-header-block">
-        <div id="card-category-row">
+  <div class="card-category">
+    <div class="card-category-header" v-if="!selectOnly">
+      <div class="card-category-header-block">
+        <div class="card-category-row">
           <div class="card-category-title">{{ title }}</div>
           <div v-if="canSetting" class="card-category-setting" @click="toggleEditMode">
             <span v-if="isEditMode"> {{ $t('category.leave_setting') }}</span>
@@ -12,8 +12,8 @@
         </div>
         <search-input ref="categorySearchBox" v-model="categoryNameKeyword"></search-input>
       </div>
-      <div id="card-category-add-root" v-if="isEditMode && canCreate" @click="addRootCategory"> 
-        <input id="add-root" type="text"
+      <div class="card-category-add-root" v-if="isEditMode && canCreate" @click="addRootCategory"> 
+        <input class="add-root" type="text"
           v-if="isAddingRoot" v-model="rootName" ref="rootName" 
           :placeholder="$t('category.placeholder_category_name')"
           @compositionstart="setCompositionState(true)"
@@ -21,7 +21,7 @@
           @blur="confirmRootNameOnMethod('click')"
           @keydown.enter="detectCompositionState"
           @keyup.enter="confirmRootNameOnMethod('enter')">
-        <div v-else id="add-root-btn">
+        <div v-else class="add-root-btn">
           <div class="icon-block">
             <icon icon-type="category_add" :size=16></icon>
           </div>
@@ -29,8 +29,8 @@
         </div>
       </div>
     </div>
-    <div id="card-category-content" ref="cardCategoryContent">
-      <div v-if="!hasSearchResult" id="no-category-search-result">
+    <div class="card-category-content" ref="cardCategoryContent">
+      <div v-if="!hasSearchResult" class="no-category-search-result">
         {{ $t('category.empty_search_result') }}
       </div>
       <category-tree-item v-for="child in categoryTree.children" 
@@ -45,7 +45,7 @@
         @itemNameChange="handleItemNameChange"
         @setActiveToAll="handleSetActiveToAll"></category-tree-item>
     </div>
-    <div id="card-category-footer" v-if="isEditMode && !selectOnly">
+    <div class="card-category-footer" v-if="isEditMode && !selectOnly">
       <div v-if="allowSubCategory && canCreate" 
         class="card-category-setting-option option-addsub"
         :class="{'option-disabled': this.currentActiveItem.layer === maxLayer || this.currentActiveItem.cid < 0}"
@@ -373,8 +373,8 @@ export default {
         const parentRef = this.findItemParentRef(this.currentActiveItem);
         if (parentRef === undefined) {  // parent is root
           const idxToDel = this.categoryTree.children
-            .findIndex(child => child.id === this.currentActiveItem.cid);
-          this.categoryTree.children.splice(idxToDel);
+            .findIndex(child => child.cid === this.currentActiveItem.cid);
+          this.categoryTree.children.splice(idxToDel, 1);
           // back to all
           this.handleSetActiveToAll();
         } else {
@@ -412,16 +412,16 @@ export default {
 @import 'styles/variable';
 $category-item-height: 32px;
 
-#card-category {
+.card-category {
   display: flex;
   flex-direction: column;
-  #card-category-header {
+  .card-category-header {
     background: #fcfcfc;
     flex: 0 0 auto;
-    #card-category-header-block {
+    .card-category-header-block {
       padding: 0 10px 14px 10px;
       border-bottom: 1px solid $color-borderline;
-      #card-category-row {
+      .card-category-row {
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -442,7 +442,7 @@ $category-item-height: 32px;
       }
     }
 
-    #card-category-add-root {
+    .card-category-add-root {
       background: #fcfcfc;
       height: $category-item-height;
       line-height: 18px;
@@ -453,7 +453,7 @@ $category-item-height: 32px;
       display: flex;
       align-items: center;
       input[type=text] {
-        &#add-root {
+        &.add-root {
           background: #fcfcfc;
           border: 0px;
           padding: 0px;
@@ -465,7 +465,7 @@ $category-item-height: 32px;
           }   
         }
       }
-      #add-root-btn {
+      .add-root-btn {
         @include font-14px();
         display: flex;
         align-items: center;
@@ -479,17 +479,17 @@ $category-item-height: 32px;
       }
     }
   }
-  #card-category-content {
+  .card-category-content {
     flex: 1 1 auto;
     @include auto-overflow();
     @include customScrollbar();
-    #no-category-search-result {
+    .no-category-search-result {
       height: $category-item-height;
       line-height: $category-item-height;
       text-align: center;
     }
   }
-  #card-category-footer {
+  .card-category-footer {
     flex: 0 0 auto;
     display: flex;
     background: #f8f8f8;
