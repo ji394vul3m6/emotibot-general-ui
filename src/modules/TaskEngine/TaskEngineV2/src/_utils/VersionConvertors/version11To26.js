@@ -53,27 +53,28 @@ export default {
           return conditions;
         }
         const cond2 = andCondtions[i + 1];
-        if (cond1.functions[0].function_name === 'cu_parser' &&
-            cond1.functions[0].content === 'Intent' &&
-            cond2.functions[0].function_name === 'key_val_match' &&
-            cond2.functions[0].content[0].compare === '==' &&
-            cond2.functions[0].content[0].key === 'Intent') {
-          i += 1;
-          conditions.push(
-            {
-              source: 'text',
-              functions: [
-                {
-                  function_name: 'intent_parser',
-                  content: {
-                    module: 'intent_engine_2.0',
-                    intentName: cond2.functions[0].content[0].val,
-                    to_key: 'Intent',
+        if ((cond1.functions[0].function_name === 'cu_parser' && cond1.functions[0].content === 'Intent') ||
+            (cond1.functions[0].function_name === 'custom_cu_parser')) {
+          if (cond2.functions[0].function_name === 'key_val_match' &&
+              cond2.functions[0].content[0].compare === '==' &&
+              cond2.functions[0].content[0].key === 'Intent') {
+            i += 1;
+            conditions.push(
+              {
+                source: 'text',
+                functions: [
+                  {
+                    function_name: 'intent_parser',
+                    content: {
+                      module: 'intent_engine_2.0',
+                      intentName: cond2.functions[0].content[0].val,
+                      to_key: 'Intent',
+                    },
                   },
-                },
-              ],
-            },
-          );
+                ],
+              },
+                );
+          }
         } else {
           conditions.push(cond1);
         }
