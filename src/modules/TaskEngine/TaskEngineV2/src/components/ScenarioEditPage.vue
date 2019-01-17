@@ -508,6 +508,21 @@ export default {
       }));
     },
     saveScenario() {
+      this.saveTaskEngineScenario();
+      this.saveTaskEngineIntents();
+    },
+    saveTaskEngineIntents() {
+      const uiNodes = this.nodeBlocks.map(nodeBlock => nodeBlock.data);
+      const triggerIntents = scenarioConvertor.parseTriggerIntents(uiNodes);
+      return taskEngineApi.saveTaskEngineIntents(
+        this.appId,
+        this.scenarioId,
+        triggerIntents,
+      ).then(() => {}, (err) => {
+        this.$notifyFail(`saveTaskEngineIntents failed, error:${err.message}`);
+      });
+    },
+    saveTaskEngineScenario() {
       const uiNodes = this.nodeBlocks.map(nodeBlock => nodeBlock.data);
       const nodes = scenarioConvertor.convertUiNodesToNodes(
         uiNodes,
@@ -515,8 +530,8 @@ export default {
         this.globalEdges,
       );
       // this.globalEdges = scenarioConvertor.appendActionToGlobalEdges(this.globalEdges);
-      const nodeInfo = scenarioConvertor.traverseEdges(nodes, this.globalEdges);
-      scenarioConvertor.generateWarnings(uiNodes, nodeInfo);
+      const nodeConnections = scenarioConvertor.traverseEdges(nodes, this.globalEdges);
+      scenarioConvertor.generateWarnings(uiNodes, nodeConnections);
       // scenarioConvertor.addBackContentTextArray(this, nodes, this.globalEdges);
       // update data
       const jsCode = {
