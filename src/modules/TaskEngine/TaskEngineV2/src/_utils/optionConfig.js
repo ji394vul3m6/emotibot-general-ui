@@ -246,7 +246,7 @@ export default {
     let textFuncs = [
       'match', 'contains', 'regular_exp', 'nlu_parser', 'common_parser',
       'task_parser', 'hotel_parser', 'user_custom_parser', 'polarity_parser', 'api_parser',
-      'qq', 'intent_parser',
+      'intent_parser',
     ];
     let globalInfoFuncs = [
       'key_val_match', 'key_key_match', 'contain_key', 'not_contain_key', 'list_length_match',

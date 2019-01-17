@@ -523,7 +523,10 @@
                 <span class="label" v-t="'task_engine_v2.condition_action_block.label_get_surname'"></span>
                 <toggle v-model="action.nluPersionName" :size="'medium'" @change="nluPersonNameChange(action)" :showLabel="true" :label="toggleLabel"></toggle>               
               </div>
-              <div class="row">
+              <div class="row"
+                v-if="action.content.tags!==NLUParserMap.SELECT_CUSTOMIZE_OPTIONS &&
+                      action.content.tags!==NLUParserMap.SELECT_OPTIONS_IN_KEY &&
+                      action.content.tags!==NLUParserMap.POLARITY">
                 <span class="label" v-t="'task_engine_v2.condition_action_block.label_has_context'"></span>
                 <toggle v-model="action.content.has_context" :size="'medium'" :showLabel="true" :label="toggleLabel"></toggle>
               </div>
@@ -919,10 +922,12 @@ export default {
           action.content.tags = NLUParserMap.SELECT_CUSTOMIZE_OPTIONS;
           action.content.options = [''];
           action.content.fuzzy_match = true;
+          action.content.has_context = true;
           break;
         }
         case NLUTypeMap.POLARITY: {
           action.content.tags = NLUParserMap.POLARITY;
+          action.content.has_context = true;
           break;
         }
         default:

@@ -304,7 +304,7 @@ export default {
         to_key: '',
       },
       polarity_parser: {
-        key: '',
+        key: 'POLARITY',
         key_suffix: `_${nodeId}`,
       },
       api_parser: '',

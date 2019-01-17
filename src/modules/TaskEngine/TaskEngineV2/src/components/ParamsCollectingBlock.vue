@@ -190,7 +190,10 @@
             </div>
             <toggle v-model="parser.content.fuzzy_match" class="row-content" :size="'medium'" :showLabel="true" :label="toggleLabel"></toggle>
           </div>
-          <div class="row">
+          <div class="row"
+            v-if="parser.content.tags!==NLUParserMap.SELECT_CUSTOMIZE_OPTIONS &&
+                  parser.content.tags!==NLUParserMap.SELECT_OPTIONS_IN_KEY &&
+                  parser.content.tags!==NLUParserMap.POLARITY">
             <div class="label label-start">
               {{$t("task_engine_v2.condition_action_block.label_has_context")}}
             </div>
@@ -532,6 +535,10 @@ export default {
         this.parsers[index].content.tags = NLUParserMap.SELECT_CUSTOMIZE_OPTIONS;
         this.parsers[index].content.options = [''];
         this.parsers[index].content.fuzzy_match = true;
+        this.parsers[index].content.has_context = true;
+      } else if (newValue[0] === optionConfig.NLUTypeMap.POLARITY) {
+        this.parsers[index].content.tags = NLUParserMap.POLARITY;
+        this.parsers[index].content.has_context = true;
       } else {
         this.parsers[index].content.tags = newValue[0].toUpperCase();
       }

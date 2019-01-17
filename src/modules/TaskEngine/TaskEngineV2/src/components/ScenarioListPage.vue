@@ -111,6 +111,7 @@
 <script>
 import taskEngineApi from '@/modules/TaskEngine/_api/taskEngine';
 import general from '@/modules/TaskEngine/_utils/general';
+import config from '@/modules/TaskEngine/_utils/config';
 // import event from '@/utils/js/event';
 import CreateScenarioPop from './CreateScenarioPop';
 import scenarioInitializer from '../_utils/scenarioInitializer';
@@ -293,8 +294,8 @@ export default {
       const files = this.$refs.uploadScenarioJSONInput.files;
       const file = files[0] || undefined;
       const that = this;
-      if (file.size <= 0 || file.size > 2 * 1024 * 1024) {
-        // maximum size: 2MB
+      if (file.size <= 0 || file.size > config.MaximumFileSize) {
+        // maximum size: 10 MB
         that.$notifyFail(that.$t('error_msg.upload_file_size_error'));
       } else {
         that.uploadScenarioJSON(this.appId, file).then(() => {

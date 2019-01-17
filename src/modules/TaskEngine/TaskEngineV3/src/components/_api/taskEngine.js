@@ -1,4 +1,5 @@
 import axios from 'axios';
+import config from '@/modules/TaskEngine/_utils/config';
 
 const QS = require('qs');
 
@@ -134,7 +135,7 @@ export default {
           reject('Empty file');
         }, 0);
       });
-    } else if (file.size <= 0 || file.size > 2 * 1024 * 1024) {
+    } else if (file.size <= 0 || file.size > config.MaximumFileSize) {
       return new Promise((resolve, reject) => {
         setTimeout(() => {
           reject('File size need more than 0, less than 2MB');
@@ -157,7 +158,7 @@ export default {
           reject('Empty file');
         }, 0);
       });
-    } else if (file.size <= 0 || file.size > 2 * 1024 * 1024) {
+    } else if (file.size <= 0 || file.size > config.MaximumFileSize) {
       return new Promise((resolve, reject) => {
         setTimeout(() => {
           reject('File size need more than 0, less than 2MB');
