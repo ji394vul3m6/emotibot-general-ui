@@ -20,4 +20,3 @@ export const HIDE_USER_PREFERENCE = 'hideUserPreference';
 export const SET_LANGUAGE = 'setLanguage';
 export const SET_ENV = 'setENV';
 export const SET_UI_MODULES = 'setUIModules';
-

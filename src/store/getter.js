@@ -108,4 +108,4 @@ export const showLanguage = (s) => {
 };
 
 export const environment = s => s.env;
-export const UIModules = s => s.ui_modules;
+export const UIModules = s => s.uiModules;
