@@ -135,6 +135,9 @@ export default {
       this.isFocus = bool;
     },
   },
+  mounted() {
+    this.text = this.value;
+  },
 };
 </script>
 

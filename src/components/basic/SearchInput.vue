@@ -52,6 +52,9 @@ export default {
       this.$emit('focus', bool);
     },
   },
+  mounted() {
+    this.keyword = this.value;
+  },
 };
 </script>
 
