@@ -212,9 +212,9 @@ export default {
   watch: {
     currentPage(val) {
       if (val === 'auditEnterprise') {
-        this.$router.push(auditEnterprisePage);
+        this.$router.replace(auditEnterprisePage);
       } else if (val === 'auditSystem') {
-        this.$router.push(auditSystemPage);
+        this.$router.replace(auditSystemPage);
       }
     },
     expertMode(val) {
