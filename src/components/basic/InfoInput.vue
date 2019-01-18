@@ -7,7 +7,7 @@
       :maxlength="maxlength"
       :type="type"
       :autocomplete="autocomplete"
-      @keyup="$emit('input', text)"
+      @input="$emit('input', text)"
       @focus="toggleFocus(true)"
       @blur="toggleFocus(false)">
     <div ref="infoIcon" class="input-icon info-icon" 
