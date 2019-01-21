@@ -56,10 +56,10 @@ export default {
       return this.$hasRight('edit');
     },
     canDelete() {
-      return this.$hasRight('delete');
+      return this.$hasRight('edit');
     },
     canCreate() {
-      return this.$hasRight('create');
+      return this.$hasRight('edit');
     },
   },
   methods: {
