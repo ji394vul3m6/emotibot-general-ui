@@ -100,7 +100,6 @@ function getTrainingStatus() {
   return this.$reqGet(GET_TRAINING_STATUS_URL)
     .then((rsp) => {
       const result = rsp.data.result;
-      let status = '';
       // const IE = result.ie_status;
       // // const RE = result.re_status;
 
@@ -114,17 +113,15 @@ function getTrainingStatus() {
       // } else {
       //   status = 'TRAINED';
       // }
-
-      if (result.status === 'TRAINING') {
-        status = 'TRAINING';
-      } else if (result.status === 'NEED_TRAIN') {
-        status = 'NOT_TRAINED';
-      } else if (result.status === 'TRAIN_FAILED') {
-        status = 'TRAIN_FAILED';
-      } else {
-        status = 'TRAINED';
+      switch (result.status) {
+        case 'TRAINING':
+        case 'NOT_TRAINED':
+        case 'TRAIN_FAILED':
+          break;
+        default:
+          result.status = 'TRAINED';
       }
-      return status;
+      return result;
     });
 }
 
