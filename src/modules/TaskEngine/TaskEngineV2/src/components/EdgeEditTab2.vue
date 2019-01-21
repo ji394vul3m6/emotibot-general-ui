@@ -143,7 +143,7 @@ export default {
     this.exitEdge = { text: this.$t('task_engine_v2.to_node_option.exit_zh'), value: '0' };
     this.parseFailedEdge = {
       text: this.$t('task_engine_v2.to_node_option.parse_fail'),
-      value: this.nodeId,
+      value: 'parseFailedEdge',
     };
     this.addNewDialogueNodeEdge = {
       text: this.$t('task_engine_v2.to_node_option.add_new_dialogue_node_2'),

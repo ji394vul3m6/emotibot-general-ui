@@ -661,8 +661,8 @@ export default {
       condition_rules: [],
       actions: [],
     };
-    if (nodeId === toNode) {
-      // 解析失败处理
+    if (toNode === 'parseFailedEdge') {
+      edge.to_node_id = nodeId;
       edge.actions = [
         this.actionSetParseFailed(true),
       ];
