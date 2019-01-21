@@ -79,7 +79,10 @@
           <!-- Intent -->
           <div class="row" v-if="rule.funcName === 'intent_parser'">
             <span class="label" v-t="'task_engine_v2.condition_action_block.label_content'"></span>
-            <div class="dropdown-container" v-dropdown="renderIntentDropdown(index)">
+            <div class="dropdown-container"
+              :key="intentDropdown.options.length ? `${index}_has_options`: index"
+              v-dropdown="renderIntentDropdown(index)"
+            >
               <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.intentName" @focus="onInputFocus">
             </div>
           </div>
