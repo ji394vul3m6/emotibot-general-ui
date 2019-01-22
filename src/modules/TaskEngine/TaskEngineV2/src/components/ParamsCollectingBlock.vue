@@ -302,6 +302,7 @@
 <script>
 import event from '@/utils/js/event';
 import DropdownSelect from '@/components/DropdownSelect';
+import general from '@/modules/TaskEngine/_utils/general';
 import scenarioInitializer from '../_utils/scenarioInitializer';
 import optionConfig from '../_utils/optionConfig';
 
@@ -385,6 +386,7 @@ export default {
         parse_failed_msg: this.parse_failed_msg,
         parsers: this.parsers,
       };
+      param.valid = this.isValid();
       this.$emit('update', param);
     },
     renderConditionContent() {
@@ -567,23 +569,11 @@ export default {
       this.$forceUpdate();
       // this.emitUpdate();
     },
-    validate() {
-      if (this.$refs['input-content']) {
-        let valid = true;
-        let refs = this.$refs['input-content'];
-        if (!Array.isArray(refs)) {
-          refs = [refs];
-        }
-        refs.forEach((el) => {
-          if (!el.value) {
-            valid = false;
-            el.dispatchEvent(event.createEvent('tooltip-show'));
-          }
-        });
-        this.$emit('update:valid', valid);
-      } else {
-        this.$emit('update:valid', true);
-      }
+    isValid() {
+      return general.isInputContentsValid(this.$refs['input-content']);
+    },
+    showToolTip() {
+      general.showInputContentTooltip(this.$refs['input-content']);
     },
   },
   beforeMount() {
@@ -591,7 +581,7 @@ export default {
     this.renderHasRequiredParser();
   },
   mounted() {
-    this.$on('validate', this.validate);
+    this.$on('showToolTip', this.showToolTip);
   },
 };
 </script>

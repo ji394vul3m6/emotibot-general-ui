@@ -18,9 +18,7 @@
         :toNodeOptions="toNodeOptions"
         :mapTableOptions="mapTableOptions"
         :globalVarOptions="globalVarOptions"
-        :validateConditionBlock="validateTab"
         :jsCodeAlias="jsCodeAlias"
-        @update:valid="$set(edge, 'valid', $event); if ($event) {isAllConditionBlockValid()}"
         @update="updateNormalEdge(index, $event)"
         @deleteEdge="deleteEdge(index)"
         @addNewDialogueNode="addNewDialogueNode">
@@ -92,10 +90,6 @@ export default {
     ConditionActionBlock,
   },
   props: {
-    validateTab: {
-      type: Boolean,
-      default: false,
-    },
     edgeTab: {
       type: Object,
       required: true,
@@ -180,18 +174,6 @@ export default {
     };
   },
   watch: {
-    validateTab(newV, oldV) {
-      if (newV && !oldV) {
-        let valid = true;
-        if (this.$refs['input-content'] && !this.$refs['input-content'].value) {
-          valid = false;
-          this.$refs['input-content'].dispatchEvent(event.createEvent('tooltip-show'));
-        }
-        if (!this.normalEdges.length) {
-          this.$emit('update:valid', valid);
-        }
-      }
-    },
     'normalEdges.length': function (newV, oldV) { // eslint-disable-line
       if (newV > oldV) {
         this.$nextTick(() => {
@@ -332,24 +314,41 @@ export default {
       if (this.exceedThenGoto !== null) {
         edgeTab.exceedThenGoto = this.exceedThenGoto;
       }
-      // console.log(edgeTab);
       this.$emit('update', edgeTab);
-    },
-    isAllConditionBlockValid() {
-      let valid = true;
-      this.normalEdges.forEach((rule) => {
-        if (!rule.valid) {
-          valid = false;
-        }
-      });
-      if (this.$refs['input-content'] && !this.$refs['input-content'].value) {
-        valid = false;
-      }
-      this.$emit('update:valid', valid);
+      this.$emit('update:valid', this.isValid());
     },
     onInputFocus(evt) {
       evt.target.dispatchEvent(event.createEvent('tooltip-hide'));
     },
+    isValid() {
+      const valid = general.isInputContentsValid(this.$refs['input-content']);
+      if (!valid) {
+        return false;
+      }
+      for (let i = 0; i < this.normalEdges.length; i += 1) {
+        const edge = this.normalEdges[i];
+        if (!edge.valid) {
+          return false;
+        }
+      }
+      return true;
+    },
+    showToolTip() {
+      general.showInputContentTooltip(this.$refs['input-content']);
+      const conditionActionBlocks = this.$refs.conditionActionBlock;
+      if (conditionActionBlocks) {
+        let blocks = conditionActionBlocks;
+        if (!Array.isArray(blocks)) {
+          blocks = [blocks];
+        }
+        blocks.forEach((block) => {
+          block.$emit('showToolTip');
+        });
+      }
+    },
+  },
+  mounted() {
+    this.$on('showToolTip', this.showToolTip);
   },
 };
 </script>

@@ -1,28 +1,11 @@
 // import * as cookie from 'tiny-cookie';
 // import ErrorAlert from '../components/ErrorAlert';
+import event from '@/utils/js/event';
 
 export default {
-  getAppId() {
-    // const robotDataJson = JSON.parse(cookie.getRaw('robotDataJson'));
-    // return robotDataJson.appid;
-  },
   popErrorWindow(context, msg, err) {
     context.$root.$popError(msg, err);
   },
-  // popErrorWindow(context, msg, err, width = '30%', height = '30%') {
-  //   context.$root.$emit('showWindow', {
-  //     component: ErrorAlert,
-  //     data: {
-  //       msg,
-  //       info: err,
-  //     },
-  //     buttons: ['ok'],
-  //     customPopContentStyle: {
-  //       width,
-  //       height,
-  //     },
-  //   });
-  // },
   getLocalDateTimeIsoString() {
     return new Date().toISOString().slice(0, 19).replace('T', ' ');
   },
@@ -62,4 +45,33 @@ export default {
     });
     return `${newNodeName}_${index}`;
   },
+  isInputContentsValid(inputContentRefs) {
+    if (inputContentRefs) {
+      let inputContents = inputContentRefs;
+      if (!Array.isArray(inputContents)) {
+        inputContents = [inputContents];
+      }
+      for (let i = 0; i < inputContents.length; i += 1) {
+        const el = inputContents[i];
+        if (!el.value) {
+          return false;
+        }
+      }
+    }
+    return true;
+  },
+  showInputContentTooltip(inputContentRefs) {
+    if (inputContentRefs) {
+      let inputContents = inputContentRefs;
+      if (!Array.isArray(inputContents)) {
+        inputContents = [inputContents];
+      }
+      inputContents.forEach((el) => {
+        if (!el.value) {
+          el.dispatchEvent(event.createEvent('tooltip-show'));
+        }
+      });
+    }
+  },
+
 };

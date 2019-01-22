@@ -5,6 +5,8 @@
     <input class="input-rounded" ref="input-content" v-tooltip="tooltip"
       v-model="nodeName"
       @focus="onInputFocus"/>
+    <!-- <input class="input-rounded" ref="input-content" v-tooltip="tooltip"
+      @focus="onInputFocus"/> -->
   </div>
   <div class="block fill-h reset-margin">
     <div class="label-header">{{$t('task_engine_v2.setting_edit_tab2.response_setting')}}</div>
@@ -82,14 +84,11 @@
 
 <script>
 import event from '@/utils/js/event';
+import general from '@/modules/TaskEngine/_utils/general';
 import optionConfig from '../_utils/optionConfig';
 
 export default {
   props: {
-    validateTab: {
-      type: Boolean,
-      default: false,
-    },
     settingTab: {
       type: Object,
       required: true,
@@ -161,17 +160,10 @@ export default {
     },
   },
   watch: {
-    validateTab(newV, oldV) {
-      if (newV && !oldV) {
-        const valid = this.isUsingResponse ?
-        [this.isValueEmpty(this.$refs['input-content'])]
-        .indexOf(false) === -1 : true;
-        this.$emit('update:valid', valid);
-      }
-    },
     result: {
       handler() {
         this.$emit('update', this.result);
+        this.$emit('update:valid', this.isValid());
       },
       deep: true,
     },
@@ -180,14 +172,15 @@ export default {
     onInputFocus(evt) {
       evt.target.dispatchEvent(event.createEvent('tooltip-hide'));
     },
-    isValueEmpty(el) {
-      let valid = true;
-      if (!el.value) {
-        valid = false;
-        el.dispatchEvent(event.createEvent('tooltip-show'));
-      }
-      return valid;
+    isValid() {
+      return general.isInputContentsValid(this.$refs['input-content']);
     },
+    showToolTip() {
+      general.showInputContentTooltip(this.$refs['input-content']);
+    },
+  },
+  mounted() {
+    this.$on('showToolTip', this.showToolTip);
   },
 };
 </script>
@@ -243,7 +236,7 @@ export default {
     }
     display: flex;
     flex-direction: column;
-    margin: 0px 0px 20px 0px;
+    padding: 0px 0px 20px 0px;
     .label-header {
       @include font-14px();
       color: $color-font-active;

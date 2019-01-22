@@ -4,6 +4,7 @@
     <template v-for="(edge, index) in normalEdges">
       <condition-block
         class="condition-block"
+        ref="conditionBlock"
         :key="edge.id"
         :nodeId="nodeId"
         :initialEdge="edge"
@@ -11,9 +12,7 @@
         :toNodeOptions="toNodeOptions"
         :mapTableOptions="mapTableOptions"
         :globalVarOptions="globalVarOptions"
-        :validateConditionBlock="validateTab"
         :jsCodeAlias="jsCodeAlias"
-        @update:valid="$set(edge, 'valid', $event); if ($event) {isAllConditionBlockValid()}"
         @update="updateNormalEdge(index, $event)"
         @deleteEdge="deleteEdge(index)"
         @addNewDialogueNode="addNewDialogueNode">
@@ -43,10 +42,6 @@ export default {
     'condition-block': ConditionBlock,
   },
   props: {
-    validateTab: {
-      type: Boolean,
-      default: false,
-    },
     paramsCollectingEdgeTab: {
       type: Object,
       required: true,
@@ -187,15 +182,28 @@ export default {
         newNodeOptions: this.newNodeOptions,
       };
       this.$emit('update', pcEdgeTab);
+      this.$emit('update:valid', this.isValid());
     },
-    isAllConditionBlockValid() {
-      let valid = true;
-      this.normalEdges.forEach((rule) => {
-        if (!rule.valid) {
-          valid = false;
+    isValid() {
+      for (let i = 0; i < this.normalEdges.length; i += 1) {
+        const edge = this.normalEdges[i];
+        if (!edge.valid) {
+          return false;
         }
-      });
-      this.$emit('update:valid', valid);
+      }
+      return true;
+    },
+    showToolTip() {
+      const conditionBlocks = this.$refs.conditionBlock;
+      if (conditionBlocks) {
+        let blocks = conditionBlocks;
+        if (!Array.isArray(blocks)) {
+          blocks = [blocks];
+        }
+        blocks.forEach((block) => {
+          block.$emit('showToolTip');
+        });
+      }
     },
   },
   beforeCreate() {
@@ -206,6 +214,9 @@ export default {
       value: 'add_new_dialogue_node',
       isButton: true,
     };
+  },
+  mounted() {
+    this.$on('showToolTip', this.showToolTip);
   },
 };
 </script>

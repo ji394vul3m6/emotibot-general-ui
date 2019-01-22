@@ -649,7 +649,7 @@
       <div class="label label-margin-left">
         {{$t("task_engine_v2.params_collecting_edge_tab.failed_description")}}
       </div>
-      <input ref="input-content" v-tooltip="inputTooltip" class="input-limit" v-model="dialogueLimit" @focus="onInputFocus"></input>
+      <input ref="input-content" v-tooltip="inputTooltip" class="input-limit" v-model.number="dialogueLimit" @focus="onInputFocus"></input>
       <div class="label">
         {{$t("task_engine_v2.edge_edit_tab.label_time")}}
       </div>
@@ -689,6 +689,7 @@ import event from '@/utils/js/event';
 import DropdownSelect from '@/components/DropdownSelect';
 import Toggle from '@/components/basic/Toggle';
 import intentApi from '@/modules/IntentEngine/_api/intent';
+import general from '@/modules/TaskEngine/_utils/general';
 import scenarioInitializer from '../_utils/scenarioInitializer';
 import optionConfig from '../_utils/optionConfig';
 
@@ -728,10 +729,6 @@ export default {
     initialDialogueLimit: {
       type: Number,
       required: false,
-    },
-    validateConditionBlock: {
-      type: Boolean,
-      default: false,
     },
     jsCodeAlias: {
       type: Array,
@@ -831,26 +828,6 @@ export default {
           }
         });
       },
-    },
-    validateConditionBlock(newV, oldV) {
-      if (newV && !oldV) {
-        let valid = true;
-        if (this.$refs['input-content']) {
-          let refs = this.$refs['input-content'];
-          if (!Array.isArray(refs)) {
-            refs = [refs];
-          }
-          refs.forEach((el) => {
-            if (!el.value) {
-              valid = false;
-              el.dispatchEvent(event.createEvent('tooltip-show'));
-            }
-          });
-          this.$emit('update:valid', valid);
-        } else {
-          this.$emit('update:valid', true);
-        }
-      }
     },
   },
   methods: {
@@ -1058,6 +1035,7 @@ export default {
           }))],
         };
       }
+      conditionBlock.valid = this.isValid();
       // console.log(conditionBlock);
       this.$emit('update', conditionBlock);
     },
@@ -1169,11 +1147,18 @@ export default {
       }
       this.$forceUpdate();
     },
+    isValid() {
+      return general.isInputContentsValid(this.$refs['input-content']);
+    },
+    showToolTip() {
+      general.showInputContentTooltip(this.$refs['input-content']);
+    },
   },
   beforeMount() {
     this.renderConditionContent();
   },
   mounted() {
+    this.$on('showToolTip', this.showToolTip);
     this.$api.getIntentsDetail().then((intents) => {
       this.intentDropdown.options = intents.map(intent => ({
         ...intent,

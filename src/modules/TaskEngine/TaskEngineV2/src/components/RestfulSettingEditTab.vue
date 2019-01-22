@@ -9,7 +9,7 @@
   </div>
   <div class="block">
     <div class="label-header">{{$t("task_engine_v2.setting_edit_tab.node_name")}}</div>
-    <input class="input-rounded" ref="input-name" v-tooltip="tooltip" @focus="onInputFocus"
+    <input class="input-rounded" ref="required-input-name" v-tooltip="tooltip" @focus="onInputFocus"
       v-model="nodeName">
     </input>
   </div>
@@ -17,7 +17,7 @@
     <div class="label-header">{{$t("task_engine_v2.restful_setting_edit_tab.restful_data_retrieve")}}</div>
     <div class="row">
       <div class="label-text">{{$t("task_engine_v2.restful_setting_edit_tab.data_save_in_key")}}</div>
-      <input class="input-key" ref="input-varname" v-tooltip="tooltip" @focus="onInputFocus" v-model="rtnVarName"></input>
+      <input class="input-key" ref="required-input-varname" v-tooltip="tooltip" @focus="onInputFocus" v-model="rtnVarName"></input>
     </div>
     <div class="row">
       <div class="label-text">{{$t("task_engine_v2.restful_setting_edit_tab.method")}}</div>
@@ -34,7 +34,7 @@
     </div>
     <div class="row">
       <div class="label-text">{{$t("task_engine_v2.restful_setting_edit_tab.url")}}</div>
-      <input class="input-url" ref="input-url" v-tooltip="tooltip" @focus="onInputFocus" v-model="url"></input>
+      <input class="input-url" ref="required-input-url" v-tooltip="tooltip" @focus="onInputFocus" v-model="url"></input>
     </div>
     <div class="label-sub-header">Header</div>
     <div class="row">
@@ -61,6 +61,7 @@
 <script>
 import event from '@/utils/js/event';
 import DropdownSelect from '@/components/DropdownSelect';
+import general from '@/modules/TaskEngine/_utils/general';
 
 export default {
   name: 'restful-setting-edit-page',
@@ -68,10 +69,6 @@ export default {
     'dropdown-select': DropdownSelect,
   },
   props: {
-    validateTab: {
-      type: Boolean,
-      default: false,
-    },
     initialRestfulSettingTab: {
       type: Object,
       required: true,
@@ -125,21 +122,10 @@ export default {
     },
   },
   watch: {
-    validateTab(newV, oldV) {
-      if (newV && !oldV) {
-        let valid = true;
-        Object.entries(this.$refs).forEach(([key, el]) => {
-          if (key.indexOf('input-') !== -1 && !el.value) {
-            valid = false;
-            el.dispatchEvent(event.createEvent('tooltip-show'));
-          }
-        });
-        this.$emit('update:valid', valid);
-      }
-    },
     restfulSettingTab: {
       handler() {
         this.$emit('update', this.restfulSettingTab);
+        this.$emit('update:valid', this.isValid());
         // console.log(this.restfulEdgeTab);
       },
       deep: true,
@@ -163,6 +149,19 @@ export default {
     onInputFocus(evt) {
       evt.target.dispatchEvent(event.createEvent('tooltip-hide'));
     },
+    isValid() {
+      const requiredInputs = Object.keys(this.$refs).filter(refName => refName.indexOf('required-input-') !== -1);
+      const elements = requiredInputs.map(refName => this.$refs[refName]);
+      return general.isInputContentsValid(elements);
+    },
+    showToolTip() {
+      const requiredInputs = Object.keys(this.$refs).filter(refName => refName.indexOf('required-input-') !== -1);
+      const elements = requiredInputs.map(refName => this.$refs[refName]);
+      general.showInputContentTooltip(elements);
+    },
+  },
+  mounted() {
+    this.$on('showToolTip', this.showToolTip);
   },
 };
 </script>

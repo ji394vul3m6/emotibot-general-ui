@@ -576,6 +576,7 @@ import event from '@/utils/js/event';
 import DropdownSelect from '@/components/DropdownSelect';
 import intentApi from '@/modules/IntentEngine/_api/intent';
 import Toggle from '@/components/basic/Toggle';
+import general from '@/modules/TaskEngine/_utils/general';
 import scenarioInitializer from '../_utils/scenarioInitializer';
 import optionConfig from '../_utils/optionConfig';
 
@@ -616,10 +617,6 @@ export default {
     mapTableOptions: {
       type: Array,
       required: true,
-    },
-    validateConditionBlock: {
-      type: Boolean,
-      default: false,
     },
     jsCodeAlias: {
       type: Array,
@@ -778,26 +775,6 @@ export default {
           }
         });
       },
-    },
-    validateConditionBlock(newV, oldV) {
-      if (newV && !oldV) {
-        let valid = true;
-        if (this.$refs['input-content']) {
-          let refs = this.$refs['input-content'];
-          if (!Array.isArray(refs)) {
-            refs = [refs];
-          }
-          refs.forEach((el) => {
-            if (!el.value) {
-              valid = false;
-              el.dispatchEvent(event.createEvent('tooltip-show'));
-            }
-          });
-          this.$emit('update:valid', valid);
-        } else {
-          this.$emit('update:valid', true);
-        }
-      }
     },
   },
   methods: {
@@ -1067,7 +1044,10 @@ export default {
           },
         })),
       };
-      this.$emit('update', conditionBlock);
+      this.$nextTick(() => {
+        conditionBlock.valid = this.isValid();
+        this.$emit('update', conditionBlock);
+      });
     },
     entityModuleOptions(parser) {
       const entityModuleOptions = optionConfig.getEntityModuleOptionsMap();
@@ -1099,18 +1079,15 @@ export default {
       }
       this.$forceUpdate();
     },
+    isValid() {
+      return general.isInputContentsValid(this.$refs['input-content']);
+    },
+    showToolTip() {
+      general.showInputContentTooltip(this.$refs['input-content']);
+    },
   },
   mounted() {
-    // this.$api.getIntentsDetail().then((intents) => {
-    //   this.intentOptions = intents.map(intent => ({
-    //     ...intent,
-    //     text: intent.name,
-    //     value: {
-    //       module: 'intent_engine_2.0',
-    //       intentName: intent.name,
-    //     },
-    //   }));
-    // });
+    this.$on('showToolTip', this.showToolTip);
     this.$api.getIntentsDetail().then((intents) => {
       this.intentDropdown.options = intents.map(intent => ({
         ...intent,
