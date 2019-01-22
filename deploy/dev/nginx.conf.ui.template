@@ -56,8 +56,12 @@ http {
             set $enterprise_id $1;
         }
 
-        if ($http_x_enterprise != "") {
+        if ($enterprise_id = "") {
             set $enterprise_id $http_x_enterprise;
+        }
+
+        if ($enterprise_id = "") {
+            set $enterprise_id $http_x_enterpriseid;
         }
 
         proxy_set_header X-Real-IP $remote_addr;
