@@ -129,7 +129,7 @@ export default {
     const normalEdges = edgeTab.normalEdges.map((edge) => {
       const obj = { ...edge };
       obj.id = this.$uuid.v1();
-      obj.valid = false;
+      obj.valid = true;
       return obj;
     });
 
@@ -292,7 +292,7 @@ export default {
     addEdge() {
       const edge = scenarioInitializer.initialNormalEdge2();
       edge.id = this.$uuid.v1();
-      edge.valid = false;
+      edge.valid = true;
       this.normalEdges.push(edge);
       this.emitUpdate();
     },

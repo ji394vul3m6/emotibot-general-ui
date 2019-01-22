@@ -79,7 +79,7 @@ export default {
     const normalEdges = pcEdgeTab.normalEdges.map((edge) => {
       const obj = { ...edge };
       obj.id = this.$uuid.v1();
-      obj.valid = false;
+      obj.valid = true;
       return obj;
     });
 

@@ -273,7 +273,6 @@ export default {
       pageStyle: {
         width: '880px',
       },
-      valid: false,
       jsCodeAlias,
     };
   },
@@ -395,7 +394,6 @@ export default {
     },
     changeTab(tab) {
       this.currentTab = tab;
-      this.valid = false;
     },
     getAllTabs() {
       return {
@@ -529,15 +527,6 @@ export default {
             'validateSuccess',
             { nodeResult, newNodeOptions: this.newNodeOptions },
           );
-      }
-    },
-    onValidateResultUpdated(valid) {
-      if (valid) {
-        const nodeResult = this.composeNodeResult();
-        this.$emit(
-          'validateSuccess',
-          { nodeResult, newNodeOptions: this.newNodeOptions },
-        );
       }
     },
     cancelValidate() {

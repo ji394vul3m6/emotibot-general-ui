@@ -82,7 +82,7 @@ export default {
     const params = paramsCollectingTab.params.map((param) => {
       const obj = { ...param };
       obj.id = this.$uuid.v1();
-      obj.valid = false;
+      obj.valid = true;
       return obj;
     });
     return {
