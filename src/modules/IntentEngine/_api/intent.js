@@ -118,6 +118,9 @@ function getTrainingStatus() {
         case 'NOT_TRAINED':
         case 'TRAIN_FAILED':
           break;
+        case 'NEED_TRAIN':
+          result.status = 'NOT_TRAINED';
+          break;
         default:
           result.status = 'TRAINED';
       }

@@ -262,7 +262,6 @@ export default {
       const prevStatus = that.trainStatus;
       that.$api.getTrainingStatus(version)
       .then((rsp) => {
-        console.log(rsp);
         const status = rsp.status;
         that.fetchStatusError = false;
         if (status === 'TRAINING') {
