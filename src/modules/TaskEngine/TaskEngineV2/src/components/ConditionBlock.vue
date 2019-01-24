@@ -1112,17 +1112,17 @@ export default {
     },
     setNluTargetEntity(index, newValue) {
       if (newValue[0] === optionConfig.NLUTypeMap.TIME) {
-        this.andRules[index].content.tags = NLUParserMap.TIME_FUTURE;
+        this.$set(this.andRules[index].content, 'tags', NLUParserMap.TIME_FUTURE);
       } else if (newValue[0] === optionConfig.NLUTypeMap.SELECT) {
-        this.andRules[index].content.tags = NLUParserMap.SELECT_CUSTOMIZE_OPTIONS;
-        this.andRules[index].content.options = [''];
-        this.andRules[index].content.fuzzy_match = true;
-        this.andRules[index].content.has_context = true;
+        this.$set(this.andRules[index].content, 'tags', NLUParserMap.SELECT_CUSTOMIZE_OPTIONS);
+        this.$set(this.andRules[index].content, 'options', ['']);
+        this.$set(this.andRules[index].content, 'fuzzy_match', true);
+        this.$set(this.andRules[index].content, 'has_context', true);
       } else if (newValue[0] === optionConfig.NLUTypeMap.POLARITY) {
-        this.andRules[index].content.tags = NLUParserMap.POLARITY;
-        this.andRules[index].content.has_context = true;
+        this.$set(this.andRules[index].content, 'tags', NLUParserMap.POLARITY);
+        this.$set(this.andRules[index].content, 'has_context', true);
       } else {
-        this.andRules[index].content.tags = newValue[0].toUpperCase();
+        this.$set(this.andRules[index].content, 'tags', newValue[0].toUpperCase());
       }
       // this.emitUpdate();
     },
