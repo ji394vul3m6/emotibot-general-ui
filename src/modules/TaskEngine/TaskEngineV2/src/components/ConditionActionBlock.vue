@@ -871,6 +871,7 @@ export default {
         }
       }
       action.content = scenarioInitializer.initialFunctionContentV2(action.funcName, this.nodeId);
+      delete action.nluType;
       this.$forceUpdate();
     },
     nluParserInput(action, { nluType, source }) {
