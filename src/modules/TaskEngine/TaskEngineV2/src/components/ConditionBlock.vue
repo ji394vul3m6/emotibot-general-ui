@@ -1035,9 +1035,10 @@ export default {
           }))],
         };
       }
-      conditionBlock.valid = this.isValid();
-      // console.log(conditionBlock);
-      this.$emit('update', conditionBlock);
+      this.$nextTick(() => {
+        conditionBlock.valid = this.isValid();
+        this.$emit('update', conditionBlock);
+      });
     },
     entityModuleOptions(parser) {
       const entityModuleOptions = optionConfig.getEntityModuleOptionsMap();

@@ -900,8 +900,8 @@ export default {
         }
         case NLUTypeMap.SELECT: {
           action.content.tags = NLUParserMap.SELECT_CUSTOMIZE_OPTIONS;
-          action.content.options = [''];
-          action.content.fuzzy_match = true;
+          this.$set(action.content, 'options', ['']);
+          this.$set(action.content, 'fuzzy_match', true);
           action.content.has_context = true;
           break;
         }
@@ -987,6 +987,7 @@ export default {
     insertVarSelect(obj, key, value) {
       obj[key] = value;
       this.$forceUpdate();
+      this.emitUpdate();
     },
     renderIntentDropdown(index) {
       let options = this.intentDropdown.options.map((option) => {
