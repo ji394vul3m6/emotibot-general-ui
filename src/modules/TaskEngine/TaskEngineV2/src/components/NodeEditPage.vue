@@ -18,35 +18,31 @@
         :triggerTab="triggerTab"
         :globalVarOptions="globalVarOptions"
         :mapTableOptions="mapTableOptions"
-        :validateTab="validateTab"
         :jsCodeAlias="jsCodeAlias"
         :nodeId="nodeId"
-        @update:valid="valid = $event"
+        @update:valid="updateTabValidStatus('triggerTab', $event)"
         @update="triggerTab = $event"
       ></trigger-edit-tab>
       <setting-edit-tab ref="settingTab"
         v-if="currentTab === 'settingTab'"
         :settingTab="settingTab"
         :globalVarOptions="globalVarOptions"
-        :validateTab="validateTab"
         :nodeType="nodeType"
-        @update:valid="valid = $event"
+        @update:valid="updateTabValidStatus('settingTab', $event)"
         @update="settingTab = $event"
       ></setting-edit-tab>
       <setting-edit-tab2 ref="dialogue2SettingTab"
         v-if="currentTab === 'dialogue2SettingTab'"
         :settingTab="dialogue2SettingTab"
         :globalVarOptions="globalVarOptions"
-        :validateTab="validateTab"
         :nodeType="nodeType"
-        @update:valid="valid = $event"
+        @update:valid="updateTabValidStatus('dialogue2SettingTab', $event)"
         @update="dialogue2SettingTab = $event"
       ></setting-edit-tab2>
       <setting-basic-edit-tab ref="settingBasicTab"
         v-if="currentTab === 'settingBasicTab'"
         :settingBasicTab="settingBasicTab"
-        :validateTab="validateTab"
-        @update:valid="valid = $event"
+        @update:valid="updateTabValidStatus('settingBasicTab', $event)"
         @update="settingBasicTab = $event"
       ></setting-basic-edit-tab>
       <entity-collecting-edit-tab ref="entityCollectingTab"
@@ -57,8 +53,7 @@
         :initialREParsers="entityCollectingTab.re_parsers || []"
         :initialTDESetting="entityCollectingTab.tde_setting || {}"
         :initialRegisterJSON="entityCollectingTab.register_json || {}"
-        :validateTab="validateTab"
-        @update:valid="valid = $event"
+        @update:valid="updateTabValidStatus('entityCollectingTab', $event)"
         @update="entityCollectingTab.entityCollectorList = $event"
         @updateREParsers="entityCollectingTab.re_parsers = $event"
         @updateTDESetting="entityCollectingTab.tde_setting = $event"
@@ -70,8 +65,7 @@
         :initialEntityCollectorList="globalVarOptions"
         :initialToNodeOptions="toNodeOptions"
         :version="extData.version"
-        :validateTab="validateTab"
-        @update:valid="valid = $event"
+        @update:valid="updateTabValidStatus('actionTab', $event)"
         @update="actionTab = $event"
         @updateNewNodeOptions="updateNewNodeOptions"
       ></action-edit-tab>
@@ -80,7 +74,7 @@
         :paramsCollectingTab="paramsCollectingTab"
         :mapTableOptions="mapTableOptions"
         :nodeId="nodeId"
-        @update:valid="onValidateResultUpdated($event)"
+        @update:valid="updateTabValidStatus('paramsCollectingTab', $event)"
         @update="paramsCollectingTab = $event"
       ></params-collecting-edit-tab>
       <params-collecting-edge-edit-tab ref="paramsCollectingEdgeTab"
@@ -89,11 +83,10 @@
         :initialToNodeOptions="toNodeOptions"
         :globalVarOptions="globalVarOptions"
         :mapTableOptions="mapTableOptions"
-        :validateTab="validateTab"
         :jsCodeAlias="jsCodeAlias"
         :nodeId="nodeId"
         :nodeType="nodeType"
-        @update:valid="valid = $event"
+        @update:valid="updateTabValidStatus('paramsCollectingEdgeTab', $event)"
         @update="paramsCollectingEdgeTab = $event"
         @updateNewNodeOptions="updateNewNodeOptions"
       ></params-collecting-edge-edit-tab>
@@ -103,11 +96,10 @@
         :initialToNodeOptions="toNodeOptions"
         :globalVarOptions="globalVarOptions"
         :mapTableOptions="mapTableOptions"
-        :validateTab="validateTab"
         :jsCodeAlias="jsCodeAlias"
         :nodeId="nodeId"
         :nodeType="nodeType"
-        @update:valid="valid = $event"
+        @update:valid="updateTabValidStatus('edgeTab', $event)"
         @update="edgeTab = $event"
         @updateNewNodeOptions="updateNewNodeOptions"
       ></edge-edit-tab>
@@ -117,11 +109,10 @@
         :initialToNodeOptions="toNodeOptions"
         :globalVarOptions="globalVarOptions"
         :mapTableOptions="mapTableOptions"
-        :validateTab="validateTab"
         :jsCodeAlias="jsCodeAlias"
         :nodeId="nodeId"
         :nodeType="nodeType"
-        @update:valid="valid = $event"
+        @update:valid="updateTabValidStatus('edgeTab2', $event)"
         @update="edgeTab2 = $event"
         @updateNewNodeOptions="updateNewNodeOptions"
       ></edge-edit-tab2>
@@ -129,8 +120,7 @@
         v-if="currentTab === 'restfulSettingTab'"
         :initialRestfulSettingTab="restfulSettingTab"
         :initialToNodeOptions="toNodeOptions"
-        :validateTab="validateTab"
-        @update:valid="valid = $event"
+        @update:valid="updateTabValidStatus('restfulSettingTab', $event)"
         @update="restfulSettingTab = $event"
       ></restful-setting-edit-tab>
       <restful-edge-edit-tab ref="restfulEdgeTab"
@@ -138,8 +128,7 @@
         :nodeId="node.nodeId"
         :initialRestfulEdgeTab="restfulEdgeTab"
         :initialToNodeOptions="toNodeOptions"
-        :validateTab="validateTab"
-        @update:valid="valid = $event"
+        @update:valid="updateTabValidStatus('restfulEdgeTab', $event)"
         @update="restfulEdgeTab = $event"
         @updateNewNodeOptions="updateNewNodeOptions"
       ></restful-edge-edit-tab>
@@ -251,7 +240,11 @@ export default {
     });
     const currentTab = this.extData.currentTab || tabs[0];
     const allTabs = this.getAllTabs();
-    tabs = tabs.map(tab => allTabs[tab]);
+    tabs = tabs.map((t) => {
+      const tab = allTabs[t];
+      tab.valid = true;
+      return tab;
+    });
     const jsCodeAlias = this.extData.jsCodeAlias || [];
     return {
       currentTab,
@@ -280,8 +273,6 @@ export default {
       pageStyle: {
         width: '880px',
       },
-      validateTab: false,
-      valid: false,
       jsCodeAlias,
     };
   },
@@ -403,7 +394,6 @@ export default {
     },
     changeTab(tab) {
       this.currentTab = tab;
-      this.valid = false;
     },
     getAllTabs() {
       return {
@@ -483,7 +473,7 @@ export default {
       });
     },
     validResult(nodeResult) { // eslint-disable-line
-      return this.valid;
+      return true;
     },
     composeNodeResult() {
       const nodeResult = {
@@ -517,30 +507,26 @@ export default {
       }
       return nodeResult;
     },
+    updateTabValidStatus(tabType, valid) {
+      this.tabs.find(tab => tab.type === tabType).valid = valid;
+    },
     validate() {
-      if (this.currentTab === 'paramsCollectingTab') {
-        this.$refs[this.currentTab].$emit('validate');
-        return;
+      for (let i = 0; i < this.tabs.length; i += 1) {
+        const tab = this.tabs[i];
+        if (!tab.valid) {
+          this.currentTab = tab.type;
+          this.$nextTick(() => {
+            this.$refs[this.currentTab].$emit('showToolTip');
+          });
+          return;
+        }
       }
-      this.validateTab = true;
-      this.$nextTick(() => {
-        this.validateTab = false;
-        const nodeResult = this.composeNodeResult();
-        if (this.validResult(nodeResult)) {
-          this.$emit(
+      const nodeResult = this.composeNodeResult();
+      if (this.validResult(nodeResult)) {
+        this.$emit(
             'validateSuccess',
             { nodeResult, newNodeOptions: this.newNodeOptions },
           );
-        }
-      });
-    },
-    onValidateResultUpdated(valid) {
-      if (valid) {
-        const nodeResult = this.composeNodeResult();
-        this.$emit(
-          'validateSuccess',
-          { nodeResult, newNodeOptions: this.newNodeOptions },
-        );
       }
     },
     cancelValidate() {

@@ -18,15 +18,12 @@
 </template>
 
 <script>
+import general from '@/modules/TaskEngine/_utils/general';
 import event from '@/utils/js/event';
 
 export default {
   name: 'nlu-pc-setting-tab',
   props: {
-    validateTab: {
-      type: Boolean,
-      default: false,
-    },
     settingBasicTab: {
       type: Object,
       required: true,
@@ -59,15 +56,10 @@ export default {
     },
   },
   watch: {
-    validateTab(newV, oldV) {
-      if (newV && !oldV) {
-        const valid = this.isValueEmpty(this.$refs['input-content']);
-        this.$emit('update:valid', valid);
-      }
-    },
     settingTab: {
       handler() {
         this.$emit('update', this.settingTab);
+        this.$emit('update:valid', this.isValid());
       },
       deep: true,
     },
@@ -76,14 +68,15 @@ export default {
     onInputFocus(evt) {
       evt.target.dispatchEvent(event.createEvent('tooltip-hide'));
     },
-    isValueEmpty(el) {
-      let valid = true;
-      if (!el.value) {
-        valid = false;
-        el.dispatchEvent(event.createEvent('tooltip-show'));
-      }
-      return valid;
+    isValid() {
+      return general.isInputContentsValid(this.$refs['input-content']);
     },
+    showToolTip() {
+      general.showInputContentTooltip(this.$refs['input-content']);
+    },
+  },
+  mounted() {
+    this.$on('showToolTip', this.showToolTip);
   },
 };
 </script>

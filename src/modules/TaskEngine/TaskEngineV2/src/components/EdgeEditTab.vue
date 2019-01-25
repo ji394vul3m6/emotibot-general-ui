@@ -14,9 +14,7 @@
         :toNodeOptions="toNodeOptions"
         :mapTableOptions="mapTableOptions"
         :globalVarOptions="globalVarOptions"
-        :validateConditionBlock="validateTab"
         :jsCodeAlias="jsCodeAlias"
-        @update:valid="$set(edge, 'valid', $event); if ($event) {isAllConditionBlockValid()}"
         @update="updateNormalEdge(index, $event)"
         @deleteEdge="deleteEdge(index)"
         @addNewDialogueNode="addNewDialogueNode">
@@ -104,10 +102,6 @@ export default {
     'condition-block': ConditionBlock,
   },
   props: {
-    validateTab: {
-      type: Boolean,
-      default: false,
-    },
     edgeTab: {
       type: Object,
       required: true,
@@ -147,7 +141,7 @@ export default {
     const normalEdges = edgeTab.normalEdges.map((edge) => {
       const obj = { ...edge };
       obj.id = this.$uuid.v1();
-      obj.valid = false;
+      obj.valid = true;
       return obj;
     });
 
@@ -155,7 +149,7 @@ export default {
     this.exitEdge = { text: `${this.$t('task_engine_v2.to_node_option.exit')} (ID: 0)`, value: '0' };
     this.parseFailedEdge = {
       text: this.$t('task_engine_v2.to_node_option.parse_fail'),
-      value: this.nodeId,
+      value: 'parseFailedEdge',
     };
     this.addNewDialogueNodeEdge = {
       text: this.$t('task_engine_v2.to_node_option.add_new_dialogue_node'),
@@ -192,18 +186,6 @@ export default {
     };
   },
   watch: {
-    validateTab(newV, oldV) {
-      if (newV && !oldV) {
-        let valid = true;
-        if (this.$refs['input-content'] && !this.$refs['input-content'].value) {
-          valid = false;
-          this.$refs['input-content'].dispatchEvent(event.createEvent('tooltip-show'));
-        }
-        if (!this.normalEdges.length) {
-          this.$emit('update:valid', valid);
-        }
-      }
-    },
     dialogueLimit: {
       handler() {
         this.emitUpdate();
@@ -339,22 +321,40 @@ export default {
       }
       // console.log(edgeTab);
       this.$emit('update', edgeTab);
+      this.$emit('update:valid', this.isValid());
     },
-    isAllConditionBlockValid() {
-      let valid = true;
-      this.normalEdges.forEach((rule) => {
-        if (!rule.valid) {
-          valid = false;
-        }
-      });
-      if (this.$refs['input-content'] && !this.$refs['input-content'].value) {
-        valid = false;
+    isValid() {
+      const valid = general.isInputContentsValid(this.$refs['input-content']);
+      if (!valid) {
+        return false;
       }
-      this.$emit('update:valid', valid);
+      for (let i = 0; i < this.normalEdges.length; i += 1) {
+        const edge = this.normalEdges[i];
+        if (!edge.valid) {
+          return false;
+        }
+      }
+      return true;
     },
     onInputFocus(evt) {
       evt.target.dispatchEvent(event.createEvent('tooltip-hide'));
     },
+    showToolTip() {
+      general.showInputContentTooltip(this.$refs['input-content']);
+      const conditionBlocks = this.$refs.conditionBlock;
+      if (conditionBlocks) {
+        let blocks = conditionBlocks;
+        if (!Array.isArray(blocks)) {
+          blocks = [blocks];
+        }
+        blocks.forEach((block) => {
+          block.$emit('showToolTip');
+        });
+      }
+    },
+  },
+  mounted() {
+    this.$on('showToolTip', this.showToolTip);
   },
 };
 </script>

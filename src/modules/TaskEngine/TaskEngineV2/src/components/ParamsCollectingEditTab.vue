@@ -4,11 +4,10 @@
     <template v-for="(param, index) in params">
       <params-collecting-block
         :key="param.id"
-        :ref="`pc_block_${index}`"
+        ref="pcBlock"
         :nodeId="nodeId"
         :initialParam="param"
         :mapTableOptions="mapTableOptions"
-        @update:valid="onValidateResultUpdated($event)"
         @update="updateParam(index, $event)"
         @deleteParam="deleteParam(index)">
       </params-collecting-block>
@@ -83,7 +82,7 @@ export default {
     const params = paramsCollectingTab.params.map((param) => {
       const obj = { ...param };
       obj.id = this.$uuid.v1();
-      obj.valid = false;
+      obj.valid = true;
       return obj;
     });
     return {
@@ -91,7 +90,6 @@ export default {
       confirmMsg: paramsCollectingTab.confirmMsg || '',
       confirmMsgParseFail: paramsCollectingTab.confirmMsgParseFail || '',
       params,
-      blockValidArray: [],
     };
   },
   watch: {
@@ -109,6 +107,7 @@ export default {
       };
       // console.log(paramsCollectingTab);
       this.$emit('update', paramsCollectingTab);
+      this.$emit('update:valid', this.isValid());
     },
     updateParam(index, $event) {
       this.params[index] = { ...this.params[index], ...$event };
@@ -141,37 +140,25 @@ export default {
       this.confirmMsgParseFail = newValue;
       this.emitUpdate();
     },
-    isAllParamsCollectingBlockValid() {
-      let valid = true;
-      this.params.forEach((param) => {
+    isValid() {
+      for (let i = 0; i < this.params.length; i += 1) {
+        const param = this.params[i];
         if (!param.valid) {
-          valid = false;
+          return false;
         }
-      });
-      this.$emit('update:valid', valid);
-    },
-    validate() {
-      if (this.params.length === 0) {
-        this.$emit('update:valid', true);
       }
-      this.blockValidArray = [];
-      this.params.forEach((param, index) => {
-        const pcBlockRef = `pc_block_${index}`;
-        if (this.$refs[pcBlockRef]) {
-          this.$refs[pcBlockRef][0].$emit('validate');
-        }
-      });
+      return true;
     },
-    onValidateResultUpdated(valid) {
-      this.blockValidArray.push(valid);
-      if (this.blockValidArray.length === this.params.length) {
-        let validateResult = true;
-        this.blockValidArray.forEach((v) => {
-          if (v === false) {
-            validateResult = false;
-          }
+    showToolTip() {
+      const pcBlocks = this.$refs.pcBlock;
+      if (pcBlocks) {
+        let blocks = pcBlocks;
+        if (!Array.isArray(blocks)) {
+          blocks = [blocks];
+        }
+        blocks.forEach((block) => {
+          block.$emit('showToolTip');
         });
-        this.$emit('update:valid', validateResult);
       }
     },
   },
@@ -179,7 +166,7 @@ export default {
   },
   mounted() {
     this.emitUpdate();
-    this.$on('validate', this.validate);
+    this.$on('showToolTip', this.showToolTip);
   },
 };
 </script>

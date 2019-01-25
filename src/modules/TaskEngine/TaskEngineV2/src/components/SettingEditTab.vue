@@ -90,6 +90,7 @@
 <script>
 import event from '@/utils/js/event';
 import DropdownSelect from '@/components/DropdownSelect';
+import general from '@/modules/TaskEngine/_utils/general';
 import optionConfig from '../_utils/optionConfig';
 
 export default {
@@ -98,10 +99,6 @@ export default {
     'dropdown-select': DropdownSelect,
   },
   props: {
-    validateTab: {
-      type: Boolean,
-      default: false,
-    },
     settingTab: {
       type: Object,
       required: true,
@@ -162,17 +159,10 @@ export default {
     },
   },
   watch: {
-    validateTab(newV, oldV) {
-      if (newV && !oldV) {
-        const valid =
-        [this.isValueEmpty(this.$refs['input-content'])]
-        .indexOf(false) === -1;
-        this.$emit('update:valid', valid);
-      }
-    },
     result: {
       handler() {
         this.$emit('update', this.result);
+        this.$emit('update:valid', this.isValid());
       },
       deep: true,
     },
@@ -296,6 +286,15 @@ export default {
         })),
       };
     },
+    isValid() {
+      return general.isInputContentsValid(this.$refs['input-content']);
+    },
+    showToolTip() {
+      general.showInputContentTooltip(this.$refs['input-content']);
+    },
+  },
+  mounted() {
+    this.$on('showToolTip', this.showToolTip);
   },
 };
 </script>

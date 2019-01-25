@@ -58,10 +58,6 @@ export default {
     'dropdown-select': DropdownSelect,
   },
   props: {
-    validateTab: {
-      type: Boolean,
-      default: false,
-    },
     nodeId: {
       type: String,
       required: true,
@@ -110,11 +106,6 @@ export default {
     },
   },
   watch: {
-    validateTab(newV, oldV) {
-      if (newV && !oldV) {
-        this.$emit('update:valid', true);
-      }
-    },
     restfulEdgeTab: {
       handler() {
         if (this.restfulSucceedThenGoto === 'add_new_dialogue_node') {
@@ -128,6 +119,7 @@ export default {
           this.restfulFailedThenGoto = newNodeID;
         }
         this.$emit('update', this.restfulEdgeTab);
+        this.$emit('update:valid', this.isValid());
         // console.log(this.restfulEdgeTab);
       },
       deep: true,
@@ -179,11 +171,18 @@ export default {
       // render toNodeOptions
       this.composeOptions(this.initialToNodeOptions);
     },
+    isValid() {
+      return true;
+    },
+    showToolTip() {
+      general.showInputContentTooltip(this.$refs['input-content']);
+    },
   },
   beforeMount() {
     this.renderTabContent();
   },
   mounted() {
+    this.$on('showToolTip', this.showToolTip);
   },
 };
 </script>

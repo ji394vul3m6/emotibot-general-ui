@@ -744,6 +744,7 @@ export default {
     leaveEditCorpus(corpus, intent) {
       corpus.isEdit = false;
       intent.hasCorpusEditing = false;
+      this.$refs.editCorpus[0].dispatchEvent(event.createEvent('tooltip-hide'));
     },
     editCorpus(intent, corpus) {
       const that = this;

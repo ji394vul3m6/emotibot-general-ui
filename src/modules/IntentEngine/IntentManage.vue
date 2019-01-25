@@ -14,6 +14,8 @@
             <loading-line></loading-line>
             {{ $t('intent_engine.manage.train_status_msg.is_training', {percentage: trainingProgress}) }}
           </div>
+          <div v-else-if="!lastTrainedTime" class="train-hint">
+          </div>
           <div v-else class="train-hint">
             {{ $t('intent_engine.manage.train_status_msg.last_train', {timestr: lastTrainedTime}) }}
           </div>
@@ -63,6 +65,7 @@
 </template>
 <script>
 import { mapGetters } from 'vuex';
+import util from '@/utils/js/format';
 import api from './_api/intent';
 import IntentList from './_components/IntentList';
 import ImportIntentPop from './_components/ImportIntentPop';
@@ -115,7 +118,7 @@ export default {
         alignLeft: true,
       },
       trainingProgress: 50,
-      lastTrainedTime: '2018-07-09 16:53',
+      lastTrainedTime: '',
       pageInfoTooltip: {
         msg: this.$t('intent_engine.manage.tooltip.page_info'),
       },
@@ -286,7 +289,8 @@ export default {
       const that = this;
       const prevStatus = that.trainStatus;
       that.$api.getTrainingStatus(version)
-      .then((status) => {
+      .then((rsp) => {
+        const status = rsp.status;
         that.fetchStatusError = false;
         if (status === 'TRAINING') {
           // that.$emit('startLoading', that.$t('intent_engine.is_training'));
@@ -315,6 +319,7 @@ export default {
         } else if (prevStatus === undefined) {
           that.refreshIntentPage();
         }
+        that.lastTrainedTime = util.datetimeToString(new Date(rsp.last_train * 1000));
         that.trainStatus = status;
         if (!this.statusTimer) {
           that.startPollingTrainingStatus(version);

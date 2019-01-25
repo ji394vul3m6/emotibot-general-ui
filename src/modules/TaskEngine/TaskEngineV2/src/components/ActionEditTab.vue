@@ -5,7 +5,6 @@
     :initialEntityCollectorList="initialEntityCollectorList"  
     :initialSkillNameList="initialToNodeOptions"
     :version="version"
-    :validateTab="validateTab"
     @update:valid="updateValid"
     @update="updateActionGroupList"
     @updateNewNodeOptions="updateNewNodeOptions"
@@ -28,6 +27,7 @@
 </template>
 
 <script>
+import general from '@/modules/TaskEngine/_utils/general';
 import ActionPage from '@/modules/TaskEngine/TaskEngineV3/src/components/ActionPage';
 
 export default {
@@ -39,10 +39,6 @@ export default {
     actionTab: {
       type: Object,
       required: true,
-    },
-    validateTab: {
-      type: Boolean,
-      default: false,
     },
     initialEntityCollectorList: {
       type: Array,
@@ -93,6 +89,12 @@ export default {
       // console.log(actionTab);
       this.$emit('update', actionTab);
     },
+    showToolTip() {
+      general.showInputContentTooltip(this.$refs['input-content']);
+    },
+  },
+  mounted() {
+    this.$on('showToolTip', this.showToolTip);
   },
 };
 </script>

@@ -3,9 +3,6 @@ function paddingNumToTwo(num) {
 }
 
 function datetimeToString(date) {
-  if (typeof date !== 'string') {
-    return '';
-  }
   const time = new Date(date);
 
   const month = paddingNumToTwo(time.getMonth() + 1);
