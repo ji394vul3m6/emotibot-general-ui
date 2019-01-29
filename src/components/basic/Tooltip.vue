@@ -110,7 +110,7 @@ export default {
       };
     },
     triangleStyle() {
-      const left = (this.elemWidth / 2);
+      const left = (this.elemWidth / 2) - 5; // minus half triangle width to centeralize triangle
       return {
         left: `${left}px`,
       };
