@@ -77,11 +77,13 @@
             <div v-else>{{ data[header.key] }}</div>
           </td>
           <td v-if="hasAction" class="table-col-action" :class="{'multi-action': action.length > 1}">
-            <span class="actions" v-for="act in action" 
+            <template v-for="act in action">
+            <span class="actions"
               :key="act.text" :class="act.type"
               @click="act.onclick(data, idx)"
               v-if="data.action_enable === undefined || (data.action_enable && data.action_enable[act.key])"
             > {{ act.text }}</span>
+            </template>
           </td>
           <template v-if="$scopedSlots.menu">
             <td class="fixed menu">
