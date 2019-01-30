@@ -37,6 +37,7 @@ import Tooltip from './plugins/tooltip';
 import Dropdown from './plugins/dropdown';
 import './plugins/Polyfill';
 import misc from './utils/js/misc';
+import Mock from './mock';
 
 Vue.config.productionTip = false;
 Vue.use(Tooltip);
@@ -51,6 +52,7 @@ Vue.use(CustomNotification, {
 Vue.use(request);
 Vue.use(auth);
 Vue.use(api);
+Mock.start();
 
 Vue.component('text-button', TextButton);
 Vue.component('search-input', SearchInput);

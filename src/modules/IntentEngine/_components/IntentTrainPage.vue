@@ -1,40 +1,53 @@
 <template>
-<div id="intent-train-tab">
-  <div class="content">
-    <div class="content-tool">
-      <div class="content-tool-left">
-        <text-button v-if="canAdd" :button-type="allowAdd ? 'primary' : 'disable'" @click="addIntent">{{ $t('intent_engine.manage.add_intent') }}</text-button>
-        <text-button v-if="canEdit && showBatchDelete" :button-type="allowEdit ? 'error' : 'disable'" @click="deleteIntents">{{ $t('intent_engine.manage.delete_intents') }}</text-button>
-        <text-button v-if="canImport" :button-type="allowImport ? 'default' : 'disable'" @click="importIntentList">{{ $t('general.import') }}</text-button>
-        <text-button v-if="canExport" :button-type="allowExport ? 'default' : 'disable'" @click="exportIntentList(currentVersion)">{{ $t('general.export') }}</text-button>
-      </div>
-      <div v-if="!hasIntents" class="content-tool-right">
-        <text-button @click="downloadTemplate">{{ $t('intent_engine.import.download_template') }}</text-button>
-      </div>
+<div id="intent-train-page" class="card w-fill h-fill">
+  <div class="header">
+    <div class="header-title">
+      {{ $t('pages.intent_engine.intent_manage') }}
     </div>
-    <div v-if="!hasIntents && !isAddIntent" class="init_page">
-      {{ $t('intent_engine.manage.no_data.title') }}<br>
-      {{ $t('intent_engine.manage.no_data.hint_left') }}<br>
-      {{ $t('intent_engine.manage.no_data.hint_right') }}
-    </div>
-    <div v-else-if="hasIntents || isAddIntent">
-      <intent-list
-        :intentList="intentList"
-        :canEditIntent="canEdit && allowEdit"
-        :canDeleteIntent="canEdit && allowEdit"
-        :addIntentMode="isAddIntent"
-        :searchIntentMode="searchIntentMode"
-        :searchIntentWithKeyword="isSearchKeyword"
-        :keyword="searchKeyword"
-        @addIntentDone="finishAddIntent($event)"
-        @deleteIntentDone="refreshIntentPage()"
-        @cancelSearch="inSearchIntentMode(false)"
-        @checkedIntent="handleIntentChecked"
-        ref="intents">
-      </intent-list>
+    <div class="right-align-header">
+      <search-input v-model="searchKeyword" @focus="inSearchIntentMode"></search-input>
     </div>
   </div>
-  <side-panel clase="side-panel"></side-panel>
+  <div class="body">
+    <div class="content">
+      <div class="content-tool">
+        <div class="content-tool-left">
+          <text-button v-if="canAdd" :button-type="allowAdd ? 'primary' : 'disable'" @click="addIntent">{{ $t('intent_engine.manage.add_intent') }}</text-button>
+          <text-button v-if="canEdit && showBatchDelete" :button-type="allowEdit ? 'error' : 'disable'" @click="deleteIntents">{{ $t('intent_engine.manage.delete_intents') }}</text-button>
+          <text-button v-if="canImport" :button-type="allowImport ? 'default' : 'disable'" @click="importIntentList">{{ $t('general.import') }}</text-button>
+          <text-button v-if="canExport" :button-type="allowExport ? 'default' : 'disable'" @click="exportIntentList(currentVersion)">{{ $t('general.export') }}</text-button>
+          <div class="intent-count-label">
+            {{ $t('intent_engine.manage.intent_num', {inum: intentList.length, cnum: corpusCounts}) }}
+          </div>
+        </div>
+        <div v-if="!hasIntents" class="content-tool-right">
+          <text-button @click="downloadTemplate">{{ $t('intent_engine.import.download_template') }}</text-button>
+        </div>
+      </div>
+      <div v-if="!hasIntents && !isAddIntent" class="init_page">
+        {{ $t('intent_engine.manage.no_data.title') }}<br>
+        {{ $t('intent_engine.manage.no_data.hint_left') }}<br>
+        {{ $t('intent_engine.manage.no_data.hint_right') }}
+      </div>
+      <div v-else-if="hasIntents || isAddIntent">
+        <intent-list
+          :intentList="intentList"
+          :canEditIntent="canEdit && allowEdit"
+          :canDeleteIntent="canEdit && allowEdit"
+          :addIntentMode="isAddIntent"
+          :searchIntentMode="searchIntentMode"
+          :searchIntentWithKeyword="isSearchKeyword"
+          :keyword="searchKeyword"
+          @addIntentDone="finishAddIntent($event)"
+          @deleteIntentDone="refreshIntentPage()"
+          @cancelSearch="inSearchIntentMode(false)"
+          @checkedIntent="handleIntentChecked"
+          ref="intents">
+        </intent-list>
+      </div>
+    </div>
+    <side-panel clase="side-panel"></side-panel>
+  </div>
 </div>
 </template>
 
@@ -47,29 +60,22 @@ import IntentList from './IntentList';
 import ImportIntentPop from './ImportIntentPop';
 
 export default {
-  name: 'intent-train-tab',
+  name: 'intent-train-page',
   api,
   privCode: 'intent_manage',
   components: {
     SidePanel,
     IntentList,
   },
-  props: {
-    searchKeyword: {
-      type: String,
-      required: true,
-    },
-    searchIntentMode: {
-      type: Boolean,
-      required: true,
-    },
-  },
+  props: {},
   data() {
     return {
       statusTimer: null,
       fetchStatusError: false,
       trainStatus: undefined,  // 'TRAINED', 'NOT_TRAINED', 'TRAINING'
       trainBtnClicked: false,
+      searchKeyword: '',
+      searchIntentMode: false,
       keywordTimer: null,
       keywordDelay: 500, // ms
 
@@ -315,7 +321,6 @@ export default {
       }, 5000);
     },
     refreshIntentPage() {
-      console.log('refreshIntentPage');
       const that = this;
       if (!this.allowLoadPage) return;
       this.$emit('startLoading');
@@ -362,35 +367,80 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-#intent-train-tab{
-  flex: 1;
+#intent-train-page{
   display: flex;
-  flex-direction: row;
-  overflow-x: scroll;
-  @include customScrollbar();
-  .content{
-    flex: 1 0 auto;
-    padding: 20px;
+  flex-direction: column;
+  min-width: 600px;
+  min-height: 400px;
+  .header {
+    flex: 0 0 auto;
+    height: 60px;
+    padding: 0 20px;
+    border-bottom: 1px solid $color-borderline-disabled;
     display: flex;
-    flex-direction: column;
-    overflow-y: scroll;
-    @include customScrollbar();
-
-    .content-tool {
-      flex: 0 0 auto;
-      margin-bottom: 20px;
+    align-items: center;
+    justify-content: space-between;
+    .header-title {
+      @include font-16px();
+      color: $color-font-active;
+      min-width: 64px;
+    }
+    .right-align-header{
       display: flex;
-      justify-content: space-between;
-      .text-button {
-        margin-right: 10px;
-        &:last-child {
-          margin-right: 0px;
-        }
-      }
+      align-items: center;
     }
   }
-  .side-pannel{
-    flex: 0 0 auto;
+  .body{
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: row;
+    overflow-x: scroll;
+    @include customScrollbar();
+    .content{
+      flex: 1 0 auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      .content-tool {
+        flex: 0 0 auto;
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        .content-tool-left{
+          display: flex;
+          flex-direction: row;
+          .text-button {
+            margin-left: 10px;
+            &:first-child {
+              margin-left: 0px;
+            }
+          }
+          .intent-count-label {
+            @include font-16px();
+            color: $color-font-mark;
+            flex: 1;
+            margin-left: 20px;
+          }
+        }
+      }
+      .intent-list {
+        flex: 1 1 auto;
+      }
+      .init_page {
+        @include font-14px();
+        color: $color-font-disabled;
+        flex: 1 1 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+    }
+    .side-pannel{
+      flex: 0 0 auto;
+      width: 270px;
+    }
   }
 }
 </style>

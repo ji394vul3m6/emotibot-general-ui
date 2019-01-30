@@ -29,10 +29,9 @@ export default {
 
 <style lang="scss" scoped>
 #side-panel{
-  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
-  width: 270px;
+  min-width: 270px;
   border-radius: 4px;
   border-left: 1px solid $color-borderline-disabled;
 }
