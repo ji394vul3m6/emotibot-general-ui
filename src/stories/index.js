@@ -23,6 +23,7 @@ import LoadingStory from './Loading';
 import NotifyStory from './Notify';
 import PopStory from './PopWindow';
 import DateTimePickerStory from './DateTimePicker';
+import GeneralScrollTableStory from './GeneralScrollTable';
 
 import './storybook.scss';
 
@@ -87,6 +88,11 @@ NavBarStory.forEach((story) => {
 const generalTableStory = storiesOf('Basic|GeneralTable', module).addDecorator(withKnobs);
 GeneralTableStory.forEach((story) => {
   generalTableStory.add(story.name, story.func.bind(null, i18n));
+});
+
+const generalScrollTableStory = storiesOf('Basic|GeneralTableScroll', module).addDecorator(withKnobs);
+GeneralScrollTableStory.forEach((story) => {
+  generalScrollTableStory.add(story.name, story.func.bind(null, i18n));
 });
 
 const dateTimePickerStory = storiesOf('Basic|DateTimePicker', module).addDecorator(withKnobs);
