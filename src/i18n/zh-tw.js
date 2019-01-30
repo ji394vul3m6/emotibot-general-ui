@@ -983,6 +983,7 @@ export default {
     intent_engine: {
       module_name: '意圖引擎',
       intent_manage: '意圖管理',
+      intent_manage_old: '舊意圖管理',
       intent_test: '意圖測試',
     },
     error: '',
