@@ -900,12 +900,20 @@ export default {
       test_record: '测试记录',
       intent_model: '意图模型版本',
       accuracy: '正确率',
-      tester: '测试帐号',
+      tester: '测试人 ID',
       see_record_detail: '查看详细',
       restore_record: '还原意图模型与测试集',
       store_record: '保存记录',
       unstore_record: '取消保存',
       intent_statistics: '{inum}组意图/{cnum}笔语料',
+    },
+    test_record: {
+      test_data: '测试集',
+      intent_model_version: '意图模型版本',
+      intent_statistics: '{inum}组意图 {cnum}笔语料',
+      accuracy: '准确率 Accuracy：',
+      recall: '召回率 Recall：',
+      precision: '精确率 Precision：',
     },
     side_bar: {
       intent_train: '意图训练',
@@ -1071,6 +1079,7 @@ export default {
     please_choose: '请选择',
     intent: '意图',
     select_all: '全选',
+    download: '下载',
   },
   dimension: {
     categories: {

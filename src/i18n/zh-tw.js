@@ -900,12 +900,20 @@ export default {
       test_record: '測試記錄',
       intent_model: '意圖模型版本',
       accuracy: '正確率',
-      tester: '測試帳號',
+      tester: '測試人 ID',
       see_record_detail: '查看詳細',
       restore_record: '還原意圖模型與測試集',
       store_record: '保存記錄',
       unstore_record: '取消保存',
       intent_statistics: '{inum}組意圖/{cnum}筆語料',
+    },
+    test_record: {
+      test_data: '測試集',
+      intent_model_version: '意圖模型版本',
+      intent_statistics: '{inum}組意圖 {cnum}筆語料',
+      accuracy: '準確率 Accuracy：',
+      recall: '召回率 Recall：',
+      precision: '精確率 Precision：',
     },
     side_bar: {
       intent_train: '意圖訓練',
@@ -1071,6 +1079,7 @@ export default {
     please_choose: '請選擇',
     intent: '意圖',
     select_all: '全選',
+    download: '下載',
   },
   dimension: {
     categories: {

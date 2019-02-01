@@ -7,6 +7,7 @@
 
 const IntentTrainPage = () => import('./_components/IntentTrainPage');
 const IntentTestPage = () => import('./_components/IntentTestPage');
+const IntentTestRecordListPage = () => import('./_components/IntentTestRecordListPage');
 const IntentTestRecordPage = () => import('./_components/IntentTestRecordPage');
 
 export default {
@@ -18,7 +19,8 @@ export default {
   childrenPath: [
     { path: '', component: IntentTrainPage },
     { path: 'test', component: IntentTestPage },
-    { path: 'test/records', component: IntentTestRecordPage },
+    { path: 'test/records', component: IntentTestRecordListPage },
+    { path: 'test/record/:id', component: IntentTestRecordPage },
   ],
   data() {
     return {

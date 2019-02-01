@@ -394,8 +394,7 @@ export default {
     flex: 1 1 auto;
     display: flex;
     flex-direction: row;
-    overflow-y: scroll;
-    @include customScrollbar();
+    height: calc(100% - 60px);
     .content{
       flex: 1 0 auto;
       padding: 20px;

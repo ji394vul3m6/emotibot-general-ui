@@ -76,6 +76,7 @@ export default {
   display: flex;
   flex-direction: column;
   width: 270px;
+  height: 100%;
   border-left: 1px solid $color-borderline-disabled;
   padding: 20px 17px 20px 25px;
   overflow-y: scroll;

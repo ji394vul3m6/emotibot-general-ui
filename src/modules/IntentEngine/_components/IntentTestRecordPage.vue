@@ -7,7 +7,7 @@
       </div>
       <icon iconType="month_right" :size="18" style="margin: 0px 10px;"></icon>
       <div class="header-title">
-        {{ $t('intent_engine.test_records.intent_test_record') }}
+        {{ $t('intent_engine.test_records.intent_test_data') }}
       </div>
     </div>
     <div class="right-align-header">
@@ -16,162 +16,118 @@
     </div>
   </div>
   <div class="body">
-    <div class="latest-record-block block">
-      <div class="block-title">
-        {{ $t('intent_engine.test_records.latest_records') }}
+    <div class="statistics-box">
+      <div class="text active">
+        {{$t('intent_engine.test_record.test_data')}}
       </div>
-      <general-table class="record-table"
-        :tableHeader="recordTableHeader"
-        :tableData="latestRecordData"
-        :action="recordTableAction"
-        showEmpty>
-      </general-table>
+      <div class="text normal margin-bottom">
+        {{`${$t('intent_engine.test_data.num_test_corpus', {cnum: record.sentences_count})}`}}
+      </div>
+
+      <div class="text active">
+        {{$t('intent_engine.test_record.intent_model_version')}}
+      </div>
+      <div class="text normal">
+        {{record.ie_model_updated_time}}
+      </div>
+      <div class="text normal margin-bottom">
+        {{`${$t('intent_engine.test_record.intent_statistics', {inum: record.intents_count, cnum: record.sentences_count})}`}}
+      </div>
+      <div class="seperater margin-bottom"></div>
+
+      <div class="text active margin-bottom">
+        {{`${$t('intent_engine.test_record.accuracy')} 100%`}}
+      </div>
+      <div class="text active margin-bottom">
+        {{`${$t('intent_engine.test_record.recall')} 100%`}}
+      </div>
+      <div class="text active margin-bottom">
+        {{`${$t('intent_engine.test_record.precision')} 100%`}}
+      </div>
+      <div class="seperater margin-bottom"></div>
+
+      <div class="text normal margin-bottom">
+        {{`True Positive：${record.true_positives}`}}
+      </div>
+      <div class="text normal margin-bottom">
+        {{`True Negative：${record.true_negatives}`}}
+      </div>
+      <div class="text normal margin-bottom">
+        {{`False Positive：${record.false_positives}`}}
+      </div>
+      <div class="text normal margin-bottom">
+        {{`False Negative：${record.false_negatives}`}}
+      </div>
     </div>
-    <div class="saved-record-block block">
-      <div class="block-title">
-        {{ $t('intent_engine.test_records.saved_records') }}
+    <div class="content">
+      <div class="tool-bar">
+        <div class="link">
+          {{$t('intent_engine.test_records.unstore_record')}}
+        </div>
+        <div class="link">
+          {{$t('intent_engine.test_records.restore_record')}}
+        </div>
+        <dropdown-select :options="[]" width="64px" @input="downloadData"/>
       </div>
-      <general-table class="record-table"
-        :tableHeader="savedRecordTableHeader"
-        :tableData="savedRecordData"
-        :action="recordTableAction"
-        showEmpty>
-      </general-table>
+      <template v-if="hasIntents">
+        <intent-test-list
+          :allIntents="intentList">
+        </intent-test-list>
+      </template>
     </div>
   </div>
 </div>
 </template>
 <script>
 
+import IntentTestList from './IntentTestList';
 import api from '../_api/intentTest';
 
 export default {
   name: 'intent-test-record-page',
   api,
-  components: {},
+  components: {
+    IntentTestList,
+  },
   props: {
   },
   data() {
-    const recordTableHeader = [
-      {
-        key: 'test_record',
-        text: this.$t('intent_engine.test_records.test_record'),
-      },
-      {
-        key: 'intent_model',
-        text: this.$t('intent_engine.test_records.intent_model'),
-      },
-      {
-        key: 'accuracy',
-        text: this.$t('intent_engine.test_records.accuracy'),
-        width: '110px',
-      },
-      {
-        key: 'tester',
-        text: this.$t('intent_engine.test_records.tester'),
-        width: '140px',
-      },
-    ];
-    const savedRecordTableHeader = [
-      {
-        key: 'test_record_name',
-        text: this.$t('intent_engine.test_records.test_record_name'),
-      },
-      ...recordTableHeader,
-    ];
-    const recordTableAction = [
-      {
-        text: this.$t('intent_engine.test_records.see_record_detail'),
-        type: 'primary',
-        onclick: this.seeRecordDetail,
-      },
-      {
-        text: this.$t('intent_engine.test_records.restore_record'),
-        type: 'primary',
-        onclick: this.restoreRecord,
-      },
-    ];
     return {
       searchKeyword: '',
       searchIntentMode: false,
-      latestRecords: [],
-      savedRecords: [],
-      recordTableHeader,
-      savedRecordTableHeader,
-      recordTableAction,
+      record: {},
+      intentList: [],
     };
   },
   computed: {
-    latestRecordData() {
-      return this.latestRecords.map((record) => {
-        const testRecord = this.composeRecordName(
-          record.intent_test.updated_time,
-          record.intent_test.intents_count,
-          record.intent_test.sentences_count,
-        );
-        const intentModel = this.composeRecordName(
-          record.ie_model.updated_time,
-          record.ie_model.intents_count,
-          record.ie_model.sentences_count,
-        );
-        return {
-          test_record: testRecord,
-          intent_model: intentModel,
-          accuracy: record.intent_test.true_positives,
-          tester: record.intent_test.tester,
-        };
-      });
-    },
-    savedRecordData() {
-      return this.savedRecords.map((record) => {
-        const testRecord = this.composeRecordName(
-          record.intent_test.updated_time,
-          record.intent_test.intents_count,
-          record.intent_test.sentences_count,
-        );
-        const intentModel = this.composeRecordName(
-          record.ie_model.updated_time,
-          record.ie_model.intents_count,
-          record.ie_model.sentences_count,
-        );
-        return {
-          test_record_name: record.intent_test.name,
-          test_record: testRecord,
-          intent_model: intentModel,
-          accuracy: record.intent_test.true_positives,
-          tester: record.intent_test.tester,
-        };
-      });
+    hasIntents() {
+      return this.intentList.length > 0;
     },
   },
   watch: {},
   methods: {
-    getTestRecords() {
-      this.$api.getTestRecords().then((data) => {
-        // console.log(data);
-        this.latestRecords = data.latest;
-        this.savedRecords = data.saved;
+    getTestRecord(intentTestID) {
+      console.log(intentTestID);
+      this.$api.getTestRecord('540000199801149697').then((data) => {
+        console.log(data);
+        const { intents, ...rest } = data;
+        this.record = rest;
+        this.intentList = intents;
       });
     },
     inSearchIntentMode(bool) {
       this.searchIntentMode = bool;
     },
-    seeRecordDetail(data) {
-      console.log(data);
-    },
-    restoreRecord(data) {
-      console.log(data);
-    },
     toPage(path) {
       this.$router.push(`/intent-manage/${path}`);
     },
-    composeRecordName(updatedTime, intentCount, corpusCount) {
-      const modelStats = this.$t('intent_engine.test_records.intent_statistics', { inum: intentCount, cnum: corpusCount });
-      return `${updatedTime} (${modelStats})`;
+    downloadData() {
+      console.log('downloadData');
     },
   },
   mounted() {
-    this.getTestRecords();
+    this.intentTestID = this.$route.params.id;
+    this.getTestRecord(this.intentTestID);
   },
 };
 </script>
@@ -208,18 +164,53 @@ export default {
     }
   }
   .body{
+    flex: 1 1 auto;
     display: flex;
-    flex-direction: column;
-    overflow-y: scroll;
-    @include customScrollbar();
-    .block{
+    height: calc(100% - 60px);
+    .statistics-box{
+      flex: 0 0 auto;
       display: flex;
       flex-direction: column;
-      .block-title{
-        flex: 0 0 auto;
-        padding: 20px;
+      margin: 20px 20px 10px 20px;
+      padding: 10px 20px 10px 20px;
+      width: 240px;
+      height: calc(100% - 30px);
+      border-radius: 4px;
+      border: 1px solid $color-borderline;
+      .margin-bottom {
+        margin-bottom: 10px;
+      }
+      .text {
+        @include font-14px-line-height-28px();
+      }
+      .active{
         color: $color-font-active;
-        @include font-16px-line-height-28px();
+      }
+      .normal{
+        color: $color-font-normal;
+      }
+      .seperater{
+        height: 1px;
+        background-color: $color-borderline;
+      }
+    }
+    .content{
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      padding-right: 20px;
+      overflow-y: scroll;
+      @include customScrollbar();
+      .tool-bar{
+        display: flex;
+        justify-content: flex-end;
+        margin: 20px 0px 20px 0px;
+        .link{
+          @include font-14px-line-height-28px();
+          cursor: pointer;
+          color: $app-active-color;
+          margin-right: 20px;
+        }
       }
     }
   }
