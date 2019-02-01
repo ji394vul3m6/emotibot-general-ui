@@ -6,8 +6,11 @@
         {{ $t('pages.intent_engine.intent_manage') }}
       </div>
       <icon iconType="month_right" :size="18" style="margin: 0px 10px;"></icon>
-      <div class="header-title">
-        {{ $t('intent_engine.test_records.intent_test_data') }}
+      <div class="header-title" v-if="record.saved">
+        {{ `${record.name} ( ${$t('intent_engine.test_records.test_record')} ${record.updated_time})` }}
+      </div>
+      <div class="header-title" v-if="!record.saved">
+        {{ `${$t('intent_engine.test_records.test_record')} ${record.updated_time}` }}
       </div>
     </div>
     <div class="right-align-header">
@@ -33,16 +36,19 @@
       <div class="text normal margin-bottom">
         {{`${$t('intent_engine.test_record.intent_statistics', {inum: record.intents_count, cnum: record.sentences_count})}`}}
       </div>
+      <div class="text normal margin-bottom">
+        {{`${$t('intent_engine.test_records.tester')}：aaa`}}
+      </div>
       <div class="seperater margin-bottom"></div>
 
       <div class="text active margin-bottom">
-        {{`${$t('intent_engine.test_record.accuracy')} 100%`}}
+        {{`${$t('intent_engine.test_record.accuracy')} ${accuracy}%`}}
       </div>
       <div class="text active margin-bottom">
-        {{`${$t('intent_engine.test_record.recall')} 100%`}}
+        {{`${$t('intent_engine.test_record.recall')} ${recall}%`}}
       </div>
       <div class="text active margin-bottom">
-        {{`${$t('intent_engine.test_record.precision')} 100%`}}
+        {{`${$t('intent_engine.test_record.precision')} ${precision}%`}}
       </div>
       <div class="seperater margin-bottom"></div>
 
@@ -103,6 +109,21 @@ export default {
     hasIntents() {
       return this.intentList.length > 0;
     },
+    accuracy() {
+      const a = ((this.record.tp + this.record.tn) * 100) /
+        (this.record.tp + this.record.tn + this.record.fp + this.record.fn);
+      return Math.round(a);
+    },
+    recall() {
+      const r = ((this.record.tp) * 100) /
+        (this.record.tp + this.record.fn);
+      return Math.round(r);
+    },
+    precision() {
+      const p = ((this.record.tp) * 100) /
+        (this.record.tp + this.record.fp);
+      return Math.round(p);
+    },
   },
   watch: {},
   methods: {
@@ -110,8 +131,12 @@ export default {
       console.log(intentTestID);
       this.$api.getTestRecord('540000199801149697').then((data) => {
         console.log(data);
-        const { intents, ...rest } = data;
-        this.record = rest;
+        const { intents, ...record } = data;
+        record.tp = record.true_positives;
+        record.tn = record.true_negatives;
+        record.fp = record.false_positives;
+        record.fn = record.false_negatives;
+        this.record = record;
         this.intentList = intents;
       });
     },
