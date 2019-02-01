@@ -28,8 +28,12 @@ for (let i = 0; i < TOTAL; i += 1) {
 }
 
 const testRecordsResponse = {
-  latest: testRecords.slice(0, 5),
-  saved: testRecords.slice(5, 30),
+  status: 0,
+  message: '',
+  result: {
+    latest: testRecords.slice(0, 5),
+    saved: testRecords.slice(5, 30),
+  },
 };
 
 export default {

@@ -394,13 +394,15 @@ export default {
     flex: 1 1 auto;
     display: flex;
     flex-direction: row;
-    overflow-x: scroll;
+    overflow-y: scroll;
     @include customScrollbar();
     .content{
       flex: 1 0 auto;
       padding: 20px;
       display: flex;
       flex-direction: column;
+      overflow-y: scroll;
+      @include customScrollbar();
       .content-tool {
         flex: 0 0 auto;
         margin-bottom: 20px;

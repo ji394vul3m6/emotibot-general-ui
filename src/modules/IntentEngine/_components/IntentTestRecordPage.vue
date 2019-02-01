@@ -1,8 +1,14 @@
 <template>
 <div id="intent-test-record-page" class="card w-fill h-fill">
   <div class="header">
-    <div class="header-title">
-      {{ $t('pages.intent_engine.intent_manage') }}
+    <div class="breadcrumb">
+      <div class="header-title" @click="toPage('');" style="cursor: pointer;">
+        {{ $t('pages.intent_engine.intent_manage') }}
+      </div>
+      <icon iconType="month_right" :size="18" style="margin: 0px 10px;"></icon>
+      <div class="header-title">
+        {{ $t('intent_engine.test_records.intent_test_record') }}
+      </div>
     </div>
     <div class="right-align-header">
       <search-input v-model="searchKeyword" @focus="inSearchIntentMode"></search-input>
@@ -98,7 +104,6 @@ export default {
   computed: {
     latestRecordData() {
       return this.latestRecords.map((record) => {
-        console.log(record);
         const testRecord = this.composeRecordName(
           record.intent_test.updated_time,
           record.intent_test.intents_count,
@@ -119,7 +124,6 @@ export default {
     },
     savedRecordData() {
       return this.savedRecords.map((record) => {
-        console.log(record);
         const testRecord = this.composeRecordName(
           record.intent_test.updated_time,
           record.intent_test.intents_count,
@@ -186,10 +190,14 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    .header-title {
-      @include font-16px();
-      color: $color-font-active;
-      min-width: 64px;
+    .breadcrumb{
+      display: flex;
+      align-items: center;
+      .header-title {
+        @include font-16px();
+        color: $color-font-active;
+        min-width: 64px;
+      }
     }
     .right-align-header{
       display: flex;
@@ -211,8 +219,7 @@ export default {
         flex: 0 0 auto;
         padding: 20px;
         color: $color-font-active;
-        font-size: 16px;
-        line-height: 28px;
+        @include font-16px-line-height-28px();
       }
     }
   }
