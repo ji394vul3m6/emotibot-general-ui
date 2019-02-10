@@ -86,8 +86,8 @@ export default {
     },
   },
   methods: {
-    getTestData() {
-      this.$api.getTestData().then((data) => {
+    getTestIntents() {
+      this.$api.getTestIntents().then((data) => {
         this.intentList = data.intents;
         console.log(data);
       });
@@ -100,7 +100,7 @@ export default {
     },
   },
   mounted() {
-    this.getTestData();
+    this.getTestIntents();
   },
 };
 </script>

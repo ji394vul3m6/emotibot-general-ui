@@ -890,6 +890,7 @@ export default {
       result_wrong: '錯誤',
       result_none: '無記錄',
       num_test_corpus: '{cnum}筆測試語料',
+      add_new_test_corpus: '加入測試語料',
     },
     test_records: {
       intent_test_record: '意圖測試記錄',

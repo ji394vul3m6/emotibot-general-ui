@@ -11,12 +11,17 @@ function getTestRecords() {
   return this.$reqGet(GET_INTENT_TEST_URL).then(rsp => rsp.data.result);
 }
 
-function getTestData() {
+function getTestIntents() {
   return this.$reqGet(GET_INTENT_TEST_DATA_URL).then(rsp => rsp.data.result);
+}
+
+function getIntentTestCorpus(intentId) {
+  return this.$reqGet(`${GET_INTENT_TEST_DATA_URL}/${intentId}`).then(rsp => rsp.data.result);
 }
 
 export default {
   getTestRecord,
   getTestRecords,
-  getTestData,
+  getTestIntents,
+  getIntentTestCorpus,
 };
