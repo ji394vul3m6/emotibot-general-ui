@@ -22,7 +22,7 @@
           <text-button v-if="canImport" :button-type="allowImport ? 'default' : 'disable'">{{ $t('general.import') }}</text-button>
           <text-button v-if="canExport" :button-type="allowExport ? 'default' : 'disable'">{{ $t('general.export') }}</text-button>
           <div class="intent-count-label">
-            {{ $t('intent_engine.test_data.intent_num', {inum: intentList.length, cnum: corpusCounts}) }}
+            {{ $t('intent_engine.test_data.intent_num', {inum: allIntents.length, cnum: corpusCounts}) }}
           </div>
         </div>
         <div class="content-tool-right">
@@ -38,9 +38,24 @@
           />
         </div>
       </div>
-      <template v-if="hasIntents">
-        <intent-test-list
-          :allIntents="intentList">
+      <template v-if="corpusGroupWithoutAnnotation.length > 0">
+        <div class="intent-list-title">
+          {{ $t('intent_engine.test_data.test_corpus_without_intent') }}
+          <icon iconType="info" :size="16" enableHover v-tooltip="intentTypeTooltip"></icon>
+        </div>
+        <intent-test-list class="intent-list"
+          :initialIntentList="corpusGroupWithoutAnnotation"
+          :intentListType="'corpusGroupWithoutAnnotation'">
+        </intent-test-list>
+      </template>
+      <template v-if="intentList.length > 0">
+        <div class="intent-list-title margin-top">
+          {{ $t('intent_engine.test_data.intent_and_test_corpus') }}
+          <icon iconType="info" :size="16" enableHover v-tooltip="intentTypeTooltip"></icon>
+        </div>
+        <intent-test-list class="intent-list"
+          :initialIntentList="intentList"
+          :intentListType="'normal'">
         </intent-test-list>
       </template>
     </div>
@@ -68,11 +83,16 @@ export default {
     return {
       searchKeyword: '',
       searchIntentMode: false,
+      allIntents: [],
       intentList: [],
+      corpusGroupWithoutAnnotation: [],
       corpusCounts: 0,
       optionSelectStyle: {
         height: '28px',
         'border-radius': '2px',
+      },
+      intentTypeTooltip: {
+        msg: this.$t('intent_engine.manage.tooltip.page_info'),
       },
     };
   },
@@ -89,23 +109,29 @@ export default {
     allowExport() {
       return false;
     },
-    hasIntents() {
-      return this.intentList.length > 0;
-    },
   },
   watch: {
-    intentList() {
+    allIntents() {
       if (!this.searchIntentMode) {
-        this.corpusCounts = this.intentList.reduce((acc, intent) => acc + intent.sentences_count
-      , 0);
+        this.corpusCounts = this.allIntents.reduce(
+          (acc, intent) => acc + intent.sentences_count, 0,
+        );
       }
+      this.intentList = [];
+      this.corpusGroupWithoutAnnotation = [];
+      this.allIntents.forEach((intent) => {
+        if (intent.type === true) {
+          this.intentList.push(intent);
+        } else {
+          this.corpusGroupWithoutAnnotation.push(intent);
+        }
+      });
     },
   },
   methods: {
     getTestIntents() {
       this.$api.getTestIntents().then((data) => {
-        this.intentList = data.intents;
-        console.log(data);
+        this.allIntents = data.intents;
       });
     },
     inSearchIntentMode(bool) {
@@ -186,6 +212,22 @@ export default {
             margin-left: 20px;
           }
         }
+      }
+      .intent-list-title{
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        color: $color-font-active;
+        @include font-14px-line-height-28px();
+        &.margin-top{
+          margin-top: 20px;
+        }
+        .icon {
+          margin-left: 6px;
+        }
+      }
+      .intent-list{
+        flex: 0 0 auto;
       }
     }
   }

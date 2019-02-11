@@ -1,33 +1,23 @@
 <template>
 <div id="intent-test-list">
-  <div class="type-title">
-    {{ $t('intent_engine.test_data.test_corpus_without_intent') }}
-    <icon iconType="info" :size="16" enableHover v-tooltip="intentTypeTooltip"></icon>
-  </div>
-  <div class="intent-block"
-    v-for="corpusGroup in corpusGroupWithoutAnnotation"
-    :key="corpusGroup.id">
-    <div class="intent-header">
-      <div class="intent-name">
-        {{`${$t('intent_engine.test_data.num_test_corpus', {cnum: corpusGroup.sentences_count})}`}}
-      </div>
-    </div>
-  </div>
-  <div class="type-title margin-top">
-    {{ $t('intent_engine.test_data.intent_and_test_corpus') }}
-    <icon iconType="info" :size="16" enableHover v-tooltip="intentTypeTooltip"></icon>
-  </div>
   <div class="intent-block"
     v-for="intent in intentList"
     :key="intent.id"
     :class="{'active': intent.expand}">
     <div class="intent-header" @click="handleIntentClicked(intent)">
-      <div class="icon">
-        <icon icon-type="intent" :size="15"/>
-      </div>
-      <div class="intent-name after-icon">
-        {{`${intent.name} ( ${$t('intent_engine.test_data.num_test_corpus', {cnum: intent.sentences_count})} )`}}
-      </div>
+      <template v-if="intentListType === 'corpusGroupWithoutAnnotation'">
+        <div class="intent-name">
+          {{`${$t('intent_engine.test_data.num_test_corpus', {cnum: intent.sentences_count})}`}}
+        </div>
+      </template>
+      <template v-if="intentListType === 'normal'">
+        <div class="icon">
+          <icon icon-type="intent" :size="15"/>
+        </div>
+        <div class="intent-name after-icon">
+          {{`${intent.name} ( ${$t('intent_engine.test_data.num_test_corpus', {cnum: intent.sentences_count})} )`}}
+        </div>
+      </template>
       <div v-if="intent.expand" class="close-expand-icon">
         <icon icon-type="close_expand" :size="18"></icon>
       </div>
@@ -109,23 +99,24 @@ export default {
   api,
   components: {},
   props: {
-    allIntents: {
+    initialIntentList: {
       type: Array,
       required: true,
       default: () => [],
+    },
+    intentListType: {
+      type: String,
+      required: true,
+      default: () => 'normal',
     },
   },
   data() {
     return {
       intentList: [],
-      corpusGroupWithoutAnnotation: [],
       LIST_PAGE_SIZE: 10,
       newCorpus: '',
       compositionState: false,
       wasCompositioning: false,
-      intentTypeTooltip: {
-        msg: this.$t('intent_engine.manage.tooltip.page_info'),
-      },
       editCorpusTooltip: {
         msg: this.$t('intent_engine.manage.tooltip.hit_enter_to_save'),
         eventOnly: true,
@@ -136,28 +127,19 @@ export default {
   },
   computed: {},
   watch: {
-    allIntents() {
+    initialIntentList() {
       this.renderIntentList();
     },
   },
   methods: {
     renderIntentList() {
-      this.intentList = [];
-      this.corpusGroupWithoutAnnotation = [];
-      const initialIntents = this.allIntents.map(intent => ({
+      this.intentList = this.initialIntentList.map(intent => ({
         ...intent,
         expand: intent.expand ? intent.expand : false,
         testCorpus: intent.testCorpus ? intent.testCorpus : [],
         curPage: 1,
         hasCorpusEditing: intent.hasCorpusEditing ? intent.hasCorpusEditing : false,
       }));
-      initialIntents.forEach((intent) => {
-        if (intent.type === true) {
-          this.intentList.push(intent);
-        } else {
-          this.corpusGroupWithoutAnnotation.push(intent);
-        }
-      });
     },
     handleIntentClicked(intent) {
       if (intent.expand) {
@@ -263,19 +245,6 @@ export default {
 #intent-test-list{
   display: flex;
   flex-direction: column;
-  .type-title{
-    flex: 0 0 auto;
-    display: flex;
-    align-items: center;
-    color: $color-font-active;
-    @include font-14px-line-height-28px();
-    &.margin-top{
-      margin-top: 20px;
-    }
-    .icon {
-      margin-left: 6px;
-    }
-  }
   .intent-block{
     flex: 0 0 auto;
     display: flex;
