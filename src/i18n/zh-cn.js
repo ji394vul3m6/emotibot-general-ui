@@ -863,12 +863,10 @@ export default {
     },
     import: {
       title: '导入意图',
-      title_test: '导入测试题',
       choose_file: '请选择档案',
       success: '意图导入成功',
       fail: '意图导入失败',
       download_template: '下载意图范本',
-      download_test_template: '下载测试题范本',
       support_format: '支援格式 .xlsx, 档案大小需介于 0 ~ 2M',
       upload_file: '上传档案',
       upload_file_undefined: '档案无法辨识',
@@ -877,6 +875,13 @@ export default {
       by_update: '新增数据',
       by_replace: '全量替换',
       tooltip: '选择全量替换将删除之前所有数据',
+      test_data: {
+        title: '导入意图测试集',
+        note: '将会全量替换测试集，删除之前所有数据，导入后测试集只会留下和意图管理相同的意图测试题，删除不同的意图测试题。',
+        success: '意图测试集导入成功',
+        fail: '意图测试集导入失败',
+        download_template: '下载意图测试集范本',
+      },
     },
     test_data: {
       intent_num: '共有 {inum} 组测试意图 / {cnum} 笔测试语料',
@@ -891,6 +896,8 @@ export default {
       result_none: '无记录',
       num_test_corpus: '{cnum}笔测试语料',
       add_new_test_corpus: '加入测试语料',
+      robot_predict: '机器预测',
+      result_score: '信心分数',
     },
     test_records: {
       intent_test_record: '意图测试记录',

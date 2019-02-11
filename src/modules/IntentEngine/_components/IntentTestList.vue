@@ -53,6 +53,11 @@
                   @blur="finishEditingCorpus(intent, corpus)"/>
               <span v-else>{{corpus.sentence}}</span>
             </div>
+            <div class="corpus-test-result" v-if="!intent.hasCorpusEditing" v-tooltip="getTestResultTooltip(corpus)">
+              <span v-if="corpus.result === 0" class="result-none result">{{$t('intent_engine.test_data.result_none')}}</span>
+              <span v-if="corpus.result === 1" class="result-correct result">{{$t('intent_engine.test_data.result_correct')}}</span>
+              <span v-if="corpus.result === 2" class="result-wrong result">{{$t('intent_engine.test_data.result_wrong')}}</span>
+            </div>
             <div class="corpus-action" v-if="corpus.mouseover && !intent.hasCorpusEditing">
               <div class="action corpus-action-edit" @click="startEditingCorpus(intent, corpus)">{{ $t('general.edit') }}</div>
               <div class="action corpus-action-delete" @click="deleteCorpus(intent, corpus)">{{ $t('general.delete')}}</div>
@@ -81,19 +86,6 @@
 import event from '@/utils/js/event';
 import api from '../_api/intentTest';
 
-// test_data: {
-// intent_num: '共有 {inum} 組測試意圖 / {cnum} 筆測試語料',
-// test_corpus_without_intent: '未標註任何意圖的測試語料',
-// intent_and_test_corpus: '意圖及測試語料',
-// show_button: '檢視',
-// show_intent_with_corpus_less_than_3: '顯示少於3筆測試語料',
-// show_test_result: '顯示測試結果',
-// test_corpus: '測試語料',
-// result_correct: '正確',
-// result_wrong: '錯誤',
-// result_none: '無記錄',
-// num_test_corpus: '{cnum}笔测试语料',
-// },
 export default {
   name: 'intent-test-list',
   api,
@@ -234,6 +226,22 @@ export default {
       const del = [corpus.id];
       this.patchCorpus(intent, [], del);
     },
+    getTestResultTooltip(corpus) {
+      const tooltip = {
+        msg: this.$t('intent_engine.manage.tooltip.page_info'),
+        alignLeft: true,
+        top: 30,
+        left: -60,
+      };
+      if (corpus.result === 0) {
+        return undefined;
+      } else if (corpus.result === 1) {
+        tooltip.msg = `${this.$t('intent_engine.test_data.result_correct')}, ${this.$t('intent_engine.test_data.result_score')}: ${corpus.score}`;
+      } else if (corpus.result === 2) {
+        tooltip.msg = `${this.$t('intent_engine.test_data.robot_predict')}: ${corpus.answer}, ${this.$t('intent_engine.test_data.result_score')}: ${corpus.score}`;
+      }
+      return tooltip;
+    },
   },
   mounted() {
     this.renderIntentList();
@@ -304,6 +312,7 @@ export default {
         border-left: 3px solid rgba(74, 144, 226, 0.24);
         .corpus-row{
           display: flex;
+          position: relative;
           margin: 4px 0px 0px 20px;
           &:hover {
             background-color: $color-disabled;
@@ -318,8 +327,29 @@ export default {
               flex: 1;
             }
           }
-          .corpus-action{
+          .corpus-test-result{
             flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            margin-right: 140px;
+            width: 50px;
+            cursor: pointer;
+            .result{
+              @include font-14px();
+            }
+            .result-nont{
+              color: $color-font-normal;
+            }
+            .result-correct{
+              color: $color-success;
+            }
+            .result-wrong{
+              color: $color-error;
+            }
+          }
+          .corpus-action{
+            position: absolute;
+            right: 0px;
             display: flex;
             .action{
               cursor: pointer;
@@ -343,6 +373,7 @@ export default {
           }
           .add-corpus-btn {
             margin-left: 10px;
+            width: 68px;
           }
         }
       }

@@ -19,8 +19,16 @@
     <div class="content">
       <div class="content-tool">
         <div class="content-tool-left">
-          <text-button v-if="canImport" :button-type="allowImport ? 'default' : 'disable'">{{ $t('general.import') }}</text-button>
-          <text-button v-if="canExport" :button-type="allowExport ? 'default' : 'disable'">{{ $t('general.export') }}</text-button>
+          <text-button v-if="canImport"
+            :button-type="allowImport ? 'default' : 'disable'"
+            @click="importIntentTestList()">
+            {{ $t('general.import') }}
+          </text-button>
+          <text-button v-if="canExport"
+            :button-type="allowExport ? 'default' : 'disable'"
+            @click="exportIntentTestList()">
+            {{ $t('general.export') }}
+          </text-button>
           <div class="intent-count-label">
             {{ $t('intent_engine.test_data.intent_num', {inum: allIntents.length, cnum: corpusCounts}) }}
           </div>
@@ -67,7 +75,9 @@
 
 import IntentTestList from './IntentTestList';
 import SidePanel from './SidePanel';
+import ImportIntentTestPop from './ImportIntentTestPop';
 import api from '../_api/intentTest';
+
 
 export default {
   name: 'intent-test-page',
@@ -76,6 +86,7 @@ export default {
   components: {
     IntentTestList,
     SidePanel,
+    ImportIntentTestPop,
   },
   props: {
   },
@@ -104,10 +115,10 @@ export default {
       return this.$hasRight('export');
     },
     allowImport() {
-      return false;
+      return true;
     },
     allowExport() {
-      return false;
+      return true;
     },
   },
   watch: {
@@ -130,8 +141,14 @@ export default {
   },
   methods: {
     getTestIntents() {
+      this.$emit('endLoading');
       this.$api.getTestIntents().then((data) => {
         this.allIntents = data.intents;
+      }).catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        this.$emit('endLoading');
       });
     },
     inSearchIntentMode(bool) {
@@ -139,6 +156,39 @@ export default {
     },
     toPage(path) {
       this.$router.push(`/intent-manage/${path}`);
+    },
+    exportIntentTestList() {
+      if (!this.allowExport) return;
+      this.$api.exportIntentTestCorpus();
+    },
+    importIntentTestList() {
+      if (!this.allowImport) return;
+      const that = this;
+      const popOption = {
+        title: that.$t('intent_engine.import.test_data.title'),
+        component: ImportIntentTestPop,
+        disable_ok: true,
+        validate: true,
+        callback: {
+          ok(file) {
+            that.$emit('startLoading');
+            that.$api.importIntentTestCorpus(file).then(() => {
+              // clearInterval(this.statusTimer);
+              // this.statusTimer = undefined;
+              // this.pollTrainingStatus(this.currentVersion);
+              // this.refreshIntentPage();
+              this.getTestIntents();
+              that.$notify({ text: that.$t('intent_engine.import.test_data.success') });
+            }).catch((err) => {
+              console.log(err);
+              that.$notifyFail(that.$t('intent_engine.import.test_data.fail'));
+            }).finally(() => {
+              that.$emit('endLoading');
+            });
+          },
+        },
+      };
+      this.$pop(popOption);
     },
   },
   mounted() {

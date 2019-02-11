@@ -32,10 +32,26 @@ function patchIntentTestCorpus(intentId, update, del) {
   ).then(rsp => rsp.data.result);
 }
 
+function importIntentTestCorpus(file) {
+  const formData = new FormData();
+  formData.append('file', file);
+  return this.$reqPost(
+    `${GET_INTENT_TEST_URL}/import`,
+    formData,
+    { headers: { 'Content-Type': 'multipart/form-data' } },
+  ).then(rsp => rsp.data.result);
+}
+
+function exportIntentTestCorpus() {
+  window.open(`${GET_INTENT_TEST_URL}/export`);
+}
+
 export default {
   getTestRecord,
   getTestRecords,
   getTestIntents,
   getIntentTestCorpus,
   patchIntentTestCorpus,
+  importIntentTestCorpus,
+  exportIntentTestCorpus,
 };

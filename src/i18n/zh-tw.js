@@ -863,12 +863,10 @@ export default {
     },
     import: {
       title: '導入意圖',
-      title_test: '導入測試題',
       choose_file: '請選擇檔案',
       success: '意圖導入成功',
       fail: '意圖導入失敗',
       download_template: '下載意圖範本',
-      download_test_template: '下載測試題範本',
       support_format: '支援格式 .xlsx, 檔案大小需介於 0 ~ 2M',
       upload_file: '上傳檔案',
       upload_file_undefined: '檔案無法辨識',
@@ -877,6 +875,13 @@ export default {
       by_update: '新增數據',
       by_replace: '全量替換',
       tooltip: '選擇全量替換將刪除之前所有數據',
+      test_data: {
+        title: '導入意圖測試集',
+        note: '將會全量替換測試集，刪除之前所有數據，導入後測試集只會留下和意圖管理相同的意圖測試題，刪除不同的意圖測試題。',
+        success: '意圖測試集導入成功',
+        fail: '意圖測試集導入失敗',
+        download_template: '下載意圖測試集範本',
+      },
     },
     test_data: {
       intent_num: '共有 {inum} 組測試意圖 / {cnum} 筆測試語料',
@@ -891,6 +896,8 @@ export default {
       result_none: '無記錄',
       num_test_corpus: '{cnum}筆測試語料',
       add_new_test_corpus: '加入測試語料',
+      robot_predict: '機器預測',
+      result_score: '信心分數',
     },
     test_records: {
       intent_test_record: '意圖測試記錄',

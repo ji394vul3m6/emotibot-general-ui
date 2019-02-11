@@ -19,6 +19,10 @@ function startMock(mock) {
   .reply(200, intentTestCorpusData.intentTestCorpusResponse);
   mock.onPatch(/\/api\/v1\/intent_tests\/intents\/\d+/)
   .reply(200, successResponse);
+  mock.onPost('/api/v1/intent_tests/import')
+  .reply(200, successResponse);
+  mock.onGet('/api/v1/intent_tests/export')
+  .reply(200, successResponse);
 }
 
 export default {
