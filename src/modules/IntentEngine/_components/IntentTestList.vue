@@ -32,49 +32,63 @@
         <icon icon-type="close_expand" :size="18"></icon>
       </div>
     </div>
-    <div class="intent-content" v-if="intent.expand === true">
-      <div class="label">
-        {{ $t('intent_engine.test_data.test_corpus') }}
+    <transition name="intent-content">
+    <div v-if="intent.expand">
+      <div class="intent-content">
+        <div class="label">
+          {{ $t('intent_engine.test_data.test_corpus') }}
+        </div>
+        <div class="corpus-block">
+          <div class="add-corpus-row">
+            <input type="text" v-model="newCorpus"
+              :placeholder="$t('intent_engine.test_data.add_new_test_corpus')"
+              @compositionstart="setCompositionState(true)"
+              @compositionend="setCompositionState(false)"
+              @keydown.enter="detectCompositionState"
+              @keyup.enter="addCorpus(intent)"/>
+            <text-button class="add-corpus-btn" @click="addCorpus(intent)">{{ $t('intent_engine.manage.addin') }}</text-button>
+          </div>
+          <div class="corpus-row" v-for="corpus in getCorpusPage(intent)"
+            :key="corpus.id"
+            @mouseover="corpus.mouseover = true" 
+            @mouseleave="corpus.mouseover = false">
+            <div class="corpus">
+              <input v-if="corpus.isEditing" type="text" v-model="editingCorpusContent"
+                  ref="editCorpusInput"
+                  v-tooltip="editCorpusTooltip"
+                  @compositionstart="setCompositionState(true)"
+                  @compositionend="setCompositionState(false)"
+                  @keydown.enter="detectCompositionState"
+                  @keyup.enter="updateCorpus(intent, corpus)"
+                  @blur="finishEditingCorpus(intent, corpus)"/>
+              <span v-else>{{corpus.sentence}}</span>
+            </div>
+            <div class="corpus-action" v-if="corpus.mouseover && !intent.hasCorpusEditing">
+              <div class="action corpus-action-edit" @click="startEditingCorpus(intent, corpus)">{{ $t('general.edit') }}</div>
+              <div class="action corpus-action-delete" @click="deleteCorpus(intent, corpus)">{{ $t('general.delete')}}</div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="corpus-block">
-        <div class="add-corpus-row">
-          <input type="text" v-model="newCorpus"
-            :placeholder="$t('intent_engine.test_data.add_new_test_corpus')"
-            @compositionstart="setCompositionState(true)"
-            @compositionend="setCompositionState(false)"
-            @keyup.enter="addCorpus(intent)"/>
-          <text-button class="add-corpus-btn" @click="addCorpus(intent)">{{ $t('intent_engine.manage.addin') }}</text-button>
-        </div>
-        <div class="corpus-row" v-for="corpus in getCorpusPage(intent)"
-          :key="corpus.id"
-          @mouseover="corpus.mouseover = true" 
-          @mouseleave="corpus.mouseover = false">
-          <div class="corpus">
-            {{corpus.sentence}}
-          </div>
-          <div class="corpus-action" v-if="corpus.mouseover">
-            <div class="action corpus-action-edit" @click="editCorpus(intent, corpus)">{{ $t('general.edit') }}</div>
-            <div class="action corpus-action-delete" @click="deleteCorpus(intent, corpus)">{{ $t('general.delete')}}</div>
-          </div>
-        </div>
+      <div class="intent-footer" v-if="intent.testCorpus.length > LIST_PAGE_SIZE">
+        <v-pagination
+          size="small"
+          :total="intent.testCorpus.length"
+          :pageIndex="intent.curPage"
+          :pageSize="LIST_PAGE_SIZE"
+          :layout="['prev', 'pager', 'next', 'jumper']"
+          @page-change="handlePageChange($event, intent)">
+        </v-pagination>
       </div>
     </div>
-    <div class="intent-block-footer" v-if="intent.expand && intent.testCorpus.length > LIST_PAGE_SIZE">
-      <v-pagination
-        size="small"
-        :total="intent.testCorpus.length"
-        :pageIndex="intent.curPage"
-        :pageSize="LIST_PAGE_SIZE"
-        :layout="['prev', 'pager', 'next', 'jumper']"
-        @page-change="handlePageChange($event, intent)">
-      </v-pagination>
-    </div>
+    </transition>
   </div>
 </div>
 
 </template>
 
 <script>
+import event from '@/utils/js/event';
 import api from '../_api/intentTest';
 
 // test_data: {
@@ -107,9 +121,16 @@ export default {
       corpusGroupWithoutAnnotation: [],
       LIST_PAGE_SIZE: 10,
       newCorpus: '',
-      duringComposition: false,
+      compositionState: false,
+      wasCompositioning: false,
       intentTypeTooltip: {
         msg: this.$t('intent_engine.manage.tooltip.page_info'),
+      },
+      editCorpusTooltip: {
+        msg: this.$t('intent_engine.manage.tooltip.hit_enter_to_save'),
+        eventOnly: true,
+        errorType: true,
+        alignLeft: true,
       },
     };
   },
@@ -128,6 +149,7 @@ export default {
         expand: intent.expand ? intent.expand : false,
         testCorpus: intent.testCorpus ? intent.testCorpus : [],
         curPage: 1,
+        hasCorpusEditing: intent.hasCorpusEditing ? intent.hasCorpusEditing : false,
       }));
       initialIntents.forEach((intent) => {
         if (intent.type === true) {
@@ -138,7 +160,6 @@ export default {
       });
     },
     handleIntentClicked(intent) {
-      console.log(intent);
       if (intent.expand) {
         this.shrinkIntentBlock(intent);
       } else {
@@ -146,45 +167,90 @@ export default {
       }
     },
     expandIntentBlock(intent) {
-      intent.testCorpus = [];
-      this.$api.getIntentTestCorpus(intent.id).then((data) => {
-        intent.testCorpus = data.map(corpus => ({
-          ...corpus,
-          mouseover: false,
-        }));
+      this.intentList.forEach((i) => {
+        i.expand = false;
+      });
+      this.fetchCorpus(intent).then(() => {
         intent.expand = true;
       });
     },
+    fetchCorpus(intent) {
+      return this.$api.getIntentTestCorpus(intent.id).then((data) => {
+        intent.testCorpus = data.map(corpus => ({
+          ...corpus,
+          mouseover: false,
+          isEditing: false,
+        }));
+      });
+    },
     shrinkIntentBlock(intent) {
-      console.log('shrinkIntentBlock');
       intent.expand = false;
     },
     setCompositionState(bool) {
-      this.duringComposition = bool;
+      this.compositionState = bool;
+    },
+    detectCompositionState() {
+      this.wasCompositioning = this.compositionState;
     },
     addCorpus(intent) {
-      console.log(this.newCorpus);
-      console.log(intent);
+      const update = [{
+        id: 0,
+        content: this.newCorpus,
+      }];
+      this.patchCorpus(intent, update, []);
     },
     handlePageChange(pageIdx, intent) {
       intent.curPage = pageIdx;
-// if (intent.hasCorpusEditing) {
-//   const editingCorpus = intent.corpus[intent.viewCorpusType].find(cp => cp.isEdit === true);
-//   this.leaveEditCorpus(editingCorpus, intent);
-// }
     },
     getCorpusPage(intent) {
       const start = this.LIST_PAGE_SIZE * (intent.curPage - 1);
       const end = this.LIST_PAGE_SIZE * intent.curPage;
       return intent.testCorpus.slice(start, end);
     },
-    editCorpus(intent, corpus) {
-      console.log(intent);
-      console.log(corpus);
+    startEditingCorpus(intent, corpus) {
+      corpus.isEditing = true;
+      intent.hasCorpusEditing = true;
+      this.editingCorpusContent = corpus.sentence;
+      this.$nextTick(() => {
+        this.$refs.editCorpusInput[0].focus();
+        this.$nextTick(() => {
+          this.$refs.editCorpusInput[0].dispatchEvent(event.createEvent('tooltip-show'));
+        });
+      });
+    },
+    finishEditingCorpus(intent, corpus) {
+      corpus.isEditing = false;
+      intent.hasCorpusEditing = false;
+      this.$refs.editCorpusInput[0].dispatchEvent(event.createEvent('tooltip-hide'));
+    },
+    updateCorpus(intent, corpus) {
+      if (this.wasCompositioning) {
+        return;
+      }
+      this.editingCorpusContent = this.editingCorpusContent.trim();
+      if (this.editingCorpusContent === '') {
+        this.deleteCorpus(intent, corpus);
+      } else {
+        corpus.sentence = this.editingCorpusContent;
+        const update = [{
+          id: corpus.id,
+          content: corpus.sentence,
+        }];
+        this.patchCorpus(intent, update, []);
+      }
+      this.finishEditingCorpus(intent, corpus);
+    },
+    patchCorpus(intent, update, del) {
+      console.log('patchCorpus');
+      this.$api.patchIntentTestCorpus(intent.id, update, del).then(() => {
+        // this.fetchCorpus(intent);
+      });
     },
     deleteCorpus(intent, corpus) {
-      console.log(intent);
-      console.log(corpus);
+      const corpusIdx = intent.testCorpus.findIndex(cp => cp.id === corpus.id);
+      intent.testCorpus.splice(corpusIdx, 1);
+      const del = [corpus.id];
+      this.patchCorpus(intent, [], del);
     },
   },
   mounted() {
@@ -243,6 +309,16 @@ export default {
         flex: 0 0 auto;
       }
     }
+    .intent-content-enter-active, .intent-content-leave-active {
+      transition: max-height .4s ease-in-out;
+      overflow: hidden;
+    }
+    .intent-content-enter, .intent-content-leave-to {
+      max-height: 0px;
+    }
+    .intent-content-enter-to, .intent-content-leave {
+      max-height: 1000px;
+    }
     .intent-content{
       display: flex;
       flex-direction: column;
@@ -260,9 +336,18 @@ export default {
         .corpus-row{
           display: flex;
           margin: 4px 0px 0px 20px;
+          &:hover {
+            background-color: $color-disabled;
+          }
           .corpus{
             flex: 1 1 auto;
-            @include font-14px-line-height-28px();
+            display: flex;
+            span{
+              @include font-14px-line-height-28px();
+            }
+            input[type=text] {
+              flex: 1;
+            }
           }
           .corpus-action{
             flex: 0 0 auto;
@@ -293,7 +378,7 @@ export default {
         }
       }
     }
-    .intent-block-footer {
+    .intent-footer {
       border-top: 1px solid $color-borderline;
       height: 50px;
       display: flex;

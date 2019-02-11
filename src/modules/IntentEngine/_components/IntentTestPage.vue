@@ -25,6 +25,18 @@
             {{ $t('intent_engine.test_data.intent_num', {inum: intentList.length, cnum: corpusCounts}) }}
           </div>
         </div>
+        <div class="content-tool-right">
+          <dropdown-select
+            class="option-select"
+            :multi="true"
+            :value="undefined"
+            @input="onSelectOption()"
+            :options="[]"
+            :showCheckedIcon="true"
+            width="64px"
+            :inputBarStyle="optionSelectStyle"
+          />
+        </div>
       </div>
       <template v-if="hasIntents">
         <intent-test-list
@@ -58,6 +70,10 @@ export default {
       searchIntentMode: false,
       intentList: [],
       corpusCounts: 0,
+      optionSelectStyle: {
+        height: '28px',
+        'border-radius': '2px',
+      },
     };
   },
   computed: {

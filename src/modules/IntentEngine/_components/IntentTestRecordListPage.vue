@@ -20,6 +20,13 @@
       <div class="block-title">
         {{ $t('intent_engine.test_records.latest_records') }}
       </div>
+      <!-- <general-scroll-table
+        :table-data="latestRecordData"
+        :table-header="recordTableHeader"
+        :action="recordTableAction"
+        show-empty
+        allowCustomHeader>
+      </general-scroll-table> -->
       <general-table class="record-table"
         :tableHeader="recordTableHeader"
         :tableData="latestRecordData"
@@ -43,12 +50,15 @@
 </template>
 <script>
 
+import GeneralScrollTable from '@/components/GeneralScrollTable/GeneralScrollTable';
 import api from '../_api/intentTest';
 
 export default {
   name: 'intent-test-record-list-page',
   api,
-  components: {},
+  components: {
+    GeneralScrollTable,
+  },
   props: {
   },
   data() {
@@ -204,6 +214,7 @@ export default {
     overflow-y: scroll;
     @include customScrollbar();
     .block{
+      flex: 0 0 auto;
       display: flex;
       flex-direction: column;
       .block-title{
