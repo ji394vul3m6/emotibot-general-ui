@@ -5,6 +5,7 @@ import pickerUtil from '@/utils/vue/DatePickerUtil';
 import DatePicker from '../../components/DateTimePicker/DatePicker';
 import TimePicker from '../../components/DateTimePicker/TimePicker';
 import DatetimePicker from '../../components/DateTimePicker';
+import RangePicker from '../../components/DatetimeRangePicker';
 
 import README from './README.md';
 
@@ -74,6 +75,43 @@ export default [
           handleSelectDate: action('select date'),
           handleDateValidityChanged: action('validity change'),
           handleDateChanged: action('date changed'),
+        },
+        template: `<div>
+        ${template}
+        </div>`,
+        i18n,
+      };
+    }),
+  },
+  {
+    name: 'Range Picker',
+    func: withMarkdownNotes(README)((i18n) => {
+      const template = `
+      <div>
+        <div class="div-block">
+          <div class="headline">預設狀態</div>
+          <range-picker/>
+        </div>
+        <div class="div-block">
+        <div class="headline">給予預設值</div>
+          <range-picker :start-time="start" :end-time="end"
+          @update="handleUpdate"/>
+        </div>
+      </div>
+        `;
+
+      return {
+        components: {
+          RangePicker,
+        },
+        data() {
+          return {
+            start: 1547803636,
+            end: 1547903636,
+          };
+        },
+        methods: {
+          handleUpdate: action('select date'),
         },
         template: `<div>
         ${template}

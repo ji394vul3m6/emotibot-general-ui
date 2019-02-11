@@ -3,6 +3,7 @@ import { action } from '@storybook/addon-actions';
 import { withMarkdownNotes } from '@storybook/addon-notes';
 import DropdownSelect from '../../components/DropdownSelect';
 import DropdownCascader from '../../components/basic/DropdownCascader';
+import DimensionSelect from '../../components/dropdown/DimensionSelector';
 import README from './README.md';
 import READMECascader from './README_Cascader.md';
 
@@ -359,6 +360,56 @@ export default [{
         },
       },
       template,
+      i18n,
+    };
+  }),
+},
+{
+  name: 'DimensionSelect',
+  func: withMarkdownNotes(README)((i18n) => {
+    const template = `
+      <div class="div-block">
+        <div class="headline">DimensionSelect</div>
+        <div class="line">
+          <dimension-select :options="options"/>
+        </div>
+      </div>
+      `;
+
+    return {
+      components: {
+        DimensionSelect,
+      },
+      data() {
+        return {
+          options: [{
+            key: 'platform',
+            text: '平台',
+            values: [
+              { key: 'a', text: 'A' },
+              { key: 'b', text: 'B' },
+            ],
+          }, {
+            key: 'size',
+            text: 'Screen',
+            values: [
+              { key: 'D1', text: 'D1' },
+              { key: 'HD', text: 'HD' },
+              { key: 'FHD', text: 'FHD' },
+            ],
+          }],
+        };
+      },
+      methods: {
+        input(val) {
+          action('input')(val);
+        },
+        onclickAction(val) {
+          action('點擊 action')(val);
+          console.log({ val });
+        },
+      },
+      template: `<div>${template}</div>`,
       i18n,
     };
   }),
