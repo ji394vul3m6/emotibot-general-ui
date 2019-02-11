@@ -15,6 +15,7 @@ import GeneralTable from '@/components/GeneralTable';
 import LabelSwitch from '@/components/basic/LabelSwitch';
 import DropdownSelect from '@/components/DropdownSelect';
 import DropdownCascader from '@/components/basic/DropdownCascader';
+import NavBar from '@/components/NavigationBar';
 import Tag from '@/components/basic/Tag';
 import LoadingLine from '@/components/basic/LoadingLine';
 import LoadingDot from '@/components/basic/LoadingDot';
@@ -65,6 +66,7 @@ Vue.component('dropdown-cascader', DropdownCascader);
 Vue.component('tag', Tag);
 Vue.component('loading-line', LoadingLine);
 Vue.component('loading-dot', LoadingDot);
+Vue.component('nav-bar', NavBar);
 
 let locale = localStorage.getItem('locale');
 if (!locale) {

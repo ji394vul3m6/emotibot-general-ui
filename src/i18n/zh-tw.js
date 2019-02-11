@@ -133,6 +133,11 @@ export default {
     delete_category_msg: '確定要刪除分類 {name} 及其子分類嗎？',
   },
   statistics: {
+    sessions_time: '會話時間',
+    session_id: '會話 ID',
+    feedback_score: '滿意度分數',
+    feedback_reeason: '滿意度反饋',
+
     search_more: '顯示上限爲1萬筆，顯示更多資料？',
     search_more_hint: '以最後一筆訪問時間爲啓始點重新搜尋',
 
@@ -190,7 +195,8 @@ export default {
 
     filter: '篩選條件',
     export_mode: '高級篩選',
-    total_records: '共有 {num} 筆日誌，已勾選 {count} 筆',
+    total_records: '共 {num} 筆',
+    total_select_records: '共有 {num} 筆日誌，已勾選 {count} 筆',
 
     recommend_question: '推薦標準問題',
     recommend_empty_msg_1: '目前無推薦標準問題',
@@ -965,6 +971,7 @@ export default {
       statistic_daily: '日誌管理',
       statistic_audit: '操作記錄',
       statistic_learning: '負反饋',
+      statistic_session: '會話日誌',
     },
     task_engine: {
       module_name: '任務引擎',
@@ -981,6 +988,11 @@ export default {
     error: '',
   },
   general: {
+    clear_all: '清除全部',
+    reset_to_default: '還原預設',
+    view: '查看',
+    custom_column: '自訂欄位',
+    default_column: '預設欄位',
     enable: '啟用',
     disable: '停用',
     setting: '設置',

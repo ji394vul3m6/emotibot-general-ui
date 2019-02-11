@@ -156,6 +156,7 @@
                 :ref="`column-${uniqueId(headerLeft.key, idx)}`"
                 v-tooltip="overflowTooltip"
                 @mouseover="showFullText($event, data[headerLeft.key], `column-${uniqueId(headerLeft.key, idx)}`)"
+                @click="copyIfEllipsis($event)"
                 @mouseout="hideFullText($event, `column-${uniqueId(headerLeft.key, idx)}`)">
                   {{ data[headerLeft.key] }}
               </div>
@@ -469,7 +470,7 @@ export default {
         width = 60;
       }
       return {
-        flex: `0 0 ${width}px`,
+        flex: `0 1 ${width}px`,
         maxWidth: `${width}px`,
       };
     },
@@ -556,6 +557,12 @@ export default {
       }
       this.headerInfoTooltip.msg = header.info;
       infoIconBlockDom.dispatchEvent(event.createEvent('tooltip-reload'));
+    },
+    copyIfEllipsis(e) {
+      if (!misc.isEllipsisActive(e.target)) return;
+
+      const text = e.target.innerText;
+      misc.copyToClipboard(text);
     },
     showFullText(e, text, refName) {
       const that = this;
@@ -713,7 +720,7 @@ $table-action-width: 80px;
     }
     .thead {
       position: relative;
-      z-index: 5;
+      z-index: 3;
     }
     .table-header-item {
       display: flex;
@@ -749,6 +756,7 @@ $table-action-width: 80px;
   }
   .general-table-body {
     overflow-x: hidden;
+    flex: 1;
 
     display: flex;
     flex-direction: column;
@@ -964,8 +972,8 @@ $table-layout-right-flex-basis: 60px;
     display: flex;
     .table-layout-left {
       position: relative; // Fix background remove box-shadow issue
-      z-index: 3;         // Fix background remove box-shadow issue
       &.has-scroll-x {
+        z-index: 3;         // Fix background remove box-shadow issue
         box-shadow: 2px 0px 4px 0px rgba(115, 115, 115, 0.2);
       }
       flex: 0 0 auto;
@@ -975,7 +983,7 @@ $table-layout-right-flex-basis: 60px;
       @include customScrollbar();
       @include auto-overflow-X();
       .tr {
-        min-width: max-content;
+        // min-width: max-content;
         .td {
           min-width: $table-cell-min-width;
           &.empty-td {

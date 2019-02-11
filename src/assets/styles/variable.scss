@@ -346,3 +346,17 @@ $success-color: #5cd29d;
     width: auto;
   }
 }
+
+// All z-index in page should smaller than 100
+@mixin floatMenu() {
+  z-index: 100;
+}
+
+// All component below the popup show smaller than 1000
+@mixin popWindow() {
+  z-index: 1000;
+}
+
+@mixin popWindowFloatMenu() {
+  z-index: 1100;
+}

@@ -167,7 +167,7 @@
       </div>
       <icon iconType="info" :size="16" v-tooltip="clusterTooltip" enableHover></icon>
       <div v-if="totalCount > 0" class="total-show">
-        {{ $t('statistics.total_records', {num: totalCount, count: checkedDataRowCount }) }}
+        {{ $t('statistics.total_select_records', {num: totalCount, count: checkedDataRowCount }) }}
           <span v-if="totalCount > tableMaxRecord" @click="searchForMore" v-tooltip="searchTooltip" class="search-more">
             {{ $t('statistics.search_more') }}
           </span>

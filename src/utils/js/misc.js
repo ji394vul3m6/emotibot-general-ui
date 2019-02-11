@@ -51,10 +51,22 @@ function getBrowserLanguage() {
   return validZHTW.find(i18n => i18n === browserLanguage) ? 'zh-tw' : 'zh-cn';
 }
 
+function copyToClipboard(text) {
+  const input = document.createElement('input');
+  input.value = text;
+  const body = document.querySelector('body');
+  body.append(input);
+
+  input.select();
+  document.execCommand('copy');
+  input.remove();
+}
+
 export default {
   useIE,
   isEllipsisActive,
   downloadRawFile,
   controlKeyOnly,
   getBrowserLanguage,
+  copyToClipboard,
 };

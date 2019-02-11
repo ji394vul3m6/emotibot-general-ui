@@ -1,4 +1,6 @@
 <template>
+  <div class="dropdown-container">
+  <div class="dropdown-name" v-if="name !== undefined">{{ name }}</div>
   <div class="dropdown-select" :style="styleObj">
     <div class="input-bar" :class="{'is-focus': show, error: showError, disabled}" :style="inputBarStyle" ref="input" @click="showSelection">
       <div class="input-block" :class="{multi}">
@@ -71,6 +73,7 @@
       </div>
     </div>
   </div>
+  </div>
 </template>
 
 <script>
@@ -83,10 +86,16 @@ export default {
         return [];
       },
     },
+    name: {
+      type: String,
+      required: false,
+      default: undefined,
+    },
     options: {
       type: Array,
       validator: input => input.reduce((ret, value) =>
         ret && (value.text !== undefined) && (value.value !== undefined || value.isGroup), true),
+      default: () => [],
     },
     showCheck: {
       type: Boolean,
@@ -155,13 +164,9 @@ export default {
   },
   computed: {
     styleObj() {
-      if (this.flex) {
-        return {
-          flex: `0 0 ${this.width}`,
-        };
-      }
       return {
         width: this.width,
+        flex: `0 0 ${this.width}`,
       };
     },
     filteredLocalOptions() {
@@ -390,7 +395,15 @@ export default {
 
 <style lang="scss" scoped>
 @import 'styles/variable.scss';
+.dropdown-container {
+  display: flex;
 
+  align-items: center;
+  .dropdown-name {
+    @include font-14px();
+    margin-right: 10px;
+  }
+}
 $border-color: $color-borderline;
 .input-bar {
   display: flex;

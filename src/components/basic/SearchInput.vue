@@ -1,15 +1,18 @@
 <template>
-  <div class="search-input icon-input" :class="{'ie-focus-within': isFocus, fill: fill, flex: flex}">
-    <input v-model="keyword"
-      ref="input"
-      :placeholder="$t('general.search_placeholder')"
-      @keypress.enter="$emit('search', keyword)"
-      @input="handleInput"
-      @focus="toggleFocus(true)"
-      @blur="toggleFocus(false)">
-    <div class="input-icon"> 
-      <icon icon-type="search" :size=16 />
-    </div> 
+  <div class="input-container">
+    <div class="input-name" v-if="name !== undefined">{{ name }}</div>
+    <div class="search-input icon-input" :class="{'ie-focus-within': isFocus, fill: fill, flex: flex}">
+      <input v-model="keyword"
+        ref="input"
+        :placeholder="$t('general.search_placeholder')"
+        @keypress.enter="$emit('search', keyword)"
+        @input="handleInput"
+        @focus="toggleFocus(true)"
+        @blur="toggleFocus(false)">
+      <div class="input-icon"> 
+        <icon icon-type="search" :size=16 />
+      </div> 
+    </div>
   </div>
 </template>
 
@@ -29,6 +32,11 @@ export default {
       type: Boolean,
       required: false,
       default: false,
+    },
+    name: {
+      type: String,
+      required: false,
+      default: undefined,
     },
   },
   data() {
@@ -59,10 +67,17 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "styles/variable";
-
 $input-height: 28px;
 
+.input-container {
+  display: flex;
+
+  align-items: center;
+  .input-name {
+    @include font-14px();
+    margin-right: 10px;
+  }
+}
 .search-input {
   display: inline-flex;
   height: $input-height;

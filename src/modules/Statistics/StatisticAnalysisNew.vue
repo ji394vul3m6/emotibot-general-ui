@@ -59,7 +59,6 @@
 import Vue from 'vue';
 import moment from 'moment';
 import DatePicker from '@/components/DateTimePicker/DatePicker';
-import NavBar from '@/components/NavigationBar';
 import tagAPI from '@/api/tagType';
 import auditAPI from '@/api/audit';
 import misc from '@/utils/js/misc';
@@ -74,7 +73,6 @@ export default {
   icon: 'white_daily',
   name: 'statistic-analysis',
   components: {
-    NavBar,
     chart: () => import('./_components/Charts').then((data) => {
       chartLoaded = true;
       return data;

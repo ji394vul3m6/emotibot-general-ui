@@ -611,6 +611,9 @@ export default {
       };
     },
     setValue(date) {
+      if (this.value === undefined) {
+        return;
+      }
       const hour = date.getHours();
       const hourStr = hour >= 10 ? `${hour}` : `0${hour}`;
       const minutes = date.getMinutes();

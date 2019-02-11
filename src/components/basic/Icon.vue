@@ -248,6 +248,8 @@ export default {
   @include iconType("month_left");
   @include iconType("month_right");
   @include iconType("month_right_white");
+
+  @include iconTypeHover("table_set");
   
   @include iconType("scenario_upload");
   @include iconType("te_help_video");
@@ -256,6 +258,7 @@ export default {
   @include iconType("edit_pencil_hover");
   @include iconType("edit_delete");
   @include iconType("edit_delete_hover");
+
 
   // robot icon should a little bit larger than other icons
   .white_robot_icon {

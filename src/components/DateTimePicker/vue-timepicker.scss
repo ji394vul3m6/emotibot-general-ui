@@ -45,8 +45,8 @@
     bottom: 0;
   }
   .dropdown {
+    @include floatMenu();
     color: $color-font-normal;
-    z-index: 5;
     top: calc(30px + 10px);
     left: 0;
     background: #fff;

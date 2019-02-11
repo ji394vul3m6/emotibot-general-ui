@@ -133,6 +133,11 @@ export default {
     delete_category_msg: '确定要删除分类 {name} 及其子分类吗？',
   },
   statistics: {
+    sessions_time: '会话时间',
+    session_id: '会话 ID',
+    feedback_score: '满意度分数',
+    feedback_reeason: '满意度反馈',
+
     search_more: '显示上限为1万笔，显示更多资料？',
     search_more_hint: '以最后一笔访问时间为启始点重新搜寻',
 
@@ -190,7 +195,8 @@ export default {
 
     filter: '筛选条件',
     export_mode: '高级筛选',
-    total_records: '共有 {num} 笔日志，已勾选 {count} 笔',
+    total_records: '共 {num} 笔',
+    total_select_records: '共有 {num} 笔日志，已勾选 {count} 笔',
 
     recommend_question: '推荐标准问题',
     recommend_empty_msg_1: '目前无推荐标准问题',
@@ -965,6 +971,7 @@ export default {
       statistic_daily: '日志管理',
       statistic_audit: '操作记录',
       statistic_learning: '负反馈',
+      statistic_session: '会话日志',
     },
     task_engine: {
       module_name: '任务引擎',
@@ -981,6 +988,11 @@ export default {
     error: '',
   },
   general: {
+    clear_all: '清除全部',
+    reset_to_default: '还原预设',
+    view: '查看',
+    custom_column: '自订栏位',
+    default_column: '预设栏位',
     enable: '启用',
     disable: '停用',
     setting: '设置',
