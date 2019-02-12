@@ -55,6 +55,7 @@ import UserPreference from '@/manage-modules/UserPreference';
 import userAPI from '@/manage-modules/_api/user';
 import adminAPI from '@/manage-modules/SystemManage/_api/system';
 import systemAPI from '@/api/system';
+import misc from '@/utils/js/misc';
 
 const defaultPath = '/statistic-dash';
 
@@ -68,20 +69,6 @@ function forceUpdate(vueObj) {
     forceUpdate(child);
   });
   vueObj.$forceUpdate();
-}
-
-// eslint-disable-next-line
-document.head || (document.head = document.getElementsByTagName('head')[0]);
-function changeFavicon(src) {
-  const link = document.createElement('link');
-  const oldLink = document.getElementById('dynamic-favicon');
-  link.id = 'dynamic-favicon';
-  link.rel = 'shortcut icon';
-  link.href = src;
-  if (oldLink) {
-    document.head.removeChild(oldLink);
-  }
-  document.head.appendChild(link);
 }
 
 export default {
@@ -226,6 +213,7 @@ export default {
           '/manage/enterprise-manage',
           '/manage/system-admin-list',
           '/manage/audit-system',
+          '/manage/system-setting',
         ];
         const valid = that.$route.matched.reduce((val, match) =>
           val || validURL.indexOf(match.path) >= 0, false);
@@ -475,11 +463,12 @@ export default {
         that.$refs.logo.style.backgroundImage = `url("${that.$api.getIconURL('app', that.enterpriseID)}")`;
       }, () => {
         that.$refs.logo.classList.add('default');
+        that.$refs.logo.style.backgroundImage = '';
       });
       that.$api.getIcon('favicon', that.enterpriseID).then(() => {
-        changeFavicon(that.$api.getIconURL('favicon', that.enterpriseID));
+        misc.changeFavicon(that.$api.getIconURL('favicon', that.enterpriseID));
       }, () => {
-        changeFavicon('/static/favicon.png');
+        misc.changeFavicon('/static/favicon.png');
       });
     },
   },
@@ -548,6 +537,10 @@ export default {
     });
     that.$root.$on('close-chat-test', () => {
       that.closeChatTest();
+    });
+
+    that.$root.$on('reload-logo', () => {
+      that.loadLogo();
     });
 
     window.addEventListener('keydown', that.debugListener);

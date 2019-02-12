@@ -21,6 +21,17 @@ function getIconURL(iconType, enterprise) {
 function getIcon(iconType, enterprise) {
   return this.$reqGet(getIconURL(iconType, enterprise)).then(rsp => rsp.data);
 }
+function uploadIcon(iconType, enterprise, file) {
+  const data = new FormData();
+  data.append('file', file);
+  data.append('type', iconType);
+  data.append('enterprise', enterprise);
+
+  return this.$reqPut(LOGO_PATH, data);
+}
+function deleteIcon(iconType, enterprise) {
+  return this.$reqDelete(getIconURL(iconType, enterprise));
+}
 
 function getUIModule() {
   return this.$reqGet(UI_MODULE_PATH).then(rsp => rsp.data.result);
@@ -33,5 +44,7 @@ export default {
 
   getIconURL,
   getIcon,
+  uploadIcon,
+  deleteIcon,
   getUIModule,
 };

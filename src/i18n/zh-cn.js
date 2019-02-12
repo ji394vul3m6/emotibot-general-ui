@@ -988,6 +988,10 @@ export default {
     error: '',
   },
   general: {
+    system_name_default: '对话管理后台',
+    name: '名称',
+    image: '图片',
+    icon: '图标',
     clear_all: '清除全部',
     reset_to_default: '还原预设',
     view: '查看',
@@ -1131,6 +1135,19 @@ export default {
   },
 
   management: {
+    enterprise_setting: '企业设置',
+    enterprise_icon_setting: '企业图标设置',
+    enterprise_lu_icon: '企业左上图标',
+    enterprise_lu_icon_info: '支援格式 svg, png，档案大小限制为 1mb，建议宽高比例 3:1',
+    browser_page_icon: '浏览器页签',
+    browser_page_icon_info: '支援格式 png ，档案大小限制为1mb，建议宽高比例1:1',
+
+    system_setting: '系统设置',
+    system_icon_setting: '系統图标设置',
+    system_lu_icon: '系統左上图标',
+    login_icon: '登入画面图标',
+    login_icon_info: '支援格式 svg,png ，档案大小限制为1mb，建议宽高比例为5:3',
+
     enterprise_list: '企业列表',
     admin_list: '系统管理人员',
     enterprise: '企业',

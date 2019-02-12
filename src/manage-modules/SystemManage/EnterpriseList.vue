@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="card h-fill w-fill">
-      <nav-bar class='nav-bar' :options=pageOption v-model="currentPage"  @search="doSearch" showSearch></nav-bar>
+      <nav-bar class='nav-bar' :options="getNavbarOption()" v-model="currentPage"  @search="doSearch" showSearch></nav-bar>
       <div class="page">
         <command-row class="commands">
             <text-button button-type="primary"
@@ -39,9 +39,9 @@ import EnterpriseDeleteForm from './_components/EnterpriseDeleteForm';
 import enterpriseAPI from './_api/enterprise';
 import systemAPI from './_api/system';
 import CommandRow from '../_components/CommandRow';
+import mixin from './_store/mixin';
 
 const robotListPage = '/manage/robot-manage';
-const adminListPage = '/manage/system-admin-list';
 export default {
   path: 'enterprise-manage',
   name: 'enterprise-manage',
@@ -51,6 +51,7 @@ export default {
     CommandRow,
   },
   api: [enterpriseAPI, systemAPI, sysAPI],
+  mixins: [mixin],
   computed: {
     ...mapGetters([
       'userInfo',
@@ -67,19 +68,13 @@ export default {
   },
   data() {
     return {
-      pageOption: {
-        enterpriseList: this.$t('management.enterprise_list'),
-        systemAdminList: this.$t('management.admin_list'),
-      },
       keyword: '',
       currentPage: 'enterpriseList',
     };
   },
   watch: {
     currentPage(val) {
-      if (val === 'systemAdminList') {
-        this.$router.push(adminListPage);
-      }
+      this.goPage(val);
     },
   },
   mounted() {

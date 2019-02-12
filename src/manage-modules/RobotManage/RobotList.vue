@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="card h-fill w-fill">
-      <nav-bar class='nav-bar' :options=pageOption @search="doSearch" showSearch></nav-bar>
+      <nav-bar class='nav-bar' v-model="currentPage" :options="getNavbarOption()" @search="doSearch" showSearch></nav-bar>
       <div class="page">
         <command-row class="commands">
             <template v-if="isAdmin">
@@ -45,6 +45,7 @@ import robotAPI from '../_api/robot';
 import roleAPI from '../_api/role';
 import userAPI from '../_api/user';
 import RobotDeleteForm from './_components/RobotDeleteForm';
+import mixin from './_store/mixin';
 
 const defaultPath = '/statistic-dash';
 export default {
@@ -56,6 +57,7 @@ export default {
     CommandRow,
   },
   api: [robotAPI, roleAPI, userAPI],
+  mixins: [mixin],
   computed: {
     ...mapGetters([
       'userInfo',
@@ -77,9 +79,7 @@ export default {
   },
   data() {
     return {
-      pageOption: {
-        robotList: this.$t('management.robot_list'),
-      },
+      currentPage: 'robotList',
       keyword: '',
       robots: [],
       robotNameTooltip: {
@@ -90,6 +90,13 @@ export default {
         left: 80,
       },
     };
+  },
+  watch: {
+    currentPage(val) {
+      if (val === 'enterpriseSetting') {
+        this.$router.push('enterprise-setting');
+      }
+    },
   },
   methods: {
     ...mapMutations([

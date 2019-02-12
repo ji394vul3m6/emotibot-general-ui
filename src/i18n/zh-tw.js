@@ -988,6 +988,10 @@ export default {
     error: '',
   },
   general: {
+    system_name_default: '對話管理後台',
+    name: '名稱',
+    image: '圖片',
+    icon: '圖標',
     clear_all: '清除全部',
     reset_to_default: '還原預設',
     view: '查看',
@@ -1131,6 +1135,19 @@ export default {
   },
 
   management: {
+    enterprise_setting: '企業設置',
+    enterprise_icon_setting: '企業圖標設置',
+    enterprise_lu_icon: '企業左上圖標',
+    enterprise_lu_icon_info: '支援格式 svg, png，檔案大小限制為 1mb，建議寬高比例 3:1',
+    browser_page_icon: '瀏覽器頁籤',
+    browser_page_icon_info: '支援格式 png ，檔案大小限制為1mb，建議寬高比例1:1',
+
+    system_setting: '系統設置',
+    system_icon_setting: '企業圖標設置',
+    system_lu_icon: '系統左上圖標',
+    login_icon: '登入畫面圖標',
+    login_icon_info: '支援格式 svg,png ，檔案大小限制為1mb，建議寬高比例為5:3',
+
     enterprise_list: '企業列表',
     admin_list: '系統管理人員',
     enterprise: '企業',
