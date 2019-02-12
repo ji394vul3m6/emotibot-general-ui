@@ -21,6 +21,7 @@
         {{ $t('intent_engine.test_records.latest_records') }}
       </div>
       <general-scroll-table
+        class="table"
         :tableData="latestRecordData"
         :tableHeader="recordTableHeader"
         :action="recordTableAction"
@@ -33,6 +34,7 @@
         {{ $t('intent_engine.test_records.saved_records') }}
       </div>
       <general-scroll-table
+        class="table"
         :tableData="savedRecordData"
         :tableHeader="savedRecordTableHeader"
         :action="recordTableAction"
@@ -48,6 +50,7 @@
 import GeneralScrollTable from '@/components/GeneralScrollTable/GeneralScrollTable';
 import api from '../_api/intentTest';
 import TestRecordListTableAction from './_tableColumn/TestRecordListTableAction';
+import TestRecordListTableDownloadLink from './_tableColumn/TestRecordListTableDownloadLink';
 
 export default {
   name: 'intent-test-record-list-page',
@@ -69,12 +72,14 @@ export default {
         key: 'test_record',
         text: this.$t('intent_engine.test_records.test_record'),
         width: '260px',
+        type: 'custom',
         default: true,
       },
       {
         key: 'intent_model',
         text: this.$t('intent_engine.test_records.intent_model'),
         width: '190px',
+        type: 'custom',
         default: true,
       },
       {
@@ -141,18 +146,16 @@ export default {
     },
     renderRecordData(records, type) {
       return records.map((record) => {
-        const testRecord = this.composeRecordName(
-          record.intent_test.updated_time,
-          record.intent_test.sentences_count,
-        );
+        const testRecord = this.composeRecordDownloadLink(record);
+        const intentModel = this.composeModelDownloadLink(record);
         const rtn = {
           intent_test_id: record.intent_test.id,
           ie_model_id: record.ie_model.id,
           test_record: testRecord,
-          intent_model: record.ie_model.updated_time,
-          accuracy: record.intent_test.true_positives,
-          recall: 0,
-          precision: 0,
+          intent_model: intentModel,
+          accuracy: this.composeStatData(record, 'accuracy'),
+          recall: this.composeStatData(record, 'recall'),
+          precision: this.composeStatData(record, 'precision'),
           tester: record.intent_test.tester,
           action: this.composeRecordAction(record, type),
         };
@@ -162,9 +165,50 @@ export default {
         return rtn;
       });
     },
-    composeRecordName(updatedTime, corpusCount) {
-      const modelStats = this.$t('intent_engine.test_records.intent_statistics', { cnum: corpusCount });
-      return `${updatedTime} (${modelStats})`;
+    composeRecordDownloadLink(record) {
+      const that = this;
+      const modelStats = this.$t('intent_engine.test_records.intent_statistics', { cnum: record.intent_test.sentences_count });
+      const text = `${record.intent_test.updated_time} (${modelStats})`;
+      const link = { ...TestRecordListTableDownloadLink };
+      link.data = () => ({
+        linkData: {
+          text,
+          onclick: () => {
+            that.exportRecord(record);
+          },
+        },
+      });
+      return link;
+    },
+    composeModelDownloadLink(record) {
+      const that = this;
+      const link = { ...TestRecordListTableDownloadLink };
+      link.data = () => ({
+        linkData: {
+          text: record.ie_model.updated_time,
+          onclick: () => {
+            that.exportModel(record);
+          },
+        },
+      });
+      return link;
+    },
+    composeStatData(record, type) {
+      const tp = record.intent_test.true_positives;
+      const fp = record.intent_test.false_positives;
+      const tn = record.intent_test.true_negatives;
+      const fn = record.intent_test.false_negatives;
+      if (type === 'accuracy') {
+        const a = ((tp + tn) * 100) / (tp + tn + fp + fn);
+        return `${Math.round(a)}%`;
+      } else if (type === 'recall') {
+        const r = ((tp) * 100) / (tp + fn);
+        return `${Math.round(r)}%`;
+      } else if (type === 'precision') {
+        const p = (tp * 100) / (tp + fp);
+        return `${Math.round(p)}%`;
+      }
+      return '';
     },
     composeRecordAction(record, type) {
       const that = this;
@@ -181,6 +225,7 @@ export default {
           text: this.$t('intent_engine.test_records.restore_record'),
           onclick: () => {
             that.restoreRecord(record);
+            console.log(record.intent_test.tester);
           },
         },
       ];
@@ -189,6 +234,7 @@ export default {
           // unsave
           text: this.$t('intent_engine.test_records.unstore_record'),
           onclick: () => {
+            that.unsaveRecord(record);
             console.log(record.intent_test.tester);
           },
         };
@@ -198,6 +244,7 @@ export default {
           // save
           text: this.$t('intent_engine.test_records.store_record'),
           onclick: () => {
+            that.saveRecord(record);
             console.log(record.intent_test.tester);
           },
         };
@@ -216,8 +263,21 @@ export default {
     seeRecordDetail(record) {
       this.toPage(`test/record/${record.intent_test.id}`);
     },
-    restoreRecord(data) {
-      console.log(data);
+    saveRecord(record) {
+      this.$api.saveTestRecord(record.intent_test.id);
+    },
+    unsaveRecord(record) {
+      this.$api.unsaveTestRecord(record.intent_test.id);
+    },
+    restoreRecord(record) {
+      this.$api.restoreTestRecord(record.intent_test.id);
+    },
+    exportRecord(record) {
+      this.$api.exportTestRecord(record.intent_test.id);
+    },
+    exportModel(record) {
+      console.log('model download');
+      console.log(record);
     },
     toPage(path) {
       this.$router.push(`/intent-manage/${path}`);
@@ -261,6 +321,7 @@ export default {
     }
   }
   .body{
+    flex: 1 1 auto;
     display: flex;
     flex-direction: column;
     overflow-y: scroll;
@@ -274,6 +335,9 @@ export default {
         padding: 20px;
         color: $color-font-active;
         @include font-16px-line-height-28px();
+      }
+      .table{
+        flex: 0 0 auto;
       }
     }
   }
