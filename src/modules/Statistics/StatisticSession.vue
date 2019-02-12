@@ -10,7 +10,7 @@
           <!-- <search-input v-model="filterSession" :name="$t('statistics.session_id')" /> -->
           <search-input v-model="filterUser" :name="$t('statistics.user_id')" />
           <!-- <range-input :name="$t('statistics.feedback_score')" :min=0 :max=5 :step=1 @input="handleScoreRange"/> -->
-          <!-- <dropdown-select :name="$t('statistics.feedback_reeason')" width="200px"/> -->
+          <dropdown-select :name="$t('statistics.feedback_reeason')" width="200px" ref="reasons"/>
           <dimension-select :name="$t('statistics.dimension')" ref="dimension"
             :options="tagInfo" @input="handleDimensionChange"/>
         </template>
@@ -55,6 +55,7 @@ import RangeInput from '@/components/basic/RangeInput';
 import constant from '@/utils/js/constant';
 import auditAPI from '@/api/audit';
 import tagAPI from '@/api/tagType';
+import feedbackAPI from './_api/feedback';
 import api from './_api/session';
 
 const STATS_SESSION_EXPORT = '/api/v1/stats/sessions/export';
@@ -64,7 +65,7 @@ export default {
   privCode: 'statistic_daily',
   displayNameKey: 'statistic_session',
   name: 'statistic-session',
-  api: [api, auditAPI, tagAPI],
+  api: [api, auditAPI, tagAPI, feedbackAPI],
   components: {
     FilterField,
     RangePicker,
@@ -122,6 +123,7 @@ export default {
 
       tagInfo: [],
       dimension: {},
+      reasons: [],
     };
   },
   methods: {
@@ -238,9 +240,17 @@ export default {
     handleDimensionChange(value) {
       this.dimension = value;
     },
+    setupFeedbackReason() {
+      const that = this;
+      that.$api.getFeedbackReasons().then((data) => {
+        that.reasons = data.result;
+        that.$refs.reasons.$emit('set-option', that.reasons);
+      });
+    },
   },
   mounted() {
     this.setupDimension();
+    this.setupFeedbackReason();
   },
 };
 </script>
