@@ -203,6 +203,7 @@
                 :ref="`column-${uniqueId(header.key, idx)}`"
                 v-tooltip="overflowTooltip"
                 @mouseover="showFullText($event, data[header.key], `column-${uniqueId(header.key, idx)}`)"
+                @click="copyIfEllipsis($event)"
                 @mouseout="hideFullText($event, `column-${uniqueId(header.key, idx)}`)">
                   {{ data[header.key] }}
               </div>
