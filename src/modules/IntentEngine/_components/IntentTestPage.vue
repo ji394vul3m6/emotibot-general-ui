@@ -115,9 +115,12 @@ export default {
       return this.$hasRight('export');
     },
     allowImport() {
+      // return !this.isTraining && !this.fetchStatusError;
       return true;
     },
     allowExport() {
+      // return !this.versionNotAvailable && this.hasIntents &&
+      //   !this.isTraining && !this.fetchStatusError;
       return true;
     },
   },

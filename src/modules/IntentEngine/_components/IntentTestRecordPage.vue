@@ -42,13 +42,13 @@
       <div class="seperater margin-bottom"></div>
 
       <div class="text active margin-bottom">
-        {{`${$t('intent_engine.test_record.accuracy')} ${accuracy}%`}}
+        {{`${$t('intent_engine.test_record.accuracy')}: ${accuracy}%`}}
       </div>
       <div class="text active margin-bottom">
-        {{`${$t('intent_engine.test_record.recall')} ${recall}%`}}
+        {{`${$t('intent_engine.test_record.recall')}: ${recall}%`}}
       </div>
       <div class="text active margin-bottom">
-        {{`${$t('intent_engine.test_record.precision')} ${precision}%`}}
+        {{`${$t('intent_engine.test_record.precision')}: ${precision}%`}}
       </div>
       <div class="seperater margin-bottom"></div>
 
@@ -77,7 +77,8 @@
       </div>
       <template v-if="hasIntents">
         <intent-test-list
-          :allIntents="intentList">
+          :initialIntentList="intentList"
+          :intentListType="'normal'">
         </intent-test-list>
       </template>
     </div>

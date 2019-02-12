@@ -20,30 +20,25 @@
       <div class="block-title">
         {{ $t('intent_engine.test_records.latest_records') }}
       </div>
-      <!-- <general-scroll-table
-        :table-data="latestRecordData"
-        :table-header="recordTableHeader"
-        :action="recordTableAction"
-        show-empty
-        allowCustomHeader>
-      </general-scroll-table> -->
-      <general-table class="record-table"
-        :tableHeader="recordTableHeader"
+      <general-scroll-table
         :tableData="latestRecordData"
+        :tableHeader="recordTableHeader"
         :action="recordTableAction"
-        showEmpty>
-      </general-table>
+        showEmpty
+        allowCustomHeader>
+      </general-scroll-table>
     </div>
     <div class="saved-record-block block">
       <div class="block-title">
         {{ $t('intent_engine.test_records.saved_records') }}
       </div>
-      <general-table class="record-table"
-        :tableHeader="savedRecordTableHeader"
+      <general-scroll-table
         :tableData="savedRecordData"
+        :tableHeader="savedRecordTableHeader"
         :action="recordTableAction"
-        showEmpty>
-      </general-table>
+        showEmpty
+        allowCustomHeader>
+      </general-scroll-table>
     </div>
   </div>
 </div>
@@ -52,6 +47,7 @@
 
 import GeneralScrollTable from '@/components/GeneralScrollTable/GeneralScrollTable';
 import api from '../_api/intentTest';
+import TestRecordListTableAction from './_tableColumn/TestRecordListTableAction';
 
 export default {
   name: 'intent-test-record-list-page',
@@ -64,42 +60,57 @@ export default {
   data() {
     const recordTableHeader = [
       {
+        key: 'tester',
+        text: this.$t('intent_engine.test_records.tester'),
+        width: '170px',
+        default: true,
+      },
+      {
         key: 'test_record',
         text: this.$t('intent_engine.test_records.test_record'),
+        width: '260px',
+        default: true,
       },
       {
         key: 'intent_model',
         text: this.$t('intent_engine.test_records.intent_model'),
+        width: '190px',
+        default: true,
       },
       {
         key: 'accuracy',
-        text: this.$t('intent_engine.test_records.accuracy'),
-        width: '110px',
+        text: this.$t('intent_engine.test_record.accuracy'),
+        width: '135px',
+        default: true,
       },
       {
-        key: 'tester',
-        text: this.$t('intent_engine.test_records.tester'),
-        width: '140px',
+        key: 'recall',
+        text: this.$t('intent_engine.test_record.recall'),
+        width: '135px',
+        default: true,
+      },
+      {
+        key: 'precision',
+        text: this.$t('intent_engine.test_record.precision'),
+        width: '135px',
+        default: true,
+      },
+      {
+        key: 'action',
+        text: this.$t('general.operation'),
+        width: '70px',
+        type: 'custom',
+        lockedRight: true,
       },
     ];
     const savedRecordTableHeader = [
       {
         key: 'test_record_name',
         text: this.$t('intent_engine.test_records.test_record_name'),
+        width: '170px',
+        lockedLeft: true,
       },
       ...recordTableHeader,
-    ];
-    const recordTableAction = [
-      {
-        text: this.$t('intent_engine.test_records.see_record_detail'),
-        type: 'primary',
-        onclick: this.seeRecordDetail,
-      },
-      {
-        text: this.$t('intent_engine.test_records.restore_record'),
-        type: 'primary',
-        onclick: this.restoreRecord,
-      },
     ];
     return {
       searchKeyword: '',
@@ -108,7 +119,7 @@ export default {
       savedRecords: [],
       recordTableHeader,
       savedRecordTableHeader,
-      recordTableAction,
+      recordTableAction: [],
     };
   },
   computed: {
@@ -132,21 +143,18 @@ export default {
       return records.map((record) => {
         const testRecord = this.composeRecordName(
           record.intent_test.updated_time,
-          record.intent_test.intents_count,
           record.intent_test.sentences_count,
-        );
-        const intentModel = this.composeRecordName(
-          record.ie_model.updated_time,
-          record.ie_model.intents_count,
-          record.ie_model.sentences_count,
         );
         const rtn = {
           intent_test_id: record.intent_test.id,
           ie_model_id: record.ie_model.id,
           test_record: testRecord,
-          intent_model: intentModel,
+          intent_model: record.ie_model.updated_time,
           accuracy: record.intent_test.true_positives,
+          recall: 0,
+          precision: 0,
           tester: record.intent_test.tester,
+          action: this.composeRecordAction(record, type),
         };
         if (type === 'saved') {
           rtn.test_record_name = record.intent_test.name;
@@ -154,15 +162,59 @@ export default {
         return rtn;
       });
     },
-    composeRecordName(updatedTime, intentCount, corpusCount) {
-      const modelStats = this.$t('intent_engine.test_records.intent_statistics', { inum: intentCount, cnum: corpusCount });
+    composeRecordName(updatedTime, corpusCount) {
+      const modelStats = this.$t('intent_engine.test_records.intent_statistics', { cnum: corpusCount });
       return `${updatedTime} (${modelStats})`;
+    },
+    composeRecordAction(record, type) {
+      const that = this;
+      const options = [
+        {
+          // detail
+          text: this.$t('intent_engine.test_records.see_record_detail'),
+          onclick: () => {
+            that.seeRecordDetail(record);
+          },
+        },
+        {
+          // restore
+          text: this.$t('intent_engine.test_records.restore_record'),
+          onclick: () => {
+            that.restoreRecord(record);
+          },
+        },
+      ];
+      if (type === 'saved') {
+        const option = {
+          // unsave
+          text: this.$t('intent_engine.test_records.unstore_record'),
+          onclick: () => {
+            console.log(record.intent_test.tester);
+          },
+        };
+        options.splice(1, 0, option);
+      } else {
+        const option = {
+          // save
+          text: this.$t('intent_engine.test_records.store_record'),
+          onclick: () => {
+            console.log(record.intent_test.tester);
+          },
+        };
+        options.splice(1, 0, option);
+      }
+      // replace data in TestRecordListTableAction
+      const action = { ...TestRecordListTableAction };
+      action.data = () => ({
+        options,
+      });
+      return action;
     },
     inSearchIntentMode(bool) {
       this.searchIntentMode = bool;
     },
-    seeRecordDetail(data) {
-      this.toPage(`test/record/${data.intent_test_id}`);
+    seeRecordDetail(record) {
+      this.toPage(`test/record/${record.intent_test.id}`);
     },
     restoreRecord(data) {
       console.log(data);
