@@ -114,6 +114,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 #table-header-selector {
+  @include floatMenu();
   position: absolute;
   top: 40px;
   left: -292px;
@@ -125,6 +126,7 @@ export default {
 
   display: flex;
   flex-direction: column;
+  background: white;
 }
 
 #selector-header {

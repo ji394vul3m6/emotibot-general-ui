@@ -9,7 +9,7 @@
         <template slot="filters">
           <!-- <search-input v-model="filterSession" :name="$t('statistics.session_id')" /> -->
           <search-input v-model="filterUser" :name="$t('statistics.user_id')" />
-          <range-input :name="$t('statistics.feedback_score')" :min=1 :max=5 :step=1 @input="handleScoreRange"/>
+          <!-- <range-input :name="$t('statistics.feedback_score')" :min=0 :max=5 :step=1 @input="handleScoreRange"/> -->
           <!-- <dropdown-select :name="$t('statistics.feedback_reeason')" width="200px"/> -->
           <dimension-select :name="$t('statistics.dimension')" ref="dimension"
             :options="tagInfo" @input="handleDimensionChange"/>
@@ -25,7 +25,7 @@
         :table-data="tableData"
         :table-header="tableHeader"
         :action="tableAction"
-        allowCustomHeader show-empty>
+        allow-custom-header show-empty>
       </general-scroll-table>
       <div class="paginator">
         <v-pagination
@@ -152,8 +152,8 @@ export default {
       const filter = {
         start_time: parseInt(range.start.getTime() / 1000, 10),
         end_time: parseInt(range.end.getTime() / 1000, 10),
-        rating_max: that.scoreMax,
-        rating_min: that.scoreMin,
+        // rating_max: that.scoreMax,
+        // rating_min: that.scoreMin,
         ...that.dimension,
       };
 

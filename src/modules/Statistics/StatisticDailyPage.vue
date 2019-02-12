@@ -181,7 +181,7 @@
           :showEmptyMsg="[$t('general.no_search_data')]"
           :isLoading="isTableLoading"
           @checkedChange="handleCheckedChange"
-          auto-height show-empty checkbox
+          show-empty checkbox allow-custom-header
         ></general-table>
       </div>
       <div class="paginator">
@@ -205,7 +205,7 @@
 <script>
 import { mapGetters, mapMutations } from 'vuex';
 import event from '@/utils/js/event';
-import GeneralTable from '@/components/GeneralTable';
+import GeneralTable from '@/components/GeneralScrollTable';
 import DatetimePicker from '@/components/DateTimePicker';
 import DropdownSelect from '@/components/DropdownSelect';
 import pickerUtil from '@/utils/vue/DatePickerUtil';
@@ -391,6 +391,16 @@ export default {
       labelsOptions: [],
       minScore: 0,
       maxScore: 100,
+
+      headerWidth: {
+        user_q: '120px',
+        std_q: '120px',
+        answer: '200px',
+        log_time: '160px',
+        module: '120px',
+        intent: '120px',
+      },
+      defaultHeader: ['user_id', 'user_q', 'answer', 'log_time', 'module', 'emotion', 'intent'],
     };
   },
   watch: {
@@ -786,14 +796,29 @@ export default {
     },
     receiveAPIHeader(headerData) {
       const that = this;
+      const headerMap = {};
       headerData.forEach((header) => {
         header.key = header.id;
+        header.default = false;
+        header.width = that.headerWidth[header.key];
+        if (header.width === undefined) {
+          header.width = '80px';
+        }
+        headerMap[header.key] = header;
+      });
+      that.defaultHeader.forEach((key) => {
+        if (headerMap[key] === undefined) {
+          return;
+        }
+        headerMap[key].default = true;
       });
       headerData.push({
         key: 'action',
         text: that.$t('statistics.action'),
         type: 'action',
         info: that.$t('statistics.action_info'),
+        width: '180px',
+        lockedRight: true,
       });
       return headerData;
     },
