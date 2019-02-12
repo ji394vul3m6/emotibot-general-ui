@@ -466,14 +466,12 @@ export default {
       }
       if (columnNum >= 1) {
         width += (40 * columnNum) + 30;
-        if (allowCustomHeader) {
-          width += 60;
-        }
-      } else if (allowCustomHeader) {
-        width = 60;
+      }
+      if (allowCustomHeader) {
+        width += 60;
       }
       return {
-        flex: `0 1 ${width}px`,
+        flex: `0 0 ${width}px`,
         maxWidth: `${width}px`,
       };
     },
@@ -725,7 +723,6 @@ $table-action-width: 80px;
     }
     .thead {
       position: relative;
-      z-index: 3;
     }
     .table-header-item {
       display: flex;
@@ -795,6 +792,7 @@ $table-action-width: 80px;
         text-overflow: ellipsis;
         overflow: hidden;
         white-space: nowrap;
+        word-break: break-all;
       }
     }
     .clickable-row {
@@ -894,6 +892,7 @@ $table-layout-right-flex-basis: 60px;
 
     
     .table-layout-right {
+      display: flex;
       &.has-scroll-x {
         box-shadow: -2px 0px 4px 0px rgba(115, 115, 115, 0.2);
       }
