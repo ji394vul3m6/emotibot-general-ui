@@ -417,6 +417,9 @@ export default {
     },
   },
   watch: {
+    tableHeader() {
+      this.resetSelectedHeader();
+    },
     tableData() {
       if (this.checkbox) {
         this.tableData.forEach((data) => {
@@ -618,6 +621,15 @@ export default {
     isSelectedHeader(key) {
       return this.selectedTableHeader.find(headerKey => headerKey === key) !== undefined;
     },
+    resetSelectedHeader() {
+      if (this.allowCustomHeader) {
+        this.selectedTableHeader = this.tableHeader
+          .filter(header => header.lockedLeft === true
+            || header.lockedRight === true
+            || header.default === true)
+          .map(header => header.key);
+      }
+    },
     /** ./end Custom Header Selector */
 
 
@@ -663,14 +675,7 @@ export default {
     this.tableData.forEach((data) => {
       data.isHover = false;
     });
-
-    if (this.allowCustomHeader) {
-      this.selectedTableHeader = this.tableHeader
-        .filter(header => header.lockedLeft === true
-          || header.lockedRight === true
-          || header.default === true)
-        .map(header => header.key);
-    }
+    this.resetSelectedHeader();
     document.body.addEventListener('click', this.hideMenu, true);
 
     window.addEventListener('resize', this.detectTableBodyScroll);
