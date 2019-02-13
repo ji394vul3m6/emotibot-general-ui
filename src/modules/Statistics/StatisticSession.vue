@@ -1,6 +1,6 @@
 <template>
   <div class="statistic-session">
-    <div class="card h-fill w-fill session-card">
+    <div class="card h-fill session-card session-list">
       <nav-bar :options="pageMap"/>
       <filter-field @search="doSearch(1)">
         <template slot="main-filter">
@@ -9,8 +9,8 @@
         <template slot="filters">
           <!-- <search-input v-model="filterSession" :name="$t('statistics.session_id')" /> -->
           <search-input v-model="filterUser" :name="$t('statistics.user_id')" />
-          <!-- <range-input :name="$t('statistics.feedback_score')" :min=0 :max=5 :step=1 @input="handleScoreRange"/> -->
-          <dropdown-select :name="$t('statistics.feedback_reeason')" width="200px" ref="reasons"/>
+          <range-input :name="$t('statistics.feedback_score')" :min=1 :max=5 :step=1 @input="handleScoreRange"/>
+          <dropdown-select :name="$t('statistics.feedback_reeason')" width="200px" ref="reasons" :options="reasons" v-model="currentReason"/>
           <dimension-select :name="$t('statistics.dimension')" ref="dimension"
             :options="tagInfo" @input="handleDimensionChange"/>
         </template>
@@ -40,6 +40,8 @@
         </v-pagination>
       </div>
       </template>
+    </div>
+    <div class="session-content" v-if="viewSession !== undefined">
     </div>
   </div>
 </template>
@@ -80,8 +82,8 @@ export default {
       pageMap: {
         sessions: this.$t('pages.statistics.statistic_session'),
       },
-      scoreMin: 1,
-      scoreMax: 5,
+      scoreMin: undefined,
+      scoreMax: undefined,
       scoreOption: [
         { text: 1, value: 1 },
         { text: 2, value: 2 },
@@ -124,6 +126,9 @@ export default {
       tagInfo: [],
       dimension: {},
       reasons: [],
+      currentReason: [],
+
+      viewSession: undefined,
     };
   },
   methods: {
@@ -154,11 +159,17 @@ export default {
       const filter = {
         start_time: parseInt(range.start.getTime() / 1000, 10),
         end_time: parseInt(range.end.getTime() / 1000, 10),
-        // rating_max: that.scoreMax,
-        // rating_min: that.scoreMin,
         ...that.dimension,
       };
 
+      if (that.scoreMax !== undefined && that.scoreMin !== undefined) {
+        filter.rating_max = that.scoreMax;
+        filter.rating_min = that.scoreMin;
+      }
+
+      if (that.currentReason.length > 0 && that.currentReason[0] !== '') {
+        filter.feedback = that.currentReason[0];
+      }
 
       if (that.filterUser.trim() !== '') {
         filter.uid = that.filterUser;
@@ -231,11 +242,16 @@ export default {
       });
     },
     showSessionDetail(session) {
+      this.viewSession = session;
       console.log(JSON.stringify(session));
     },
     handleScoreRange(value) {
-      this.scoreMin = value.start;
-      this.scoreMax = value.end;
+      if (value.start) {
+        this.scoreMin = value.start;
+      }
+      if (value.end) {
+        this.scoreMax = value.end;
+      }
     },
     handleDimensionChange(value) {
       this.dimension = value;
@@ -243,7 +259,12 @@ export default {
     setupFeedbackReason() {
       const that = this;
       that.$api.getFeedbackReasons().then((data) => {
-        that.reasons = data.result;
+        that.reasons = data.result.map(reason => ({
+          value: reason.content,
+          text: reason.content,
+        }));
+        that.reasons.unshift({ value: '', text: this.$t('general.all') });
+        that.currentReason = [''];
         that.$refs.reasons.$emit('set-option', that.reasons);
       });
     },
@@ -256,6 +277,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.statistic-session {
+  display: flex;
+  .session-list {
+    flex: 1;
+  }
+  .session-content {
+    flex: 0 0 320px;
+  }
+}
 .session-card {
   display: flex;
   flex-direction: column;

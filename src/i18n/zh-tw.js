@@ -1013,6 +1013,7 @@ export default {
     error: '',
   },
   general: {
+    range: '區間',
     system_name_default: '對話管理後台',
     name: '名稱',
     image: '圖片',
