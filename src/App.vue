@@ -146,6 +146,9 @@ export default {
       this.$cookie.set('userid', this.userID, { expires: constant.cookieTimeout });
     },
     $route() {
+      if (!this.ready) {
+        return;
+      }
       this.checkPrivilege();
       this.endLoading();
     },
@@ -471,79 +474,79 @@ export default {
         misc.changeFavicon('/static/favicon.png');
       });
     },
+    setup() {
+      const that = this;
+      const token = that.$getToken();
+      // that.checkCookie();
+      that.$setReqToken(token);
+      this.getEnv.call(null, this)
+      .then(() => this.getUIModule.call(null, this))
+      .then(() => {}, () => {
+        console.log('Get UI modules Fail');
+      })
+      .then(() => that.$setIntoWithToken(token))
+      .then(() => {
+        const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+
+        let getUserInfoPromise;
+        if (userInfo.type === 0) {
+          getUserInfoPromise = that.$api.getAdmin(userInfo.id);
+        } else {
+          getUserInfoPromise = that.$api.getEnterpriseUser(userInfo.enterprise, userInfo.id);
+        }
+        return getUserInfoPromise;
+      })
+      .then((data) => {
+        const enterpriseList = that.$getUserEnterprises();
+        that.userInfo = data;
+        that.setUser(data.id);
+        that.setUserInfo(data);
+        that.setPrivilegedEnterprise(enterpriseList);
+        if (data.type !== 0) {
+          const robots = that.$getRobots();
+          const userRoleMap = JSON.parse(localStorage.getItem('roleMap'));
+          that.setRobotList(robots);
+          that.setUserRoleMap(userRoleMap);
+          that.setPrivilegeList(that.$getPrivModules());
+          // that.setupPages();
+        }
+        that.checkPrivilege();
+        that.ready = true;
+      })
+      .then(() => {
+        that.loadLogo();
+      })
+      .catch((err) => {
+        console.log(err);
+        that.goLoginPage();
+      });
+
+      that.$root.$on('pop-window', () => {
+        that.$nextTick(() => {
+          that.isBackgroundBlur = that.$isBackgroundBlur();
+        });
+      });
+      that.$root.$on('close-window', () => {
+        that.$nextTick(() => {
+          that.isBackgroundBlur = that.$isBackgroundBlur();
+        });
+      });
+      that.$root.$on('open-chat-test', () => {
+        that.openChatTest();
+      });
+      that.$root.$on('close-chat-test', () => {
+        that.closeChatTest();
+      });
+
+      that.$root.$on('reload-logo', () => {
+        that.loadLogo();
+      });
+
+      window.addEventListener('keydown', that.debugListener);
+    },
   },
   mounted() {
-    const that = this;
-    const token = that.$getToken();
-    // that.checkCookie();
-    that.$setReqToken(token);
-    this.getEnv.call(null, this)
-    .then(() => this.getUIModule.call(null, this))
-    .then(() => {}, () => {
-      console.log('Get UI modules Fail');
-    })
-    .then(() => that.$setIntoWithToken(token))
-    .then(() => {
-      const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-
-      let getUserInfoPromise;
-      if (userInfo.type === 0) {
-        getUserInfoPromise = that.$api.getAdmin(userInfo.id);
-      } else {
-        getUserInfoPromise = that.$api.getEnterpriseUser(userInfo.enterprise, userInfo.id);
-      }
-      return getUserInfoPromise;
-    })
-    .then((data) => {
-      const enterpriseList = that.$getUserEnterprises();
-      that.userInfo = data;
-      that.setUser(data.id);
-      that.setUserInfo(data);
-      that.setPrivilegedEnterprise(enterpriseList);
-      if (data.type !== 0) {
-        const robots = that.$getRobots();
-        const userRoleMap = JSON.parse(localStorage.getItem('roleMap'));
-        that.setRobotList(robots);
-        that.setUserRoleMap(userRoleMap);
-        that.setPrivilegeList(that.$getPrivModules());
-        // that.setupPages();
-      }
-      that.checkPrivilege();
-      that.ready = true;
-    })
-    .then(() => {
-      that.loadLogo();
-    })
-    .catch((err) => {
-      console.log(err);
-      if (window.localStorage.getItem('DEBUGGERMODE')) {
-        debugger;
-      }
-      that.goLoginPage();
-    });
-
-    that.$root.$on('pop-window', () => {
-      that.$nextTick(() => {
-        that.isBackgroundBlur = that.$isBackgroundBlur();
-      });
-    });
-    that.$root.$on('close-window', () => {
-      that.$nextTick(() => {
-        that.isBackgroundBlur = that.$isBackgroundBlur();
-      });
-    });
-    that.$root.$on('open-chat-test', () => {
-      that.openChatTest();
-    });
-    that.$root.$on('close-chat-test', () => {
-      that.closeChatTest();
-    });
-
-    that.$root.$on('reload-logo', () => {
-      that.loadLogo();
-    });
-
-    window.addEventListener('keydown', that.debugListener);
+    this.setup();
   },
 };
 </script>
