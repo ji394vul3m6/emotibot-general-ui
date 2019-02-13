@@ -214,7 +214,8 @@ export default {
                 const metadata = data.template.metadata;
                 const scenarioId = metadata.scenario_id;
                 if (obj.templateID === '') {
-                  const scenario = scenarioInitializer.initialScenario(metadata);
+                  const entryNodeName = that.$t('task_engine_v2.node_type.entry');
+                  const scenario = scenarioInitializer.initialScenario(metadata, entryNodeName);
                   that.saveScenario(scenarioId, scenario).then(() => {
                     const path = general.composeV2Path(`scenario/${scenarioId}`);
                     that.$router.replace(path);
