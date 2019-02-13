@@ -29,6 +29,31 @@ export default {
       title: '轉人工',
     },
     rule: '規則設置',
+    faq: {
+      title: 'FAQ',
+      'faq-similar-question-range-pre': '匹配分數與閾值差距小於',
+      'faq-similar-question-range-suf': '時，將其視為相似問',
+      'faq-recommand-question-range-pre': '匹配分數與閾值差距小於',
+      'faq-recommand-question-range-suf': '時，將其視為推薦問',
+    },
+    'task-engine': {
+      title: '任務引擎',
+      'task-engine-total-timeout-pre': '當任務引擎超過',
+      'task-engine-total-timeout-suf': '毫秒無反應則視為超時',
+    },
+    knowledge: {
+      title: '知識圖譜',
+      'knowledge-threshold-pre': '匹配分數超過',
+      'knowledge-threshold-suf': '時，使用知識圖譜為答案',
+    },
+    command: {
+      title: '指令',
+    },
+    intent: {
+      title: '意圖引擎',
+      'intent-threshold-pre': '當意圖信心分數超過',
+      'intent-threshold-suf': '時，使用該意圖',
+    },
   },
   integration: {
     integration: '接入部署',

@@ -27,7 +27,7 @@
         </div>
         <div v-for="config in configs" :key="config.key" class="config-block">
           <div class="block-title row">{{ $t(`robot_config.${config.key}.title`) }}{{ $t('general.setting') }}</div>
-          <div class="row">
+          <div class="row" v-if="!config.alwaysOn">
             <div class="row-title">{{ $t('general.enable') }}/{{ $t('general.disable') }}{{ $t(`robot_config.${config.key}.title`) }}:</div>
             <toggle v-model="config.on" @input="handleConfigChange(config, $event)"/>
           </div>
@@ -37,7 +37,7 @@
             <div class="row-title">{{ $t('robot_config.rule') }}</div>
             <div class="row-content">
             <div v-for="child in config.children" :key="child.key" class="content-row">
-              <toggle v-model="child.on" @input="handleConfigChange(child, $event)"/>
+              <toggle class="content-row-toggle" v-model="child.on" @input="handleConfigChange(child, $event)" v-if="!child.alwaysOn"/>
               <div class="content-row-desc" >
                 <template v-if="editTarget !== child">
                   {{ $t(`robot_config.${config.key}.${child.key}-pre`) }} {{ child.threshold }} {{ $t(`robot_config.${config.key}.${child.key}-suf`) }}
@@ -49,7 +49,7 @@
                   {{ $t(`robot_config.${config.key}.${child.key}-suf`) }}
                 </template>
               </div>
-              <template v-if="child.threshold !== undefined && editTarget === undefined && !robotNameEdit && child.on">
+              <template v-if="child.threshold !== undefined && editTarget === undefined && !robotNameEdit && (child.on || child.alwaysOn)">
                 <div class="content-row-edit" @click.stop="startEdit(child)">
                   <icon :size=12 icon-type="edit_blue"></icon>
                 </div>
@@ -81,6 +81,7 @@ function setConfigWithMap(config, configMap) {
   if (configMap[configKey] !== undefined) {
     config.on = isOn(configMap[configKey].value);
     config.module = configMap[configKey].module;
+    config.threshold = parseInt(configMap[configKey].value, 10);
   }
   if (configMap[thresholdKey] !== undefined) {
     config.threshold = parseInt(configMap[thresholdKey].value, 10);
@@ -165,6 +166,65 @@ export default {
         {
           key: 'human-intent',
           on: false,
+        },
+        {
+          key: 'faq',
+          on: false,
+          children: [
+            {
+              key: 'faq-similar-question-range',
+              threshold: 0,
+              module: '',
+              alwaysOn: true,
+            },
+            {
+              key: 'faq-recommand-question-range',
+              threshold: 0,
+              module: '',
+              alwaysOn: true,
+            },
+          ],
+        },
+        {
+          key: 'task-engine',
+          on: false,
+          children: [
+            {
+              key: 'task-engine-total-timeout',
+              threshold: 0,
+              module: '',
+              alwaysOn: true,
+            },
+          ],
+        },
+        {
+          key: 'knowledge',
+          on: false,
+          children: [
+            {
+              key: 'knowledge-threshold',
+              threshold: 0,
+              module: '',
+              alwaysOn: true,
+            },
+          ],
+        },
+        {
+          key: 'command',
+          on: false,
+        },
+        {
+          key: 'intent',
+          on: false,
+          alwaysOn: true,
+          children: [
+            {
+              key: 'intent-threshold',
+              threshold: 0,
+              module: '',
+              alwaysOn: true,
+            },
+          ],
         },
       ],
       flatConfigMap: {},
@@ -324,7 +384,8 @@ export default {
 
     .row-title {
       flex: 0 0 auto;
-      min-width: 120px;
+      min-width: 110px;
+      margin-right: 10px;
     }
     .row-value {
       flex: 1;
@@ -358,8 +419,11 @@ export default {
         align-items: center;
         flex: 0 0 28px;
 
+        .content-row-toggle {
+          margin-right: 20px;
+        }
+
         .content-row-desc {
-          margin-left: 20px;
           margin-right: 10px;
           user-select: none;
 
