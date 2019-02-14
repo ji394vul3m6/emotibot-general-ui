@@ -1,6 +1,8 @@
 const SESSIONS_URL = '/api/v1/stats/sessions/query';
 const SESSIONS_EXPORT_URL = '/api/v1/stats/sessions/export';
 
+const RECORDS_URL = '/api/v2/stats/records/query';
+
 const DEFAULT_PAGE_START = 1;
 const DEFAULT_PAGE_LIMIT = 20;
 
@@ -29,8 +31,19 @@ function getExportStatus(id) {
   return this.$reqGet(`${SESSIONS_EXPORT_URL}/${id}/status`).then(rsp => rsp.data);
 }
 
+function getRecordOfSession(sessionID) {
+  const now = new Date();
+  const params = {
+    start_time: 0,
+    end_time: parseInt(now.getTime() / 1000, 10),
+    session_id: sessionID,
+  };
+  return this.$reqPost(RECORDS_URL, params).then(rsp => rsp.data);
+}
+
 export default {
   getSessionList,
   getSessionExportID,
   getExportStatus,
+  getRecordOfSession,
 };

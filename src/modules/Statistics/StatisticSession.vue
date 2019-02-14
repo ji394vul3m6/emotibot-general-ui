@@ -10,7 +10,7 @@
           <!-- <search-input v-model="filterSession" :name="$t('statistics.session_id')" /> -->
           <search-input v-model="filterUser" :name="$t('statistics.user_id')" />
           <range-input :name="$t('statistics.feedback_score')" :min=1 :max=5 :step=1 @input="handleScoreRange"/>
-          <dropdown-select :name="$t('statistics.feedback_reeason')" width="200px" ref="reasons" :options="reasons" v-model="currentReason"/>
+          <dropdown-select :name="$t('statistics.feedback_reason')" width="200px" ref="reasons" :options="reasons" v-model="currentReason"/>
           <dimension-select :name="$t('statistics.dimension')" ref="dimension"
             :options="tagInfo" @input="handleDimensionChange"/>
         </template>
@@ -41,8 +41,35 @@
       </div>
       </template>
     </div>
-    <div class="session-content" v-if="viewSession !== undefined">
+    <transition name="zoom">
+    <div class="card h-fill session-content" v-if="viewSession !== undefined">
+      <div class="session-detail">
+        <div class="session-id row">
+          <div class="name">{{ $t('statistics.session_id') }}:</div>
+          <div class="id">{{ viewSession.session_id }}</div>
+          <div class="icon">
+            <icon icon-type='close' :size=12 button @click="viewSession = undefined"/>
+          </div>
+        </div>
+        <div class="session-feedback row">
+          <div class="name">{{ $t('statistics.feedback_reason') }}:</div>
+          <div>{{ viewSession.rating !== 0 ? viewSession.rating : '-' }} / {{ viewSession.feedback !== '' ? viewSession.feedback : '-' }}</div>
+        </div>
+        <div class="session-action row">
+          <div class="action-left action"></div>
+          <div class="action-right action">
+            <div class="name">{{ $t('qatest.sentence_analysis') }}</div>
+            <toggle v-model="showRecordAnalysis"/>
+          </div>
+        </div>
+      </div>
+      <div class="session-records">
+        <chat-list :records="sessionRecords" ref="chatList"
+          v-if="sessionRecords.length > 0"
+          :default-show-analysis="showRecordAnalysis"/>
+      </div>
     </div>
+    </transition>
   </div>
 </template>
 
@@ -54,6 +81,7 @@ import DimensionSelect from '@/components/dropdown/DimensionSelector';
 import GeneralScrollTable from '@/components/GeneralScrollTable';
 import SearchInput from '@/components/basic/SearchInput';
 import RangeInput from '@/components/basic/RangeInput';
+import ChatList from '@/components/ChatList';
 import constant from '@/utils/js/constant';
 import auditAPI from '@/api/audit';
 import tagAPI from '@/api/tagType';
@@ -76,6 +104,7 @@ export default {
     RangeInput,
     GeneralScrollTable,
     DimensionSelect,
+    ChatList,
   },
   data() {
     return {
@@ -129,7 +158,17 @@ export default {
       currentReason: [],
 
       viewSession: undefined,
+      sessionRecords: [],
+      showRecordAnalysis: true,
     };
+  },
+  watch: {
+    showRecordAnalysis(value) {
+      const event = value ? 'show-analysis' : 'hide-analysis';
+      if (this.$refs.chatList) {
+        this.$refs.chatList.$emit(event);
+      }
+    },
   },
   methods: {
     setLimit(limit) {
@@ -178,12 +217,17 @@ export default {
     },
     doSearch(page) {
       const that = this;
+      that.viewSession = undefined;
       that.nowPage = page === undefined ? 1 : page;
       const filter = that.getSearchParam();
+      that.$emit('startLoading');
       this.$api.getSessionList(that.nowPage, that.nowLimit, filter).then((rsp) => {
         that.tableData = rsp.data;
         that.tableHeader = that.fixHeaderFormat(rsp.table_header);
         that.recordNum = rsp.total_size;
+      })
+      .finally(() => {
+        that.$emit('endLoading');
       });
     },
     doExport() {
@@ -242,8 +286,26 @@ export default {
       });
     },
     showSessionDetail(session) {
-      this.viewSession = session;
-      console.log(JSON.stringify(session));
+      const that = this;
+      that.viewSession = session;
+      if (session.records !== undefined) {
+        that.sessionRecords = session.records;
+        that.$refs.chatList.$emit('reload', that.sessionRecords);
+      } else {
+        that.$emit('startLoading');
+        that.$api.getRecordOfSession(session.session_id).then((rsp) => {
+          rsp.data.sort(x => x.log_time);
+          rsp.data.reverse();
+          that.sessionRecords = rsp.data;
+          that.$refs.chatList.$emit('reload', that.sessionRecords);
+          if (that.viewSession !== undefined) {
+            that.viewSession.records = rsp.data;
+          }
+        })
+        .finally(() => {
+          that.$emit('endLoading');
+        });
+      }
     },
     handleScoreRange(value) {
       if (value.start) {
@@ -277,6 +339,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.zoom-enter-active, .zoom-leave-active {
+  transition: max-width .5s;
+  max-width: 320px;
+}
+.zoom-enter, .zoom-leave-to {
+  transition: max-width .5s;
+  max-width: 0px;
+}
+
 .statistic-session {
   display: flex;
   .session-list {
@@ -284,6 +355,7 @@ export default {
   }
   .session-content {
     flex: 0 0 320px;
+    margin-left: 10px;
   }
 }
 .session-card {
@@ -309,6 +381,55 @@ export default {
     display: flex;
     align-items: center;
     justify-content: flex-end;
+  }
+}
+.session-content {
+  display: flex;
+  flex-direction: column;
+
+  .session-detail {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 10px;
+    .name {
+      margin-right: 10px;
+    }
+
+    .session-id {
+      .id {
+        flex: 1;
+        @include textEllipsis();
+      }
+      .icon {
+        flex: 0 0 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+
+    .row {
+      flex: 0 0 28px;
+      display: flex;
+      align-items: center;
+    }
+    .session-action {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      .action {
+        display: flex;
+        align-items: center;
+      }
+    }
+  }
+  .session-records {
+    flex: 1;
+    background: #f3f3f3;
+    overflow-y: auto;
+    @include customScrollbar();
   }
 }
 </style>

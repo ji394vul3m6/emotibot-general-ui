@@ -172,7 +172,7 @@ export default {
     sessions_time: '會話時間',
     session_id: '會話 ID',
     feedback_score: '滿意度分數',
-    feedback_reeason: '滿意度反饋',
+    feedback_reason: '滿意度反饋',
 
     search_more: '顯示上限爲1萬筆，顯示更多資料？',
     search_more_hint: '以最後一筆訪問時間爲啓始點重新搜尋',
