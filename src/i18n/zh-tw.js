@@ -812,6 +812,7 @@ export default {
   intent_engine: {
     train: '意圖訓練',
     is_training: '意圖訓練中...',
+    is_testing: '意圖測試中...',
     training_success: '意圖訓練成功',
     training_fail: '意圖訓練失敗',
     version_not_exist: '意圖版本不存在',

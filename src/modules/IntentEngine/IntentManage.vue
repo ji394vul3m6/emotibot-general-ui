@@ -5,6 +5,8 @@
 </template>
 <script>
 
+import eventBus from './_components/eventBus';
+
 const IntentTrainPage = () => import('./_components/IntentTrainPage');
 const IntentTestPage = () => import('./_components/IntentTestPage');
 const IntentTestRecordListPage = () => import('./_components/IntentTestRecordListPage');
@@ -24,11 +26,21 @@ export default {
   ],
   data() {
     return {
+      eventBus: eventBus.eventBus,
     };
   },
   computed: {},
   watch: {},
   methods: {},
+  mounted() {
+    const that = this;
+    this.eventBus.$on('startLoading', (msg) => {
+      that.$emit('startLoading', msg);
+    });
+    this.eventBus.$on('endLoading', () => {
+      that.$emit('endLoading');
+    });
+  },
 };
 </script>
 

@@ -6,7 +6,7 @@
   <div class="info margin-bottom">
     {{$t('intent_engine.side_bar.intent_train_info')}}
   </div>
-  <text-button class="button margin-bottom" :height="'40px'">
+  <text-button class="button margin-bottom" :height="'40px'" @click="startTraining()">
     {{$t('intent_engine.side_bar.do_train')}}
   </text-button>
   <div class="records" style="margin-bottom: 20px;">
@@ -38,7 +38,7 @@
   <div class="info margin-bottom" >
     {{$t('intent_engine.side_bar.do_intent_test_info')}}
   </div>
-  <text-button class="button margin-bottom" :height="'40px'">
+  <text-button class="button margin-bottom" :height="'40px'" @click="startTesting()">
     {{$t('intent_engine.side_bar.do_test')}}
   </text-button>
   <div class="link" @click="toPage('test/records')">
@@ -51,22 +51,89 @@
 //   intent_and_corpus_unchanged: '無新增任何意圖或語料',
 //   intent_test_is_empty: '意圖測試集為空請先編輯',
 // },
+
+import testApi from '../_api/intentTest';
+import eventBus from './eventBus';
+
+const TEST_STATUS = {
+  TESTING: 0,
+  TESTED: 1,
+  TEST_FAILED: 2,
+  NEED_TEST: 3,
+  PENDING: 4,
+};
+
 export default {
   name: 'side-panel',
+  testApi,
   components: {},
-  props: {
-  },
+  props: {},
   data() {
-    return {};
+    return {
+      testStatus: undefined,  // type: TEST_STATUS
+      testStatusIntervalId: undefined,
+      eventBus: eventBus.eventBus,
+    };
   },
-  computed: {},
   watch: {},
+  computed: {
+    canTest() {
+      return true;
+    },
+  },
   methods: {
+    startTraining() {
+      this.$emit('startTraining');
+    },
+    startTesting() {
+      if (!this.canTest) return;
+      console.log('startTesting');
+      this.eventBus.$emit('startLoading', this.$t('intent_engine.is_testing'));
+      const that = this;
+      testApi.testIntentTestCorpus.call(this, '').then(() => {
+        that.testStatus = TEST_STATUS.TESTING;
+        // that.trainBtnClicked = true;
+      });
+    },
+    startPollingTestStatus() {
+      this.testStatusIntervalId = setInterval(() => {
+        this.pollTestStatus();
+      }, 5000);
+    },
+    pollTestStatus() {
+      const that = this;
+      testApi.getTestStatus.call(this).then((data) => {
+        // console.log(data);
+        that.testStatusChanged(data.status);
+        if (!that.testStatusIntervalId) {
+          that.startPollingTestStatus();
+        }
+      }).catch((err) => {
+        console.error(err);
+        this.eventBus.$emit('endLoading');
+      });
+    },
+    testStatusChanged(newStatus) {
+      const prevStatus = this.testStatus;
+      console.log(prevStatus);
+      this.testStatus = newStatus;
+      if (newStatus === TEST_STATUS.TESTED) {
+        this.eventBus.$emit('endLoading');
+      } else if (newStatus === TEST_STATUS.TESTED) {
+        this.eventBus.$emit('endLoading');
+      }
+    },
     toPage(path) {
       this.$router.push(`/intent-manage/${path}`);
     },
   },
-  mounted() {},
+  mounted() {
+    // this.pollTestStatus();
+  },
+  beforeDestroy() {
+    clearInterval(this.testStatusIntervalId);
+    this.testStatusIntervalId = undefined;
+  },
 };
 </script>
 

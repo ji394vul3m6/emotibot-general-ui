@@ -32,9 +32,7 @@ testIntents.push({
 const testIntentsResponse = {
   status: 0,
   message: '',
-  result: {
-    intents: testIntents,
-  },
+  result: testIntents,
 };
 
 

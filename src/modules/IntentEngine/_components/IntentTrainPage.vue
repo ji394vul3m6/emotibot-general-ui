@@ -46,7 +46,9 @@
         </intent-list>
       </div>
     </div>
-    <side-panel clase="side-panel"></side-panel>
+    <side-panel clase="side-panel"
+      @startTraining="startTraining()">
+    </side-panel>
   </div>
 </div>
 </template>
@@ -438,7 +440,7 @@ export default {
         text-align: center;
       }
     }
-    .side-pannel{
+    .side-panel{
       flex: 0 0 auto;
       width: 270px;
     }

@@ -66,8 +66,15 @@ function exportIntentTestCorpus() {
   window.open(`${INTENT_TEST_URL}/export`);
 }
 
-function testIntentTestCorpus() {
-  return this.$reqPost(`${INTENT_TEST_URL}/test`).then(rsp => rsp.data.result);
+function testIntentTestCorpus(intentModelId) {
+  const body = {
+    ie_model_id: intentModelId,
+  };
+  return this.$reqPost(
+    `${INTENT_TEST_URL}/test`,
+    qs.stringify(body),
+    { headers: { 'Content-Type': 'multipart/form-data' } },
+  ).then(rsp => rsp.data.result);
 }
 
 export default {

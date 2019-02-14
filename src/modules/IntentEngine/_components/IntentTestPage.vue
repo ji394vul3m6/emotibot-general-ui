@@ -144,9 +144,9 @@ export default {
   },
   methods: {
     getTestIntents() {
-      this.$emit('endLoading');
+      this.$emit('startLoading');
       this.$api.getTestIntents().then((data) => {
-        this.allIntents = data.intents;
+        this.allIntents = data;
       }).catch((err) => {
         console.log(err);
       })
