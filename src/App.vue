@@ -571,7 +571,7 @@ export default {
 }
 
 #chat-test-pop {
-  position: fixed;
+  position: absolute;
   right: -700px;
   top: 0;
   height: 100vh;
@@ -595,5 +595,8 @@ export default {
   &.slide-in-enter-to, &.slide-in-leave {
     right: 0;
   }
+}
+#app-page {
+  z-index: 0;
 }
 </style>
