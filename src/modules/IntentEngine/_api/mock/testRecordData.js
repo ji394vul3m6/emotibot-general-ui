@@ -32,6 +32,7 @@ for (let i = 0; i < TOTAL; i += 1) {
     id: MockJS.mock('@id'),
     name: MockJS.mock('@ctitle'),
     sentences_count: MockJS.mock('@integer(1, 1000)'),
+    positives_count: MockJS.mock('@integer(1, 1000)'),
     type: true,
   };
   testIntents.push(mockData);
@@ -40,6 +41,7 @@ testIntents.push({
   id: MockJS.mock('@id'),
   name: MockJS.mock('@ctitle'),
   sentences_count: MockJS.mock('@integer(1, 1000)'),
+  positives_count: MockJS.mock('@integer(1, 1000)'),
   type: false,
 });
 

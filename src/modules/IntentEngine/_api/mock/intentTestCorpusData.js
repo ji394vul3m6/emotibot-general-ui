@@ -19,10 +19,10 @@ const testCorpus = [];
 for (let i = 0; i < TOTAL; i += 1) {
   const mockData = {
     id: MockJS.mock('@id'),
-    sentence: MockJS.mock('@csentence()'),
+    sentence: MockJS.mock('@csentence(3, 100)'),
     result: MockJS.mock('@integer(0, 2)'),
     score: MockJS.mock('@integer(1, 100)'),
-    answer: MockJS.mock('@ctitle'),
+    answer: MockJS.mock('@ctitle(3, 20)'),
   };
   testCorpus.push(mockData);
 }

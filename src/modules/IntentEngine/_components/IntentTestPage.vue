@@ -46,14 +46,14 @@
           />
         </div>
       </div>
-      <template v-if="corpusGroupWithoutAnnotation.length > 0">
+      <template v-if="corpusGroupsWithoutIntent.length > 0">
         <div class="intent-list-title">
           {{ $t('intent_engine.test_data.test_corpus_without_intent') }}
           <icon iconType="info" :size="16" enableHover v-tooltip="intentTypeTooltip"></icon>
         </div>
         <intent-test-list class="intent-list"
-          :initialIntentList="corpusGroupWithoutAnnotation"
-          :intentListType="'corpusGroupWithoutAnnotation'">
+          :initialIntentList="corpusGroupsWithoutIntent"
+          :intentListType="'withoutIntent'">
         </intent-test-list>
       </template>
       <template v-if="intentList.length > 0">
@@ -63,7 +63,7 @@
         </div>
         <intent-test-list class="intent-list"
           :initialIntentList="intentList"
-          :intentListType="'normal'">
+          :intentListType="'withIntent'">
         </intent-test-list>
       </template>
     </div>
@@ -96,7 +96,7 @@ export default {
       searchIntentMode: false,
       allIntents: [],
       intentList: [],
-      corpusGroupWithoutAnnotation: [],
+      corpusGroupsWithoutIntent: [],
       corpusCounts: 0,
       optionSelectStyle: {
         height: '28px',
@@ -132,12 +132,12 @@ export default {
         );
       }
       this.intentList = [];
-      this.corpusGroupWithoutAnnotation = [];
+      this.corpusGroupsWithoutIntent = [];
       this.allIntents.forEach((intent) => {
         if (intent.type === true) {
           this.intentList.push(intent);
         } else {
-          this.corpusGroupWithoutAnnotation.push(intent);
+          this.corpusGroupsWithoutIntent.push(intent);
         }
       });
     },
@@ -237,7 +237,7 @@ export default {
     flex-direction: row;
     height: calc(100% - 60px);
     .content{
-      flex: 1 0 auto;
+      flex: 1 1 auto;
       padding: 20px;
       display: flex;
       flex-direction: column;

@@ -5,12 +5,12 @@
     :key="intent.id"
     :class="{'active': intent.expand}">
     <div class="intent-header" @click="handleIntentClicked(intent)">
-      <template v-if="intentListType === 'corpusGroupWithoutAnnotation'">
+      <template v-if="intentListType === 'withoutIntent'">
         <div class="intent-name">
           {{`${$t('intent_engine.test_data.num_test_corpus', {cnum: intent.sentences_count})}`}}
         </div>
       </template>
-      <template v-if="intentListType === 'normal'">
+      <template v-if="intentListType === 'withIntent'">
         <div class="icon">
           <icon icon-type="intent" :size="15"/>
         </div>
@@ -18,7 +18,11 @@
           {{`${intent.name} ( ${$t('intent_engine.test_data.num_test_corpus', {cnum: intent.sentences_count})} )`}}
         </div>
       </template>
-      <div v-if="intent.expand" class="close-expand-icon">
+      <div  class="intent-test-result-stats" v-if="intentListMode === 'result'">
+        <span class="positive-count">{{`${$t('intent_engine.test_data.result_correct')}: ${intent.positives_count}/${intent.sentences_count}`}}</span>
+        <span class="correct-rate">{{composeIntentTestCorrectRate(intent)}}</span>
+      </div>
+      <div class="close-expand-icon" v-if="intent.expand">
         <icon icon-type="close_expand" :size="18"></icon>
       </div>
     </div>
@@ -29,7 +33,7 @@
           {{ $t('intent_engine.test_data.test_corpus') }}
         </div>
         <div class="corpus-block">
-          <div class="add-corpus-row">
+          <div class="add-corpus-row" v-if="intentListMode === 'edit'">
             <input type="text" v-model="newCorpus"
               :placeholder="$t('intent_engine.test_data.add_new_test_corpus')"
               @compositionstart="setCompositionState(true)"
@@ -51,17 +55,51 @@
                   @keydown.enter="detectCompositionState"
                   @keyup.enter="updateCorpus(intent, corpus)"
                   @blur="finishEditingCorpus(intent, corpus)"/>
-              <span v-else>{{corpus.sentence}}</span>
+              <template v-else>
+                <span
+                  v-tooltip="{msg:corpus.sentence, alignLeft: true, left: -10, eventOnly: true}"
+                  @mouseover="showFullCorpusIfEllipsis($event)" 
+                  @mouseleave="hideFullCorpus($event)">
+                  {{corpus.sentence}}
+                </span>
+              </template>
             </div>
-            <div class="corpus-test-result" v-if="!intent.hasCorpusEditing" v-tooltip="getTestResultTooltip(corpus)">
-              <span v-if="corpus.result === 0" class="result-none result">{{$t('intent_engine.test_data.result_none')}}</span>
-              <span v-if="corpus.result === 1" class="result-correct result">{{$t('intent_engine.test_data.result_correct')}}</span>
-              <span v-if="corpus.result === 2" class="result-wrong result">{{$t('intent_engine.test_data.result_wrong')}}</span>
-            </div>
-            <div class="corpus-action" v-if="corpus.mouseover && !intent.hasCorpusEditing">
-              <div class="action corpus-action-edit" @click="startEditingCorpus(intent, corpus)">{{ $t('general.edit') }}</div>
-              <div class="action corpus-action-delete" @click="deleteCorpus(intent, corpus)">{{ $t('general.delete')}}</div>
-            </div>
+            <template v-if="intentListMode === 'edit'">
+              <div class="edit-mode-test-result" v-if="!intent.hasCorpusEditing">
+                <span v-if="corpus.result === 0" class="result-none result">{{$t('intent_engine.test_data.result_none')}}</span>
+                <span v-if="corpus.result === 2" class="result-wrong result" v-tooltip="getEditModeTestResultTooltip(corpus)">{{$t('intent_engine.test_data.result_wrong')}}</span>
+                <template v-if="corpus.result === 1">
+                  <template v-if="intentListType === 'withoutIntent'">
+                    <span class="result-correct result">{{$t('intent_engine.test_data.result_correct')}}</span>
+                  </template>
+                  <template v-if="intentListType === 'withIntent'">
+                    <span class="result-correct result" v-tooltip="getEditModeTestResultTooltip(corpus)">{{$t('intent_engine.test_data.result_correct')}}</span>
+                  </template>
+                </template>
+              </div>
+              <div class="corpus-action" v-if="corpus.mouseover && !intent.hasCorpusEditing">
+                <div class="action corpus-action-edit" @click="startEditingCorpus(intent, corpus)">{{ $t('general.edit') }}</div>
+                <div class="action corpus-action-delete" @click="deleteCorpus(intent, corpus)">{{ $t('general.delete')}}</div>
+              </div>
+            </template>
+            <template v-if="intentListMode === 'result'">
+              <div class="result-mode-test-result">
+                <div class="result-correct" v-if="corpus.result === 1">
+                  <template v-if="intentListType === 'withoutIntent'">
+                    <span class="result">{{`${$t('intent_engine.test_data.result_correct')}`}}</span>
+                  </template>
+                  <template v-if="intentListType === 'withIntent'">
+                    <span class="result">{{`${$t('intent_engine.test_data.result_correct')}`}}</span>
+                    <span class="score">{{`｜${$t('intent_engine.test_data.result_score')}: ${corpus.score}`}}</span>
+                  </template>
+                </div>
+                <div class="result-wrong" v-if="corpus.result === 2" v-tooltip="getResultModeTestResultTooltip(corpus)">
+                  <span class="result">{{`${$t('intent_engine.test_data.result_wrong')}`}}</span>
+                  <span class="score">{{`｜${$t('intent_engine.test_data.result_score')}: ${corpus.score}`}}</span>
+                  <span class="answer">{{`｜${$t('intent_engine.test_data.robot_predict')}: ${corpus.answer}`}}</span>
+                </div>
+              </div>
+            </template>
           </div>
         </div>
       </div>
@@ -99,7 +137,14 @@ export default {
     intentListType: {
       type: String,
       required: true,
-      default: () => 'normal',
+      default: () => 'withIntent',
+      // value: withIntent / withoutIntent
+    },
+    intentListMode: {
+      type: String,
+      required: false,
+      default: () => 'edit',
+      // value: edit / result
     },
   },
   data() {
@@ -226,21 +271,46 @@ export default {
       const del = [corpus.id];
       this.patchCorpus(intent, [], del);
     },
-    getTestResultTooltip(corpus) {
+    getEditModeTestResultTooltip(corpus) {
       const tooltip = {
-        msg: this.$t('intent_engine.manage.tooltip.page_info'),
+        msg: '',
         alignLeft: true,
         top: 30,
-        left: -60,
+        left: -40,
       };
-      if (corpus.result === 0) {
-        return undefined;
-      } else if (corpus.result === 1) {
+      if (corpus.result === 1) {
         tooltip.msg = `${this.$t('intent_engine.test_data.result_correct')}, ${this.$t('intent_engine.test_data.result_score')}: ${corpus.score}`;
       } else if (corpus.result === 2) {
         tooltip.msg = `${this.$t('intent_engine.test_data.robot_predict')}: ${corpus.answer}, ${this.$t('intent_engine.test_data.result_score')}: ${corpus.score}`;
       }
       return tooltip;
+    },
+    getResultModeTestResultTooltip(corpus) {
+      const tooltip = {
+        msg: '',
+        alignLeft: true,
+        left: -20,
+      };
+      const wrong = this.$t('intent_engine.test_data.result_wrong');
+      const score = this.$t('intent_engine.test_data.result_score');
+      const predict = this.$t('intent_engine.test_data.robot_predict');
+      tooltip.msg = `${wrong}｜${score}: ${corpus.score}｜${predict}: ${corpus.answer}`;
+      return tooltip;
+    },
+    composeIntentTestCorrectRate(intent) {
+      const total = intent.sentences_count;
+      const positive = intent.positives_count;
+      const rate = Math.round((positive * 100) / total);
+      return `(${rate}%)`;
+    },
+    showFullCorpusIfEllipsis(e) {
+      const overflow = e.target.scrollWidth > e.target.clientWidth;
+      if (overflow) {
+        e.target.dispatchEvent(event.createEvent('tooltip-show'));
+      }
+    },
+    hideFullCorpus(e) {
+      e.target.dispatchEvent(event.createEvent('tooltip-hide'));
     },
   },
   mounted() {
@@ -282,8 +352,21 @@ export default {
           margin-left: 18px;
         }
       }
+      .intent-test-result-stats{
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        @include font-14px-line-height-28px();
+        .positive-count{
+          width: 100px;
+        }
+        .correct-rate{
+          width: 40px;
+        }
+      }
       .close-expand-icon{
         flex: 0 0 auto;
+        margin-left: 20px;
       }
     }
     .intent-content-enter-active, .intent-content-leave-active {
@@ -297,6 +380,7 @@ export default {
       max-height: 1000px;
     }
     .intent-content{
+      flex: 0 0 auto;
       display: flex;
       flex-direction: column;
       padding: 10px 20px 10px 20px;
@@ -311,6 +395,7 @@ export default {
         margin-top: 22px;
         border-left: 3px solid rgba(74, 144, 226, 0.24);
         .corpus-row{
+          flex: 1 1 auto;
           display: flex;
           position: relative;
           margin: 4px 0px 0px 20px;
@@ -320,19 +405,27 @@ export default {
           .corpus{
             flex: 1 1 auto;
             display: flex;
+            height: 28px;
+            min-width: 200px;
             span{
+              // flex: 1 1 auto;
               @include font-14px-line-height-28px();
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+              margin-right: 20px;
             }
             input[type=text] {
-              flex: 1;
+              flex: 1 1 auto;
             }
           }
-          .corpus-test-result{
+          .edit-mode-test-result{
             flex: 0 0 auto;
             display: flex;
             align-items: center;
             margin-right: 140px;
             width: 50px;
+            height: 28px;
             cursor: pointer;
             .result{
               @include font-14px();
@@ -361,6 +454,33 @@ export default {
             }
             .corpus-action-delete{
               color: $color-error;
+            }
+          }
+          .result-mode-test-result{
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            width: 300px;
+            height: 28px;
+            @include font-14px();
+            .result-correct{
+              flex: 0 0 auto;
+              display: flex;
+              color: $color-success;
+            }
+            .result-wrong{
+              flex: 0 0 auto;
+              display: flex;
+              color: $color-error;
+            }
+            .score{
+              width: 100px;
+            }
+            .answer{
+              width: 170px;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
             }
           }
         }

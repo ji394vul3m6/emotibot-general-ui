@@ -67,18 +67,34 @@
     </div>
     <div class="content">
       <div class="tool-bar">
-        <div class="link">
+        <div class="link" @click="unsaveRecord()">
           {{$t('intent_engine.test_records.unstore_record')}}
         </div>
-        <div class="link">
+        <div class="link" @click="restoreRecord()">
           {{$t('intent_engine.test_records.restore_record')}}
         </div>
         <dropdown-select :options="[]" width="64px" @input="downloadData"/>
       </div>
-      <template v-if="hasIntents">
-        <intent-test-list
+      <template v-if="corpusGroupsWithoutIntent.length > 0">
+        <div class="intent-list-title  margin-top">
+          {{ $t('intent_engine.test_data.test_corpus_without_intent') }}
+          <icon iconType="info" :size="16" enableHover v-tooltip="intentTypeTooltip"></icon>
+        </div>
+        <intent-test-list class="intent-list"
+          :initialIntentList="corpusGroupsWithoutIntent"
+          :intentListType="'withoutIntent'"
+          :intentListMode="'result'">
+        </intent-test-list>
+      </template>
+      <template v-if="intentList.length > 0">
+        <div class="intent-list-title margin-top">
+          {{ $t('intent_engine.test_data.intent_and_test_corpus') }}
+          <icon iconType="info" :size="16" enableHover v-tooltip="intentTypeTooltip"></icon>
+        </div>
+        <intent-test-list class="intent-list"
           :initialIntentList="intentList"
-          :intentListType="'normal'">
+          :intentListType="'withIntent'"
+          :intentListMode="'result'">
         </intent-test-list>
       </template>
     </div>
@@ -103,13 +119,15 @@ export default {
       searchKeyword: '',
       searchIntentMode: false,
       record: {},
+      allIntents: [],
       intentList: [],
+      corpusGroupsWithoutIntent: [],
+      intentTypeTooltip: {
+        msg: this.$t('intent_engine.manage.tooltip.page_info'),
+      },
     };
   },
   computed: {
-    hasIntents() {
-      return this.intentList.length > 0;
-    },
     accuracy() {
       const a = ((this.record.tp + this.record.tn) * 100) /
         (this.record.tp + this.record.tn + this.record.fp + this.record.fn);
@@ -126,11 +144,22 @@ export default {
       return Math.round(p);
     },
   },
-  watch: {},
+  watch: {
+    allIntents() {
+      this.intentList = [];
+      this.corpusGroupsWithoutIntent = [];
+      this.allIntents.forEach((intent) => {
+        if (intent.type === true) {
+          this.intentList.push(intent);
+        } else {
+          this.corpusGroupsWithoutIntent.push(intent);
+        }
+      });
+    },
+  },
   methods: {
     getTestRecord(intentTestID) {
-      console.log(intentTestID);
-      this.$api.getTestRecord('540000199801149697').then((data) => {
+      this.$api.getTestRecord(intentTestID).then((data) => {
         console.log(data);
         const { intents, ...record } = data;
         record.tp = record.true_positives;
@@ -138,7 +167,7 @@ export default {
         record.fp = record.false_positives;
         record.fn = record.false_negatives;
         this.record = record;
-        this.intentList = intents;
+        this.allIntents = intents;
       });
     },
     inSearchIntentMode(bool) {
@@ -149,6 +178,12 @@ export default {
     },
     downloadData() {
       console.log('downloadData');
+    },
+    unsaveRecord() {
+      this.$api.unsaveTestRecord(this.$route.params.id);
+    },
+    restoreRecord() {
+      this.$api.restoreTestRecord(this.$route.params.id);
     },
   },
   mounted() {
@@ -198,7 +233,7 @@ export default {
       display: flex;
       flex-direction: column;
       margin: 20px 20px 10px 20px;
-      padding: 10px 20px 10px 20px;
+      padding: 10px;
       width: 240px;
       height: calc(100% - 30px);
       border-radius: 4px;
@@ -208,6 +243,8 @@ export default {
       }
       .text {
         @include font-14px-line-height-28px();
+        margin-left: 10px;
+        margin-right: 10px;
       }
       .active{
         color: $color-font-active;
@@ -224,19 +261,36 @@ export default {
       flex: 1 1 auto;
       display: flex;
       flex-direction: column;
-      padding-right: 20px;
+      padding: 20px 20px 10px 0px;
       overflow-y: scroll;
       @include customScrollbar();
       .tool-bar{
+        flex: 0 0 auto;
         display: flex;
         justify-content: flex-end;
-        margin: 20px 0px 20px 0px;
+        align-items: center;
         .link{
           @include font-14px-line-height-28px();
           cursor: pointer;
           color: $app-active-color;
           margin-right: 20px;
         }
+      }
+      .intent-list-title{
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        color: $color-font-active;
+        @include font-14px-line-height-28px();
+        &.margin-top{
+          margin-top: 20px;
+        }
+        .icon {
+          margin-left: 6px;
+        }
+      }
+      .intent-list{
+        flex: 0 0 auto;
       }
     }
   }
