@@ -1,6 +1,17 @@
 export default {
   robot_config: {
     robot_config: '系統功能配置',
+    config_content_error: '設定內容錯誤',
+    ssm: {
+      title: '問答',
+      'ssm_context_support-info': '在常用問答中使用上下文',
+      'uploadimg_server-pre': '答案中圖片伺服器將使用',
+      'uploadimg_server-suf': '',
+      'ssm_ml_threshold-pre': '當 ML 相似度信心分數為',
+      'ssm_ml_threshold-suf': '時視為相同問題',
+      'ssm_qq_threshold-pre': '當 QQ 相似度信心分數為',
+      'ssm_qq_threshold-suf': '時視為相同問題',
+    },
     chat: {
       title: '閒聊',
       'chat-editorial-pre': '信心分數高於',
@@ -23,7 +34,7 @@ export default {
       default: '我',
     },
     context: {
-      title: '上下文',
+      title: '技能上下文',
     },
     'human-intent': {
       title: '轉人工',
