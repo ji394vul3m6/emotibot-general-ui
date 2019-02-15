@@ -571,7 +571,7 @@ export default {
 }
 
 #chat-test-pop {
-  position: absolute;
+  position: fixed;
   right: -700px;
   top: 0;
   height: 100vh;
