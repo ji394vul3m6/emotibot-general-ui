@@ -192,6 +192,12 @@ export default {
       });
       return headers;
     },
+    fixDataFormat(datas) {
+      datas.forEach((data) => {
+        data.rating = data.rating === 0 ? '' : data.rating;
+      });
+      return datas;
+    },
     getSearchParam() {
       const that = this;
       const range = that.$refs.timeRange.getCurrentValue();
@@ -222,7 +228,7 @@ export default {
       const filter = that.getSearchParam();
       that.$emit('startLoading');
       this.$api.getSessionList(that.nowPage, that.nowLimit, filter).then((rsp) => {
-        that.tableData = rsp.data;
+        that.tableData = that.fixDataFormat(rsp.data);
         that.tableHeader = that.fixHeaderFormat(rsp.table_header);
         that.recordNum = rsp.total_size;
       })
