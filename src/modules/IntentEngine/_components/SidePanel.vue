@@ -1,48 +1,48 @@
 <template>
 <div id="side-panel">
   <div class="title margin-bottom">
-    {{$t('intent_engine.side_bar.intent_train')}}
+    {{$t('intent_engine.side_panel.intent_train')}}
   </div>
   <div class="info margin-bottom">
-    {{$t('intent_engine.side_bar.intent_train_info')}}
+    {{$t('intent_engine.side_panel.intent_train_info')}}
   </div>
   <text-button class="button margin-bottom" :height="'40px'" @click="startTraining()">
-    {{$t('intent_engine.side_bar.do_train')}}
+    {{$t('intent_engine.side_panel.do_train')}}
   </text-button>
   <div class="records" style="margin-bottom: 20px;">
     <div class="record">
-      {{$t('intent_engine.side_bar.last_success_train')}}
+      {{$t('intent_engine.side_panel.last_success_train')}}
     </div>
     <div class="record">
-      {{$t('intent_engine.side_bar.success_train_record')}}
+      {{$t('intent_engine.side_panel.success_train_record')}}
     </div>
     <div class="link">
-      {{$t('intent_engine.side_bar.show_train_records')}}
+      {{$t('intent_engine.side_panel.show_train_records')}}
     </div>
     <div class="link">
-      {{$t('intent_engine.side_bar.hide_train_records')}}
+      {{$t('intent_engine.side_panel.hide_train_records')}}
     </div>
   </div>
   <div class="title" style="margin-bottom: 20px;">
-    {{$t('intent_engine.side_bar.intent_test')}}
+    {{$t('intent_engine.side_panel.intent_test')}}
   </div>
   <div class="info margin-bottom">
-    {{$t('intent_engine.side_bar.intent_test_info')}}
+    {{$t('intent_engine.side_panel.intent_test_info')}}
   </div>
   <div class="hint">
-    {{$t('intent_engine.side_bar.edit_intent_test_corpus_hint')}}
+    {{$t('intent_engine.side_panel.edit_intent_test_corpus_hint')}}
   </div>
   <text-button class="button" style="margin-bottom: 30px;" :height="'40px'" @click="toPage('test')">
-    {{$t('intent_engine.side_bar.go_to_intent_test')}}
+    {{$t('intent_engine.side_panel.go_to_intent_test')}}
   </text-button>
   <div class="info margin-bottom" >
-    {{$t('intent_engine.side_bar.do_intent_test_info')}}
+    {{$t('intent_engine.side_panel.do_intent_test_info')}}
   </div>
   <text-button class="button margin-bottom" :height="'40px'" @click="startTesting()">
-    {{$t('intent_engine.side_bar.do_test')}}
+    {{$t('intent_engine.side_panel.do_test')}}
   </text-button>
   <div class="link" @click="toPage('test/records')">
-    {{$t('intent_engine.side_bar.go_to_intent_test_records')}}
+    {{$t('intent_engine.side_panel.go_to_intent_test_records')}}
   </div>
 </div>
 </template>
@@ -54,6 +54,7 @@
 
 import testApi from '../_api/intentTest';
 import eventBus from './eventBus';
+import DoIntentTestPop from './DoIntentTestPop';
 
 const TEST_STATUS = {
   TESTING: 0,
@@ -87,13 +88,26 @@ export default {
     },
     startTesting() {
       if (!this.canTest) return;
-      console.log('startTesting');
-      this.eventBus.$emit('startLoading', this.$t('intent_engine.is_testing'));
       const that = this;
-      testApi.testIntentTestCorpus.call(this, '').then(() => {
-        that.testStatus = TEST_STATUS.TESTING;
-        // that.trainBtnClicked = true;
-      });
+      const popOption = {
+        title: that.$t('intent_engine.side_panel.do_intent_test.title'),
+        component: DoIntentTestPop,
+        validate: true,
+        extData: {
+          models: ['123'],
+        },
+        callback: {
+          ok(model) {
+            console.log(`startTesting: ${model}`);
+            that.eventBus.$emit('startLoading', that.$t('intent_engine.is_testing'));
+            // testApi.testIntentTestCorpus.call(that, model).then(() => {
+            //   that.testStatus = TEST_STATUS.TESTING;
+            // //   that.trainBtnClicked = true;
+            // });
+          },
+        },
+      };
+      this.$pop(popOption);
     },
     startPollingTestStatus() {
       this.testStatusIntervalId = setInterval(() => {

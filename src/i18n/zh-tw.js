@@ -924,7 +924,7 @@ export default {
       recall: '召回率 Recall',
       precision: '精確率 Precision',
     },
-    side_bar: {
+    side_panel: {
       intent_train: '意圖訓練',
       intent_test: '意圖測試',
       intent_train_info: '新增意圖或語料後，必須進行意圖訓練以提高機器人識別正確率。',
@@ -943,6 +943,11 @@ export default {
       show_train_records: '更多記錄',
       hide_train_records: '縮合',
       edit_intent_test_corpus_hint: '新模型有新意圖，建議編輯測試語料。',
+      do_intent_test: {
+        title: '進行意圖測試',
+        select_label: '選擇欲測試的意圖訓練版本',
+        hint: '提示：目前意圖管理有新意圖和語料，尚未進行意圖訓練。',
+      },
     },
   },
   pages: {
