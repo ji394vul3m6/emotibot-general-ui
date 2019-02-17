@@ -169,6 +169,7 @@ export default {
     delete_category_msg: '确定要删除分类 {name} 及其子分类吗？',
   },
   statistics: {
+    add_new_std_question: '新增標準問題',
     sessions_time: '会话时间',
     session_id: '会话 ID',
     feedback_score: '满意度分数',

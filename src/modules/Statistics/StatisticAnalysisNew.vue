@@ -370,7 +370,7 @@ export default {
       that.tableData = [];
       that.currentChartType = setting.chartType;
 
-      that.$emit('startLoading');
+      // that.$emit('startLoading');
       that.$api.getTagTypes().then((data) => {
         that.tagTypes = data.map(d => ({
           val: d.type,
