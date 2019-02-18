@@ -9,17 +9,19 @@
   <text-button class="button margin-bottom" :height="'40px'" @click="startTraining()">
     {{$t('intent_engine.side_panel.do_train')}}
   </text-button>
-  <div class="records" style="margin-bottom: 20px;">
-    <div class="record">
-      {{$t('intent_engine.side_panel.last_success_train')}}
+  <div class="train-records" v-if="recentModels.length > 0" style="margin-bottom: 20px;">
+    <div class="model" v-for="(model, index) in recentModels" :key="model.id">
+      <span v-if="index===0">
+        {{`${$t('intent_engine.side_panel.last_success_train')}: ${model.train_time}`}}
+      </span>
+      <span v-if="index!==0 && showRecentTrainRecords">
+        {{`${$t('intent_engine.side_panel.success_train_record')}: ${model.train_time}`}}
+      </span>
     </div>
-    <div class="record">
-      {{$t('intent_engine.side_panel.success_train_record')}}
-    </div>
-    <div class="link">
+    <div class="link" v-if="showRecentTrainRecords===false" @click="showRecentTrainRecords=true">
       {{$t('intent_engine.side_panel.show_train_records')}}
     </div>
-    <div class="link">
+    <div class="link" v-if="showRecentTrainRecords===true" @click="showRecentTrainRecords=false">
       {{$t('intent_engine.side_panel.hide_train_records')}}
     </div>
   </div>
@@ -52,7 +54,8 @@
 //   intent_test_is_empty: '意圖測試集為空請先編輯',
 // },
 
-import testApi from '../_api/intentTest';
+import intentApi from '../_api/intent';
+import intentTestApi from '../_api/intentTest';
 import eventBus from './eventBus';
 import DoIntentTestPop from './DoIntentTestPop';
 
@@ -66,14 +69,17 @@ const TEST_STATUS = {
 
 export default {
   name: 'side-panel',
-  testApi,
+  intentApi,
+  intentTestApi,
   components: {},
   props: {},
   data() {
     return {
+      models: [],
       testStatus: undefined,  // type: TEST_STATUS
       testStatusIntervalId: undefined,
       eventBus: eventBus.eventBus,
+      showRecentTrainRecords: false,
     };
   },
   watch: {},
@@ -81,8 +87,38 @@ export default {
     canTest() {
       return true;
     },
+    recentModels() {
+      if (this.models.recent_trained) {
+        return this.models.recent_trained;
+      }
+      return [];
+    },
+    uniqueModels() {
+      const keyOrder = ['recent_trained', 'recent_tested', 'recent_saved'];
+      const uniqueIds = {};
+      const uniqueModels = [];
+      if (this.models.in_used) {
+        uniqueIds[this.models.in_used.id] = 1;
+        uniqueModels.push(this.models.in_used);
+      }
+      for (let i = 0; i < keyOrder.length; i += 1) {
+        const models = this.models[keyOrder[i]];
+        models.forEach((model) => {
+          if (uniqueIds[model.id] === undefined) {
+            uniqueIds[model.id] = 1;
+            uniqueModels.push(model);
+          }
+        });
+      }
+      return uniqueModels;
+    },
   },
   methods: {
+    getModels() {
+      intentApi.getModels.call(this).then((data) => {
+        this.models = data;
+      });
+    },
     startTraining() {
       this.$emit('startTraining');
     },
@@ -94,16 +130,16 @@ export default {
         component: DoIntentTestPop,
         validate: true,
         extData: {
-          models: ['123'],
+          models: this.uniqueModels,
         },
         callback: {
-          ok(model) {
-            console.log(`startTesting: ${model}`);
+          ok(modelId) {
+            console.log(`startTesting: ${modelId}`);
             that.eventBus.$emit('startLoading', that.$t('intent_engine.is_testing'));
-            // testApi.testIntentTestCorpus.call(that, model).then(() => {
-            //   that.testStatus = TEST_STATUS.TESTING;
-            // //   that.trainBtnClicked = true;
-            // });
+            intentTestApi.testIntentTestCorpus.call(that, modelId).then(() => {
+              that.testStatus = TEST_STATUS.TESTING;
+            //   that.trainBtnClicked = true;
+            });
           },
         },
       };
@@ -112,11 +148,11 @@ export default {
     startPollingTestStatus() {
       this.testStatusIntervalId = setInterval(() => {
         this.pollTestStatus();
-      }, 5000);
+      }, 10000);
     },
     pollTestStatus() {
       const that = this;
-      testApi.getTestStatus.call(this).then((data) => {
+      intentTestApi.getTestStatus.call(this).then((data) => {
         // console.log(data);
         that.testStatusChanged(data.status);
         if (!that.testStatusIntervalId) {
@@ -129,12 +165,27 @@ export default {
     },
     testStatusChanged(newStatus) {
       const prevStatus = this.testStatus;
-      console.log(prevStatus);
       this.testStatus = newStatus;
-      if (newStatus === TEST_STATUS.TESTED) {
+      console.log(prevStatus);
+      if (prevStatus === undefined) {
+        if (newStatus === TEST_STATUS.TESTING) {
+          this.eventBus.$emit('startLoading', this.$t('intent_engine.is_testing'));
+        }
+      }
+      if (newStatus !== TEST_STATUS.TESTING) {
         this.eventBus.$emit('endLoading');
+      }
+      this.testStatus = newStatus;
+      if (newStatus === TEST_STATUS.TESTING) {
+        console.log('TEST_STATUS.TESTING');
       } else if (newStatus === TEST_STATUS.TESTED) {
-        this.eventBus.$emit('endLoading');
+        console.log('TEST_STATUS.TESTED');
+      } else if (newStatus === TEST_STATUS.TEST_FAILED) {
+        console.log('TEST_STATUS.TEST_FAILED');
+      } else if (newStatus === TEST_STATUS.NEED_TEST) {
+        console.log('TEST_STATUS.NEED_TEST');
+      } else if (newStatus === TEST_STATUS.PENDING) {
+        console.log('TEST_STATUS.PENDING');
       }
     },
     toPage(path) {
@@ -142,7 +193,8 @@ export default {
     },
   },
   mounted() {
-    // this.pollTestStatus();
+    this.pollTestStatus();
+    this.getModels();
   },
   beforeDestroy() {
     clearInterval(this.testStatusIntervalId);
@@ -172,7 +224,7 @@ export default {
     @include font-14px-line-height-28px();
     cursor: pointer;
   }
-  .record{
+  .model{
     @include font-12px-line-height-28px();
     color: $color-font-mark;
   }

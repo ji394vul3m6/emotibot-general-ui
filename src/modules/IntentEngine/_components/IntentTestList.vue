@@ -40,7 +40,7 @@
               @compositionend="setCompositionState(false)"
               @keydown.enter="detectCompositionState"
               @keyup.enter="addCorpus(intent)"/>
-            <text-button class="add-corpus-btn" @click="addCorpus(intent)">{{ $t('intent_engine.manage.addin') }}</text-button>
+            <text-button class="add-corpus-btn" @click="detectCompositionState(); addCorpus(intent)">{{ $t('intent_engine.manage.addin') }}</text-button>
           </div>
           <div class="corpus-row" v-for="corpus in getCorpusPage(intent)"
             :key="corpus.id"
@@ -212,11 +212,16 @@ export default {
       this.wasCompositioning = this.compositionState;
     },
     addCorpus(intent) {
+      if (this.wasCompositioning) {
+        return;
+      }
+      this.newCorpus = this.newCorpus.trim();
       const update = [{
         id: 0,
         content: this.newCorpus,
       }];
       this.patchCorpus(intent, update, []);
+      this.newCorpus = '';
     },
     handlePageChange(pageIdx, intent) {
       intent.curPage = pageIdx;
@@ -262,7 +267,7 @@ export default {
     patchCorpus(intent, update, del) {
       console.log('patchCorpus');
       this.$api.patchIntentTestCorpus(intent.id, update, del).then(() => {
-        // this.fetchCorpus(intent);
+        this.fetchCorpus(intent);
       });
     },
     deleteCorpus(intent, corpus) {

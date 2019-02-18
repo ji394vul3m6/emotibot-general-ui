@@ -134,6 +134,10 @@ function deleteIntents(IDs) {
   });
 }
 
+function getModels() {
+  return this.$reqGet(`${GET_INTENT_URL}/models`).then(rsp => rsp.data.result);
+}
+
 export default {
   getIntents,
   getIntentsDetail,
@@ -145,4 +149,5 @@ export default {
   startTraining,
   getTrainingStatus,
   deleteIntents,
+  getModels,
 };

@@ -8,21 +8,25 @@ const testIntents = [];
 //   "message": "success",
 //   "result": {
 //     "updated_time": 0,
-//     "intents_count": 0,
-//     "sentences_count": 0,
+//     "test_intents_count": 0,
+//     "test_sentences_count": 0,
 //     "true_positives": 0,
 //     "false_positives": 0,
 //     "true_negatives": 0,
 //     "false_negatives": 0,
+//     "tester": "string",
 //     "name": "string",
 //     "saved": true,
 //     "ie_model_updated_time": 0,
-//     "intents": [
+//     "intents_count": 0,
+//     "sentences_count": 0,
+//     "test_intents": [
 //       {
 //         "id": 0,
 //         "name": "string",
 //         "sentences_count": 0,
-//         "positives_count": 0
+//         "positives_count": 0,
+//         "type": true
 //       }
 //     ]
 //   }
@@ -50,16 +54,19 @@ const testRecordResponse = {
   message: '',
   result: {
     updated_time: MockJS.mock('@datetime("yyyy-MM-dd HH:mm")'),
-    intents_count: 21,
-    sentences_count: MockJS.mock('@integer(10000, 20000)'),
+    test_intents_count: 21,
+    test_sentences_count: MockJS.mock('@integer(10000, 20000)'),
     true_positives: MockJS.mock('@integer(1, 500)'),
     false_positives: MockJS.mock('@integer(1, 500)'),
     true_negatives: MockJS.mock('@integer(1, 500)'),
     false_negatives: MockJS.mock('@integer(1, 500)'),
+    tester: MockJS.mock('@cname'),
     name: MockJS.mock('@ctitle'),
     ie_model_updated_time: MockJS.mock('@datetime("yyyy-MM-dd HH:mm")'),
+    intents_count: 21,
+    sentences_count: MockJS.mock('@integer(10000, 20000)'),
     saved: true,
-    intents: testIntents,
+    test_intents: testIntents,
   },
 };
 

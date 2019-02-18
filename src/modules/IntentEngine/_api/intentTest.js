@@ -42,8 +42,8 @@ function getIntentTestCorpus(intentId) {
 
 function patchIntentTestCorpus(intentId, update, del) {
   const body = {
-    update,
-    delete: del,
+    update: JSON.stringify(update),
+    delete: JSON.stringify(del),
   };
   return this.$reqPatch(
     `${INTENT_TEST_DATA_URL}/${intentId}`,
@@ -73,7 +73,7 @@ function testIntentTestCorpus(intentModelId) {
   return this.$reqPost(
     `${INTENT_TEST_URL}/test`,
     qs.stringify(body),
-    { headers: { 'Content-Type': 'multipart/form-data' } },
+    { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
   ).then(rsp => rsp.data.result);
 }
 

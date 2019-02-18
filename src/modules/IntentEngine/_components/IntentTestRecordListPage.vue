@@ -167,7 +167,7 @@ export default {
     },
     composeRecordDownloadLink(record) {
       const that = this;
-      const modelStats = this.$t('intent_engine.test_records.intent_statistics', { cnum: record.intent_test.sentences_count });
+      const modelStats = this.$t('intent_engine.test_records.intent_statistics', { cnum: record.intent_test.test_sentences_count });
       const text = `${record.intent_test.updated_time} (${modelStats})`;
       const link = { ...TestRecordListTableDownloadLink };
       link.data = () => ({

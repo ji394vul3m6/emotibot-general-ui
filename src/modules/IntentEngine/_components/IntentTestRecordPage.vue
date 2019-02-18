@@ -24,7 +24,7 @@
         {{$t('intent_engine.test_record.test_data')}}
       </div>
       <div class="text normal margin-bottom">
-        {{`${$t('intent_engine.test_data.num_test_corpus', {cnum: record.sentences_count})}`}}
+        {{`${$t('intent_engine.test_data.num_test_corpus', {cnum: record.test_sentences_count})}`}}
       </div>
 
       <div class="text active">
@@ -37,7 +37,7 @@
         {{`${$t('intent_engine.test_record.intent_statistics', {inum: record.intents_count, cnum: record.sentences_count})}`}}
       </div>
       <div class="text normal margin-bottom">
-        {{`${$t('intent_engine.test_records.tester')}：aaa`}}
+        {{`${$t('intent_engine.test_records.tester')}：${record.tester}`}}
       </div>
       <div class="seperater margin-bottom"></div>
 
@@ -161,13 +161,13 @@ export default {
     getTestRecord(intentTestID) {
       this.$api.getTestRecord(intentTestID).then((data) => {
         console.log(data);
-        const { intents, ...record } = data;
+        const { test_intents, ...record } = data;
         record.tp = record.true_positives;
         record.tn = record.true_negatives;
         record.fp = record.false_positives;
         record.fn = record.false_negatives;
         this.record = record;
-        this.allIntents = intents;
+        this.allIntents = data.test_intents;
       });
     },
     inSearchIntentMode(bool) {

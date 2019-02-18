@@ -6,9 +6,8 @@
     </div>
     <dropdown-select
       class="model-select"
-      :value="undefined"
-      @input="onModelSelect()"
-      :options="[]"
+      v-model="model"
+      :options="modelOptions"
       :showCheckedIcon="true"
       width="260px"
       :inputBarStyle="optionSelectStyle"
@@ -28,12 +27,17 @@ export default {
     },
   },
   data() {
+    const modelOptions = this.extData.models.map(model => ({
+      text: model.train_time,
+      value: model.id,
+    }));
     let model;
     if (this.extData.models.length > 0) {
-      model = this.extData.models[0];
+      model = [this.extData.models[0].id];
     }
     return {
       model,
+      modelOptions,
       optionSelectStyle: {
         height: '28px',
         'border-radius': '2px',
@@ -44,9 +48,9 @@ export default {
   },
   methods: {
     validate() {
-      console.log(this.model);
+      console.log(this.model[0]);
       if (this.model) {
-        this.$emit('validateSuccess', this.model);
+        this.$emit('validateSuccess', this.model[0]);
       }
     },
   },

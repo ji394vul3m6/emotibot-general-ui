@@ -7,8 +7,8 @@ for (let i = 0; i < TOTAL; i += 1) {
   const mockData = {
     intent_test: {
       updated_time: MockJS.mock('@datetime("yyyy-MM-dd HH:mm")'),
-      intents_count: MockJS.mock('@integer(1, 20)'),
-      sentences_count: MockJS.mock('@integer(1, 1000)'),
+      test_intents_count: MockJS.mock('@integer(1, 20)'),
+      test_sentences_count: MockJS.mock('@integer(1, 1000)'),
       true_positives: MockJS.mock('@integer(1, 200)'),
       false_positives: MockJS.mock('@integer(1, 200)'),
       true_negatives: MockJS.mock('@integer(1, 200)'),

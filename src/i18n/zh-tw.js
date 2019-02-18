@@ -824,7 +824,7 @@ export default {
       corpus_search_num: '(搜尋結果: {pos}筆正例/{neg}筆反例)',
       cancel_edit_msg: '尚未保存編輯，確定要取消編輯嗎？',
       cancel_add_msg: '尚未保存意圖，確定要取消新增嗎？',
-      delete_intent_msg: '確定要刪除意圖 {name} 嗎？',
+      delete_intent_msg: '刪除意圖會同時移除測試語料，刪除後將不能復原，確定要刪除意圖 {name} 嗎？',
       addin: '加入',
       positive: '正例',
       negative: '反例',
@@ -903,7 +903,7 @@ export default {
     test_records: {
       intent_test_record: '意圖測試記錄',
       intent_test_data: '意圖測試集',
-      latest_records: '近五比測試記錄',
+      latest_records: '近五筆測試記錄',
       saved_records: '保存測試記錄',
       test_record_name: '名稱',
       test_record: '測試記錄',
