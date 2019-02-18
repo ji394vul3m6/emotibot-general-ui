@@ -47,6 +47,7 @@
       </div>
     </div>
     <side-panel clase="side-panel"
+      :mode="'trainPage'"
       @startTraining="startTraining()">
     </side-panel>
   </div>

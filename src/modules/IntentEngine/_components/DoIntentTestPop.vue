@@ -28,7 +28,7 @@ export default {
   },
   data() {
     const modelOptions = this.extData.models.map(model => ({
-      text: model.train_time,
+      text: model.trainDatetimeStr,
       value: model.id,
     }));
     let model;

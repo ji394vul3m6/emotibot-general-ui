@@ -1,51 +1,55 @@
 <template>
 <div id="side-panel">
-  <div class="title margin-bottom">
-    {{$t('intent_engine.side_panel.intent_train')}}
-  </div>
-  <div class="info margin-bottom">
-    {{$t('intent_engine.side_panel.intent_train_info')}}
-  </div>
-  <text-button class="button margin-bottom" :height="'40px'" @click="startTraining()">
-    {{$t('intent_engine.side_panel.do_train')}}
-  </text-button>
-  <div class="train-records" v-if="recentModels.length > 0" style="margin-bottom: 20px;">
-    <div class="model" v-for="(model, index) in recentModels" :key="model.id">
-      <span v-if="index===0">
-        {{`${$t('intent_engine.side_panel.last_success_train')}: ${model.train_time}`}}
-      </span>
-      <span v-if="index!==0 && showRecentTrainRecords">
-        {{`${$t('intent_engine.side_panel.success_train_record')}: ${model.train_time}`}}
-      </span>
+  <template v-if="mode==='trainPage'">
+    <div class="title margin-bottom">
+      {{$t('intent_engine.side_panel.intent_train')}}
     </div>
-    <div class="link" v-if="showRecentTrainRecords===false" @click="showRecentTrainRecords=true">
-      {{$t('intent_engine.side_panel.show_train_records')}}
+    <div class="info margin-bottom">
+      {{$t('intent_engine.side_panel.intent_train_info')}}
     </div>
-    <div class="link" v-if="showRecentTrainRecords===true" @click="showRecentTrainRecords=false">
-      {{$t('intent_engine.side_panel.hide_train_records')}}
+    <text-button class="button margin-bottom" :height="'40px'" @click="startTraining()">
+      {{$t('intent_engine.side_panel.do_train')}}
+    </text-button>
+    <div class="train-records" v-if="recentModels.length > 0" style="margin-bottom: 20px;">
+      <div class="model" v-for="(model, index) in recentModels" :key="model.id">
+        <span v-if="index===0">
+          {{`${$t('intent_engine.side_panel.last_success_train')}: ${model.trainDatetimeStr}`}}
+        </span>
+        <span v-if="index!==0 && showRecentTrainRecords">
+          {{`${$t('intent_engine.side_panel.success_train_record')}: ${model.trainDatetimeStr}`}}
+        </span>
+      </div>
+      <div class="link" v-if="showRecentTrainRecords===false" @click="showRecentTrainRecords=true">
+        {{$t('intent_engine.side_panel.show_train_records')}}
+      </div>
+      <div class="link" v-if="showRecentTrainRecords===true" @click="showRecentTrainRecords=false">
+        {{$t('intent_engine.side_panel.hide_train_records')}}
+      </div>
     </div>
-  </div>
-  <div class="title" style="margin-bottom: 20px;">
-    {{$t('intent_engine.side_panel.intent_test')}}
-  </div>
-  <div class="info margin-bottom">
-    {{$t('intent_engine.side_panel.intent_test_info')}}
-  </div>
-  <div class="hint">
-    {{$t('intent_engine.side_panel.edit_intent_test_corpus_hint')}}
-  </div>
-  <text-button class="button" style="margin-bottom: 30px;" :height="'40px'" @click="toPage('test')">
-    {{$t('intent_engine.side_panel.go_to_intent_test')}}
-  </text-button>
-  <div class="info margin-bottom" >
-    {{$t('intent_engine.side_panel.do_intent_test_info')}}
-  </div>
-  <text-button class="button margin-bottom" :height="'40px'" @click="startTesting()">
-    {{$t('intent_engine.side_panel.do_test')}}
-  </text-button>
-  <div class="link" @click="toPage('test/records')">
-    {{$t('intent_engine.side_panel.go_to_intent_test_records')}}
-  </div>
+    <div class="title" style="margin-bottom: 20px;">
+      {{$t('intent_engine.side_panel.intent_test')}}
+    </div>
+    <div class="info margin-bottom">
+      {{$t('intent_engine.side_panel.intent_test_info')}}
+    </div>
+    <div class="hint">
+      {{$t('intent_engine.side_panel.edit_intent_test_corpus_hint')}}
+    </div>
+    <text-button class="button" style="margin-bottom: 30px;" :height="'40px'" @click="toPage('test')">
+      {{$t('intent_engine.side_panel.go_to_intent_test')}}
+    </text-button>
+  </template>
+  <template v-if="mode==='trainPage' || mode==='testPage'">
+    <div class="info margin-bottom" >
+      {{$t('intent_engine.side_panel.do_intent_test_info')}}
+    </div>
+    <text-button class="button margin-bottom" :height="'40px'" @click="startTesting()">
+      {{$t('intent_engine.side_panel.do_test')}}
+    </text-button>
+    <div class="link" @click="toPage('test/records')">
+      {{$t('intent_engine.side_panel.go_to_intent_test_records')}}
+    </div>
+  </template>
 </div>
 </template>
 <script>
@@ -54,6 +58,7 @@
 //   intent_test_is_empty: '意圖測試集為空請先編輯',
 // },
 
+import moment from 'moment';
 import intentApi from '../_api/intent';
 import intentTestApi from '../_api/intentTest';
 import eventBus from './eventBus';
@@ -72,7 +77,13 @@ export default {
   intentApi,
   intentTestApi,
   components: {},
-  props: {},
+  props: {
+    mode: {
+      type: String,
+      required: false,
+      default: () => 'trainPage',
+    },
+  },
   data() {
     return {
       models: [],
@@ -89,7 +100,10 @@ export default {
     },
     recentModels() {
       if (this.models.recent_trained) {
-        return this.models.recent_trained;
+        return this.models.recent_trained.map(model => ({
+          ...model,
+          trainDatetimeStr: this.timestampToDatetimeString(model.train_time),
+        }));
       }
       return [];
     },
@@ -99,17 +113,28 @@ export default {
       const uniqueModels = [];
       if (this.models.in_used) {
         uniqueIds[this.models.in_used.id] = 1;
-        uniqueModels.push(this.models.in_used);
+        uniqueModels.push(
+          {
+            ...this.models.in_used,
+            trainDatetimeStr: this.timestampToDatetimeString(this.models.in_used.train_time),
+          },
+        );
       }
       for (let i = 0; i < keyOrder.length; i += 1) {
         const models = this.models[keyOrder[i]];
         models.forEach((model) => {
           if (uniqueIds[model.id] === undefined) {
             uniqueIds[model.id] = 1;
-            uniqueModels.push(model);
+            uniqueModels.push(
+              {
+                ...model,
+                trainDatetimeStr: this.timestampToDatetimeString(model.train_time),
+              },
+            );
           }
         });
       }
+      console.log(uniqueModels);
       return uniqueModels;
     },
   },
@@ -118,6 +143,10 @@ export default {
       intentApi.getModels.call(this).then((data) => {
         this.models = data;
       });
+    },
+    timestampToDatetimeString(ts, format = 'YYYY-MM-DD HH:mm') {
+      const date = new Date(ts * 1000);
+      return moment(date).format(format);
     },
     startTraining() {
       this.$emit('startTraining');

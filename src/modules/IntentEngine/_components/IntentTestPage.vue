@@ -67,7 +67,9 @@
         </intent-test-list>
       </template>
     </div>
-    <side-panel clase="side-panel"></side-panel>
+    <side-panel clase="side-panel"
+      :mode="'testPage'">
+    </side-panel>
   </div>
 </div>
 </template>
