@@ -1,5 +1,11 @@
 import DropdownMenu from '../components/basic/DropdownMenu';
 
+const dropdownMap = {};
+
+function randomID() {
+  return parseInt(Math.random() * 100000, 10).toString();
+}
+
 const MyPlugin = {
   getPosition(el, alignLeft) {
     const boundedBox = el.getBoundingClientRect();
@@ -52,13 +58,19 @@ const MyPlugin = {
             },
           });
           vm.$mount();
-          el.appendChild(vm.$el);
+
+          const tempID = randomID();
+          el.dataset.id = tempID;
+          dropdownMap[tempID] = vm;
+
+          const body = document.querySelector('body');
+          body.appendChild(vm.$el);
           vm.$forceUpdate();
 
 
           el.addEventListener('dropdown-reload', ({ detail: value = binding.value }) => {
             const newPos = that.getPosition(el, value.alignLeft);
-            el.removeChild(vm.$el);
+            body.removeChild(vm.$el);
             vm.$destroy();
             vm = new DropdownGenerator({
               propsData: {
@@ -70,7 +82,7 @@ const MyPlugin = {
               },
             });
             vm.$mount();
-            el.appendChild(vm.$el);
+            body.appendChild(vm.$el);
             vm.$forceUpdate();
           });
 
@@ -87,6 +99,13 @@ const MyPlugin = {
             that.addEventListeners(vm, el, binding.value.alignLeft);
           });
         });
+      },
+      unbind(el) {
+        const id = el.dataset.id;
+        const body = document.querySelector('body');
+        body.removeChild(dropdownMap[id].$el.remove());
+        dropdownMap[id].$destroy();
+        delete dropdownMap[id];
       },
     });
   },
