@@ -81,6 +81,9 @@ const MyPlugin = {
                 alignLeft: value.alignLeft,
               },
             });
+            const id = el.dataset.id;
+            dropdownMap[id] = vm;
+
             vm.$mount();
             body.appendChild(vm.$el);
             vm.$forceUpdate();
@@ -103,7 +106,7 @@ const MyPlugin = {
       unbind(el) {
         const id = el.dataset.id;
         const body = document.querySelector('body');
-        body.removeChild(dropdownMap[id].$el.remove());
+        body.removeChild(dropdownMap[id].$el);
         dropdownMap[id].$destroy();
         delete dropdownMap[id];
       },
