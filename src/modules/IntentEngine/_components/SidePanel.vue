@@ -58,10 +58,10 @@
 //   intent_test_is_empty: '意圖測試集為空請先編輯',
 // },
 
-import moment from 'moment';
 import intentApi from '../_api/intent';
 import intentTestApi from '../_api/intentTest';
-import eventBus from './eventBus';
+import eventBus from '../_utils/eventBus';
+import general from '../_utils/general';
 import DoIntentTestPop from './DoIntentTestPop';
 
 const TEST_STATUS = {
@@ -102,7 +102,7 @@ export default {
       if (this.models.recent_trained) {
         return this.models.recent_trained.map(model => ({
           ...model,
-          trainDatetimeStr: this.timestampToDatetimeString(model.train_time),
+          trainDatetimeStr: general.timestampToDatetimeString(model.train_time),
         }));
       }
       return [];
@@ -116,7 +116,7 @@ export default {
         uniqueModels.push(
           {
             ...this.models.in_used,
-            trainDatetimeStr: this.timestampToDatetimeString(this.models.in_used.train_time),
+            trainDatetimeStr: general.timestampToDatetimeString(this.models.in_used.train_time),
           },
         );
       }
@@ -128,7 +128,7 @@ export default {
             uniqueModels.push(
               {
                 ...model,
-                trainDatetimeStr: this.timestampToDatetimeString(model.train_time),
+                trainDatetimeStr: general.timestampToDatetimeString(model.train_time),
               },
             );
           }
@@ -143,10 +143,6 @@ export default {
       intentApi.getModels.call(this).then((data) => {
         this.models = data;
       });
-    },
-    timestampToDatetimeString(ts, format = 'YYYY-MM-DD HH:mm') {
-      const date = new Date(ts * 1000);
-      return moment(date).format(format);
     },
     startTraining() {
       this.$emit('startTraining');
@@ -163,7 +159,7 @@ export default {
         },
         callback: {
           ok(modelId) {
-            console.log(`startTesting: ${modelId}`);
+            that.eventBus.$emit('startTesting');
             that.eventBus.$emit('startLoading', that.$t('intent_engine.is_testing'));
             intentTestApi.testIntentTestCorpus.call(that, modelId).then(() => {
               that.testStatus = TEST_STATUS.TESTING;

@@ -122,6 +122,7 @@
 
 <script>
 import event from '@/utils/js/event';
+import eventBus from '../_utils/eventBus';
 import api from '../_api/intentTest';
 
 export default {
@@ -154,6 +155,7 @@ export default {
       newCorpus: '',
       compositionState: false,
       wasCompositioning: false,
+      eventBus: eventBus.eventBus,
       editCorpusTooltip: {
         msg: this.$t('intent_engine.manage.tooltip.hit_enter_to_save'),
         eventOnly: true,
@@ -202,6 +204,11 @@ export default {
         }));
       });
     },
+    shirnkAllIntentBlock() {
+      this.intentList.forEach((i) => {
+        this.shrinkIntentBlock(i);
+      });
+    },
     shrinkIntentBlock(intent) {
       intent.expand = false;
     },
@@ -210,18 +217,6 @@ export default {
     },
     detectCompositionState() {
       this.wasCompositioning = this.compositionState;
-    },
-    addCorpus(intent) {
-      if (this.wasCompositioning) {
-        return;
-      }
-      this.newCorpus = this.newCorpus.trim();
-      const update = [{
-        id: 0,
-        content: this.newCorpus,
-      }];
-      this.patchCorpus(intent, update, []);
-      this.newCorpus = '';
     },
     handlePageChange(pageIdx, intent) {
       intent.curPage = pageIdx;
@@ -264,17 +259,34 @@ export default {
       }
       this.finishEditingCorpus(intent, corpus);
     },
-    patchCorpus(intent, update, del) {
-      console.log('patchCorpus');
-      this.$api.patchIntentTestCorpus(intent.id, update, del).then(() => {
-        this.fetchCorpus(intent);
+    addCorpus(intent) {
+      if (this.wasCompositioning) {
+        return;
+      }
+      this.newCorpus = this.newCorpus.trim();
+      const update = [{
+        id: 0,
+        content: this.newCorpus,
+      }];
+      this.patchCorpus(intent, update, []).then(() => {
+        this.fetchCorpus(intent).then(() => {
+          intent.sentences_count += 1;
+          intent.curPage = Math.ceil(intent.testCorpus.length / this.LIST_PAGE_SIZE);
+        });
       });
+      this.newCorpus = '';
     },
     deleteCorpus(intent, corpus) {
       const corpusIdx = intent.testCorpus.findIndex(cp => cp.id === corpus.id);
       intent.testCorpus.splice(corpusIdx, 1);
       const del = [corpus.id];
-      this.patchCorpus(intent, [], del);
+      this.patchCorpus(intent, [], del).then(() => {
+        intent.sentences_count -= 1;
+      });
+      intent.curPage = Math.ceil(intent.testCorpus.length / this.LIST_PAGE_SIZE);
+    },
+    patchCorpus(intent, update, del) {
+      return this.$api.patchIntentTestCorpus(intent.id, update, del);
     },
     getEditModeTestResultTooltip(corpus) {
       const tooltip = {
@@ -304,9 +316,12 @@ export default {
     },
     composeIntentTestCorrectRate(intent) {
       const total = intent.sentences_count;
-      const positive = intent.positives_count;
-      const rate = Math.round((positive * 100) / total);
-      return `(${rate}%)`;
+      if (total > 0) {
+        const positive = intent.positives_count;
+        const rate = Math.round((positive * 100) / total);
+        return `(${rate}%)`;
+      }
+      return '';
     },
     showFullCorpusIfEllipsis(e) {
       const overflow = e.target.scrollWidth > e.target.clientWidth;
@@ -320,6 +335,9 @@ export default {
   },
   mounted() {
     this.renderIntentList();
+    this.eventBus.$on('startTesting', () => {
+      this.shirnkAllIntentBlock();
+    });
   },
 };
 </script>

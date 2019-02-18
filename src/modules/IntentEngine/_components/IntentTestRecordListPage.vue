@@ -51,6 +51,8 @@ import GeneralScrollTable from '@/components/GeneralScrollTable/GeneralScrollTab
 import api from '../_api/intentTest';
 import TestRecordListTableAction from './_tableColumn/TestRecordListTableAction';
 import TestRecordListTableDownloadLink from './_tableColumn/TestRecordListTableDownloadLink';
+import eventBus from '../_utils/eventBus';
+import general from '../_utils/general';
 
 export default {
   name: 'intent-test-record-list-page',
@@ -125,6 +127,7 @@ export default {
       recordTableHeader,
       savedRecordTableHeader,
       recordTableAction: [],
+      eventBus: eventBus.eventBus,
     };
   },
   computed: {
@@ -168,7 +171,7 @@ export default {
     composeRecordDownloadLink(record) {
       const that = this;
       const modelStats = this.$t('intent_engine.test_records.intent_statistics', { cnum: record.intent_test.test_sentences_count });
-      const text = `${record.intent_test.updated_time} (${modelStats})`;
+      const text = `${general.timestampToDatetimeString(record.intent_test.updated_time)} (${modelStats})`;
       const link = { ...TestRecordListTableDownloadLink };
       link.data = () => ({
         linkData: {
@@ -185,7 +188,7 @@ export default {
       const link = { ...TestRecordListTableDownloadLink };
       link.data = () => ({
         linkData: {
-          text: record.ie_model.updated_time,
+          text: general.timestampToDatetimeString(record.ie_model.updated_time),
           onclick: () => {
             that.exportModel(record);
           },
@@ -200,13 +203,19 @@ export default {
       const fn = record.intent_test.false_negatives;
       if (type === 'accuracy') {
         const a = ((tp + tn) * 100) / (tp + tn + fp + fn);
-        return `${Math.round(a)}%`;
+        if (a) {
+          return `${Math.round(a)}%`;
+        }
       } else if (type === 'recall') {
         const r = ((tp) * 100) / (tp + fn);
-        return `${Math.round(r)}%`;
+        if (r) {
+          return `${Math.round(r)}%`;
+        }
       } else if (type === 'precision') {
         const p = (tp * 100) / (tp + fp);
-        return `${Math.round(p)}%`;
+        if (p) {
+          return `${Math.round(p)}%`;
+        }
       }
       return '';
     },
@@ -225,7 +234,6 @@ export default {
           text: this.$t('intent_engine.test_records.restore_record'),
           onclick: () => {
             that.restoreRecord(record);
-            console.log(record.intent_test.tester);
           },
         },
       ];
@@ -235,7 +243,6 @@ export default {
           text: this.$t('intent_engine.test_records.unstore_record'),
           onclick: () => {
             that.unsaveRecord(record);
-            console.log(record.intent_test.tester);
           },
         };
         options.splice(1, 0, option);
@@ -245,7 +252,6 @@ export default {
           text: this.$t('intent_engine.test_records.store_record'),
           onclick: () => {
             that.saveRecord(record);
-            console.log(record.intent_test.tester);
           },
         };
         options.splice(1, 0, option);
@@ -264,13 +270,22 @@ export default {
       this.toPage(`test/record/${record.intent_test.id}`);
     },
     saveRecord(record) {
-      this.$api.saveTestRecord(record.intent_test.id);
+      this.$api.saveTestRecord(record.intent_test.id).then(() => {
+        this.getTestRecords();
+      });
     },
     unsaveRecord(record) {
-      this.$api.unsaveTestRecord(record.intent_test.id);
+      this.$api.unsaveTestRecord(record.intent_test.id).then(() => {
+        this.getTestRecords();
+      });
     },
     restoreRecord(record) {
-      this.$api.restoreTestRecord(record.intent_test.id);
+      this.eventBus.$emit('startLoading', this.$t('intent_engine.is_restoring'));
+      this.$api.restoreTestRecord(record.intent_test.id).then(() => {
+        this.toPage('test');
+      }).finally(() => {
+        this.eventBus.$emit('endLoading');
+      });
     },
     exportRecord(record) {
       this.$api.exportTestRecord(record.intent_test.id);
@@ -330,6 +345,9 @@ export default {
       flex: 0 0 auto;
       display: flex;
       flex-direction: column;
+      &:last-child{
+        flex: 1 1 auto;
+      }
       .block-title{
         flex: 0 0 auto;
         padding: 20px;
@@ -337,7 +355,7 @@ export default {
         @include font-16px-line-height-28px();
       }
       .table{
-        flex: 0 0 auto;
+        // flex: 0 0 auto;
       }
     }
   }

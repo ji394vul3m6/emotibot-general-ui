@@ -5,7 +5,7 @@
 </template>
 <script>
 
-import eventBus from './_components/eventBus';
+import eventBus from './_utils/eventBus';
 
 const IntentTrainPage = () => import('./_components/IntentTrainPage');
 const IntentTestPage = () => import('./_components/IntentTestPage');

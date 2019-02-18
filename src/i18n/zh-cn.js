@@ -850,6 +850,7 @@ export default {
     train: '意图训练',
     is_training: '意图训练中...',
     is_testing: '意图测试中...',
+    is_restoring: '意图还原中...',
     training_success: '意图训练成功',
     training_fail: '意图训练失败',
     version_not_exist: '意图版本不存在',

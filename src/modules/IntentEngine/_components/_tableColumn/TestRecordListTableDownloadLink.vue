@@ -1,6 +1,6 @@
 <template>
   <div id="download-link-column" @click="linkClicked()">
-    <icon :size=18 icon-type="more_blue"/>
+    <!-- <icon :size=18 icon-type="more_blue"/> -->
     <span class="text">{{linkData.text}}</span>
   </div>
 </template>

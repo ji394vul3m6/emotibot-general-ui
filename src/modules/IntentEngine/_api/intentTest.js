@@ -25,7 +25,8 @@ function unsaveTestRecord(intentTestId) {
 }
 
 function exportTestRecord(intentTestId) {
-  window.open(`${INTENT_TEST_URL}/${intentTestId}/export`);
+  const token = window.localStorage.getItem('token');
+  window.open(`${INTENT_TEST_URL}/${intentTestId}/export?token=Bearer%20${token}`);
 }
 
 function restoreTestRecord(intentTestId) {
@@ -63,7 +64,8 @@ function importIntentTestCorpus(file) {
 }
 
 function exportIntentTestCorpus() {
-  window.open(`${INTENT_TEST_URL}/export`);
+  const token = window.localStorage.getItem('token');
+  window.open(`${INTENT_TEST_URL}/export?token=Bearer%20${token}`);
 }
 
 function testIntentTestCorpus(intentModelId) {
