@@ -37,21 +37,7 @@ export default {
   watch: {
     selectedPage(val) {
       this.$emit('input', val);
-      const idx = Object.keys(this.options).findIndex(x => x === this.selectedPage);
-      if (this.$refs.tags === undefined) {
-        return;
-      }
-      const tag = this.$refs.tags[idx];
-      const left = this.$refs.tags.reduce((ret, t, currentIdx) => {
-        if (currentIdx < idx) {
-          return ret + 24 + t.getBoundingClientRect().width;
-        }
-        return ret;
-      }, 18);
-      if (tag !== undefined) {
-        this.$refs.activeBar.style.width = `${tag.getBoundingClientRect().width}px`;
-        this.$refs.activeBar.style.left = `${left}px`;
-      }
+      this.computeWidth();
     },
   },
   data() {
@@ -76,6 +62,24 @@ export default {
       that.emitTimer = setTimeout(() => {
         that.$emit('search', that.keyword);
       }, 200);
+    },
+    computeWidth() {
+      const that = this;
+      const idx = Object.keys(that.options).findIndex(x => x === that.selectedPage);
+      if (that.$refs.tags === undefined) {
+        return;
+      }
+      const tag = that.$refs.tags[idx];
+      const left = that.$refs.tags.reduce((ret, t, currentIdx) => {
+        if (currentIdx < idx) {
+          return ret + 24 + t.getBoundingClientRect().width;
+        }
+        return ret;
+      }, 18);
+      if (tag !== undefined) {
+        that.$refs.activeBar.style.width = `${tag.getBoundingClientRect().width}px`;
+        that.$refs.activeBar.style.left = `${left}px`;
+      }
     },
   },
   mounted() {
