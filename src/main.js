@@ -23,6 +23,8 @@ import LoadingDot from '@/components/basic/LoadingDot';
 import '@/components/EasyTable/themes-base/index.css';
 import VPagination from '@/components/EasyTable/v-pagination';
 
+import BFOPMixin from '@/store/BFOPMixin';
+
 import App from './App';
 import router from './router';
 import store from './store';
@@ -67,6 +69,8 @@ Vue.component('tag', Tag);
 Vue.component('loading-line', LoadingLine);
 Vue.component('loading-dot', LoadingDot);
 Vue.component('nav-bar', NavBar);
+
+Vue.mixin(BFOPMixin);
 
 let locale = localStorage.getItem('locale');
 if (!locale) {

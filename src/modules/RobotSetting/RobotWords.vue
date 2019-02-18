@@ -139,7 +139,7 @@ export default {
     },
     callAPI(calledAPI, ...params) {
       const that = this;
-      that.$emit('startLoading');
+      that.$startPageLoading();
       calledAPI.bind(this)(...params)
         .catch((err) => {
           that.$notifyFail(that.$t('error_msg.request_fail'));
@@ -161,7 +161,7 @@ export default {
     },
     loadRobotWords() {
       const that = this;
-      that.$emit('startLoading');
+      that.$startPageLoading();
       that.$api.getRobotChatListV2()
       .then((data) => {
         that.wordsList = data;

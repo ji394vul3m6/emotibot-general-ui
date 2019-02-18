@@ -1,5 +1,5 @@
 <template>
-  <router-view @startLoading="$emit('startLoading', $event)" @endLoading="$emit('endLoading', $event)"></router-view>
+  <router-view @startLoading="$startPageLoading($event)" @endLoading="endPageLoading($event)"></router-view>
 </template>
 
 <script>

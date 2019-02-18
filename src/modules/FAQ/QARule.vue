@@ -99,7 +99,7 @@ export default {
         bindValue: false,
         callback: {
           ok(retData) {
-            that.$emit('startLoading');
+            that.$startPageLoading();
             that.$api.addRule(retData)
             .then(() => that.loadRules(), (err) => {
               // TODO: handle add error
@@ -129,7 +129,7 @@ export default {
         bindValue: false,
         callback: {
           ok(retData) {
-            that.$emit('startLoading');
+            that.$startPageLoading();
             that.$api.updateRule(rule.id, retData)
             .then(() => that.loadRules(), (err) => {
               // TODO: handle add error
@@ -149,7 +149,7 @@ export default {
         },
         callback: {
           ok() {
-            that.$emit('startLoading');
+            that.$startPageLoading();
             that.$api.deleteRule(rule.id)
             .then(() => that.loadRules(), () => {
               // TODO: handle delete error
@@ -165,7 +165,7 @@ export default {
     loadRules() {
       const that = this;
       that.rules = [];
-      that.$emit('startLoading');
+      that.$startPageLoading();
       return that.$api.loadLabels().then((labels) => {
         that.labelMap = {};
         labels.forEach((label) => {

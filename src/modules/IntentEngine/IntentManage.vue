@@ -203,7 +203,7 @@ export default {
     deleteIntents() {
       const that = this;
       const deleteIDs = that.$refs.intents.getCheckedIntentIDs();
-      that.$emit('startLoading');
+      that.$startPageLoading();
       that.$api.deleteIntents(deleteIDs).then(() => {
         that.$notify({ text: that.$t('intent_engine.manage.notify.delete_intent_success') });
       })
@@ -212,7 +212,7 @@ export default {
         that.$notifyFail(that.$t('intent_engine.manage.notify.delete_intent_fail'));
       })
       .finally(() => {
-        that.$emit('endLoading');
+        that.$endPageLoading();
         that.refreshIntentPage();
       });
     },
@@ -253,7 +253,7 @@ export default {
         validate: true,
         callback: {
           ok(file) {
-            that.$emit('startLoading');
+            that.$startPageLoading();
             that.$api.importIntents(file)
             .then((res) => {
               that.currentVersion = res.version;
@@ -268,7 +268,7 @@ export default {
               that.$notifyFail(that.$t('intent_engine.import.fail'));
             })
             .finally(() => {
-              that.$emit('endLoading');
+              that.$endPageLoading();
             });
           },
         },
@@ -278,7 +278,7 @@ export default {
     startTraining() {
       const that = this;
       if (!that.canTrain) return;
-      that.$emit('startLoading', that.$t('intent_engine.is_training'));
+      that.$startPageLoading(that.$t('intent_engine.is_training'));
       that.$api.startTraining()
       .then(() => {
         that.trainStatus = 'TRAINING';
@@ -293,7 +293,7 @@ export default {
         const status = rsp.status;
         that.fetchStatusError = false;
         if (status === 'TRAINING') {
-          // that.$emit('startLoading', that.$t('intent_engine.is_training'));
+          // that.$startPageLoading(that.$t('intent_engine.is_training'));
           that.trainStatus = status;
         } else if (prevStatus === 'TRAINING') {
           that.refreshIntentPage(); // also hideloading
@@ -313,7 +313,7 @@ export default {
             if (that.trainBtnClicked) {
               that.$notifyFail(that.$t('intent_engine.training_fail'));
               that.trainBtnClicked = false;
-              that.$emit('endLoading');
+              that.$endPageLoading();
             }
           }
         } else if (prevStatus === undefined) {
@@ -341,7 +341,7 @@ export default {
         } else if (err.response.status !== 500) {
           that.$notifyFail(that.$t('intent_engine.training_fail'));
         }
-        that.$emit('endLoading');
+        that.$endPageLoading();
       });
     },
     startPollingTrainingStatus(version) {
@@ -352,7 +352,7 @@ export default {
     refreshIntentPage() {
       const that = this;
       if (!this.allowLoadPage) return;
-      this.$emit('startLoading');
+      this.$startPageLoading();
       // that.$api.getIntents()
       that.$api.getIntentsDetail(that.intentKeyword)
       .then((intents) => {
@@ -380,12 +380,12 @@ export default {
         }
       })
       .finally(() => {
-        this.$emit('endLoading');
+        this.$endPageLoading();
       });
     },
   },
   mounted() {
-    this.$emit('startLoading');
+    this.$startPageLoading();
     this.pollTrainingStatus();
   },
   beforeDestroy() {

@@ -153,7 +153,7 @@ export default {
     },
     loadCommands() {
       const that = this;
-      that.$emit('startLoading');
+      that.$startPageLoading();
       return that.$api.getRobotCommands()
         .then((data) => {
           that.setCategoryTree(data);

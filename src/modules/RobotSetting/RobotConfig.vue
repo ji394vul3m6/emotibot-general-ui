@@ -371,7 +371,7 @@ export default {
     loadAllConfigs() {
       const that = this;
 
-      that.$emit('startLoading');
+      that.$startPageLoading();
       that.$api.getConfigs().then((datas) => {
         datas.forEach((config) => {
           that.flatConfigMap[config.code] = config;

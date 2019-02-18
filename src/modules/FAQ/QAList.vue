@@ -146,28 +146,28 @@ export default {
     },
     showLoading() {
       this.loading = true;
-      this.$emit('startLoading');
+      this.$startPageLoading();
     },
     hideLoading() {
       this.loading = false;
-      this.$emit('endLoading');
+      this.$endPageLoading();
     },
     handleFileImported() {
       // reset search options
       this.resetSearchOptions();
 
       this.loading = false;
-      this.$emit('endLoading');
+      this.$endPageLoading();
       this.refreshQAList();
     },
     showFileUploading() {
       this.loading = true;
-      this.$emit('startLoading', this.$t('qalist.in_uploading'));
+      this.$startPageLoading(this.$t('qalist.in_uploading'));
     },
     showFileImporting() {
       // in FQA import status
       this.loading = true;
-      this.$emit('startLoading', this.$t('qalist.import_success'));
+      this.$startPageLoading(this.$t('qalist.import_success'));
     },
     showImportError(msg, id) {
       const that = this;
@@ -205,11 +205,11 @@ export default {
     },
     handleCategoryChanged() {
       this.loading = true;
-      this.$emit('startLoading');
+      this.$startPageLoading();
     },
     handleCategoryChangedDone() {
       this.loading = false;
-      this.$emit('endLoading');
+      this.$endPageLoading();
       this.refreshQAList();
     },
     deleteQuestions() {
@@ -273,7 +273,7 @@ export default {
     },
     handleError() {
       this.loading = false;
-      this.$emit('endLoading');
+      this.$endPageLoading();
       // const that = this;
       // general.handleAPIError(that, error).catch(() => {
       //   that.showLoadingFailPop();
@@ -298,7 +298,7 @@ export default {
       const that = this;
       if (!that.loading) {
         that.loading = true;
-        that.$emit('startLoading');
+        that.$startPageLoading();
         const options = JSON.parse(JSON.stringify(that.qaQueryOptions));
         options.dimension = JSON.stringify(that.qaQueryDimension);
 
@@ -324,14 +324,14 @@ export default {
     },
     refreshQAList() {
       this.loading = false;
-      this.$emit('endLoading');
+      this.$endPageLoading();
       this.queryQA().then(() => {
         this.loading = true;
-        this.$emit('startLoading');
+        this.$startPageLoading();
         return this.$refs.category.updateCategory();
       }).then(() => {
         this.loading = false;
-        this.$emit('endLoading');
+        this.$endPageLoading();
       }).catch(this.handleError.bind(this));
     },
   },

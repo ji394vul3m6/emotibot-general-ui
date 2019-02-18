@@ -103,7 +103,7 @@ export default {
     loadUser() {
       const that = this;
       let promise;
-      that.$emit('startLoading');
+      that.$startPageLoading();
 
       if (that.userInfo.type >= 1) {
         promise = that.$api.getEnterpriseUser(that.enterpriseID, that.userInfo.id);
@@ -147,7 +147,7 @@ export default {
             }
 
             let promise;
-            that.$emit('startLoading');
+            that.$startPageLoading();
 
             if (that.userInfo.type >= 1) {
               promise = that.$api.updateEnterpriseUser(
@@ -187,7 +187,7 @@ export default {
             };
 
             let promise;
-            that.$emit('startLoading');
+            that.$startPageLoading();
 
             if (that.userInfo.type >= 1) {
               promise = that.$api.updateEnterpriseUser(
@@ -196,7 +196,7 @@ export default {
               promise = that.$api.updateAdmin(that.userInfo.id, updatedUser);
             }
 
-            that.$emit('startLoading');
+            that.$startPageLoading();
             promise.then(() => {
               that.$notify({ text: that.$t('management.update_password_success') });
             })

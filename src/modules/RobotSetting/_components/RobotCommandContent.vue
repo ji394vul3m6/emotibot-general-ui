@@ -463,7 +463,7 @@ export default {
     },
     loadLabels() {
       const that = this;
-      that.$emit('startLoading');
+      that.$startPageLoading();
       that.$api.loadLabels(that.appid).then((labels) => {
         if (labels.error_code === 0) {
           that.labels = labels.data.tag;

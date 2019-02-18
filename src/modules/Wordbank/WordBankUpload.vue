@@ -133,7 +133,7 @@ export default {
     },
     uploadFile() {
       const that = this;
-      that.$emit('startLoading');
+      that.$startPageLoading();
       that.$api.uploadFile(this.file)
         .then((data) => {
           const res = data.data;
@@ -163,7 +163,7 @@ export default {
     loadAllAjaxStatus(background) {
       const that = this;
       if (!background) {
-        that.$emit('startLoading');
+        that.$startPageLoading();
       }
       that.$api.getLastResult().then((data) => {
         const res = data.data;

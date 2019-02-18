@@ -134,7 +134,7 @@ export default {
     },
     loadUsers() {
       const that = this;
-      that.$emit('startLoading');
+      that.$startPageLoading();
       that.$api.getAdmins()
       .then((users) => {
         that.users = users;

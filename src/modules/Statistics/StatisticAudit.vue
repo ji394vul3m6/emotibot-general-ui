@@ -155,7 +155,7 @@ export default {
       if (that.userNick) {
         params.filters.uid = that.userNick;
       }
-      that.$emit('startLoading');
+      that.$startPageLoading();
 
       that.$api.auditExportLog({
         module,
@@ -195,7 +195,7 @@ export default {
         params.filters.uid = that.userNick;
       }
 
-      that.$emit('startLoading');
+      that.$startPageLoading();
       that.$api.getAuditLog(params).then((data) => {
         const res = data.data;
         if (res.status === 0) {

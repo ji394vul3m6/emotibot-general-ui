@@ -661,7 +661,7 @@ export default {
         return;
       }
 
-      that.$emit('startLoading');
+      that.$startPageLoading();
       that.$api.auditExportLog({
         module,
         filename,
@@ -963,7 +963,7 @@ export default {
   mounted() {
     const that = this;
     that.isMount = true;
-    that.$emit('startLoading');
+    that.$startPageLoading();
     that.refreshCategory()
     .then(() => that.refreshLabels())
     .then(() => that.refreshPlatforms())

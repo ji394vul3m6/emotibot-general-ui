@@ -92,7 +92,7 @@ export default {
         validate: true,
         callback: {
           ok(retData) {
-            that.$emit('startLoading');
+            that.$startPageLoading();
             that.$api.updateTag(label.id, retData).then(() => {
               that.loadLabels();
             });
@@ -109,7 +109,7 @@ export default {
         },
         callback: {
           ok() {
-            that.$emit('startLoading');
+            that.$startPageLoading();
             that.$api.deleteLabel(label.id).then(() => {
               that.loadLabels();
             }, () => {
@@ -135,7 +135,7 @@ export default {
         bindValue: false,
         callback: {
           ok(name) {
-            that.$emit('startLoading');
+            that.$startPageLoading();
             that.$api.addTag(name).then(() => {
               that.loadLabels();
             }, (err) => {
@@ -151,7 +151,7 @@ export default {
     },
     loadLabels() {
       const that = this;
-      that.$emit('startLoading');
+      that.$startPageLoading();
       that.$api.loadLabels().then((labels) => {
         that.labels = labels;
       }, () => {
