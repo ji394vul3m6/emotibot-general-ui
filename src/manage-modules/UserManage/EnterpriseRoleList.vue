@@ -192,7 +192,7 @@ export default {
     },
     deleteRole(role) {
       const that = this;
-      that.$emit('startLoading');
+      that.$startPageLoading();
       return that.$api.deleteEnterpriseRole(that.enterpriseID, role.uuid)
       .then(() => that.loadRoles())
       .finally(() => {
@@ -263,7 +263,7 @@ export default {
           });
         });
 
-        that.$emit('startLoading');
+        that.$startPageLoading();
         let promise;
         const options = {
           name: that.editName,
@@ -294,7 +294,7 @@ export default {
     },
     loadRoles() {
       const that = this;
-      that.$emit('startLoading');
+      that.$startPageLoading();
       that.roles = [];
       return that.$api.getEnterpriseRoles(that.enterpriseID)
       .then((roles) => {

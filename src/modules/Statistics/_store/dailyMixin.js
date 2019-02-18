@@ -23,6 +23,7 @@ function popSelfLearnMark(datarows) {
       },
     },
     validate: true,
+    cancelValidate: true,
   };
   that.$pop(options);
 }

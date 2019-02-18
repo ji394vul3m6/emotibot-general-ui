@@ -55,7 +55,7 @@ export default {
       const active = skill.active;
       const that = this;
 
-      that.$emit('startLoading');
+      that.$startPageLoading();
       this.$api.setFunctionStatusV2(skill.code, active).then((data) => {
         const res = data.data;
         if (res.status === 0) {
@@ -80,7 +80,7 @@ export default {
         skill.checked = val;
       });
 
-      that.$emit('startLoading');
+      that.$startPageLoading();
       this.$api.setFunctionInfosV2(that.moduleList, val)
       .then((rsp) => {
         if (rsp.data.status !== 0) {
@@ -103,7 +103,7 @@ export default {
     initPage() {
       const that = this;
 
-      that.$emit('startLoading');
+      that.$startPageLoading();
       that.reloadSkill().then(() => {
         that.$emit('endLoading');
       });

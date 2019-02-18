@@ -1,6 +1,17 @@
 export default {
   robot_config: {
     robot_config: '系統功能配置',
+    config_content_error: '设定内容错误',
+    ssm: {
+      title: '问答',
+      'ssm_context_support-info': '在常用问答中使用上下文',
+      'uploadimg_server-pre': '答案中图片伺服器将使用 http://',
+      'uploadimg_server-suf': '',
+      'ssm_ml_threshold-pre': '当 ML 相似度信心分数为',
+      'ssm_ml_threshold-suf': '时视为相同问题',
+      'ssm_qq_threshold-pre': '当 QQ 相似度信心分数为',
+      'ssm_qq_threshold-suf': '时视为相同问题',
+    },
     chat: {
       title: '闲聊',
       'chat-editorial-pre': '信心分数高于',
@@ -23,12 +34,37 @@ export default {
       default: '我',
     },
     context: {
-      title: '上下文',
+      title: '技能上下文',
     },
     'human-intent': {
       title: '转人工',
     },
     rule: '规则设置',
+    faq: {
+      title: 'FAQ',
+      'faq-similar-question-range-pre': '匹配分数与阈值差距小于',
+      'faq-similar-question-range-suf': '时，将其视为相似问',
+      'faq-recommand-question-range-pre': '匹配分数与阈值差距小于',
+      'faq-recommand-question-range-suf': '时，将其视为推荐问',
+    },
+    'task-engine': {
+      title: '任务引擎',
+      'task-engine-total-timeout-pre': '当任务引擎超过',
+      'task-engine-total-timeout-suf': '毫秒无反应则视为超时',
+    },
+    knowledge: {
+      title: '知识图谱',
+      'knowledge-threshold-pre': '匹配分数超过',
+      'knowledge-threshold-suf': '时，使用知识图谱为答案',
+    },
+    command: {
+      title: '指令',
+    },
+    intent: {
+      title: '意图引擎',
+      'intent-threshold-pre': '当意图信心分数超过',
+      'intent-threshold-suf': '时，使用该意图',
+    },
   },
   integration: {
     integration: '接入部署',
@@ -133,10 +169,11 @@ export default {
     delete_category_msg: '确定要删除分类 {name} 及其子分类吗？',
   },
   statistics: {
+    add_new_std_question: '新增標準問題',
     sessions_time: '会话时间',
     session_id: '会话 ID',
     feedback_score: '满意度分数',
-    feedback_reeason: '满意度反馈',
+    feedback_reason: '满意度反馈',
 
     search_more: '显示上限为1万笔，显示更多资料？',
     search_more_hint: '以最后一笔访问时间为启始点重新搜寻',
@@ -1027,6 +1064,11 @@ export default {
     error: '',
   },
   general: {
+    range: '区间',
+    system_name_default: '对话管理后台',
+    name: '名称',
+    image: '图片',
+    icon: '图标',
     clear_all: '清除全部',
     reset_to_default: '还原预设',
     view: '查看',
@@ -1171,6 +1213,19 @@ export default {
   },
 
   management: {
+    enterprise_setting: '企业设置',
+    enterprise_icon_setting: '企业图标设置',
+    enterprise_lu_icon: '企业左上图标',
+    enterprise_lu_icon_info: '支援格式 svg, png，档案大小限制为 1mb，建议宽高比例 3:1',
+    browser_page_icon: '浏览器页签',
+    browser_page_icon_info: '支援格式 png ，档案大小限制为1mb，建议宽高比例1:1',
+
+    system_setting: '系统设置',
+    system_icon_setting: '系統图标设置',
+    system_lu_icon: '系統左上图标',
+    login_icon: '登入画面图标',
+    login_icon_info: '支援格式 svg,png ，档案大小限制为1mb，建议宽高比例为5:3',
+
     enterprise_list: '企业列表',
     admin_list: '系统管理人员',
     enterprise: '企业',

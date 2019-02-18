@@ -1,6 +1,6 @@
 <template>
   <div class="statistic-session">
-    <div class="card h-fill w-fill session-card">
+    <div class="card h-fill session-card session-list">
       <nav-bar :options="pageMap"/>
       <filter-field @search="doSearch(1)">
         <template slot="main-filter">
@@ -9,8 +9,8 @@
         <template slot="filters">
           <!-- <search-input v-model="filterSession" :name="$t('statistics.session_id')" /> -->
           <search-input v-model="filterUser" :name="$t('statistics.user_id')" />
-          <!-- <range-input :name="$t('statistics.feedback_score')" :min=0 :max=5 :step=1 @input="handleScoreRange"/> -->
-          <!-- <dropdown-select :name="$t('statistics.feedback_reeason')" width="200px"/> -->
+          <range-input :name="$t('statistics.feedback_score')" :min=1 :max=5 :step=1 @input="handleScoreRange"/>
+          <dropdown-select :name="$t('statistics.feedback_reason')" width="200px" ref="reasons" :options="reasons" v-model="currentReason"/>
           <dimension-select :name="$t('statistics.dimension')" ref="dimension"
             :options="tagInfo" @input="handleDimensionChange"/>
         </template>
@@ -41,6 +41,35 @@
       </div>
       </template>
     </div>
+    <transition name="zoom">
+    <div class="card h-fill session-content" v-if="viewSession !== undefined">
+      <div class="session-detail">
+        <div class="session-id row">
+          <div class="name">{{ $t('statistics.session_id') }}:</div>
+          <div class="id">{{ viewSession.session_id }}</div>
+          <div class="icon">
+            <icon icon-type='close' :size=12 button @click="viewSession = undefined"/>
+          </div>
+        </div>
+        <div class="session-feedback row">
+          <div class="name">{{ $t('statistics.feedback_reason') }}:</div>
+          <div>{{ viewSession.rating !== 0 ? viewSession.rating : '-' }} / {{ viewSession.feedback !== '' ? viewSession.feedback : '-' }}</div>
+        </div>
+        <div class="session-action row">
+          <div class="action-left action"></div>
+          <div class="action-right action">
+            <div class="name">{{ $t('qatest.sentence_analysis') }}</div>
+            <toggle v-model="showRecordAnalysis"/>
+          </div>
+        </div>
+      </div>
+      <div class="session-records">
+        <chat-list :records="sessionRecords" ref="chatList"
+          v-if="sessionRecords.length > 0"
+          :default-show-analysis="showRecordAnalysis"/>
+      </div>
+    </div>
+    </transition>
   </div>
 </template>
 
@@ -52,9 +81,11 @@ import DimensionSelect from '@/components/dropdown/DimensionSelector';
 import GeneralScrollTable from '@/components/GeneralScrollTable';
 import SearchInput from '@/components/basic/SearchInput';
 import RangeInput from '@/components/basic/RangeInput';
+import ChatList from '@/components/ChatList';
 import constant from '@/utils/js/constant';
 import auditAPI from '@/api/audit';
 import tagAPI from '@/api/tagType';
+import feedbackAPI from './_api/feedback';
 import api from './_api/session';
 
 const STATS_SESSION_EXPORT = '/api/v1/stats/sessions/export';
@@ -64,7 +95,7 @@ export default {
   privCode: 'statistic_daily',
   displayNameKey: 'statistic_session',
   name: 'statistic-session',
-  api: [api, auditAPI, tagAPI],
+  api: [api, auditAPI, tagAPI, feedbackAPI],
   components: {
     FilterField,
     RangePicker,
@@ -73,14 +104,15 @@ export default {
     RangeInput,
     GeneralScrollTable,
     DimensionSelect,
+    ChatList,
   },
   data() {
     return {
       pageMap: {
         sessions: this.$t('pages.statistics.statistic_session'),
       },
-      scoreMin: 1,
-      scoreMax: 5,
+      scoreMin: undefined,
+      scoreMax: undefined,
       scoreOption: [
         { text: 1, value: 1 },
         { text: 2, value: 2 },
@@ -122,7 +154,21 @@ export default {
 
       tagInfo: [],
       dimension: {},
+      reasons: [],
+      currentReason: [],
+
+      viewSession: undefined,
+      sessionRecords: [],
+      showRecordAnalysis: true,
     };
+  },
+  watch: {
+    showRecordAnalysis(value) {
+      const event = value ? 'show-analysis' : 'hide-analysis';
+      if (this.$refs.chatList) {
+        this.$refs.chatList.$emit(event);
+      }
+    },
   },
   methods: {
     setLimit(limit) {
@@ -146,17 +192,29 @@ export default {
       });
       return headers;
     },
+    fixDataFormat(datas) {
+      datas.forEach((data) => {
+        data.rating = data.rating === 0 ? '' : data.rating;
+      });
+      return datas;
+    },
     getSearchParam() {
       const that = this;
       const range = that.$refs.timeRange.getCurrentValue();
       const filter = {
         start_time: parseInt(range.start.getTime() / 1000, 10),
         end_time: parseInt(range.end.getTime() / 1000, 10),
-        // rating_max: that.scoreMax,
-        // rating_min: that.scoreMin,
         ...that.dimension,
       };
 
+      if (that.scoreMax !== undefined && that.scoreMin !== undefined) {
+        filter.rating_max = that.scoreMax;
+        filter.rating_min = that.scoreMin;
+      }
+
+      if (that.currentReason.length > 0 && that.currentReason[0] !== '') {
+        filter.feedback = that.currentReason[0];
+      }
 
       if (that.filterUser.trim() !== '') {
         filter.uid = that.filterUser;
@@ -165,12 +223,17 @@ export default {
     },
     doSearch(page) {
       const that = this;
+      that.viewSession = undefined;
       that.nowPage = page === undefined ? 1 : page;
       const filter = that.getSearchParam();
+      that.$startPageLoading();
       this.$api.getSessionList(that.nowPage, that.nowLimit, filter).then((rsp) => {
-        that.tableData = rsp.data;
+        that.tableData = that.fixDataFormat(rsp.data);
         that.tableHeader = that.fixHeaderFormat(rsp.table_header);
         that.recordNum = rsp.total_size;
+      })
+      .finally(() => {
+        that.$emit('endLoading');
       });
     },
     doExport() {
@@ -183,7 +246,7 @@ export default {
         return;
       }
 
-      that.$emit('startLoading');
+      that.$startPageLoading();
       that.$api.auditExportLog({
         module,
         filename,
@@ -229,23 +292,78 @@ export default {
       });
     },
     showSessionDetail(session) {
-      console.log(JSON.stringify(session));
+      const that = this;
+      that.viewSession = session;
+      if (session.records !== undefined) {
+        that.sessionRecords = session.records;
+        that.$refs.chatList.$emit('reload', that.sessionRecords);
+      } else {
+        that.$startPageLoading();
+        that.$api.getRecordOfSession(session.session_id).then((rsp) => {
+          rsp.data.sort(x => x.log_time);
+          rsp.data.reverse();
+          that.sessionRecords = rsp.data;
+          that.$refs.chatList.$emit('reload', that.sessionRecords);
+          if (that.viewSession !== undefined) {
+            that.viewSession.records = rsp.data;
+          }
+        })
+        .finally(() => {
+          that.$emit('endLoading');
+        });
+      }
     },
     handleScoreRange(value) {
-      this.scoreMin = value.start;
-      this.scoreMax = value.end;
+      if (value.start) {
+        this.scoreMin = value.start;
+      }
+      if (value.end) {
+        this.scoreMax = value.end;
+      }
     },
     handleDimensionChange(value) {
       this.dimension = value;
     },
+    setupFeedbackReason() {
+      const that = this;
+      that.$api.getFeedbackReasons().then((data) => {
+        that.reasons = data.result.map(reason => ({
+          value: reason.content,
+          text: reason.content,
+        }));
+        that.reasons.unshift({ value: '', text: this.$t('general.all') });
+        that.currentReason = [''];
+        that.$refs.reasons.$emit('set-option', that.reasons);
+      });
+    },
   },
   mounted() {
     this.setupDimension();
+    this.setupFeedbackReason();
   },
 };
 </script>
 
 <style lang="scss" scoped>
+.zoom-enter-active, .zoom-leave-active {
+  transition: max-width .5s;
+  max-width: 320px;
+}
+.zoom-enter, .zoom-leave-to {
+  transition: max-width .5s;
+  max-width: 0px;
+}
+
+.statistic-session {
+  display: flex;
+  .session-list {
+    flex: 1;
+  }
+  .session-content {
+    flex: 0 0 320px;
+    margin-left: 10px;
+  }
+}
 .session-card {
   display: flex;
   flex-direction: column;
@@ -269,6 +387,55 @@ export default {
     display: flex;
     align-items: center;
     justify-content: flex-end;
+  }
+}
+.session-content {
+  display: flex;
+  flex-direction: column;
+
+  .session-detail {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 10px;
+    .name {
+      margin-right: 10px;
+    }
+
+    .session-id {
+      .id {
+        flex: 1;
+        @include textEllipsis();
+      }
+      .icon {
+        flex: 0 0 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+
+    .row {
+      flex: 0 0 28px;
+      display: flex;
+      align-items: center;
+    }
+    .session-action {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      .action {
+        display: flex;
+        align-items: center;
+      }
+    }
+  }
+  .session-records {
+    flex: 1;
+    background: #f3f3f3;
+    overflow-y: auto;
+    @include customScrollbar();
   }
 }
 </style>

@@ -356,7 +356,7 @@ export default {
     },
     loadQAs() {
       const that = this;
-      that.$emit('startLoading');
+      that.$startPageLoading();
 
       that.$api.getRobotQAs()
       .then((data) => {

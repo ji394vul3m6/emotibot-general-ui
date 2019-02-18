@@ -169,6 +169,7 @@ export default {
 
       this.selfOptions.forEach((category) => {
         category.checked = setValue;
+        category.indeterminate = false;
         category.values.forEach((value) => {
           value.checked = setValue;
         });

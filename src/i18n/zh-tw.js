@@ -1,6 +1,17 @@
 export default {
   robot_config: {
     robot_config: '系統功能配置',
+    config_content_error: '設定內容錯誤',
+    ssm: {
+      title: '問答',
+      'ssm_context_support-info': '在常用問答中使用上下文',
+      'uploadimg_server-pre': '答案中圖片伺服器將使用',
+      'uploadimg_server-suf': '',
+      'ssm_ml_threshold-pre': '當 ML 相似度信心分數為',
+      'ssm_ml_threshold-suf': '時視為相同問題',
+      'ssm_qq_threshold-pre': '當 QQ 相似度信心分數為',
+      'ssm_qq_threshold-suf': '時視為相同問題',
+    },
     chat: {
       title: '閒聊',
       'chat-editorial-pre': '信心分數高於',
@@ -23,12 +34,37 @@ export default {
       default: '我',
     },
     context: {
-      title: '上下文',
+      title: '技能上下文',
     },
     'human-intent': {
       title: '轉人工',
     },
     rule: '規則設置',
+    faq: {
+      title: 'FAQ',
+      'faq-similar-question-range-pre': '匹配分數與閾值差距小於',
+      'faq-similar-question-range-suf': '時，將其視為相似問',
+      'faq-recommand-question-range-pre': '匹配分數與閾值差距小於',
+      'faq-recommand-question-range-suf': '時，將其視為推薦問',
+    },
+    'task-engine': {
+      title: '任務引擎',
+      'task-engine-total-timeout-pre': '當任務引擎超過',
+      'task-engine-total-timeout-suf': '毫秒無反應則視為超時',
+    },
+    knowledge: {
+      title: '知識圖譜',
+      'knowledge-threshold-pre': '匹配分數超過',
+      'knowledge-threshold-suf': '時，使用知識圖譜為答案',
+    },
+    command: {
+      title: '指令',
+    },
+    intent: {
+      title: '意圖引擎',
+      'intent-threshold-pre': '當意圖信心分數超過',
+      'intent-threshold-suf': '時，使用該意圖',
+    },
   },
   integration: {
     integration: '接入部署',
@@ -133,10 +169,11 @@ export default {
     delete_category_msg: '確定要刪除分類 {name} 及其子分類嗎？',
   },
   statistics: {
+    add_new_std_question: '新增标准问题',
     sessions_time: '會話時間',
     session_id: '會話 ID',
     feedback_score: '滿意度分數',
-    feedback_reeason: '滿意度反饋',
+    feedback_reason: '滿意度反饋',
 
     search_more: '顯示上限爲1萬筆，顯示更多資料？',
     search_more_hint: '以最後一筆訪問時間爲啓始點重新搜尋',
@@ -1027,6 +1064,11 @@ export default {
     error: '',
   },
   general: {
+    range: '區間',
+    system_name_default: '對話管理後台',
+    name: '名稱',
+    image: '圖片',
+    icon: '圖標',
     clear_all: '清除全部',
     reset_to_default: '還原預設',
     view: '查看',
@@ -1171,6 +1213,19 @@ export default {
   },
 
   management: {
+    enterprise_setting: '企業設置',
+    enterprise_icon_setting: '企業圖標設置',
+    enterprise_lu_icon: '企業左上圖標',
+    enterprise_lu_icon_info: '支援格式 svg, png，檔案大小限制為 1mb，建議寬高比例 3:1',
+    browser_page_icon: '瀏覽器頁籤',
+    browser_page_icon_info: '支援格式 png ，檔案大小限制為1mb，建議寬高比例1:1',
+
+    system_setting: '系統設置',
+    system_icon_setting: '企業圖標設置',
+    system_lu_icon: '系統左上圖標',
+    login_icon: '登入畫面圖標',
+    login_icon_info: '支援格式 svg,png ，檔案大小限制為1mb，建議寬高比例為5:3',
+
     enterprise_list: '企業列表',
     admin_list: '系統管理人員',
     enterprise: '企業',

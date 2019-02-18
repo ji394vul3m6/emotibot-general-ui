@@ -5,6 +5,10 @@ function paddingNumToTwo(num) {
 function datetimeToString(date) {
   const time = new Date(date);
 
+  if (isNaN(time.getTime())) {
+    return '';
+  }
+
   const month = paddingNumToTwo(time.getMonth() + 1);
   const day = paddingNumToTwo(time.getDate());
   const hour = paddingNumToTwo(time.getHours());

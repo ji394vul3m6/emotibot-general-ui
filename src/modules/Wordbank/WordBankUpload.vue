@@ -121,9 +121,6 @@ export default {
       } else if (theFile.size <= 0 || theFile.size > fileSizeLimit) {
         this.fileValid = false;
         this.updateFilename(this.$t('wordbank.upload_file_size_error'));
-      } else if (this.fileTypeInvalid(theFile)) {
-        this.fileValid = false;
-        this.updateFilename(this.$t('wordbank.upload_file_type_invalid'));
       } else {
         this.fileValid = true;
         this.file = theFile;
@@ -134,13 +131,9 @@ export default {
         this.uploadFile();
       }
     },
-    fileTypeInvalid(file) {
-      const validType = ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
-      return validType.indexOf(file.type) === -1;
-    },
     uploadFile() {
       const that = this;
-      that.$emit('startLoading');
+      that.$startPageLoading();
       that.$api.uploadFile(this.file)
         .then((data) => {
           const res = data.data;
@@ -170,7 +163,7 @@ export default {
     loadAllAjaxStatus(background) {
       const that = this;
       if (!background) {
-        that.$emit('startLoading');
+        that.$startPageLoading();
       }
       that.$api.getLastResult().then((data) => {
         const res = data.data;

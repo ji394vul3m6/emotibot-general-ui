@@ -242,7 +242,7 @@ export default {
         validate: true,
         callback: {
           ok(file) {
-            that.$emit('startLoading');
+            that.$startPageLoading();
             // TODO: call api to import intent test
             that.$api.importIntents(file)
             .then((res) => {
@@ -285,7 +285,7 @@ export default {
       .then(() => {
         that.trainStatus = 'TRAINING';
         that.trainBtnClicked = true;
-        that.$emit('startLoading', that.$t('intent_engine.is_training'));
+        that.$startPageLoading(that.$t('intent_engine.is_training'));
       });
     },
     pollTrainingStatus(version) {
@@ -295,7 +295,7 @@ export default {
       .then((rsp) => {
         const status = rsp.status;
         if (status === 'TRAINING') {
-          // that.$emit('startLoading', that.$t('intent_engine.is_training'));
+          // that.$startPageLoading(that.$t('intent_engine.is_training'));
           that.trainStatus = status;
         } else if (prevStatus === 'TRAINING') {
           that.refreshTestingPage(); // also hideloading

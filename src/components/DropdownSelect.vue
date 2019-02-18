@@ -166,7 +166,7 @@ export default {
     styleObj() {
       return {
         width: this.width,
-        flex: `0 0 ${this.width}`,
+        flex: `1 1 ${this.width}`,
       };
     },
     filteredLocalOptions() {

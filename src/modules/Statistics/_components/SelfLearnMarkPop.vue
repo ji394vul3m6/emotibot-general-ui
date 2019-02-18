@@ -1,68 +1,82 @@
 <template>
-  <div id="pop-qa-mark">
-    <div id="mark-header">
-      <div class="toolbar-row">
-        <div class="toolbar-left">
-          <div class="row-title">
-            {{ $t('statistics.user_question') }}：
-          </div>
-          <div class="row-content">
-            {{ qa[0].user_q }}
-            <span v-if="qa.length > 1">, ...</span>
-          </div>
-        </div>
+  <div>
+    <div v-if="inAddQuestionState" id="pop-qa-add">
+      <div class="row">
+        <div class="row-title">{{ $t('statistics.add_new_std_question') }}</div>
+        <input class="row-input" v-model="newQuestion">
       </div>
-      <div class="toolbar-row">
-        <div class="toolbar-left">
-          <div class="row-title">
-            {{ $t('statistics.mark.as') }}：
-          </div>
-          <div class="row-content">
-            <template v-if="hasMultiOriginMarks">
-              <div class="marked-q">
-                {{ $t('statistics.mark.multi') }}
-                <icon icon-type="close" :size="8" id="delete-tag" @click="toggleHasMultiOriginMarks" button></icon>
-              </div>
-            </template>
-            <template v-else-if="markedQuestion !== ''">
-              <div class="marked-q" ref="markedQ" v-tooltip="markedQuestionTooltip"
-                >
-                <div class="marked-tag" @mouseover="showFullMarkedQuestion" @mouseout="hideFullMarkedQuestion">
-                  {{ markedQuestion }}
-                </div>
-                <icon icon-type="close" :size="8" id="delete-tag" @click="cancelMarkedQuestion" button></icon>
-              </div>
-            </template>
-            <template v-else>
-              {{ $t('general.empty') }}
-            </template>
-            <div class="toolbar-middle"><!--fill empty space--></div>
-          </div>
-        </div>
-        <div class="toolbar-right">
-          <search-input v-model="keyword"></search-input>
-        </div>
+      <div class="row">
+        <div class="row-title">{{ $t('general.answer') }}</div>
+        <input class="row-input" v-model="newAnswer">
       </div>
     </div>
-    <general-table
-      id="mark-content"
-      :tableHeader="tableHeader"
-      :tableData="tableData"
-      :showEmptyMsg="emptyMsg"
-      :onclickRow="setChosenQuestion"
-      showEmpty
-    >
-    </general-table>
+    <div v-else id="pop-qa-mark">
+      <div id="mark-header">
+        <div class="toolbar-row">
+          <div class="toolbar-left">
+            <div class="row-title">
+              {{ $t('statistics.user_question') }}：
+            </div>
+            <div class="row-content">
+              {{ qa[0].user_q }}
+              <span v-if="qa.length > 1">, ...</span>
+            </div>
+          </div>
+        </div>
+        <div class="toolbar-row">
+          <div class="toolbar-left">
+            <div class="row-title">
+              {{ $t('statistics.mark.as') }}：
+            </div>
+            <div class="row-content">
+              <template v-if="hasMultiOriginMarks">
+                <div class="marked-q">
+                  {{ $t('statistics.mark.multi') }}
+                  <icon icon-type="close" :size="8" id="delete-tag" @click="toggleHasMultiOriginMarks" button></icon>
+                </div>
+              </template>
+              <template v-else-if="markedQuestion !== ''">
+                <div class="marked-q" ref="markedQ" v-tooltip="markedQuestionTooltip"
+                  >
+                  <div class="marked-tag" @mouseover="showFullMarkedQuestion" @mouseout="hideFullMarkedQuestion">
+                    {{ markedQuestion }}
+                  </div>
+                  <icon icon-type="close" :size="8" id="delete-tag" @click="cancelMarkedQuestion" button></icon>
+                </div>
+              </template>
+              <template v-else>
+                {{ $t('general.empty') }}
+              </template>
+              <div class="toolbar-middle"><!--fill empty space--></div>
+            </div>
+          </div>
+          <div class="toolbar-right">
+            <search-input v-model="keyword"></search-input>
+          </div>
+        </div>
+      </div>
+      <general-table
+        id="mark-content"
+        :tableHeader="tableHeader"
+        :tableData="tableDataWithNewQuestion"
+        :showEmptyMsg="emptyMsg"
+        :onclickRow="setChosenQuestion"
+        showEmpty
+      >
+      </general-table>
+    </div>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import misc from '@/utils/js/misc';
 import event from '@/utils/js/event';
 import api from '../_api/selflearn';
+import ssmAPI from '../_api/ssm';
 
 export default {
-  api,
+  api: [api, ssmAPI],
   props: {
     value: {
       type: Object,
@@ -109,9 +123,40 @@ export default {
         eventOnly: true,
         alignLeft: true,
       },
+
+      inAddQuestionState: false,
+      newQuestion: '',
+      newAnswer: '',
     };
   },
+  computed: {
+    ...mapGetters([
+      'robotID',
+      'userID',
+    ]),
+    tableDataWithNewQuestion() {
+      const that = this;
+      const ret = [{
+        onelineCommand: true,
+        align: 'question',
+        text: this.$t('statistics.add_new_std_question'),
+        action: () => {
+          that.inAddQuestionState = true;
+        },
+      }];
+      ret.push(...this.tableData);
+      return ret;
+    },
+    canAddNewQuestion() {
+      return this.newQuestion !== '' && this.newAnswer !== '';
+    },
+  },
   watch: {
+    canAddNewQuestion(val) {
+      if (val) {
+        this.$emit('enableOK');
+      }
+    },
     keyword() {
       const that = this;
       if (that.keywordTimer !== undefined) {
@@ -202,14 +247,42 @@ export default {
         });
       }
     },
+    resetAddingQuestion() {
+      this.inAddQuestionState = false;
+      this.newQuestion = '';
+      this.newAnswer = '';
+    },
     validate() {
       const that = this;
+
+      if (that.inAddQuestionState) {
+        that.$api.addStdQuestion(that.robotID, that.newQuestion, that.newAnswer)
+        .then(() => {
+          that.tableData.unshift({
+            question: that.newQuestion,
+          });
+          that.updateMarkedIcon(that.newQuestion);
+          that.updateTableEmptyMsg(that.noSearchResultMsg);
+          that.resetAddingQuestion();
+        });
+        return;
+      }
+
       if (that.hasMultiOriginMarks) {
         that.$notifyFail(that.$t('statistics.error.multi_origin_mark_fail'));
         return;
       }
       that.value.markedQuestion = that.markedQuestion;
       that.$emit('validateSuccess', that.value);
+    },
+    validateCancel() {
+      const that = this;
+      if (that.inAddQuestionState) {
+        that.resetAddingQuestion();
+        return;
+      }
+
+      that.$emit('cancelValidateSuccess');
     },
     getOriginMark() {
       const that = this;
@@ -269,6 +342,7 @@ export default {
     });
 
     that.$on('validate', that.validate);
+    that.$on('cancelValidate', that.validateCancel);
     that.$emit('disableOK');
   },
 };
@@ -280,6 +354,32 @@ export default {
   height: 378px;
   display: flex;
   flex-direction: column;
+}
+#pop-qa-add {
+  width: 450px;
+  height: 80px;
+  display: flex;
+  flex-direction: column;
+
+  .row {
+    margin-right: 20px;
+    margin-left: 20px;
+    display: flex;
+    align-items: center;
+
+    &:not(:first-child) {
+      margin-top: 10px;
+    }
+
+    .row-title {
+      flex: 0 0 80px;
+      margin-right: 10px;
+    }
+    .row-input {
+      display: block;
+      flex: 1;
+    }
+  }
 }
 
 #mark-header {

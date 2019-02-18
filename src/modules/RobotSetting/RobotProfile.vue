@@ -89,7 +89,7 @@ export default {
     },
     rebuild() {
       const that = this;
-      that.$emit('startLoading');
+      that.$startPageLoading();
       this.rebuildRobotQAModel().then((data) => {
         that.operationSuccess(data);
       });
@@ -162,7 +162,7 @@ export default {
     initPage() {
       const that = this;
       // this.showLoading = true;
-      that.$emit('startLoading');
+      that.$startPageLoading();
       this.$api.getRobotQAListV2(this.curPage, 0).then((data) => {
         this.tableData = that.convertAPIData(data.qa_infos);
         this.dataCnt = data.count;

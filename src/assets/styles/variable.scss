@@ -372,3 +372,10 @@ $success-color: #5cd29d;
 @mixin popWindowFloatMenu() {
   z-index: 1100;
 }
+
+@mixin textEllipsis() {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-wrap: break-all;
+  overflow: hidden;
+}

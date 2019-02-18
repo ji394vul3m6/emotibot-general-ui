@@ -89,8 +89,8 @@ export default {
       pageMap: {
         visitTime: `${this.$t('statistics.visit_record')}(${this.$t('statistics.time')})`,
         visitDimension: `${this.$t('statistics.visit_record')}(${this.$t('statistics.dimension')})`,
-        topHot: `${this.$t('statistics.hot_question')} Top 20`,
-        topUnused: `${this.$t('statistics.failed_question')} Top 20`,
+        topHot: `${this.$t('statistics.hot_question')} Top 100`,
+        topUnused: `${this.$t('statistics.failed_question')} Top 100`,
         // topUnresolved: `${this.$t('statistics.unresolve_question')} Top 20`,
       },
       pageSetting: {
@@ -276,6 +276,7 @@ export default {
           param: {
             days: 1,
             type: 'top',
+            top: 100,
           },
           tableHeader: [
             {
@@ -296,6 +297,7 @@ export default {
           param: {
             days: 1,
             type: 'unused',
+            top: 100,
           },
           tableHeader: [
             {
@@ -368,7 +370,7 @@ export default {
       that.tableData = [];
       that.currentChartType = setting.chartType;
 
-      that.$emit('startLoading');
+      that.$startPageLoading();
       that.$api.getTagTypes().then((data) => {
         that.tagTypes = data.map(d => ({
           val: d.type,

@@ -1,11 +1,15 @@
 <template>
   <div class="range-input">
     <div class="range-name" v-if="name !== undefined">{{ name }}</div>
-    <dropdown-select :width="width" :options="startDropOption"
-      v-model="start" @input="handleValueChange" ref="start" :showCheckedIcon=false />
-    <div class="range-text">～</div>
-    <dropdown-select :width="width" :options="endDropOption"
-      v-model="end" @input="handleValueChange" ref="end" :showCheckedIcon=false />
+    <dropdown-select class="range-type" width="80px" :options="typeOption"
+      v-model="rangeType" @input="handleTypeChange" ref="type" />
+    <div class="range-selector" :class="{hide: !showRange}">
+      <dropdown-select :width="width" :options="startDropOption"
+        v-model="start" @input="handleValueChange" ref="start" :showCheckedIcon=false />
+      <div class="range-text">～</div>
+      <dropdown-select :width="width" :options="endDropOption"
+        v-model="end" @input="handleValueChange" ref="end" :showCheckedIcon=false />
+    </div>
   </div>  
 </template>
 
@@ -54,15 +58,35 @@ export default {
       origOption: [],
       startDropOption: [],
       endDropOption: [],
+      typeOption: [
+        { value: '', text: this.$t('general.all') },
+        { value: 'range', text: this.$t('general.range') },
+      ],
+      rangeType: [''],
+      showRange: false,
     };
   },
   methods: {
+    handleTypeChange() {
+      const that = this;
+      if (that.rangeType.length <= 0 || that.rangeType[0] === '') {
+        that.showRange = false;
+      } else {
+        that.showRange = true;
+      }
+      that.emitUpdate();
+    },
     handleValueChange() {
       this.updateEndOption();
-      this.$emit('input', {
-        start: this.start[0],
-        end: this.end[0],
-      });
+      this.emitUpdate();
+    },
+    emitUpdate() {
+      const param = {};
+      if (this.showRange) {
+        param.start = this.start[0];
+        param.end = this.end[0];
+      }
+      this.$emit('input', param);
     },
     updateEndOption() {
       const that = this;
@@ -136,6 +160,16 @@ export default {
   align-items: center;
   .range-name {
     margin-right: 10px;
+  }
+  .range-type {
+    margin-right: 10px;
+  }
+  .range-selector {
+    display: flex;
+    align-items: center;
+    &.hide {
+      display: none;
+    }
   }
   .range-text {
     margin: 0 5px;

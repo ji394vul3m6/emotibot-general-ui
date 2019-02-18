@@ -164,7 +164,7 @@ export default {
       const skillInfos = {};
       const buttonEnable = {};
       const infoPos = {};
-      that.$emit('startLoading');
+      that.$startPageLoading();
       that.$api.getRobotChatDescription().then((data) => {
         data.forEach((info) => {
           skillInfos[info.type] = info;

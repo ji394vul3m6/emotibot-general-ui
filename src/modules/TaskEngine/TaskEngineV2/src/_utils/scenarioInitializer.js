@@ -5,7 +5,7 @@ const ActionType = optionConfig.ActionType;
 export default {
   s4_sort() { return Math.floor((1 + Math.random()) * 0x10000).toString(10).substring(1); },
   guid_sort() { return this.s4_sort() + this.s4_sort() + this.s4_sort(); },
-  initialScenario(metadata) {
+  initialScenario(metadata, entryNodeName) {
     const entryNodeId = this.guid_sort();
     const scenario = {
       editingContent: {
@@ -22,7 +22,7 @@ export default {
                 rules: [],
               },
               nodeType: 'entry',
-              nodeName: '入口节点',
+              nodeName: entryNodeName,
               warnings: [
                 {
                   type: 'missing_entry_trigger',
@@ -38,7 +38,7 @@ export default {
               },
               settingBasicTab: {
                 nodeType: 'entry',
-                nodeName: '入口节点',
+                nodeName: entryNodeName,
               },
             },
           ],
@@ -51,7 +51,7 @@ export default {
           },
           {
             node_id: entryNodeId,
-            description: '入口节点',
+            description: entryNodeName,
             node_type: 'entry',
             entry_condition_rules: [],
             warnings: [],

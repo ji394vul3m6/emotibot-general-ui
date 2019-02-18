@@ -210,7 +210,7 @@ export default {
         },
         callback: {
           ok() {
-            that.$emit('startLoading');
+            that.$startPageLoading();
             const params = {
               appid: that.robotID,
               tagid: item.id,
@@ -235,7 +235,7 @@ export default {
     },
     loadLabels() {
       const that = this;
-      that.$emit('startLoading');
+      that.$startPageLoading();
       that.$api.loadLabels(that.robotID)
       .then((rsp) => {
         if (rsp.error_code === 0) {
