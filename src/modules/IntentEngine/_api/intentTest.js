@@ -16,8 +16,15 @@ function getTestRecord(intentTestId) {
   return this.$reqGet(`${INTENT_TEST_URL}/${intentTestId}`).then(rsp => rsp.data.result);
 }
 
-function saveTestRecord(intentTestId) {
-  return this.$reqPost(`${INTENT_TEST_URL}/${intentTestId}/save`).then(rsp => rsp.data.result);
+function saveTestRecord(intentTestId, recordName) {
+  const body = {
+    name: recordName,
+  };
+  return this.$reqPost(
+    `${INTENT_TEST_URL}/${intentTestId}/save`,
+    qs.stringify(body),
+    { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
+  ).then(rsp => rsp.data.result);
 }
 
 function unsaveTestRecord(intentTestId) {

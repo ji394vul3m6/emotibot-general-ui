@@ -953,6 +953,12 @@ export default {
       store_record: '保存記錄',
       unstore_record: '取消保存',
       intent_statistics: '{cnum}筆語料',
+      save_record_pop: {
+        save_record: '保存測試記錄',
+        enter_record_name: '輸入保存測試記錄名稱',
+      },
+      unsave_warning: '取消保存，將會從保存測試記錄中移除，並且回到測試記錄頁面，確定要移除嗎？',
+      restore_warning: '會刪除當前的意圖模型與測試集，不能復原，確定繼續動作嗎？',
     },
     test_record: {
       test_data: '測試集',

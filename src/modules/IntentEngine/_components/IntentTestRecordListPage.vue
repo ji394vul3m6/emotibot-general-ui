@@ -53,6 +53,7 @@ import TestRecordListTableAction from './_tableColumn/TestRecordListTableAction'
 import TestRecordListTableDownloadLink from './_tableColumn/TestRecordListTableDownloadLink';
 import eventBus from '../_utils/eventBus';
 import general from '../_utils/general';
+import SaveRecordPop from './SaveRecordPop';
 
 export default {
   name: 'intent-test-record-list-page',
@@ -270,22 +271,56 @@ export default {
       this.toPage(`test/record/${record.intent_test.id}`);
     },
     saveRecord(record) {
-      this.$api.saveTestRecord(record.intent_test.id).then(() => {
-        this.getTestRecords();
-      });
+      const that = this;
+      const popOption = {
+        title: that.$t('intent_engine.test_records.save_record_pop.save_record'),
+        component: SaveRecordPop,
+        validate: true,
+        disable_ok: true,
+        callback: {
+          ok(recordName) {
+            that.$api.saveTestRecord(record.intent_test.id, recordName).then(() => {
+              that.getTestRecords();
+            });
+          },
+        },
+      };
+      this.$pop(popOption);
     },
     unsaveRecord(record) {
-      this.$api.unsaveTestRecord(record.intent_test.id).then(() => {
-        this.getTestRecords();
-      });
+      const that = this;
+      const option = {
+        data: {
+          msg: that.$t('intent_engine.test_records.unsave_warning'),
+        },
+        callback: {
+          ok: () => {
+            that.$api.unsaveTestRecord(record.intent_test.id).then(() => {
+              that.getTestRecords();
+            });
+          },
+        },
+      };
+      that.$popWarn(option);
     },
     restoreRecord(record) {
-      this.eventBus.$emit('startLoading', this.$t('intent_engine.is_restoring'));
-      this.$api.restoreTestRecord(record.intent_test.id).then(() => {
-        this.toPage('test');
-      }).finally(() => {
-        this.eventBus.$emit('endLoading');
-      });
+      const that = this;
+      const option = {
+        data: {
+          msg: that.$t('intent_engine.test_records.restore_warning'),
+        },
+        callback: {
+          ok: () => {
+            that.eventBus.$emit('startLoading', that.$t('intent_engine.is_restoring'));
+            that.$api.restoreTestRecord(record.intent_test.id).then(() => {
+              that.toPage('test');
+            }).finally(() => {
+              that.eventBus.$emit('endLoading');
+            });
+          },
+        },
+      };
+      that.$popWarn(option);
     },
     exportRecord(record) {
       this.$api.exportTestRecord(record.intent_test.id);
@@ -345,9 +380,6 @@ export default {
       flex: 0 0 auto;
       display: flex;
       flex-direction: column;
-      &:last-child{
-        flex: 1 1 auto;
-      }
       .block-title{
         flex: 0 0 auto;
         padding: 20px;
@@ -355,7 +387,7 @@ export default {
         @include font-16px-line-height-28px();
       }
       .table{
-        // flex: 0 0 auto;
+        flex: 0 0 auto;
       }
     }
   }
