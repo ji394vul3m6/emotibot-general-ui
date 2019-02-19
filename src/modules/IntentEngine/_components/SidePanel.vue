@@ -7,7 +7,10 @@
     <div class="info margin-bottom">
       {{$t('intent_engine.side_panel.intent_train_info')}}
     </div>
-    <text-button class="button margin-bottom" :height="'40px'" @click="startTraining()">
+    <text-button class="button margin-bottom"
+      :button-type="canTrain ? 'default' : 'disable'"
+      :height="'40px'"
+      @click="startTraining()">
       {{$t('intent_engine.side_panel.do_train')}}
     </text-button>
     <div class="train-records" v-if="recentModels.length > 0" style="margin-bottom: 20px;">
@@ -43,7 +46,10 @@
     <div class="info margin-bottom" >
       {{$t('intent_engine.side_panel.do_intent_test_info')}}
     </div>
-    <text-button class="button margin-bottom" :height="'40px'" @click="startTesting()">
+    <text-button class="button margin-bottom"
+      :button-type="canTest ? 'default' : 'disable'"
+      :height="'40px'"
+      @click="startTesting()">
       {{$t('intent_engine.side_panel.do_test')}}
     </text-button>
     <div class="link" @click="toPage('test/records')">
@@ -64,6 +70,15 @@ import eventBus from '../_utils/eventBus';
 import general from '../_utils/general';
 import DoIntentTestPop from './DoIntentTestPop';
 
+
+const TRAIN_STATUS = {
+  NOT_TRAINED: 'NOT_TRAINED',
+  TRAINING: 'TRAINING',
+  TRAINED: 'TRAINED',
+  NEED_TRAIN: 'NEED_TRAIN',
+  TRAIN_FAILED: 'TRAIN_FAILED',
+};
+
 const TEST_STATUS = {
   TESTING: 0,
   TESTED: 1,
@@ -83,10 +98,17 @@ export default {
       required: false,
       default: () => 'trainPage',
     },
+    hasIntents: {
+      type: Boolean,
+      required: false,
+      default: () => false,
+    },
   },
   data() {
     return {
       models: [],
+      trainStatus: undefined,
+      trainStatusIntervalId: undefined,
       testStatus: undefined,  // type: TEST_STATUS
       testStatusIntervalId: undefined,
       eventBus: eventBus.eventBus,
@@ -95,8 +117,17 @@ export default {
   },
   watch: {},
   computed: {
+    canTrain() {
+      return this.hasIntents && this.shouldTrain;
+    },
+    shouldTrain() {
+      return this.trainStatus === TRAIN_STATUS.NOT_TRAINED ||
+             this.trainStatus === TRAIN_STATUS.NEED_TRAIN ||
+             this.trainStatus === TRAIN_STATUS.TRAIN_FAILED;
+    },
     canTest() {
-      return true;
+      return this.testStatus === TEST_STATUS.NEED_TEST ||
+             this.testStatus === TRAIN_STATUS.TEST_FAILED;
     },
     recentModels() {
       if (this.models.recent_trained) {
@@ -144,7 +175,12 @@ export default {
       });
     },
     startTraining() {
-      this.$emit('startTraining');
+      if (!this.canTrain) return;
+      const that = this;
+      that.eventBus.$emit('startLoading', that.$t('intent_engine.is_training'));
+      intentApi.startTraining.call(this).then(() => {
+        that.trainStatus = TRAIN_STATUS.TRAINING;
+      });
     },
     startTesting() {
       if (!this.canTest) return;
@@ -162,17 +198,70 @@ export default {
             that.eventBus.$emit('startLoading', that.$t('intent_engine.is_testing'));
             intentTestApi.testIntentTestCorpus.call(that, modelId).then(() => {
               that.testStatus = TEST_STATUS.TESTING;
-            //   that.trainBtnClicked = true;
             });
           },
         },
       };
       this.$pop(popOption);
     },
+    startPollingTrainStatus() {
+      this.trainStatusIntervalId = setInterval(() => {
+        this.pollTrainStatus();
+      }, 5000);
+    },
+    stopPollingTrainStatus() {
+      clearInterval(this.trainStatusIntervalId);
+      this.trainStatusIntervalId = undefined;
+    },
+    pollTrainStatus() {
+      const that = this;
+      intentApi.getTrainingStatus.call(this).then((data) => {
+        that.trainStatusChanged(data.status);
+        if (!that.trainStatusIntervalId) {
+          that.startPollingTrainStatus();
+        }
+      }).catch((err) => {
+        console.error(err);
+        this.eventBus.$emit('endLoading');
+      });
+    },
+    trainStatusChanged(newStatus) {
+      const prevStatus = this.trainStatus;
+      this.trainStatus = newStatus;
+      if (prevStatus === undefined) { // run trainStatusChanged for the first time
+        if (newStatus === TRAIN_STATUS.TRAINING) {
+          this.eventBus.$emit('startLoading', this.$t('intent_engine.is_training'));
+        }
+      } else if (prevStatus === TRAIN_STATUS.TRAINING) {
+        if (newStatus === TRAIN_STATUS.TRAINED) {
+          this.$notify({ text: this.$t('intent_engine.training_success') });
+        } else if (status === TRAIN_STATUS.TRAIN_FAILED) {
+          this.$notifyFail(this.$('intent_engine.training_fail'));
+        }
+        if (newStatus !== TRAIN_STATUS.TRAINING) {
+          this.eventBus.$emit('endLoading');
+        }
+      }
+      // if (newStatus === TRAIN_STATUS.NOT_TRAINED) {
+      //   console.log('TRAIN_STATUS.NOT_TRAINED');
+      // } else if (newStatus === TRAIN_STATUS.TRAINING) {
+      //   console.log('TRAIN_STATUS.TRAINING');
+      // } else if (newStatus === TRAIN_STATUS.TRAINED) {
+      //   console.log('TRAIN_STATUS.TRAINED');
+      // } else if (newStatus === TRAIN_STATUS.NEED_TRAIN) {
+      //   console.log('TRAIN_STATUS.NEED_TRAIN');
+      // } else if (newStatus === TRAIN_STATUS.TRAIN_FAILED) {
+      //   console.log('TRAIN_STATUS.TRAIN_FAILED');
+      // }
+    },
     startPollingTestStatus() {
       this.testStatusIntervalId = setInterval(() => {
         this.pollTestStatus();
       }, 10000);
+    },
+    stopPollingTestStatus() {
+      clearInterval(this.testStatusIntervalId);
+      this.testStatusIntervalId = undefined;
     },
     pollTestStatus() {
       const that = this;
@@ -191,7 +280,7 @@ export default {
       const prevStatus = this.testStatus;
       this.testStatus = newStatus;
       console.log(prevStatus);
-      if (prevStatus === undefined) {
+      if (prevStatus === undefined) { // run testStatusChanged for the first time
         if (newStatus === TEST_STATUS.TESTING) {
           this.eventBus.$emit('startLoading', this.$t('intent_engine.is_testing'));
         }
@@ -199,30 +288,30 @@ export default {
       if (newStatus !== TEST_STATUS.TESTING) {
         this.eventBus.$emit('endLoading');
       }
-      this.testStatus = newStatus;
-      if (newStatus === TEST_STATUS.TESTING) {
-        console.log('TEST_STATUS.TESTING');
-      } else if (newStatus === TEST_STATUS.TESTED) {
-        console.log('TEST_STATUS.TESTED');
-      } else if (newStatus === TEST_STATUS.TEST_FAILED) {
-        console.log('TEST_STATUS.TEST_FAILED');
-      } else if (newStatus === TEST_STATUS.NEED_TEST) {
-        console.log('TEST_STATUS.NEED_TEST');
-      } else if (newStatus === TEST_STATUS.PENDING) {
-        console.log('TEST_STATUS.PENDING');
-      }
+      // if (newStatus === TEST_STATUS.TESTING) {
+      //   console.log('TEST_STATUS.TESTING');
+      // } else if (newStatus === TEST_STATUS.TESTED) {
+      //   console.log('TEST_STATUS.TESTED');
+      // } else if (newStatus === TEST_STATUS.TEST_FAILED) {
+      //   console.log('TEST_STATUS.TEST_FAILED');
+      // } else if (newStatus === TEST_STATUS.NEED_TEST) {
+      //   console.log('TEST_STATUS.NEED_TEST');
+      // } else if (newStatus === TEST_STATUS.PENDING) {
+      //   console.log('TEST_STATUS.PENDING');
+      // }
     },
     toPage(path) {
       this.$router.push(`/intent-manage/${path}`);
     },
   },
   mounted() {
-    this.pollTestStatus();
     this.getModels();
+    this.pollTrainStatus();
+    // this.pollTestStatus();
   },
   beforeDestroy() {
-    clearInterval(this.testStatusIntervalId);
-    this.testStatusIntervalId = undefined;
+    this.stopPollingTrainStatus();
+    this.stopPollingTestStatus();
   },
 };
 </script>

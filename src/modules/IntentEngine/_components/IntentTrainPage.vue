@@ -48,7 +48,7 @@
     </div>
     <side-panel clase="side-panel"
       :mode="'trainPage'"
-      @startTraining="startTraining()">
+      :hasIntents="hasIntents">
     </side-panel>
   </div>
 </div>
@@ -56,7 +56,6 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import util from '@/utils/js/format';
 import api from '../_api/intent';
 import SidePanel from './SidePanel';
 import IntentList from './IntentList';
@@ -73,7 +72,6 @@ export default {
   props: {},
   data() {
     return {
-      statusTimer: null,
       fetchStatusError: false,
       trainStatus: undefined,  // 'TRAINED', 'NOT_TRAINED', 'TRAINING'
       trainBtnClicked: false,
@@ -136,12 +134,6 @@ export default {
     },
     allowLoadPage() {
       return !this.fetchStatusError;
-    },
-    canTrain() {
-      return !this.versionNotAvailable && (this.hasIntents && this.shouldTrain);
-    },
-    shouldTrain() {
-      return this.trainStatus === 'NOT_TRAINED' || this.trainStatus === 'TRAIN_FAILED';
     },
     isTraining() {
       return this.trainStatus === 'TRAINING';
@@ -231,9 +223,6 @@ export default {
             that.$api.importIntents(file)
             .then((res) => {
               that.currentVersion = res.version;
-              clearInterval(that.statusTimer);
-              that.statusTimer = undefined;
-              that.pollTrainingStatus(that.currentVersion);
               that.refreshIntentPage();
               that.$notify({ text: that.$t('intent_engine.import.success') });
             })
@@ -248,80 +237,6 @@ export default {
         },
       };
       that.$pop(popOption);
-    },
-    startTraining() {
-      const that = this;
-      if (!that.canTrain) return;
-      that.$emit('startLoading', that.$t('intent_engine.is_training'));
-      that.$api.startTraining()
-      .then(() => {
-        that.trainStatus = 'TRAINING';
-        that.trainBtnClicked = true;
-      });
-    },
-    pollTrainingStatus(version) {
-      const that = this;
-      const prevStatus = that.trainStatus;
-      that.$api.getTrainingStatus(version)
-      .then((rsp) => {
-        const status = rsp.status;
-        that.fetchStatusError = false;
-        if (status === 'TRAINING') {
-          // that.$emit('startLoading', that.$t('intent_engine.is_training'));
-          that.trainStatus = status;
-        } else if (prevStatus === 'TRAINING') {
-          that.refreshIntentPage(); // also hideloading
-          if (status === 'TRAINED') {
-            if (that.trainBtnClicked) {
-              that.$notify({ text: that.$t('intent_engine.training_success') });
-              that.trainBtnClicked = false;
-            }
-          } else if (status === 'TRAIN_FAILED') {
-            if (that.trainBtnClicked) {
-              that.$notifyFail(that.$('intent_engine.training_fail'));
-              that.trainBtnClicked = false;
-            }
-          }
-        } else if (prevStatus === 'TRAIN_FAILED') {
-          if (status === 'TRAIN_FAILED') {
-            if (that.trainBtnClicked) {
-              that.$notifyFail(that.$t('intent_engine.training_fail'));
-              that.trainBtnClicked = false;
-              that.$emit('endLoading');
-            }
-          }
-        } else if (prevStatus === undefined) {
-          that.refreshIntentPage();
-        }
-        that.lastTrainedTime = util.datetimeToString(new Date(rsp.last_train * 1000));
-        that.trainStatus = status;
-        if (!this.statusTimer) {
-          that.startPollingTrainingStatus(version);
-        }
-      })
-      .catch((err) => {
-        that.fetchStatusError = true;
-        that.trainBtnClicked = false;
-        console.log(err);
-        if (err.response.status === 400) {
-          that.$notifyFail(that.$t('http_status.400'));
-        } else if (err.response.status === 401) { // unauthorized
-          that.$notifyFail(that.$t('http_status.401'));
-        } else if (err.response.status === 404) {  // version not exist
-          that.$notifyFail(that.$t('intent_engine.version_not_exist'));
-          this.currentVersion = '';
-          clearInterval(this.statusTimer);
-          this.statusTimer = undefined;
-        } else if (err.response.status !== 500) {
-          that.$notifyFail(that.$t('intent_engine.training_fail'));
-        }
-        that.$emit('endLoading');
-      });
-    },
-    startPollingTrainingStatus(version) {
-      this.statusTimer = setInterval(() => {
-        this.pollTrainingStatus(version);
-      }, 5000);
     },
     refreshIntentPage() {
       const that = this;
@@ -360,12 +275,9 @@ export default {
   },
   mounted() {
     this.$emit('startLoading');
-    this.pollTrainingStatus();
+    this.refreshIntentPage();
   },
-  beforeDestroy() {
-    clearInterval(this.statusTimer);
-    this.statusTimer = undefined;
-  },
+  beforeDestroy() {},
 };
 </script>
 
