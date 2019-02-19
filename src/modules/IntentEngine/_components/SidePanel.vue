@@ -1,61 +1,65 @@
 <template>
 <div id="side-panel">
-  <template v-if="mode==='trainPage'">
-    <div class="title margin-bottom">
-      {{$t('intent_engine.side_panel.intent_train')}}
+  <div class="title">
+    {{$t('intent_engine.side_panel.intent_train')}}
+  </div>
+  <div class="info" style="margin-top: 10px;">
+    {{$t('intent_engine.side_panel.intent_train_info')}}
+  </div>
+  <text-button class="button" style="margin-top: 10px;"
+    :button-type="canTrain ? 'default' : 'disable'"
+    :height="'40px'"
+    @click="startTraining()">
+    {{$t('intent_engine.side_panel.do_train')}}
+  </text-button>
+  <div class="train-records" v-if="recentModels.length > 0">
+    <div class="model" v-for="(model, index) in recentModels" :key="model.ie_model_id">
+      <span v-if="index===0">
+        {{`${$t('intent_engine.side_panel.last_success_train')}: ${model.trainDatetimeStr}`}}
+      </span>
+      <span v-if="index!==0 && showRecentTrainRecords">
+        {{`${$t('intent_engine.side_panel.success_train_record')}: ${model.trainDatetimeStr}`}}
+      </span>
     </div>
-    <div class="info margin-bottom">
-      {{$t('intent_engine.side_panel.intent_train_info')}}
-    </div>
-    <text-button class="button margin-bottom"
-      :button-type="canTrain ? 'default' : 'disable'"
-      :height="'40px'"
-      @click="startTraining()">
-      {{$t('intent_engine.side_panel.do_train')}}
-    </text-button>
-    <div class="train-records" v-if="recentModels.length > 0" style="margin-bottom: 20px;">
-      <div class="model" v-for="(model, index) in recentModels" :key="model.ie_model_id">
-        <span v-if="index===0">
-          {{`${$t('intent_engine.side_panel.last_success_train')}: ${model.trainDatetimeStr}`}}
-        </span>
-        <span v-if="index!==0 && showRecentTrainRecords">
-          {{`${$t('intent_engine.side_panel.success_train_record')}: ${model.trainDatetimeStr}`}}
-        </span>
-      </div>
+    <template v-if="recentModels.length > 1">
       <div class="link" v-if="showRecentTrainRecords===false" @click="showRecentTrainRecords=true">
         {{$t('intent_engine.side_panel.show_train_records')}}
       </div>
       <div class="link" v-if="showRecentTrainRecords===true" @click="showRecentTrainRecords=false">
         {{$t('intent_engine.side_panel.hide_train_records')}}
       </div>
-    </div>
-    <div class="title" style="margin-bottom: 20px;">
-      {{$t('intent_engine.side_panel.intent_test')}}
-    </div>
-    <div class="info margin-bottom">
-      {{$t('intent_engine.side_panel.intent_test_info')}}
-    </div>
-    <div class="hint">
-      {{$t('intent_engine.side_panel.edit_intent_test_corpus_hint')}}
-    </div>
-    <text-button class="button" style="margin-bottom: 30px;" :height="'40px'" @click="toPage('test')">
+    </template>
+  </div>
+  <div class="title" style="margin-top: 20px;">
+    {{$t('intent_engine.side_panel.intent_test')}}
+  </div>
+  <div class="info" style="margin-bottom: 10px; margin-top: 10px;">
+    {{$t('intent_engine.side_panel.intent_test_info')}}
+  </div>
+  <div class="hint">
+    {{$t('intent_engine.side_panel.edit_intent_test_corpus_hint')}}
+  </div>
+  <template v-if="mode==='trainPage'">
+    <text-button class="button" :height="'40px'" @click="toPage('test')">
       {{$t('intent_engine.side_panel.go_to_intent_test')}}
     </text-button>
   </template>
-  <template v-if="mode==='trainPage' || mode==='testPage'">
-    <div class="info margin-bottom" >
-      {{$t('intent_engine.side_panel.do_intent_test_info')}}
-    </div>
-    <text-button class="button margin-bottom"
-      :button-type="canTest ? 'default' : 'disable'"
-      :height="'40px'"
-      @click="startTesting()">
-      {{$t('intent_engine.side_panel.do_test')}}
-    </text-button>
-    <div class="link" @click="toPage('test/records')">
-      {{$t('intent_engine.side_panel.go_to_intent_test_records')}}
+  <template v-if="mode==='testPage'">
+    <div class="test-btn-container"
+      v-tooltip="testBtnTooltip"
+      @mouseenter="showTestBtnTooltip($event)"
+      @mouseleave="hideTestBtnTooltip($event)">
+      <text-button class="button"
+        :button-type="canTest ? 'primary' : 'disable'"
+        :height="'40px'"
+        @click="startTesting()">
+        {{$t('intent_engine.side_panel.do_test')}}
+      </text-button>
     </div>
   </template>
+  <div class="link" @click="toPage('test/records')" style="margin-top: 10px;">
+    {{$t('intent_engine.side_panel.go_to_intent_test_records')}}
+  </div>
 </div>
 </template>
 <script>
@@ -64,6 +68,7 @@
 //   intent_test_is_empty: '意圖測試集為空請先編輯',
 // },
 
+import event from '@/utils/js/event';
 import intentApi from '../_api/intent';
 import intentTestApi from '../_api/intentTest';
 import eventBus from '../_utils/eventBus';
@@ -98,10 +103,15 @@ export default {
       required: false,
       default: () => 'trainPage',
     },
-    hasIntents: {
+    hasTrainIntents: {
       type: Boolean,
       required: false,
       default: () => false,
+    },
+    testCorpusCounts: {
+      type: Number,
+      required: false,
+      default: () => 0,
     },
   },
   data() {
@@ -113,12 +123,18 @@ export default {
       testStatusIntervalId: undefined,
       eventBus: eventBus.eventBus,
       showRecentTrainRecords: false,
+      testBtnTooltip: {
+        msg: this.$t('intent_engine.side_panel.test_corpus_is_empty'),
+        alignLeft: true,
+        // left: -10,
+        eventOnly: true,
+      },
     };
   },
   watch: {},
   computed: {
     canTrain() {
-      return this.hasIntents && this.shouldTrain;
+      return this.shouldTrain && this.hasTrainIntents;
     },
     shouldTrain() {
       return this.trainStatus === TRAIN_STATUS.NOT_TRAINED ||
@@ -126,6 +142,9 @@ export default {
              this.trainStatus === TRAIN_STATUS.TRAIN_FAILED;
     },
     canTest() {
+      return this.shouldTest && this.testCorpusCounts > 0;
+    },
+    shouldTest() {
       return this.testStatus === TEST_STATUS.NEED_TEST ||
              this.testStatus === TRAIN_STATUS.TEST_FAILED;
     },
@@ -303,11 +322,20 @@ export default {
     toPage(path) {
       this.$router.push(`/intent-manage/${path}`);
     },
+    showTestBtnTooltip(e) {
+      console.log(this.testCorpusCounts);
+      if (this.testCorpusCounts === 0) {
+        e.target.dispatchEvent(event.createEvent('tooltip-show'));
+      }
+    },
+    hideTestBtnTooltip(e) {
+      e.target.dispatchEvent(event.createEvent('tooltip-hide'));
+    },
   },
   mounted() {
     this.getModels();
     this.pollTrainStatus();
-    // this.pollTestStatus();
+    this.pollTestStatus();
   },
   beforeDestroy() {
     this.stopPollingTrainStatus();
@@ -334,14 +362,21 @@ export default {
     @include font-14px();
   }
   .button{
+    flex: 0 0 auto;
     @include font-14px-line-height-28px();
     cursor: pointer;
+  }
+  .test-btn-container{
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
   }
   .model{
     @include font-12px-line-height-28px();
     color: $color-font-mark;
   }
   .link{
+    flex: 0 0 auto;
     @include font-12px-line-height-28px();
     cursor: pointer;
     color: $app-active-color;

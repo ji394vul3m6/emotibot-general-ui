@@ -992,6 +992,7 @@ export default {
         select_label: '选择欲测试的意图训练版本',
         hint: '提示：目前意图管理有新意图和语料，尚未进行意图训练。',
       },
+      test_corpus_is_empty: '意图测试集为空请先编辑',
     },
   },
   pages: {

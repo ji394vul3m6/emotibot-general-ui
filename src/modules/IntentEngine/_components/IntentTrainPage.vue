@@ -48,7 +48,7 @@
     </div>
     <side-panel clase="side-panel"
       :mode="'trainPage'"
-      :hasIntents="hasIntents">
+      :hasTrainIntents="hasIntents">
     </side-panel>
   </div>
 </div>

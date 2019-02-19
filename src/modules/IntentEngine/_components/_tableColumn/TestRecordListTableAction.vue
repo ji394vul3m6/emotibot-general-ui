@@ -22,6 +22,7 @@ export default {
         options,
         alignLeft: true,
         width: '190px',
+        globalFix: true,
       };
     },
   },

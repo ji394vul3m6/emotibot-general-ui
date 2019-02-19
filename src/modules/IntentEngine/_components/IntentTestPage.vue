@@ -68,6 +68,7 @@
       </template>
     </div>
     <side-panel clase="side-panel"
+      :testCorpusCounts="corpusCounts"
       :mode="'testPage'">
     </side-panel>
   </div>
@@ -149,6 +150,7 @@ export default {
       this.$emit('startLoading');
       this.$api.getTestIntents().then((data) => {
         this.allIntents = data;
+        // console.log(this.allIntents);
       }).catch((err) => {
         console.log(err);
       })
