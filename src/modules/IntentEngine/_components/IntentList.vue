@@ -242,6 +242,7 @@ export default {
           onclick: this.beforeEditIntent,
         }],
         alignLeft: true,
+        globalFix: false,
       },
 
       intentNameTooltip: {

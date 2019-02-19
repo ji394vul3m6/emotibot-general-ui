@@ -59,18 +59,27 @@ const MyPlugin = {
           });
           vm.$mount();
 
-          const tempID = randomID();
-          el.dataset.id = tempID;
-          dropdownMap[tempID] = vm;
-
           const body = document.querySelector('body');
-          body.appendChild(vm.$el);
-          vm.$forceUpdate();
+          const useGlobal = binding.value.globalFix;
+          if (useGlobal) {
+            const tempID = randomID();
+            el.dataset.id = tempID;
+            dropdownMap[tempID] = vm;
+
+            body.appendChild(vm.$el);
+            vm.$forceUpdate();
+          } else {
+            el.appendChild(vm.$el);
+          }
 
 
           el.addEventListener('dropdown-reload', ({ detail: value = binding.value }) => {
             const newPos = that.getPosition(el, value.alignLeft);
-            body.removeChild(vm.$el);
+            if (useGlobal) {
+              body.removeChild(vm.$el);
+            } else {
+              el.removeChild(vm.$el);
+            }
             vm.$destroy();
             vm = new DropdownGenerator({
               propsData: {
@@ -81,11 +90,15 @@ const MyPlugin = {
                 alignLeft: value.alignLeft,
               },
             });
-            const id = el.dataset.id;
-            dropdownMap[id] = vm;
-
             vm.$mount();
-            body.appendChild(vm.$el);
+            if (useGlobal) {
+              const id = el.dataset.id;
+              dropdownMap[id] = vm;
+              body.appendChild(vm.$el);
+            } else {
+              el.appendChild(vm.$el);
+            }
+
             vm.$forceUpdate();
           });
 
@@ -103,12 +116,14 @@ const MyPlugin = {
           });
         });
       },
-      unbind(el) {
-        const id = el.dataset.id;
-        const body = document.querySelector('body');
-        body.removeChild(dropdownMap[id].$el);
-        dropdownMap[id].$destroy();
-        delete dropdownMap[id];
+      unbind(el, binding) {
+        if (binding.value.globalFix) {
+          const id = el.dataset.id;
+          const body = document.querySelector('body');
+          body.removeChild(dropdownMap[id].$el);
+          dropdownMap[id].$destroy();
+          delete dropdownMap[id];
+        }
       },
     });
   },
