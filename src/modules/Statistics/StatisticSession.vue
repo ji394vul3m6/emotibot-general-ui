@@ -20,6 +20,9 @@
         <text-button @click="doExport" v-if="recordNum > 0">{{ $t('general.export') }}</text-button>
         <text-button button-type="disable" v-else>{{ $t('general.export') }}</text-button>
         <div class="action-text">{{ $t('statistics.total_records', {num: recordNum }) }}</div>
+        <span v-if="recordNum > tableMaxRecord" @click="searchForMore" v-tooltip="searchTooltip" class="search-more">
+          {{ $t('statistics.search_more') }}
+        </span>
       </div>
       <general-scroll-table class="table"
         :table-data="tableData"
@@ -34,7 +37,7 @@
           :pageSizeOption="constant.tableLimitOption"
           @page-change="doSearch"
           @page-size-change="setLimit"
-          :total="recordNum"
+          :total="recordNum > tableMaxRecord ? tableMaxRecord : recordNum"
           :page-size="nowLimit"
           :layout="constant.tableLayout">
         </v-pagination>
@@ -135,6 +138,11 @@ export default {
           width: '100px',
         },
       ],
+      tableMaxRecord: 10000,
+      searchTooltip: {
+        msg: this.$t('statistics.search_more_hint'),
+      },
+      searching: false,
 
       recordNum: 0,
       nowPage: 1,
@@ -171,6 +179,22 @@ export default {
     },
   },
   methods: {
+    searchForMore() {
+      const that = this;
+
+      if (that.searching) {
+        return;
+      }
+      that.searching = true;
+      const filter = that.getSearchParam();
+      this.$api.getSessionList(that.tableMaxRecord, 1, filter).then((rsp) => {
+        const lastTime = new Date(rsp.data[0].start_time);
+        that.$refs.timeRange.$emit('set-start', lastTime);
+        that.$nextTick(() => {
+          that.doSearch(1);
+        });
+      });
+    },
     setLimit(limit) {
       this.nowLimit = limit;
       this.nowPage = 1;
@@ -227,12 +251,14 @@ export default {
       that.nowPage = page === undefined ? 1 : page;
       const filter = that.getSearchParam();
       that.$startPageLoading();
+      that.searching = true;
       this.$api.getSessionList(that.nowPage, that.nowLimit, filter).then((rsp) => {
         that.tableData = that.fixDataFormat(rsp.data);
         that.tableHeader = that.fixHeaderFormat(rsp.table_header);
         that.recordNum = rsp.total_size;
       })
       .finally(() => {
+        that.searching = false;
         that.$emit('endLoading');
       });
     },
@@ -375,7 +401,11 @@ export default {
     display: flex;
     align-items: center;
     .action-text {
-      margin-left: 20px;
+      margin: 0 20px;
+    }
+    .search-more {
+      @include click-button();
+      color: $color-primary;
     }
   }
   .table {
