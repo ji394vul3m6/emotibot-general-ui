@@ -29,11 +29,11 @@ export default {
   data() {
     const modelOptions = this.extData.models.map(model => ({
       text: model.trainDatetimeStr,
-      value: model.id,
+      value: model.ie_model_id,
     }));
     let model;
     if (this.extData.models.length > 0) {
-      model = [this.extData.models[0].id];
+      model = [this.extData.models[0].ie_model_id];
     }
     return {
       model,

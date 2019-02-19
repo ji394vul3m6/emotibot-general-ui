@@ -11,7 +11,7 @@
       {{$t('intent_engine.side_panel.do_train')}}
     </text-button>
     <div class="train-records" v-if="recentModels.length > 0" style="margin-bottom: 20px;">
-      <div class="model" v-for="(model, index) in recentModels" :key="model.id">
+      <div class="model" v-for="(model, index) in recentModels" :key="model.ie_model_id">
         <span v-if="index===0">
           {{`${$t('intent_engine.side_panel.last_success_train')}: ${model.trainDatetimeStr}`}}
         </span>
@@ -112,7 +112,7 @@ export default {
       const uniqueIds = {};
       const uniqueModels = [];
       if (this.models.in_used) {
-        uniqueIds[this.models.in_used.id] = 1;
+        uniqueIds[this.models.in_used.ie_model_id] = 1;
         uniqueModels.push(
           {
             ...this.models.in_used,
@@ -123,8 +123,8 @@ export default {
       for (let i = 0; i < keyOrder.length; i += 1) {
         const models = this.models[keyOrder[i]];
         models.forEach((model) => {
-          if (uniqueIds[model.id] === undefined) {
-            uniqueIds[model.id] = 1;
+          if (uniqueIds[model.ie_model_id] === undefined) {
+            uniqueIds[model.ie_model_id] = 1;
             uniqueModels.push(
               {
                 ...model,
@@ -134,7 +134,6 @@ export default {
           }
         });
       }
-      console.log(uniqueModels);
       return uniqueModels;
     },
   },

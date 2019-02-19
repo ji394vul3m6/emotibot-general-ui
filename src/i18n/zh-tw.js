@@ -850,7 +850,7 @@ export default {
     train: '意圖訓練',
     is_training: '意圖訓練中...',
     is_testing: '意圖測試中...',
-    is_restoring: '意圖還原中...',
+    is_restoring: '還原意圖模型與測試集...',
     training_success: '意圖訓練成功',
     training_fail: '意圖訓練失敗',
     version_not_exist: '意圖版本不存在',

@@ -7,10 +7,10 @@
       </div>
       <icon iconType="month_right" :size="18" style="margin: 0px 10px;"></icon>
       <div class="header-title" v-if="record.saved">
-        {{ `${record.name} ( ${$t('intent_engine.test_records.test_record')} ${record.updated_time})` }}
+        {{ `${record.name} ( ${$t('intent_engine.test_records.test_record')} ${recordVersion})` }}
       </div>
       <div class="header-title" v-if="!record.saved">
-        {{ `${$t('intent_engine.test_records.test_record')} ${record.updated_time}` }}
+        {{ `${$t('intent_engine.test_records.test_record')} ${recordVersion}` }}
       </div>
     </div>
     <div class="right-align-header">
@@ -31,7 +31,7 @@
         {{$t('intent_engine.test_record.intent_model_version')}}
       </div>
       <div class="text normal">
-        {{record.ie_model_updated_time}}
+        {{modelVersion}}
       </div>
       <div class="text normal margin-bottom">
         {{`${$t('intent_engine.test_record.intent_statistics', {inum: record.intents_count, cnum: record.sentences_count})}`}}
@@ -105,6 +105,7 @@
 
 import IntentTestList from './IntentTestList';
 import api from '../_api/intentTest';
+import general from '../_utils/general';
 
 export default {
   name: 'intent-test-record-page',
@@ -143,6 +144,12 @@ export default {
         (this.record.tp + this.record.fp);
       return Math.round(p);
     },
+    modelVersion() {
+      return general.timestampToDatetimeString(this.record.ie_model_updated_time);
+    },
+    recordVersion() {
+      return general.timestampToDatetimeString(this.record.updated_time);
+    },
   },
   watch: {
     allIntents() {
@@ -160,7 +167,7 @@ export default {
   methods: {
     getTestRecord(intentTestID) {
       this.$api.getTestRecord(intentTestID).then((data) => {
-        console.log(data);
+        // console.log(data);
         const { test_intents, ...record } = data;
         record.tp = record.true_positives;
         record.tn = record.true_negatives;
