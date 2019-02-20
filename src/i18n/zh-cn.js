@@ -847,6 +847,7 @@ export default {
     },
   },
   intent_engine: {
+    delete_multi_intent_msg: '确定要删除所选意图吗？',
     train: '意图训练',
     is_training: '意图训练中...',
     training_success: '意图训练成功',
