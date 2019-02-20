@@ -7,7 +7,7 @@
           <range-picker :name="$t('statistics.sessions_time')" ref="timeRange"/>
         </template>
         <template slot="filters">
-          <!-- <search-input v-model="filterSession" :name="$t('statistics.session_id')" /> -->
+          <search-input v-model="filterSession" :name="$t('statistics.session_id')" />
           <search-input v-model="filterUser" :name="$t('statistics.user_id')" />
           <range-input :name="$t('statistics.feedback_score')" :min=1 :max=5 :step=1 @input="handleScoreRange"/>
           <dropdown-select :name="$t('statistics.feedback_reason')" width="200px" ref="reasons" :options="reasons" v-model="currentReason"/>
@@ -242,6 +242,9 @@ export default {
 
       if (that.filterUser.trim() !== '') {
         filter.uid = that.filterUser;
+      }
+      if (that.filterSession.trim() !== '') {
+        filter.session_id = that.filterSession;
       }
       return filter;
     },
