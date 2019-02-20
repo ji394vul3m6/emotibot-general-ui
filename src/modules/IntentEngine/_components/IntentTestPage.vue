@@ -177,15 +177,15 @@ export default {
         validate: true,
         callback: {
           ok(file) {
-            this.eventBus.$emit('startLoading');
+            that.eventBus.$emit('startLoading');
             that.$api.importIntentTestCorpus(file).then(() => {
-              this.getTestIntents();
+              that.getTestIntents();
               that.$notify({ text: that.$t('intent_engine.import.test_data.success') });
             }).catch((err) => {
               console.log(err);
               that.$notifyFail(that.$t('intent_engine.import.test_data.fail'));
             }).finally(() => {
-              this.eventBus.$emit('endLoading');
+              that.eventBus.$emit('endLoading');
             });
           },
         },
