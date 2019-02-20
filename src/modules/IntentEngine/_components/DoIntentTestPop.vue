@@ -65,6 +65,7 @@ export default {
   display: flex;
   flex-direction: column;
   padding: 10px 20px 55px 20px;
+  width: 480px;
   @include font-14px-line-height-28px();
   .model-select-row{
     flex: 0 0 auto;

@@ -45,6 +45,7 @@ export default {
   display: flex;
   flex-direction: column;
   padding: 10px 20px 105px 20px;
+  width: 480px;
   .input-row{
     flex: 0 0 auto;
     display: flex;

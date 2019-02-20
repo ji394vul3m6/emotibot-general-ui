@@ -53,7 +53,8 @@
         </div>
         <intent-test-list class="intent-list"
           :initialIntentList="corpusGroupsWithoutIntent"
-          :intentListType="'withoutIntent'">
+          :intentListType="'withoutIntent'"
+          @update="updateCorpusGroupsWithoutIntent($event)">
         </intent-test-list>
       </template>
       <template v-if="intentList.length > 0">
@@ -63,7 +64,8 @@
         </div>
         <intent-test-list class="intent-list"
           :initialIntentList="intentList"
-          :intentListType="'withIntent'">
+          :intentListType="'withIntent'"
+          @update="updateIntentList($event)">
         </intent-test-list>
       </template>
     </div>
@@ -76,11 +78,13 @@
 </template>
 <script>
 
+import { createNamespacedHelpers } from 'vuex';
 import IntentTestList from './IntentTestList';
 import SidePanel from './SidePanel';
 import ImportIntentTestPop from './ImportIntentTestPop';
 import api from '../_api/intentTest';
 
+const { mapState, mapGetters, mapMutations } = createNamespacedHelpers('intentTest-module');
 
 export default {
   name: 'intent-test-page',
@@ -97,10 +101,6 @@ export default {
     return {
       searchKeyword: '',
       searchIntentMode: false,
-      allIntents: [],
-      intentList: [],
-      corpusGroupsWithoutIntent: [],
-      corpusCounts: 0,
       optionSelectStyle: {
         height: '28px',
         'border-radius': '2px',
@@ -111,6 +111,14 @@ export default {
     };
   },
   computed: {
+    ...mapState([
+      'allIntents',
+      'intentList',
+      'corpusGroupsWithoutIntent',
+    ]),
+    ...mapGetters([
+      'corpusCounts',
+    ]),
     canImport() {
       return this.$hasRight('import');
     },
@@ -128,28 +136,17 @@ export default {
     },
   },
   watch: {
-    allIntents() {
-      if (!this.searchIntentMode) {
-        this.corpusCounts = this.allIntents.reduce(
-          (acc, intent) => acc + intent.sentences_count, 0,
-        );
-      }
-      this.intentList = [];
-      this.corpusGroupsWithoutIntent = [];
-      this.allIntents.forEach((intent) => {
-        if (intent.type === true) {
-          this.intentList.push(intent);
-        } else {
-          this.corpusGroupsWithoutIntent.push(intent);
-        }
-      });
-    },
   },
   methods: {
+    ...mapMutations([
+      'updateAllIntents',
+      'updateIntentList',
+      'updateCorpusGroupsWithoutIntent',
+    ]),
     getTestIntents() {
       this.$emit('startLoading');
       this.$api.getTestIntents().then((data) => {
-        this.allIntents = data;
+        this.updateAllIntents(data);
         // console.log(this.allIntents);
       }).catch((err) => {
         console.log(err);
@@ -180,10 +177,6 @@ export default {
           ok(file) {
             that.$emit('startLoading');
             that.$api.importIntentTestCorpus(file).then(() => {
-              // clearInterval(this.statusTimer);
-              // this.statusTimer = undefined;
-              // this.pollTrainingStatus(this.currentVersion);
-              // this.refreshIntentPage();
               this.getTestIntents();
               that.$notify({ text: that.$t('intent_engine.import.test_data.success') });
             }).catch((err) => {
@@ -288,6 +281,5 @@ export default {
       }
     }
   }
-  
 }
 </style>

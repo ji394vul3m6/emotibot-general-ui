@@ -196,10 +196,20 @@ export default {
     startTraining() {
       if (!this.canTrain) return;
       const that = this;
-      that.eventBus.$emit('startLoading', that.$t('intent_engine.is_training'));
-      intentApi.startTraining.call(this).then(() => {
-        that.trainStatus = TRAIN_STATUS.TRAINING;
-      });
+      const option = {
+        data: {
+          msg: that.$t('intent_engine.side_panel.start_train_warning'),
+        },
+        callback: {
+          ok: () => {
+            that.eventBus.$emit('startLoading', that.$t('intent_engine.is_training'));
+            intentApi.startTraining.call(this).then(() => {
+              that.trainStatus = TRAIN_STATUS.TRAINING;
+            });
+          },
+        },
+      };
+      that.$popWarn(option);
     },
     startTesting() {
       if (!this.canTest) return;

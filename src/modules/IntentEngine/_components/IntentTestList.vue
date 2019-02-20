@@ -149,8 +149,15 @@ export default {
     },
   },
   data() {
+    const intentList = this.initialIntentList.map(intent => ({
+      ...intent,
+      expand: intent.expand ? intent.expand : false,
+      testCorpus: intent.testCorpus ? intent.testCorpus : [],
+      curPage: 1,
+      hasCorpusEditing: intent.hasCorpusEditing ? intent.hasCorpusEditing : false,
+    }));
     return {
-      intentList: [],
+      intentList,
       LIST_PAGE_SIZE: 10,
       newCorpus: '',
       compositionState: false,
@@ -165,20 +172,14 @@ export default {
     };
   },
   computed: {},
-  watch: {
-    initialIntentList() {
-      this.renderIntentList();
-    },
-  },
+  watch: {},
   methods: {
-    renderIntentList() {
-      this.intentList = this.initialIntentList.map(intent => ({
-        ...intent,
-        expand: intent.expand ? intent.expand : false,
-        testCorpus: intent.testCorpus ? intent.testCorpus : [],
-        curPage: 1,
-        hasCorpusEditing: intent.hasCorpusEditing ? intent.hasCorpusEditing : false,
-      }));
+    emitUpdate() {
+      const newIntentList = this.intentList.map((intent) => {
+        const { expand, testCorpus, curPage, hasCorpusEditing, ...left } = intent;
+        return left;
+      });
+      this.$emit('update', newIntentList);
     },
     handleIntentClicked(intent) {
       if (intent.expand) {
@@ -272,6 +273,7 @@ export default {
         this.fetchCorpus(intent).then(() => {
           intent.sentences_count += 1;
           intent.curPage = Math.ceil(intent.testCorpus.length / this.LIST_PAGE_SIZE);
+          this.emitUpdate();
         });
       });
       this.newCorpus = '';
@@ -282,6 +284,7 @@ export default {
       const del = [corpus.id];
       this.patchCorpus(intent, [], del).then(() => {
         intent.sentences_count -= 1;
+        this.emitUpdate();
       });
       intent.curPage = Math.ceil(intent.testCorpus.length / this.LIST_PAGE_SIZE);
     },
@@ -334,7 +337,6 @@ export default {
     },
   },
   mounted() {
-    this.renderIntentList();
     this.eventBus.$on('startTesting', () => {
       this.shirnkAllIntentBlock();
     });

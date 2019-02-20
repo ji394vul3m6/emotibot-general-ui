@@ -993,6 +993,7 @@ export default {
         hint: '提示：目前意圖管理有新意圖和語料，尚未進行意圖訓練。',
       },
       test_corpus_is_empty: '意圖測試集為空請先編輯',
+      start_train_warning: '注意進行意圖訓練後，將會產生新模型及對應的意圖測試集。',
     },
   },
   pages: {
