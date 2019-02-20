@@ -197,6 +197,13 @@ export default {
     that.$nextTick(() => {
       that.dayRange = dayRange;  // update lable switch after datepicker is updated
     });
+
+    that.$on('set-start', (value) => {
+      that.$refs.start.$emit('setValue', value);
+    });
+    that.$on('set-end', (value) => {
+      that.$refs.end.$emit('setValue', value);
+    });
   },
 };
 
