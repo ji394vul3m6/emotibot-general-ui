@@ -34,8 +34,8 @@ export default {
   methods: {},
   mounted() {
     const that = this;
-    this.eventBus.$on('startLoading', (msg) => {
-      that.$emit('startLoading', msg);
+    this.eventBus.$on('startLoading', (msg, type = 'dot') => {
+      that.$emit('startLoading', msg, type);
     });
     this.eventBus.$on('endLoading', () => {
       that.$emit('endLoading');

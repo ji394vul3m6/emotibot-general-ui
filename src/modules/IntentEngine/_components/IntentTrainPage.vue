@@ -60,6 +60,7 @@ import api from '../_api/intent';
 import SidePanel from './SidePanel';
 import IntentList from './IntentList';
 import ImportIntentPop from './ImportIntentPop';
+import eventBus from '../_utils/eventBus';
 
 export default {
   name: 'intent-train-page',
@@ -95,6 +96,7 @@ export default {
         msg: this.$t('intent_engine.manage.tooltip.page_info'),
       },
       showBatchDelete: false,
+      eventBus: eventBus.eventBus,
     };
   },
   computed: {
@@ -169,7 +171,7 @@ export default {
     deleteIntents() {
       const that = this;
       const deleteIDs = that.$refs.intents.getCheckedIntentIDs();
-      that.$emit('startLoading');
+      this.eventBus.$emit('startLoading');
       that.$api.deleteIntents(deleteIDs).then(() => {
         that.$notify({ text: that.$t('intent_engine.manage.notify.delete_intent_success') });
       })
@@ -178,7 +180,7 @@ export default {
         that.$notifyFail(that.$t('intent_engine.manage.notify.delete_intent_fail'));
       })
       .finally(() => {
-        that.$emit('endLoading');
+        that.eventBus.$emit('endLoading');
         that.refreshIntentPage();
       });
     },
@@ -219,7 +221,7 @@ export default {
         validate: true,
         callback: {
           ok(file) {
-            that.$emit('startLoading');
+            that.eventBus.$emit('startLoading');
             that.$api.importIntents(file)
             .then((res) => {
               that.currentVersion = res.version;
@@ -231,7 +233,7 @@ export default {
               that.$notifyFail(that.$t('intent_engine.import.fail'));
             })
             .finally(() => {
-              that.$emit('endLoading');
+              that.eventBus.$emit('endLoading');
             });
           },
         },
@@ -241,7 +243,7 @@ export default {
     refreshIntentPage() {
       const that = this;
       if (!this.allowLoadPage) return;
-      this.$emit('startLoading');
+      this.eventBus.$emit('startLoading');
       // that.$api.getIntents()
       that.$api.getIntentsDetail(that.searchKeyword)
       .then((intents) => {
@@ -269,12 +271,12 @@ export default {
         }
       })
       .finally(() => {
-        this.$emit('endLoading');
+        this.eventBus.$emit('endLoading');
       });
     },
   },
   mounted() {
-    this.$emit('startLoading');
+    this.eventBus.$emit('startLoading');
     this.refreshIntentPage();
   },
   beforeDestroy() {},

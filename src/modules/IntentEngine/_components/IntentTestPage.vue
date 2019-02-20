@@ -83,6 +83,7 @@ import IntentTestList from './IntentTestList';
 import SidePanel from './SidePanel';
 import ImportIntentTestPop from './ImportIntentTestPop';
 import api from '../_api/intentTest';
+import eventBus from '../_utils/eventBus';
 
 const { mapState, mapGetters, mapMutations } = createNamespacedHelpers('intentTest-module');
 
@@ -101,6 +102,7 @@ export default {
     return {
       searchKeyword: '',
       searchIntentMode: false,
+      eventBus: eventBus.eventBus,
       optionSelectStyle: {
         height: '28px',
         'border-radius': '2px',
@@ -144,7 +146,7 @@ export default {
       'updateCorpusGroupsWithoutIntent',
     ]),
     getTestIntents() {
-      this.$emit('startLoading');
+      this.eventBus.$emit('startLoading');
       this.$api.getTestIntents().then((data) => {
         this.updateAllIntents(data);
         // console.log(this.allIntents);
@@ -152,7 +154,7 @@ export default {
         console.log(err);
       })
       .finally(() => {
-        this.$emit('endLoading');
+        this.eventBus.$emit('endLoading');
       });
     },
     inSearchIntentMode(bool) {
@@ -175,7 +177,7 @@ export default {
         validate: true,
         callback: {
           ok(file) {
-            that.$emit('startLoading');
+            this.eventBus.$emit('startLoading');
             that.$api.importIntentTestCorpus(file).then(() => {
               this.getTestIntents();
               that.$notify({ text: that.$t('intent_engine.import.test_data.success') });
@@ -183,7 +185,7 @@ export default {
               console.log(err);
               that.$notifyFail(that.$t('intent_engine.import.test_data.fail'));
             }).finally(() => {
-              that.$emit('endLoading');
+              this.eventBus.$emit('endLoading');
             });
           },
         },

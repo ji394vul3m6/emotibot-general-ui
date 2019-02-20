@@ -952,6 +952,7 @@ export default {
       restore_record: '還原意圖模型與測試集',
       store_record: '保存記錄',
       unstore_record: '取消保存',
+      edit_record_name: '編輯名稱',
       intent_statistics: '{cnum}筆語料',
       save_record_pop: {
         save_record: '保存測試記錄',

@@ -202,7 +202,7 @@ export default {
         },
         callback: {
           ok: () => {
-            that.eventBus.$emit('startLoading', that.$t('intent_engine.is_training'));
+            that.eventBus.$emit('startLoading', that.$t('intent_engine.is_training'), 'line');
             intentApi.startTraining.call(this).then(() => {
               that.trainStatus = TRAIN_STATUS.TRAINING;
             });
@@ -224,7 +224,7 @@ export default {
         callback: {
           ok(modelId) {
             that.eventBus.$emit('startTesting');
-            that.eventBus.$emit('startLoading', that.$t('intent_engine.is_testing'));
+            that.eventBus.$emit('startLoading', that.$t('intent_engine.is_testing'), 'line');
             intentTestApi.testIntentTestCorpus.call(that, modelId).then(() => {
               that.testStatus = TEST_STATUS.TESTING;
             });
@@ -259,7 +259,7 @@ export default {
       this.trainStatus = newStatus;
       if (prevStatus === undefined) { // run trainStatusChanged for the first time
         if (newStatus === TRAIN_STATUS.TRAINING) {
-          this.eventBus.$emit('startLoading', this.$t('intent_engine.is_training'));
+          this.eventBus.$emit('startLoading', this.$t('intent_engine.is_training'), 'line');
         }
       } else if (prevStatus === TRAIN_STATUS.TRAINING) {
         if (newStatus === TRAIN_STATUS.TRAINED) {
@@ -311,7 +311,7 @@ export default {
       console.log(prevStatus);
       if (prevStatus === undefined) { // run testStatusChanged for the first time
         if (newStatus === TEST_STATUS.TESTING) {
-          this.eventBus.$emit('startLoading', this.$t('intent_engine.is_testing'));
+          this.eventBus.$emit('startLoading', this.$t('intent_engine.is_testing'), 'line');
         }
       }
       if (newStatus !== TEST_STATUS.TESTING) {

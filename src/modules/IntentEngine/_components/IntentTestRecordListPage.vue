@@ -146,6 +146,8 @@ export default {
         // console.log(data);
         this.latestRecords = data.latest;
         this.savedRecords = data.saved;
+      }).finally(() => {
+        this.eventBus.$emit('endLoading');
       });
     },
     renderRecordData(records, type) {
@@ -239,14 +241,23 @@ export default {
         },
       ];
       if (type === 'saved') {
-        const option = {
-          // unsave
-          text: this.$t('intent_engine.test_records.unstore_record'),
-          onclick: () => {
-            that.unsaveRecord(record);
+        const ops = [
+          {
+            // edit record name
+            text: this.$t('intent_engine.test_records.edit_record_name'),
+            onclick: () => {
+              console.log('TODO: edit record name');
+            },
           },
-        };
-        options.splice(1, 0, option);
+          {
+            // unsave
+            text: this.$t('intent_engine.test_records.unstore_record'),
+            onclick: () => {
+              that.unsaveRecord(record);
+            },
+          },
+        ];
+        options.splice(1, 0, ...ops);
       } else {
         const option = {
           // save
@@ -311,7 +322,7 @@ export default {
         },
         callback: {
           ok: () => {
-            that.eventBus.$emit('startLoading', that.$t('intent_engine.is_restoring'));
+            that.eventBus.$emit('startLoading', that.$t('intent_engine.is_restoring'), 'line');
             that.$api.restoreTestRecord(record.intent_test.id).then(() => {
               that.toPage('test');
             }).finally(() => {
@@ -334,6 +345,7 @@ export default {
     },
   },
   mounted() {
+    this.eventBus.$emit('startLoading');
     this.getTestRecords();
   },
 };
