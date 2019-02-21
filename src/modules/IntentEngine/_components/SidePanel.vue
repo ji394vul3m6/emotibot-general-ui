@@ -196,7 +196,8 @@ export default {
   },
   methods: {
     getModels() {
-      intentApi.getModels.call(this).then((data) => {
+      intentTestApi.getModels.call(this).then((data) => {
+        // console.log(data);
         this.models = data;
       });
     },

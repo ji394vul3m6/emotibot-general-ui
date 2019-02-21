@@ -85,6 +85,10 @@ function testIntentTestCorpus(intentModelId) {
   ).then(rsp => rsp.data.result);
 }
 
+function getModels() {
+  return this.$reqGet(`${INTENT_TEST_URL}/models`).then(rsp => rsp.data.result);
+}
+
 export default {
   getTestRecords,
   getTestRecord,
@@ -99,4 +103,5 @@ export default {
   importIntentTestCorpus,
   exportIntentTestCorpus,
   testIntentTestCorpus,
+  getModels,
 };
