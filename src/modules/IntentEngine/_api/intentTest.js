@@ -1,5 +1,4 @@
 import qs from 'qs';
-import './mock/intentTest';
 
 const INTENT_TEST_URL = '/api/v1/intent_tests';
 const INTENT_TEST_DATA_URL = '/api/v1/intent_tests/intents';
