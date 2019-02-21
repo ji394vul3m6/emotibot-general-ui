@@ -308,7 +308,6 @@ export default {
     testStatusChanged(newStatus) {
       const prevStatus = this.testStatus;
       this.testStatus = newStatus;
-      console.log(prevStatus);
       if (prevStatus === undefined) { // run testStatusChanged for the first time
         if (newStatus === TEST_STATUS.TESTING) {
           this.eventBus.$emit('startLoading', this.$t('intent_engine.is_testing'), 'line');

@@ -23,22 +23,25 @@ export const intentTest = {
     },
   },
   mutations: {
-    updateAllIntents(s, allIntents) {
+    // updateAllIntents(s, allIntents) {
+    //   s.allIntents = allIntents;
+    //   s.intentList = [];
+    //   s.corpusGroupsWithoutIntent = [];
+    //   s.allIntents.forEach((intent) => {
+    //     if (intent.type === true) {
+    //       s.intentList.push(intent);
+    //     } else {
+    //       s.corpusGroupsWithoutIntent.push(intent);
+    //     }
+    //   });
+    // },
+    setAllIntents(s, allIntents) {
       s.allIntents = allIntents;
-      s.intentList = [];
-      s.corpusGroupsWithoutIntent = [];
-      s.allIntents.forEach((intent) => {
-        if (intent.type === true) {
-          s.intentList.push(intent);
-        } else {
-          s.corpusGroupsWithoutIntent.push(intent);
-        }
-      });
     },
-    updateIntentList(s, intentList) {
+    setIntentList(s, intentList) {
       s.intentList = intentList;
     },
-    updateCorpusGroupsWithoutIntent(s, corpusGroups) {
+    setCorpusGroupsWithoutIntent(s, corpusGroups) {
       s.corpusGroupsWithoutIntent = corpusGroups;
     },
   },

@@ -51,23 +51,25 @@
           {{ $t('intent_engine.test_data.test_corpus_without_intent') }}
           <icon iconType="info" :size="16" enableHover v-tooltip="intentTypeTooltip"></icon>
         </div>
+      </template>
         <intent-test-list class="intent-list"
+          ref="corpusGroupsWithoutIntent"
           :initialIntentList="corpusGroupsWithoutIntent"
           :intentListType="'withoutIntent'"
-          @update="updateCorpusGroupsWithoutIntent($event)">
+          @update="setCorpusGroupsWithoutIntent($event)">
         </intent-test-list>
-      </template>
       <template v-if="intentList.length > 0">
         <div class="intent-list-title margin-top">
           {{ $t('intent_engine.test_data.intent_and_test_corpus') }}
           <icon iconType="info" :size="16" enableHover v-tooltip="intentTypeTooltip"></icon>
         </div>
+      </template>
         <intent-test-list class="intent-list"
+          ref="intentList"
           :initialIntentList="intentList"
           :intentListType="'withIntent'"
-          @update="updateIntentList($event)">
+          @update="setIntentList($event)">
         </intent-test-list>
-      </template>
     </div>
     <side-panel clase="side-panel"
       :testCorpusCounts="corpusCounts"
@@ -141,9 +143,9 @@ export default {
   },
   methods: {
     ...mapMutations([
-      'updateAllIntents',
-      'updateIntentList',
-      'updateCorpusGroupsWithoutIntent',
+      'setAllIntents',
+      'setIntentList',
+      'setCorpusGroupsWithoutIntent',
     ]),
     getTestIntents() {
       this.eventBus.$emit('startLoading');
@@ -156,6 +158,22 @@ export default {
       .finally(() => {
         this.eventBus.$emit('endLoading');
       });
+    },
+    updateAllIntents(intents) {
+      this.setAllIntents(intents);
+      const intentList = [];
+      const corpusGroupsWithoutIntent = [];
+      this.allIntents.forEach((intent) => {
+        if (intent.type === true) {
+          intentList.push(intent);
+        } else {
+          corpusGroupsWithoutIntent.push(intent);
+        }
+      });
+      this.setIntentList(intentList);
+      this.$refs.intentList.$emit('renderIntentTestList', this.intentList);
+      this.setCorpusGroupsWithoutIntent(corpusGroupsWithoutIntent);
+      this.$refs.corpusGroupsWithoutIntent.$emit('renderIntentTestList', this.corpusGroupsWithoutIntent);
     },
     inSearchIntentMode(bool) {
       this.searchIntentMode = bool;

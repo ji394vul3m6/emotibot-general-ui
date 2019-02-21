@@ -149,15 +149,8 @@ export default {
     },
   },
   data() {
-    const intentList = this.initialIntentList.map(intent => ({
-      ...intent,
-      expand: intent.expand ? intent.expand : false,
-      testCorpus: intent.testCorpus ? intent.testCorpus : [],
-      curPage: 1,
-      hasCorpusEditing: intent.hasCorpusEditing ? intent.hasCorpusEditing : false,
-    }));
     return {
-      intentList,
+      intentList: [],
       LIST_PAGE_SIZE: 10,
       newCorpus: '',
       compositionState: false,
@@ -172,8 +165,16 @@ export default {
     };
   },
   computed: {},
-  watch: {},
   methods: {
+    renderIntentList(initialIntentList) {
+      this.intentList = initialIntentList.map(intent => ({
+        ...intent,
+        expand: intent.expand ? intent.expand : false,
+        testCorpus: intent.testCorpus ? intent.testCorpus : [],
+        curPage: 1,
+        hasCorpusEditing: intent.hasCorpusEditing ? intent.hasCorpusEditing : false,
+      }));
+    },
     emitUpdate() {
       const newIntentList = this.intentList.map((intent) => {
         const { expand, testCorpus, curPage, hasCorpusEditing, ...left } = intent;
@@ -337,6 +338,10 @@ export default {
     },
   },
   mounted() {
+    this.renderIntentList(this.initialIntentList);
+    this.$on('renderIntentTestList', (initialIntentList) => {
+      this.renderIntentList(initialIntentList);
+    });
     this.eventBus.$on('startTesting', () => {
       this.shirnkAllIntentBlock();
     });
