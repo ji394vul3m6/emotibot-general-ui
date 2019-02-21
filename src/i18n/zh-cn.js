@@ -993,8 +993,6 @@ export default {
         select_label: '选择欲测试的意图训练版本',
         hint: '提示：目前意图管理有新意图和语料，尚未进行意图训练。',
       },
-      train_data_unchanged: '无新增任何意图或语料',
-      test_corpus_is_empty: '意图测试集为空请先编辑',
       start_train_warning: '注意进行意图训练后，将会产生新模型及对应的意图测试集。',
     },
   },

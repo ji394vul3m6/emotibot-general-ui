@@ -1,4 +1,20 @@
-export const intentTrain = {};
+export const intentTrain = {
+  name: 'intentTrain',
+  namespaced: true,
+  state: {
+    intentList: [],
+  },
+  getters: {
+    hasIntents(s) {
+      return s.intentList.length > 0;
+    },
+  },
+  mutations: {
+    setIntentList(s, intentList) {
+      s.intentList = intentList;
+    },
+  },
+};
 export const intentTest = {
   name: 'intentTest',
   namespaced: true,
@@ -20,6 +36,17 @@ export const intentTest = {
         return count;
       }
       return 0;
+    },
+    hasEmptyCorpus: (s) => {
+      let hasEmptyCorpus = false;
+      for (let i = 0; i < s.intentList.length; i += 1) {
+        const intent = s.intentList[i];
+        if (intent.sentences_count === 0) {
+          hasEmptyCorpus = true;
+          break;
+        }
+      }
+      return hasEmptyCorpus;
     },
   },
   mutations: {

@@ -71,10 +71,7 @@
           @update="setIntentList($event)">
         </intent-test-list>
     </div>
-    <side-panel clase="side-panel"
-      :testCorpusCounts="corpusCounts"
-      :mode="'testPage'">
-    </side-panel>
+    <side-panel clase="side-panel" :mode="'testPage'"></side-panel>
   </div>
 </div>
 </template>

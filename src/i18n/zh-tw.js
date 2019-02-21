@@ -993,8 +993,6 @@ export default {
         select_label: '選擇欲測試的意圖訓練版本',
         hint: '提示：目前意圖管理有新意圖和語料，尚未進行意圖訓練。',
       },
-      train_data_unchanged: '無新增任何意圖或語料',
-      test_corpus_is_empty: '意圖測試集為空請先編輯',
       start_train_warning: '注意進行意圖訓練後，將會產生新模型及對應的意圖測試集。',
     },
   },

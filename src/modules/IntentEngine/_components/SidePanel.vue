@@ -46,7 +46,7 @@
   <div class="info" style="margin-bottom: 10px; margin-top: 10px;">
     {{$t('intent_engine.side_panel.intent_test_info')}}
   </div>
-  <div class="hint">
+  <div class="hint" v-if="hasEmptyTestCorpus">
     {{$t('intent_engine.side_panel.edit_intent_test_corpus_hint')}}
   </div>
   <template v-if="mode==='trainPage'">
@@ -73,18 +73,14 @@
 </div>
 </template>
 <script>
-// tooltip: {
-//   intent_and_corpus_unchanged: '無新增任何意圖或語料',
-//   intent_test_is_empty: '意圖測試集為空請先編輯',
-// },
 
+import { mapGetters } from 'vuex';
 import event from '@/utils/js/event';
 import intentApi from '../_api/intent';
 import intentTestApi from '../_api/intentTest';
 import eventBus from '../_utils/eventBus';
 import general from '../_utils/general';
 import DoIntentTestPop from './DoIntentTestPop';
-
 
 const TRAIN_STATUS = {
   NOT_TRAINED: 'NOT_TRAINED',
@@ -113,16 +109,6 @@ export default {
       required: false,
       default: () => 'trainPage',
     },
-    hasTrainIntents: {
-      type: Boolean,
-      required: false,
-      default: () => false,
-    },
-    testCorpusCounts: {
-      type: Number,
-      required: false,
-      default: () => 0,
-    },
   },
   data() {
     return {
@@ -134,12 +120,12 @@ export default {
       eventBus: eventBus.eventBus,
       showRecentTrainRecords: false,
       trainBtnTooltip: {
-        msg: this.$t('intent_engine.side_panel.train_data_unchanged'),
+        msg: this.$t('intent_engine.side_panel.tooltip.intent_and_corpus_unchanged'),
         alignLeft: true,
         eventOnly: true,
       },
       testBtnTooltip: {
-        msg: this.$t('intent_engine.side_panel.test_corpus_is_empty'),
+        msg: this.$t('intent_engine.side_panel.tooltip.intent_test_is_empty'),
         alignLeft: true,
         eventOnly: true,
       },
@@ -147,6 +133,13 @@ export default {
   },
   watch: {},
   computed: {
+    ...mapGetters('intentTrain-module', {
+      hasTrainIntents: 'hasIntents',
+    }),
+    ...mapGetters('intentTest-module', {
+      testCorpusCounts: 'corpusCounts',
+      hasEmptyTestCorpus: 'hasEmptyCorpus',
+    }),
     canTrain() {
       return this.shouldTrain && this.hasTrainIntents;
     },
@@ -262,12 +255,13 @@ export default {
       const that = this;
       intentApi.getTrainingStatus.call(this).then((data) => {
         that.trainStatusChanged(data.status);
+      }).catch(() => {
+        // console.error(err);
+        this.eventBus.$emit('endLoading');
+      }).finally(() => {
         if (!that.trainStatusIntervalId) {
           that.startPollingTrainStatus();
         }
-      }).catch((err) => {
-        console.error(err);
-        this.eventBus.$emit('endLoading');
       });
     },
     trainStatusChanged(newStatus) {
@@ -304,12 +298,13 @@ export default {
       intentTestApi.getTestStatus.call(this).then((data) => {
         // console.log(data);
         that.testStatusChanged(data.status);
+      }).catch(() => {
+        // console.error(err);
+        this.eventBus.$emit('endLoading');
+      }).finally(() => {
         if (!that.testStatusIntervalId) {
           that.startPollingTestStatus();
         }
-      }).catch((err) => {
-        console.error(err);
-        this.eventBus.$emit('endLoading');
       });
     },
     testStatusChanged(newStatus) {

@@ -46,21 +46,20 @@
         </intent-list>
       </div>
     </div>
-    <side-panel clase="side-panel"
-      :mode="'trainPage'"
-      :hasTrainIntents="hasIntents">
-    </side-panel>
+    <side-panel clase="side-panel" :mode="'trainPage'"></side-panel>
   </div>
 </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters as rootMapGetters, createNamespacedHelpers } from 'vuex';
 import api from '../_api/intent';
 import SidePanel from './SidePanel';
 import IntentList from './IntentList';
 import ImportIntentPop from './ImportIntentPop';
 import eventBus from '../_utils/eventBus';
+
+const { mapState, mapGetters, mapMutations } = createNamespacedHelpers('intentTrain-module');
 
 export default {
   name: 'intent-train-page',
@@ -83,7 +82,6 @@ export default {
 
       isAddIntent: false,
       isSearchKeyword: false,    // call search api with keyword or not
-      intentList: [],
       corpusCounts: 0,
       currentVersion: '',
       trainButtonTooltip: {
@@ -100,12 +98,15 @@ export default {
     };
   },
   computed: {
-    ...mapGetters([
+    ...rootMapGetters([
       'robotID',
     ]),
-    hasIntents() {
-      return this.intentList.length > 0;
-    },
+    ...mapState([
+      'intentList',
+    ]),
+    ...mapGetters([
+      'hasIntents',
+    ]),
     versionNotAvailable() {
       return !this.hasIntents && this.currentVersion === '';
     },
@@ -160,6 +161,9 @@ export default {
     },
   },
   methods: {
+    ...mapMutations([
+      'setIntentList',
+    ]),
     downloadTemplate() {
       window.open('/Files/intent_template.xlsx', '_blank');
     },
@@ -249,9 +253,9 @@ export default {
       .then((intents) => {
         that.isSearchKeyword = that.searchKeyword !== '';
 
-        that.intentList = [];
+        const intentList = [];
         intents.forEach((intent) => {
-          that.intentList.push({
+          intentList.push({
             id: intent.id,
             name: intent.name,
             total: intent.count,
@@ -259,6 +263,7 @@ export default {
             negativeCount: intent.negative_count,
           });
         });
+        this.setIntentList(intentList);
       })
       .catch((err) => {
         console.log(err);
