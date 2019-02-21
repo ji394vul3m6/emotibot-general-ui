@@ -23,18 +23,6 @@ export const intentTest = {
     },
   },
   mutations: {
-    // updateAllIntents(s, allIntents) {
-    //   s.allIntents = allIntents;
-    //   s.intentList = [];
-    //   s.corpusGroupsWithoutIntent = [];
-    //   s.allIntents.forEach((intent) => {
-    //     if (intent.type === true) {
-    //       s.intentList.push(intent);
-    //     } else {
-    //       s.corpusGroupsWithoutIntent.push(intent);
-    //     }
-    //   });
-    // },
     setAllIntents(s, allIntents) {
       s.allIntents = allIntents;
     },

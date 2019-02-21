@@ -6,20 +6,30 @@
   <div class="info" style="margin-top: 10px;">
     {{$t('intent_engine.side_panel.intent_train_info')}}
   </div>
-  <text-button class="button" style="margin-top: 10px;"
-    :button-type="canTrain ? 'default' : 'disable'"
-    :height="'40px'"
-    @click="startTraining()">
-    {{$t('intent_engine.side_panel.do_train')}}
-  </text-button>
-  <div class="train-records" v-if="recentModels.length > 0">
-    <div class="model" v-for="(model, index) in recentModels" :key="model.ie_model_id">
-      <span v-if="index===0">
-        {{`${$t('intent_engine.side_panel.last_success_train')}: ${model.trainDatetimeStr}`}}
-      </span>
-      <span v-if="index!==0 && showRecentTrainRecords">
-        {{`${$t('intent_engine.side_panel.success_train_record')}: ${model.trainDatetimeStr}`}}
-      </span>
+  <div class="test-btn-container"
+    v-tooltip="trainBtnTooltip"
+    @mouseenter="showTrainBtnTooltip($event)"
+    @mouseleave="hideTrainBtnTooltip($event)">
+    <text-button class="button" style="margin-top: 10px;"
+      :button-type="canTrain ? 'default' : 'disable'"
+      :height="'40px'"
+      @click="startTraining()">
+      {{$t('intent_engine.side_panel.do_train')}}
+    </text-button>
+  </div>
+  <div class="train-records">
+    <div class="model">
+      <div v-if="recentModels.length===0">
+        {{$t('intent_engine.test_data.result_none')}}
+      </div>
+      <template v-for="(model, index) in recentModels">
+        <div v-if="index===0"  :key="model.ie_model_id">
+          {{`${$t('intent_engine.side_panel.last_success_train')}: ${model.trainDatetimeStr}`}}
+        </div>
+        <div v-if="index!==0 && showRecentTrainRecords"  :key="model.ie_model_id">
+          {{`${$t('intent_engine.side_panel.success_train_record')}: ${model.trainDatetimeStr}`}}
+        </div>
+      </template>
     </div>
     <template v-if="recentModels.length > 1">
       <div class="link" v-if="showRecentTrainRecords===false" @click="showRecentTrainRecords=true">
@@ -123,10 +133,14 @@ export default {
       testStatusIntervalId: undefined,
       eventBus: eventBus.eventBus,
       showRecentTrainRecords: false,
+      trainBtnTooltip: {
+        msg: this.$t('intent_engine.side_panel.train_data_unchanged'),
+        alignLeft: true,
+        eventOnly: true,
+      },
       testBtnTooltip: {
         msg: this.$t('intent_engine.side_panel.test_corpus_is_empty'),
         alignLeft: true,
-        // left: -10,
         eventOnly: true,
       },
     };
@@ -234,9 +248,11 @@ export default {
       this.$pop(popOption);
     },
     startPollingTrainStatus() {
-      this.trainStatusIntervalId = setInterval(() => {
-        this.pollTrainStatus();
-      }, 5000);
+      if (!this.trainStatusIntervalId) {
+        this.trainStatusIntervalId = setInterval(() => {
+          this.pollTrainStatus();
+        }, 5000);
+      }
     },
     stopPollingTrainStatus() {
       clearInterval(this.trainStatusIntervalId);
@@ -271,22 +287,13 @@ export default {
           this.eventBus.$emit('endLoading');
         }
       }
-      // if (newStatus === TRAIN_STATUS.NOT_TRAINED) {
-      //   console.log('TRAIN_STATUS.NOT_TRAINED');
-      // } else if (newStatus === TRAIN_STATUS.TRAINING) {
-      //   console.log('TRAIN_STATUS.TRAINING');
-      // } else if (newStatus === TRAIN_STATUS.TRAINED) {
-      //   console.log('TRAIN_STATUS.TRAINED');
-      // } else if (newStatus === TRAIN_STATUS.NEED_TRAIN) {
-      //   console.log('TRAIN_STATUS.NEED_TRAIN');
-      // } else if (newStatus === TRAIN_STATUS.TRAIN_FAILED) {
-      //   console.log('TRAIN_STATUS.TRAIN_FAILED');
-      // }
     },
     startPollingTestStatus() {
-      this.testStatusIntervalId = setInterval(() => {
-        this.pollTestStatus();
-      }, 10000);
+      if (!this.testStatusIntervalId) {
+        this.testStatusIntervalId = setInterval(() => {
+          this.pollTestStatus();
+        }, 5000);
+      }
     },
     stopPollingTestStatus() {
       clearInterval(this.testStatusIntervalId);
@@ -312,9 +319,10 @@ export default {
         if (newStatus === TEST_STATUS.TESTING) {
           this.eventBus.$emit('startLoading', this.$t('intent_engine.is_testing'), 'line');
         }
-      }
-      if (newStatus !== TEST_STATUS.TESTING) {
-        this.eventBus.$emit('endLoading');
+      } else if (prevStatus === TEST_STATUS.TESTING) {
+        if (newStatus !== TEST_STATUS.TESTING) {
+          this.eventBus.$emit('endLoading');
+        }
       }
       // if (newStatus === TEST_STATUS.TESTING) {
       //   console.log('TEST_STATUS.TESTING');
@@ -331,8 +339,15 @@ export default {
     toPage(path) {
       this.$router.push(`/intent-manage/${path}`);
     },
+    showTrainBtnTooltip(e) {
+      if (!this.canTrain) {
+        e.target.dispatchEvent(event.createEvent('tooltip-show'));
+      }
+    },
+    hideTrainBtnTooltip(e) {
+      e.target.dispatchEvent(event.createEvent('tooltip-hide'));
+    },
     showTestBtnTooltip(e) {
-      console.log(this.testCorpusCounts);
       if (this.testCorpusCounts === 0) {
         e.target.dispatchEvent(event.createEvent('tooltip-show'));
       }

@@ -204,8 +204,13 @@ export default {
         disable_ok: true,
         callback: {
           ok(recordName) {
+            that.eventBus.$emit('startLoading');
+            // that.eventBus.$emit('startLoading', that.$t('intent_engine.is_restoring'), 'dot');
             that.$api.saveTestRecord(this.$route.params.id, recordName).then(() => {
               that.getTestRecord(that.intentTestID);
+            }).catch((err) => {
+              console.log(err);
+              that.eventBus.$emit('endLoading');
             });
           },
         },
@@ -220,8 +225,12 @@ export default {
         },
         callback: {
           ok: () => {
+            that.eventBus.$emit('startLoading');
             that.$api.unsaveTestRecord(this.$route.params.id).then(() => {
               that.toPage('test/records');
+            }).catch((err) => {
+              console.log(err);
+              that.eventBus.$emit('endLoading');
             });
           },
         },
