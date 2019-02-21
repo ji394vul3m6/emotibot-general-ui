@@ -67,7 +67,10 @@
     </div>
     <div class="content">
       <div class="tool-bar">
-        <div class="link" @click="unsaveRecord()">
+        <div class="link" v-if="!record.saved" @click="saveRecord()">
+          {{$t('intent_engine.test_records.store_record')}}
+        </div>
+        <div class="link" v-if="record.saved" @click="unsaveRecord()">
           {{$t('intent_engine.test_records.unstore_record')}}
         </div>
         <div class="link" @click="restoreRecord()">
@@ -104,6 +107,8 @@
 <script>
 
 import IntentTestList from './IntentTestList';
+import SaveRecordPop from './SaveRecordPop';
+import eventBus from '../_utils/eventBus';
 import api from '../_api/intentTest';
 import general from '../_utils/general';
 
@@ -123,6 +128,7 @@ export default {
       allIntents: [],
       intentList: [],
       corpusGroupsWithoutIntent: [],
+      eventBus: eventBus.eventBus,
       intentTypeTooltip: {
         msg: this.$t('intent_engine.manage.tooltip.page_info'),
       },
@@ -166,6 +172,7 @@ export default {
   },
   methods: {
     getTestRecord(intentTestID) {
+      this.eventBus.$emit('startLoading');
       this.$api.getTestRecord(intentTestID).then((data) => {
         // console.log(data);
         const { test_intents, ...record } = data;
@@ -175,6 +182,8 @@ export default {
         record.fn = record.false_negatives;
         this.record = record;
         this.allIntents = data.test_intents;
+      }).finally(() => {
+        this.eventBus.$emit('endLoading');
       });
     },
     inSearchIntentMode(bool) {
@@ -186,15 +195,62 @@ export default {
     downloadData() {
       console.log('downloadData');
     },
+    saveRecord() {
+      const that = this;
+      const popOption = {
+        title: that.$t('intent_engine.test_records.save_record_pop.save_record'),
+        component: SaveRecordPop,
+        validate: true,
+        disable_ok: true,
+        callback: {
+          ok(recordName) {
+            that.$api.saveTestRecord(this.$route.params.id, recordName).then(() => {
+              that.getTestRecord(that.intentTestID);
+            });
+          },
+        },
+      };
+      this.$pop(popOption);
+    },
     unsaveRecord() {
-      this.$api.unsaveTestRecord(this.$route.params.id);
+      const that = this;
+      const option = {
+        data: {
+          msg: that.$t('intent_engine.test_records.unsave_warning'),
+        },
+        callback: {
+          ok: () => {
+            that.$api.unsaveTestRecord(this.$route.params.id).then(() => {
+              that.toPage('test/records');
+            });
+          },
+        },
+      };
+      that.$popWarn(option);
     },
     restoreRecord() {
-      this.$api.restoreTestRecord(this.$route.params.id);
+      const that = this;
+      const option = {
+        data: {
+          msg: that.$t('intent_engine.test_records.restore_warning'),
+        },
+        callback: {
+          ok: () => {
+            that.eventBus.$emit('startLoading', that.$t('intent_engine.is_restoring'), 'line');
+            that.$api.restoreTestRecord(this.$route.params.id).then(() => {
+              that.toPage('test');
+            }).finally(() => {
+              that.eventBus.$emit('endLoading');
+            });
+          },
+        },
+      };
+      that.$popWarn(option);
     },
   },
   mounted() {
     this.intentTestID = this.$route.params.id;
+    this.eventBus.$emit('startLoading');
     this.getTestRecord(this.intentTestID);
   },
 };
