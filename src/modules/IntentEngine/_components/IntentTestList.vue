@@ -378,6 +378,9 @@ export default {
       .intent-name{
         flex: 1 1 auto;
         @include font-14px-line-height-28px();
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
         &.after-icon{
           margin-left: 18px;
         }

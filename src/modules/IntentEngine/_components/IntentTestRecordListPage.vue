@@ -47,8 +47,10 @@
 </template>
 <script>
 
+import { mapGetters } from 'vuex';
 import GeneralScrollTable from '@/components/GeneralScrollTable/GeneralScrollTable';
 import api from '../_api/intentTest';
+import intentApi from '../_api/intent';
 import TestRecordListTableAction from './_tableColumn/TestRecordListTableAction';
 import TestRecordListTableDownloadLink from './_tableColumn/TestRecordListTableDownloadLink';
 import eventBus from '../_utils/eventBus';
@@ -132,6 +134,9 @@ export default {
     };
   },
   computed: {
+    ...mapGetters([
+      'robotID',
+    ]),
     latestRecordData() {
       return this.renderRecordData(this.latestRecords, 'latest');
     },
@@ -361,8 +366,7 @@ export default {
       this.$api.exportTestRecord(record.intent_test.id);
     },
     exportModel(record) {
-      console.log('model download');
-      console.log(record);
+      intentApi.exportModel.call(this, this.robotID, record.ie_model.id);
     },
     toPage(path) {
       this.$router.push(`/intent-manage/${path}`);

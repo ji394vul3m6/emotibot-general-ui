@@ -138,6 +138,10 @@ function getModels() {
   return this.$reqGet(`${GET_INTENT_URL}/models`).then(rsp => rsp.data.result);
 }
 
+function exportModel(appid, version) {
+  window.open(`${GET_INTENT_URL}/export?appid=${appid}&version=${version}`);
+}
+
 export default {
   getIntents,
   getIntentsDetail,
@@ -150,4 +154,5 @@ export default {
   getTrainingStatus,
   deleteIntents,
   getModels,
+  exportModel,
 };
