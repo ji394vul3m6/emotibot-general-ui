@@ -157,7 +157,12 @@ export default {
     },
     composeDiffLink(model) {
       const link = { ...SelectTableShowDiffLink };
-      const text = this.$t('intent_engine.side_panel.do_intent_test.check_diffs', { inum: model.diffs_count });
+      let text;
+      if (model.diffs_count === 0) {
+        text = this.$t('intent_engine.side_panel.do_intent_test.no_diff');
+      } else {
+        text = this.$t('intent_engine.side_panel.do_intent_test.check_diffs', { inum: model.diffs_count });
+      }
       const that = this;
       link.data = () => ({
         linkData: {

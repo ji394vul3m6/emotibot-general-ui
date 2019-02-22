@@ -30,7 +30,7 @@
             {{ $t('general.export') }}
           </text-button>
           <div class="intent-count-label">
-            {{ $t('intent_engine.test_data.intent_num', {inum: allIntents.length, cnum: corpusCounts}) }}
+            {{ $t('intent_engine.test_data.intent_num', {inum: intentList.length, cnum: corpusCounts}) }}
           </div>
         </div>
         <!-- <div class="content-tool-right">
@@ -49,7 +49,7 @@
       <template v-if="corpusGroupsWithoutIntent.length > 0">
         <div class="intent-list-title">
           {{ $t('intent_engine.test_data.test_corpus_without_intent') }}
-          <icon iconType="info" :size="16" enableHover v-tooltip="intentTypeTooltip"></icon>
+          <icon iconType="info" :size="16" enableHover v-tooltip="withoutIntentTooltip"></icon>
         </div>
       </template>
         <intent-test-list class="intent-list"
@@ -61,10 +61,10 @@
       <template v-if="intentList.length > 0">
         <div class="intent-list-title" :class="{'margin-top': corpusGroupsWithoutIntent.length > 0}">
           {{ $t('intent_engine.test_data.intent_and_test_corpus') }}
-          <icon iconType="info" :size="16" enableHover v-tooltip="intentTypeTooltip"></icon>
+          <icon iconType="info" :size="16" enableHover v-tooltip="intentListTooltip"></icon>
         </div>
         <div class="closable-intro" v-if="showClosableIntro">
-          {{ $t('intent_engine.test_data.intent_and_test_corpus_intro') }}
+          {{ $t('intent_engine.test_data.intent_and_test_corpus_tooltip') }}
           <icon class="close-intro" iconType="info_close" :size="18" @click="closeTestCorpusIntro()"></icon>
         </div>
       </template>
@@ -111,8 +111,11 @@ export default {
         height: '28px',
         'border-radius': '2px',
       },
-      intentTypeTooltip: {
-        msg: this.$t('intent_engine.manage.tooltip.page_info'),
+      withoutIntentTooltip: {
+        msg: this.$t('intent_engine.test_data.test_corpus_without_intent_tooltip'),
+      },
+      intentListTooltip: {
+        msg: this.$t('intent_engine.test_data.intent_and_test_corpus_tooltip'),
       },
     };
   },

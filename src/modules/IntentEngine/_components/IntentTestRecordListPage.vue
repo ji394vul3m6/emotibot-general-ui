@@ -249,7 +249,7 @@ export default {
             // edit record name
             text: this.$t('intent_engine.test_records.edit_record_name'),
             onclick: () => {
-              console.log('TODO: edit record name');
+              that.editRecordName(record);
             },
           },
           {
@@ -290,10 +290,31 @@ export default {
         title: that.$t('intent_engine.test_records.save_record_pop.save_record'),
         component: SaveRecordPop,
         validate: true,
+        extData: {},
         disable_ok: true,
         callback: {
           ok(recordName) {
             that.$api.saveTestRecord(record.intent_test.id, recordName).then(() => {
+              that.getTestRecords();
+            });
+          },
+        },
+      };
+      this.$pop(popOption);
+    },
+    editRecordName(record) {
+      const that = this;
+      const popOption = {
+        title: that.$t('intent_engine.test_records.save_record_pop.edit_saved_record'),
+        component: SaveRecordPop,
+        validate: true,
+        extData: {
+          recordName: record.intent_test.name,
+        },
+        disable_ok: true,
+        callback: {
+          ok(recordName) {
+            that.$api.patchTestRecord(record.intent_test.id, recordName).then(() => {
               that.getTestRecords();
             });
           },

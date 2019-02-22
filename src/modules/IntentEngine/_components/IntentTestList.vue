@@ -96,7 +96,7 @@
                 <div class="result-wrong" v-if="corpus.result === 2" v-tooltip="getResultModeTestResultTooltip(corpus)">
                   <span class="result">{{`${$t('intent_engine.test_data.result_wrong')}`}}</span>
                   <span class="score">{{`｜${$t('intent_engine.test_data.result_score')}: ${corpus.score}`}}</span>
-                  <span class="answer">{{`｜${$t('intent_engine.test_data.robot_predict')}: ${corpus.answer}`}}</span>
+                  <span class="answer">{{`, ${$t('intent_engine.test_data.robot_predict')}: ${corpus.answer}`}}</span>
                 </div>
               </div>
             </template>
@@ -315,7 +315,7 @@ export default {
       const wrong = this.$t('intent_engine.test_data.result_wrong');
       const score = this.$t('intent_engine.test_data.result_score');
       const predict = this.$t('intent_engine.test_data.robot_predict');
-      tooltip.msg = `${wrong}｜${score}: ${corpus.score}｜${predict}: ${corpus.answer}`;
+      tooltip.msg = `${wrong}｜${score}: ${corpus.score}, ${predict}: ${corpus.answer}`;
       return tooltip;
     },
     composeIntentTestCorrectRate(intent) {
@@ -499,15 +499,18 @@ export default {
               color: $color-success;
             }
             .result-wrong{
-              flex: 0 0 auto;
+              flex: 1 1 auto;
               display: flex;
               color: $color-error;
             }
+            .result{
+              flex: 0 0 auto;
+            }
             .score{
-              width: 100px;
+              flex: 0 0 auto;
             }
             .answer{
-              width: 170px;
+              flex: 1 1 auto;
               overflow: hidden;
               text-overflow: ellipsis;
               white-space: nowrap;

@@ -119,6 +119,7 @@ export default {
       testStatusIntervalId: undefined,
       eventBus: eventBus.eventBus,
       showRecentTrainRecords: false,
+      beforeDestroy: false,
       trainBtnTooltip: {
         msg: this.$t('intent_engine.side_panel.tooltip.intent_and_corpus_unchanged'),
         alignLeft: true,
@@ -152,7 +153,8 @@ export default {
              this.trainStatus === TRAIN_STATUS.TRAIN_FAILED;
     },
     canTest() {
-      return this.shouldTest && this.testCorpusCounts > 0 && this.uniqueModels.length > 0;
+      // return this.shouldTest && this.testCorpusCounts > 0 && this.uniqueModels.length > 0;
+      return this.testCorpusCounts > 0 && this.uniqueModels.length > 0;
     },
     shouldTest() {
       return this.testStatus === TEST_STATUS.NEED_TEST ||
@@ -249,7 +251,7 @@ export default {
       this.$pop(popOption);
     },
     startPollingTrainStatus() {
-      if (!this.trainStatusIntervalId) {
+      if (!this.trainStatusIntervalId && !this.beforeDestroy) {
         this.trainStatusIntervalId = setInterval(() => {
           this.pollTrainStatus();
         }, 5000);
@@ -267,7 +269,7 @@ export default {
         // console.error(err);
         this.eventBus.$emit('endLoading');
       }).finally(() => {
-        if (!that.trainStatusIntervalId) {
+        if (!that.trainStatusIntervalId && !that.beforeDestroy) {
           that.startPollingTrainStatus();
         }
       });
@@ -282,6 +284,7 @@ export default {
       } else if (prevStatus === TRAIN_STATUS.TRAINING) {
         if (newStatus === TRAIN_STATUS.TRAINED) {
           this.$notify({ text: this.$t('intent_engine.training_success') });
+          this.getModels();
         } else if (status === TRAIN_STATUS.TRAIN_FAILED) {
           this.$notifyFail(this.$('intent_engine.training_fail'));
         }
@@ -291,7 +294,7 @@ export default {
       }
     },
     startPollingTestStatus() {
-      if (!this.testStatusIntervalId) {
+      if (!this.testStatusIntervalId && !this.beforeDestroy) {
         this.testStatusIntervalId = setInterval(() => {
           this.pollTestStatus();
         }, 5000);
@@ -310,7 +313,7 @@ export default {
         // console.error(err);
         this.eventBus.$emit('endLoading');
       }).finally(() => {
-        if (!that.testStatusIntervalId) {
+        if (!that.testStatusIntervalId && !that.beforeDestroy) {
           that.startPollingTestStatus();
         }
       });
@@ -323,6 +326,11 @@ export default {
           this.eventBus.$emit('startLoading', this.$t('intent_engine.is_testing'), 'line');
         }
       } else if (prevStatus === TEST_STATUS.TESTING) {
+        if (newStatus === TEST_STATUS.TESTED) {
+          this.$notify({ text: this.$t('intent_engine.side_panel.testing_success') });
+        } else if (newStatus === TEST_STATUS.TEST_FAILED) {
+          this.$notifyFail(this.$t('intent_engine.side_panel.testing_fail'));
+        }
         if (newStatus !== TEST_STATUS.TESTING) {
           this.eventBus.$emit('endLoading');
         }
@@ -365,6 +373,7 @@ export default {
     this.pollTestStatus();
   },
   beforeDestroy() {
+    this.beforeDestroy = true;
     this.stopPollingTrainStatus();
     this.stopPollingTestStatus();
   },

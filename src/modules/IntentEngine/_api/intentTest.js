@@ -26,6 +26,17 @@ function saveTestRecord(intentTestId, recordName) {
   ).then(rsp => rsp.data.result);
 }
 
+function patchTestRecord(intentTestId, recordName) {
+  const body = {
+    name: recordName,
+  };
+  return this.$reqPatch(
+    `${INTENT_TEST_URL}/${intentTestId}`,
+    qs.stringify(body),
+    { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
+  ).then(rsp => rsp.data.result);
+}
+
 function unsaveTestRecord(intentTestId) {
   return this.$reqDelete(`${INTENT_TEST_URL}/${intentTestId}/unsave`).then(rsp => rsp.data.result);
 }
@@ -94,6 +105,7 @@ export default {
   getTestRecord,
   getTestStatus,
   saveTestRecord,
+  patchTestRecord,
   unsaveTestRecord,
   exportTestRecord,
   restoreTestRecord,

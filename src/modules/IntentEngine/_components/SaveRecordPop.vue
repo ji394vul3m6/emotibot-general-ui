@@ -12,7 +12,12 @@
 
 <script>
 export default {
-  props: {},
+  props: {
+    extData: {
+      type: Object,
+      required: true,
+    },
+  },
   data() {
     return {
       recordName: '',
@@ -36,6 +41,9 @@ export default {
   },
   mounted() {
     this.$on('validate', this.validate);
+    if (this.extData.recordName) {
+      this.recordName = this.extData.recordName;
+    }
   },
 };
 </script>
