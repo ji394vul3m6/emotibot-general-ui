@@ -926,6 +926,7 @@ export default {
       intent_num: '共有 {inum} 组测试意图 / {cnum} 笔测试语料',
       test_corpus_without_intent: '未标注任何意图的测试语料',
       intent_and_test_corpus: '意图及测试语料',
+      intent_and_test_corpus_intro: '可以按關閉的說明提示可以按關閉的說明提示可以按關閉的說明提示可以按關閉的說明提示可以按關閉的說明提示可以按關閉的說明提示可以按關閉的說明提示可以按關閉的說明提示可以按關閉的說明提示',
       show_button: '检视',
       show_intent_with_corpus_less_than_3: '显示少于3笔测试语料',
       show_test_result: '显示测试结果',

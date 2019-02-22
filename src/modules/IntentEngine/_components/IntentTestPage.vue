@@ -33,7 +33,7 @@
             {{ $t('intent_engine.test_data.intent_num', {inum: allIntents.length, cnum: corpusCounts}) }}
           </div>
         </div>
-        <div class="content-tool-right">
+        <!-- <div class="content-tool-right">
           <dropdown-select
             class="option-select"
             :multi="true"
@@ -44,7 +44,7 @@
             width="64px"
             :inputBarStyle="optionSelectStyle"
           />
-        </div>
+        </div> -->
       </div>
       <template v-if="corpusGroupsWithoutIntent.length > 0">
         <div class="intent-list-title">
@@ -59,9 +59,13 @@
           @update="setCorpusGroupsWithoutIntent($event)">
         </intent-test-list>
       <template v-if="intentList.length > 0">
-        <div class="intent-list-title margin-top">
+        <div class="intent-list-title" :class="{'margin-top': corpusGroupsWithoutIntent.length > 0}">
           {{ $t('intent_engine.test_data.intent_and_test_corpus') }}
           <icon iconType="info" :size="16" enableHover v-tooltip="intentTypeTooltip"></icon>
+        </div>
+        <div class="closable-intro" v-if="showClosableIntro">
+          {{ $t('intent_engine.test_data.intent_and_test_corpus_intro') }}
+          <icon class="close-intro" iconType="info_close" :size="18" @click="closeTestCorpusIntro()"></icon>
         </div>
       </template>
         <intent-test-list class="intent-list"
@@ -102,6 +106,7 @@ export default {
       searchKeyword: '',
       searchIntentMode: false,
       eventBus: eventBus.eventBus,
+      showClosableIntro: true,
       optionSelectStyle: {
         height: '28px',
         'border-radius': '2px',
@@ -167,6 +172,12 @@ export default {
           corpusGroupsWithoutIntent.push(intent);
         }
       });
+      // intentList.push({
+      //   id: 0,
+      //   name: 'Intent Name',
+      //   sentences_count: 133,
+      //   type: true,
+      // });
       this.setIntentList(intentList);
       this.$refs.intentList.$emit('renderIntentTestList', this.intentList);
       this.setCorpusGroupsWithoutIntent(corpusGroupsWithoutIntent);
@@ -206,6 +217,9 @@ export default {
         },
       };
       this.$pop(popOption);
+    },
+    closeTestCorpusIntro() {
+      this.showClosableIntro = false;
     },
   },
   mounted() {
@@ -291,6 +305,24 @@ export default {
         }
         .icon {
           margin-left: 6px;
+        }
+      }
+      .closable-intro{
+        position: relative;
+        flex: 0 0 auto;
+        margin: 10px 0px 10px 0px;
+        padding: 10px 40px 10px 10px;
+        background-color: #f8f8f8;
+        border-radius: 4px;
+        color: $color-font-normal;
+        @include font-14px();
+        .close-intro{
+          position: absolute;
+          right: 10px;
+          top: 10px;
+          &:hover {
+            cursor: pointer;
+          }
         }
       }
       .intent-list{
