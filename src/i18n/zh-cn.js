@@ -1,6 +1,6 @@
 export default {
   robot_config: {
-    robot_config: '系統功能配置',
+    robot_config: '系统功能配置',
     config_content_error: '设定内容错误',
     ssm: {
       title: '问答',
@@ -169,7 +169,8 @@ export default {
     delete_category_msg: '确定要删除分类 {name} 及其子分类吗？',
   },
   statistics: {
-    add_new_std_question: '新增標準問題',
+    std_question_exists: '标准问题已存在',
+    add_new_std_question: '新增标准问题',
     sessions_time: '会话时间',
     session_id: '会话 ID',
     feedback_score: '满意度分数',
@@ -847,6 +848,7 @@ export default {
     },
   },
   intent_engine: {
+    delete_multi_intent_msg: '确定要删除所选意图吗？',
     train: '意图训练',
     is_training: '意图训练中...',
     training_success: '意图训练成功',
@@ -1181,8 +1183,8 @@ export default {
     browser_page_icon_info: '支援格式 png ，档案大小限制为1mb，建议宽高比例1:1',
 
     system_setting: '系统设置',
-    system_icon_setting: '系統图标设置',
-    system_lu_icon: '系統左上图标',
+    system_icon_setting: '系统图标设置',
+    system_lu_icon: '系统左上图标',
     login_icon: '登入画面图标',
     login_icon_info: '支援格式 svg,png ，档案大小限制为1mb，建议宽高比例为5:3',
 
