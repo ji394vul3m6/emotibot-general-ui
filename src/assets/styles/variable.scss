@@ -36,6 +36,18 @@ $color-input-error: #FEF3F0;
   font-size: 12px;
   line-height: 18px;
 }
+@mixin font-12px-line-height-28px() {
+  font-size: 12px;
+  line-height: 28px;
+}
+@mixin font-14px-line-height-28px() {
+  font-size: 14px;
+  line-height: 28px;
+}
+@mixin font-16px-line-height-28px() {
+  font-size: 16px;
+  line-height: 28px;
+}
 
 $app-dft-font-size: 12px;
 $app-dft-font-family: PingFangHK-Regular, PingFangSC, 'Microsoft YaHei', 'Microsoft JhengHei';

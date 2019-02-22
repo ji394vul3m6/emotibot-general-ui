@@ -80,7 +80,7 @@ import ImportIntentTestPop from './_components/ImportIntentTestPop';
 
 export default {
   path: 'intent-test',
-  privCode: 'intent_test',
+  privCode: 'intent_manage',
   displayNameKey: 'intent_test',
   name: 'intent-test',
   api,

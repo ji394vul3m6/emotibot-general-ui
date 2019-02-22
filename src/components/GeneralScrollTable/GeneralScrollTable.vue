@@ -377,6 +377,11 @@ export default {
       required: false,
       default: false,
     },
+    columnBoder: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
@@ -499,6 +504,7 @@ export default {
         'custom-action': header.type === 'action',
         'multi-action': this.hasMultiCustomAction,
         'icon-column': header.type === 'icon',
+        'column-border': this.columnBoder,
       };
     },
     uniqueId(key, idx) {
@@ -962,6 +968,9 @@ $table-layout-right-flex-basis: 60px;
             // justify-content: space-between;
           }
         }
+        &.column-border{
+          border-right: 1px solid $table-color-borderline;
+        }
       }
       .table-col-action {
         flex: 0 0 $table-action-width;
@@ -1096,6 +1105,9 @@ $table-layout-right-flex-basis: 60px;
               pointer-events: auto;
             }
           }
+        }
+        &.column-border{
+          border-right: 1px solid $table-color-borderline;
         }
       }
       .table-col-action {

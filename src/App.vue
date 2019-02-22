@@ -10,7 +10,8 @@
         <!-- <div class="app-header" v-if="!isIFrame">{{ pageName }}</div> -->
         <div v-if="showLoading" class="app-body">
           <div class="loading card h-fill w-fill">
-            <loading-dot></loading-dot>
+            <loading-dot v-if="loadingType==='dot'"></loading-dot>
+            <loading-line v-if="loadingType==='line'"></loading-line>
             <div class="loading-msg"> {{ loadingMsg || $t('general.loading') }}</div>
           </div>
         </div>
@@ -27,7 +28,8 @@
         <div id="app-page" class="manage">
           <div v-if="showLoading" class="app-body">
             <div class="loading card h-fill w-fill">
-              <loading-dot></loading-dot>
+              <loading-dot v-if="loadingType==='dot'"></loading-dot>
+              <loading-line v-if="loadingType==='line'"></loading-line>
               <div class="loading-msg"> {{ loadingMsg || $t('general.loading') }}</div>
             </div>
           </div>
@@ -107,6 +109,7 @@ export default {
   },
   data() {
     return {
+      loadingType: 'dot',
       showLoading: false,
       loadingMsg: '',
       ready: false,
@@ -339,7 +342,8 @@ export default {
       that.$router.push(`/${page.path}`);
       that.setCurrentPage(newPage);
     },
-    startLoading(msg) {
+    startLoading(msg, type = 'dot') {
+      this.loadingType = type;
       this.showLoading = true;
       this.loadingMsg = msg;
     },

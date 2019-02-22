@@ -7,7 +7,7 @@
 
 * 使用時必須在 component 引用 GeneralTableScroll
 ```
-  import GeneralTable from '@/components/GeneralTableScroll';
+  import GeneralTable from '@/components/GeneralScrollTable/GeneralScrollTable';
 
   // script
   components: {

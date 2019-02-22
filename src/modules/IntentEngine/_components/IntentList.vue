@@ -1040,15 +1040,16 @@ export default {
           }
           .corpus-action {
             display: flex;
-            cursor: pointer;
             > :not(:last-child) {
               margin-right: 10px;
             }
             .corpus-action-edit {
               color: $color-primary;
+              cursor: pointer;
             }
             .corpus-action-delete {
               color: $color-error;
+              cursor: pointer;
             }
           }
         }
