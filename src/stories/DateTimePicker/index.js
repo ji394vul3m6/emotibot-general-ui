@@ -85,7 +85,7 @@ export default [
   },
   {
     name: 'Range Picker',
-    func: withMarkdownNotes(README)((i18n) => {
+    func: withMarkdownNotes('FIXME!!')((i18n) => {
       const template = `
       <div>
         <div class="div-block">
