@@ -169,7 +169,8 @@ export default {
     delete_category_msg: '確定要刪除分類 {name} 及其子分類嗎？',
   },
   statistics: {
-    add_new_std_question: '新增标准问题',
+    std_question_exists: '標準問題已存在',
+    add_new_std_question: '新增標準問題',
     sessions_time: '會話時間',
     session_id: '會話 ID',
     feedback_score: '滿意度分數',
