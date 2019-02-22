@@ -74,7 +74,7 @@
 </template>
 <script>
 
-import { mapGetters } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
 import event from '@/utils/js/event';
 import intentApi from '../_api/intent';
 import intentTestApi from '../_api/intentTest';
@@ -136,6 +136,9 @@ export default {
     ...mapGetters('intentTrain-module', {
       hasTrainIntents: 'hasIntents',
     }),
+    ...mapState('intentTest-module', {
+      testIntentList: 'intentList',
+    }),
     ...mapGetters('intentTest-module', {
       testCorpusCounts: 'corpusCounts',
       hasEmptyTestCorpus: 'hasEmptyCorpus',
@@ -149,7 +152,7 @@ export default {
              this.trainStatus === TRAIN_STATUS.TRAIN_FAILED;
     },
     canTest() {
-      return this.shouldTest && this.testCorpusCounts > 0;
+      return this.shouldTest && this.testCorpusCounts > 0 && this.uniqueModels.length > 0;
     },
     shouldTest() {
       return this.testStatus === TEST_STATUS.NEED_TEST ||
@@ -179,17 +182,19 @@ export default {
       }
       for (let i = 0; i < keyOrder.length; i += 1) {
         const models = this.models[keyOrder[i]];
-        models.forEach((model) => {
-          if (uniqueIds[model.ie_model_id] === undefined) {
-            uniqueIds[model.ie_model_id] = 1;
-            uniqueModels.push(
-              {
-                ...model,
-                trainDatetimeStr: general.timestampToDatetimeString(model.train_time),
-              },
-            );
-          }
-        });
+        if (models && models.length > 0) {
+          models.forEach((model) => {
+            if (uniqueIds[model.ie_model_id] === undefined) {
+              uniqueIds[model.ie_model_id] = 1;
+              uniqueModels.push(
+                {
+                  ...model,
+                  trainDatetimeStr: general.timestampToDatetimeString(model.train_time),
+                },
+              );
+            }
+          });
+        }
       }
       return uniqueModels;
     },
@@ -228,6 +233,8 @@ export default {
         validate: true,
         extData: {
           models: this.uniqueModels,
+          testIntentCount: this.testIntentList.length,
+          testCorpusCounts: this.testCorpusCounts,
         },
         callback: {
           ok(modelId) {

@@ -14,6 +14,7 @@
           @cancelValidateSuccess="cancelValidatePass"
           @disableOK="disableOK"
           @enableOK="enableOK"
+          @changeOKMsg="changeOKMsg"
           @cancel="close"
           @showReminder="showReminder"
           :is="currentView" v-model="data" :extData="extData" ref="content"></component>
@@ -22,6 +23,7 @@
           @cancelValidateSuccess="cancelValidatePass"
           @disableOK="disableOK"
           @enableOK="enableOK"
+          @changeOKMsg="changeOKMsg"
           @cancel="close"
           @showReminder="showReminder"
           :is="currentView" :origData="data" :extData="extData" ref="content"></component>
@@ -198,6 +200,9 @@ export default {
     },
     disableOK() {
       this.disable_ok = true;
+    },
+    changeOKMsg(msg) {
+      this.ok_msg = msg;
     },
     showReminder({ buttonRef, ok = () => {}, cancel = () => {}, content, ok_msg, cancel_msg }) {
       this.isReminderShow = true;

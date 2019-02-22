@@ -206,19 +206,22 @@ export default {
       const fn = record.intent_test.false_negatives;
       if (type === 'accuracy') {
         const a = ((tp + tn) * 100) / (tp + tn + fp + fn);
-        if (a) {
+        if (a >= 0) {
           return `${Math.round(a)}%`;
         }
+        return 'NaN';
       } else if (type === 'recall') {
         const r = ((tp) * 100) / (tp + fn);
-        if (r) {
+        if (r >= 0) {
           return `${Math.round(r)}%`;
         }
+        return 'NaN';
       } else if (type === 'precision') {
         const p = (tp * 100) / (tp + fp);
-        if (p) {
+        if (p >= 0) {
           return `${Math.round(p)}%`;
         }
+        return 'NaN';
       }
       return '';
     },
