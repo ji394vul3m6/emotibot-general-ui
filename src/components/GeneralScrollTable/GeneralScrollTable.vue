@@ -153,10 +153,11 @@
                 <component :is="data[headerLeft.key]" :value="data"></component>
               </template>
               <div v-else
+                class="click-copy"
                 :ref="`column-${uniqueId(headerLeft.key, idx)}`"
                 v-tooltip="overflowTooltip"
                 @mouseover="showFullText($event, data[headerLeft.key], `column-${uniqueId(headerLeft.key, idx)}`)"
-                @click="copyIfEllipsis($event)"
+                @click="copyText($event, headerLeft)"
                 @mouseout="hideFullText($event, `column-${uniqueId(headerLeft.key, idx)}`)">
                   {{ data[headerLeft.key] }}
               </div>
@@ -200,10 +201,11 @@
                 <component :is="data[header.key]" :value="data"></component>
               </template>
               <div v-else
+                class="click-copy"
                 :ref="`column-${uniqueId(header.key, idx)}`"
                 v-tooltip="overflowTooltip"
                 @mouseover="showFullText($event, data[header.key], `column-${uniqueId(header.key, idx)}`)"
-                @click="copyIfEllipsis($event)"
+                @click="copyText($event, header)"
                 @mouseout="hideFullText($event, `column-${uniqueId(header.key, idx)}`)">
                   {{ data[header.key] }}
               </div>
@@ -256,9 +258,11 @@
                 <component :is="data[headerRight.key]" :value="data"></component>
               </template>
                 <div v-else
+                  class="click-copy"
                   :ref="`column-${uniqueId(headerRight.key, idx)}`"
                   v-tooltip="overflowTooltip"
                   @mouseover="showFullText($event, data[headerRight.key], `column-${uniqueId(headerRight.key, idx)}`)"
+                  @click="copyText($event, headerRight)"
                   @mouseout="hideFullText($event, `column-${uniqueId(headerRight.key, idx)}`)">
                     {{ data[headerRight.key] }}
                 </div>
@@ -566,10 +570,15 @@ export default {
       this.headerInfoTooltip.msg = header.info;
       infoIconBlockDom.dispatchEvent(event.createEvent('tooltip-reload'));
     },
-    copyIfEllipsis(e) {
-      if (!misc.isEllipsisActive(e.target)) return;
-
+    copyText(e, header) {
+      console.log(header.type);
+      if (['toggle', 'action', 'icon', 'custom'].indexOf(header.type) >= 0) {
+        return;
+      }
       const text = e.target.innerText;
+      if (text === '') {
+        return;
+      }
       misc.copyToClipboard(text);
     },
     showFullText(e, text, refName) {

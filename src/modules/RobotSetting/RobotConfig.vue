@@ -424,7 +424,12 @@ export default {
           return;
         }
         target.threadholds = parseInt(that.editNumber, 10);
-        config.value = JSON.stringify(ssmConfig);
+        config.value = target.threadholds;
+        that.$api.setConfig('ssm_config', BFSystemModule, JSON.stringify(ssmConfig)).then(() => {
+          that.$notify({ text: that.$t('error_msg.save_success') });
+        });
+        that.$forceUpdate();
+        return;
       } else if (config.type === 'threshold') {
         config.value = that.editNumber;
         configKey = `${config.key}-threshold`;

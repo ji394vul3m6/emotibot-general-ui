@@ -8,7 +8,6 @@
       <page-menu></page-menu>
       <div id="app-page" v-if="ready" :class="{iframe: isIFrame}">
         <!-- <div class="app-header" v-if="!isIFrame">{{ pageName }}</div> -->
-        <router-view v-show="!showLoading" class="app-body" :class="{iframe: isIFrame}" @startLoading="startLoading" @endLoading="endLoading"/>
         <div v-if="showLoading" class="app-body">
           <div class="loading card h-fill w-fill">
             <loading-dot v-if="loadingType==='dot'"></loading-dot>
@@ -16,6 +15,7 @@
             <div class="loading-msg"> {{ loadingMsg || $t('general.loading') }}</div>
           </div>
         </div>
+        <router-view class="app-body" :class="{iframe: isIFrame}" @startLoading="startLoading" @endLoading="endLoading"/>
       </div>
       <transition name="slide-in">
       <div id="chat-test-pop" :class="{show: isChatOpen}">
@@ -26,14 +26,14 @@
       <!-- if isManageModule, show enterprise admin page -->
       <template v-else-if="isManageModule && ready">
         <div id="app-page" class="manage">
-          <router-view v-show="!showLoading" class="app-body" @startLoading="startLoading" @endLoading="endLoading"/>
           <div v-if="showLoading" class="app-body">
-          <div class="loading card h-fill w-fill">
-            <loading-dot v-if="loadingType==='dot'"></loading-dot>
-            <loading-line v-if="loadingType==='line'"></loading-line>
-            <div class="loading-msg"> {{ loadingMsg || $t('general.loading') }}</div>
+            <div class="loading card h-fill w-fill">
+              <loading-dot v-if="loadingType==='dot'"></loading-dot>
+              <loading-line v-if="loadingType==='line'"></loading-line>
+              <div class="loading-msg"> {{ loadingMsg || $t('general.loading') }}</div>
+            </div>
           </div>
-        </div>
+          <router-view class="app-body" @startLoading="startLoading" @endLoading="endLoading"/>
         </div>
       </template>
       <template v-if="showUserInfoPage && ready">
