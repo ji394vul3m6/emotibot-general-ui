@@ -63,7 +63,7 @@
       <template v-if="intentList.length > 0">
         <div class="intent-list-title" :class="{'margin-top': corpusGroupsWithoutIntent.length > 0}">
           {{ $t('intent_engine.test_data.intent_and_test_corpus') }}
-          <icon iconType="info" :size="16" enableHover v-tooltip="intentListTooltip"></icon>
+          <!-- <icon iconType="info" :size="16" enableHover v-tooltip="intentListTooltip"></icon> -->
         </div>
         <div class="closable-intro" v-if="showClosableIntro">
           {{ $t('intent_engine.test_data.intent_and_test_corpus_tooltip') }}
@@ -112,7 +112,7 @@ export default {
       searchKeyword: '',
       searchIntentMode: false,
       eventBus: eventBus.eventBus,
-      showClosableIntro: true,
+      showClosableIntro: false,
       showResult: true,
       showSmallTestCorpusOnly: false,
       optionSelectStyle: {
