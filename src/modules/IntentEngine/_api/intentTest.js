@@ -50,12 +50,20 @@ function restoreTestRecord(intentTestId) {
   return this.$reqPost(`${INTENT_TEST_URL}/${intentTestId}/restore`).then(rsp => rsp.data.result);
 }
 
-function getTestIntents() {
-  return this.$reqGet(INTENT_TEST_DATA_URL).then(rsp => rsp.data.result);
+function getTestIntents(keyword) {
+  let url = INTENT_TEST_DATA_URL;
+  if (keyword) {
+    url = `${url}?keyword=${keyword}`;
+  }
+  return this.$reqGet(url).then(rsp => rsp.data.result);
 }
 
-function getIntentTestCorpus(intentId) {
-  return this.$reqGet(`${INTENT_TEST_DATA_URL}/${intentId}`).then(rsp => rsp.data.result);
+function getIntentTestCorpus(intentId, keyword) {
+  let url = `${INTENT_TEST_DATA_URL}/${intentId}`;
+  if (keyword) {
+    url = `${url}?keyword=${keyword}`;
+  }
+  return this.$reqGet(url).then(rsp => rsp.data.result);
 }
 
 function patchIntentTestCorpus(intentId, update, del) {

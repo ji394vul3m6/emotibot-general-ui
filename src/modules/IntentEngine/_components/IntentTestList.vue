@@ -157,6 +157,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    keyword: {
+      type: String,
+      default: '',
+    },
   },
   data() {
     return {
@@ -217,7 +221,7 @@ export default {
       });
     },
     fetchCorpus(intent) {
-      return this.$api.getIntentTestCorpus(intent.id).then((data) => {
+      return this.$api.getIntentTestCorpus(intent.id, this.keyword).then((data) => {
         intent.testCorpus = data.map(corpus => ({
           ...corpus,
           mouseover: false,

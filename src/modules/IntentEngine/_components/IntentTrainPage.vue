@@ -78,7 +78,7 @@ export default {
       searchKeyword: '',
       searchIntentMode: false,
       keywordTimer: null,
-      keywordDelay: 500, // ms
+      keywordDelay: 1000, // ms
 
       isAddIntent: false,
       isSearchKeyword: false,    // call search api with keyword or not
@@ -145,19 +145,14 @@ export default {
   watch: {
     intentList() {
       const that = this;
-      if (!that.searchIntentMode) {
-        that.corpusCounts = that.intentList.reduce((acc, intent) => acc + intent.total
-      , 0);
-      }
+      that.corpusCounts = that.intentList.reduce((acc, intent) => acc + intent.total, 0);
     },
     searchKeyword() {
-      const that = this;
-      if (that.keywordTimer) {
-        clearTimeout(that.keywordTimer);
-      }
-      that.keywordTimer = setTimeout(() => {
-        that.refreshIntentPage();
-      }, that.keywordDelay);
+      this.clearKeywordTimer();
+      this.keywordTimer = setTimeout(
+        () => { this.refreshIntentPage(); },
+        this.keywordDelay,
+      );
     },
   },
   methods: {
@@ -279,12 +274,20 @@ export default {
         this.eventBus.$emit('endLoading');
       });
     },
+    clearKeywordTimer() {
+      if (this.keywordTimer) {
+        clearTimeout(this.keywordTimer);
+      }
+      this.keywordTimer = undefined;
+    },
   },
   mounted() {
     this.eventBus.$emit('startLoading');
     this.refreshIntentPage();
   },
-  beforeDestroy() {},
+  beforeDestroy() {
+    this.clearKeywordTimer();
+  },
 };
 </script>
 

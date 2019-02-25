@@ -58,6 +58,7 @@
           :intentListType="'withoutIntent'"
           :showEditResult="showResult"
           :showSmallTestCorpusOnly="showSmallTestCorpusOnly"
+          :keyword="searchKeyword"
           @update="setCorpusGroupsWithoutIntent($event)">
         </intent-test-list>
       <template v-if="intentList.length > 0">
@@ -76,6 +77,7 @@
           :intentListType="'withIntent'"
           :showEditResult="showResult"
           :showSmallTestCorpusOnly="showSmallTestCorpusOnly"
+          :keyword="searchKeyword"
           @update="setIntentList($event)">
         </intent-test-list>
     </div>
@@ -110,6 +112,8 @@ export default {
   data() {
     return {
       searchKeyword: '',
+      keywordTimer: undefined,
+      keywordTimerDelay: 1000, // ms
       searchIntentMode: false,
       eventBus: eventBus.eventBus,
       showClosableIntro: false,
@@ -187,6 +191,16 @@ export default {
       this.$refs.viewOptionsBtn.dispatchEvent(event.createCustomEvent('dropdown-reload', this.viewOptions));
       // this.$refs.viewOptionsBtn.dispatchEvent(event.createEvent('dropdown-show'));
     },
+    searchKeyword() {
+      if (this.keywordTimer) {
+        clearTimeout(this.keywordTimer);
+        this.keywordTimer = undefined;
+      }
+      this.keywordTimer = setTimeout(
+        () => { this.getTestIntents(); },
+        this.keywordTimerDelay,
+      );
+    },
   },
   methods: {
     ...mapMutations([
@@ -196,7 +210,7 @@ export default {
     ]),
     getTestIntents() {
       this.eventBus.$emit('startLoading');
-      this.$api.getTestIntents().then((data) => {
+      this.$api.getTestIntents(this.searchKeyword).then((data) => {
         this.updateAllIntents(data);
         // console.log(this.allIntents);
       }).catch((err) => {
