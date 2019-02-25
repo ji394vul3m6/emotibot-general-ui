@@ -55,6 +55,8 @@ const MyPlugin = {
               options: binding.value.options,
               width: binding.value.width,
               alignLeft: binding.value.alignLeft,
+              optionType: binding.value.optionType,
+              hideAfterOptionClicked: binding.value.hideAfterOptionClicked,
             },
           });
           vm.$mount();
@@ -75,6 +77,7 @@ const MyPlugin = {
 
           el.addEventListener('dropdown-reload', ({ detail: value = binding.value }) => {
             const newPos = that.getPosition(el, value.alignLeft);
+            const wasShowing = vm.show;
             if (useGlobal) {
               body.removeChild(vm.$el);
             } else {
@@ -88,6 +91,8 @@ const MyPlugin = {
                 options: value.options,
                 width: value.width,
                 alignLeft: value.alignLeft,
+                optionType: value.optionType,
+                hideAfterOptionClicked: value.hideAfterOptionClicked,
               },
             });
             vm.$mount();
@@ -98,12 +103,16 @@ const MyPlugin = {
             } else {
               el.appendChild(vm.$el);
             }
-
             vm.$forceUpdate();
+            if (wasShowing) {
+              vm.$emit('show', that.getPosition(el, binding.value.alignLeft));
+              that.addEventListeners(vm, el, binding.value.alignLeft);
+            }
           });
 
           el.addEventListener('dropdown-show', () => {
             vm.$emit('show', that.getPosition(el, binding.value.alignLeft));
+            that.addEventListeners(vm, el, binding.value.alignLeft);
           });
           el.addEventListener('dropdown-hide', () => {
             el.dispatchEvent(new Event('dropdownHidden'));

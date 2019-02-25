@@ -1,9 +1,16 @@
 <template>
   <div v-if="show" class="dropdown-menu-container" :style="style">
     <div class="dropdown-menu">
-      <div v-for="(option, idx) in options" :key="idx" class="menu-option" :class="{'disabled': option.disabled === true}" @click.stop="clickOption($event, option.onclick)">
-        {{ option.text }}
-      </div>
+      <template v-if="optionType === 'text'">
+        <div v-for="(option, idx) in options" :key="idx" class="text-menu-option menu-option" :class="{'disabled': option.disabled === true}" @click.stop="clickOption($event, option.onclick)">
+          {{ option.text }}          
+        </div>
+      </template>
+      <template v-else-if="optionType === 'custom'">
+        <div v-for="(option, idx) in options" :key="idx" class="custom-menu-option menu-option" :class="{'disabled': option.disabled === true}" @click.stop="clickOption($event, option.onclick)">
+          <component :is="option.component" :option="option"></component>
+        </div>
+      </template>
     </div>
   </div>
 </template>
@@ -32,6 +39,14 @@ export default {
       type: Boolean,
       default: false,
     },
+    optionType: {
+      type: String,
+      default: 'text', // 'text' / 'custom'
+    },
+    hideAfterOptionClicked: {
+      type: Boolean,
+      default: true,
+    },
   },
   data() {
     return {
@@ -55,7 +70,9 @@ export default {
     clickOption(e, onclickFunction) {
       const that = this;
       onclickFunction(e);
-      that.show = false;
+      if (this.hideAfterOptionClicked) {
+        that.show = false;
+      }
     },
   },
   mounted() {
@@ -102,8 +119,6 @@ $option-height: 32px;
   @include customScrollbar();
   .menu-option {
     @include font-14px;
-    height: $option-height;
-    padding: 7px 15px;
     display: flex;
     align-items: center;
     cursor: pointer;
@@ -126,6 +141,10 @@ $option-height: 32px;
       border-bottom-left-radius: 2px;
       border-bottom-right-radius: 2px;
     }
+  }
+  .text-menu-option {
+    height: $option-height;
+    padding: 7px 15px;
   }
 }
 </style>

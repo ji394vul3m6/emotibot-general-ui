@@ -65,18 +65,20 @@
               </template>
             </div>
             <template v-if="intentListMode === 'edit'">
-              <div class="edit-mode-test-result" v-if="!intent.hasCorpusEditing">
-                <span v-if="corpus.result === 0" class="result-none result">{{$t('intent_engine.test_data.result_none')}}</span>
-                <span v-if="corpus.result === 2" class="result-wrong result" v-tooltip="getEditModeTestResultTooltip(corpus)">{{$t('intent_engine.test_data.result_wrong')}}</span>
-                <template v-if="corpus.result === 1">
-                  <template v-if="intentListType === 'withoutIntent'">
-                    <span class="result-correct result">{{$t('intent_engine.test_data.result_correct')}}</span>
+              <template v-if="showEditResult">
+                <div class="edit-mode-test-result" v-if="!intent.hasCorpusEditing">
+                  <span v-if="corpus.result === 0" class="result-none result">{{$t('intent_engine.test_data.result_none')}}</span>
+                  <span v-if="corpus.result === 2" class="result-wrong result" v-tooltip="getEditModeTestResultTooltip(corpus)">{{$t('intent_engine.test_data.result_wrong')}}</span>
+                  <template v-if="corpus.result === 1">
+                    <template v-if="intentListType === 'withoutIntent'">
+                      <span class="result-correct result">{{$t('intent_engine.test_data.result_correct')}}</span>
+                    </template>
+                    <template v-if="intentListType === 'withIntent'">
+                      <span class="result-correct result" v-tooltip="getEditModeTestResultTooltip(corpus)">{{$t('intent_engine.test_data.result_correct')}}</span>
+                    </template>
                   </template>
-                  <template v-if="intentListType === 'withIntent'">
-                    <span class="result-correct result" v-tooltip="getEditModeTestResultTooltip(corpus)">{{$t('intent_engine.test_data.result_correct')}}</span>
-                  </template>
-                </template>
-              </div>
+                </div>
+              </template>
               <div class="corpus-action" v-if="corpus.mouseover && !intent.hasCorpusEditing">
                 <div class="action corpus-action-edit" @click="startEditingCorpus(intent, corpus)">{{ $t('general.edit') }}</div>
                 <div class="action corpus-action-delete" @click="deleteCorpus(intent, corpus)">{{ $t('general.delete')}}</div>
@@ -147,6 +149,14 @@ export default {
       default: () => 'edit',
       // value: edit / result
     },
+    showEditResult: {
+      type: Boolean,
+      default: false,
+    },
+    showSmallTestCorpusOnly: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -164,10 +174,19 @@ export default {
       },
     };
   },
+  watch: {
+    showSmallTestCorpusOnly() {
+      this.renderIntentList(this.initialIntentList);
+    },
+  },
   computed: {},
   methods: {
     renderIntentList(initialIntentList) {
-      this.intentList = initialIntentList.map(intent => ({
+      let intentList = initialIntentList;
+      if (this.showSmallTestCorpusOnly) {
+        intentList = initialIntentList.filter(intent => intent.sentences_count < 3);
+      }
+      this.intentList = intentList.map(intent => ({
         ...intent,
         expand: intent.expand ? intent.expand : false,
         testCorpus: intent.testCorpus ? intent.testCorpus : [],

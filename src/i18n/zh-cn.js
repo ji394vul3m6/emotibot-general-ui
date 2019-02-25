@@ -939,6 +939,8 @@ export default {
       add_new_test_corpus: '加入测试语料',
       robot_predict: '机器预测',
       result_score: '信心分数',
+      show_small_test_corpus_only: '显示少于{num}笔测试语料',
+      show_result: '显示测试结果',
     },
     test_records: {
       intent_test_record: '意图测试记录',
