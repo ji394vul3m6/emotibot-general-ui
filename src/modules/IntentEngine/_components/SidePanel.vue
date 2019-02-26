@@ -277,7 +277,7 @@ export default {
     trainStatusChanged(newStatus) {
       const prevStatus = this.trainStatus;
       this.trainStatus = newStatus;
-      if (prevStatus === undefined) { // run trainStatusChanged for the first time
+      if (prevStatus !== TRAIN_STATUS.TRAINING) { // run trainStatusChanged for the first time
         if (newStatus === TRAIN_STATUS.TRAINING) {
           this.eventBus.$emit('startLoading', this.$t('intent_engine.is_training'), 'line');
         }
@@ -321,7 +321,7 @@ export default {
     testStatusChanged(newStatus) {
       const prevStatus = this.testStatus;
       this.testStatus = newStatus;
-      if (prevStatus === undefined) { // run testStatusChanged for the first time
+      if (prevStatus !== TEST_STATUS.TESTING) { // run testStatusChanged for the first time
         if (newStatus === TEST_STATUS.TESTING) {
           this.eventBus.$emit('startLoading', this.$t('intent_engine.is_testing'), 'line');
         }
@@ -335,17 +335,6 @@ export default {
           this.eventBus.$emit('endLoading');
         }
       }
-      // if (newStatus === TEST_STATUS.TESTING) {
-      //   console.log('TEST_STATUS.TESTING');
-      // } else if (newStatus === TEST_STATUS.TESTED) {
-      //   console.log('TEST_STATUS.TESTED');
-      // } else if (newStatus === TEST_STATUS.TEST_FAILED) {
-      //   console.log('TEST_STATUS.TEST_FAILED');
-      // } else if (newStatus === TEST_STATUS.NEED_TEST) {
-      //   console.log('TEST_STATUS.NEED_TEST');
-      // } else if (newStatus === TEST_STATUS.PENDING) {
-      //   console.log('TEST_STATUS.PENDING');
-      // }
     },
     toPage(path) {
       this.$router.push(`/intent-manage/${path}`);
