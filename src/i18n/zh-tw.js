@@ -973,6 +973,8 @@ export default {
       accuracy: '準確率 Accuracy',
       recall: '召回率 Recall',
       precision: '精確率 Precision',
+      export_intent_test_corpus: '導出意圖測試集',
+      export_intent_train_corpus: '導出意圖訓練語料',
     },
     side_panel: {
       intent_train: '意圖訓練',
