@@ -1,10 +1,21 @@
 <template>
 <div id="intent-manage">
+  <div class="loading-container card w-fill h-fill" v-if="isTraining===true||isTesting===true">
+    <template v-if="isTraining">
+      <loading-line></loading-line>
+      <div class="loading-msg"> {{$t('intent_engine.is_training')}}</div>
+    </template>
+    <template v-if="isTesting">
+      <loading-line></loading-line>
+      <div class="loading-msg"> {{$t('intent_engine.is_testing')}}</div>
+    </template>
+  </div>
   <router-view></router-view>
 </div>
 </template>
 <script>
 
+import { mapState } from 'vuex';
 import eventBus from './_utils/eventBus';
 
 const IntentTrainPage = () => import('./_components/IntentTrainPage');
@@ -29,7 +40,14 @@ export default {
       eventBus: eventBus.eventBus,
     };
   },
-  computed: {},
+  computed: {
+    ...mapState('intentTrain-module', {
+      isTraining: 'isTraining',
+    }),
+    ...mapState('intentTest-module', {
+      isTesting: 'isTesting',
+    }),
+  },
   watch: {},
   methods: {},
   mounted() {
@@ -45,9 +63,17 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-// #intent-manage{
-//   overflow-x: scroll;
-//   overflow-y: scroll;
-//   @include customScrollbar();
-// }
+#intent-manage{
+  .loading-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    @include font-14px();
+    color: $color-font-mark;
+    .loading-msg {
+      margin-top: 20px;
+    }
+  }
+}
 </style>
