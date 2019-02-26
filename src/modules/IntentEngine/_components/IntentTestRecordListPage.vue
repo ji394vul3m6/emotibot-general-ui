@@ -161,7 +161,7 @@ export default {
         const intentModel = this.composeModelDownloadLink(record);
         const rtn = {
           intent_test_id: record.intent_test.id,
-          ie_model_id: record.ie_model.id,
+          ie_model_version: record.ie_model.version,
           test_record: testRecord,
           intent_model: intentModel,
           accuracy: this.composeStatData(record, 'accuracy'),
@@ -366,7 +366,7 @@ export default {
       this.$api.exportTestRecord(record.intent_test.id);
     },
     exportModel(record) {
-      intentApi.exportModel.call(this, this.robotID, record.ie_model.id);
+      intentApi.exportModel.call(this, this.robotID, record.ie_model.version);
     },
     toPage(path) {
       this.$router.push(`/intent-manage/${path}`);

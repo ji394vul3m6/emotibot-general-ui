@@ -162,7 +162,7 @@ export default {
           {
             text: this.$t('intent_engine.test_record.export_intent_train_corpus'),
             onclick: () => {
-              intentApi.exportModel.call(this, this.robotID, this.record.ie_model_id);
+              intentApi.exportModel.call(this, this.robotID, this.record.ie_model_version);
             },
           },
         ],
