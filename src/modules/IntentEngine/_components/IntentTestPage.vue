@@ -192,10 +192,7 @@ export default {
       // this.$refs.viewOptionsBtn.dispatchEvent(event.createEvent('dropdown-show'));
     },
     searchKeyword() {
-      if (this.keywordTimer) {
-        clearTimeout(this.keywordTimer);
-        this.keywordTimer = undefined;
-      }
+      this.clearKeywordTimer();
       this.keywordTimer = setTimeout(
         () => { this.getTestIntents(); },
         this.keywordTimerDelay,
@@ -274,9 +271,18 @@ export default {
     closeTestCorpusIntro() {
       this.showClosableIntro = false;
     },
+    clearKeywordTimer() {
+      if (this.keywordTimer) {
+        clearTimeout(this.keywordTimer);
+      }
+      this.keywordTimer = undefined;
+    },
   },
   mounted() {
     this.getTestIntents();
+  },
+  beforeDestroy() {
+    this.clearKeywordTimer();
   },
 };
 </script>

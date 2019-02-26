@@ -11,7 +11,7 @@
       </div>
     </div>
     <div class="right-align-header">
-      <search-input v-model="searchKeyword" @focus="inSearchIntentMode"></search-input>
+      <!-- <search-input v-model="searchKeyword" @focus="inSearchIntentMode"></search-input> -->
       <text-button class="return-button" @click="toPage('')">{{ $t('general.go_back') }}</text-button>
     </div>
   </div>
@@ -123,7 +123,7 @@ export default {
       ...recordTableHeader,
     ];
     return {
-      searchKeyword: '',
+      // searchKeyword: '',
       searchIntentMode: false,
       latestRecords: [],
       savedRecords: [],

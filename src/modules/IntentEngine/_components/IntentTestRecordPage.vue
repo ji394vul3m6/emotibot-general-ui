@@ -97,7 +97,8 @@
         <intent-test-list class="intent-list"
           :initialIntentList="intentList"
           :intentListType="'withIntent'"
-          :intentListMode="'result'">
+          :intentListMode="'result'"
+          :keyword="searchKeyword">
         </intent-test-list>
       </template>
     </div>
@@ -123,6 +124,8 @@ export default {
   data() {
     return {
       searchKeyword: '',
+      keywordTimer: undefined,
+      keywordTimerDelay: 1000, // ms
       searchIntentMode: false,
       record: {},
       allIntents: [],
@@ -169,11 +172,18 @@ export default {
         }
       });
     },
+    searchKeyword() {
+      this.clearKeywordTimer();
+      this.keywordTimer = setTimeout(
+        () => { this.getTestRecord(this.intentTestID); },
+        this.keywordTimerDelay,
+      );
+    },
   },
   methods: {
     getTestRecord(intentTestID) {
       this.eventBus.$emit('startLoading');
-      this.$api.getTestRecord(intentTestID).then((data) => {
+      this.$api.getTestRecord(intentTestID, this.searchKeyword).then((data) => {
         // console.log(data);
         const { test_intents, ...record } = data;
         record.tp = record.true_positives;
@@ -256,11 +266,20 @@ export default {
       };
       that.$popWarn(option);
     },
+    clearKeywordTimer() {
+      if (this.keywordTimer) {
+        clearTimeout(this.keywordTimer);
+      }
+      this.keywordTimer = undefined;
+    },
   },
   mounted() {
     this.intentTestID = this.$route.params.id;
     this.eventBus.$emit('startLoading');
     this.getTestRecord(this.intentTestID);
+  },
+  beforeDestroy() {
+    this.clearKeywordTimer();
   },
 };
 </script>

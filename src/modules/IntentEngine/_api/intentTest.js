@@ -11,8 +11,12 @@ function getTestStatus() {
   return this.$reqGet(`${INTENT_TEST_URL}/status`).then(rsp => rsp.data.result);
 }
 
-function getTestRecord(intentTestId) {
-  return this.$reqGet(`${INTENT_TEST_URL}/${intentTestId}`).then(rsp => rsp.data.result);
+function getTestRecord(intentTestId, keyword) {
+  let url = `${INTENT_TEST_URL}/${intentTestId}`;
+  if (keyword) {
+    url = `${url}?keyword=${keyword}`;
+  }
+  return this.$reqGet(url).then(rsp => rsp.data.result);
 }
 
 function saveTestRecord(intentTestId, recordName) {
