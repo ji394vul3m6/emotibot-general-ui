@@ -103,10 +103,6 @@ export default {
     'dropdown-menu': DropdownMenu,
   },
   props: {
-    validateTab: {
-      type: Boolean,
-      default: false,
-    },
     initialEntityCollectorList: {
       type: Array,
       required: true,
@@ -150,13 +146,9 @@ export default {
   },
   computed: {},
   watch: {
-    validateTab(newV, oldV) {
-      if (newV && !oldV) {
-        this.$emit('update:valid', true);
-      }
-    },
     entityCollectorList() {
       this.$emit('update', this.entityCollectorList);
+      this.$emit('update:valid', this.isValid());
     },
   },
   methods: {
@@ -322,6 +314,7 @@ export default {
     updateData(index, newEntityCollector) {
       this.entityCollectorList[index] = JSON.parse(JSON.stringify(newEntityCollector));
       this.$emit('update', this.entityCollectorList);
+      this.$emit('update:valid', this.isValid());
     },
     editEntityRelation() {
       const customEntityCollectorList = this.entityCollectorList.filter(collector => collector.ner.sourceType === 'custom');
@@ -440,6 +433,12 @@ export default {
       });
       console.log(out);
     },
+    isValid() {
+      return true;
+    },
+    showToolTip() {
+      general.showInputContentTooltip(this.$refs['input-content']);
+    },
   },
   beforeMount() {
     this.i18n = i18nUtils.getLocaleMsgs(this.$i18n);
@@ -457,6 +456,7 @@ export default {
       alignLeft: true,
     };
     this.$on('rerender', this.rerender);
+    this.$on('showToolTip', this.showToolTip);
     this.rerender();
     // this.printSlotType();
   },

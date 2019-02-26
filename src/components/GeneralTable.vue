@@ -1,5 +1,5 @@
 <template>
-  <div class="general-table-container" :class="[showEmpty ? 'show-empty': '']">
+  <div class="general-table-container" :class="[showEmpty ? 'show-empty': '']" :style="{'min-width': tableMinWidth+'px'}">
     <div class="general-table-header">
     <table ref="tableHeader" class="general-table" :class="[autoHeight ? 'auto-height': '', fontClass]">
       <thead>
@@ -50,38 +50,53 @@
           <td v-if="checkbox" class="table-col-checkbox">
             <input type="checkbox" @click="checkSelf(data, idx)" :checked="data.isChecked">
           </td>
-          <td v-for="header in tableHeader" :key="uniqueId(header.key, idx)"
-            :style="{width: header.width}"
-            :class="{'fixed': header.width, 'custom-action': header.type === 'action', 'multi-action': hasMultiCustomAction, 'icon-column': header.type === 'icon'}"
-             class="table-body-item"
-            @click="handleOnclickRow(onclickRow, data, idx);$emit('onCellClicked', { rowIndex: idx, rowData: data, key: header.key })">
-            <div v-if="header.type === 'tag'">
-              <tag class="tags" v-for="(tag, tagIdx) in data[header.key]" :key="`${tagIdx}-${tag}`" :fontClass="fontClass">{{ tag }}</tag>
-            </div>
-            <!-- type toggle need to have a readonly mode -->
-            <template v-else-if="header.type === 'toggle'">
-              <toggle class="toggles"
-                v-model="data[header.key].val"
-                :disabled="data[header.key].disabled"
-                @change="data[header.key].onclick(data, idx)"></toggle>
-            </template>
-            <template v-else-if="header.type === 'action'">
-              <span class="actions" v-for="act in data[header.key]"
-                :key="act.text" :class="act.type" @click="act.onclick(data, idx)">
-                {{act.text}}
-              </span>
-            </template>
-            <template v-else-if="header.type === 'icon'">
-              <icon v-if="data[header.key]" :icon-type="data[header.key].iconType" :size="data[header.key].iconSize"></icon>
-            </template>
-            <div v-else>{{ data[header.key] }}</div>
-          </td>
+          <template v-if="data.onelineCommand">
+            <td v-for="header in tableHeader" :key="uniqueId(header.key, idx)"
+              :style="{width: header.width}"
+              :class="{'fixed': header.width, 'custom-action': header.type === 'action', 'multi-action': hasMultiCustomAction, 'icon-column': header.type === 'icon'}"
+              class="table-body-item oneline-command"
+              @click="data.action === undefined ? () => {} : data.action(data)">
+              <template v-if="header.key === data.align">
+                {{ data.text }}
+              </template>
+            </td>
+          </template>
+          <template v-else>
+            <td v-for="header in tableHeader" :key="uniqueId(header.key, idx)"
+              :style="{width: header.width}"
+              :class="{'fixed': header.width, 'custom-action': header.type === 'action', 'multi-action': hasMultiCustomAction, 'icon-column': header.type === 'icon'}"
+              class="table-body-item"
+              @click="handleOnclickRow(onclickRow, data, idx);$emit('onCellClicked', { rowIndex: idx, rowData: data, key: header.key })">
+              <div v-if="header.type === 'tag'">
+                <tag class="tags" v-for="(tag, tagIdx) in data[header.key]" :key="`${tagIdx}-${tag}`" :fontClass="fontClass">{{ tag }}</tag>
+              </div>
+              <!-- type toggle need to have a readonly mode -->
+              <template v-else-if="header.type === 'toggle'">
+                <toggle class="toggles"
+                  v-model="data[header.key].val"
+                  :disabled="data[header.key].disabled"
+                  @change="data[header.key].onclick(data, idx)"></toggle>
+              </template>
+              <template v-else-if="header.type === 'action'">
+                <span class="actions" v-for="act in data[header.key]"
+                  :key="act.text" :class="act.type" @click="act.onclick(data, idx)">
+                  {{act.text}}
+                </span>
+              </template>
+              <template v-else-if="header.type === 'icon'">
+                <icon v-if="data[header.key]" :icon-type="data[header.key].iconType" :size="data[header.key].iconSize"></icon>
+              </template>
+              <div v-else>{{ data[header.key] }}</div>
+            </td>
+          </template>
           <td v-if="hasAction" class="table-col-action" :class="{'multi-action': action.length > 1}">
-            <span class="actions" v-for="act in action" 
+            <template v-for="act in action">
+            <span class="actions"
               :key="act.text" :class="act.type"
               @click="act.onclick(data, idx)"
               v-if="data.action_enable === undefined || (data.action_enable && data.action_enable[act.key])"
             > {{ act.text }}</span>
+            </template>
           </td>
           <template v-if="$scopedSlots.menu">
             <td class="fixed menu">
@@ -198,6 +213,9 @@ export default {
         return this.tableData[0][key].length > 1;
       }
       return false;
+    },
+    tableMinWidth() {
+      return (80 * this.tableHeader.length) + 176;
     },
   },
   watch: {
@@ -362,6 +380,9 @@ $table-cell-min-width: 80px;
         text-overflow: ellipsis;
         overflow: hidden;
         white-space: nowrap;
+      }
+      &.oneline-command {
+        color: $color-primary;
       }
     }
     tr {

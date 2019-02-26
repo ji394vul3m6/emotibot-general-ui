@@ -5,7 +5,7 @@
     v-if="edgeType!=='pc_succeed' && edgeType!=='pc_failed' && edgeType!=='virtual_global_edges'">
     <icon icon-type="delete" :enableHover="true" :size=24 @click="deleteEdge()"/>
   </div>
-  <div class="normal-edge" v-if="edgeType==='normal' || edgeType==='trigger'">
+  <div class="normal-edge" v-if="edgeType==='normal'">
     <template v-for="(rule, index) in andRules">
       <div class="rule-block" :key="rule.id">
         <div class="row row-function" v-bind:class="{'not-first': index !== 0}">
@@ -30,7 +30,7 @@
             :ref="`selectFunction_${index}`"
             :value="[rule.funcName]"
             @input="onSelectFunctionInput(index, $event)"
-            :options="getFuncOptions(rule.source, index)"
+            :options="getFuncOptions(rule.source)"
             :showCheckedIcon="false"
             :fixedListWidth="false"
             width="160px"
@@ -124,6 +124,105 @@
             />
           </div>
         </div>
+        <!-- NLU解析器 -->
+        <div class="content-parser"
+          v-if="rule.funcName === 'nlu_parser'">
+          <div class="row">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_block.label_content")}}
+            </div>
+            <dropdown-select
+              class="select select-target-entity"
+              :key="rule.funcName"
+              :ref="`selectTargetEntity_${index}`"
+              :multi="false"
+              :value="[getNluTargetEntity(rule.content.tags)]"
+              @input="setNluTargetEntity(index, $event)"
+              :options="nluTypeOptions"
+              :showCheckedIcon="false"
+              width="200px"
+              :inputBarStyle="selectStyle"
+            />
+          </div>
+          <div class="row"
+            v-if="rule.content.tags === 'TIME_FUTURE' ||
+                  rule.content.tags === 'TIME_PAST'">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_action_block.label_default")}}
+            </div>
+            <dropdown-select
+              class="select select-target-entity"
+              :key="rule.funcName"
+              :multi="false"
+              :value="[rule.content.tags]"
+              @input="rule.content.tags = $event[0]"
+              :options="nluTimeOptions"
+              :showCheckedIcon="false"
+              width="200px"
+              :inputBarStyle="selectStyle"
+            />
+          </div>
+          <div class="row"
+            v-if="rule.content.tags === NLUParserMap.SELECT_CUSTOMIZE_OPTIONS ||
+                  rule.content.tags === NLUParserMap.SELECT_OPTIONS_IN_KEY">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_action_block.label_select_mode")}}
+            </div>
+            <dropdown-select
+              class="select select-target-entity"
+              :key="rule.funcName"
+              :multi="false"
+              :value="[rule.content.tags]"
+              @input="setNluSelectOptionType(index, $event)"
+              :options="nluSelectOptions"
+              :showCheckedIcon="false"
+              width="200px"
+              :inputBarStyle="selectStyle"
+            />
+          </div>
+          <div class="row"
+            v-if="rule.content.tags === NLUParserMap.SELECT_CUSTOMIZE_OPTIONS">
+            <div class="label label-start"></div>
+            <button 
+              class="add-new-option" 
+              v-t="'task_engine_v2.condition_action_block.add_option'"
+              @click="addNLUSelectOption(rule)">
+            </button>
+          </div>
+          <div class="row"
+            v-if="rule.content.tags === NLUParserMap.SELECT_CUSTOMIZE_OPTIONS"
+            v-for="(option, index) in rule.content.options" :key="index">
+            <div class="label label-start">
+              {{`${$t("task_engine_v2.condition_action_block.label_option")}${index + 1}`}}
+            </div>
+            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.options[index]" @focus="onInputFocus">
+            <button class="button" style="width: 60px;" @click="rule.content.options.splice(index, 1); $forceUpdate();">{{$t("task_engine_v2.condition_block.button_remove")}}</button>
+          </div>
+          <div class="row"
+            v-if="rule.content.tags === NLUParserMap.SELECT_OPTIONS_IN_KEY">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_action_block.label_option_key")}}
+            </div>
+            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.option_key" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus">
+          </div>
+          <div class="row"
+            v-if="rule.content.tags === NLUParserMap.SELECT_CUSTOMIZE_OPTIONS ||
+                  rule.content.tags === NLUParserMap.SELECT_OPTIONS_IN_KEY">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_action_block.label_fuzzy_match")}}
+            </div>
+            <toggle v-model="rule.content.fuzzy_match" :size="'medium'" :showLabel="true" :label="toggleLabel"></toggle>
+          </div>
+          <div class="row"
+            v-if="rule.content.tags!==NLUParserMap.SELECT_CUSTOMIZE_OPTIONS &&
+                  rule.content.tags!==NLUParserMap.SELECT_OPTIONS_IN_KEY &&
+                  rule.content.tags!==NLUParserMap.POLARITY">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_action_block.label_has_context")}}
+            </div>
+            <toggle v-model="rule.content.has_context" :size="'medium'" :showLabel="true" :label="toggleLabel"></toggle>
+          </div>
+        </div>
         <!-- 转换数据解析器 -->
         <div class="content-map-table" v-if="rule.funcName === 'user_custom_parser'">
           <div class="row">
@@ -168,6 +267,22 @@
             <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content" @focus="onInputFocus"></input>
           </div>
         </div>
+        <!-- JS 脚本使用 -->
+        <div class="content-api-parser" v-if="rule.funcName === 'js_code'">
+          <div class="row">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_block.label_link")}}
+            </div>
+            <dropdown-select
+              class="select"
+              :value="[rule.content = rule.content || jsCodeOptions[0].text]"
+              @input="onSelectContentInput(index, $event)"
+              :options="jsCodeOptions"
+              :showCheckedIcon="false"
+              width="420px"
+            />
+          </div>
+        </div>
         <!-- Intent -->
         <div class="content-api-parser" v-if="rule.funcName === 'intent_parser'">
           <div class="row">
@@ -177,6 +292,15 @@
             <div :key="intentDropdown.options.length ? `${index}_has_options`: index" class="input-with-dropdown-container" v-dropdown="renderIntentDropdown(index)" :data-index="index">
               <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="rule.content.intentName" :key="rule.funcName" @focus="onInputFocus">
             </div>
+          </div>
+          <div class="row">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_block.label_target_key")}}
+            </div>
+            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" @focus="onInputFocus"
+              :value="getIntentToKey(index)"
+              @input="setIntentToKey(index, $event.target.value)"
+            >
           </div>
         </div>
         <!-- 键值匹配 -->
@@ -212,17 +336,13 @@
                          rule.content[0].compare === '>=' ||
                          rule.content[0].compare === '<'  ||
                          rule.content[0].compare === '<=' "
-              ref="input-content" 
-              v-tooltip="inputTooltip"
               class="input-content"
               oninput="this.value = this.value.replace(/[^0-9]/g, '');"
               v-model="rule.content[0].val"
               @focus="onInputFocus"
             >
             <input v-else
-              ref="input-content" 
               class="input-content"
-              v-tooltip="inputTooltip"
               v-model="rule.content[0].val"
               @focus="onInputFocus"
             >
@@ -476,7 +596,7 @@
         </div>
       </div>
     </template>
-    <div class="row row-no-bottom-margin" v-if="edgeType!=='trigger'">
+    <div class="row row-no-bottom-margin" v-if="tab !== 'TriggerEditTab'">
       <div class="label label-start">
         {{$t("task_engine_v2.edge_edit_tab.label_then_goto")}}
       </div>
@@ -492,81 +612,6 @@
         width="200px"
         :inputBarStyle="selectStyle"
       />
-    </div>
-  </div>
-  <!-- 语句相似度 -->
-  <div class="qq-edge" v-if="edgeType==='qq'">
-    <div class="rule-block">
-      <div class="row row-function">
-        <div class="label label-start">
-          if
-        </div>
-        <dropdown-select
-          class="select select-source"
-          ref="selectSource_0"
-          :value="['text']"
-          @input="onSelectSourceInput(0, $event)"
-          :options="sourceOptions"
-          :showCheckedIcon="false"
-          width="250px"
-          :inputBarStyle="selectStyle"
-        />
-        <dropdown-select
-          class="select select-function"
-          ref="selectFunction_0"
-          :value="['qq']"
-          @input="onSelectFunctionInput(0, $event)"
-          :options="getFuncOptions('text', 0)"
-          :showCheckedIcon="false"
-          width="160px"
-          :inputBarStyle="selectStyle"
-        />
-      </div>
-      <div class="row">
-        <div class="label label-start">
-          {{$t("task_engine_v2.condition_block.label_similarity_threshold")}}
-        </div>
-        <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="threshold" @focus="onInputFocus"></input>
-      </div>
-      <template v-for="(edge, index) in candidateEdges">
-        <div class="row">
-          <div class="label label-start">
-            {{$t("task_engine_v2.condition_block.label_sentence")}}
-          </div>
-          <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="edge.tar_text" @focus="onInputFocus"></input>
-          <button
-            v-if="index===0"
-            class="button"
-            style="width: 100px;"
-            @click="addQQCandidateEdge()">
-            {{`${$t("task_engine_v2.condition_block.button_add")}${$t("task_engine_v2.condition_block.label_sentence")}`}}
-          </button>
-          <button
-            v-if="index!==0"
-            class="button"
-            style="width: 60px;"
-            @click="deleteQQCandidateEdge(index)">
-            {{$t("task_engine_v2.condition_block.button_remove")}}
-          </button>
-        </div>
-        <div class="row">
-          <div class="label label-start">
-            {{$t("task_engine_v2.edge_edit_tab.label_then_goto")}}
-          </div>
-          <dropdown-select
-            class="select select-goto"
-            :ref="`qqSelectGoto_${index}`"
-            :value="[edge.to_node_id]"
-            @input="onQQSelectGoto($event[0], index)"
-            :options="toNodeOptions"
-            :fixedListWidth="false"
-            :showCheckedIcon="false"
-            :showSearchBar="true"
-            width="200px"
-            :inputBarStyle="selectStyle"
-          />
-        </div>
-      </template>
     </div>
   </div>
   <!--[参数收集节点]取得所有必要参数-->
@@ -604,7 +649,7 @@
       <div class="label label-margin-left">
         {{$t("task_engine_v2.params_collecting_edge_tab.failed_description")}}
       </div>
-      <input ref="input-content" v-tooltip="inputTooltip" class="input-limit" v-model="dialogueLimit" @focus="onInputFocus"></input>
+      <input ref="input-content" v-tooltip="inputTooltip" class="input-limit" v-model.number="dialogueLimit" @focus="onInputFocus"></input>
       <div class="label">
         {{$t("task_engine_v2.edge_edit_tab.label_time")}}
       </div>
@@ -642,15 +687,23 @@
 <script>
 import event from '@/utils/js/event';
 import DropdownSelect from '@/components/DropdownSelect';
+import Toggle from '@/components/basic/Toggle';
 import intentApi from '@/modules/IntentEngine/_api/intent';
+import general from '@/modules/TaskEngine/_utils/general';
 import scenarioInitializer from '../_utils/scenarioInitializer';
 import optionConfig from '../_utils/optionConfig';
+
+const NLUTypeOptions = optionConfig.NLUTypeOptions;
+const NLUParserMap = optionConfig.NLUParserMap;
+const NLUTimeParsers = optionConfig.NLUTimeParsers;
+const NLUSelectParsers = optionConfig.NLUSelectParsers;
 
 export default {
   name: 'condition-block',
   api: intentApi,
   components: {
     'dropdown-select': DropdownSelect,
+    Toggle,
   },
   props: {
     nodeId: {
@@ -677,9 +730,10 @@ export default {
       type: Number,
       required: false,
     },
-    validateConditionBlock: {
-      type: Boolean,
-      default: false,
+    jsCodeAlias: {
+      type: Array,
+      // required: false,
+      default: () => [],
     },
   },
   data() {
@@ -703,6 +757,7 @@ export default {
       funcOptionMap: [],
       dialogueLimit: 3,
       varDropdownMap: {},
+      jsCodeOptions: [],
       inputTooltip: {
         msg: this.$t('task_engine_v2.err_empty'),
         eventOnly: true,
@@ -714,6 +769,23 @@ export default {
         width: '450px',
         options: [],
       },
+      toggleLabel: {
+        on: this.$t('task_engine_v2.condition_action_block.on'),
+        off: this.$t('task_engine_v2.condition_action_block.off'),
+      },
+      NLUParserMap,
+      nluTypeOptions: NLUTypeOptions.map(parser => ({
+        text: this.$t(`task_engine_v2.condition_action_block.nlu_options.${parser}`),
+        value: parser,
+      })),
+      nluTimeOptions: NLUTimeParsers.map(parser => ({
+        text: this.$t(`task_engine_v2.condition_action_block.nlu_time_options.${parser}`),
+        value: parser,
+      })),
+      nluSelectOptions: NLUSelectParsers.map(parser => ({
+        text: this.$t(`task_engine_v2.condition_action_block.nlu_select_options.${parser}`),
+        value: parser,
+      })),
     };
   },
   computed: {},
@@ -757,26 +829,6 @@ export default {
         });
       },
     },
-    validateConditionBlock(newV, oldV) {
-      if (newV && !oldV) {
-        let valid = true;
-        if (this.$refs['input-content']) {
-          let refs = this.$refs['input-content'];
-          if (!Array.isArray(refs)) {
-            refs = [refs];
-          }
-          refs.forEach((el) => {
-            if (!el.value) {
-              valid = false;
-              el.dispatchEvent(event.createEvent('tooltip-show'));
-            }
-          });
-          this.$emit('update:valid', valid);
-        } else {
-          this.$emit('update:valid', true);
-        }
-      }
-    },
   },
   methods: {
     onInputFocus(evt) {
@@ -786,31 +838,26 @@ export default {
       this.edge = this.initialEdge;
       this.dialogueLimit = this.initialDialogueLimit;
       this.edgeType = this.edge.edge_type || 'normal';
+      this.tab = this.edge.tab || undefined;
       this.sourceOptions = optionConfig.getSourceOptions(this);
-      this.funcOptionMap = optionConfig.getFuncOptionMap(this);
+      this.funcOptionMap = optionConfig.getFuncOptionMap(this, this.tab);
       this.keyValMatchCompareOptions = optionConfig.getKeyValMatchCompareOptions(this);
       this.keyKeyMatchCompareOptions = optionConfig.getKeyKeyMatchCompareOptions(this);
       this.listLengthMatchCompareOptions = optionConfig.getListLengthMatchCompareOptions(this);
       this.counterCheckOptions = optionConfig.getCounterCheckOptions(this);
       this.cuParserOptions = optionConfig.getCuParserOptions(this);
       if (this.edgeType === 'qq') {
-        this.renderQQEdge();
+        console.warn('qq edge (语句相似度) is no longer supported.');
       } else {
         this.renderNormalEdge();
       }
-    },
-    renderQQEdge() {
-      this.threshold = this.edge.threshold;
-      this.candidateEdges = this.edge.candidate_edges.map((edge) => {
-        let toNodeId = edge.to_node_id;
-        if (toNodeId === 'null') {
-          toNodeId = null;
-        }
-        return {
-          to_node_id: toNodeId,
-          tar_text: edge.tar_text,
-        };
-      });
+      if (this.jsCodeAlias && this.jsCodeAlias.length > 0) {
+        this.funcOptionMap.text.push({
+          value: 'js_code',
+          text: this.$t('task_engine_v2.condition_block.func.js_code'),
+        });
+        this.jsCodeOptions = this.jsCodeAlias.map(item => ({ value: item, text: item }));
+      }
     },
     renderNormalEdge() {
       // render andRules
@@ -860,43 +907,22 @@ export default {
     deleteRegTargetKey(index, idx) {
       this.andRules[index].content.operations.splice(idx, 1);
     },
-    addQQCandidateEdge() {
-      this.candidateEdges.push(scenarioInitializer.initialCandidateEdge());
-    },
-    deleteQQCandidateEdge(index) {
-      this.candidateEdges.splice(index, 1);
-    },
     onSelectSourceInput(index, newValue) {
       const newSource = newValue[0];
       const options = this.funcOptionMap[newSource];
-      if (this.edgeType === 'qq') {
-        this.edgeType = 'normal';
-        this.toNode = null;
-        this.andRules = [{
-          id: this.$uuid.v1(),
-          source: newSource,
-          funcName: options[0].value,
-          content: scenarioInitializer.initialFunctionContent(options[0].value, this.nodeId),
-        }];
-      } else {
-        if (this.andRules[index].source === newSource) return;
-        this.andRules[index].source = newSource;
-        const selectFunctionRef = `selectFunction_${index}`;
-        if (this.$refs[selectFunctionRef]) {
-          this.$refs[selectFunctionRef][0].$emit('updateOptions', options);
-          this.$refs[selectFunctionRef][0].$emit('select', options[0].value);
-        }
+      if (this.andRules[index].source === newSource) return;
+      this.andRules[index].source = newSource;
+      const selectFunctionRef = `selectFunction_${index}`;
+      if (this.$refs[selectFunctionRef]) {
+        this.$refs[selectFunctionRef][0].$emit('updateOptions', options);
+        this.$refs[selectFunctionRef][0].$emit('select', options[0].value);
       }
       this.reloadTooltip();
     },
     onSelectFunctionInput(index, newValue) {
       const newFuncName = newValue[0];
       const originalEdgeType = this.edgeType;
-      if (newFuncName === 'qq') {
-        this.changeToQQEdge(originalEdgeType);
-      } else {
-        this.changeToNormalEdge(originalEdgeType, index, newFuncName);
-      }
+      this.changeToNormalEdge(originalEdgeType, index, newFuncName);
       this.reloadTooltip();
     },
     reloadTooltip() {
@@ -906,34 +932,16 @@ export default {
         });
       }
     },
-    changeToQQEdge(originalEdgeType) {
-      if (originalEdgeType === 'qq') {
-        return;
-      }
-      this.edgeType = 'qq';
-      this.threshold = '0';
-      this.candidateEdges = [scenarioInitializer.initialCandidateEdge()];
-    },
     changeToNormalEdge(originalEdgeType, index, newFuncName) {
-      if (originalEdgeType === 'qq') {
-        this.edgeType = 'normal';
-        this.toNode = null;
-        this.andRules = [{
-          id: this.$uuid.v1(),
-          source: 'text',
-          funcName: newFuncName,
-          content: {},
-        }];
-      } else {  // originalEdgeType === 'normal'
-        if (this.andRules[index].funcName === newFuncName) return;
-        this.andRules[index].funcName = newFuncName;
-      }
+      if (this.andRules[index].funcName === newFuncName) return;
+      this.andRules[index].funcName = newFuncName;
       // initial content
       const content = scenarioInitializer.initialFunctionContent(newFuncName, this.nodeId);
       this.andRules[index].content = content;
 
       // update parser options
-      if (newFuncName === 'common_parser' ||
+      if (newFuncName === 'nlu_parser' ||
+          newFuncName === 'common_parser' ||
           newFuncName === 'task_parser' ||
           newFuncName === 'hotel_parser') {
         const options = this.entityModuleOptions(newFuncName);
@@ -945,6 +953,9 @@ export default {
           });
         }
       }
+    },
+    onSelectContentInput(index, newValue) {
+      this.andRules[index].content = newValue[0];
     },
     onSelectTargetEntity(index, newValue) {
       this.andRules[index].content.tags = newValue.join(',');
@@ -972,14 +983,7 @@ export default {
     },
     emitUpdate() {
       let conditionBlock = {};
-      if (this.edgeType === 'qq') {
-        conditionBlock = {
-          id: this.edge.id,
-          edge_type: this.edgeType,
-          threshold: this.threshold,
-          candidate_edges: this.candidateEdges,
-        };
-      } else if (this.edgeType === 'pc_succeed') {
+      if (this.edgeType === 'pc_succeed') {
         conditionBlock = {
           id: this.edge.id,
           edge_type: 'pc_succeed',
@@ -1031,18 +1035,18 @@ export default {
           }))],
         };
       }
-      this.$emit('update', conditionBlock);
+      this.$nextTick(() => {
+        conditionBlock.valid = this.isValid();
+        this.$emit('update', conditionBlock);
+      });
     },
     entityModuleOptions(parser) {
       const entityModuleOptions = optionConfig.getEntityModuleOptionsMap();
       return entityModuleOptions[parser];
     },
-    getFuncOptions(source, ruleIndex) {
-      // hide qq option when it is not the first rule
-      if (source === 'text' && ruleIndex !== 0) {
-        return this.funcOptionMap[source].filter((option => option.value !== 'qq'));
-      }
-      return this.funcOptionMap[source];
+    getFuncOptions(source) {
+      const options = this.funcOptionMap[source];
+      return options;
     },
     onSelectGoto(toNode) {
       if (toNode === 'add_new_dialogue_node') {
@@ -1053,17 +1057,8 @@ export default {
         this.toNode = toNode;
       }
     },
-    onQQSelectGoto(toNode, index) {
-      if (toNode === 'add_new_dialogue_node') {
-        const newNodeID = scenarioInitializer.guid_sort();
-        this.$emit('addNewDialogueNode', newNodeID);
-        this.candidateEdges[index].to_node_id = newNodeID;
-      } else {
-        this.candidateEdges[index].to_node_id = toNode;
-      }
-    },
     renderIntentDropdown(index) {
-      const options = this.intentDropdown.options.map((option) => {
+      let options = this.intentDropdown.options.map((option) => {
         const onclick = () => {
           this.andRules[index].content = {
             module: 'intent_engine_2.0',
@@ -1075,16 +1070,96 @@ export default {
           onclick,
         };
       });
+      // pre-pend a no intent option, trigger scenario when there is no intent matched
+      const textNoIntent = this.$t('task_engine_v2.condition_block.option.no_intent');
+      options = [
+        {
+          text: textNoIntent,
+          onclick: () => {
+            this.andRules[index].content = {
+              module: 'intent_engine_2.0',
+              intentName: textNoIntent,
+            };
+          },
+        },
+        ...options,
+      ];
       return {
         ...this.intentDropdown,
         options,
       };
+    },
+    getIntentToKey(index) {
+      const toKey = this.andRules[index].content.to_key;
+      if (toKey !== undefined) {
+        return toKey;
+      }
+      this.andRules[index].content.to_key = 'Intent';
+      return 'Intent';
+    },
+    setIntentToKey(index, newValue) {
+      this.andRules[index].content.to_key = newValue;
+      this.emitUpdate();
+    },
+    getNluTargetEntity(tags) {
+      if (optionConfig.NLUTimeParsers.indexOf(tags) > -1) {
+        return optionConfig.NLUTypeMap.TIME;
+      }
+      if (optionConfig.NLUSelectParsers.indexOf(tags) > -1) {
+        return optionConfig.NLUTypeMap.SELECT;
+      }
+      return tags.toLowerCase();
+    },
+    setNluTargetEntity(index, newValue) {
+      if (newValue[0] === optionConfig.NLUTypeMap.TIME) {
+        this.$set(this.andRules[index].content, 'tags', NLUParserMap.TIME_FUTURE);
+      } else if (newValue[0] === optionConfig.NLUTypeMap.SELECT) {
+        this.$set(this.andRules[index].content, 'tags', NLUParserMap.SELECT_CUSTOMIZE_OPTIONS);
+        this.$set(this.andRules[index].content, 'options', ['']);
+        this.$set(this.andRules[index].content, 'fuzzy_match', true);
+        this.$set(this.andRules[index].content, 'has_context', true);
+      } else if (newValue[0] === optionConfig.NLUTypeMap.POLARITY) {
+        this.$set(this.andRules[index].content, 'tags', NLUParserMap.POLARITY);
+        this.$set(this.andRules[index].content, 'has_context', true);
+      } else {
+        this.$set(this.andRules[index].content, 'tags', newValue[0].toUpperCase());
+      }
+      // this.emitUpdate();
+    },
+    setNluSelectOptionType(index, newValue) {
+      const type = newValue[0];
+      const content = this.andRules[index].content;
+      content.tags = type;
+      delete content.options;
+      delete content.option_key;
+      if (type === NLUParserMap.SELECT_CUSTOMIZE_OPTIONS) {
+        this.$set(content, 'options', ['']);
+      }
+      if (type === NLUParserMap.SELECT_OPTIONS_IN_KEY) {
+        this.$set(content, 'option_key', '');
+      }
+      // this.emitUpdate();
+    },
+    addNLUSelectOption(rule) {
+      if (rule.content.options) {
+        rule.content.options.push('');
+      } else {
+        this.$set(rule.content, 'options', ['']);
+      }
+      this.$forceUpdate();
+    },
+    isValid() {
+      return general.isInputContentsValid(this.$refs['input-content']);
+    },
+    showToolTip() {
+      general.showInputContentTooltip(this.$refs['input-content']);
     },
   },
   beforeMount() {
     this.renderConditionContent();
   },
   mounted() {
+    this.$on('showToolTip', this.showToolTip);
     this.$api.getIntentsDetail().then((intents) => {
       this.intentDropdown.options = intents.map(intent => ({
         ...intent,
@@ -1181,6 +1256,14 @@ export default {
     }
     .button-add-if{
       width: 80px;
+    }
+    .add-new-option {
+      color: $color-primary;
+      border: none;
+      background-color: transparent;
+      padding: 0;
+      @include font-14px();
+      cursor: pointer;
     }
   }
 }

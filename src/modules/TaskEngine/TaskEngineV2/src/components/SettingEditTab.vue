@@ -4,8 +4,7 @@
     <div class="label-header">{{$t("task_engine_v2.setting_edit_tab.node_type")}}</div>
     <input class="input-rounded input-readonly"
       disabled
-      :value="$t(`task_engine_v2.node_type.${nodeType}`)">
-    </input>
+      :value="$t(`task_engine_v2.node_type.${nodeType}`)"/>
   </div>
   <div class="block">
     <div class="label-header">{{$t("task_engine_v2.setting_edit_tab.node_name")}}</div>
@@ -91,6 +90,7 @@
 <script>
 import event from '@/utils/js/event';
 import DropdownSelect from '@/components/DropdownSelect';
+import general from '@/modules/TaskEngine/_utils/general';
 import optionConfig from '../_utils/optionConfig';
 
 export default {
@@ -99,16 +99,16 @@ export default {
     'dropdown-select': DropdownSelect,
   },
   props: {
-    validateTab: {
-      type: Boolean,
-      default: false,
-    },
     settingTab: {
       type: Object,
       required: true,
     },
     globalVarOptions: {
       type: Array,
+      required: true,
+    },
+    nodeType: {
+      type: String,
       required: true,
     },
   },
@@ -119,7 +119,6 @@ export default {
     const entityModuleOptionsMap = optionConfig.getEntityModuleOptionsMap();
     const entityKeyNameOptionsMap = this.getEntityKeyNameOptionsMap();
     return {
-      nodeType: settingTab.nodeType,
       nodeName: settingTab.nodeName,
       parser: settingTab.parser,
       parserOptions: this.getParserOptions(),
@@ -128,8 +127,8 @@ export default {
       initialResponse: settingTab.initialResponse,
       failureResponse: settingTab.failureResponse,
       parseFromThisNode: settingTab.parseFromThisNode,
-      entityModuleOptions: entityModuleOptionsMap[this.parser],
-      entityKeyNameOptions: entityKeyNameOptionsMap[this.parser],
+      entityModuleOptions: entityModuleOptionsMap[settingTab.parser],
+      entityKeyNameOptions: entityKeyNameOptionsMap[settingTab.parser],
       selectStyle: {
         height: '36px',
         'border-radius': '5px',
@@ -160,17 +159,10 @@ export default {
     },
   },
   watch: {
-    validateTab(newV, oldV) {
-      if (newV && !oldV) {
-        const valid =
-        [this.isValueEmpty(this.$refs['input-content'])]
-        .indexOf(false) === -1;
-        this.$emit('update:valid', valid);
-      }
-    },
     result: {
       handler() {
         this.$emit('update', this.result);
+        this.$emit('update:valid', this.isValid());
       },
       deep: true,
     },
@@ -294,6 +286,15 @@ export default {
         })),
       };
     },
+    isValid() {
+      return general.isInputContentsValid(this.$refs['input-content']);
+    },
+    showToolTip() {
+      general.showInputContentTooltip(this.$refs['input-content']);
+    },
+  },
+  mounted() {
+    this.$on('showToolTip', this.showToolTip);
   },
 };
 </script>

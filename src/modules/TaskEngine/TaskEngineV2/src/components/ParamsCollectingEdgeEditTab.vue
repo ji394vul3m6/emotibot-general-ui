@@ -4,6 +4,7 @@
     <template v-for="(edge, index) in normalEdges">
       <condition-block
         class="condition-block"
+        ref="conditionBlock"
         :key="edge.id"
         :nodeId="nodeId"
         :initialEdge="edge"
@@ -11,8 +12,7 @@
         :toNodeOptions="toNodeOptions"
         :mapTableOptions="mapTableOptions"
         :globalVarOptions="globalVarOptions"
-        :validateConditionBlock="validateTab"
-        @update:valid="$set(edge, 'valid', $event); if ($event) {isAllConditionBlockValid()}"
+        :jsCodeAlias="jsCodeAlias"
         @update="updateNormalEdge(index, $event)"
         @deleteEdge="deleteEdge(index)"
         @addNewDialogueNode="addNewDialogueNode">
@@ -42,10 +42,6 @@ export default {
     'condition-block': ConditionBlock,
   },
   props: {
-    validateTab: {
-      type: Boolean,
-      default: false,
-    },
     paramsCollectingEdgeTab: {
       type: Object,
       required: true,
@@ -62,18 +58,28 @@ export default {
       type: Array,
       required: true,
     },
+    jsCodeAlias: {
+      type: Array,
+      default: () => [],
+    },
+    nodeId: {
+      type: String,
+      required: true,
+    },
+    nodeType: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     const pcEdgeTab = this.paramsCollectingEdgeTab;
-    const nodeId = pcEdgeTab.nodeId;
-    const nodeType = pcEdgeTab.nodeType;
     const dialogueLimit = pcEdgeTab.dialogueLimit;
 
     // add tmp id for edges
     const normalEdges = pcEdgeTab.normalEdges.map((edge) => {
       const obj = { ...edge };
       obj.id = this.$uuid.v1();
-      obj.valid = false;
+      obj.valid = true;
       return obj;
     });
 
@@ -86,8 +92,6 @@ export default {
     ].concat(options);
 
     return {
-      nodeId,
-      nodeType,
       normalEdges,
       dialogueLimit,
       newNodeOptions: undefined,
@@ -178,15 +182,28 @@ export default {
         newNodeOptions: this.newNodeOptions,
       };
       this.$emit('update', pcEdgeTab);
+      this.$emit('update:valid', this.isValid());
     },
-    isAllConditionBlockValid() {
-      let valid = true;
-      this.normalEdges.forEach((rule) => {
-        if (!rule.valid) {
-          valid = false;
+    isValid() {
+      for (let i = 0; i < this.normalEdges.length; i += 1) {
+        const edge = this.normalEdges[i];
+        if (!edge.valid) {
+          return false;
         }
-      });
-      this.$emit('update:valid', valid);
+      }
+      return true;
+    },
+    showToolTip() {
+      const conditionBlocks = this.$refs.conditionBlock;
+      if (conditionBlocks) {
+        let blocks = conditionBlocks;
+        if (!Array.isArray(blocks)) {
+          blocks = [blocks];
+        }
+        blocks.forEach((block) => {
+          block.$emit('showToolTip');
+        });
+      }
     },
   },
   beforeCreate() {
@@ -197,6 +214,9 @@ export default {
       value: 'add_new_dialogue_node',
       isButton: true,
     };
+  },
+  mounted() {
+    this.$on('showToolTip', this.showToolTip);
   },
 };
 </script>

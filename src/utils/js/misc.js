@@ -51,10 +51,37 @@ function getBrowserLanguage() {
   return validZHTW.find(i18n => i18n === browserLanguage) ? 'zh-tw' : 'zh-cn';
 }
 
+function copyToClipboard(text) {
+  const input = document.createElement('input');
+  input.value = text;
+  const body = document.querySelector('body');
+  body.append(input);
+
+  input.select();
+  document.execCommand('copy');
+  input.remove();
+}
+
+// eslint-disable-next-line
+document.head || (document.head = document.getElementsByTagName('head')[0]);
+function changeFavicon(src) {
+  const link = document.createElement('link');
+  const oldLink = document.getElementById('dynamic-favicon');
+  link.id = 'dynamic-favicon';
+  link.rel = 'shortcut icon';
+  link.href = src;
+  if (oldLink) {
+    document.head.removeChild(oldLink);
+  }
+  document.head.appendChild(link);
+}
+
 export default {
   useIE,
   isEllipsisActive,
   downloadRawFile,
   controlKeyOnly,
   getBrowserLanguage,
+  copyToClipboard,
+  changeFavicon,
 };

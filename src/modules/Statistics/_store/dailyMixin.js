@@ -23,6 +23,7 @@ function popSelfLearnMark(datarows) {
       },
     },
     validate: true,
+    cancelValidate: true,
   };
   that.$pop(options);
 }
@@ -72,9 +73,15 @@ function updateMarkedTableData(tableData, markedRecord, marked) {
 function apiSetMark(tableData, markedQuestion, record, tomark) {
   const that = this;
   return that.$api.setMark(markedQuestion, record, tomark)
-  .then(() => {
-    that.$notify({ text: that.$t('statistics.success.mark_ok') });
-    return that.updateMarkedTableData(tableData, record, tomark);
+  .then((rsp) => {
+    if (rsp.data.done.length > 0) {
+      that.$notify({ text: that.$t('statistics.success.mark_ok') });
+    }
+    if (rsp.data.skip.length > 0) {
+      that.$notifyWarn(that.$t('statistics.warning.mark_skip', { num: rsp.data.skip.length }));
+    }
+
+    return that.updateMarkedTableData(tableData, rsp.data.done, tomark);
   })
   .catch((err) => {
     const statusCode = err.response.status;

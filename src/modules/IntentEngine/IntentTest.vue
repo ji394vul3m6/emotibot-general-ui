@@ -292,7 +292,8 @@ export default {
       const that = this;
       const prevStatus = that.trainStatus;
       that.$api.getTrainingStatus(version)
-      .then((status) => {
+      .then((rsp) => {
+        const status = rsp.status;
         if (status === 'TRAINING') {
           // that.$emit('startLoading', that.$t('intent_engine.is_training'));
           that.trainStatus = status;

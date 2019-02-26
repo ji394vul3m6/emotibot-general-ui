@@ -73,13 +73,18 @@ http {
             set $enterprise_id $1;
         }
 
-        if ($http_x_enterprise != "") {
+        if ($enterprise_id = "") {
             set $enterprise_id $http_x_enterprise;
+        }
+
+        if ($enterprise_id = "") {
+            set $enterprise_id $http_x_enterpriseid;
         }
 
         set $stat_server_url "${ADMIN_STAT_SERVER_URL}";
         set $elk_stat_server_url "${ADMIN_ELK_STAT_SERVER_URL}";
         set $bf_server_url "${ADMIN_BF_SERVER_URL}";
+        set $sso_server_url "${ADMIN_SSO_SERVER}";
 
         set $im_server_url "${ADMIN_IM_SERVER_URL}";
         set $im_msg_kf "${ADMIN_IM_MSG_KF_URL}";
@@ -102,6 +107,10 @@ http {
         location /auth { 
             # auth_request /auth/v1/appid/validate 
             proxy_pass http://127.0.0.1:8088; 
+        }
+
+        location /login/ { 
+            proxy_pass http://$sso_server_url;
         }
         
         location = /stats/record {

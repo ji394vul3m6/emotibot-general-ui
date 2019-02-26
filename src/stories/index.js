@@ -23,6 +23,7 @@ import LoadingStory from './Loading';
 import NotifyStory from './Notify';
 import PopStory from './PopWindow';
 import DateTimePickerStory from './DateTimePicker';
+import GeneralScrollTableStory from './GeneralScrollTable';
 
 import './storybook.scss';
 
@@ -34,7 +35,7 @@ const i18n = new VueI18n({
 });
 
 /** Basic Components */
-const welcomeStory = storiesOf('Welcome', module).addDecorator(withKnobs);
+const welcomeStory = storiesOf('General Style', module).addDecorator(withKnobs);
 WelcomeStory.forEach((story) => {
   welcomeStory.add(story.name, story.func);
 });
@@ -71,7 +72,7 @@ TagInputStory.forEach((story) => {
 
 const dropdownSelectStory = storiesOf('Basic|Dropdown', module).addDecorator(withKnobs);
 DropdownSelectStory.forEach((story) => {
-  dropdownSelectStory.add(story.name, story.func);
+  dropdownSelectStory.add(story.name, story.func.bind(null, i18n));
 });
 
 let labelStory = storiesOf('Basic|LabelSwitch', module).addDecorator(withKnobs);
@@ -87,6 +88,11 @@ NavBarStory.forEach((story) => {
 const generalTableStory = storiesOf('Basic|GeneralTable', module).addDecorator(withKnobs);
 GeneralTableStory.forEach((story) => {
   generalTableStory.add(story.name, story.func.bind(null, i18n));
+});
+
+const generalScrollTableStory = storiesOf('Basic|GeneralTableScroll', module).addDecorator(withKnobs);
+GeneralScrollTableStory.forEach((story) => {
+  generalScrollTableStory.add(story.name, story.func.bind(null, i18n));
 });
 
 const dateTimePickerStory = storiesOf('Basic|DateTimePicker', module).addDecorator(withKnobs);
@@ -112,5 +118,5 @@ NotifyStory.forEach((story) => {
 });
 const popStory = storiesOf('Extensions|PopWindow', module).addDecorator(withKnobs);
 PopStory.forEach((story) => {
-  popStory.add(story.name, story.func);
+  popStory.add(story.name, story.func.bind(null, i18n));
 });

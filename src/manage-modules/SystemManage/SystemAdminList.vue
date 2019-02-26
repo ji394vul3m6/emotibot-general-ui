@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="card h-fill w-fill">
-      <nav-bar class='nav-bar' :options=pageOption v-model='currentPage' @search="changeKeyword" showSearch></nav-bar>
+      <nav-bar class='nav-bar' :options="getNavbarOption()" v-model='currentPage' @search="changeKeyword" showSearch></nav-bar>
       <div class="page">
         <command-row class="commands">
           <text-button button-type="primary" @click="popEditUser()">{{ $t('management.add_account') }}</text-button>
@@ -35,8 +35,8 @@ import api from './_api/system';
 import CommandRow from '../_components/CommandRow';
 import UserAddForm from './_components/AdminAddForm';
 import PasswordForm from '../UserManage/_components/UserPasswordForm';
+import mixin from './_store/mixin';
 
-const enterpriseListPage = '/manage/enterprise-manage';
 export default {
   name: 'system-admin-list',
   path: 'system-admin-list',
@@ -46,6 +46,7 @@ export default {
     CommandRow,
   },
   api,
+  mixins: [mixin],
   computed: {
     filteredUsers() {
       if (this.keyword === '') {
@@ -64,9 +65,7 @@ export default {
   },
   watch: {
     currentPage(val) {
-      if (val === 'enterpriseList') {
-        this.$router.push(enterpriseListPage);
-      }
+      this.goPage(val);
     },
     lastPageIdx() {
       if (this.lastPageIdx < this.curPageIdx) {
@@ -76,10 +75,6 @@ export default {
   },
   data() {
     return {
-      pageOption: {
-        enterpriseList: this.$t('management.enterprise_list'),
-        systemAdminList: this.$t('management.admin_list'),
-      },
       currentPage: 'systemAdminList',
       keyword: '',
       users: [],

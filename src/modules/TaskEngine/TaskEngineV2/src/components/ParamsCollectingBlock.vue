@@ -101,6 +101,105 @@
             />
           </div>
         </div>
+        <!-- NLU解析器 -->
+        <div class="content-parser"
+          v-if="parser.funcName === 'nlu_parser'">
+          <div class="row">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_block.label_content")}}
+            </div>
+            <dropdown-select
+              class="select row-content"
+              :key="parser.funcName"
+              :ref="`selectTargetEntity_${index}`"
+              :multi="false"
+              :value="[getNluTargetEntity(parser.content.tags)]"
+              @input="setNluTargetEntity(index, $event)"
+              :options="nluTypeOptions"
+              :showCheckedIcon="false"
+              width="200px"
+              :inputBarStyle="selectStyle"
+            />
+          </div>
+          <div class="row"
+            v-if="parser.content.tags === 'TIME_FUTURE' ||
+                  parser.content.tags === 'TIME_PAST'">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_action_block.label_default")}}
+            </div>
+            <dropdown-select
+              class="select row-content"
+              :key="parser.funcName"
+              :multi="false"
+              :value="[parser.content.tags]"
+              @input="parser.content.tags = $event[0]"
+              :options="nluTimeOptions"
+              :showCheckedIcon="false"
+              width="200px"
+              :inputBarStyle="selectStyle"
+            />
+          </div>
+          <div class="row"
+            v-if="parser.content.tags === NLUParserMap.SELECT_CUSTOMIZE_OPTIONS ||
+                  parser.content.tags === NLUParserMap.SELECT_OPTIONS_IN_KEY">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_action_block.label_select_mode")}}
+            </div>
+            <dropdown-select
+              class="select row-content"
+              :key="parser.funcName"
+              :multi="false"
+              :value="[parser.content.tags]"
+              @input="setNluSelectOptionType(index, $event)"
+              :options="nluSelectOptions"
+              :showCheckedIcon="false"
+              width="200px"
+              :inputBarStyle="selectStyle"
+            />
+          </div>
+          <div class="row"
+            v-if="parser.content.tags === NLUParserMap.SELECT_CUSTOMIZE_OPTIONS">
+            <div class="label label-start"></div>
+            <button 
+              class="add-new-option row-content" 
+              v-t="'task_engine_v2.condition_action_block.add_option'"
+              @click="addNLUSelectOption(parser)">
+            </button>
+          </div>
+          <div class="row"
+            v-if="parser.content.tags === NLUParserMap.SELECT_CUSTOMIZE_OPTIONS"
+            v-for="(option, index) in parser.content.options" :key="index">
+            <div class="label label-start">
+              {{`${$t("task_engine_v2.condition_action_block.label_option")}${index + 1}`}}
+            </div>
+            <input ref="input-content" v-tooltip="tooltip" class="input-content row-content" v-model="parser.content.options[index]" @focus="onInputFocus">
+            <button class="button" style="width: 60px;" @click="parser.content.options.splice(index, 1); $forceUpdate();">{{$t("task_engine_v2.condition_block.button_remove")}}</button>
+          </div>
+          <div class="row"
+            v-if="parser.content.tags === NLUParserMap.SELECT_OPTIONS_IN_KEY">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_action_block.label_option_key")}}
+            </div>
+            <input ref="input-content" v-tooltip="tooltip" class="input-content row-content" v-model="parser.content.option_key" :placeholder="$t('task_engine_v2.condition_action_block.input_placeholder')" @focus="onInputFocus">
+          </div>
+          <div class="row"
+            v-if="parser.content.tags === NLUParserMap.SELECT_CUSTOMIZE_OPTIONS ||
+                  parser.content.tags === NLUParserMap.SELECT_OPTIONS_IN_KEY">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_action_block.label_fuzzy_match")}}
+            </div>
+            <toggle v-model="parser.content.fuzzy_match" class="row-content" :size="'medium'" :showLabel="true" :label="toggleLabel"></toggle>
+          </div>
+          <div class="row"
+            v-if="parser.content.tags!==NLUParserMap.SELECT_CUSTOMIZE_OPTIONS &&
+                  parser.content.tags!==NLUParserMap.SELECT_OPTIONS_IN_KEY &&
+                  parser.content.tags!==NLUParserMap.POLARITY">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_action_block.label_has_context")}}
+            </div>
+            <toggle v-model="parser.content.has_context" class="row-content" :size="'medium'" :showLabel="true" :label="toggleLabel"></toggle>
+          </div>
+        </div>
         <!-- 转换数据解析器 -->
         <div class="content-map-table" v-if="parser.funcName === 'user_custom_parser'">
           <div class="row">
@@ -203,8 +302,14 @@
 <script>
 import event from '@/utils/js/event';
 import DropdownSelect from '@/components/DropdownSelect';
+import general from '@/modules/TaskEngine/_utils/general';
 import scenarioInitializer from '../_utils/scenarioInitializer';
 import optionConfig from '../_utils/optionConfig';
+
+const NLUTypeOptions = optionConfig.NLUTypeOptions;
+const NLUParserMap = optionConfig.NLUParserMap;
+const NLUTimeParsers = optionConfig.NLUTimeParsers;
+const NLUSelectParsers = optionConfig.NLUSelectParsers;
 
 export default {
   name: 'params-collecting-block',
@@ -223,10 +328,6 @@ export default {
     initialParam: {
       type: Object,
       required: true,
-    },
-    validateParamsCollectingBlock: {
-      type: Boolean,
-      default: false,
     },
   },
   data() {
@@ -247,21 +348,32 @@ export default {
         absolute: true,
       },
       hasRequiredParser: true,
+      toggleLabel: {
+        on: this.$t('task_engine_v2.condition_action_block.on'),
+        off: this.$t('task_engine_v2.condition_action_block.off'),
+      },
+      NLUParserMap,
+      nluTypeOptions: NLUTypeOptions.map(parser => ({
+        text: this.$t(`task_engine_v2.condition_action_block.nlu_options.${parser}`),
+        value: parser,
+      })),
+      nluTimeOptions: NLUTimeParsers.map(parser => ({
+        text: this.$t(`task_engine_v2.condition_action_block.nlu_time_options.${parser}`),
+        value: parser,
+      })),
+      nluSelectOptions: NLUSelectParsers.map(parser => ({
+        text: this.$t(`task_engine_v2.condition_action_block.nlu_select_options.${parser}`),
+        value: parser,
+      })),
     };
   },
   computed: {},
   watch: {
-    validateParamsCollectingBlock(newV, oldV) {
-      if (newV && !oldV) {
-        let valid = true;
-        this.$refs['input-content'].forEach((el) => {
-          if (!el.value) {
-            valid = false;
-            el.dispatchEvent(event.createEvent('tooltip-show'));
-          }
-        });
-        this.$emit('update:valid', valid);
-      }
+    parsers: {
+      handler() {
+        this.emitUpdate();
+      },
+      deep: true,
     },
   },
   methods: {
@@ -274,6 +386,7 @@ export default {
         parse_failed_msg: this.parse_failed_msg,
         parsers: this.parsers,
       };
+      param.valid = this.isValid();
       this.$emit('update', param);
     },
     renderConditionContent() {
@@ -398,7 +511,7 @@ export default {
     },
     getFuncOptions() {
       return [
-        'regular_exp', 'common_parser', 'task_parser',
+        'regular_exp', 'nlu_parser', 'common_parser', 'task_parser',
         'hotel_parser', 'user_custom_parser', 'polarity_parser', 'api_parser',
       ].map((func) => {
         const key = `task_engine_v2.condition_block.func.${func}`;
@@ -408,12 +521,67 @@ export default {
         };
       });
     },
+    getNluTargetEntity(tags) {
+      if (optionConfig.NLUTimeParsers.indexOf(tags) > -1) {
+        return optionConfig.NLUTypeMap.TIME;
+      }
+      if (optionConfig.NLUSelectParsers.indexOf(tags) > -1) {
+        return optionConfig.NLUTypeMap.SELECT;
+      }
+      return tags.toLowerCase();
+    },
+    setNluTargetEntity(index, newValue) {
+      if (newValue[0] === optionConfig.NLUTypeMap.TIME) {
+        this.parsers[index].content.tags = NLUParserMap.TIME_FUTURE;
+      } else if (newValue[0] === optionConfig.NLUTypeMap.SELECT) {
+        this.parsers[index].content.tags = NLUParserMap.SELECT_CUSTOMIZE_OPTIONS;
+        this.parsers[index].content.options = [''];
+        this.parsers[index].content.fuzzy_match = true;
+        this.parsers[index].content.has_context = true;
+      } else if (newValue[0] === optionConfig.NLUTypeMap.POLARITY) {
+        this.parsers[index].content.tags = NLUParserMap.POLARITY;
+        this.parsers[index].content.has_context = true;
+      } else {
+        this.parsers[index].content.tags = newValue[0].toUpperCase();
+      }
+      // this.emitUpdate();
+    },
+    setNluSelectOptionType(index, newValue) {
+      const type = newValue[0];
+      const content = this.parsers[index].content;
+      content.tags = type;
+      delete content.options;
+      delete content.option_key;
+      if (type === NLUParserMap.SELECT_CUSTOMIZE_OPTIONS) {
+        this.$set(content, 'options', ['']);
+      }
+      if (type === NLUParserMap.SELECT_OPTIONS_IN_KEY) {
+        this.$set(content, 'option_key', '');
+      }
+      // this.emitUpdate();
+    },
+    addNLUSelectOption(rule) {
+      if (rule.content.options) {
+        rule.content.options.push('');
+      } else {
+        this.$set(rule.content, 'options', ['']);
+      }
+      this.$forceUpdate();
+      // this.emitUpdate();
+    },
+    isValid() {
+      return general.isInputContentsValid(this.$refs['input-content']);
+    },
+    showToolTip() {
+      general.showInputContentTooltip(this.$refs['input-content']);
+    },
   },
   beforeMount() {
     this.renderConditionContent();
     this.renderHasRequiredParser();
   },
   mounted() {
+    this.$on('showToolTip', this.showToolTip);
   },
 };
 </script>
@@ -499,6 +667,14 @@ export default {
     }
     .button-add-parser{
       width: 100px;
+    }
+    .add-new-option {
+      color: $color-primary;
+      border: none;
+      background-color: transparent;
+      padding: 0;
+      @include font-14px();
+      cursor: pointer;
     }
   }
   .text-response{

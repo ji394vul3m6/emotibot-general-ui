@@ -14,8 +14,7 @@
         :toNodeOptions="toNodeOptions"
         :mapTableOptions="mapTableOptions"
         :globalVarOptions="globalVarOptions"
-        :validateConditionBlock="validateTab"
-        @update:valid="$set(edge, 'valid', $event); if ($event) {isAllConditionBlockValid()}"
+        :jsCodeAlias="jsCodeAlias"
         @update="updateNormalEdge(index, $event)"
         @deleteEdge="deleteEdge(index)"
         @addNewDialogueNode="addNewDialogueNode">
@@ -103,10 +102,6 @@ export default {
     'condition-block': ConditionBlock,
   },
   props: {
-    validateTab: {
-      type: Boolean,
-      default: false,
-    },
     edgeTab: {
       type: Object,
       required: true,
@@ -123,11 +118,21 @@ export default {
       type: Array,
       required: true,
     },
+    jsCodeAlias: {
+      type: Array,
+      default: () => [],
+    },
+    nodeId: {
+      type: String,
+      required: true,
+    },
+    nodeType: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     const edgeTab = this.edgeTab;
-    const nodeId = edgeTab.nodeId;
-    const nodeType = edgeTab.nodeType;
     const exceedThenGoto = edgeTab.exceedThenGoto || null;
     const elseInto = edgeTab.elseInto;
     const dialogueLimit = edgeTab.dialogueLimit || null;
@@ -136,7 +141,7 @@ export default {
     const normalEdges = edgeTab.normalEdges.map((edge) => {
       const obj = { ...edge };
       obj.id = this.$uuid.v1();
-      obj.valid = false;
+      obj.valid = true;
       return obj;
     });
 
@@ -144,7 +149,7 @@ export default {
     this.exitEdge = { text: `${this.$t('task_engine_v2.to_node_option.exit')} (ID: 0)`, value: '0' };
     this.parseFailedEdge = {
       text: this.$t('task_engine_v2.to_node_option.parse_fail'),
-      value: nodeId,
+      value: 'parseFailedEdge',
     };
     this.addNewDialogueNodeEdge = {
       text: this.$t('task_engine_v2.to_node_option.add_new_dialogue_node'),
@@ -153,15 +158,12 @@ export default {
     };
 
     // render toNodeOptions, exceedThenGotoOptions, elseIntoOptions
-    const options = this.initialToNodeOptions.filter(option => option.value !== this.nodeId);
     const {
       toNodeOptions,
       exceedThenGotoOptions,
       elseIntoOptions,
-    } = this.composeOptions(options, nodeType);
+    } = this.composeOptions(this.initialToNodeOptions, this.nodeType);
     return {
-      nodeId,
-      nodeType,
       normalEdges,
       dialogueLimit,
       newNodeOptions: undefined,
@@ -184,18 +186,6 @@ export default {
     };
   },
   watch: {
-    validateTab(newV, oldV) {
-      if (newV && !oldV) {
-        let valid = true;
-        if (this.$refs['input-content'] && !this.$refs['input-content'].value) {
-          valid = false;
-          this.$refs['input-content'].dispatchEvent(event.createEvent('tooltip-show'));
-        }
-        if (!this.normalEdges.length) {
-          this.$emit('update:valid', valid);
-        }
-      }
-    },
     dialogueLimit: {
       handler() {
         this.emitUpdate();
@@ -258,11 +248,10 @@ export default {
       this.exceedThenGotoOptions = exceedThenGotoOptions;
       this.elseIntoOptions = elseIntoOptions;
     },
-    composeOptions(fullOptions, nodeType) {
+    composeOptions(options, nodeType) {
       let toNodeOptions;
       let exceedThenGotoOptions;
       let elseIntoOptions;
-      const options = fullOptions.filter(option => option.value !== this.nodeId);
       if (nodeType === 'entry') {
         toNodeOptions = [
           this.addNewDialogueNodeEdge,
@@ -332,22 +321,40 @@ export default {
       }
       // console.log(edgeTab);
       this.$emit('update', edgeTab);
+      this.$emit('update:valid', this.isValid());
     },
-    isAllConditionBlockValid() {
-      let valid = true;
-      this.normalEdges.forEach((rule) => {
-        if (!rule.valid) {
-          valid = false;
-        }
-      });
-      if (this.$refs['input-content'] && !this.$refs['input-content'].value) {
-        valid = false;
+    isValid() {
+      const valid = general.isInputContentsValid(this.$refs['input-content']);
+      if (!valid) {
+        return false;
       }
-      this.$emit('update:valid', valid);
+      for (let i = 0; i < this.normalEdges.length; i += 1) {
+        const edge = this.normalEdges[i];
+        if (!edge.valid) {
+          return false;
+        }
+      }
+      return true;
     },
     onInputFocus(evt) {
       evt.target.dispatchEvent(event.createEvent('tooltip-hide'));
     },
+    showToolTip() {
+      general.showInputContentTooltip(this.$refs['input-content']);
+      const conditionBlocks = this.$refs.conditionBlock;
+      if (conditionBlocks) {
+        let blocks = conditionBlocks;
+        if (!Array.isArray(blocks)) {
+          blocks = [blocks];
+        }
+        blocks.forEach((block) => {
+          block.$emit('showToolTip');
+        });
+      }
+    },
+  },
+  mounted() {
+    this.$on('showToolTip', this.showToolTip);
   },
 };
 </script>

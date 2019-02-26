@@ -3,10 +3,11 @@ function paddingNumToTwo(num) {
 }
 
 function datetimeToString(date) {
-  if (typeof date !== 'string') {
+  const time = new Date(date);
+
+  if (isNaN(time.getTime())) {
     return '';
   }
-  const time = new Date(date);
 
   const month = paddingNumToTwo(time.getMonth() + 1);
   const day = paddingNumToTwo(time.getDate());

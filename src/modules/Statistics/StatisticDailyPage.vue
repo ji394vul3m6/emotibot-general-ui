@@ -34,9 +34,45 @@
         </div>
         <template v-if="expertMode">
         <div class="row">
-          <div class="row-title">{{ $t('statistics.user_id') }}</div>
+          <div class="row-title">{{ $t('statistics.category') }}</div>
           <div class="row-value">
-            <input class="single-input" v-model="userID">
+            <dropdown-select class="single-input"
+              :options="categoryOption"
+              v-model="categoryFilter"
+              width='300px'
+              :placeholder="$t('general.please_choose')"/>
+          </div>
+          <div class="row-title">{{ $t('statistics.label') }}</div>
+          <div class="row-value">
+            <dropdown-select class="single-input"
+              width='300px'
+              :placeholder="$t('general.please_choose')"
+              :options="labelsOptions" multi v-model="labelsFilter"/>
+          </div>
+        </div>
+        <div class="row">
+          <div class="row-title">{{ $t('statistics.confidence_score.title') }}</div>
+          <div class="row-value short">
+            <dropdown-select class="single-input"
+              width='130px'
+              :placeholder="$t('general.please_choose')"
+              :options="scoreOptions" v-model="scoreType"/>
+          </div>
+          <div class="score-range"
+            v-if="scoreType.length === 1 && scoreType[0] === 'range'">
+            <input class="score-input"
+              :placeholder="$t('statistics.min_score')"
+              v-model="minScore"
+              @keypress.enter="doSearch(1)">
+            <span class="range-icon">~</span>
+            <input class="score-input"
+              :placeholder="$t('statistics.max_score')"
+              v-model="maxScore"
+              @keypress.enter="doSearch(1)">
+          </div>
+          <div class="row-title">{{ $t('statistics.user_id') }}</div>
+          <div class="row-value short">
+            <search-input fill v-model="userID" @search="doSearch(1)"/>
           </div>
           <div class="row-title">{{ $t('statistics.emotions.title') }}</div>
           <div class="row-value">
@@ -46,10 +82,13 @@
           </div>
         </div>
         <div class="row">
-          <div class="row-title">{{ $t('statistics.qtypes.title') }}</div>
+          <div class="row-title">{{ $t('statistics.modules.title') }}</div>
           <div class="row-value">
             <dropdown-select class="single-input"
-              :options="qtypesOptions" v-model="qtypeFilters"/>
+              width='300px'
+              :hide-close="true"
+              :options="moduleOptions" multi v-model="modulesFilter"
+              :placeholder="$t('general.please_choose')"/>
           </div>
           <div class="row-title">{{ $t('statistics.platform.title') }}</div>
           <div class="row-value">
@@ -79,7 +118,15 @@
           <div class="row-title">{{ $t('statistics.keyword_search') }}</div>
           <div class="row-value">
             <div class="input">
-              <search-input v-model="keyword" fill/>
+              <search-input v-model="keyword" fill @search="doSearch(1)"/>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="row-title">{{ $t('general.intent') }}</div>
+          <div class="row-value">
+            <div class="input">
+              <search-input v-model="intent" fill @search="doSearch(1)"/>
             </div>
           </div>
         </div>
@@ -120,7 +167,7 @@
       </div>
       <icon iconType="info" :size="16" v-tooltip="clusterTooltip" enableHover></icon>
       <div v-if="totalCount > 0" class="total-show">
-        {{ $t('statistics.total_records', {num: totalCount, count: checkedDataRowCount }) }}
+        {{ $t('statistics.total_select_records', {num: totalCount, count: checkedDataRowCount }) }}
           <span v-if="totalCount > tableMaxRecord" @click="searchForMore" v-tooltip="searchTooltip" class="search-more">
             {{ $t('statistics.search_more') }}
           </span>
@@ -134,7 +181,7 @@
           :showEmptyMsg="[$t('general.no_search_data')]"
           :isLoading="isTableLoading"
           @checkedChange="handleCheckedChange"
-          auto-height show-empty checkbox
+          show-empty checkbox allow-custom-header
         ></general-table>
       </div>
       <div class="paginator">
@@ -158,7 +205,7 @@
 <script>
 import { mapGetters, mapMutations } from 'vuex';
 import event from '@/utils/js/event';
-import GeneralTable from '@/components/GeneralTable';
+import GeneralTable from '@/components/GeneralScrollTable';
 import DatetimePicker from '@/components/DateTimePicker';
 import DropdownSelect from '@/components/DropdownSelect';
 import pickerUtil from '@/utils/vue/DatePickerUtil';
@@ -166,6 +213,7 @@ import pickerUtil from '@/utils/vue/DatePickerUtil';
 import tagAPI from '@/api/tagType';
 import auditAPI from '@/api/audit';
 import api from './_api/selflearn';
+import SSMAPI from './_api/ssm';
 import VIEW from './_data/dailyView';
 import dailyMixin from './_store/dailyMixin';
 
@@ -182,7 +230,7 @@ export default {
     GeneralTable,
     DropdownSelect,
   },
-  api: [tagAPI, api, auditAPI],
+  api: [tagAPI, api, auditAPI, SSMAPI],
   mixins: [dailyMixin],
   data() {
     return {
@@ -190,7 +238,6 @@ export default {
 
       isClustering: false,
       clusteringCnt: 0,
-      clusterTimer: undefined,
 
       expertMode: false,
       start: pickerUtil.createDateObj(),
@@ -211,6 +258,7 @@ export default {
 
       searchParams: undefined,
       keyword: '',
+      intent: '',
       userID: '',
       startValidity: true,
       endValidity: true,
@@ -219,16 +267,34 @@ export default {
       startDisableDate: undefined,
       endDisableDate: undefined,
       emotionOptions: [
-        { value: 'angry', text: this.$t('statistics.emotions.angry') },
-        { value: 'not_satisfied', text: this.$t('statistics.emotions.not_satisfied') },
-        { value: 'satisfied', text: this.$t('statistics.emotions.satisfied') },
-        { value: 'neutral', text: this.$t('statistics.emotions.neutral') },
+        {
+          value: this.$t('statistics.emotions.angry'),
+          text: this.$t('statistics.emotions.angry'),
+        },
+        {
+          value: this.$t('statistics.emotions.not_satisfied'),
+          text: this.$t('statistics.emotions.not_satisfied'),
+        },
+        {
+          value: this.$t('statistics.emotions.satisfied'),
+          text: this.$t('statistics.emotions.satisfied'),
+        },
+        {
+          value: this.$t('statistics.emotions.neutral'),
+          text: this.$t('statistics.emotions.neutral'),
+        },
       ],
-      qtypesOptions: [
-        { value: '', text: this.$t('statistics.qtypes.all') },
-        { value: 'business', text: this.$t('statistics.qtypes.business') },
-        { value: 'chat', text: this.$t('statistics.qtypes.chat') },
-        { value: 'other', text: this.$t('statistics.qtypes.other') },
+      moduleOptions: [
+        { value: 'backfill', text: this.$t('statistics.modules.backfill') },
+        { value: 'chat', text: this.$t('statistics.modules.chat') },
+        { value: 'keyword', text: this.$t('statistics.modules.keyword') },
+        { value: 'function', text: this.$t('statistics.modules.function') },
+        { value: 'faq', text: this.$t('statistics.modules.faq') },
+        { value: 'task_engine', text: this.$t('statistics.modules.task_engine') },
+        { value: 'to_human', text: this.$t('statistics.modules.to_human') },
+        { value: 'knowledge', text: this.$t('statistics.modules.knowledge') },
+        { value: 'command', text: this.$t('statistics.modules.command') },
+        { value: 'emotion', text: this.$t('statistics.modules.emotion') },
       ],
       platformOptions: [
         { value: 'weixin', text: this.$t('statistics.platform.wechat') },
@@ -251,12 +317,19 @@ export default {
         { value: 'marked', text: this.$t('statistics.mark.marked') },
         { value: 'not_marked', text: this.$t('statistics.mark.not_marked') },
       ],
+      scoreOptions: [
+        { value: '', text: this.$t('general.all') },
+        { value: 'low', text: this.$t('statistics.confidence_score.low') },
+        { value: 'range', text: this.$t('statistics.confidence_score.range') },
+      ],
       emotionFilters: [],
-      qtypeFilters: [''],
+      modulesFilter: [''],
       platformFilters: [],
       genderFilters: [''],
       ignoreFilters: [''],
       markFilters: [''],
+      categoryFilter: [],
+      scoreType: [''],
       timeOption: [
         {
           text: `1${this.$t('statistics.day')}`,
@@ -297,6 +370,37 @@ export default {
         msg: this.$t('statistics.search_more_hint'),
       },
       searching: false,
+      categoryRoot: undefined,
+      categoryIDMap: {},
+      categoryNameMap: {},
+      categoryOption: [],
+      // this map use cn hard-code, because this column is the result of emotion module
+      // it will be zh-cn forever.
+      emotionMap: {
+        [this.$t('dimension.emotions.angry')]: [
+          '愤怒'],
+        [this.$t('dimension.emotions.not_satisfied')]: [
+          '疑惑', '沮丧', '尴尬', '不满', '不高兴', '厌烦', '反感', '不喜欢', '厌恶'],
+        [this.$t('dimension.emotions.satisfied')]: [
+          '喜欢', '感动', '高兴', '称赞'],
+        [this.$t('dimension.emotions.neutral')]: [
+          '伤心', '害怕', '惊讶', '无聊', '自责', '难过', '寂寞', '疲惫', '焦虑', '中性'],
+      },
+      emotionRevMap: {},
+      labelsFilter: [],
+      labelsOptions: [],
+      minScore: 0,
+      maxScore: 100,
+
+      headerWidth: {
+        user_q: '120px',
+        std_q: '120px',
+        answer: '200px',
+        log_time: '160px',
+        module: '120px',
+        intent: '120px',
+      },
+      defaultHeader: ['user_id', 'user_q', 'answer', 'log_time', 'module', 'emotion', 'intent'],
     };
   },
   watch: {
@@ -318,7 +422,7 @@ export default {
         return;
       }
       that.searching = true;
-      that.$api.getRecords(that.searchParams, that.tableMaxRecord, 1).then((res) => {
+      that.$api.getRecordsV2(that.searchParams, that.tableMaxRecord, 1).then((res) => {
         const lastData = res.data[0];
         const lastTime = new Date(lastData.log_time);
         that.$refs.end.$emit('setValue', lastTime);
@@ -388,9 +492,9 @@ export default {
       that.$api.startCluster(params)
       .then((reportId) => {
         that.clusterMsg = that.$t('statistics.clustering_msg', { num: that.clusteringCnt });
-        that.clusterTimer = setInterval(() => {
+        setTimeout(() => {
           that.pollClusterReport(reportId);
-        }, 5000);
+        }, 3000);
       })
       .catch((err) => {
         console.log(err);
@@ -409,26 +513,28 @@ export default {
       const that = this;
       that.$api.pollClusterReport(reportId)
       .then((report) => {
-        if (report.status === -1) { // cluster fail
-          that.clearClusterTimer();
+        if (report.status === 0 && report.results === undefined) {
+          setTimeout(() => {
+            that.pollClusterReport(reportId);
+          }, 3000);
+          return;
+        }
+
+        if (report.status === -2) {
+          that.$notifyFail(that.$t('statistics.error.too_few_valid_sentence'));
+        } else if (report.status === -1) { // cluster fail
           that.$notifyFail(that.$t('statistics.error.cluster_fail'));
         } else if (report.status === 1) { // cluster success
           that.$notify({ text: that.$t('statistics.success.cluster_ok') });
-          that.clearClusterTimer();
           that.setDailyCurrentView(VIEW.DAILY_CLUSTER);
           that.setClusterReport(report);
-        } // else cluster in progress, do nothing
+        }
+        that.$emit('endLoading');
+        that.isClustering = false;
       })
       .catch(() => {
-        that.clearClusterTimer();
         that.$notifyFail(that.$t('statistics.error.cluster_fail'));
       });
-    },
-    clearClusterTimer() {
-      const that = this;
-      that.isClustering = false;
-      clearInterval(that.clusterTimer);
-      that.clusterTimer = undefined;
     },
     setMark(markedQuestion, record, tomark) {
       const that = this;
@@ -451,23 +557,35 @@ export default {
       };
       const that = this;
 
-        // keyword
+      // keyword
       if (that.trimmedKeyword) {
         const escapedKeyword = that.escapeRegExp(that.trimmedKeyword);
         params.keyword = escapedKeyword;
       }
-        // id
+      // id
       if (that.trimmedUserID) {
         params.uid = that.trimmedUserID;
       }
       if (that.emotionFilters.length > 0) {
         const group = that.getFilterValue(that.emotionOptions, that.emotionFilters);
-        params.emotions = group;
+        params.emotions = [];
+        group.forEach((g) => {
+          if (that.emotionMap[g]) {
+            params.emotions.push(...that.emotionMap[g]);
+          }
+          params.emotions.push(g);
+        });
       }
-      if (that.qtypeFilters.length > 0) {
-        const group = that.getFilterValue(that.qtypesOptions, that.qtypeFilters);
+      if (that.modulesFilter.length > 0) {
+        const group = that.getFilterValue(that.moduleOptions, that.modulesFilter);
         if (group.length > 0) {
-          params.question_types = group;
+          params.modules = group;
+        }
+      }
+      if (that.labelsFilter.length > 0) {
+        const group = that.getFilterValue(that.labelsOptions, that.labelsFilter);
+        if (group.length > 0) {
+          params.faq_robot_tags = group;
         }
       }
       if (that.platformFilters.length > 0) {
@@ -490,6 +608,34 @@ export default {
         const group = that.getFilterValue(that.markOptions, that.markFilters);
         if (group.length > 0) {
           params.is_marked = group.indexOf('marked') !== -1;
+        }
+      }
+      if (that.intent !== '') {
+        params.intent = that.intent;
+      }
+      if (that.scoreType.length > 0) {
+        if (that.scoreType[0] === 'low') {
+          params.low_confidence_score = 5;
+        } else if (that.scoreType[0] === 'range') {
+          params.min_score = parseInt(that.minScore, 10);
+          params.max_score = parseInt(that.maxScore, 10);
+        }
+      }
+      if (that.categoryFilter.length > 0) {
+        const searchID = that.categoryFilter[that.categoryFilter.length - 1];
+        const category = that.categoryIDMap[searchID];
+        if (category) {
+          const dirs = [category.id];
+          if (category !== that.categoryRoot) {
+            const appendChilds = (dir) => {
+              dirs.push(dir.id);
+              dir.children.forEach((child) => {
+                appendChilds(child);
+              });
+            };
+            appendChilds(category);
+          }
+          params.faq_cats = dirs;
         }
       }
       return params;
@@ -520,16 +666,17 @@ export default {
         module,
         filename,
       })
-      .then(() => that.$api.getExportID(that.searchParams).then(data => data.export_id))
+      .then(() => that.$api.getExportIDV2(that.searchParams).then(data => data.export_id))
       .then((exportID) => {
         const checkStatus = () => {
-          that.$api.getExportStatus(exportID).then((data) => {
+          that.$api.getExportStatusV2(exportID).then((data) => {
             if (data.status === 'RUNNING') {
               setTimeout(() => { checkStatus(); }, 1000);
               return;
             }
             if (data.status === 'COMPLETED') {
-              window.open(`${STATS_RECORD_EXPORT}/${exportID}`);
+              const token = window.localStorage.getItem('token');
+              window.open(`${STATS_RECORD_EXPORT}/${exportID}?token=Bearer%20${token}`);
             } else {
               that.$notifyFail(`${that.$t('general.export')}${that.$t('general.fail')}`);
             }
@@ -539,6 +686,86 @@ export default {
         checkStatus();
       });
     },
+    fillCategoryMap(category) {
+      if (!category) {
+        return;
+      }
+      const that = this;
+      that.categoryIDMap[category.cat_id] = category;
+      if (that.categoryNameMap[category.name]) {
+        that.categoryNameMap[category.name].push(category);
+      } else {
+        that.categoryNameMap[category.name] = [category];
+      }
+      category.children.forEach((child) => {
+        that.fillCategoryMap(child);
+      });
+    },
+    convertAPIData(datas) {
+      const that = this;
+      datas.forEach((data) => {
+        if (data.faq_cat_name) {
+          data.faq_cat_id = data.faq_cat_name;
+          if (that.categoryIDMap[data.faq_cat_id]) {
+            data.faq_cat_name = that.categoryIDMap[data.faq_cat_id].name;
+          } else {
+            data.faq_cat_name = '';
+          }
+        }
+        if (data.emotion) {
+          if (that.emotionRevMap[data.emotion]) {
+            data.emotion = that.emotionRevMap[data.emotion];
+          } else {
+            data.emotion = that.$t('dimension.emotions.neutral');
+          }
+        }
+        const moduleKey = `statistics.modules.${data.module}`;
+        if (data.module && that.$t(moduleKey) !== moduleKey) {
+          data.module = that.$t(moduleKey);
+        }
+      });
+    },
+    refreshCategory() {
+      const that = this;
+      that.categoryOption = [
+        { value: '', text: this.$t('general.all') },
+      ];
+      return that.$api.getSSMCategories().then((data) => {
+        if (!data) {
+          return;
+        }
+        that.categoryRoot = data;
+        that.fillCategoryMap(that.categoryRoot);
+        that.categoryOption.push({
+          text: data.name,
+          value: data.cat_id,
+        });
+        that.categoryRoot.children.forEach((firstLayer) => {
+          const opt = {
+            text: firstLayer.name,
+            value: firstLayer.cat_id,
+            options: [],
+          };
+          firstLayer.children.forEach((secondLayer) => {
+            opt.options.push({
+              text: secondLayer.name,
+              value: secondLayer.cat_id,
+            });
+          });
+          that.categoryOption.push(opt);
+        });
+      });
+    },
+    refreshLabels() {
+      const that = this;
+      that.labelsOptions = [];
+      return that.$api.getSSMLabels().then((data) => {
+        that.labelsOptions = data.map(d => ({
+          text: d.name,
+          value: d.id,
+        }));
+      });
+    },
     doSearch(page) {
       const that = this;
       that.pageIndex = page;
@@ -546,7 +773,11 @@ export default {
       that.setDailySearchParams(that.searchParams);
       that.isTableLoading = true;
       that.showTable = true;
-      return that.$api.getRecords(that.searchParams, page, that.pageLimit).then((res) => {
+      return that.refreshCategory()
+      .then(() => that.refreshLabels())
+      .then(() => that.$api.getRecordsV2(that.searchParams, page, that.pageLimit))
+      .then((res) => {
+        that.convertAPIData(res.data);
         that.tableData = that.appendTableDataAction(res.data);
         that.headerInfo = that.receiveAPIHeader(res.table_header);
         that.totalCount = res.total_size;
@@ -565,14 +796,29 @@ export default {
     },
     receiveAPIHeader(headerData) {
       const that = this;
+      const headerMap = {};
       headerData.forEach((header) => {
         header.key = header.id;
+        header.default = false;
+        header.width = that.headerWidth[header.key];
+        if (header.width === undefined) {
+          header.width = '80px';
+        }
+        headerMap[header.key] = header;
+      });
+      that.defaultHeader.forEach((key) => {
+        if (headerMap[key] === undefined) {
+          return;
+        }
+        headerMap[key].default = true;
       });
       headerData.push({
         key: 'action',
         text: that.$t('statistics.action'),
         type: 'action',
         info: that.$t('statistics.action_info'),
+        width: '180px',
+        lockedRight: true,
       });
       return headerData;
     },
@@ -632,6 +878,23 @@ export default {
         from: this.end.dateObj,
       };
     },
+    refreshPlatforms() {
+      const that = this;
+      return that.$api.getTagTypes().then((data) => {
+        data.forEach((d) => {
+          if (d.type === 'platform' && d.values.length > 0) {
+            const newPlatformOptions = [];
+            d.values.forEach((v) => {
+              newPlatformOptions.push({
+                value: v.id,
+                text: v.text,
+              });
+            });
+            that.platformOptions = newPlatformOptions;
+          }
+        });
+      });
+    },
   },
   computed: {
     ...mapGetters([
@@ -644,7 +907,10 @@ export default {
       return this.checkedDataRow.length;
     },
     validTimeRange() {
-      return this.end.dateObj > this.start.dateObj;
+      if (this.end !== undefined && this.start !== undefined) {
+        return this.end.dateObj > this.start.dateObj;
+      }
+      return this.end === undefined || this.start === undefined;
     },
     validInputString() {
       return this.startValidity && this.endValidity;
@@ -664,15 +930,18 @@ export default {
     trimmedKeyword() {
       return this.keyword.trim();
     },
+    trimmedIntent() {
+      return this.intent.trim();
+    },
   },
   beforeMount() {
     pickerUtil.initTime(this);
-    this.startDisableDate = {
+    this.startDisableDate = this.end ? {
       from: this.end.dateObj,
-    };
-    this.endDisableDate = {
+    } : undefined;
+    this.endDisableDate = this.start ? {
       to: this.start.dateObj,
-    };
+    } : undefined;
     this.$nextTick(() => {
       this.dayRange = 1;  // update lable switch after datepicker is updated
     });
@@ -692,7 +961,21 @@ export default {
     }
   },
   mounted() {
-    this.isMount = true;
+    const that = this;
+    that.isMount = true;
+    that.$emit('startLoading');
+    that.refreshCategory()
+    .then(() => that.refreshLabels())
+    .then(() => that.refreshPlatforms())
+    .then(() => {
+      that.$emit('endLoading');
+    });
+
+    Object.keys(that.emotionMap).forEach((key) => {
+      that.emotionMap[key].forEach((val) => {
+        that.emotionRevMap[val] = key;
+      });
+    });
   },
 };
 </script>
@@ -774,7 +1057,8 @@ export default {
   align-items: center;
   .row-title {
     @include font-14px();
-    flex: 0 0 70px;
+    flex: 0 0 auto;
+    min-width: 56px;
     margin-right: 10px;
     margin-left: 20px;
   }
@@ -782,6 +1066,9 @@ export default {
     flex: 0 0 300px;
     display: flex;
     align-items: center;
+    &.short {
+      flex: 0 0 130px;
+    }
     .label-switch {
       flex: 0 0 auto;
       margin-right: 5px;
@@ -797,6 +1084,19 @@ export default {
     .single-input {
       display: block;
       flex: 1;
+      // width: 300.px;
+    }
+  }
+  .score-range {
+    display: flex;
+    align-items: center;
+    margin-left: 10px;
+    .range-icon {
+      margin: 0 4px;
+    }
+    .score-input {
+      display: block;
+      width: 60px;
     }
   }
 }

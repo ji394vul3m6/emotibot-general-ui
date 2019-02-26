@@ -17,13 +17,14 @@
 ---
 ## Props
 
-| Prop | required | Type | Accepted Values | Default | 說明 |
-|---|---|---|---|---|---|
-| value<br>(v-model) | true | String | - | - | Input 文字內容
-| fill | false | Boolean | true / false | false | input 寬度 100% 
+| Prop | required | Type | Default | 說明 |
+|---|---|---|---|---|
+| value<br>(v-model) | true | String | - | Input 文字內容
+| fill | - | Boolean | false | input 寬度 100% 
+
 
 ---
-## Events
+## Emit Events
 
 | Event | Callback $event | 說明 |
 |---|---|---|

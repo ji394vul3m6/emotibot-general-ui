@@ -27,16 +27,35 @@ export default [
       const iconSize = number('iconSize', 16);
       const iconAlign = select('iconAlign', iconAlignTypes, 'left');
       const template = `
-        <text-button
-          width='${width}'
-          height='${height}'
-          button-type='${buttonType}'
-          iconType="${iconType}"
-          :iconSize="${iconSize}"
-          iconAlign="${iconAlign}"
-          @click="test">
-          ${buttonTxt}
-        </text-button>`;
+        <div class="div-block">
+          <div class="headline">Text Button</div>
+          <text-button
+            width='${width}'
+            height='${height}'
+            button-type='${buttonType}'
+            iconType="${iconType}"
+            :iconSize="${iconSize}"
+            iconAlign="${iconAlign}"
+            @click="test">
+            ${buttonTxt}
+          </text-button>
+        </div>
+        <div class="div-block">
+          <div class="headline">Text Button 樣式: button-type</div>
+          <text-button>default</text-button>
+          <text-button button-type="primary">primary</text-button>
+          <text-button button-type="error">error</text-button>
+          <text-button button-type="fill">fill</text-button>
+          <text-button button-type="disable">disable</text-button>
+        </div>
+        <div class="div-block">
+          <div class="headline">Text Button with Icon</div>
+          <div style="display: flex; alignItems: center;">
+            <text-button icon-type="search" icon-align="left" style="marginRight: 3px">icon在左邊</text-button>
+            <text-button icon-type="search" icon-align="right">icon在右邊</text-button>
+          </div>
+        </div>
+        `;
 
       return {
         components: { TextButton },

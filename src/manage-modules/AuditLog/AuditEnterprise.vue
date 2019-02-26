@@ -192,9 +192,9 @@ export default {
   watch: {
     currentPage(val) {
       if (val === 'auditSystem') {
-        this.$router.push(auditSystemPage);
+        this.$router.replace(auditSystemPage);
       } else if (val === 'auditRobot') {
-        this.$router.push(auditRobotPage);
+        this.$router.replace(auditRobotPage);
       }
     },
     expertMode(val) {

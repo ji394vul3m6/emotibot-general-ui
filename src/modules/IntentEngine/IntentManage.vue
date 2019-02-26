@@ -14,6 +14,8 @@
             <loading-line></loading-line>
             {{ $t('intent_engine.manage.train_status_msg.is_training', {percentage: trainingProgress}) }}
           </div>
+          <div v-else-if="!lastTrainedTime" class="train-hint">
+          </div>
           <div v-else class="train-hint">
             {{ $t('intent_engine.manage.train_status_msg.last_train', {timestr: lastTrainedTime}) }}
           </div>
@@ -28,6 +30,7 @@
         <div class="content-tool">
           <div class="content-tool-left">
             <text-button v-if="canAdd" :button-type="allowAdd ? 'primary' : 'disable'" @click="addIntent">{{ $t('intent_engine.manage.add_intent') }}</text-button>
+            <text-button v-if="canEdit && showBatchDelete" :button-type="allowEdit ? 'error' : 'disable'" @click="popDeleteCheck">{{ $t('intent_engine.manage.delete_intents') }}</text-button>
             <text-button v-if="canImport" :button-type="allowImport ? 'default' : 'disable'" @click="importIntentList">{{ $t('general.import') }}</text-button>
             <text-button v-if="canExport" :button-type="allowExport ? 'default' : 'disable'" @click="exportIntentList(currentVersion)">{{ $t('general.export') }}</text-button>
           </div>
@@ -51,7 +54,9 @@
           :keyword="intentKeyword"
           @addIntentDone="finishAddIntent($event)"
           @deleteIntentDone="refreshIntentPage()"
-          @cancelSearch="setSearchIntent(false)">
+          @cancelSearch="setSearchIntent(false)"
+          @checkedIntent="handleIntentChecked"
+          ref="intents">
         </intent-list>
         </div>
       </div>
@@ -60,6 +65,7 @@
 </template>
 <script>
 import { mapGetters } from 'vuex';
+import util from '@/utils/js/format';
 import api from './_api/intent';
 import IntentList from './_components/IntentList';
 import ImportIntentPop from './_components/ImportIntentPop';
@@ -112,10 +118,11 @@ export default {
         alignLeft: true,
       },
       trainingProgress: 50,
-      lastTrainedTime: '2018-07-09 16:53',
+      lastTrainedTime: '',
       pageInfoTooltip: {
         msg: this.$t('intent_engine.manage.tooltip.page_info'),
       },
+      showBatchDelete: false,
     };
   },
   computed: {
@@ -193,6 +200,48 @@ export default {
       this.isAddIntent = true;
       this.intentKeyword = '';
     },
+    popDeleteCheck() {
+      const that = this;
+      const deleteIDs = that.$refs.intents.getCheckedIntentIDs();
+      if (deleteIDs.length === 0) {
+        return;
+      }
+      const option = {
+        data: {
+          msg: that.$t('intent_engine.delete_multi_intent_msg'),
+        },
+        callback: {
+          ok: () => {
+            that.deleteIntents();
+          },
+        },
+      };
+      that.$popWarn(option);
+    },
+    deleteIntents() {
+      const that = this;
+      const deleteIDs = that.$refs.intents.getCheckedIntentIDs();
+      that.$emit('startLoading');
+      that.$api.deleteIntents(deleteIDs).then(() => {
+        that.$notify({ text: that.$t('intent_engine.manage.notify.delete_intent_success') });
+      })
+      .catch((err) => {
+        console.log(err);
+        that.$notifyFail(that.$t('intent_engine.manage.notify.delete_intent_fail'));
+      })
+      .finally(() => {
+        that.$emit('endLoading');
+        that.refreshIntentPage();
+      });
+    },
+    handleIntentChecked() {
+      const deleteIDs = this.$refs.intents.getCheckedIntentIDs();
+      if (deleteIDs.length > 0) {
+        this.showBatchDelete = true;
+      } else {
+        this.showBatchDelete = false;
+      }
+    },
     finishAddIntent(done) {
       this.isAddIntent = false;
       if (done) {
@@ -258,7 +307,8 @@ export default {
       const that = this;
       const prevStatus = that.trainStatus;
       that.$api.getTrainingStatus(version)
-      .then((status) => {
+      .then((rsp) => {
+        const status = rsp.status;
         that.fetchStatusError = false;
         if (status === 'TRAINING') {
           // that.$emit('startLoading', that.$t('intent_engine.is_training'));
@@ -287,6 +337,7 @@ export default {
         } else if (prevStatus === undefined) {
           that.refreshIntentPage();
         }
+        that.lastTrainedTime = util.datetimeToString(new Date(rsp.last_train * 1000));
         that.trainStatus = status;
         if (!this.statusTimer) {
           that.startPollingTrainingStatus(version);

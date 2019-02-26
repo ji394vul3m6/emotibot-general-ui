@@ -59,7 +59,6 @@
 import Vue from 'vue';
 import moment from 'moment';
 import DatePicker from '@/components/DateTimePicker/DatePicker';
-import NavBar from '@/components/NavigationBar';
 import tagAPI from '@/api/tagType';
 import auditAPI from '@/api/audit';
 import misc from '@/utils/js/misc';
@@ -74,7 +73,6 @@ export default {
   icon: 'white_daily',
   name: 'statistic-analysis',
   components: {
-    NavBar,
     chart: () => import('./_components/Charts').then((data) => {
       chartLoaded = true;
       return data;
@@ -91,8 +89,8 @@ export default {
       pageMap: {
         visitTime: `${this.$t('statistics.visit_record')}(${this.$t('statistics.time')})`,
         visitDimension: `${this.$t('statistics.visit_record')}(${this.$t('statistics.dimension')})`,
-        topHot: `${this.$t('statistics.hot_question')} Top 20`,
-        topUnused: `${this.$t('statistics.failed_question')} Top 20`,
+        topHot: `${this.$t('statistics.hot_question')} Top 100`,
+        topUnused: `${this.$t('statistics.failed_question')} Top 100`,
         // topUnresolved: `${this.$t('statistics.unresolve_question')} Top 20`,
       },
       pageSetting: {
@@ -278,6 +276,7 @@ export default {
           param: {
             days: 1,
             type: 'top',
+            top: 100,
           },
           tableHeader: [
             {
@@ -298,6 +297,7 @@ export default {
           param: {
             days: 1,
             type: 'unused',
+            top: 100,
           },
           tableHeader: [
             {

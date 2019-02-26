@@ -1,35 +1,33 @@
 <template lang="html">
   <div id="edges" class="edges"> 
     <svg class="svg">
-      <g class="paths" v-for="p in paths" >
-        <path :d="p.data" :style="p.style"></path>
+      <g class="paths" v-for="p, idx in paths" >
+        <path 
+          :d="p.data" 
+          stroke-width="5" 
+          :stroke="rainbowColors[idx % rainbowColors.length]"
+          fill="none">
+        </path>
       </g>
     </svg>
   </div>
 </template>
 
 <script>
+import optionConfig from '../_utils/optionConfig';
+import { NodeBlock } from '../_utils/componentConfig';
 
 export default {
-  name: 'scenario-edit-page',
-  components: {},
   props: {
     edges: {
       type: Array,
       default: [],
     },
-    nodeBlockWidth: {
-      type: Number,
-      default: 230,
-    },
-    nodeBlockHeight: {
-      type: Number,
-      default: 120,
-    },
   },
   data() {
     return {
       radius: 60,
+      rainbowColors: optionConfig.getRainbowColors(),
     };
   },
   computed: {
@@ -43,12 +41,6 @@ export default {
         });
       });
       return pathList;
-    },
-    halfBlockWidth() {
-      return this.nodeBlockWidth / 2;
-    },
-    halfBlockHeight() {
-      return this.nodeBlockHeight / 2;
     },
   },
   watch: {},
@@ -64,12 +56,12 @@ export default {
       let sx = edge.x2;
       let sy = edge.y2;
 
-      if (Math.abs(sx - px) <= this.halfBlockWidth) {
+      if (Math.abs(sx - px) <= (NodeBlock.nodeBlockWidth / 2)) {
         const meanX = (px + sx) / 2;
         px = meanX;
         sx = meanX;
       }
-      if (Math.abs(sy - py) <= this.halfBlockHeight) {
+      if (Math.abs(sy - py) <= (NodeBlock.nodeBlockHeight / 2)) {
         const meanY = (py + sy) / 2;
         py = meanY;
         sy = meanY;
@@ -100,19 +92,14 @@ export default {
       return Math.sqrt(((x2 - x1) * (x2 - x1)) + ((y2 - y1) * (y2 - y1)));
     },
   },
-  beforeMount() {},
-  mounted() {
-  },
 };
 </script>
 
 <style lang="scss" scoped>
-@import 'styles/variable.scss';
-
-#edges{
+#edges {
   width: 100%;
   height: 100%;
-  .svg{
+  .svg {
     width: 100%;
     height: 100%;
   }

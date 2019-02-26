@@ -70,10 +70,6 @@ export default {
     'action-group': ActionGroup,
   },
   props: {
-    validateTab: {
-      type: Boolean,
-      default: false,
-    },
     initialActionGroupList: {
       type: Array,
       required: true,
@@ -100,11 +96,6 @@ export default {
   },
   computed: {},
   watch: {
-    validateTab(newV, oldV) {
-      if (newV && !oldV) {
-        this.$emit('update:valid', true);
-      }
-    },
   },
   methods: {
     addNewDialogueNode(newNodeID) {
@@ -183,6 +174,13 @@ export default {
     },
     emitUpdate() {
       this.$emit('update', this.actionGroupList);
+      this.$emit('update:valid', this.isValid());
+    },
+    isValid() {
+      return true;
+    },
+    showToolTip() {
+      general.showInputContentTooltip(this.$refs['input-content']);
     },
   },
   beforeMount() {
@@ -190,6 +188,7 @@ export default {
   },
   mounted() {
     this.$on('rerender', this.rerender);
+    this.$on('showToolTip', this.showToolTip);
   },
   activated() {
     this.rerender();

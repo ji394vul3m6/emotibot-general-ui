@@ -1,20 +1,20 @@
 <template>
   <div id="app">
     <div :class="{blur: isBackgroundBlur}">
-      <div id="app-logo" :class="$i18n.locale"></div>
+      <div id="app-logo" :class="$i18n.locale" ref="logo"></div>
       <page-header v-if="ready"></page-header>
       <!-- if not Manage Module, show robot page -->
       <template v-if="!isManageModule && ready">
       <page-menu></page-menu>
       <div id="app-page" v-if="ready" :class="{iframe: isIFrame}">
         <!-- <div class="app-header" v-if="!isIFrame">{{ pageName }}</div> -->
-        <router-view v-show="!showLoading" class="app-body" :class="{iframe: isIFrame}" @startLoading="startLoading" @endLoading="endLoading"/>
         <div v-if="showLoading" class="app-body">
           <div class="loading card h-fill w-fill">
             <loading-dot></loading-dot>
             <div class="loading-msg"> {{ loadingMsg || $t('general.loading') }}</div>
           </div>
         </div>
+        <router-view class="app-body" :class="{iframe: isIFrame}" @startLoading="startLoading" @endLoading="endLoading"/>
       </div>
       <transition name="slide-in">
       <div id="chat-test-pop" :class="{show: isChatOpen}">
@@ -25,13 +25,13 @@
       <!-- if isManageModule, show enterprise admin page -->
       <template v-else-if="isManageModule && ready">
         <div id="app-page" class="manage">
-          <router-view v-show="!showLoading" class="app-body" @startLoading="startLoading" @endLoading="endLoading"/>
           <div v-if="showLoading" class="app-body">
-          <div class="loading card h-fill w-fill">
-            <loading-dot></loading-dot>
-            <div class="loading-msg"> {{ loadingMsg || $t('general.loading') }}</div>
+            <div class="loading card h-fill w-fill">
+              <loading-dot></loading-dot>
+              <div class="loading-msg"> {{ loadingMsg || $t('general.loading') }}</div>
+            </div>
           </div>
-        </div>
+          <router-view class="app-body" @startLoading="startLoading" @endLoading="endLoading"/>
         </div>
       </template>
       <template v-if="showUserInfoPage && ready">
@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters } from 'vuex';
+import { mapMutations, mapGetters, mapActions } from 'vuex';
 import modules from '@/modules';
 import PageHeader from '@/components/layout/Header';
 import PageMenu from '@/components/layout/Menu';
@@ -54,6 +54,8 @@ import constant from '@/utils/js/constant';
 import UserPreference from '@/manage-modules/UserPreference';
 import userAPI from '@/manage-modules/_api/user';
 import adminAPI from '@/manage-modules/SystemManage/_api/system';
+import systemAPI from '@/api/system';
+import misc from '@/utils/js/misc';
 
 const defaultPath = '/statistic-dash';
 
@@ -76,7 +78,7 @@ export default {
     'page-menu': PageMenu,
     'user-preference': UserPreference,
   },
-  api: [userAPI, adminAPI],
+  api: [userAPI, adminAPI, systemAPI],
   computed: {
     pageName() {
       return this.$t(this.currentPage.display);
@@ -99,6 +101,8 @@ export default {
       'showUserInfoPage',
       'showLanguage',
       'privilegeList',
+      'environment',
+      'UIModules',
     ]),
   },
   data() {
@@ -117,6 +121,7 @@ export default {
     enterpriseID(val) {
       this.setPrivilegeList(this.$getPrivModules());
       this.$cookie.set('enterprise', val, { expires: constant.cookieTimeout });
+      this.loadLogo();
     },
     robotID(val) {
       if (val === '') {
@@ -124,6 +129,7 @@ export default {
       }
       this.$cookie.set('appid', val, { expires: constant.cookieTimeout });
       this.$setReqAppid(val);
+      this.getUIModule.call(null, this);
 
       const robotData = {
         appid: val,
@@ -140,6 +146,9 @@ export default {
       this.$cookie.set('userid', this.userID, { expires: constant.cookieTimeout });
     },
     $route() {
+      if (!this.ready) {
+        return;
+      }
       this.checkPrivilege();
       this.endLoading();
     },
@@ -149,6 +158,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions(['getEnv', 'getUIModule']),
     ...mapMutations([
       'setPrivilegeList',
       'setPageInfos',
@@ -206,6 +216,7 @@ export default {
           '/manage/enterprise-manage',
           '/manage/system-admin-list',
           '/manage/audit-system',
+          '/manage/system-setting',
         ];
         const valid = that.$route.matched.reduce((val, match) =>
           val || validURL.indexOf(match.path) >= 0, false);
@@ -404,7 +415,7 @@ export default {
       const that = this;
       that.checkCookieLoop = undefined;
       if (!that.$cookie.get('verify')) {
-        that.$logout();
+        that.$logout(true);
         that.goLoginPage();
       } else if (that.checkCookieLoop === undefined) {
         that.checkCookieLoop = setTimeout(() => {
@@ -415,6 +426,12 @@ export default {
     goLoginPage(notification) {
       const that = this;
       const fullPath = that.$route.fullPath;
+
+      const ssoLoginPath = that.environment.SSO_LOGIN_URL;
+      if (ssoLoginPath) {
+        window.location = `${ssoLoginPath}?redirect=${window.location}`;
+        return;
+      }
       if (notification) {
         window.location = `/login.html?invalid=1&redirect=${encodeURIComponent(fullPath)}`;
       } else {
@@ -443,69 +460,93 @@ export default {
         }, 500);
       }
     },
+    loadLogo() {
+      const that = this;
+      this.$api.getIcon('app', that.enterpriseID).then(() => {
+        that.$refs.logo.style.backgroundImage = `url("${that.$api.getIconURL('app', that.enterpriseID)}")`;
+      }, () => {
+        that.$refs.logo.classList.add('default');
+        that.$refs.logo.style.backgroundImage = '';
+      });
+      that.$api.getIcon('favicon', that.enterpriseID).then(() => {
+        misc.changeFavicon(that.$api.getIconURL('favicon', that.enterpriseID));
+      }, () => {
+        misc.changeFavicon('/static/favicon.png');
+      });
+    },
+    setup() {
+      const that = this;
+      const token = that.$getToken();
+      // that.checkCookie();
+      that.$setReqToken(token);
+      this.getEnv.call(null, this)
+      .then(() => this.getUIModule.call(null, this))
+      .then(() => {}, () => {
+        console.log('Get UI modules Fail');
+      })
+      .then(() => that.$setIntoWithToken(token))
+      .then(() => {
+        const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+
+        let getUserInfoPromise;
+        if (userInfo.type === 0) {
+          getUserInfoPromise = that.$api.getAdmin(userInfo.id);
+        } else {
+          getUserInfoPromise = that.$api.getEnterpriseUser(userInfo.enterprise, userInfo.id);
+        }
+        return getUserInfoPromise;
+      })
+      .then((data) => {
+        const enterpriseList = that.$getUserEnterprises();
+        that.userInfo = data;
+        that.setUser(data.id);
+        that.setUserInfo(data);
+        that.setPrivilegedEnterprise(enterpriseList);
+        if (data.type !== 0) {
+          const robots = that.$getRobots();
+          const userRoleMap = JSON.parse(localStorage.getItem('roleMap'));
+          that.setRobotList(robots);
+          that.setUserRoleMap(userRoleMap);
+          that.setPrivilegeList(that.$getPrivModules());
+          // that.setupPages();
+        }
+        that.checkPrivilege();
+        that.ready = true;
+      })
+      .then(() => {
+        that.loadLogo();
+      })
+      .catch((err) => {
+        console.log(err);
+        that.goLoginPage();
+      });
+
+      that.$root.$on('pop-window', () => {
+        that.$nextTick(() => {
+          that.isBackgroundBlur = that.$isBackgroundBlur();
+        });
+      });
+      that.$root.$on('close-window', () => {
+        that.$nextTick(() => {
+          that.isBackgroundBlur = that.$isBackgroundBlur();
+        });
+      });
+      that.$root.$on('open-chat-test', () => {
+        that.openChatTest();
+      });
+      that.$root.$on('close-chat-test', () => {
+        that.closeChatTest();
+      });
+
+      that.$root.$on('reload-logo', () => {
+        that.loadLogo();
+      });
+
+      window.addEventListener('keydown', that.debugListener);
+    },
   },
   mounted() {
-    const that = this;
-    const token = that.$getToken();
-
-    if (!token) {
-      that.goLoginPage(false);
-    }
-
-    that.checkCookie();
-    that.$setReqToken(token);
-    that.$setIntoWithToken(token).then(() => {
-      const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-
-      let getUserInfoPromise;
-      if (userInfo.type === 0) {
-        getUserInfoPromise = that.$api.getAdmin(userInfo.id);
-      } else {
-        getUserInfoPromise = that.$api.getEnterpriseUser(userInfo.enterprise, userInfo.id);
-      }
-      return getUserInfoPromise;
-    })
-    .then((data) => {
-      const enterpriseList = that.$getUserEnterprises();
-      that.userInfo = data;
-      that.setUser(data.id);
-      that.setUserInfo(data);
-      that.setPrivilegedEnterprise(enterpriseList);
-      if (data.type !== 0) {
-        const robots = that.$getRobots();
-        const userRoleMap = JSON.parse(localStorage.getItem('roleMap'));
-        that.setRobotList(robots);
-        that.setUserRoleMap(userRoleMap);
-        that.setPrivilegeList(that.$getPrivModules());
-        // that.setupPages();
-      }
-      that.checkPrivilege();
-      that.ready = true;
-    })
-    .catch((err) => {
-      console.log(err);
-      const fullPath = that.$route.fullPath;
-      window.location = `/login.html?invalid=1&redirect=${encodeURIComponent(fullPath)}`;
-    });
-
-    that.$root.$on('pop-window', () => {
-      that.$nextTick(() => {
-        that.isBackgroundBlur = that.$isBackgroundBlur();
-      });
-    });
-    that.$root.$on('close-window', () => {
-      that.$nextTick(() => {
-        that.isBackgroundBlur = that.$isBackgroundBlur();
-      });
-    });
-    that.$root.$on('open-chat-test', () => {
-      that.openChatTest();
-    });
-    that.$root.$on('close-chat-test', () => {
-      that.closeChatTest();
-    });
-
-    window.addEventListener('keydown', that.debugListener);
+    this.setup();
   },
 };
 </script>
@@ -554,5 +595,8 @@ export default {
   &.slide-in-enter-to, &.slide-in-leave {
     right: 0;
   }
+}
+#app-page {
+  z-index: 0;
 }
 </style>

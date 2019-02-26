@@ -212,9 +212,9 @@ export default {
   watch: {
     currentPage(val) {
       if (val === 'auditEnterprise') {
-        this.$router.push(auditEnterprisePage);
+        this.$router.replace(auditEnterprisePage);
       } else if (val === 'auditSystem') {
-        this.$router.push(auditSystemPage);
+        this.$router.replace(auditSystemPage);
       }
     },
     expertMode(val) {
@@ -368,6 +368,13 @@ export default {
           }
         });
       }
+
+      this.robotModuleList.forEach((robotModule) => {
+        if (robotModule.id === 'ssm') {
+          robotModule.privCode.push('2');
+        }
+      });
+
       this.filterModuleOptions = moduleOptions;
       this.filterModule = [moduleOptions[0].value];
       this.setFilterActionType();

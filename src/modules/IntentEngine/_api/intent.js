@@ -1,7 +1,7 @@
 import qs from 'qs';
 
-// TODO: change these to v2 !!!!!!!!!
 const GET_INTENT_URL = 'api/v2/intents';
+const DELETE_INTENTS_URL = 'api/v2/intents/delete';
 const IMPORT_INTENT_URL = 'api/v2/intents/import';
 const TRAIN_URL = 'api/v2/intents/train';
 const GET_TRAINING_STATUS_URL = 'api/v2/intents/status';
@@ -100,7 +100,6 @@ function getTrainingStatus() {
   return this.$reqGet(GET_TRAINING_STATUS_URL)
     .then((rsp) => {
       const result = rsp.data.result;
-      let status = '';
       // const IE = result.ie_status;
       // // const RE = result.re_status;
 
@@ -114,18 +113,25 @@ function getTrainingStatus() {
       // } else {
       //   status = 'TRAINED';
       // }
-
-      if (result.status === 'TRAINING') {
-        status = 'TRAINING';
-      } else if (result.status === 'NEED_TRAIN') {
-        status = 'NOT_TRAINED';
-      } else if (result.status === 'TRAIN_FAILED') {
-        status = 'TRAIN_FAILED';
-      } else {
-        status = 'TRAINED';
+      switch (result.status) {
+        case 'TRAINING':
+        case 'NOT_TRAINED':
+        case 'TRAIN_FAILED':
+          break;
+        case 'NEED_TRAIN':
+          result.status = 'NOT_TRAINED';
+          break;
+        default:
+          result.status = 'TRAINED';
       }
-      return status;
+      return result;
     });
+}
+
+function deleteIntents(IDs) {
+  return this.$reqPost(DELETE_INTENTS_URL, {
+    id: IDs,
+  });
 }
 
 export default {
@@ -138,4 +144,5 @@ export default {
   getCorpus,
   startTraining,
   getTrainingStatus,
+  deleteIntents,
 };

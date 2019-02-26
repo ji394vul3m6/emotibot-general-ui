@@ -3,7 +3,7 @@ const operationType = {
     return {
       operationType: {
         all: this.$t('general.all'),
-        create: this.$t('privileges.actions.create'),
+        add: this.$t('privileges.actions.create'),
         edit: this.$t('privileges.actions.edit'),
         delete: this.$t('privileges.actions.delete'),
         import: this.$t('privileges.actions.import'),

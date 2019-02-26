@@ -1,4 +1,71 @@
 export default {
+  robot_config: {
+    robot_config: '系统功能配置',
+    config_content_error: '设定内容错误',
+    ssm: {
+      title: '问答',
+      'ssm_context_support-info': '在常用问答中使用上下文',
+      'uploadimg_server-pre': '答案中图片伺服器将使用 http://',
+      'uploadimg_server-suf': '',
+      'ssm_ml_threshold-pre': '当 ML 相似度信心分数为',
+      'ssm_ml_threshold-suf': '时视为相同问题',
+      'ssm_qq_threshold-pre': '当 QQ 相似度信心分数为',
+      'ssm_qq_threshold-suf': '时视为相同问题',
+    },
+    chat: {
+      title: '闲聊',
+      'chat-editorial-pre': '信心分数高于',
+      'chat-editorial-suf': '时使用竹间闲聊 I',
+      'chat-editorial-custom-pre': '信心分数高于',
+      'chat-editorial-custom-suf': '时使用客制闲聊',
+      'chat-editorial-domain-pre': '信心分数高于',
+      'chat-editorial-domain-suf': '时使用行业闲聊',
+      'chat-editorial-sport-pre': '信心分数高于',
+      'chat-editorial-sport-suf': '时使用竹间闲聊 II',
+      'chat-robot-pre': '信心分数高于',
+      'chat-robot-suf': '时使用竹间机器人形象',
+      'chat-robot-custom-pre': '信心分数高于',
+      'chat-robot-custom-suf': '时使用客制机器人形象',
+    },
+    robot: {
+      title: '机器人',
+      name: '自称',
+      language: '出话语系',
+      default: '我',
+    },
+    context: {
+      title: '技能上下文',
+    },
+    'human-intent': {
+      title: '转人工',
+    },
+    rule: '规则设置',
+    faq: {
+      title: 'FAQ',
+      'faq-similar-question-range-pre': '匹配分数与阈值差距小于',
+      'faq-similar-question-range-suf': '时，将其视为相似问',
+      'faq-recommand-question-range-pre': '匹配分数与阈值差距小于',
+      'faq-recommand-question-range-suf': '时，将其视为推荐问',
+    },
+    'task-engine': {
+      title: '任务引擎',
+      'task-engine-total-timeout-pre': '当任务引擎超过',
+      'task-engine-total-timeout-suf': '毫秒无反应则视为超时',
+    },
+    knowledge: {
+      title: '知识图谱',
+      'knowledge-threshold-pre': '匹配分数超过',
+      'knowledge-threshold-suf': '时，使用知识图谱为答案',
+    },
+    command: {
+      title: '指令',
+    },
+    intent: {
+      title: '意图引擎',
+      'intent-threshold-pre': '当意图信心分数超过',
+      'intent-threshold-suf': '时，使用该意图',
+    },
+  },
   integration: {
     integration: '接入部署',
     enterpriseID: '企业 ID',
@@ -102,6 +169,13 @@ export default {
     delete_category_msg: '确定要删除分类 {name} 及其子分类吗？',
   },
   statistics: {
+    std_question_exists: '标准问题已存在',
+    add_new_std_question: '新增标准问题',
+    sessions_time: '会话时间',
+    session_id: '会话 ID',
+    feedback_score: '满意度分数',
+    feedback_reason: '满意度反馈',
+
     search_more: '显示上限为1万笔，显示更多资料？',
     search_more_hint: '以最后一笔访问时间为启始点重新搜寻',
 
@@ -145,6 +219,10 @@ export default {
     question_first_time: '首次提问时间',
     question_last_time: '末次提问时间',
     audit_record_filename: '操作日志',
+    label: '标准问题标签',
+    category: '标准问题分类',
+    min_score: '最低分',
+    max_score: '最高分',
 
     keyword_search: '关键词',
     time_range: '访问时间',
@@ -155,7 +233,8 @@ export default {
 
     filter: '筛选条件',
     export_mode: '高级筛选',
-    total_records: '共有 {num} 笔日志，已勾选 {count} 笔',
+    total_records: '共 {num} 笔',
+    total_select_records: '共有 {num} 笔日志，已勾选 {count} 笔',
 
     recommend_question: '推荐标准问题',
     recommend_empty_msg_1: '目前无推荐标准问题',
@@ -187,6 +266,10 @@ export default {
       cluster_fail: '辅助分类失败',
       multi_origin_mark_fail: '尚未为多笔用户问题选择标注问题',
       search_fail: '无法取得对话日志',
+      too_few_valid_sentence: '有效的用户问句不足',
+    },
+    warning: {
+      mark_skip: '{num}个问答已为标准问题，忽略标注',
     },
     categories: {
       title: '维度',
@@ -228,6 +311,19 @@ export default {
       chat: '聊天',
       other: '其他',
       all: '全部',
+    },
+    modules: {
+      title: '出话模块',
+      backfill: '未知回复',
+      chat: '闲聊',
+      keyword: '其他',
+      function: '机器人技能',
+      faq: '常用标准问题',
+      task_engine: '多轮对话引擎',
+      to_human: '转人工',
+      knowledge: '知识图谱',
+      command: '机器人话术',
+      emotion: '情绪话术',
     },
     platform: {
       title: '平台',
@@ -272,6 +368,12 @@ export default {
       result: '动作结果',
       create_time: '发生时间',
       ip_source: 'IP地址',
+    },
+
+    confidence_score: {
+      title: '信心分数',
+      low: '低信心问题',
+      range: '分数区间',
     },
 
     user_say: '用户提问',
@@ -400,10 +502,10 @@ export default {
     empty_category_search_result: '无符合分类',
     all: '全部',
     no_category: '未分类',
-    default: '预设',
-    define: '自订',
+    default: '默认',
+    define: '自定义',
     sensitive_wordbank: '敏感词库',
-    sensitive_word: '敏感词回应',
+    sensitive_word: '敏感词答案',
     batch_import: '批量导入',
     export_all: '全部导出',
     success: {
@@ -746,12 +848,14 @@ export default {
     },
   },
   intent_engine: {
+    delete_multi_intent_msg: '确定要删除所选意图吗？',
     train: '意图训练',
     is_training: '意图训练中...',
     training_success: '意图训练成功',
     training_fail: '意图训练失败',
     version_not_exist: '意图版本不存在',
     manage: {
+      delete_intents: '批量删除',
       add_intent: '新增意图',
       intent_num: '共有 {inum} 组意图 / {cnum} 笔语料',
       corpus_num: ' ({pos}笔正例/{neg}笔反例)',
@@ -883,6 +987,7 @@ export default {
       robot_chat_skill: '话术设置',
       robot_command: '指令设置',
       integration: '接入部署',
+      robot_config: '系统功能配置',
     },
     wordbank: {
       module_name: '词库',
@@ -905,6 +1010,7 @@ export default {
       statistic_daily: '日志管理',
       statistic_audit: '操作记录',
       statistic_learning: '负反馈',
+      statistic_session: '会话日志',
     },
     task_engine: {
       module_name: '任务引擎',
@@ -921,6 +1027,19 @@ export default {
     error: '',
   },
   general: {
+    range: '区间',
+    system_name_default: '对话管理后台',
+    name: '名称',
+    image: '图片',
+    icon: '图标',
+    clear_all: '清除全部',
+    reset_to_default: '还原预设',
+    view: '查看',
+    custom_column: '自订栏位',
+    default_column: '预设栏位',
+    enable: '启用',
+    disable: '停用',
+    setting: '设置',
     language: '语言',
     zh_tw: '繁体中文',
     zh_cn: '简体中文',
@@ -930,6 +1049,7 @@ export default {
     no_data: '暂无数据',
     no_search_data: '暂无搜寻结果',
     no_option: '无选项',
+    no_filterable_option: '无筛选结果',
     reset: '重置',
     chat_test: '对话测试',
     custom: '自订',
@@ -976,6 +1096,8 @@ export default {
     save_change: '储存变更',
     go_back: '返回',
     please_choose: '请选择',
+    intent: '意图',
+    select_all: '全选',
   },
   dimension: {
     categories: {
@@ -1053,6 +1175,19 @@ export default {
   },
 
   management: {
+    enterprise_setting: '企业设置',
+    enterprise_icon_setting: '企业图标设置',
+    enterprise_lu_icon: '企业左上图标',
+    enterprise_lu_icon_info: '支援格式 svg, png，档案大小限制为 1mb，建议宽高比例 3:1',
+    browser_page_icon: '浏览器页签',
+    browser_page_icon_info: '支援格式 png ，档案大小限制为1mb，建议宽高比例1:1',
+
+    system_setting: '系统设置',
+    system_icon_setting: '系统图标设置',
+    system_lu_icon: '系统左上图标',
+    login_icon: '登入画面图标',
+    login_icon_info: '支援格式 svg,png ，档案大小限制为1mb，建议宽高比例为5:3',
+
     enterprise_list: '企业列表',
     admin_list: '系统管理人员',
     enterprise: '企业',
@@ -1229,8 +1364,9 @@ export default {
       },
       intent_manage: {
         view: '意图管理查看',
-        export: '意图管理导入',
-        import: '意图管理导出',
+        edit: '意图管理编辑',
+        export: '意图管理导出',
+        import: '意图管理导入',
       },
       integration: {
         view: '接入部署查看',

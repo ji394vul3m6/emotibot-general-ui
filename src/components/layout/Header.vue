@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex';
+import { mapState, mapGetters, mapMutations, mapActions } from 'vuex';
 import api from '@/api/system';
 import event from '@/utils/js/event';
 
@@ -68,10 +68,15 @@ export default {
       top: 90,
       left: -250,
     },
-    imEnable: false,
   }),
   api,
   computed: {
+    ...mapState({
+      imEnable(state) {
+        const env = state.env;
+        return (env.IM_ENABLE === '1' || env.IM_ENABLE === 'true');
+      },
+    }),
     ...mapGetters([
       'robotName',
       'robotID',
@@ -107,6 +112,7 @@ export default {
       'showUserPreference',
       'hideUserPreference',
     ]),
+    ...mapActions(['getEnv']),
     isEllipsisActive(elem) {
       return elem.offsetWidth < elem.scrollWidth;
     },
@@ -197,10 +203,7 @@ export default {
     },
   },
   mounted() {
-    const that = this;
-    that.$api.getEnv().then((data) => {
-      that.imEnable = !(data.IM_ENABLE === '0' || data.IM_ENABLE === 'false');
-    });
+    // this.getEnv.call(null, this);
   },
 };
 </script>

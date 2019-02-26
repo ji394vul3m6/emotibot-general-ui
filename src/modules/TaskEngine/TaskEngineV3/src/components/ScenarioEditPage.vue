@@ -310,8 +310,25 @@ export default {
       });
     },
     switchScenario() {
+      const content = {
+        version: '2.0',
+        setting: window.moduleData.setting,
+        metadata: window.moduleData.metadata,
+        msg_confirm: window.moduleData.msg_confirm,
+        skills: this.skills,
+        idToNerMap: this.idToNerMap,
+      };
       Promise.all([
         api.switchScenario(this.appId, this.scenarioId, this.enable),
+        Object.keys(content.skills).map((skillId) => {
+          const skill = content.skills[skillId];
+          if (skill.entityCollectorList.length > 0 ||
+              (skill.register_json && Object.keys(skill.register_json).length > 0)) {
+            const data = scenarioConvertor.convertToRegistryData(this.scenarioId, skill, skillId);
+            return this.enable ? api.registerNluTdeScenario(data) : Promise.resolve();
+          }
+          return Promise.resolve();
+        }),
         this.enable && api.publishScenario(this.appId, this.scenarioId),
       ])
       .catch((err) => {

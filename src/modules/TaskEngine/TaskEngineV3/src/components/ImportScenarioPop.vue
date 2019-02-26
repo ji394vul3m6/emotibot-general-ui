@@ -58,6 +58,7 @@
 </template>
 
 <script>
+import config from '@/modules/TaskEngine/_utils/config';
 
 export default {
   name: 'create-skill-pop',
@@ -113,7 +114,7 @@ export default {
     },
     validateFile() {
       const theFile = this.$refs.fileChooser.files[0] || undefined;
-      const fileSizeLimit = 2 * 1024 * 1024;
+      const fileSizeLimit = config.MaximumFileSize;
       if (!theFile) {
         this.fileValid = false;
         this.fileName = this.$t('task_engine_v3.import_scenario_pop.upload_file_undefined');

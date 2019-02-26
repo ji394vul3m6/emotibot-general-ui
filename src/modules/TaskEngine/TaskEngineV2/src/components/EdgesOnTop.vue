@@ -3,7 +3,7 @@
     <svg class="svg">
       <defs>
         <marker id="head" viewBox="0 0 10 10" refX="7" refY="5" markerUnits="strokeWidth" markerWidth="4" markerHeight="3" orient="auto">
-          <path d="M 0 0 L 10 5 L 0 10 z" stroke="none" fill="black"/>
+          <path d="M 0 0 L 10 5 L 0 10 z" stroke="none" fill="#AAAAAA"/>
         </marker>
       </defs>
       <g class="linking-path" v-if="linkingPath.show === true">
@@ -35,14 +35,6 @@ export default {
       },
     };
   },
-  computed: {
-    halfBlockWidth() {
-      return this.nodeBlockWidth / 2;
-    },
-    halfBlockHeight() {
-      return this.nodeBlockHeight / 2;
-    },
-  },
   watch: {
     linkingEdge: {
       handler() {
@@ -66,8 +58,8 @@ export default {
       const py = edge.y1;
       const qx = px;
       let qy = py;
-      const sx = edge.x2;
-      const sy = edge.y2;
+      let sx = edge.x2;
+      let sy = edge.y2;
       let rx = sx;
       const ry = sy;
       const cx = px;
@@ -85,6 +77,22 @@ export default {
           qy = cy - this.radius;
         } else if (sy < py) {
           qy = cy + this.radius;
+        }
+      }
+
+      if (rx === sx) {
+        if (px > sx) {
+          sx -= 1;
+        } else {
+          sx += 1;
+        }
+      }
+
+      if (ry === sy) {
+        if (py > sy) {
+          sy -= 1;
+        } else {
+          sy += 1;
         }
       }
 

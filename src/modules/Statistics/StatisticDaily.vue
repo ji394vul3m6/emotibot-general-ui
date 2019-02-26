@@ -1,7 +1,7 @@
 <template>
   <div class="statistic-daily">
     <keep-alive>
-      <component :is="currentView"> </component>
+      <component :is="currentView" @startLoading="$emit('startLoading')" @endLoading="$emit('endLoading')"> </component>
     </keep-alive>
   </div>
 </template>

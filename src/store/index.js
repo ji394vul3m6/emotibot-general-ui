@@ -6,7 +6,7 @@ import wordbank from '@/modules/Wordbank/_store';
 import statistics from '@/modules/Statistics/_store';
 
 import * as getters from './getter';
-import * as actions from './action';
+import actions from './action';
 import { state, mutations } from './mutations';
 
 

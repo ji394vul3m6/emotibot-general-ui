@@ -1,8 +1,6 @@
-// import AuditLog from './StatisticAudit';
-// import DailyLog from './StatisticDaily';
 import DailyLog from './StatisticDaily';
 import Analysis from './StatisticAnalysisNew';
-// import Learning from './StatisticLearning';
+import Session from './StatisticSession';
 
 export default {
   displayNameKey: 'statistics',
@@ -10,7 +8,6 @@ export default {
   pages: {
     Analysis,
     DailyLog,
-    // Learning,
-    // AuditLog,
+    Session,
   },
 };

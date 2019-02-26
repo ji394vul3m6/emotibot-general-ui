@@ -1,58 +1,78 @@
 <template>
+  <div class="dropdown-container">
+  <div class="dropdown-name" v-if="name !== undefined">{{ name }}</div>
   <div class="dropdown-select" :style="styleObj">
-    <div class="input-bar" :class="{'is-focus': show, error: showError}" :style="inputBarStyle" ref="input" @click="showSelection">
-      <div class="input-block">
+    <div class="input-bar" :class="{'is-focus': show, error: showError, disabled}" :style="inputBarStyle" ref="input" @click="showSelection">
+      <div class="input-block" :class="{multi}">
         <span v-if="!checkedValues.length" class="placeholder">{{ placeholder }}</span>
         <template v-if="multi">
         <tag class="input-tag" v-for="value in checkedValues" :key="value.value" font-class="font-12">
           {{ value.text }}
-          <icon icon-type="close" :size="8" class="close-icon" @click.stop="removeOption(value)"/>
+          <icon v-if="!hideClose" icon-type="close" :size="8" class="close-icon" @click.stop="removeOption(value)"/>
         </tag>
+        </template>
+        <template v-else-if="filterable">
+          <input
+            class="input-search" 
+            ref="searchInput"
+            :value="filtering ? searchKeyWord : checkedValues[0] && checkedValues[0].text" 
+            @input="filterInput"
+            @focus="$event.target.select()"/>
         </template>
         <template v-else-if="checkedValues.length > 0">
           <div class="input-text">{{checkedValues[0].text}}</div>
         </template>
       </div>
-      <div class="icon-block" :class="{error: showError}">
-        <icon :icon-type="!showError ? 'drop_down' : 'red_arrow'" :size=10></icon>
+      <div class="icon-block">
+        <icon icon-type="drop_down" :size=10></icon>
       </div>
     </div>
     <div ref="list" v-if="show" class="select-list" :style="listStyle">
-      <div class="select-item search" v-if="showSearchBar">
-        <input class="search-input" v-model="searchKeyWord" placeholder="Search">
+      <div class="search-bar" v-if="showSearchBar">
+        <search-input v-model="searchKeyWord" fill></search-input>
       </div>
-      <template v-if="filteredLocalOptions.length === 0">
-        <div class="select-item item">
-          <div class="select-text not-selectable" :style="selectTextStyle">
-            {{ $t('general.no_option') }}
+      <div class="select-item-block">
+        <div v-if="action" class="select-item item-action" @click="onClickAction($event, action.onclick)">
+          <div>{{ action.text }}</div>
+        </div>
+        <template v-if="filteredLocalOptions.length === 0">
+          <div class="select-item item">
+            <div class="select-text not-selectable" :style="selectTextStyle">
+              {{ filterable ? $t('general.no_filterable_option') : $t('general.no_option') }}
+            </div>
+          </div>
+        </template>
+        <template v-else  v-for="(option, idx) in filteredLocalOptions">
+        <div class="select-item item" :key="idx" v-if="!option.isGroup"
+          :class="{
+            checked: option.checked && showCheckedIcon,
+            'in-group': option.inGroup,
+            'is-button': option.isButton,
+            filterable: option.checked && filterable,
+          }"
+          @click="selectOption(idx)"
+          @mouseover="toggleHover(option, true)" @mouseout="toggleHover(option, false)">
+          <div class="select-text" :style="selectTextStyle"> {{option.text}} </div>
+          <div class=select-icon-container v-if="showCheckedIcon">
+            <div class="select-icon" v-if="!option.checked && !option.isButton">
+              <icon icon-type="checked" :size=16></icon>
+            </div>
+            <div class="select-icon" v-if="option.checked">
+              <icon v-if="option.hovered" icon-type="checked" :size=16></icon>
+              <icon v-else icon-type="check" :size=16></icon>
+            </div>
           </div>
         </div>
-      </template>
-      <template v-else v-for="(option, idx) in filteredLocalOptions">
-      <div class="select-item item" :key="idx" v-if="!option.isGroup"
-        :class="{
-          checked: option.checked && showCheckedIcon,
-          'in-group': option.inGroup,
-          'is-button': option.isButton
-        }"
-        @click="selectOption(idx)"
-        @mouseover="toggleHover(option, true)" @mouseout="toggleHover(option, false)">
-        <div class="select-text" :style="selectTextStyle"> {{option.text}} </div>
-        <div class=select-icon-container v-if="showCheckedIcon">
-          <div class="select-icon" v-if="!option.checked && !option.isButton">
-            <icon icon-type="checked" :size=16></icon>
-          </div>
-          <div class="select-icon" v-if="option.checked">
-            <icon v-if="option.hovered" icon-type="checked" :size=16></icon>
-            <icon v-else icon-type="check" :size=16></icon>
-          </div>
+        <div class="select-item group" :class="{'group-selectable': groupSelectable}"
+          v-if="option.isGroup" :key="idx"
+          @mouseover="toggleGroupHover(option, true)" @mouseout="toggleGroupHover(option, false)" @click="selectGroup(idx)">
+          <div class="select-text">{{ option.text }}</div>
+          <div v-if="option.hovered && groupSelectable" class="select-all">{{ $t('general.select_all') }}</div>
         </div>
+        </template>
       </div>
-      <div class="select-item group" v-if="option.isGroup" :key="idx">
-        <div class="select-text"> {{option.text}} </div>
-      </div>
-      </template>
     </div>
+  </div>
   </div>
 </template>
 
@@ -66,10 +86,16 @@ export default {
         return [];
       },
     },
+    name: {
+      type: String,
+      required: false,
+      default: undefined,
+    },
     options: {
       type: Array,
       validator: input => input.reduce((ret, value) =>
         ret && (value.text !== undefined) && (value.value !== undefined || value.isGroup), true),
+      default: () => [],
     },
     showCheck: {
       type: Boolean,
@@ -113,23 +139,44 @@ export default {
       type: Boolean,
       default: false,
     },
+    hideClose: {
+      type: Boolean,
+      default: true,
+    },
+    filterable: {
+      type: Boolean,
+      default: false,
+    },
+    allowSelectGroup: {
+      type: Boolean,
+      default: false,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
+    action: {
+      type: Object,
+      default() {
+        return undefined;
+      },
+    },
   },
   computed: {
     styleObj() {
-      if (this.flex) {
-        return {
-          flex: `0 0 ${this.width}`,
-        };
-      }
       return {
         width: this.width,
+        flex: `1 1 ${this.width}`,
       };
     },
     filteredLocalOptions() {
-      if (this.searchKeyWord === '') {
+      if ((this.filterable && !this.filtering) || this.searchKeyWord === '') {
         return this.localOptions;
       }
       return this.localOptions.filter(option => option.text.indexOf(this.searchKeyWord) !== -1);
+    },
+    groupSelectable() {
+      return this.multi && this.allowSelectGroup;
     },
   },
   data() {
@@ -141,14 +188,26 @@ export default {
       checkedValues: [],
       detectClickListener: undefined,
       searchKeyWord: '',
+      filtering: false,
     };
   },
   watch: {
     options(options) {
       this.initOptions(options);
     },
+    show(show) {
+      if (!show && this.showSearchBar) {
+        this.searchKeyWord = '';
+      }
+    },
   },
   methods: {
+    filterInput(e) {
+      if (e.target.value.length) {
+        this.filtering = true;
+      }
+      this.searchKeyWord = e.target.value;
+    },
     removeOption(opt) {
       opt.checked = false;
       this.updateValue();
@@ -162,6 +221,32 @@ export default {
       window.removeEventListener('click', this.hideListWhenEventTriggeredOutside);
       window.removeEventListener('scroll', this.hideListWhenEventTriggeredOutside, true);
       window.removeEventListener('resize', this.reposition);
+    },
+    onClickAction(e, action) {
+      const that = this;
+      if (action) {
+        action(e);
+      }
+      that.show = false;
+      that.removEventListeners();
+    },
+    selectGroup(idx) {
+      const that = this;
+      if (!that.groupSelectable) return;
+
+      let nextGroupIdx = that.localOptions.findIndex(
+        (option, index) => option.isGroup === true && index > idx);
+      nextGroupIdx = nextGroupIdx > 0 ? nextGroupIdx : undefined;
+
+      const selectedValues = that.localOptions
+          .slice(idx + 1, nextGroupIdx).map(option => option.value);
+      selectedValues.forEach((value) => {
+        const option = that.localOptions.find(o => o.value === value);
+        option.checked = true;
+        that.toggleHover(option, false);
+      });
+      this.filtering = false;
+      that.updateValue();
     },
     selectOption(idx) {
       const value = this.filteredLocalOptions[idx].value;
@@ -179,17 +264,28 @@ export default {
         that.show = false;
         this.removEventListeners();
       }
+      this.filtering = false;
       that.updateValue();
     },
     updateValue() {
       this.checkedValues = this.localOptions.filter(opt => opt.checked);
+      if (this.filterable) {
+        this.searchKeyWord = this.checkedValues[0].text;
+      }
       this.$emit('input', this.checkedValues.map(opt => opt.value));
     },
     showSelection() {
       const that = this;
+      if (that.disabled) {
+        return;
+      }
       if (that.show) {
         that.show = false;
         return;
+      }
+      if (that.filterable) {
+        const searchInput = that.$refs.searchInput;
+        searchInput.focus();
       }
       that.show = true;
 
@@ -200,6 +296,7 @@ export default {
     hideListWhenEventTriggeredOutside(e) {
       if (this.$refs.list && !this.$refs.list.contains(e.target)) {
         this.show = false;
+        this.filtering = false;
         this.removEventListeners();
       }
     },
@@ -266,6 +363,9 @@ export default {
     toggleHover(option, bool) {
       option.hovered = bool;
     },
+    toggleGroupHover(option, bool) {
+      option.hovered = bool;
+    },
     initOptions(options) {
       const that = this;
       that.localOptions = [];
@@ -295,15 +395,40 @@ export default {
 
 <style lang="scss" scoped>
 @import 'styles/variable.scss';
+.dropdown-container {
+  display: flex;
 
+  align-items: center;
+  .dropdown-name {
+    @include font-14px();
+    margin-right: 10px;
+  }
+}
 $border-color: $color-borderline;
 .input-bar {
   display: flex;
   height: 28px;
   border: 1px solid $border-color;
   border-radius: 2px;
+  background: $color-white;
   &.error {
-    border: 1px solid #f25c62;
+    background: $color-input-error;
+  }
+  &.disabled {
+    background: $color-disabled;
+    border: 1px solid $color-borderline-disabled;
+    cursor: default;
+    &:hover {
+      border-color: $color-borderline-disabled;
+    }
+    .input-block {
+      .input-text{
+        color: $color-font-disabled;
+      }
+    }
+    .icon-block {
+      border-left: 1px solid $color-borderline-disabled;
+    }
   }
   @include click-button();
 
@@ -322,6 +447,11 @@ $border-color: $color-borderline;
   }
 
   .input-block {
+    &.multi {
+      @include customScrollbar();
+      @include auto-overflow-X();
+      overflow-y: hidden;
+    }
     flex: 1;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -337,9 +467,16 @@ $border-color: $color-borderline;
         @include click-button();
       }
     }
-    .input-text {
+    .input-text, .input-search {
       @include font-14px();
       color: $color-font-normal;
+    }
+    .input-search {
+      width: 100%;
+      border: none;
+      &:focus {
+        box-shadow: none;
+      }
     }
   }
   .icon-block {
@@ -350,9 +487,6 @@ $border-color: $color-borderline;
     justify-content: center;
     margin: 3px 0;
     border-left: 1px solid $border-color;
-    &.error {
-      border-left: 1px solid #f25c62;
-    }
   }
 }
 .select-list {
@@ -369,57 +503,94 @@ $border-color: $color-borderline;
   color: $color-font-normal;
   background: $color-white;
   max-height: calc(4 * 32px);
-  @include auto-overflow();
-  @include customScrollbar();
 
   display: flex;
   flex-direction: column;
-  .select-item {
-    flex: 0 0 32px;
-    &.item {
-      @include click-button();
-      &.checked {
-        background: $color-select;
-      }
-      &:hover {
-        background: $color-select-hover;
-        color: $color-white;
-      }
-      &.in-group {
-        .select-text {
-          padding-left: 24px;
+
+  .search-bar {
+    flex: 0 0 36px;
+    padding: 4px;
+    border-bottom: 1px solid $color-borderline;
+    background: #fafafa;
+  }
+  .select-item-block {
+    display: flex;
+    flex-direction: column;
+    @include auto-overflow();
+    @include customScrollbar();
+    .select-item {
+      flex: 0 0 32px;
+      &.item {
+        @include click-button();
+        &.checked {
+          background: $color-select;
         }
-      }
-      &.is-button {
-        color: $color-primary;
         &:hover {
+          background: $color-select-hover;
           color: $color-white;
         }
+        &.in-group {
+          .select-text {
+            padding-left: 24px;
+          }
+        }
+        &.is-button {
+          color: $color-primary;
+          &:hover {
+            color: $color-white;
+          }
+        }
+        &.filterable {
+          background: $color-select-hover;
+        }
       }
-    }
-    &.group {
-      font-weight: bold;
-    }
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    .select-text {
-      flex: 1;
-      padding-left: 16px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .select-icon-container{
-      .select-icon {
-        margin-right:16px;
-        flex: 0 0 16px;
+      &.item-action {
+        color: $color-primary;
+        text-align: center;
         display: flex;
         align-items: center;
+        justify-content: center;
+        &:hover {
+          text-decoration: underline;
+          cursor: pointer;
+        }
       }
-    }
-    .search-input{
-      margin-left: 10px;
+      &.group {
+        font-weight: bold;
+        padding-right: 16px;
+        &.group-selectable {
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          .select-text {
+            flex: 1;
+          }
+          .select-all {
+            flex: 0 0 28px;
+            @include font-12px();
+            font-weight: normal;
+          }
+        }
+      }
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      .select-text {
+        flex: 1;
+        padding-left: 16px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .select-icon-container{
+        .select-icon {
+          margin-right:16px;
+          flex: 0 0 16px;
+          display: flex;
+          align-items: center;
+        }
+      }
     }
   }
 }

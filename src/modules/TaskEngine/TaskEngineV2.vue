@@ -5,25 +5,21 @@
     <router-view></router-view>
   </div>
 </template>
-
 <script>
-import ScenarioEditPage from './TaskEngineV2/src/components/ScenarioEditPage';
-import ScenarioListPage from './TaskEngineV2/src/components/ScenarioListPage';
+
+const ListPageImport = () => import('./TaskEngineV2/src/components/ScenarioListPage');
+const EditPageImport = () => import('./TaskEngineV2/src/components/ScenarioEditPage');
 
 export default {
   name: 'task-engine-scenario-v2',
   path: 'task-engine-scenario-v2',
   childrenPath: [
-    { path: '', component: ScenarioListPage },
-    { path: 'scenario/:id', component: ScenarioEditPage },
+    { path: '', component: ListPageImport },
+    { path: 'scenario/:id', component: EditPageImport },
   ],
   privCode: 'task_engine',
   displayNameKey: 'task_engine_scenario_v2',
   icon: 'white_task_engine',
-  components: {
-    'scenario-edit-page': ScenarioEditPage,
-    'scenario-list-page': ScenarioListPage,
-  },
   data() {
     return {
     };

@@ -6,14 +6,14 @@
       <template v-for="(edge, index) in globalEdges">
         <condition-block
           class="condition-block"
+          ref="conditionBlock"
           :key="edge.id"
           :nodeId="nodeId"
           :initialEdge="edge"
           :toNodeOptions="toNodeOptions"
           :globalVarOptions="globalVarOptions"
           :mapTableOptions="mapTableOptions"
-          :validateConditionBlock="validateConditionBlock"
-          :valid.sync="edge.valid"
+          :jsCodeAlias="jsCodeAlias"
           @update="updateEdge(index, $event)"
           @deleteEdge="deleteEdge(index)"
           @addNewDialogueNode="addNewDialogueNode">
@@ -53,7 +53,7 @@ export default {
     const globalEdges = this.extData.globalEdges.map((edge) => {
       const obj = { ...edge };
       obj.id = this.$uuid.v1();
-      obj.valid = false;
+      obj.valid = true;
       return obj;
     });
     const originalGlobalEdgesStr =
@@ -73,15 +73,16 @@ export default {
       acc.push(...globalVarOption);
       return acc;
     }, []);
+    const jsCodeAlias = this.extData.jsCodeAlias || [];
     return {
       nodeId: '',
+      jsCodeAlias,
       originalGlobalEdgesStr,
       globalEdges,
       toNodeOptions,
       globalVarOptions,
       mapTableOptions: [],
       newNodeOptions: [],
-      validateConditionBlock: false,
     };
   },
   methods: {
@@ -91,7 +92,7 @@ export default {
         ...this.newNodeOptions.map(option => option.nodeName),
       ];
       const newNodeName = general.suffixIndexToNodeName(
-                            this.$t('task_engine_v2.global_edge_edit_pop.dialogue'),
+                            this.$t('task_engine_v2.node_type.dialogue'),
                             nodeNames,
                           );
       this.newNodeOptions.push({
@@ -143,31 +144,23 @@ export default {
       });
     },
     validate() {
-      this.validateConditionBlock = true;
-      this.$nextTick(() => {
-        this.validateConditionBlock = false;
-        let valid = true;
-        const edges = this.globalEdges.map((edge) => {
-          if (!edge.valid) valid = false;
-          return {
-            edge_type: edge.edge_type,
-            to_node_id: edge.to_node_id,
-            condition_rules: edge.condition_rules,
-            actions: [],
-          };
-        });
-        if (valid) {
-          this.$emit(
-            'validateSuccess',
-            { edges, newNodeOptions: this.newNodeOptions },
-          );
-        }
-      });
+      if (!this.isValid()) {
+        this.showToolTip();
+        return;
+      }
+      const edges = this.globalEdges.map(edge => ({
+        edge_type: edge.edge_type,
+        to_node_id: edge.to_node_id,
+        condition_rules: edge.condition_rules,
+        actions: [],
+      }));
+      this.$emit(
+        'validateSuccess',
+        { edges, newNodeOptions: this.newNodeOptions },
+      );
     },
     cancelValidate() {
       const newGlobalEdgesStr = JSON.stringify(this.globalEdges, general.JSONStringifyReplacer);
-      // console.log(`New Str: ${newGlobalEdgesStr}`);
-      // console.log(`Old Str: ${this.originalGlobalEdgesStr}`);
       if (newGlobalEdgesStr === this.originalGlobalEdgesStr) {
         this.$emit('cancelValidateSuccess');
       } else {
@@ -179,21 +172,33 @@ export default {
           },
           callback: {
             ok() {
-              const edges = that.globalEdges.map(edge => ({
-                edge_type: edge.edge_type,
-                to_node_id: edge.to_node_id,
-                condition_rules: edge.condition_rules,
-                actions: [],
-              }));
-              that.$emit(
-                'validateSuccess',
-                edges,
-              );
+              that.validate();
             },
             cancel() {
               that.$emit('cancelValidateSuccess');
             },
           },
+        });
+      }
+    },
+    isValid() {
+      for (let i = 0; i < this.globalEdges.length; i += 1) {
+        const edge = this.globalEdges[i];
+        if (!edge.valid) {
+          return false;
+        }
+      }
+      return true;
+    },
+    showToolTip() {
+      const conditionBlocks = this.$refs.conditionBlock;
+      if (conditionBlocks) {
+        let blocks = conditionBlocks;
+        if (!Array.isArray(blocks)) {
+          blocks = [blocks];
+        }
+        blocks.forEach((block) => {
+          block.$emit('showToolTip');
         });
       }
     },
@@ -216,9 +221,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'styles/variable.scss';
-
-#global-edge-edit-pop{
+#global-edge-edit-pop {
   width: 725px;
   height: 70vh;
   display: flex;

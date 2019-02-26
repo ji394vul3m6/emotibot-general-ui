@@ -10,19 +10,19 @@ export default [{
     const magnifyLine = number('Line: magnify', 0.5);
     const magnifyDot = number('Dot: magnify', 0.5);
     const template = `
-      <div style="height:300px">
-        <div style="margin-bottom: 20px;">
-          Loading Line 預設大小<br><br>
+      <div>
+        <div class="div-block">
+          <div class="headline">Loading Line 預設大小</div>
           <loading-line></loading-line>
           <br><br>
-          Loading Line 自訂大小<br><br>
+          <div class="headline">Loading Line 自訂大小</div>
           <loading-line :magnify="magnifyLine"></loading-line>
         </div>
-        <div>
-          Loading Dot 預設大小<br><br>
+        <div class="div-block">
+          <div class="headline">Loading Dot 預設大小</div>
           <loading-dot></loading-dot>
           <br><br>
-          Loading Dot 自訂大小<br><br>
+          <div class="headline">Loading Dot 自訂大小</div>
           <loading-dot :magnify="magnifyDot"></loading-dot>
         </div>
       </div>`;

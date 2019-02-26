@@ -1,4 +1,5 @@
 node_modules
 dist
 deploy
-docker
+docker/**/Dockerfile
+docker/**/*.env

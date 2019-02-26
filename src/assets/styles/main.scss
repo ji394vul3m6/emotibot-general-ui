@@ -133,13 +133,15 @@ textarea {
   left: 0;
   width: $page-menu-width;
   height: $page-header-height;
-  &.zh-cn {
-    background: $page-menu-color url("/static/emotibot_logo_small_chs.svg") no-repeat center center;
-    background-size: 60px 32px;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-color: $page-menu-color;
+  background-size: 120px 40px;
+  &.default.zh-cn {
+    background-image: url("/static/emotibot_logo_small_chs.svg");
   }
-  &.zh-tw {
-    background: $page-menu-color url("/static/emotibot_logo_small_cht.svg") no-repeat center center;
-    background-size: 60px 32px;
+  &.default.zh-tw {
+    background-image: url("/static/emotibot_logo_small_cht.svg");
   }
 }
 

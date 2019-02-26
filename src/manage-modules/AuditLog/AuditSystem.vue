@@ -170,9 +170,9 @@ export default {
   watch: {
     currentPage(val) {
       if (val === 'auditEnterprise') {
-        this.$router.push(auditEnterprisePage);
+        this.$router.replace(auditEnterprisePage);
       } else if (val === 'auditRobot') {
-        this.$router.push(auditRobotPage);
+        this.$router.replace(auditRobotPage);
       }
     },
   },

@@ -68,7 +68,7 @@ export default {
 
     buttons: {
       type: Array,
-      default: [],
+      default() { return []; },
     },
     tooltipType: {
       type: String,
@@ -110,7 +110,7 @@ export default {
       };
     },
     triangleStyle() {
-      const left = this.leftOffset > 0 ? 0 : (0 - this.leftOffset - 8) + (this.elemWidth / 2);
+      const left = (this.elemWidth / 2) - 5; // minus half triangle width to centeralize triangle
       return {
         left: `${left}px`,
       };
@@ -167,7 +167,7 @@ export default {
     position: absolute;
   }
   position: fixed;
-  z-index: 2;
+  z-index: 10;
   word-break: break-all;
   white-space: normal;  // explicitly set normal to avoid being rewritten by parent
 
@@ -211,7 +211,7 @@ export default {
   }
 
   &.error {
-    z-index: 1;
+    z-index: 10;
     background-color: #FEF3F0;
     border-radius: 4px;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);

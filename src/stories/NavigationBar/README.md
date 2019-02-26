@@ -44,14 +44,14 @@
 ---
 ## Props
 
-| Prop | required | Type | Accepted Values | Default | 說明 |
-|---|---|---|---|---|---|
-| value<br>(v-model) | false | String | - | - | 當前 Active 的選項，若沒有傳入，則沒有初始 Active 的選項
-| options | true | Object | {<br>&nbsp;&nbsp;pageKey: pageName,<br>&nbsp;&nbsp;...<br>}, | {} | 可放入多組由 pageKey 和 pageName 組成的 key-value pair<br>**pageKey:** 選項的key值<br>**pageName:** 顯示的選項名稱
-| showSearch | false | Boolean | true / false | false | 是否顯示搜尋框
+| Prop | required | Type | Default | 說明 |
+|---|---|---|---|---|
+| value<br>(v-model) | false | String | - | 當前 Active 的選項，若沒有傳入，則沒有初始 Active 的選項
+| options | true | {<br>&nbsp;&nbsp;pageKey: pageName,<br>&nbsp;&nbsp;...<br>}, | {} | 可放入多組由 pageKey 和 pageName 組成的 key-value pair<br>**pageKey:** 選項的key值<br>**pageName:** 顯示的選項名稱
+| showSearch | false | Boolean | false | 是否顯示搜尋框
 
 ---
-## Events
+## Emit Events
 
 | Event | Callback $event | 說明 |
 |---|---|---|

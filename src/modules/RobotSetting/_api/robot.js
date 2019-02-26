@@ -103,6 +103,10 @@ function updateRobotQAV2(info) {
   return this.$reqPost(`${QA_OPERATION_PATH_V2}/${info.id}`, info);
 }
 
+function getRobotSecret(enterprise, appid) {
+  return this.$reqGet(`/auth/v3/enterprise/${enterprise}/app/${appid}/secret`).then(rsp => rsp.data.result);
+}
+
 export default {
   getFunctionsStatus,
   setFunctionStatus,
@@ -118,4 +122,6 @@ export default {
 
   getRobotQAListV2,
   updateRobotQAV2,
+
+  getRobotSecret,
 };

@@ -4,379 +4,6 @@ import scenarioInitializer from './scenarioInitializer';
 import api from '../../../_api/taskEngine';
 
 export default {
-  convertJsonToVersion(toVersion, jsonData) {
-    let jsonVersion;
-    if ('version' in jsonData.moduleData) {
-      jsonVersion = jsonData.moduleData.version;
-    } else {
-      jsonVersion = '1.0';
-    }
-    if (toVersion === '1.1') {
-      return this.convertJsonToVersion_1_1(jsonVersion, jsonData);
-    }
-    return {};
-  },
-  convertJsonToVersion_1_1(jsonVersion, jsonData) {
-    let newJsonData = {};
-    if (jsonVersion === '1.0') {
-      newJsonData = this.convertJson_1_0_to_1_1(jsonData);
-    } else {
-      newJsonData = jsonData;
-    }
-    return newJsonData;
-  },
-  convertJson_1_0_to_1_1(initialJsonData) {
-    const jsonData = JSON.parse(JSON.stringify(initialJsonData));
-    const nodes = jsonData.moduleData.nodes.filter(
-      node => node.node_id !== '0',
-    ).map(
-      node => this.convertNode(node),
-    );
-    jsonData.moduleData.ui_data = {
-      nodes,
-    };
-    if (!('global_edges' in jsonData.moduleData)) {
-      jsonData.moduleData.global_edges = [];
-    }
-    jsonData.moduleData.version = '1.1';
-    return jsonData;
-  },
-  convertNode(initialNode) {
-    const node = JSON.parse(JSON.stringify(initialNode));
-    const nodeType = node.node_type;
-    // render tab data
-    let tabs = [];
-    const nodeType2TabsMap = optionConfig.nodeType2Tabs();
-    if (nodeType in nodeType2TabsMap) {
-      tabs = nodeType2TabsMap[nodeType];
-    }
-    const tabData = {};
-    tabs.forEach((tab) => {
-      if (tab === 'triggerTab') {
-        tabData.triggerTab = this.parseTriggerTab(node);
-      } else if (tab === 'settingTab') {
-        tabData.settingTab = this.parseSettingTab(node);
-      } else if (tab === 'edgeTab') {
-        tabData.edgeTab = this.parseEdgeTab(node);
-      } else if (tab === 'settingBasicTab') {
-        tabData.settingBasicTab = this.parseSettingBasicTab(node);
-      } else if (tab === 'entityCollectingTab') {
-        tabData.entityCollectingTab = {
-          relatedEntities: {
-            relatedEntityCollectorList: [],
-            relatedEntityMatrix: [],
-          },
-          tde_setting: {},
-        };
-      } else if (tab === 'restfulSettingTab') {
-        tabData.restfulSettingTab = this.parseRestfulSettingTab(node);
-      } else if (tab === 'restfulEdgeTab') {
-        tabData.restfulEdgeTab = this.parseRestfulEdgeTab(node);
-      } else if (tab === 'paramsCollectingTab') {
-        tabData.paramsCollectingTab = this.parseParamsCollectingTab(node);
-      } else if (tab === 'paramsCollectingEdgeTab') {
-        tabData.paramsCollectingEdgeTab = this.parseParamsCollectingEdgeTab(node);
-      }
-    });
-    return {
-      nodeId: node.node_id,
-      nodeName: node.description || '',
-      nodeType,
-      triggerTab: tabData.triggerTab,
-      settingTab: tabData.settingTab,
-      edgeTab: tabData.edgeTab,
-      settingBasicTab: tabData.settingBasicTab,
-      entityCollectingTab: tabData.entityCollectingTab,
-      restfulSettingTab: tabData.restfulSettingTab,
-      restfulEdgeTab: tabData.restfulEdgeTab,
-      paramsCollectingTab: tabData.paramsCollectingTab,
-      paramsCollectingEdgeTab: tabData.paramsCollectingEdgeTab,
-    };
-  },
-  removeActionsAndContentTextArray(normalEdges) {
-    return normalEdges.map((edge) => {
-      if (edge.edge_type === 'normal') { // remove unneeded content_text_array and actions
-        edge.actions = [];
-        edge.condition_rules.forEach((condition) => {
-          condition.forEach((ifCase) => {
-            ifCase.functions.forEach((fun) => {
-              delete fun.content_text_array;
-            });
-          });
-        });
-      }
-      return edge;
-    });
-  },
-  parseTriggerTab(node) {
-    if (!node.entry_condition_rules) return undefined;
-    const rules = node.entry_condition_rules;
-    rules.forEach((condition) => {
-      condition.forEach((ifCase) => {
-        ifCase.functions.forEach((fun) => {
-          delete fun.content_text_array;
-        });
-      });
-    });
-    return {
-      rules,
-    };
-  },
-  parseSettingBasicTab(node) {
-    const tab = {};
-    // render nodeType, nodeName
-    tab.nodeType = node.node_type || '';
-    tab.nodeName = node.description || '';
-    return tab;
-  },
-  parseSettingTab(node) {
-    const tab = {};
-    // parse nodeName
-    tab.nodeName = node.description || '';
-
-    // parse parser, targetEntities, skipIfKeyExist
-    const c = node.edges[1].condition_rules;
-    if (c.length > 0 && c[0].length > 1) {
-      tab.parser = c[0][1].functions[0].function_name;
-      if (typeof c[0][1].functions[0].content === 'object') {
-        tab.targetEntities = c[0][1].functions[0].content.tags.split(',');
-      }
-      if (typeof c[0][1].functions[0].content === 'string') {
-        tab.targetEntities = c[0][1].functions[0].content.split(',');
-      }
-      tab.skipIfKeyExist = c[0][0].functions[0].content.map(obj => obj.key.split('_')[0]);
-    } else {
-      tab.parser = 'none';
-      tab.targetEntities = [];
-      tab.skipIfKeyExist = [];
-    }
-
-    if (node.ui_node_type === 'router') {
-      tab.initialResponse = '$skip_dialogue';
-      tab.failureResponse = '';
-    } else {
-      // parse responses
-      const qLength = node.content.questions.length;
-      let initResp = node.content.questions.find(
-        q => q.question_type === 'initial_response',
-      );
-      if (initResp === undefined) {
-        initResp = node.content.questions[qLength - 1];
-      }
-      let failResp = node.content.questions.find(
-        q => q.question_type === 'failure_response',
-      );
-      if (failResp === undefined) {
-        failResp = node.content.questions[qLength - 2];
-      }
-      tab.initialResponse = initResp.msg;
-      tab.failureResponse = failResp.msg;
-    }
-
-    // parse parseFromThisNode
-    tab.parseFromThisNode = node.default_parser_with_suffix;
-    return tab;
-  },
-  parseEdgeTab(node) {
-    const edges = node.edges || [];
-    if (edges.length > 0 && edges[0].edge_type === undefined) {
-      return this.parseEdgeTabWithoutEdgeType(node);
-    }
-    return this.parseEdgeTabWithEdgeType(node);
-  },
-  parseEdgeTabWithEdgeType(node) {
-    const tab = {};
-    const nodeType = node.node_type || '';
-
-    // render edges, normalEdges
-    const edges = node.edges || [];
-    tab.normalEdges = edges.filter(edge => edge.edge_type === 'normal' || edge.edge_type === 'qq');
-    tab.normalEdges = this.removeActionsAndContentTextArray(tab.normalEdges);
-
-    // render exceedThenGoto
-    if (nodeType !== 'entry') {
-      let exceedGotoEdge = edges.find(edge => edge.edge_type === 'exceedThenGoTo');
-      if (!exceedGotoEdge) {
-        exceedGotoEdge = edges.find((edge) => {
-          if (edge.condition_rules &&
-            edge.condition_rules.length > 0 &&
-            edge.condition_rules[0].length > 0 &&
-            edge.condition_rules[0][0].functions &&
-            edge.condition_rules[0][0].functions.length > 0 &&
-            edge.condition_rules[0][0].functions[0].content_text_array &&
-            edge.condition_rules[0][0].functions[0].content_text_array.length > 0 &&
-            edge.condition_rules[0][0].functions[0].content_text_array[0] === '若超过节点对话轮数限制'
-            ) {
-            edge.edge_type = 'exceedThenGoTo';
-            return true;
-          }
-          return false;
-        });
-      }
-      if (exceedGotoEdge) {
-        tab.exceedThenGoto = exceedGotoEdge.to_node_id;
-      } else {
-        tab.exceedThenGoto = '0';
-      }
-    }
-    // render elseInto
-    const elseIntoEdge = edges.find(edge => edge.edge_type === 'else_into');
-    if (elseIntoEdge === undefined) {
-      tab.elseInto = null;
-    } else {
-      tab.elseInto = elseIntoEdge.to_node_id;
-    }
-
-    // render dialogueLimit
-    if (node.node_dialogue_cnt_limit) {
-      tab.dialogueLimit = node.node_dialogue_cnt_limit;
-    } else {
-      const dialogueLimitEdge = edges.find(edge =>
-        edge.edge_type === 'hidden' &&
-        edge.actions &&
-        edge.actions.length >= 1 &&
-        edge.actions[0].key === 'sys_node_dialogue_cnt_limit',
-      );
-      if (dialogueLimitEdge) {
-        tab.dialogueLimit = dialogueLimitEdge.actions[0].val;
-      } else {
-        tab.dialogueLimit = 3;
-      }
-    }
-    return tab;
-  },
-  parseEdgeTabWithoutEdgeType(node) {
-    const tab = {};
-    tab.exceedThenGoto = '0';
-    tab.normalEdges = [];
-    for (let index = 0; index < node.edges.length; index += 1) {
-      const edge = node.edges[index];
-      if (index === 0 && node.edges.length >= 3) {
-        // skip the parser function on conditions UI (which is selected in setting page)
-        // insert parser function into setting page
-        if (edge.actions &&
-            edge.actions.length >= 1 &&
-            edge.actions[0].key === 'sys_node_dialogue_cnt_limit') {
-          tab.dialogueLimit = edge.actions[0].val;
-        } else {
-          tab.dialogueLimit = 3;
-        }
-        index += 2;
-      } else if (index === node.edges.length - 1) {
-        // else edge
-        tab.elseInto = edge.to_node_id;
-      } else if (edge.edge_type === 'qq') {
-        // qq edges
-        tab.normalEdges.push(edge);
-      } else {
-        // normal edges
-        edge.edge_type = 'normal';
-        edge.condition_rules.forEach((condition) => {
-          condition.forEach((ifCase) => {
-            ifCase.functions.forEach((fun) => {
-              if (fun.function_name === 'task_parser' ||
-                  fun.function_name === 'common_parser' ||
-                  fun.function_name === 'hotel_parser') {
-                if (typeof fun.content === 'string') {
-                  fun.content = {
-                    tags: fun.content,
-                    key_suffix: `_${node.node_id}`,
-                  };
-                }
-              }
-            });
-          });
-        });
-        tab.normalEdges.push(edge);
-        tab.normalEdges = this.removeActionsAndContentTextArray(tab.normalEdges);
-      }
-    }
-    return tab;
-  },
-  parseRestfulSettingTab(node) {
-    let tab = {};
-    if (node.content && node.content.requests &&
-        node.content.requests.length > 0) {
-      const request = node.content.requests[0];
-      tab = {
-        nodeType: node.node_type || '',
-        nodeName: node.description || '',
-        url: request.url,
-        method: request.method,
-        contentType: request.headers['Content-Type'],
-        body: request.body.content,
-        rtnVarName: request.rtn_var_name,
-      };
-    }
-    return tab;
-  },
-  parseRestfulEdgeTab(node) {
-    const edges = node.edges || [];
-    const restfulFailedEdge = edges.find((edge) => {
-      if (edge.condition_rules && edge.condition_rules.length > 0 &&
-          edge.condition_rules[0].length > 0 &&
-          edge.condition_rules[0][0].functions &&
-          edge.condition_rules[0][0].functions.length > 0) {
-        const funcName = edge.condition_rules[0][0].functions[0].function_name;
-        if (funcName === 'restful_failed') {
-          return true;
-        }
-      }
-      return false;
-    });
-    const restfulSucceedEdge = edges.find((edge) => {
-      if (edge.condition_rules && edge.condition_rules.length > 0 &&
-          edge.condition_rules[0].length > 0 &&
-          edge.condition_rules[0][0].functions &&
-          edge.condition_rules[0][0].functions.length > 0) {
-        const funcName = edge.condition_rules[0][0].functions[0].function_name;
-        if (funcName === 'restful_succeed') {
-          return true;
-        }
-      }
-      return false;
-    });
-    const tab = {
-      restfulFailedThenGoto: restfulFailedEdge.to_node_id,
-      restfulSucceedThenGoto: restfulSucceedEdge.to_node_id,
-    };
-    return tab;
-  },
-  parseParamsCollectingEdgeTab(node) {
-    const tab = {};
-    node.edges[0].edge_type = 'pc_succeed';
-    tab.dialogueLimit = node.edges[1].actions[0].val;
-    node.edges[2].edge_type = 'pc_failed';
-    tab.normalEdges = node.edges.filter(edge => edge.edge_type !== 'hidden');
-    tab.normalEdges = this.removeActionsAndContentTextArray(tab.normalEdges);
-    return tab;
-  },
-  parseParamsCollectingTab(node) {
-    const tab = {
-      enableConfirmMsg: false,
-      confirmMsg: '',
-      confirmMsgParseFail: '',
-    };
-    tab.params = [];
-    node.content.questions.forEach((q, index) => {
-      const param = {};
-      param.msg = q.msg;
-      param.parse_failed_msg = q.parse_failed_msg;
-      param.parsers = [];
-      const conditionRules = node.content.parsers[index].condition_rules;
-      conditionRules.forEach((conditionRule) => {
-        const parser = {};
-        parser.content = conditionRule[0].functions[0].content;
-        parser.funcName = conditionRule[0].functions[0].function_name;
-        if (parser.funcName === 'api_parser' && conditionRule[0].functions[0].content_text_array) {
-          parser.skipIfKeyExist = conditionRule[0].functions[0].content_text_array;
-        }
-        param.parsers.push(parser);
-      });
-      tab.params.push(param);
-    });
-    return tab;
-  },
   convertUiNodesToNodes(uiNodes, setting, globalEdges) {
     const nodes = uiNodes.map((uiNode) => {
       const newUiNode = JSON.parse(JSON.stringify(uiNode));
@@ -424,6 +51,9 @@ export default {
         uiNode.actionTab.actionGroupList,
         uiNode.actionTab.waitForResponse,
       );
+    } else if (uiNode.nodeType === 'dialogue_2.0') {
+      node.content = this.composeDialogue2Content(uiNode);
+      node.node_dialogue_cnt_limit = uiNode.edgeTab2.dialogueLimit;
     }
     return node;
   },
@@ -556,6 +186,32 @@ export default {
       questions,
     };
   },
+  composeDialogue2Content(uiNode) {
+    const skipDialogue = uiNode.dialogue2SettingTab.skipDialogue;
+    // insert failure_response
+    const failureResponse = {
+      msg: uiNode.dialogue2SettingTab.failureResponse,
+    };
+    // insert initial_response
+    const initialResponse = {
+      msg: uiNode.dialogue2SettingTab.initialResponse,
+    };
+    const repeatResponse = {
+      msg: uiNode.dialogue2SettingTab.repeatResponse,
+    };
+    const rewindResponse = {
+      msg: uiNode.dialogue2SettingTab.rewindResponse,
+    };
+    return {
+      skip_dialogue: skipDialogue,
+      questions: {
+        failure_response: failureResponse,
+        initial_response: initialResponse,
+        repeat_response: repeatResponse,
+        rewind_response: rewindResponse,
+      },
+    };
+  },
   composeRestfulContent(uiNode) {
     if (!uiNode.restfulSettingTab) return {};
     const tab = uiNode.restfulSettingTab;
@@ -651,6 +307,20 @@ export default {
       edges = [
         ...normalEdges,
         ...globalEdges,
+        elseInto,
+      ];
+    } else if (uiNode.nodeType === 'dialogue_2.0') {
+      const hiddenSetCntLimit = this.edgeHiddenSetNodeDialogueCntLimit(
+        uiNode.edgeTab2.dialogueLimit,
+      );
+      const normalEdges = uiNode.edgeTab2.normalEdges;
+      const exceedThenGoto = this.edgeExceedThenGoTo(uiNode.edgeTab2.exceedThenGoto);
+      const elseInto = this.edgeElseInto(uiNode.nodeId, uiNode.edgeTab2.elseInto);
+      edges = [
+        hiddenSetCntLimit,
+        ...normalEdges,
+        ...globalEdges,
+        exceedThenGoto,
         elseInto,
       ];
     }
@@ -823,22 +493,33 @@ export default {
   getGlobalVars(edges) {
     const globalVars = [];
     edges.forEach((edge) => {
-      let andRules = [];
-      if (edge.condition_rules &&
-          edge.condition_rules instanceof Array &&
-          edge.condition_rules.length > 0) {
-        andRules = edge.condition_rules[0];
-      }
-      andRules.forEach((rule) => {
-        let functions = [];
-        if (rule.functions && rule.functions instanceof Array) {
-          functions = rule.functions;
-        }
-        functions.forEach((func) => {
-          const vars = this.getGlobalVarsFromFunction(func);
+      if (edge.edge_type === 'normal_2.0') {
+        edge.condition_rules.forEach((rule) => {
+          const vars = this.getGlobalVarsFromFunction(rule.function);
           globalVars.push(...vars);
         });
-      });
+        edge.actions.forEach((action) => {
+          const vars = this.getGlobalVarsFromFunction(action.function);
+          globalVars.push(...vars);
+        });
+      } else {
+        let andRules = [];
+        if (edge.condition_rules &&
+          edge.condition_rules instanceof Array &&
+          edge.condition_rules.length > 0) {
+          andRules = edge.condition_rules[0];
+        }
+        andRules.forEach((rule) => {
+          let functions = [];
+          if (rule.functions && rule.functions instanceof Array) {
+            functions = rule.functions;
+          }
+          functions.forEach((func) => {
+            const vars = this.getGlobalVarsFromFunction(func);
+            globalVars.push(...vars);
+          });
+        });
+      }
     });
     return globalVars;
   },
@@ -874,6 +555,19 @@ export default {
         ).map((tag) => {
           // snake_case to CamelCase
           const key = tag.replace(/_([\w])/g, m => m[1].toUpperCase());
+          return key + func.content.key_suffix;
+        });
+      }
+    } else if (funcName === 'nlu_parser') {
+      if (func.content && func.content.tags && func.content.key_suffix) {
+        vars = func.content.tags.split(',').map((tag) => {
+          let key = tag;
+          if (tag === 'TIME_FUTURE' || tag === 'TIME_PAST') {
+            key = 'TIME';
+          }
+          if (tag === 'SELECT_CUSTOMIZE_OPTIONS' || tag === 'SELECT_OPTIONS_IN_KEY') {
+            key = 'SELECT';
+          }
           return key + func.content.key_suffix;
         });
       }
@@ -967,8 +661,8 @@ export default {
       condition_rules: [],
       actions: [],
     };
-    if (nodeId === toNode) {
-      // 解析失败处理
+    if (toNode === 'parseFailedEdge') {
+      edge.to_node_id = nodeId;
       edge.actions = [
         this.actionSetParseFailed(true),
       ];
@@ -1200,15 +894,30 @@ export default {
       }
     });
   },
+  parseTriggerIntents(uiNodes) {
+    const triggerIntents = {};
+    const entryNode = uiNodes.find(uiNode => uiNode.nodeType === 'entry');
+    entryNode.triggerTab.rules.forEach((andCondtions) => {
+      andCondtions.forEach((condtion) => {
+        if (condtion.functions[0].function_name === 'intent_parser' &&
+            condtion.functions[0].content &&
+            condtion.functions[0].content.intentName) {
+          triggerIntents[condtion.functions[0].content.intentName] = 1;
+        }
+      });
+    });
+    return Object.keys(triggerIntents);
+  },
   traverseEdges(nodes, globalEdges) {
     // initial node_info
-    let nodeInfo = {};
+    let nodeConnections = {};
     nodes.forEach((node) => {
-      nodeInfo[node.node_id] = {
+      nodeConnections[node.node_id] = {
         hasInboundConnection: false,
         hasOutboundConnection: false,
         hasExitConnection: false,
         hasInnerConnection: false,
+        hasConnectionToNotExistNode: false,
       };
     });
 
@@ -1218,17 +927,17 @@ export default {
       node.edges.forEach((edge) => {
         const edgeType = edge.edge_type || 'normal';
         if (edgeType === 'qq') {
-          nodeInfo = this.traverseQQEdge(nodeId, edge, nodeInfo);
+          nodeConnections = this.traverseQQEdge(nodeId, edge, nodeConnections);
         } else {
-          nodeInfo = this.traverseEdge(nodeId, edge, edgeType, nodeInfo);
+          nodeConnections = this.traverseEdge(nodeId, edge, edgeType, nodeConnections);
         }
       });
       globalEdges.forEach((edge) => {
         const edgeType = edge.edge_type || 'normal';
         if (edgeType === 'qq') {
-          nodeInfo = this.traverseQQEdge(nodeId, edge, nodeInfo);
+          nodeConnections = this.traverseQQEdge(nodeId, edge, nodeConnections);
         } else {
-          nodeInfo = this.traverseEdge(nodeId, edge, edgeType, nodeInfo);
+          nodeConnections = this.traverseEdge(nodeId, edge, edgeType, nodeConnections);
         }
       });
       if (node.node_type === 'action') {
@@ -1238,109 +947,127 @@ export default {
         } else if (node.content instanceof Array) {
           actionGroupList = node.content;
         }
-        nodeInfo = this.traverseActionGroupList(nodeId, actionGroupList, nodeInfo);
+        nodeConnections = this.traverseActionGroupList(nodeId, actionGroupList, nodeConnections);
       }
     });
-    return nodeInfo;
+    return nodeConnections;
   },
-  traverseActionGroupList(nodeId, actionGroupList, nodeInfo) {
+  traverseActionGroupList(nodeId, actionGroupList, nodeConnections) {
     actionGroupList.forEach((actionGroup) => {
       actionGroup.actionList.forEach((action) => {
         if (action.type === 'webhook') {
           let toNodeId = action.webhookSuccessThenGoto;
-          this.setNodeInfo(nodeInfo, nodeId, toNodeId);
+          this.setNodeConnections(nodeConnections, nodeId, toNodeId);
           toNodeId = action.webhookFailThenGoto;
-          this.setNodeInfo(nodeInfo, nodeId, toNodeId);
+          this.setNodeConnections(nodeConnections, nodeId, toNodeId);
         } else if (action.type === 'goto') {
           const toNodeId = action.targetSkillId;
-          this.setNodeInfo(nodeInfo, nodeId, toNodeId);
+          this.setNodeConnections(nodeConnections, nodeId, toNodeId);
         }
       });
     });
-    return nodeInfo;
+    return nodeConnections;
   },
-  setNodeInfo(nodeInfo, nodeId, toNodeId) {
-    if (toNodeId === null || toNodeId === nodeId || nodeInfo[toNodeId] === undefined) return;
+  setNodeConnections(nodeConnections, nodeId, toNodeId) {
+    if (toNodeId === null || toNodeId === nodeId || nodeConnections[toNodeId] === undefined) return;
     if (toNodeId === '0') {
-      nodeInfo[nodeId].hasExitConnection = true;
+      nodeConnections[nodeId].hasExitConnection = true;
     } else {
-      nodeInfo[toNodeId].hasInboundConnection = true;
-      nodeInfo[nodeId].hasOutboundConnection = true;
+      nodeConnections[toNodeId].hasInboundConnection = true;
+      nodeConnections[nodeId].hasOutboundConnection = true;
     }
   },
-  traverseQQEdge(nodeId, edge, nodeInfo) {
-    if (!edge.candidate_edges) return nodeInfo;
+  traverseQQEdge(nodeId, edge, nodeConnections) {
+    if (!edge.candidate_edges) return nodeConnections;
     edge.candidate_edges.forEach((e) => {
       const toNodeId = e.to_node_id;
-      if (toNodeId === null || toNodeId === nodeId || nodeInfo[toNodeId] === undefined) return;
+      if (toNodeId === null || toNodeId === nodeId) {
+        return;
+      }
+      if (nodeConnections[toNodeId] === undefined) {
+        nodeConnections[nodeId].hasConnectionToNotExistNode = true;
+        return;
+      }
+
       if (toNodeId === '0') {
-        nodeInfo[nodeId].hasExitConnection = true;
+        nodeConnections[nodeId].hasExitConnection = true;
       } else {
-        nodeInfo[toNodeId].hasInboundConnection = true;
-        nodeInfo[nodeId].hasOutboundConnection = true;
+        nodeConnections[toNodeId].hasInboundConnection = true;
+        nodeConnections[nodeId].hasOutboundConnection = true;
       }
     });
-    return nodeInfo;
+    return nodeConnections;
   },
-  traverseEdge(nodeId, edge, edgeType, nodeInfo) {
+  traverseEdge(nodeId, edge, edgeType, nodeConnections) {
     const toNodeId = edge.to_node_id;
-    if (toNodeId === null || nodeInfo[toNodeId] === undefined) {
-      return nodeInfo;
+    if (toNodeId === null) {
+      return nodeConnections;
+    }
+    if (nodeConnections[toNodeId] === undefined) {
+      nodeConnections[nodeId].hasConnectionToNotExistNode = true;
+      return nodeConnections;
     }
     if (edgeType === 'hidden') { // hidden edge
       if (toNodeId === nodeId) {
-        nodeInfo[nodeId].hasInnerConnection = true;
+        nodeConnections[nodeId].hasInnerConnection = true;
       }
     } else {
       if (edgeType === 'else_into') {
         if (toNodeId === nodeId) {
           // inner connection: the node connect to itself
-          nodeInfo[nodeId].hasInnerConnection = true;
+          nodeConnections[nodeId].hasInnerConnection = true;
         }
       }
       if (toNodeId === nodeId) {
-        return nodeInfo;
+        return nodeConnections;
       } else if (toNodeId === '0') {
-        nodeInfo[nodeId].hasExitConnection = true;
+        nodeConnections[nodeId].hasExitConnection = true;
       } else {
-        nodeInfo[toNodeId].hasInboundConnection = true;
-        nodeInfo[nodeId].hasOutboundConnection = true;
+        nodeConnections[toNodeId].hasInboundConnection = true;
+        nodeConnections[nodeId].hasOutboundConnection = true;
       }
     }
-    return nodeInfo;
+    return nodeConnections;
   },
-  generateWarnings(uiNodes, nodeInfo) {
+  generateWarnings(uiNodes, nodeConnections) {
     uiNodes.forEach((uiNode) => {
       uiNode.warnings = [];
       const nodeType = uiNode.nodeType || 'normal';
       const nodeId = uiNode.nodeId;
-      this.checkNodeFormat(uiNode, nodeInfo, nodeType, nodeId);
+      this.checkNodeFormat(uiNode, nodeConnections, nodeType, nodeId);
       // has inbound connection or not
       if (nodeType !== 'entry' &&
-          nodeInfo[nodeId].hasInboundConnection === false) {
+          nodeConnections[nodeId].hasInboundConnection === false) {
         uiNode.warnings.push({
           type: 'missing_inbound_connection',
           // warning_msg: '请新增至少一个指向此节点的连线',
         });
       }
       // has exit connection or not
-      if (nodeInfo[nodeId].hasExitConnection === true) {
+      if (nodeConnections[nodeId].hasExitConnection === true) {
         uiNode.warnings.push({
           type: 'has_exit_connection',
           // warning_msg: '出口节点',
         });
       }
       // has outbound connection or not
-      if (nodeInfo[nodeId].hasOutboundConnection === false &&
-          nodeInfo[nodeId].hasExitConnection === false) {
+      if (nodeConnections[nodeId].hasOutboundConnection === false &&
+          nodeConnections[nodeId].hasExitConnection === false) {
         uiNode.warnings.push({
           type: 'missing_outbound_connection',
           // warning_msg: '请在此节点新增至少一个指向其他节点的连线',
         });
       }
+      // has connection to not exist node
+      if (nodeConnections[nodeId].hasConnectionToNotExistNode === true) {
+        uiNode.warnings.push({
+          type: 'hss_connection_to_not_exist_node',
+        // warning_msg: '存在有问题的连线，连线指向不存在或是已经被删除的节点。',
+        });
+      }
     });
   },
-  checkNodeFormat(uiNode, nodeInfo, nodeType, nodeId) {
+  checkNodeFormat(uiNode, nodeConnections, nodeType, nodeId) {
     if (nodeType === 'entry') {
       if (!uiNode.triggerTab.rules || uiNode.triggerTab.rules.length === 0) {
         uiNode.warnings.push({
@@ -1355,11 +1082,26 @@ export default {
           // warning_msg: '预设文本栏位不能为空白，请填入询问语句。',
         });
       }
-      if (nodeInfo[nodeId].hasInnerConnection === true) {
+      if (nodeConnections[nodeId].hasInnerConnection === true) {
         if (!uiNode.settingTab.failureResponse || uiNode.settingTab.failureResponse === '') {
           uiNode.warnings.push({
             type: 'missing_failure_response',
             // warning_msg: '解析失败文本栏位不能为空白，请填入解析失败时的提示语句。',
+          });
+        }
+      }
+    } else if (nodeType === 'dialogue_2.0') {
+      if (!uiNode.dialogue2SettingTab.initialResponse || uiNode.dialogue2SettingTab.initialResponse === '') {
+        uiNode.warnings.push({
+          type: 'missing_response_dialogue_2',
+          // warning_msg: '预设话术栏位不能为空白，请填入询问语句。',
+        });
+      }
+      if (nodeConnections[nodeId].hasInnerConnection === true) {
+        if (!uiNode.dialogue2SettingTab.failureResponse || uiNode.dialogue2SettingTab.failureResponse === '') {
+          uiNode.warnings.push({
+            type: 'missing_failure_response_dialogue_2',
+            // warning_msg: '解析失败话术栏位不能为空白，请填入解析失败时的提示语句。',
           });
         }
       }
@@ -1380,13 +1122,13 @@ export default {
       });
       if (missingMsg === true) {
         uiNode.warnings.push({
-          type: 'missing_pc_response',
+          type: 'missing_response_pc',
           // warning_msg: '参数询问文本栏位不能为空白，请填入询问语句。',
         });
       }
       if (missingParseFailedMsg === true) {
         uiNode.warnings.push({
-          type: 'missing_pc_failure_response',
+          type: 'missing_failure_response_pc',
           // warning_msg: '解析失败文本栏位不能为空白，请填入解析失败时的提示语句。',
         });
       }

@@ -1,6 +1,6 @@
 <template lang="html">
 <div id="scenario-editor-pop">
-  <div class="row">
+  <!-- <div class="row">
     <div id="template-list">
       <div class="template-item" v-for="(template, index) in templateList" @click="selectTemplate(template.scenarioID)">
         <img :src="`/static/images/${template.image}`" alt="...">
@@ -10,14 +10,32 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
   <div class="row">
     <div id="scenario-name">
-      <div class="edit-title">{{$t("task_engine_v3.create_scenario_pop.label_name_the_scenario")}}</div>
+      <div class="edit-title">{{$t("task_engine_v3.create_scenario_pop.scenario_name")}}</div>
       <div class="edit-data">
         <input ref="scenarioName" v-tooltip="noNameTooltip" v-model="scenarioName" 
           :placeholder="$t('task_engine_v3.create_scenario_pop.placeholder_enter_scenario_name')"
         ></input>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div id="template-list">
+      <div class="edit-title">{{$t("task_engine_v3.create_scenario_pop.scenario_temp")}}</div>
+      <div class="edit-data">
+        <dropdown-select
+            v-model="filterTemplate"
+            :options="templateList"
+            :showCheckedIcon="false"
+            :placeholder="$t('task_engine_v3.create_scenario_pop.placeholder_enter_template')"
+            width="516px"
+          />
+      </div>
+        <!-- <input v-model="scenarioName" 
+          :placeholder="$t('task_engine_v3.create_scenario_pop.placeholder_enter_scenario_name')"
+        ></input> -->
       </div>
     </div>
   </div>
@@ -50,6 +68,7 @@ export default {
       },
       templateList: [],
       templateID: '',
+      filterTemplate: [],
     };
   },
   computed: {},
@@ -67,7 +86,8 @@ export default {
         this.$refs.scenarioName.dispatchEvent(event.createEvent('tooltip-show'));
         this.$refs.scenarioName.focus();
       } else {
-        this.$emit('validateSuccess', { scenarioName: this.scenarioName, templateID: this.templateID });
+        const templateID = this.filterTemplate[0] || '';
+        this.$emit('validateSuccess', { scenarioName: this.scenarioName, templateID });
       }
     },
     setTemplateImage(templateItem) {
@@ -96,12 +116,20 @@ export default {
   beforeMount() {
     const that = this;
     taskEngineApi.loadTemplateScenario().then((data) => {
-      that.templateList.push(that.setTemplateImage({ scenarioName: '不使用范本', scenarioID: '' }));
-      const templateItemList = data.result;
-      templateItemList.forEach((templateItem) => {
-        that.templateList.push(that.setTemplateImage(templateItem));
-      });
+      const templateList = [];
+      templateList.push({ scenarioName: '不使用范本', scenarioID: '' }, ...data.result);
+      that.templateList = templateList.map(template => ({
+        text: template.scenarioName,
+        value: template.scenarioID,
+      }));
     });
+    // taskEngineApi.loadTemplateScenario().then((data) => {
+    //   that.templateList.push(that.setTemplateImage({ scenarioName: '不使用范本', scenarioID: '' }));
+    //   const templateItemList = data.result;
+    //   templateItemList.forEach((templateItem) => {
+    //     that.templateList.push(that.setTemplateImage(templateItem));
+    //   });
+    // });
   },
   mounted() {
     this.$on('validate', this.validate);

@@ -1,7 +1,8 @@
 <template>
-  <div class="toggle-base" v-on:click="toggle" :class="{checked: checked, big: big, disabled: disabled}">
+  <div class="toggle-base" v-on:click="toggle" :class="[{checked: checked, big: big, disabled: disabled}, !big && size]">
     <input type="checkbox" :id="id" v-model="checked">
     <label :for="id"></label>
+    <span v-if="showLabel" class="info" :style="infoStyle">{{ labelText }}</span>
   </div>
 </template>
 
@@ -20,16 +21,44 @@ export default {
       type: Boolean,
       default: false,
     },
+    label: {
+      type: Object,
+      default: () => ({ on: 'on', off: 'off' }),
+    },
+    showLabel: {
+      type: Boolean,
+      default: false,
+    },
+    size: {
+      type: String,
+      validate: value => ['big', 'medium'].includes(value),
+      default: '',
+    },
   },
   watch: {
     value() {
       this.checked = this.value;
     },
     checked(val) {
-      if (val !== this.value) {
-        this.$emit('input', this.checked);
-        this.$emit('change', this.checked);
+      const that = this;
+      if (that.timer !== undefined) {
+        clearTimeout(that.timer);
       }
+      that.timer = setTimeout(() => {
+        if (val !== that.value) {
+          that.$emit('input', that.checked);
+          that.$emit('change', that.checked);
+          that.timer = undefined;
+        }
+      }, 500);
+    },
+  },
+  computed: {
+    infoStyle() {
+      return this.checked ? { left: '20%' } : { right: '20%' };
+    },
+    labelText() {
+      return this.checked ? this.label.on : this.label.off;
     },
   },
   methods: {
@@ -42,6 +71,7 @@ export default {
     return {
       id: `toggle_${random}`,
       checked: false,
+      timer: undefined,
     };
   },
   mounted() {
@@ -70,12 +100,14 @@ $disabled-deactive-color: #EBEBEB;
     background: $toggle-active-color;
   }
   transition: background-color 500ms;
+
   input {
     visibility: hidden;
     &:checked + label {
       left: 15px;
     }
   }
+
   label {
     display: block;
     position: absolute;
@@ -96,14 +128,43 @@ $disabled-deactive-color: #EBEBEB;
     border-radius: 20px;
     padding: 3px;
     label {
-      width: 20px;
-      height: 20px;
+      width: 22px;
+      height: 22px;
+      top: 2px;
     }
     input {
       visibility: hidden;
       &:checked + label {
         left: 36px;
       }
+    }
+  }
+
+  &.medium {
+    width: 44px;
+    height: 22px;
+    border-radius: 40px;
+    label {
+      width: 18px;
+      height: 18px;
+      top: 2px;
+    }
+    input:checked + label {
+      left: 24px;
+    }
+  }
+
+  &.small {
+    width: 40px;
+    height: 18px;
+    border-radius: 18px;
+    label {
+      width: 16px;
+      height: 16px;
+      top: 1px;
+    }
+    input:checked + label {
+      left: 22px;
     }
   }
 
@@ -114,6 +175,13 @@ $disabled-deactive-color: #EBEBEB;
     &.checked {
       background: $disabled-active-color;
     }
+  }
+  .info {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    @include font-12px();
+    color:  white;
   }
 }
 </style>

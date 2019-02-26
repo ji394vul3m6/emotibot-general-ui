@@ -57,7 +57,6 @@ import draggable from 'vuedraggable';
 import scenarioInitializer from '../_utils/scenarioInitializer';
 
 export default {
-  name: 'scenario-edit-page',
   components: {
     draggable,
   },
@@ -77,7 +76,7 @@ export default {
       return obj;
     });
     const originalVarTemplatesStr =
-      JSON.stringify(this.varTemplates, general.JSONStringifyReplacer);
+      JSON.stringify(varTemplates, general.JSONStringifyReplacer);
 
     // render globalVarOptions
     const globalVarOptionsMap = this.extData.globalVarOptionsMap;
@@ -180,8 +179,6 @@ export default {
     },
     cancelValidate() {
       const newVarTemplatesStr = JSON.stringify(this.varTemplates, general.JSONStringifyReplacer);
-      // console.log(`New Str: ${newVarTemplatesStr}`);
-      // console.log(`Old Str: ${this.originalVarTemplatesStr}`);
       if (newVarTemplatesStr === this.originalVarTemplatesStr) {
         this.$emit('cancelValidateSuccess');
       } else {
@@ -232,9 +229,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'styles/variable.scss';
-
-#var-template-edit-pop{
+#var-template-edit-pop {
   width: 600px;
   height: 70vh;
   display: flex;

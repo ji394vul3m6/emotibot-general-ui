@@ -25,7 +25,7 @@
 | options | true | Array | [<br>&nbsp;&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;text: ...,<br>&nbsp;&nbsp;&nbsp;&nbsp;val: ...,<br>&nbsp;&nbsp;},<br>&nbsp;&nbsp;...<br>], | [] | 可放入多組選項 Object，每個選項需包含<br>**text：**顯示的選項名稱<br>**val：** 選項的 value
 
 ---
-## Events
+## Emit Events
 
 | Event | Callback $event | 說明 |
 |---|---|---|

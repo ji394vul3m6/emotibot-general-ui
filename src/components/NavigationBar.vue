@@ -4,10 +4,11 @@
       <div class="tag"
         v-for="(text, val) in options" :key=val
         :class="{active: selectedPage === val, 'no-hover': Object.keys(options).length <= 1}"
-        @click="clickPage(val)">
+        @click="clickPage(val)" ref="tags">
         {{text}}
       </div>
     </div>
+    <div class="active-bar" ref='activeBar' :class="{animation: animation}"></div>
     <search-input v-if="showSearch" v-model='keyword' @input="keywordChange"></search-input>
   </div>  
 </template>
@@ -28,10 +29,15 @@ export default {
       type: Boolean,
       default: false,
     },
+    animation: {
+      type: Boolean,
+      defualt: false,
+    },
   },
   watch: {
     selectedPage(val) {
       this.$emit('input', val);
+      this.computeWidth();
     },
   },
   data() {
@@ -57,6 +63,24 @@ export default {
         that.$emit('search', that.keyword);
       }, 200);
     },
+    computeWidth() {
+      const that = this;
+      const idx = Object.keys(that.options).findIndex(x => x === that.selectedPage);
+      if (that.$refs.tags === undefined) {
+        return;
+      }
+      const tag = that.$refs.tags[idx];
+      const left = that.$refs.tags.reduce((ret, t, currentIdx) => {
+        if (currentIdx < idx) {
+          return ret + 24 + t.getBoundingClientRect().width;
+        }
+        return ret;
+      }, 18);
+      if (tag !== undefined) {
+        that.$refs.activeBar.style.width = `${tag.getBoundingClientRect().width}px`;
+        that.$refs.activeBar.style.left = `${left}px`;
+      }
+    },
   },
   mounted() {
     this.selectedPage = this.value;
@@ -78,6 +102,19 @@ $navbar-active-color: $color-primary;
   justify-content: space-between;
   align-items: center;
   padding-right: 20px;
+
+  position: relative;
+  .active-bar {
+    position: absolute;
+    left: 0;
+    bottom: 0px;
+    color: $navbar-active-color;
+    border-bottom: 3px solid $navbar-active-color;
+    padding-bottom: 0px;
+    &.animation {
+      transition: left 0.3s ease-in-out, width 0.3s ease-in-out;
+    }
+  }
   .tag-container {
     display: flex;
     .tag {
@@ -95,8 +132,8 @@ $navbar-active-color: $color-primary;
       }
       &.active {
         color: $navbar-active-color;
-        border-bottom: 3px solid $navbar-active-color;
-        padding-bottom: 0px;
+      //   border-bottom: 3px solid $navbar-active-color;
+      //   padding-bottom: 0px;
       }
       &:not(.no-hover) {
         @include click-button();

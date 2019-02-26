@@ -1,6 +1,73 @@
 export default {
+  robot_config: {
+    robot_config: '系統功能配置',
+    config_content_error: '設定內容錯誤',
+    ssm: {
+      title: '問答',
+      'ssm_context_support-info': '在常用問答中使用上下文',
+      'uploadimg_server-pre': '答案中圖片伺服器將使用',
+      'uploadimg_server-suf': '',
+      'ssm_ml_threshold-pre': '當 ML 相似度信心分數為',
+      'ssm_ml_threshold-suf': '時視為相同問題',
+      'ssm_qq_threshold-pre': '當 QQ 相似度信心分數為',
+      'ssm_qq_threshold-suf': '時視為相同問題',
+    },
+    chat: {
+      title: '閒聊',
+      'chat-editorial-pre': '信心分數高於',
+      'chat-editorial-suf': '時使用竹間閒聊 I',
+      'chat-editorial-custom-pre': '信心分數高於',
+      'chat-editorial-custom-suf': '時使用客制閒聊',
+      'chat-editorial-domain-pre': '信心分數高於',
+      'chat-editorial-domain-suf': '時使用行業閒聊',
+      'chat-editorial-sport-pre': '信心分數高於',
+      'chat-editorial-sport-suf': '時使用竹間閒聊 II',
+      'chat-robot-pre': '信心分數高於',
+      'chat-robot-suf': '時使用竹間機器人形象',
+      'chat-robot-custom-pre': '信心分數高於',
+      'chat-robot-custom-suf': '時使用客制機器人形象',
+    },
+    robot: {
+      title: '機器人',
+      name: '自稱',
+      language: '出話語系',
+      default: '我',
+    },
+    context: {
+      title: '技能上下文',
+    },
+    'human-intent': {
+      title: '轉人工',
+    },
+    rule: '規則設置',
+    faq: {
+      title: 'FAQ',
+      'faq-similar-question-range-pre': '匹配分數與閾值差距小於',
+      'faq-similar-question-range-suf': '時，將其視為相似問',
+      'faq-recommand-question-range-pre': '匹配分數與閾值差距小於',
+      'faq-recommand-question-range-suf': '時，將其視為推薦問',
+    },
+    'task-engine': {
+      title: '任務引擎',
+      'task-engine-total-timeout-pre': '當任務引擎超過',
+      'task-engine-total-timeout-suf': '毫秒無反應則視為超時',
+    },
+    knowledge: {
+      title: '知識圖譜',
+      'knowledge-threshold-pre': '匹配分數超過',
+      'knowledge-threshold-suf': '時，使用知識圖譜為答案',
+    },
+    command: {
+      title: '指令',
+    },
+    intent: {
+      title: '意圖引擎',
+      'intent-threshold-pre': '當意圖信心分數超過',
+      'intent-threshold-suf': '時，使用該意圖',
+    },
+  },
   integration: {
-    integration: '整合部署',
+    integration: '接入部署',
     enterpriseID: '企業 ID',
     robotID: '機器人 ID / AppID',
   },
@@ -88,16 +155,6 @@ export default {
       },
     },
   },
-  login: {
-    title: '用戶登陸',
-    login: '登入',
-    account_place: '輸入帳號',
-    password_place: '輸入密碼',
-    captcha_place: '輸入驗證碼',
-    contact_sm: '無法登入？請聯絡管理人員',
-    notify_fail: '登入失敗',
-    notify_input: '請輸入帳密',
-  },
   category: {
     title: '分類',
     setting: '設置',
@@ -112,6 +169,13 @@ export default {
     delete_category_msg: '確定要刪除分類 {name} 及其子分類嗎？',
   },
   statistics: {
+    std_question_exists: '標準問題已存在',
+    add_new_std_question: '新增標準問題',
+    sessions_time: '會話時間',
+    session_id: '會話 ID',
+    feedback_score: '滿意度分數',
+    feedback_reason: '滿意度反饋',
+
     search_more: '顯示上限爲1萬筆，顯示更多資料？',
     search_more_hint: '以最後一筆訪問時間爲啓始點重新搜尋',
 
@@ -155,6 +219,10 @@ export default {
     question_first_time: '首次提問時間',
     question_last_time: '末次提問時間',
     audit_record_filename: '操作日誌',
+    label: '標準問題標籤',
+    category: '標準問題分類',
+    min_score: '最低分',
+    max_score: '最高分',
 
     keyword_search: '關鍵詞',
     time_range: '訪問時間',
@@ -165,7 +233,8 @@ export default {
 
     filter: '篩選條件',
     export_mode: '高級篩選',
-    total_records: '共有 {num} 筆日誌，已勾選 {count} 筆',
+    total_records: '共 {num} 筆',
+    total_select_records: '共有 {num} 筆日誌，已勾選 {count} 筆',
 
     recommend_question: '推薦標準問題',
     recommend_empty_msg_1: '目前無推薦標準問題',
@@ -186,6 +255,9 @@ export default {
       mark_ok: '標註問題成功',
       cluster_ok: '輔助分類完成，請繼續其他操作',
     },
+    warning: {
+      mark_skip: '{num}個問答已為標準問題，忽略標注',
+    },
     error: {
       ignore_fail: '更新忽略狀態失敗',
       mark_fail: '標註問題失敗',
@@ -197,6 +269,7 @@ export default {
       cluster_fail: '輔助分類失敗',
       multi_origin_mark_fail: '尚未爲多筆用戶問題選擇標註問題',
       search_fail: '無法取得對話日誌',
+      too_few_valid_sentence: '有效的用戶問句不足',
     },
     categories: {
       title: '維度',
@@ -238,6 +311,19 @@ export default {
       chat: '聊天',
       other: '其他',
       all: '全部',
+    },
+    modules: {
+      title: '出話模塊',
+      backfill: '未知回覆',
+      chat: '閒聊',
+      keyword: '其他',
+      function: '機器人技能',
+      faq: '常用標準問題',
+      task_engine: '多輪對話引擎',
+      to_human: '轉人工',
+      knowledge: '知識圖譜',
+      command: '機器人話術',
+      emotion: '情緒話術',
     },
     platform: {
       title: '平臺',
@@ -282,6 +368,12 @@ export default {
       result: '動作結果',
       create_time: '發生時間',
       ip_source: 'IP地址',
+    },
+
+    confidence_score: {
+      title: '信心分數',
+      low: '低信心問題',
+      range: '分數區間',
     },
 
     user_say: '用戶提問',
@@ -756,12 +848,14 @@ export default {
     },
   },
   intent_engine: {
+    delete_multi_intent_msg: '確定要刪除所選意圖嗎？',
     train: '意圖訓練',
     is_training: '意圖訓練中...',
     training_success: '意圖訓練成功',
     training_fail: '意圖訓練失敗',
     version_not_exist: '意圖版本不存在',
     manage: {
+      delete_intents: '批量刪除',
       add_intent: '新增意圖',
       intent_num: '共有 {inum} 組意圖 / {cnum} 筆語料',
       corpus_num: ' ({pos}筆正例/{neg}筆反例)',
@@ -793,7 +887,7 @@ export default {
       notify: {
         add_intent_success: '新增意圖成功',
         add_intent_fail: '新增意圖失敗',
-        delete_intent_success: '删除意圖成功',
+        delete_intent_success: '刪除意圖成功',
         delete_intent_fail: '刪除意圖失敗',
         update_intent_success: '編輯意圖成功',
         update_intent_fail: '編輯意圖失敗',
@@ -893,6 +987,7 @@ export default {
       robot_chat_skill: '話術設置',
       robot_command: '指令設置',
       integration: '整合部署',
+      robot_config: '系統功能配置',
     },
     wordbank: {
       module_name: '詞庫',
@@ -915,6 +1010,7 @@ export default {
       statistic_daily: '日誌管理',
       statistic_audit: '操作記錄',
       statistic_learning: '負反饋',
+      statistic_session: '會話日誌',
     },
     task_engine: {
       module_name: '任務引擎',
@@ -931,6 +1027,19 @@ export default {
     error: '',
   },
   general: {
+    range: '區間',
+    system_name_default: '對話管理後台',
+    name: '名稱',
+    image: '圖片',
+    icon: '圖標',
+    clear_all: '清除全部',
+    reset_to_default: '還原預設',
+    view: '查看',
+    custom_column: '自訂欄位',
+    default_column: '預設欄位',
+    enable: '啟用',
+    disable: '停用',
+    setting: '設置',
     language: '語言',
     zh_tw: '繁體中文',
     zh_cn: '簡體中文',
@@ -940,6 +1049,7 @@ export default {
     no_data: '暫無數據',
     no_search_data: '暫無搜尋結果',
     no_option: '無選項',
+    no_filterable_option: '无筛选结果',
     reset: '重置',
     chat_test: '對話測試',
     custom: '自訂',
@@ -986,6 +1096,8 @@ export default {
     save_change: '儲存變更',
     go_back: '返回',
     please_choose: '請選擇',
+    intent: '意圖',
+    select_all: '全選',
   },
   dimension: {
     categories: {
@@ -1063,6 +1175,19 @@ export default {
   },
 
   management: {
+    enterprise_setting: '企業設置',
+    enterprise_icon_setting: '企業圖標設置',
+    enterprise_lu_icon: '企業左上圖標',
+    enterprise_lu_icon_info: '支援格式 svg, png，檔案大小限制為 1mb，建議寬高比例 3:1',
+    browser_page_icon: '瀏覽器頁籤',
+    browser_page_icon_info: '支援格式 png ，檔案大小限制為1mb，建議寬高比例1:1',
+
+    system_setting: '系統設置',
+    system_icon_setting: '企業圖標設置',
+    system_lu_icon: '系統左上圖標',
+    login_icon: '登入畫面圖標',
+    login_icon_info: '支援格式 svg,png ，檔案大小限制為1mb，建議寬高比例為5:3',
+
     enterprise_list: '企業列表',
     admin_list: '系統管理人員',
     enterprise: '企業',
@@ -1239,8 +1364,9 @@ export default {
       },
       intent_manage: {
         view: '意圖管理查看',
-        export: '意圖管理導入',
-        import: '意圖管理導出',
+        edit: '意圖管理編輯',
+        export: '意圖管理導出',
+        import: '意圖管理導入',
       },
       integration: {
         view: '整合部署查看',

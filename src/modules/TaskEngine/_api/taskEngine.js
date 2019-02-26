@@ -1,4 +1,5 @@
 import axios from 'axios';
+import config from '@/modules/TaskEngine/_utils/config';
 
 const QS = require('qs');
 
@@ -9,8 +10,16 @@ const TASK_ENGINE_SCENARIO_PATH = `${BASE_URL}task_engine_scenario.php`;
 const NLU_TDE_REGISTER_PATH = `${BASE_URL}tde_register.php`;
 const UPLOAD_SPREADSHEET_PATH = `${BASE_URL}spreadsheet.php`;
 const UPLOAD_SCENARIO_JSON_PATH = `${BASE_URL}scenario_json_upload.php`;
+const TASK_CONFIG = '/api/v1/task/config';
+const TASK_ENGINE_SCENARIO_INTENT = '/api/v1/task/scenario/intents';
 
 export default {
+  taskConfig() {
+    return axios({
+      method: 'GET',
+      url: TASK_CONFIG,
+    }).then(resp => resp.data);
+  },
   listScenarios(appId) {
     return axios({
       method: 'GET',
@@ -133,6 +142,20 @@ export default {
       }
     });
   },
+  saveTaskEngineIntents(appId, scenarioId, triggerIntents) {
+    const triggerIntentsString = JSON.stringify(triggerIntents);
+    const data = {
+      app_id: appId,
+      scenario_id: scenarioId,
+      trigger_intents: triggerIntentsString,
+    };
+    return axios({
+      method: 'PUT',
+      url: TASK_ENGINE_SCENARIO_INTENT,
+      data: QS.stringify(data),
+      config: { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
+    }).then(resp => resp.data);
+  },
   saveScenario(appId, scenarioId, content, layout = '{}') {
     const data = {
       method: 'PUT',
@@ -191,7 +214,7 @@ export default {
           reject('Empty file');
         }, 0);
       });
-    } else if (file.size <= 0 || file.size > 2 * 1024 * 1024) {
+    } else if (file.size <= 0 || file.size > config.MaximumFileSize) {
       return new Promise((resolve, reject) => {
         setTimeout(() => {
           reject('File size need more than 0, less than 2MB');
@@ -214,7 +237,7 @@ export default {
           reject('Empty file');
         }, 0);
       });
-    } else if (file.size <= 0 || file.size > 2 * 1024 * 1024) {
+    } else if (file.size <= 0 || file.size > config.MaximumFileSize) {
       return new Promise((resolve, reject) => {
         setTimeout(() => {
           reject('File size need more than 0, less than 2MB');
