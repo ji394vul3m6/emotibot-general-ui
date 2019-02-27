@@ -295,11 +295,12 @@ export default {
 #intent-train-page{
   display: flex;
   flex-direction: column;
-  min-width: 600px;
-  min-height: 400px;
+  overflow-x: scroll;
+  @include customScrollbar();
   .header {
     flex: 0 0 auto;
     height: 60px;
+    min-width: 900px;
     padding: 0 20px;
     border-bottom: 1px solid $color-borderline-disabled;
     display: flex;
@@ -319,9 +320,11 @@ export default {
     flex: 1 1 auto;
     display: flex;
     flex-direction: row;
+    min-width: 900px;
+    min-height: 540px;
     height: calc(100% - 60px);
     .content{
-      flex: 1 0 auto;
+      flex: 1 1 auto;
       padding: 20px;
       display: flex;
       flex-direction: column;

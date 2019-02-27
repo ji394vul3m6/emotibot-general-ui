@@ -326,10 +326,11 @@ export default {
 #intent-test-record-page{
   display: flex;
   flex-direction: column;
-  min-width: 600px;
-  min-height: 400px;
+  overflow-x: scroll;
+  @include customScrollbar();
   .header {
     flex: 0 0 auto;
+    min-width: 900px;
     height: 60px;
     padding: 0 20px;
     border-bottom: 1px solid $color-borderline-disabled;
@@ -356,7 +357,8 @@ export default {
   .body{
     flex: 1 1 auto;
     display: flex;
-    height: calc(100% - 60px);
+    min-width: 900px;
+    min-height: 540px;
     .statistics-box{
       flex: 0 0 auto;
       display: flex;

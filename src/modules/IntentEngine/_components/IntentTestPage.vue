@@ -291,10 +291,11 @@ export default {
 #intent-test-page{
   display: flex;
   flex-direction: column;
-  min-width: 600px;
-  min-height: 400px;
+  overflow-x: scroll;
+  @include customScrollbar();
   .header {
     flex: 0 0 auto;
+    min-width: 900px;
     height: 60px;
     padding: 0 20px;
     border-bottom: 1px solid $color-borderline-disabled;
@@ -322,6 +323,8 @@ export default {
     flex: 1 1 auto;
     display: flex;
     flex-direction: row;
+    min-width: 900px;
+    min-height: 540px;
     height: calc(100% - 60px);
     .content{
       flex: 1 1 auto;
@@ -387,6 +390,10 @@ export default {
       .intent-list{
         flex: 0 0 auto;
       }
+    }
+    .side-panel{
+      flex: 0 0 auto;
+      width: 270px;
     }
   }
 }
