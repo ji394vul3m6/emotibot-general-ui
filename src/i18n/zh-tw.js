@@ -902,6 +902,7 @@ export default {
     },
     import: {
       title: '導入意圖',
+      note: '將會全量替換意圖，刪除之前所有數據，測試集也只會留下相同的意圖測試題，刪除不同的意圖測試題。',
       choose_file: '請選擇檔案',
       success: '意圖導入成功',
       fail: '意圖導入失敗',

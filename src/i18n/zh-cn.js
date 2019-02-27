@@ -902,6 +902,7 @@ export default {
     },
     import: {
       title: '导入意图',
+      note: '将会全量替换意图，删除之前所有数据，测试集也只会留下相同的意图测试题，删除不同的意图测试题。',
       choose_file: '请选择档案',
       success: '意图导入成功',
       fail: '意图导入失败',
