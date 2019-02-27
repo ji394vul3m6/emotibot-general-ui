@@ -471,8 +471,10 @@ export default {
       }
     },
     expandIntent(intent) {
+      if (intent.expand === true) {
+        return Promise.resolve();
+      }
       const that = this;
-
       that.closeAllIntent();
       if (intent.positiveCount + intent.negativeCount === 0) {
         intent.corpus = {
