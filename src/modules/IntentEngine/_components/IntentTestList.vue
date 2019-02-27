@@ -28,7 +28,10 @@
     </div>
     <transition name="intent-content">
     <div v-if="intent.expand">
-      <div class="intent-content">
+      <div class="corpus-loading-container" v-if="intentContentLoaded===false">
+        <loading-dot :magnify="0.4"></loading-dot>
+      </div>
+      <div class="intent-content" v-if="intentContentLoaded===true">
         <div class="label">
           {{ $t('intent_engine.test_data.test_corpus') }}
         </div>
@@ -41,6 +44,11 @@
               @keydown.enter="detectCompositionState"
               @keyup.enter="addCorpus(intent)"/>
             <text-button class="add-corpus-btn" @click="detectCompositionState(); addCorpus(intent)">{{ $t('intent_engine.manage.addin') }}</text-button>
+          </div>
+          <div v-if="intent.testCorpus.length === 0" class="corpus-row">
+            <div class="corpus">
+              <span>{{ $t('general.no_data') }}</span>
+            </div>
           </div>
           <div class="corpus-row" v-for="corpus in getCorpusPage(intent)"
             :key="corpus.id"
@@ -170,6 +178,7 @@ export default {
       compositionState: false,
       wasCompositioning: false,
       eventBus: eventBus.eventBus,
+      intentContentLoaded: false,
       editCorpusTooltip: {
         msg: this.$t('intent_engine.manage.tooltip.hit_enter_to_save'),
         eventOnly: true,
@@ -216,9 +225,16 @@ export default {
       this.intentList.forEach((i) => {
         i.expand = false;
       });
-      this.fetchCorpus(intent).then(() => {
+      if (intent.sentences_count === 0) {
+        this.intentContentLoaded = true;
         intent.expand = true;
-      });
+      } else {
+        this.intentContentLoaded = false;
+        intent.expand = true;
+        this.fetchCorpus(intent).then(() => {
+          this.intentContentLoaded = true;
+        });
+      }
     },
     fetchCorpus(intent) {
       return this.$api.getIntentTestCorpus(intent.id, this.keyword).then((data) => {
@@ -276,6 +292,7 @@ export default {
         this.deleteCorpus(intent, corpus);
       } else {
         corpus.sentence = this.editingCorpusContent;
+        corpus.result = 0;
         const update = [{
           id: corpus.id,
           content: corpus.sentence,
@@ -435,6 +452,14 @@ export default {
     .intent-content-enter-to, .intent-content-leave {
       max-height: 1000px;
     }
+    .corpus-loading-container{
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+      height: 100px;
+      align-items: center;
+      justify-content: center;
+    }
     .intent-content{
       flex: 0 0 auto;
       display: flex;
@@ -443,15 +468,17 @@ export default {
       border-top: 1px solid $color-borderline;
       background-color: $table-body-hover-background;
       .label{
+        flex: 0 0 auto;
         @include font-14px-line-height-28px();
       }
       .corpus-block{
+        flex: 0 0 auto;
         display: flex;
         flex-direction: column;
         margin-top: 22px;
         border-left: 3px solid rgba(74, 144, 226, 0.24);
         .corpus-row{
-          flex: 1 1 auto;
+          flex: 0 0 auto;
           display: flex;
           position: relative;
           margin: 4px 0px 0px 20px;
@@ -544,6 +571,7 @@ export default {
           }
         }
         .add-corpus-row{
+          flex: 0 0 auto;
           display: flex;
           height: 28px;
           margin: 0px 0px 0px 20px;
