@@ -547,7 +547,7 @@ export default {
         main: JSON.stringify(this.jsCode.main),
       };
       const data = {
-        version: '1.1',
+        version: '2.6',
         metadata: {
           scenario_name: this.setting.scenarioName,
           update_time: this.moduleData.metadata.update_time,
@@ -1129,7 +1129,7 @@ export default {
     width: 100%;
     height: 100%;
     @include auto-overflow();
-    @include customScrollbar();  
+    @include customScrollbar();
     .canvas-page {
       background: url('data:image/svg+xml, \
       <svg xmlns="http://www.w3.org/2000/svg" \
