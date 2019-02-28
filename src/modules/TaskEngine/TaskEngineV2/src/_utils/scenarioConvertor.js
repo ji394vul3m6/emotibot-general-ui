@@ -239,7 +239,7 @@ export default {
       condition_rules: [],
     };
   },
-  convertUiNodeToEdgeElseInto(uiNode) {
+  convertUiNodeEdgeElseIntoO2N(uiNode) {
     if (uiNode.edgeTab && uiNode.edgeTab.elseInto === uiNode.nodeId) {
       uiNode.edgeTab.elseInto = 'parseFailedEdge';
     }
@@ -253,7 +253,7 @@ export default {
       uiNode.nodeId,
       this.addResetDialogueCntAndParseFailedAction(initialGlobalEdges),
     );
-    this.convertUiNodeToEdgeElseInto(uiNode);
+    this.convertUiNodeEdgeElseIntoO2N(uiNode);
     let edges = [];
     if (uiNode.nodeType === 'entry') {
       const hiddenEdges = this.composeEntryNodeHiddenEdges(uiNode, setting);
