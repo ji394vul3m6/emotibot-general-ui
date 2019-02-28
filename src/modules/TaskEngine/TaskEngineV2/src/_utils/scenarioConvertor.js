@@ -239,12 +239,21 @@ export default {
       condition_rules: [],
     };
   },
+  convertUiNodeEdgeElseIntoO2N(uiNode) {
+    if (uiNode.edgeTab && uiNode.edgeTab.elseInto === uiNode.nodeId) {
+      uiNode.edgeTab.elseInto = 'parseFailedEdge';
+    }
+    if (uiNode.edgeTab2 && uiNode.edgeTab2.elseInto === uiNode.nodeId) {
+      uiNode.edgeTab2.elseInto = 'parseFailedEdge';
+    }
+  },
   // convert tab data to edges
   convertUiNodeToEdges(uiNode, setting, initialGlobalEdges) {
     const globalEdges = this.changeSuffixOfGlobalEdges(
       uiNode.nodeId,
       this.addResetDialogueCntAndParseFailedAction(initialGlobalEdges),
     );
+    this.convertUiNodeEdgeElseIntoO2N(uiNode);
     let edges = [];
     if (uiNode.nodeType === 'entry') {
       const hiddenEdges = this.composeEntryNodeHiddenEdges(uiNode, setting);
