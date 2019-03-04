@@ -12,11 +12,11 @@ function getTestStatus() {
 }
 
 function getTestRecord(intentTestId, keyword) {
-  let url = `${INTENT_TEST_URL}/${intentTestId}`;
-  if (keyword) {
-    url = `${url}?keyword=${keyword}`;
-  }
-  return this.$reqGet(url).then(rsp => rsp.data.result);
+  return this.$reqGet(`${INTENT_TEST_URL}/${intentTestId}`, {
+    params: {
+      keyword,
+    },
+  }).then(rsp => rsp.data.result);
 }
 
 function saveTestRecord(intentTestId, recordName) {
@@ -55,19 +55,19 @@ function restoreTestRecord(intentTestId) {
 }
 
 function getTestIntents(keyword) {
-  let url = INTENT_TEST_DATA_URL;
-  if (keyword) {
-    url = `${url}?keyword=${keyword}`;
-  }
-  return this.$reqGet(url).then(rsp => rsp.data.result);
+  return this.$reqGet(INTENT_TEST_DATA_URL, {
+    params: {
+      keyword,
+    },
+  }).then(rsp => rsp.data.result);
 }
 
 function getIntentTestCorpus(intentId, keyword) {
-  let url = `${INTENT_TEST_DATA_URL}/${intentId}`;
-  if (keyword) {
-    url = `${url}?keyword=${keyword}`;
-  }
-  return this.$reqGet(url).then(rsp => rsp.data.result);
+  return this.$reqGet(`${INTENT_TEST_DATA_URL}/${intentId}`, {
+    params: {
+      keyword,
+    },
+  }).then(rsp => rsp.data.result);
 }
 
 function patchIntentTestCorpus(intentId, update, del) {
