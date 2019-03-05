@@ -1372,6 +1372,10 @@ export default {
         view: '接入部署查看',
         edit: '接入部署编辑',
       },
+      robot_config: {
+        view: '机器人设定查看',
+        edit: '机器人设定变更',
+      },
     },
   },
   header: {
