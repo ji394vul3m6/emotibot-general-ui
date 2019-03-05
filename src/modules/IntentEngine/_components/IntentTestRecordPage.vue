@@ -76,7 +76,16 @@
         <div class="link" @click="restoreRecord()">
           {{$t('intent_engine.test_records.restore_record')}}
         </div>
-        <dropdown-select :options="[]" width="64px" @input="downloadData"/>
+        <div class="download-option-btn" ref="downloadOptionsBtn" v-dropdown="downloadOptions">
+          <text-button
+            :width="'64px'"
+            :height="'28px'"
+            :icon-type="'header_dropdown_gray'"
+            :iconAlign="'right'"
+            :icon-size="10">
+            {{ $t('general.download') }}
+          </text-button>
+        </div>
       </div>
       <template v-if="corpusGroupsWithoutIntent.length > 0">
         <div class="intent-list-title  margin-top">
@@ -84,6 +93,7 @@
           <icon iconType="info" :size="16" enableHover v-tooltip="intentTypeTooltip"></icon>
         </div>
         <intent-test-list class="intent-list"
+          ref="corpusGroupsWithoutIntent"
           :initialIntentList="corpusGroupsWithoutIntent"
           :intentListType="'withoutIntent'"
           :intentListMode="'result'">
@@ -95,9 +105,11 @@
           <icon iconType="info" :size="16" enableHover v-tooltip="intentTypeTooltip"></icon>
         </div>
         <intent-test-list class="intent-list"
+          ref="intentList"
           :initialIntentList="intentList"
           :intentListType="'withIntent'"
-          :intentListMode="'result'">
+          :intentListMode="'result'"
+          :keyword="searchKeyword">
         </intent-test-list>
       </template>
     </div>
@@ -106,10 +118,12 @@
 </template>
 <script>
 
+import { mapGetters } from 'vuex';
 import IntentTestList from './IntentTestList';
 import SaveRecordPop from './SaveRecordPop';
 import eventBus from '../_utils/eventBus';
 import api from '../_api/intentTest';
+import intentApi from '../_api/intent';
 import general from '../_utils/general';
 
 export default {
@@ -123,6 +137,8 @@ export default {
   data() {
     return {
       searchKeyword: '',
+      keywordTimer: undefined,
+      keywordTimerDelay: 1000, // ms
       searchIntentMode: false,
       record: {},
       allIntents: [],
@@ -132,9 +148,31 @@ export default {
       intentTypeTooltip: {
         msg: this.$t('intent_engine.manage.tooltip.page_info'),
       },
+      downloadOptions: {
+        alignLeft: true,
+        globalFix: false,
+        width: '200px',
+        options: [
+          {
+            text: this.$t('intent_engine.test_record.export_intent_test_corpus'),
+            onclick: () => {
+              this.$api.exportTestRecord(this.record.id);
+            },
+          },
+          {
+            text: this.$t('intent_engine.test_record.export_intent_train_corpus'),
+            onclick: () => {
+              intentApi.exportModel.call(this, this.robotID, this.record.ie_model_version);
+            },
+          },
+        ],
+      },
     };
   },
   computed: {
+    ...mapGetters([
+      'robotID',
+    ]),
     accuracy() {
       const a = ((this.record.tp + this.record.tn) * 100) /
         (this.record.tp + this.record.tn + this.record.fp + this.record.fn);
@@ -168,12 +206,25 @@ export default {
           this.corpusGroupsWithoutIntent.push(intent);
         }
       });
+      if (this.$refs.intentList) {
+        this.$refs.intentList.$emit('renderIntentTestList', this.intentList);
+      }
+      if (this.$refs.corpusGroupsWithoutIntent) {
+        this.$refs.corpusGroupsWithoutIntent.$emit('renderIntentTestList', this.corpusGroupsWithoutIntent);
+      }
+    },
+    searchKeyword() {
+      this.clearKeywordTimer();
+      this.keywordTimer = setTimeout(
+        () => { this.getTestRecord(this.intentTestID); },
+        this.keywordTimerDelay,
+      );
     },
   },
   methods: {
     getTestRecord(intentTestID) {
       this.eventBus.$emit('startLoading');
-      this.$api.getTestRecord(intentTestID).then((data) => {
+      this.$api.getTestRecord(intentTestID, this.searchKeyword).then((data) => {
         // console.log(data);
         const { test_intents, ...record } = data;
         record.tp = record.true_positives;
@@ -191,9 +242,6 @@ export default {
     },
     toPage(path) {
       this.$router.push(`/intent-manage/${path}`);
-    },
-    downloadData() {
-      console.log('downloadData');
     },
     saveRecord() {
       const that = this;
@@ -256,11 +304,20 @@ export default {
       };
       that.$popWarn(option);
     },
+    clearKeywordTimer() {
+      if (this.keywordTimer) {
+        clearTimeout(this.keywordTimer);
+      }
+      this.keywordTimer = undefined;
+    },
   },
   mounted() {
     this.intentTestID = this.$route.params.id;
     this.eventBus.$emit('startLoading');
     this.getTestRecord(this.intentTestID);
+  },
+  beforeDestroy() {
+    this.clearKeywordTimer();
   },
 };
 </script>
@@ -269,10 +326,11 @@ export default {
 #intent-test-record-page{
   display: flex;
   flex-direction: column;
-  min-width: 600px;
-  min-height: 400px;
+  overflow-x: scroll;
+  @include customScrollbar();
   .header {
     flex: 0 0 auto;
+    min-width: 900px;
     height: 60px;
     padding: 0 20px;
     border-bottom: 1px solid $color-borderline-disabled;
@@ -299,7 +357,8 @@ export default {
   .body{
     flex: 1 1 auto;
     display: flex;
-    height: calc(100% - 60px);
+    min-width: 900px;
+    min-height: 540px;
     .statistics-box{
       flex: 0 0 auto;
       display: flex;

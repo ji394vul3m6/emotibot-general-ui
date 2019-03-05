@@ -902,6 +902,7 @@ export default {
     },
     import: {
       title: '導入意圖',
+      note: '將會全量替換意圖，刪除之前所有數據，測試集也只會留下相同的意圖測試題，刪除不同的意圖測試題。',
       choose_file: '請選擇檔案',
       success: '意圖導入成功',
       fail: '意圖導入失敗',
@@ -939,6 +940,8 @@ export default {
       add_new_test_corpus: '加入測試語料',
       robot_predict: '機器預測',
       result_score: '信心分數',
+      show_small_test_corpus_only: '顯示少於{num}筆測試語料',
+      show_result: '顯示測試結果',
     },
     test_records: {
       intent_test_record: '意圖測試記錄',
@@ -971,6 +974,8 @@ export default {
       accuracy: '準確率 Accuracy',
       recall: '召回率 Recall',
       precision: '精確率 Precision',
+      export_intent_test_corpus: '導出意圖測試集',
+      export_intent_train_corpus: '導出意圖訓練語料',
     },
     side_panel: {
       intent_train: '意圖訓練',

@@ -3,6 +3,7 @@ export const intentTrain = {
   namespaced: true,
   state: {
     intentList: [],
+    isTraining: false,
   },
   getters: {
     hasIntents(s) {
@@ -10,6 +11,9 @@ export const intentTrain = {
     },
   },
   mutations: {
+    setIsTraining(s, isTraining) {
+      s.isTraining = isTraining;
+    },
     setIntentList(s, intentList) {
       s.intentList = intentList;
     },
@@ -23,6 +27,7 @@ export const intentTest = {
     intentList: [],
     corpusGroupsWithoutIntent: [],
     searchIntentMode: false,
+    isTesting: false,
   },
   getters: {
     corpusCounts: (s) => {
@@ -50,6 +55,9 @@ export const intentTest = {
     },
   },
   mutations: {
+    setIsTesting(s, isTesting) {
+      s.isTesting = isTesting;
+    },
     setAllIntents(s, allIntents) {
       s.allIntents = allIntents;
     },

@@ -11,8 +11,12 @@ function getTestStatus() {
   return this.$reqGet(`${INTENT_TEST_URL}/status`).then(rsp => rsp.data.result);
 }
 
-function getTestRecord(intentTestId) {
-  return this.$reqGet(`${INTENT_TEST_URL}/${intentTestId}`).then(rsp => rsp.data.result);
+function getTestRecord(intentTestId, keyword) {
+  return this.$reqGet(`${INTENT_TEST_URL}/${intentTestId}`, {
+    params: {
+      keyword,
+    },
+  }).then(rsp => rsp.data.result);
 }
 
 function saveTestRecord(intentTestId, recordName) {
@@ -50,12 +54,20 @@ function restoreTestRecord(intentTestId) {
   return this.$reqPost(`${INTENT_TEST_URL}/${intentTestId}/restore`).then(rsp => rsp.data.result);
 }
 
-function getTestIntents() {
-  return this.$reqGet(INTENT_TEST_DATA_URL).then(rsp => rsp.data.result);
+function getTestIntents(keyword) {
+  return this.$reqGet(INTENT_TEST_DATA_URL, {
+    params: {
+      keyword,
+    },
+  }).then(rsp => rsp.data.result);
 }
 
-function getIntentTestCorpus(intentId) {
-  return this.$reqGet(`${INTENT_TEST_DATA_URL}/${intentId}`).then(rsp => rsp.data.result);
+function getIntentTestCorpus(intentId, keyword) {
+  return this.$reqGet(`${INTENT_TEST_DATA_URL}/${intentId}`, {
+    params: {
+      keyword,
+    },
+  }).then(rsp => rsp.data.result);
 }
 
 function patchIntentTestCorpus(intentId, update, del) {

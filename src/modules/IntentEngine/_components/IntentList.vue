@@ -33,6 +33,10 @@
       </div>
       <transition name="intent-content">
       <div v-if="intent.expand">
+        <div class="corpus-loading-container" v-if="intentContentLoaded===false">
+          <loading-dot :magnify="0.4"></loading-dot>
+        </div>
+        <template v-if="intentContentLoaded===true">
         <div class="intent-block-content">
           <div class="corpus-tools">
             <label-switch
@@ -89,6 +93,7 @@
         <div v-if="getCurTotal(intent) > LIST_PAGE_SIZE" class="intent-block-footer">
           <v-pagination size="small" :total="getCurTotal(intent)" :pageIndex="intent.curPage" :pageSize="LIST_PAGE_SIZE" :layout="['prev', 'pager', 'next', 'jumper']" @page-change="handlePageChange($event, intent)"></v-pagination>
         </div>
+        </template>
       </div>
       </transition>
     </div>
@@ -278,6 +283,7 @@ export default {
       deletedCorpusIds: [],
       updatedCorpus: [],
       addedCorpus: [],
+      intentContentLoaded: false,
     };
   },
   computed: {
@@ -465,10 +471,26 @@ export default {
       }
     },
     expandIntent(intent) {
+      if (intent.expand === true) {
+        return Promise.resolve();
+      }
       const that = this;
-
       that.closeAllIntent();
-      return that.callGetCorpus(intent);
+      if (intent.positiveCount + intent.negativeCount === 0) {
+        intent.corpus = {
+          pos: [],
+          neg: [],
+        };
+        this.corpusBackup = { ...intent.corpus };
+        this.intentContentLoaded = true;
+        intent.expand = true;
+        return Promise.resolve();
+      }
+      this.intentContentLoaded = false;
+      intent.expand = true;
+      return that.callGetCorpus(intent).then(() => {
+        this.intentContentLoaded = true;
+      });
     },
     callGetCorpus(intent) {
       const that = this;
@@ -500,7 +522,6 @@ export default {
           pos: [].concat(intent.corpus.pos),
           neg: [].concat(intent.corpus.neg),
         };
-        intent.expand = true;
         that.toFirstPage(intent);
       })
       .catch((err) => {
@@ -991,7 +1012,13 @@ export default {
         }
       }
     }
-
+    .corpus-loading-container{
+      display: flex;
+      flex-direction: column;
+      height: 100px;
+      align-items: center;
+      justify-content: center;
+    }
     .intent-block-content {
       padding: 10px 20px;
       border-top: 1px solid $color-borderline;

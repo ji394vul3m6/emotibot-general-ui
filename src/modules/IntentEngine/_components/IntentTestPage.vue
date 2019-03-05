@@ -33,18 +33,18 @@
             {{ $t('intent_engine.test_data.intent_num', {inum: intentList.length, cnum: corpusCounts}) }}
           </div>
         </div>
-        <!-- <div class="content-tool-right">
-          <dropdown-select
-            class="option-select"
-            :multi="true"
-            :value="undefined"
-            @input="onSelectOption()"
-            :options="[]"
-            :showCheckedIcon="true"
-            width="64px"
-            :inputBarStyle="optionSelectStyle"
-          />
-        </div> -->
+        <div class="content-tool-right">
+          <div class="view-option-btn" ref="viewOptionsBtn" v-dropdown="viewOptions">
+            <text-button
+              :width="'64px'"
+              :height="'28px'"
+              :icon-type="'header_dropdown_gray'"
+              :iconAlign="'right'"
+              :icon-size="10">
+              {{ $t('intent_engine.test_data.show_button') }}
+            </text-button>
+          </div>
+        </div>
       </div>
       <template v-if="corpusGroupsWithoutIntent.length > 0">
         <div class="intent-list-title">
@@ -56,12 +56,15 @@
           ref="corpusGroupsWithoutIntent"
           :initialIntentList="corpusGroupsWithoutIntent"
           :intentListType="'withoutIntent'"
+          :showEditResult="showResult"
+          :showSmallTestCorpusOnly="showSmallTestCorpusOnly"
+          :keyword="searchKeyword"
           @update="setCorpusGroupsWithoutIntent($event)">
         </intent-test-list>
       <template v-if="intentList.length > 0">
         <div class="intent-list-title" :class="{'margin-top': corpusGroupsWithoutIntent.length > 0}">
           {{ $t('intent_engine.test_data.intent_and_test_corpus') }}
-          <icon iconType="info" :size="16" enableHover v-tooltip="intentListTooltip"></icon>
+          <!-- <icon iconType="info" :size="16" enableHover v-tooltip="intentListTooltip"></icon> -->
         </div>
         <div class="closable-intro" v-if="showClosableIntro">
           {{ $t('intent_engine.test_data.intent_and_test_corpus_tooltip') }}
@@ -72,6 +75,9 @@
           ref="intentList"
           :initialIntentList="intentList"
           :intentListType="'withIntent'"
+          :showEditResult="showResult"
+          :showSmallTestCorpusOnly="showSmallTestCorpusOnly"
+          :keyword="searchKeyword"
           @update="setIntentList($event)">
         </intent-test-list>
     </div>
@@ -82,11 +88,13 @@
 <script>
 
 import { createNamespacedHelpers } from 'vuex';
+import event from '@/utils/js/event';
 import IntentTestList from './IntentTestList';
 import SidePanel from './SidePanel';
 import ImportIntentTestPop from './ImportIntentTestPop';
 import api from '../_api/intentTest';
 import eventBus from '../_utils/eventBus';
+import DropdownMenuCheckBox from './_tableColumn/DropdownMenuCheckBox';
 
 const { mapState, mapGetters, mapMutations } = createNamespacedHelpers('intentTest-module');
 
@@ -104,9 +112,13 @@ export default {
   data() {
     return {
       searchKeyword: '',
+      keywordTimer: undefined,
+      keywordTimerDelay: 1000, // ms
       searchIntentMode: false,
       eventBus: eventBus.eventBus,
-      showClosableIntro: true,
+      showClosableIntro: false,
+      showResult: true,
+      showSmallTestCorpusOnly: false,
       optionSelectStyle: {
         height: '28px',
         'border-radius': '2px',
@@ -116,6 +128,14 @@ export default {
       },
       intentListTooltip: {
         msg: this.$t('intent_engine.test_data.intent_and_test_corpus_tooltip'),
+      },
+      defaultViewOptions: {
+        options: [],
+        alignLeft: true,
+        globalFix: false,
+        width: '200px',
+        optionType: 'custom',
+        hideAfterOptionClicked: false,
       },
     };
   },
@@ -143,8 +163,41 @@ export default {
       //   !this.isTraining && !this.fetchStatusError;
       return true;
     },
+    viewOptions() {
+      const viewOptions = { ...this.defaultViewOptions };
+      viewOptions.options = [
+        {
+          text: this.$t('intent_engine.test_data.show_small_test_corpus_only', { num: 3 }),
+          checked: this.showSmallTestCorpusOnly,
+          onclick: () => {
+            this.showSmallTestCorpusOnly = !this.showSmallTestCorpusOnly;
+          },
+          component: { ...DropdownMenuCheckBox },
+        },
+        {
+          text: this.$t('intent_engine.test_data.show_result'),
+          checked: this.showResult,
+          onclick: () => {
+            this.showResult = !this.showResult;
+          },
+          component: { ...DropdownMenuCheckBox },
+        },
+      ];
+      return viewOptions;
+    },
   },
   watch: {
+    viewOptions() {
+      this.$refs.viewOptionsBtn.dispatchEvent(event.createCustomEvent('dropdown-reload', this.viewOptions));
+      // this.$refs.viewOptionsBtn.dispatchEvent(event.createEvent('dropdown-show'));
+    },
+    searchKeyword() {
+      this.clearKeywordTimer();
+      this.keywordTimer = setTimeout(
+        () => { this.getTestIntents(); },
+        this.keywordTimerDelay,
+      );
+    },
   },
   methods: {
     ...mapMutations([
@@ -154,7 +207,7 @@ export default {
     ]),
     getTestIntents() {
       this.eventBus.$emit('startLoading');
-      this.$api.getTestIntents().then((data) => {
+      this.$api.getTestIntents(this.searchKeyword).then((data) => {
         this.updateAllIntents(data);
         // console.log(this.allIntents);
       }).catch((err) => {
@@ -175,12 +228,6 @@ export default {
           corpusGroupsWithoutIntent.push(intent);
         }
       });
-      // intentList.push({
-      //   id: 0,
-      //   name: 'Intent Name',
-      //   sentences_count: 133,
-      //   type: true,
-      // });
       this.setIntentList(intentList);
       this.$refs.intentList.$emit('renderIntentTestList', this.intentList);
       this.setCorpusGroupsWithoutIntent(corpusGroupsWithoutIntent);
@@ -224,9 +271,18 @@ export default {
     closeTestCorpusIntro() {
       this.showClosableIntro = false;
     },
+    clearKeywordTimer() {
+      if (this.keywordTimer) {
+        clearTimeout(this.keywordTimer);
+      }
+      this.keywordTimer = undefined;
+    },
   },
   mounted() {
     this.getTestIntents();
+  },
+  beforeDestroy() {
+    this.clearKeywordTimer();
   },
 };
 </script>
@@ -235,10 +291,11 @@ export default {
 #intent-test-page{
   display: flex;
   flex-direction: column;
-  min-width: 600px;
-  min-height: 400px;
+  overflow-x: scroll;
+  @include customScrollbar();
   .header {
     flex: 0 0 auto;
+    min-width: 900px;
     height: 60px;
     padding: 0 20px;
     border-bottom: 1px solid $color-borderline-disabled;
@@ -266,6 +323,8 @@ export default {
     flex: 1 1 auto;
     display: flex;
     flex-direction: row;
+    min-width: 900px;
+    min-height: 540px;
     height: calc(100% - 60px);
     .content{
       flex: 1 1 auto;
@@ -331,6 +390,10 @@ export default {
       .intent-list{
         flex: 0 0 auto;
       }
+    }
+    .side-panel{
+      flex: 0 0 auto;
+      width: 270px;
     }
   }
 }

@@ -11,7 +11,7 @@
       </div>
     </div>
     <div class="right-align-header">
-      <search-input v-model="searchKeyword" @focus="inSearchIntentMode"></search-input>
+      <!-- <search-input v-model="searchKeyword" @focus="inSearchIntentMode"></search-input> -->
       <text-button class="return-button" @click="toPage('')">{{ $t('general.go_back') }}</text-button>
     </div>
   </div>
@@ -123,7 +123,7 @@ export default {
       ...recordTableHeader,
     ];
     return {
-      searchKeyword: '',
+      // searchKeyword: '',
       searchIntentMode: false,
       latestRecords: [],
       savedRecords: [],
@@ -161,7 +161,7 @@ export default {
         const intentModel = this.composeModelDownloadLink(record);
         const rtn = {
           intent_test_id: record.intent_test.id,
-          ie_model_id: record.ie_model.id,
+          ie_model_version: record.ie_model.version,
           test_record: testRecord,
           intent_model: intentModel,
           accuracy: this.composeStatData(record, 'accuracy'),
@@ -366,7 +366,7 @@ export default {
       this.$api.exportTestRecord(record.intent_test.id);
     },
     exportModel(record) {
-      intentApi.exportModel.call(this, this.robotID, record.ie_model.id);
+      intentApi.exportModel.call(this, this.robotID, record.ie_model.version);
     },
     toPage(path) {
       this.$router.push(`/intent-manage/${path}`);
@@ -383,10 +383,11 @@ export default {
 #intent-test-record-list-page{
   display: flex;
   flex-direction: column;
-  min-width: 600px;
-  min-height: 400px;
+  overflow-x: scroll;
+  @include customScrollbar();
   .header {
     flex: 0 0 auto;
+    min-width: 900px;
     height: 60px;
     padding: 0 20px;
     border-bottom: 1px solid $color-borderline-disabled;
@@ -414,6 +415,8 @@ export default {
     flex: 1 1 auto;
     display: flex;
     flex-direction: column;
+    min-width: 900px;
+    min-height: 540px;
     overflow-y: scroll;
     @include customScrollbar();
     .block{

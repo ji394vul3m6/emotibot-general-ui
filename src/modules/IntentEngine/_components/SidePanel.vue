@@ -74,7 +74,7 @@
 </template>
 <script>
 
-import { mapState, mapGetters } from 'vuex';
+import { mapState, mapGetters, mapMutations } from 'vuex';
 import event from '@/utils/js/event';
 import intentApi from '../_api/intent';
 import intentTestApi from '../_api/intentTest';
@@ -202,6 +202,12 @@ export default {
     },
   },
   methods: {
+    ...mapMutations('intentTrain-module', {
+      setIsTraining: 'setIsTraining',
+    }),
+    ...mapMutations('intentTest-module', {
+      setIsTesting: 'setIsTesting',
+    }),
     getModels() {
       intentTestApi.getModels.call(this).then((data) => {
         // console.log(data);
@@ -217,7 +223,7 @@ export default {
         },
         callback: {
           ok: () => {
-            that.eventBus.$emit('startLoading', that.$t('intent_engine.is_training'), 'line');
+            that.setIsTraining(true);
             intentApi.startTraining.call(this).then(() => {
               that.trainStatus = TRAIN_STATUS.TRAINING;
             });
@@ -241,7 +247,7 @@ export default {
         callback: {
           ok(modelId) {
             that.eventBus.$emit('startTesting');
-            that.eventBus.$emit('startLoading', that.$t('intent_engine.is_testing'), 'line');
+            that.setIsTesting(true);
             intentTestApi.testIntentTestCorpus.call(that, modelId).then(() => {
               that.testStatus = TEST_STATUS.TESTING;
             });
@@ -267,7 +273,7 @@ export default {
         that.trainStatusChanged(data.status);
       }).catch(() => {
         // console.error(err);
-        this.eventBus.$emit('endLoading');
+        that.setIsTraining(false);
       }).finally(() => {
         if (!that.trainStatusIntervalId && !that.beforeDestroy) {
           that.startPollingTrainStatus();
@@ -277,9 +283,15 @@ export default {
     trainStatusChanged(newStatus) {
       const prevStatus = this.trainStatus;
       this.trainStatus = newStatus;
-      if (prevStatus === undefined) { // run trainStatusChanged for the first time
+      if (prevStatus !== TRAIN_STATUS.TRAINING) { // run trainStatusChanged for the first time
         if (newStatus === TRAIN_STATUS.TRAINING) {
-          this.eventBus.$emit('startLoading', this.$t('intent_engine.is_training'), 'line');
+          this.setIsTraining(true);
+        }
+      }
+
+      if (prevStatus === undefined) {
+        if (newStatus !== TRAIN_STATUS.TRAINING) {
+          this.setIsTraining(false);
         }
       } else if (prevStatus === TRAIN_STATUS.TRAINING) {
         if (newStatus === TRAIN_STATUS.TRAINED) {
@@ -289,9 +301,13 @@ export default {
           this.$notifyFail(this.$('intent_engine.training_fail'));
         }
         if (newStatus !== TRAIN_STATUS.TRAINING) {
-          this.eventBus.$emit('endLoading');
+          this.setIsTraining(false);
         }
       }
+      // console.log('prevStatus');
+      // console.log(prevStatus);
+      // console.log('newStatus');
+      // console.log(newStatus);
     },
     startPollingTestStatus() {
       if (!this.testStatusIntervalId && !this.beforeDestroy) {
@@ -311,7 +327,7 @@ export default {
         that.testStatusChanged(data.status);
       }).catch(() => {
         // console.error(err);
-        this.eventBus.$emit('endLoading');
+        that.setIsTesting(false);
       }).finally(() => {
         if (!that.testStatusIntervalId && !that.beforeDestroy) {
           that.startPollingTestStatus();
@@ -321,9 +337,15 @@ export default {
     testStatusChanged(newStatus) {
       const prevStatus = this.testStatus;
       this.testStatus = newStatus;
-      if (prevStatus === undefined) { // run testStatusChanged for the first time
+      if (prevStatus !== TEST_STATUS.TESTING) { // run testStatusChanged for the first time
         if (newStatus === TEST_STATUS.TESTING) {
-          this.eventBus.$emit('startLoading', this.$t('intent_engine.is_testing'), 'line');
+          this.setIsTesting(true);
+        }
+      }
+
+      if (prevStatus === undefined) {
+        if (newStatus !== TEST_STATUS.TESTING) {
+          this.setIsTesting(false);
         }
       } else if (prevStatus === TEST_STATUS.TESTING) {
         if (newStatus === TEST_STATUS.TESTED) {
@@ -332,9 +354,12 @@ export default {
           this.$notifyFail(this.$t('intent_engine.side_panel.testing_fail'));
         }
         if (newStatus !== TEST_STATUS.TESTING) {
-          this.eventBus.$emit('endLoading');
+          this.setIsTesting(false);
         }
       }
+      // console.log('prevStatus');
+      // console.log(prevStatus);
+      // console.log('newStatus');
       // if (newStatus === TEST_STATUS.TESTING) {
       //   console.log('TEST_STATUS.TESTING');
       // } else if (newStatus === TEST_STATUS.TESTED) {

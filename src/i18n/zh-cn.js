@@ -902,6 +902,7 @@ export default {
     },
     import: {
       title: '导入意图',
+      note: '将会全量替换意图，删除之前所有数据，测试集也只会留下相同的意图测试题，删除不同的意图测试题。',
       choose_file: '请选择档案',
       success: '意图导入成功',
       fail: '意图导入失败',
@@ -939,6 +940,8 @@ export default {
       add_new_test_corpus: '加入测试语料',
       robot_predict: '机器预测',
       result_score: '信心分数',
+      show_small_test_corpus_only: '显示少于{num}笔测试语料',
+      show_result: '显示测试结果',
     },
     test_records: {
       intent_test_record: '意图测试记录',
@@ -971,6 +974,8 @@ export default {
       accuracy: '准确率 Accuracy',
       recall: '召回率 Recall',
       precision: '精确率 Precision',
+      export_intent_test_corpus: '导出意图测试集',
+      export_intent_train_corpus: '导出意图模型训练语料',
     },
     side_panel: {
       intent_train: '意图训练',
