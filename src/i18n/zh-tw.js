@@ -1372,6 +1372,10 @@ export default {
         view: '整合部署查看',
         edit: '整合部署編輯',
       },
+      robot_config: {
+        view: '機器人設定查看',
+        edit: '機器人設定變更',
+      },
     },
   },
   header: {
