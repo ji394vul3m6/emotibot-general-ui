@@ -462,15 +462,24 @@ export default {
     },
     loadLogo() {
       const that = this;
+
+      // load logo of enterprise, if fail, try to load system's logo
       this.$api.getIcon('app', that.enterpriseID).then(() => {
         that.$refs.logo.style.backgroundImage = `url("${that.$api.getIconURL('app', that.enterpriseID)}")`;
-      }, () => {
+      }, () => this.$api.getIcon('app', '').then(() => {
+        that.$refs.logo.style.backgroundImage = `url("${that.$api.getIconURL('app', '')}")`;
+      }))
+      .catch(() => {
         that.$refs.logo.classList.add('default');
         that.$refs.logo.style.backgroundImage = '';
       });
+
       that.$api.getIcon('favicon', that.enterpriseID).then(() => {
         misc.changeFavicon(that.$api.getIconURL('favicon', that.enterpriseID));
-      }, () => {
+      }, () => that.$api.getIcon('favicon', '').then(() => {
+        misc.changeFavicon(that.$api.getIconURL('favicon', ''));
+      }))
+      .catch(() => {
         misc.changeFavicon('/static/favicon.png');
       });
     },
