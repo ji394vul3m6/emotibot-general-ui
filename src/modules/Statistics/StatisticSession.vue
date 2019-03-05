@@ -257,7 +257,9 @@ export default {
       that.searching = true;
       this.$api.getSessionList(that.nowPage, that.nowLimit, filter).then((rsp) => {
         that.tableData = that.fixDataFormat(rsp.data);
-        that.tableHeader = that.fixHeaderFormat(rsp.table_header);
+        if (that.tableHeader === undefined) {
+          that.tableHeader = that.fixHeaderFormat(rsp.table_header);
+        }
         that.recordNum = rsp.total_size;
       })
       .finally(() => {

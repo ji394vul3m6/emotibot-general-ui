@@ -264,6 +264,11 @@ export default {
           that.updateMarkedIcon(that.newQuestion);
           that.updateTableEmptyMsg(that.noSearchResultMsg);
           that.resetAddingQuestion();
+        })
+        .catch((err) => {
+          if (err.error_code === -12) {
+            that.$notifyFail(that.$t('statistics.std_question_exists'));
+          }
         });
         return;
       }

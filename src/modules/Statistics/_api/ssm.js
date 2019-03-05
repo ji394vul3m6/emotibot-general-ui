@@ -29,6 +29,9 @@ function addStdQuestion(appid, question, answer) {
     return this.$reqPost(INSERT_STD_Q_URL, stdQParam);
   })
   .then((rsp) => {
+    if (rsp.data.error_code === -12) {
+      throw rsp.data;
+    }
     const qID = rsp.data.data.actualResults[0];
     const stdAParam = {
       appid,

@@ -169,7 +169,8 @@ export default {
     delete_category_msg: '確定要刪除分類 {name} 及其子分類嗎？',
   },
   statistics: {
-    add_new_std_question: '新增标准问题',
+    std_question_exists: '標準問題已存在',
+    add_new_std_question: '新增標準問題',
     sessions_time: '會話時間',
     session_id: '會話 ID',
     feedback_score: '滿意度分數',
@@ -847,6 +848,7 @@ export default {
     },
   },
   intent_engine: {
+    delete_multi_intent_msg: '確定要刪除所選意圖嗎？',
     train: '意圖訓練',
     is_training: '意圖訓練中',
     is_testing: '意圖測試中',
@@ -1437,6 +1439,10 @@ export default {
       integration: {
         view: '整合部署查看',
         edit: '整合部署編輯',
+      },
+      robot_config: {
+        view: '機器人設定查看',
+        edit: '機器人設定變更',
       },
     },
   },

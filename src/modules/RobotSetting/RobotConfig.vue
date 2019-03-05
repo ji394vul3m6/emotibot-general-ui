@@ -142,7 +142,7 @@ const BFSystemModule = 'bf-env';
 
 export default {
   path: 'robot_config',
-  privCode: 'integration',
+  privCode: 'robot_config',
   displayNameKey: 'robot_config',
   icon: 'white_chat',
   name: 'robot_config',
