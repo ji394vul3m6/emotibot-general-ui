@@ -254,7 +254,7 @@ export default {
     ];
     if (page === 'TriggerEditTab') {
       textFuncs = [
-        'match', 'contains', 'regular_exp', 'intent_parser',
+        'match', 'contains', 'regular_exp', 'user_custom_parser', 'api_parser', 'intent_parser',
       ];
       globalInfoFuncs = [
         'key_val_match', 'key_key_match', 'contain_key', 'not_contain_key', 'list_length_match',
