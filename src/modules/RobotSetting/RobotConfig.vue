@@ -294,6 +294,13 @@ export default {
               alwaysOn: true,
               type: 'number',
             },
+            {
+              key: 'task-engine-web-api-timeout',
+              value: 0,
+              module: '',
+              alwaysOn: true,
+              type: 'number',
+            },
           ],
         },
         {
