@@ -51,6 +51,8 @@ export default {
       title: '任务引擎',
       'task-engine-total-timeout-pre': '当任务引擎超过',
       'task-engine-total-timeout-suf': '毫秒无反应则视为超时',
+      'task-engine-web-api-timeout-pre': '当任务引擎呼叫外部 API 超过',
+      'task-engine-web-api-timeout-suf': '毫秒无反应则视为超时',
     },
     knowledge: {
       title: '知识图谱',
