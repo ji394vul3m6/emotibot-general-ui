@@ -103,12 +103,12 @@ export default {
       ],
       actions: [
         {
-          text: '编辑',
+          text: this.$t('general.edit'),
           type: 'primary',
           onclick: this.popEditUser,
         },
         {
-          text: '刪除',
+          text: this.$t('general.delete'),
           type: 'error',
           onclick: this.deleteUser,
         },

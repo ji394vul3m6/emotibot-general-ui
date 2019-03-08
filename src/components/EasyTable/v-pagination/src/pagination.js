@@ -259,7 +259,7 @@ exports.default = {
                 return h(
                     "span",
                     { "class": "v-page-goto" },
-                    ["\xA0\u524D\u5F80\xA0", h(
+                    [window.vm.$t('components.pagination.goto'), h(
                         "input",
                         {
                             "class": "v-page-goto-input",
@@ -274,7 +274,7 @@ exports.default = {
                             }
                         },
                         []
-                    ), "\xA0\u9875\xA0"]
+                    ), window.vm.$t('components.pagination.page')]
                 );
             }
         }
@@ -333,7 +333,7 @@ exports.default = {
                 var temp = {};
 
                 temp.value = x;
-                temp.label = x + ' 条/页';
+                temp.label = x + ' ' + window.vm.$t('components.pagination.size');
                 if (_this.newPageSize == x) {
                     temp.selected = true;
                 }

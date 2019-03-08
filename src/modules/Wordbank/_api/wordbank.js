@@ -130,7 +130,7 @@ function parseWordbank(wordbank) {
   if (wordbank.layer === 0) {
     // uncategoried
     wordbank.children.splice(0, 0, {
-      name: '未分类',
+      name: window.vm.$t('wordbank.no_category'),
       deletable: false,
       editable: false,
       isActive: false,
@@ -143,7 +143,7 @@ function parseWordbank(wordbank) {
 
     // all
     wordbank.children.splice(0, 0, {
-      name: '全部',
+      name: window.vm.$t('wordbank.all'),
       deletable: false,
       editable: false,
       isActive: false,

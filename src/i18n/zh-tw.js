@@ -1456,4 +1456,11 @@ export default {
   format: {
     tag_format: '僅限10字長內的中文、半形英文與數字',
   },
+  components: {
+    pagination: {
+      size: '條/頁',
+      goto: '前往',
+      page: '頁',
+    },
+  },
 };
