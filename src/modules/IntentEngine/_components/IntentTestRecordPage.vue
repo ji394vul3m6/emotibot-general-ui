@@ -402,7 +402,7 @@ export default {
         align-items: center;
         .link{
           @include font-14px-line-height-28px();
-          cursor: pointer;
+          @include clickable-text();
           color: $app-active-color;
           margin-right: 20px;
         }

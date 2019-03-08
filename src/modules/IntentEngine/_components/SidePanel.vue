@@ -439,8 +439,8 @@ export default {
   .link{
     flex: 0 0 auto;
     @include font-12px-line-height-28px();
-    cursor: pointer;
     color: $app-active-color;
+    @include clickable-text();
   }
   .hint{
     @include font-12px-line-height-28px();

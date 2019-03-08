@@ -400,6 +400,7 @@ export default {
     margin-top: 10px;
     border: 1px solid $color-borderline;
     border-radius: 4px;
+    overflow:hidden;
     transition: all .2s ease-in-out;
     &:hover {
       box-shadow: 0 4px 9px 0 rgba(115, 115, 115, 0.2), 0 5px 8px 0 rgba(228, 228, 228, 0.5);
@@ -483,7 +484,7 @@ export default {
           position: relative;
           margin: 4px 0px 0px 20px;
           &:hover {
-            background-color: $color-disabled;
+            background-color: #f1f1f1;
           }
           .corpus{
             flex: 1 1 auto;
@@ -509,7 +510,7 @@ export default {
             margin-right: 140px;
             width: 50px;
             height: 28px;
-            cursor: pointer;
+            cursor: default;
             .result{
               @include font-14px();
             }
@@ -528,7 +529,7 @@ export default {
             right: 0px;
             display: flex;
             .action{
-              cursor: pointer;
+              @include clickable-text();
               margin-right: 14px;
               @include font-12px-line-height-28px();
             }

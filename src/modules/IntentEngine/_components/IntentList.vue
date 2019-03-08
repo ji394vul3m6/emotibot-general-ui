@@ -1072,11 +1072,11 @@ export default {
             }
             .corpus-action-edit {
               color: $color-primary;
-              cursor: pointer;
+              @include clickable-text();
             }
             .corpus-action-delete {
               color: $color-error;
-              cursor: pointer;
+              @include clickable-text();
             }
           }
         }

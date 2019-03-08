@@ -32,7 +32,7 @@ export default {
     color: $color-font-normal;
   }
   .diff-count{
-    cursor: pointer;
+    @include clickable-text();
     color: $color-primary;
   }
 }

@@ -339,6 +339,7 @@ export default {
         .content-tool-left{
           display: flex;
           flex-direction: row;
+          align-items: center;
           .text-button {
             margin-left: 10px;
             &:first-child {
@@ -346,7 +347,7 @@ export default {
             }
           }
           .intent-count-label {
-            @include font-16px();
+            @include font-14px();
             color: $color-font-mark;
             flex: 1;
             margin-left: 20px;

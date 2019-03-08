@@ -379,3 +379,10 @@ $success-color: #5cd29d;
   word-wrap: break-all;
   overflow: hidden;
 }
+
+@mixin clickable-text() {
+  cursor: pointer;
+  &:hover {
+    text-decoration: underline;
+  }
+}

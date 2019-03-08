@@ -24,7 +24,11 @@ export default {
 #download-link-column {
   display: flex;
   align-items: center;
+  border-bottom: 1px solid transparent;
   cursor: pointer;
+  &:hover {
+    border-bottom: 1px solid $color-primary;
+  }
   .text{
     margin-left: 10px;
     @include font-14px();
