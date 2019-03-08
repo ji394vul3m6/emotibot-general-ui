@@ -47,7 +47,7 @@ export default {
   },
   methods: {
     downloadTemplate() {
-      // window.open(, '_blank');
+      window.open('/Files/intent_test_template.xlsx', '_blank');
     },
     toggleIconHover(bool) {
       this.iconHover = bool;
@@ -146,7 +146,7 @@ export default {
     color: $color-primary;
     margin-bottom: 40px;
     span {
-      cursor: pointer;
+      @include clickable-text();
     }
   }
 }

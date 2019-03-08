@@ -151,7 +151,7 @@ export default {
     color: $color-primary;
     margin-bottom: 40px;
     span {
-      cursor: pointer;
+      @include clickable-text();
     }
   }
 }
