@@ -99,9 +99,7 @@ export default {
         localStorage.setItem('modules', JSON.stringify(showModules));
         this.setEnterprise(enterprise.enterpriseID);
 
-        const robots = that.$getRobots();
         const userRoleMap = JSON.parse(localStorage.getItem('roleMap'));
-        that.setRobotList(robots);
         that.setUserRoleMap(userRoleMap);
         that.setPrivilegeList(that.$getPrivModules());
         that.$router.push(robotListPage);

@@ -58,6 +58,7 @@ import userAPI from '@/manage-modules/_api/user';
 import adminAPI from '@/manage-modules/SystemManage/_api/system';
 import systemAPI from '@/api/system';
 import misc from '@/utils/js/misc';
+import enterpriseAPI from './manage-modules/SystemManage/_api/enterprise';
 
 const defaultPath = '/statistic-dash';
 
@@ -80,7 +81,7 @@ export default {
     'page-menu': PageMenu,
     'user-preference': UserPreference,
   },
-  api: [userAPI, adminAPI, systemAPI],
+  api: [userAPI, adminAPI, systemAPI, enterpriseAPI],
   computed: {
     pageName() {
       return this.$t(this.currentPage.display);
@@ -515,16 +516,72 @@ export default {
         that.setUser(data.id);
         that.setUserInfo(data);
         that.setPrivilegedEnterprise(enterpriseList);
+
         if (data.type !== 0) {
           const robots = that.$getRobots();
           const userRoleMap = JSON.parse(localStorage.getItem('roleMap'));
           that.setRobotList(robots);
           that.setUserRoleMap(userRoleMap);
           that.setPrivilegeList(that.$getPrivModules());
-          // that.setupPages();
         }
-        that.checkPrivilege();
-        that.ready = true;
+
+        let promise = new Promise(r => r());
+        const lastRobot = window.sessionStorage.getItem('appid');
+        const lastEnterprise = window.sessionStorage.getItem('enterprise');
+        if (enterpriseList.findIndex(e => e.id === lastEnterprise) >= 0) {
+          promise = promise
+            .then(() => that.$api.getEnterpriseModules(lastEnterprise))
+            .then((datas) => {
+              const showModules = datas.filter(mod => mod.status);
+              localStorage.setItem('enterprise', lastEnterprise);
+              localStorage.setItem('modules', JSON.stringify(showModules));
+              this.setEnterprise(lastEnterprise);
+            })
+            .then(() => that.$loadRobotOfUser(that.userInfo))
+            .then((robots) => {
+              const robotMap = {};
+              robots.forEach((robot) => {
+                robotMap[robot.id] = robot;
+              });
+              that.setRobotList(robots);
+              const userRoleMap = JSON.parse(localStorage.getItem('roleMap'));
+              that.setUserRoleMap(userRoleMap);
+              that.setPrivilegeList(that.$getPrivModules());
+              return robots;
+            })
+            .then((robots) => {
+              if (robots.findIndex(e => e.id === lastRobot) >= 0) {
+                that.setRobot(lastRobot);
+                let p;
+                if (data.type === 2) {
+                  const roleIDs = that.userRoleMap[lastRobot];
+                  const roleID = roleIDs[0];
+                  const promises = roleIDs.map(id =>
+                    that.$api.getEnterpriseRole(that.enterpriseID, id));
+
+                  p = Promise.all(promises).then((roles) => {
+                    that.setUserRole(roles);
+                  })
+                  .then(() => that.$api.updateBFUserRole(
+                      that.enterpriseID, that.userInfo.id, roleID));
+                } else {
+                  p = new Promise(r => r());
+                }
+                return p
+                  .then(() => that.$reqGet(
+                    `/robot/stare/${lastRobot}?appid=${lastRobot}&user_id=${that.userInfo.id}`))
+                  .then(() => {
+                    that.setRobot(lastRobot);
+                  });
+              }
+              return new Promise(r => r());
+            });
+        }
+
+        promise.then(() => {
+          that.checkPrivilege();
+          that.ready = true;
+        });
       })
       .then(() => {
         that.loadLogo();

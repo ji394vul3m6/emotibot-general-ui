@@ -38,6 +38,8 @@ export const mutations = {
     }
   },
   [types.SET_ROBOT]: (s, appid) => {
+    window.localStorage.setItem('appid', appid);
+    window.sessionStorage.setItem('appid', appid);
     if (s.appid === appid) {
       return;
     }
@@ -49,6 +51,7 @@ export const mutations = {
     }
   },
   [types.SET_ROBOT_LIST]: (s, robotList) => {
+    window.localStorage.setItem('robots', JSON.stringify(robotList));
     s.robotList = {};
 
     robotList.forEach((robot) => {
@@ -60,6 +63,8 @@ export const mutations = {
     }
   },
   [types.SET_ENTERPRISE]: (s, enterpriseID) => {
+    window.localStorage.setItem('enterprise', enterpriseID);
+    window.sessionStorage.setItem('enterprise', enterpriseID);
     if (s.enterpriseID === enterpriseID) {
       return;
     }
