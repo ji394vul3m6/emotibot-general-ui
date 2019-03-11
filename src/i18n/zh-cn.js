@@ -136,6 +136,7 @@ export default {
       robot_chat_skill: '话术设置',
       robot_function: '技能设置',
       robot_command: '指令设置',
+      robot_config: '机器人设定',
       wordbank: '词库',
       task_engine: '任务引擎',
 
