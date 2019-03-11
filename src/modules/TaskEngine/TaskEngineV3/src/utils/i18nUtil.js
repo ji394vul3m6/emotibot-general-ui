@@ -1,7 +1,11 @@
 export default {
   getLocaleMsgs(vueI18n) {
     if (vueI18n) {
-      return vueI18n.messages['zh-cn'];
+      let locale = localStorage.getItem('locale');
+      if (!locale) {
+        locale = 'zh-cn';
+      }
+      return vueI18n.messages[locale];
     }
     return {};
   },
