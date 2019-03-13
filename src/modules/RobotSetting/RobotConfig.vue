@@ -142,7 +142,7 @@ const BFSystemModule = 'bf-env';
 
 export default {
   path: 'robot_config',
-  privCode: 'integration',
+  privCode: 'robot_config',
   displayNameKey: 'robot_config',
   icon: 'white_chat',
   name: 'robot_config',
@@ -289,6 +289,13 @@ export default {
           children: [
             {
               key: 'task-engine-total-timeout',
+              value: 0,
+              module: '',
+              alwaysOn: true,
+              type: 'number',
+            },
+            {
+              key: 'task-engine-web-api-timeout',
               value: 0,
               module: '',
               alwaysOn: true,

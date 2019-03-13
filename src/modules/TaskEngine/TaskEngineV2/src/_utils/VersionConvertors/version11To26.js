@@ -8,6 +8,7 @@ export default {
     return jsonData;
   },
   convertNode(node) {
+    this.convertNodeEdgeElseIntoO2N(node);
     const nodeType = node.nodeType;
     if (nodeType === 'exit') {
       return node;
@@ -82,4 +83,13 @@ export default {
       return conditions;
     });
   },
+  convertNodeEdgeElseIntoO2N(uiNode) {
+    if (uiNode.edgeTab && uiNode.edgeTab.elseInto === uiNode.nodeId) {
+      uiNode.edgeTab.elseInto = 'parseFailedEdge';
+    }
+    if (uiNode.edgeTab2 && uiNode.edgeTab2.elseInto === uiNode.nodeId) {
+      uiNode.edgeTab2.elseInto = 'parseFailedEdge';
+    }
+  },
+
 };

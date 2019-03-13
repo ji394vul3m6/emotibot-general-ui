@@ -51,6 +51,8 @@ export default {
       title: '任務引擎',
       'task-engine-total-timeout-pre': '當任務引擎超過',
       'task-engine-total-timeout-suf': '毫秒無反應則視為超時',
+      'task-engine-web-api-timeout-pre': '當任務引擎呼叫外部 API 超過',
+      'task-engine-web-api-timeout-suf': '毫秒無反應則視為超時',
     },
     knowledge: {
       title: '知識圖譜',
@@ -134,6 +136,7 @@ export default {
       robot_chat_skill: '話術設置',
       robot_function: '技能設置',
       robot_command: '指令設置',
+      robot_config: '機器人設定',
       wordbank: '詞庫',
       task_engine: '任務引擎',
 
@@ -1371,6 +1374,10 @@ export default {
       integration: {
         view: '整合部署查看',
         edit: '整合部署編輯',
+      },
+      robot_config: {
+        view: '機器人設定查看',
+        edit: '機器人設定變更',
       },
     },
   },
