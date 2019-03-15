@@ -136,6 +136,7 @@ export default {
       robot_chat_skill: '話術設置',
       robot_function: '技能設置',
       robot_command: '指令設置',
+      robot_config: '機器人設定',
       wordbank: '詞庫',
       task_engine: '任務引擎',
 
