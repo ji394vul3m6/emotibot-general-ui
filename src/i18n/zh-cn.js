@@ -1463,6 +1463,7 @@ export default {
     pagination: {
       size: '条/页',
       goto: '前往',
+      page: '页',
     },
   },
 };
