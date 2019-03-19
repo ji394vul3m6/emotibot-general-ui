@@ -35,6 +35,8 @@ export const mutations = {
     // If only one enterprise, it is normal user or enterprise admin
     if (keys.length === 1 && s.userInfo.type >= 1) {
       s.enterpriseID = keys[0];
+      window.localStorage.setItem('enterprise', s.enterpriseID);
+      window.sessionStorage.setItem('enterprise', s.enterpriseID);
     }
   },
   [types.SET_ROBOT]: (s, appid) => {
