@@ -26,6 +26,7 @@
   </div>
 </template>
 <script>
+import { mapGetters } from 'vuex';
 
 export default {
   data() {
@@ -50,9 +51,14 @@ export default {
       }
     },
   },
+  computed: {
+    ...mapGetters([
+      'showLanguage',
+    ]),
+  },
   methods: {
     downloadTemplate() {
-      window.open('/Files/intent_template.xlsx', '_blank');
+      window.open(`/Files/intent_template.xlsx?locale=${this.showLanguage}`, '_blank');
     },
     toggleIconHover(bool) {
       this.iconHover = bool;

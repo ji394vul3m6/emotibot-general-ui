@@ -135,9 +135,6 @@ http {
         location /php {
             proxy_pass http://${REMOTE_IP};
         }
-        location /Files {
-            proxy_pass http://${REMOTE_IP};
-        }
         location /auth {
             proxy_pass http://${AUTH_IP};
         }
@@ -232,6 +229,9 @@ http {
             proxy_pass http://${REMOTE_IP};
         }
 
+        location /Files {
+            proxy_pass http://${API_IP};
+        }
         location /api {
             proxy_pass http://${API_IP};
         }

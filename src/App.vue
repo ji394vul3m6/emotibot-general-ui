@@ -617,6 +617,7 @@ export default {
   },
   mounted() {
     this.setup();
+    this.setLanguage(this.$i18n.locale);
   },
 };
 </script>
