@@ -25,7 +25,7 @@ export default {
   },
   watch: {
     recordName() {
-      if (this.recordName !== '') {
+      if (this.recordName.trim() !== '') {
         this.$emit('enableOK');
       } else {
         this.$emit('disableOK');
@@ -34,8 +34,9 @@ export default {
   },
   methods: {
     validate() {
-      if (this.recordName) {
-        this.$emit('validateSuccess', this.recordName);
+      const name = this.recordName.trim();
+      if (name) {
+        this.$emit('validateSuccess', name);
       }
     },
   },
