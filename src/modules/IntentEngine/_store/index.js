@@ -28,6 +28,7 @@ export const intentTest = {
     corpusGroupsWithoutIntent: [],
     searchIntentMode: false,
     isTesting: false,
+    lastPath: '',
   },
   getters: {
     corpusCounts: (s) => {
@@ -66,6 +67,9 @@ export const intentTest = {
     },
     setCorpusGroupsWithoutIntent(s, corpusGroups) {
       s.corpusGroupsWithoutIntent = corpusGroups;
+    },
+    setLastPath(s, path) {
+      s.lastPath = path;
     },
   },
 };

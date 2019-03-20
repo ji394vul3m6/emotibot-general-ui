@@ -2,7 +2,7 @@
 <div id="intent-test-page" class="card w-fill h-fill">
   <div class="header">
     <div class="breadcrumb">
-      <div class="header-title" @click="toPage('');" style="cursor: pointer;">
+      <div class="header-title" @click="goToPage(-1)" style="cursor: pointer;">
         {{ $t('pages.intent_engine.intent_manage') }}
       </div>
       <icon iconType="month_right" :size="18" style="margin: 0px 10px;"></icon>
@@ -12,7 +12,7 @@
     </div>
     <div class="right-align-header">
       <search-input v-model="searchKeyword" @focus="inSearchIntentMode"></search-input>
-      <text-button class="return-button" @click="toPage('')">{{ $t('general.go_back') }}</text-button>
+      <text-button class="return-button" @click="goToPage(-1)">{{ $t('general.go_back') }}</text-button>
     </div>
   </div>
   <div class="body">
@@ -238,6 +238,9 @@ export default {
     },
     toPage(path) {
       this.$router.push(`/intent-manage/${path}`);
+    },
+    goToPage(steps) {
+      this.$router.go(steps);
     },
     exportIntentTestList() {
       if (!this.allowExport) return;

@@ -207,6 +207,7 @@ export default {
     }),
     ...mapMutations('intentTest-module', {
       setIsTesting: 'setIsTesting',
+      setLastPath: 'setLastPath',
     }),
     getModels() {
       intentTestApi.getModels.call(this).then((data) => {
@@ -373,6 +374,11 @@ export default {
       // }
     },
     toPage(path) {
+      if (this.mode === 'trainPage') {
+        this.setLastPath('train');
+      } else if (this.mode === 'testPage') {
+        this.setLastPath('test');
+      }
       this.$router.push(`/intent-manage/${path}`);
     },
     showTrainBtnTooltip(e) {
