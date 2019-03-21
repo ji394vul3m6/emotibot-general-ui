@@ -361,7 +361,9 @@ export default {
           ok: () => {
             that.eventBus.$emit('startLoading', that.$t('intent_engine.is_restoring'), 'line');
             that.$api.restoreTestRecord(record.intent_test.id).then(() => {
-              that.toPage('test');
+              that.$notify({ text: this.$t('intent_engine.restore_success') });
+            }).catch(() => {
+              that.$notifyFail(this.$('intent_engine.restore_fail'));
             }).finally(() => {
               that.eventBus.$emit('endLoading');
             });

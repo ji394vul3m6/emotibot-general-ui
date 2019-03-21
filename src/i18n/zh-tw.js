@@ -858,6 +858,8 @@ export default {
     is_restoring: '還原意圖模型與測試集',
     training_success: '意圖訓練成功',
     training_fail: '意圖訓練失敗',
+    restore_success: '還原模型與測試集成功',
+    restore_fail: '還原模型與測試集失敗',
     version_not_exist: '意圖版本不存在',
     manage: {
       delete_intents: '批量刪除',

@@ -256,7 +256,6 @@ export default {
         callback: {
           ok(recordName) {
             that.eventBus.$emit('startLoading');
-            // that.eventBus.$emit('startLoading', that.$t('intent_engine.is_restoring'), 'dot');
             that.$api.saveTestRecord(this.$route.params.id, recordName).then(() => {
               that.getTestRecord(that.intentTestID);
             }).catch((err) => {
@@ -298,7 +297,9 @@ export default {
           ok: () => {
             that.eventBus.$emit('startLoading', that.$t('intent_engine.is_restoring'), 'line');
             that.$api.restoreTestRecord(this.$route.params.id).then(() => {
-              that.toPage('test');
+              that.$notify({ text: this.$t('intent_engine.restore_success') });
+            }).catch(() => {
+              that.$notifyFail(this.$('intent_engine.restore_fail'));
             }).finally(() => {
               that.eventBus.$emit('endLoading');
             });
