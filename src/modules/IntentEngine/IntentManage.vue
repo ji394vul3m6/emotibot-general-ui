@@ -18,10 +18,10 @@
 import { mapState } from 'vuex';
 import eventBus from './_utils/eventBus';
 
-const IntentTrainPage = () => import('./_components/IntentTrainPage');
-const IntentTestPage = () => import('./_components/IntentTestPage');
-const IntentTestRecordListPage = () => import('./_components/IntentTestRecordListPage');
-const IntentTestRecordPage = () => import('./_components/IntentTestRecordPage');
+import IntentTrainPage from './_components/IntentTrainPage';
+import IntentTestPage from './_components/IntentTestPage';
+import IntentTestRecordListPage from './_components/IntentTestRecordListPage';
+import IntentTestRecordPage from './_components/IntentTestRecordPage';
 
 export default {
   path: 'intent-manage',
