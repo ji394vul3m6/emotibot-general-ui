@@ -130,11 +130,9 @@ export default {
         && !this.isWordbankNameDuplicate;
     },
     isWordbankNameEmpty() {
-      this.wordbankName = this.wordbankName.trim();
-      return this.wordbankName === '';
+      return this.wordbankName.trim() === '';
     },
     isWordbankNameTooLong() {
-      this.wordbankName = this.wordbankName.trim();
       return this.wordbankName.length > this.lengthLimit;
     },
     isWordbankNameDuplicate() {
@@ -311,7 +309,7 @@ export default {
       }
       const editedWordbank = {
         wid: this.wid,
-        name: this.wordbankName,
+        name: this.wordbankName.trim(),
         similar_words: this.synonyms,
         answer: this.sensitiveAnswer,
       };
