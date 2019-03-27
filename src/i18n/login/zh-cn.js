@@ -24,7 +24,7 @@ export default {
     no_filterable_option: '无筛选结果',
     reset: '重置',
     chat_test: '对话测试',
-    custom: '自定义',
+    custom: '更多',
     yes: '是',
     no: '否',
     empty: '无',
