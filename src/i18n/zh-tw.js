@@ -792,6 +792,7 @@ export default {
     group_basic: '基本話術',
     group_timeout: '答案失效話術',
     group_emotion: '情緒相關話術',
+    group_human: '轉人工話術',
     save_success_msg: '保存{item}成功',
     add_new_msg: '新增個{item}吧',
     errorDuplicate: '內容已存在',
