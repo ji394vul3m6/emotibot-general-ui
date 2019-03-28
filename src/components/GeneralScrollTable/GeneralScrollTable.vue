@@ -789,6 +789,7 @@ $table-action-width: 80px;
     .tbody {
       flex: 1;
       position: relative;
+      overflow: hidden;
       .table-layout-left {
         overflow-y: hidden;
       }
