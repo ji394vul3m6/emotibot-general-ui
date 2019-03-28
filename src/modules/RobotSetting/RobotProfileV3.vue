@@ -341,6 +341,9 @@ export default {
         return;
       }
       that.robotQAs.forEach((qa) => {
+        if (qa.expand) {
+          qa.show_answer = qa.answers[0].content;
+        }
         qa.expand = false;
       });
       robotQA.expand = true;
