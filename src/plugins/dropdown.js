@@ -1,10 +1,7 @@
 import DropdownMenu from '../components/basic/DropdownMenu';
+import util from '../utils/js/misc';
 
 const dropdownMap = {};
-
-function randomID() {
-  return parseInt(Math.random() * 100000, 10).toString();
-}
 
 const MyPlugin = {
   getPosition(el, alignLeft) {
@@ -64,7 +61,7 @@ const MyPlugin = {
           const body = document.querySelector('body');
           const useGlobal = binding.value.globalFix;
           if (useGlobal) {
-            const tempID = randomID();
+            const tempID = util.randomID();
             el.dataset.id = tempID;
             dropdownMap[tempID] = vm;
 

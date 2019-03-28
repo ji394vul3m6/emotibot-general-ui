@@ -89,6 +89,10 @@ function getParameterByName(name, url) {
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
 
+function randomID() {
+  return parseInt(Math.random() * 100000, 10).toString();
+}
+
 export default {
   useIE,
   isEllipsisActive,
@@ -98,4 +102,5 @@ export default {
   copyToClipboard,
   changeFavicon,
   getParameterByName,
+  randomID,
 };
