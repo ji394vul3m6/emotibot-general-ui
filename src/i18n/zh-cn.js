@@ -445,7 +445,7 @@ export default {
       datetime: {
         title: '生效时间',
         forever: '永远',
-        custom: '更多',
+        custom: '自定义',
       },
       reply: {
         title: '回复内容',
@@ -1122,7 +1122,7 @@ export default {
     no_filterable_option: '无筛选结果',
     reset: '重置',
     chat_test: '对话测试',
-    custom: '更多',
+    custom: '自定义',
     yes: '是',
     no: '否',
     empty: '无',
