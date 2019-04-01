@@ -95,6 +95,16 @@
             </div>
             </template>
             </template>
+            <template v-if="config.relatives">
+            <div class="row">
+              <div class="row-title">{{ $t('robot_config.relative') }}</div>
+              <div>
+                <div v-for="relative in config.relatives" :key="relative.url">
+                  <div class="relative-link" @click="$router.push(relative.url)">{{ relative.text }}</div>
+                </div>
+              </div>
+            </div>
+            </template>
           </div>
         </template>
       </div>
@@ -353,6 +363,12 @@ export default {
               end_key: 'to-human-end-time',
               begin: '',
               end: '',
+            },
+          ],
+          relatives: [
+            {
+              text: this.$t('robot_config.to-human.words-link'),
+              url: '/robot-chat-skill?page=human',
             },
           ],
         },
@@ -722,6 +738,10 @@ export default {
           border-radius: 12px;
         }
       }
+    }
+    .relative-link {
+      @include click-button();
+      color: $color-primary;
     }
   }
 }

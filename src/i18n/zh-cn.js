@@ -2,6 +2,7 @@ export default {
   robot_config: {
     robot_config: '系统功能配置',
     config_content_error: '设定内容错误',
+    relative: '其他设定',
     ssm: {
       title: '问答',
       'ssm_context_support-info': '在常用问答中使用上下文',
@@ -46,10 +47,12 @@ export default {
       'to-human-work-suf': '以外时，使用非工作时间话术',
 
       'to-human-emotion-info': '当识别用户情绪愤怒或不满时启动转人工',
-      'to-human-faq-label-info': '当用户问题匹配到系统设置的一条或多条标准问时启动转人工',
+      'to-human-faq-label-info': '当用户问题匹配到的标准问有 HUMAN 标签时启动转人工',
       'to-human-intent-info': '意图引擎中存在转人工，并成功触发时启动转人工',
       'human-intent-info': '系统预设转人工意图触发时启动转人工',
-      'to-human-keyword-info': '机器人识别用户问题包含关键词时转人工',
+      'to-human-keyword-info': '机器人识别用户问题包含转人工词库中的关键词时转人工',
+
+      'words-link': '转人工话术设置',
     },
     rule: '规则设置',
     faq: {

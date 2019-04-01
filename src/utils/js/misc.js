@@ -76,6 +76,19 @@ function changeFavicon(src) {
   document.head.appendChild(link);
 }
 
+function getParameterByName(name, url) {
+  let useURL = url;
+  if (!useURL) {
+    useURL = window.location.href;
+  }
+  const useName = name.replace(/[[]]/g, '\\$&');
+  const regex = new RegExp(`[?&]${useName}(=([^&#]*)|&|#|$)`);
+  const results = regex.exec(useURL);
+  if (!results) return null;
+  if (!results[2]) return '';
+  return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
 export default {
   useIE,
   isEllipsisActive,
@@ -84,4 +97,5 @@ export default {
   getBrowserLanguage,
   copyToClipboard,
   changeFavicon,
+  getParameterByName,
 };

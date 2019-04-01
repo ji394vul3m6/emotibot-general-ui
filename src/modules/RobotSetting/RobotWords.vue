@@ -49,6 +49,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import misc from '@/utils/js/misc';
 import NavBar from '@/components/NavigationBar';
 import EditPop from './_components/RobotWordsEdit';
 import api from './_api/chatskill';
@@ -72,7 +73,7 @@ export default {
   api,
   data() {
     return {
-      currentPage: 'basic',
+      currentPage: '',
       pageMap: {
         basic: this.$t('chat_skill.group_basic'),
         emotion: this.$t('chat_skill.group_emotion'),
@@ -184,6 +185,17 @@ export default {
         that.$emit('endLoading');
       });
     },
+    setupPage() {
+      const target = misc.getParameterByName('page');
+      if (target in pageGroup) {
+        this.currentPage = target;
+      } else {
+        this.currentPage = 'basic';
+      }
+    },
+  },
+  beforeMount() {
+    this.setupPage();
   },
   mounted() {
     this.loadRobotWords();
