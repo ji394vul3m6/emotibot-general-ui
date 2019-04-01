@@ -59,7 +59,7 @@
                     <template v-else>
                       <template v-if="child.type === 'threshold'">
                       {{ $t(`robot_config.${config.key}.${child.key}-pre`) }}
-                      <input v-model="editNumber" ref="edit-input" type="number" max="100" min="0"
+                      <input v-model="editNumber" ref="edit-input" type="number" max="101" min="0"
                         @keyup.enter="finishEdit(child)" @input="checkThreshold(config)" @blur="cancelEditConfig" @keyup.esc="cancelEditConfig">
                       {{ $t(`robot_config.${config.key}.${child.key}-suf`) }}
                       </template>
@@ -143,6 +143,7 @@ function setConfigWithMap(config, configMap) {
         return;
       }
       config.value = target.threadholds;
+      config.status = configMap.ssm_config.status;
     } catch (err) {
       console.log(err);
     }
@@ -206,7 +207,7 @@ export default {
       editNumber: 0,
       editString: '',
       minThreshold: 0,
-      maxThreshold: 100,
+      maxThreshold: 101,
       configs: [
         {
           key: 'ssm',
@@ -509,6 +510,7 @@ export default {
           });
           mainConfig.hasValidChildren = mainConfig.children.reduce(
             (val, child) => val || child.status, false);
+          mainConfig.status = mainConfig.status || mainConfig.hasValidChildren;
         });
 
         datas.forEach((config) => {
