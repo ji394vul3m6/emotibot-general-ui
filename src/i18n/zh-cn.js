@@ -36,8 +36,20 @@ export default {
     context: {
       title: '技能上下文',
     },
-    'human-intent': {
+    'to-human': {
       title: '转人工',
+      'to-human-backfill-pre': '当机器人连续',
+      'to-human-backfill-suf': '次无法回答用户问题时启动转人工',
+      'to-human-faq-repeat-q-pre': '当用户连续',
+      'to-human-faq-repeat-q-suf': '次匹配到同一标准问时启动转人工',
+      'to-human-work-pre': '在工作时间',
+      'to-human-work-suf': '以外时，使用非工作时间话术',
+
+      'to-human-emotion-info': '当识别用户情绪愤怒或不满时启动转人工',
+      'to-human-faq-label-info': '当用户问题匹配到系统设置的一条或多条标准问时启动转人工',
+      'to-human-intent-info': '意图引擎中存在转人工，并成功触发时启动转人工',
+      'human-intent-info': '系统预设转人工意图触发时启动转人工',
+      'to-human-keyword-info': '机器人识别用户问题包含关键词时转人工',
     },
     rule: '规则设置',
     faq: {

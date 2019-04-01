@@ -3,8 +3,8 @@
     <div class="card w-fill h-fill">
       <nav-bar :options=pageMap v-model="currentPage"></nav-bar>
       <div class="words-list">
-        <div class="words"
-          v-for="words in wordsList" :key="words.type"
+        <template v-for="words in wordsList">
+        <div class="words" :key="words.type"
           v-if="words.page === currentPage">
           <div class="words-title">
             <div class="title-text">{{ words.name }}</div>
@@ -41,6 +41,7 @@
             </div>
           </div>
         </div>
+        </template>
       </div>
     </div>
   </div>
@@ -53,9 +54,10 @@ import EditPop from './_components/RobotWordsEdit';
 import api from './_api/chatskill';
 
 const pageGroup = {
-  basic: [1, 2, 3, 4, 5, 6, 12, 13],
+  basic: [1, 2, 3, 4, 5, 6, 12],
   emotion: [9, 10, 11],
   timeout: [7, 8],
+  human: [13, 14, 15, 16, 17, 18, 19, 20],
 };
 
 export default {
@@ -75,6 +77,7 @@ export default {
         basic: this.$t('chat_skill.group_basic'),
         emotion: this.$t('chat_skill.group_emotion'),
         timeout: this.$t('chat_skill.group_timeout'),
+        human: this.$t('chat_skill.group_human'),
       },
       wordsList: [],
     };

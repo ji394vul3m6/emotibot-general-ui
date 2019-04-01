@@ -89,6 +89,9 @@ export default {
     isSecondFormat() {
       return this.format === 'HH:mm:ss';
     },
+    isFocus() {
+      return this.showDropdown;
+    },
   },
 
   watch: {
@@ -573,6 +576,8 @@ export default {
         } else if (type === 'apm') {
           this.apm = value;
         }
+        console.log('here');
+        this.$refs.input.select();
       });
     },
 
@@ -589,17 +594,18 @@ export default {
     clickOrScrollOutside(event) {
       if (this.$el && !this.$el.contains(event.target)) {
         this.toggleDropdown();
+        this.$emit('inputBlur');
       }
       return false;
     },
-    selectAllText(event) {
-      event.target.select();
+    selectAllText(target) {
+      target.select();
     },
     clickInput(event) {
       this.reposition();
       this.toggleDropdown(event);
       if (this.showDropdown) {
-        this.selectAllText(event);
+        this.selectAllText(event.target);
       }
     },
     reposition() {
@@ -628,6 +634,21 @@ export default {
         obj[key] = this.value[key];
       });
     },
+    focus() {
+      const that = this;
+      that.reposition();
+      that.$nextTick(() => {
+        that.showDropdown = true;
+        that.addEventListeners();
+        that.selectAllText(that.$refs.input);
+      });
+    },
+    tabHandler(e) {
+      const that = this;
+      that.$emit('tab', e);
+      that.showDropdown = false;
+      that.removeEventListeners();
+    },
   },
 
   mounted() {
@@ -655,6 +676,11 @@ export default {
     type="text"
     :readonly="readonly"
     :placeholder="placeholder"
+    @keyup.esc="$emit('cancel')"
+    @keyup.enter="$emit('finish')"
+    @keydown.tab="$event.preventDefault()"
+    @keyup.tab="tabHandler"
+    ref="input"
   />
   <span class="clear-btn" v-if="!hideClearButton" v-show="!showDropdown && showClearBtn" @click.stop="clearTime">&times;</span>
   <div class="dropdown" v-show="showDropdown" :style="listStyle">
