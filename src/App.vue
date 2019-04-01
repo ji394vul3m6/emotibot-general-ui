@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" @mousemove="checkDragSpliter" @mouseup="endDragSpliter">
     <div :class="{blur: isBackgroundBlur}">
       <div id="app-logo" :class="$i18n.locale" ref="logo"></div>
       <page-header v-if="ready"></page-header>
@@ -18,8 +18,9 @@
         <router-view class="app-body" :class="{iframe: isIFrame}" @startLoading="startLoading" @endLoading="endLoading"/>
       </div>
       <transition name="slide-in">
-      <div id="chat-test-pop" :class="{show: isChatOpen}">
-        <component :is="testComponent"></component>
+      <div id="chat-test-pop" :style="{width: `${testWidth}px`, right: isChatOpen ? 0 : `${-1 * testWidth}px`}">
+        <div class="spliter" @mousedown="startDragSpliter"></div>
+        <component :is="testComponent" style="flex: 1"></component>
       </div>
       </transition>
       </template>
@@ -119,6 +120,8 @@ export default {
       testComponent: QATest,
       checkCookieMs: 5000,
       checkCookieLoop: undefined,
+      draging: false,
+      testWidth: 700,
     };
   },
   watch: {
@@ -614,6 +617,19 @@ export default {
 
       window.addEventListener('keydown', that.debugListener);
     },
+    startDragSpliter() {
+      this.draging = true;
+    },
+    checkDragSpliter(e) {
+      if (!this.draging) {
+        return;
+      }
+      this.testWidth = e.screenX * -1;
+      console.log(e);
+    },
+    endDragSpliter() {
+      this.draging = false;
+    },
   },
   mounted() {
     this.setup();
@@ -643,13 +659,16 @@ export default {
 
 #chat-test-pop {
   position: fixed;
-  right: -700px;
+  // right: -700px;
   top: 0;
   height: 100vh;
-  width: 700px;
+  // width: 500px;
+  min-width: 300px;
+  max-width: 700px;
   background: #EEEEEE;
   box-shadow: 0 0 5px #CCCCCC;
   transition: right 1s;
+  display: flex;
   &.show {
     right: 0px;
   }
@@ -665,6 +684,12 @@ export default {
   }
   &.slide-in-enter-to, &.slide-in-leave {
     right: 0;
+  }
+
+  .spliter {
+    width: 4px;
+    margin-left: -4px;
+    cursor: col-resize;
   }
 }
 #app-page {
