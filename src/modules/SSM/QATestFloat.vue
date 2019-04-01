@@ -19,47 +19,11 @@
         </div>
       </div>
     </div>
-    <div class="list" ref="qaBox">
-      <div v-for="(data, idx) in chatData" :key="idx" :class="data.role" class="chat-box">
-        <div class="chat-image" v-if="data.role !== 'user'">
-          <div class="robot-icon">
-            <icon :size=24 icon-type="robot"></icon>
-          </div>
-        </div>
-        <div class="chat-item">
-          <template v-if="data.content.type === 'text' && data.content.subType === 'text'">
-            <template v-if="data.html">
-              <div class="chat-content" v-html="data.content.value">
-              </div>
-            </template>
-            <template v-else>
-              <div class="chat-content">{{data.content.value}}</div>
-            </template>
-          </template>
-          <template v-if="data.content.type === 'text' && (data.content.subType === 'guslist' || data.content.subType === 'relatelist')">
-            <div class="chat-content">{{ data.content.value }}
-              <div v-for="(sentence, idx) in data.content.data" :key="sentence" @click="sendUserText(sentence, true)" class='click-text'>
-                {{ idx + 1 }}. {{ sentence }}
-              </div>
-            </div>
-          </template>
-          <template v-if="data.content.type === 'cmd'">
-            <div class="chat-content"> 
-            [{{ $t('qatest.cmd') }}]：
-            {{ $t(`qatest.cmdlist.${data.content.subType}`) !== `qatest.cmdlist.${data.content.subType}`
-            ? $t(`qatest.cmdlist.${data.content.subType}`) : data.content.subType }}
-            </div>
-          </template>
-          <div class="chat-time">{{ data.time }}</div>
-          <div class="chat-analysis" v-if="data.analysis !== undefined && data.role === 'user'" >
-            <div>[{{ $t('qatest.intent') }}]：{{ data.analysis.intent }}</div>
-            <div>[{{ $t('qatest.emotion') }}]：{{ data.analysis.emotion }}</div>
-            <div>[{{ $t('qatest.module') }}]：{{ data.analysis.module }}</div>
-            <div>[{{ $t('qatest.token') }}]：{{ data.analysis.tokens }}</div>
-          </div>  
-        </div>
-      </div>
-    </div>
+    
+    <chat-list :records="chatData" ref="chatList"
+      v-if="chatData.length > 0"
+      :convert-record-to-chat-data=false
+      :default-show-analysis="showAnalysis"/>
     <div class="input">
       <div class="dimension">
         <text-button @click="selectDimension">{{ $t('qatest.dimension') }}</text-button>
@@ -82,10 +46,14 @@ import { mapGetters } from 'vuex';
 import moment from 'moment';
 import DimensionSelector from '@/components/DimensionSelector';
 import tagAPI from '@/api/tagType';
+import ChatList from '@/components/ChatList';
 import api from '../FAQ/_api/qatest';
 
 export default {
   api: [api, tagAPI],
+  components: {
+    ChatList,
+  },
   computed: {
     ...mapGetters([
       'robotName',
@@ -109,6 +77,15 @@ export default {
       chatData: [],
       tagTypes: [],
     };
+  },
+  watch: {
+    showAnalysis() {
+      if (this.showAnalysis) {
+        this.$refs.chatList.$emit('show-analysis');
+      } else {
+        this.$refs.chatList.$emit('hide-analysis');
+      }
+    },
   },
   mounted() {
     const that = this;
@@ -283,7 +260,8 @@ export default {
       return chatNode;
     },
     scrollToBottom() {
-      this.$refs.qaBox.scrollTop = this.$refs.qaBox.scrollHeight;
+      // this.$refs.qaBox.scrollTop = this.$refs.qaBox.scrollHeight;
+      this.$refs.chatList.$emit('scroll-bottom');
     },
   },
 };
