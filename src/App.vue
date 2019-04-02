@@ -18,9 +18,10 @@
         <router-view class="app-body" :class="{iframe: isIFrame}" @startLoading="startLoading" @endLoading="endLoading"/>
       </div>
       <transition name="slide-in">
-      <div id="chat-test-pop" :style="{width: `${testWidth}px`, right: isChatOpen ? 0 : `${-1 * testWidth}px`}">
+      <div id="chat-test-pop" :style="{right: isChatOpen ? 0 : `${-1 * testWidth}px`}">
         <div class="spliter" @mousedown="startDragSpliter"></div>
-        <component :is="testComponent" style="flex: 1"></component>
+        <component :is="testComponent" :style="{width: `${testWidth}px`, 'flex-basis': `${testWidth}px`}"
+          style="flex-shrink: 0; flex-grow: 0;"></component>
       </div>
       </transition>
       </template>
@@ -626,7 +627,13 @@ export default {
       if (!this.draging) {
         return;
       }
-      this.testWidth = screen.width - e.x;
+      let width = screen.width - e.x;
+      if (width < 300) {
+        width = 300;
+      } else if (width > 700) {
+        width = 700;
+      }
+      this.testWidth = width;
     },
     endDragSpliter() {
       this.draging = false;
@@ -688,6 +695,7 @@ export default {
   }
 
   .spliter {
+    flex: 0 0 4px;
     width: 4px;
     margin-left: -4px;
     cursor: col-resize;
