@@ -617,15 +617,16 @@ export default {
 
       window.addEventListener('keydown', that.debugListener);
     },
-    startDragSpliter() {
+    startDragSpliter(e) {
       this.draging = true;
+      e.stopPropagation();
+      e.preventDefault();
     },
     checkDragSpliter(e) {
       if (!this.draging) {
         return;
       }
-      this.testWidth = e.screenX * -1;
-      console.log(e);
+      this.testWidth = screen.width - e.x;
     },
     endDragSpliter() {
       this.draging = false;
