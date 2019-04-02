@@ -119,7 +119,7 @@ export default {
       ].concat(options);
     },
     addEdge() {
-      const edge = scenarioInitializer.initialEdge();
+      const edge = scenarioInitializer.initialEdge('global_normal');
       edge.id = this.$uuid.v1();
       edge.valid = false;
       this.globalEdges.push(edge);
