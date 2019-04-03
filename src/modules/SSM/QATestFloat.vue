@@ -236,6 +236,11 @@ export default {
         if (answerObj === null) {
           throw String('Not object');
         }
+
+        if (!('type' in answerObj && 'subType' in answerObj)) {
+          throw String('Not valid answer object');
+        }
+
         // transform old format in openAPI
         // TODO: check all format alive to parse
         if (oldAnswerFormat) {
