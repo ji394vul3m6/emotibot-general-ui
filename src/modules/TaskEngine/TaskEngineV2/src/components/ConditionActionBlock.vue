@@ -15,7 +15,7 @@
       <div class="to-node">{{ toNodeText }}</div>
       {{ $t('task_engine_v2.condition_action_block.condition_action', { condition: rules.length, action: actions.length + 1}) }}
     </span>
-    <button 
+    <button
       class="delete"
       v-if="edgeType!=='pc_succeed' && edgeType!=='pc_failed' && edgeType!=='virtual_global_edges'"
       @click="deleteEdge">
@@ -31,7 +31,7 @@
       <div class="title" v-t="'task_engine_v2.condition_action_block.condition_setup'"></div>
       <div class="dropdown-select-container">
         {{ $t('task_engine_v2.condition_action_block.match') }}
-        <dropdown-select 
+        <dropdown-select
           class="dropdown-select"
           :options="conditionOptions"
           :showCheckedIcon="false"
@@ -181,9 +181,9 @@
             </div>
             <div class="row">
               <span class="label" v-t="'task_engine_v2.condition_action_block.label_value'"></span>
-              <input 
-                class="input-content" 
-                ref="input-content" 
+              <input
+                class="input-content"
+                ref="input-content"
                 v-tooltip="inputTooltip"
                 oninput="this.value = this.value.replace(/[^0-9]/g, '');"
                 v-model="rule.content.val"
@@ -329,8 +329,8 @@
               </div>
               <div class="row">
                 <span class="label"></span>
-                <button 
-                  class="add-new-row" 
+                <button
+                  class="add-new-row"
                   v-t="'task_engine_v2.condition_action_block.add_target_key'"
                   @click="action.content.operations.push({index: 0, key: '', operation: 'set_to_global_info'})">
                 </button>
@@ -483,8 +483,8 @@
                 <template v-if="action.content.tags === NLUParserMap.SELECT_CUSTOMIZE_OPTIONS">
                   <div class="row">
                     <span class="label"></span>
-                    <button 
-                      class="add-new-row" 
+                    <button
+                      class="add-new-row"
                       v-t="'task_engine_v2.condition_action_block.add_option'"
                       @click="addNLUSelectOption(action)">
                     </button>
@@ -524,7 +524,7 @@
               </div>
               <div class="row" v-if="action.nluType === NLUTypeMap.PERSON_NAME">
                 <span class="label" v-t="'task_engine_v2.condition_action_block.label_get_surname'"></span>
-                <toggle :value="renderOnlyParseSurname(action.content.tags)" @change="onlyParseSurnameChange(action, $event)" :size="'medium'" :showLabel="true" :label="toggleLabel"></toggle>               
+                <toggle :value="renderOnlyParseSurname(action.content.tags)" @change="onlyParseSurnameChange(action, $event)" :size="'medium'" :showLabel="true" :label="toggleLabel"></toggle>
               </div>
               <div class="row"
                 v-if="action.content.tags!==NLUParserMap.SELECT_CUSTOMIZE_OPTIONS &&
@@ -549,6 +549,12 @@
               <icon class="trash" :size="14" iconType="trash" @click="deleteAction(index)"></icon>
             </div>
           </template>
+          <!-- 删除键 -->
+          <div class="row" v-if="action.type === ActionType.RemoveKey">
+            <span class="label" v-t="'task_engine_v2.condition_action_block.label_remove_key'"></span>
+            <input ref="input-content" v-tooltip="inputTooltip" class="input-content" v-model="action.content" :placeholder="$t('task_engine_v2.condition_action_block.key_placeholder')" @focus="onInputFocus"/>
+            <icon class="trash" :size="14" iconType="trash" @click="deleteAction(index)"></icon>
+          </div>
         </div>
       </template>
       <div class="block">
