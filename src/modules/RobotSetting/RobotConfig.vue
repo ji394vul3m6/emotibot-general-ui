@@ -544,7 +544,7 @@ export default {
     },
     animateScroll(element, target) {
       const that = this;
-      const speed = 10;
+      const speed = 5;
       let interval = 10;
       const scrollToTarget = () => {
         const orig = element.scrollTop;
@@ -571,7 +571,7 @@ export default {
         }
       };
 
-      interval = 1000 / (target - element.scrollTop);
+      interval = (1000 * speed) / (target - element.scrollTop);
       that.scrollTimer = setTimeout(scrollToTarget, interval);
     },
     startEdit(child) {
