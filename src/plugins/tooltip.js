@@ -180,7 +180,7 @@ const MyPlugin = {
           const info = plugin.tooltipMap[id];
           window.removeEventListener('resize', info.resize);
           if (info.scrollTarget && info.scroll) {
-            info.scrollTarget.removeEventListener(info.scroll);
+            info.scrollTarget.removeEventListener('scroll', info.scroll);
           }
           delete plugin.tooltipMap[id];
         }
