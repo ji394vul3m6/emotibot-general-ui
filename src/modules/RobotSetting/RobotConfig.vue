@@ -1,112 +1,126 @@
 <template>
   <div class="robot-special-words">
     <div class="card w-fill h-fill">
-      <nav-bar :options=pageMap />
-      <div class="content">
-        <div class="config-block">
-          <div class="block-title row">{{ $t('robot_config.robot.title') }}{{ $t('general.setting') }}</div>
-          <div class="row">
-            <div class="row-title">{{ $t('robot_config.robot.title') }}{{ $t('robot_config.robot.name') }}</div>
-            <div v-if="robotNameEdit">
-              <input v-model="robotEditName" :placeholder="$t('robot_config.robot.default')" ref="name-input"
-                @keyup.enter="finishEditName"
-                @keyup.esc="cancelEditName"
-                @blur="cancelEditName">
+      <nav-bar class="nav" :options=pageMap />
+      <div class="card-content">
+        <div class="menu-list">
+          <div class="menu-container">
+            <div class="active-bar" :style="activeBarStyle"></div>
+            <div class="menu" @click="scrollTo('robot')">{{ $t('robot_config.robot.title') }}{{ $t('general.setting') }}</div>
+            <template v-for="config in configs">
+            <div v-if="config.status" :key="config.key" class="menu"
+              @click="scrollTo(config.key)">
+              <div>{{ $t(`robot_config.${config.key}.title`) }}{{ $t('general.setting') }}</div>
             </div>
-            <div v-else class="row-value">
-              <div>{{ robotName || $t('robot_config.robot.default') }}</div>
-              <div class="row-value-edit" @click.stop="startEditRobotName" v-if="editTarget === undefined">
-                <icon :size=12 icon-type="edit_blue"></icon>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="row-title">{{ $t('robot_config.robot.title') }}{{ $t('robot_config.robot.language') }}</div>
-            <dropdown-select :options="languageOption" width="150px" v-model="robotLanguage" ref="language" @input="changeLanguage"/>
+            </template>
           </div>
         </div>
-        <template v-for="config in configs">
-          <div v-if="config.status" :key="config.key" class="config-block">
-            <div class="block-title row">{{ $t(`robot_config.${config.key}.title`) }}{{ $t('general.setting') }}</div>
-            <div class="row" v-if="!config.alwaysOn">
-              <div class="row-title">{{ $t('general.enable') }}/{{ $t('general.disable') }}{{ $t(`robot_config.${config.key}.title`) }}:</div>
-              <toggle v-model="config.on" @input="handleConfigChange(config, $event)"/>
-            </div>
-            <template v-if="config.on || config.alwaysOn">
-            <template v-if="config.hasValidChildren" >
+        <div class="content" @wheel="handleScroll" ref="container">
+          <div class="config-block" ref="robot-block" data-key="robot">
+            <div class="block-title row">{{ $t('robot_config.robot.title') }}{{ $t('general.setting') }}</div>
             <div class="row">
-              <div class="row-title">{{ $t('robot_config.rule') }}</div>
-              <div class="row-content">
-              <template v-for="child in config.children">
-                <div v-if="child.status" :key="child.key" class="content-row">
-                  <template v-if="!child.alwaysOn">
-                  <toggle class="content-row-toggle" v-model="child.on" @input="handleConfigChange(child, $event)"/>
-                  </template>
-                  <div class="content-row-desc" >
-                    <!-- Show status -->
-                    <template v-if="editTarget !== child">
-                      <template v-if="['threshold','string','number','count'].indexOf(child.type) >= 0">
-                      {{ $t(`robot_config.${config.key}.${child.key}-pre`) }} {{ child.value }} {{ $t(`robot_config.${config.key}.${child.key}-suf`) }}
-                      </template>
-                      <template v-if="child.type === 'time-range'">
-                      {{ $t(`robot_config.${config.key}.${child.key}-pre`) }} {{ child.begin }} ~ {{ child.end }} {{ $t(`robot_config.${config.key}.${child.key}-suf`) }}
-                      </template>
-                      <template v-if="child.type === 'switch'">
-                      {{ $t(`robot_config.${config.key}.${child.key}-info`) }}
-                      </template>
+              <div class="row-title">{{ $t('robot_config.robot.title') }}{{ $t('robot_config.robot.name') }}</div>
+              <div v-if="robotNameEdit">
+                <input v-model="robotEditName" :placeholder="$t('robot_config.robot.default')" ref="name-input"
+                  @keyup.enter="finishEditName"
+                  @keyup.esc="cancelEditName"
+                  @blur="cancelEditName">
+              </div>
+              <div v-else class="row-value">
+                <div>{{ robotName || $t('robot_config.robot.default') }}</div>
+                <div class="row-value-edit" @click.stop="startEditRobotName" v-if="editTarget === undefined">
+                  <icon :size=12 icon-type="edit_blue"></icon>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="row-title">{{ $t('robot_config.robot.title') }}{{ $t('robot_config.robot.language') }}</div>
+              <dropdown-select :options="languageOption" width="150px" v-model="robotLanguage" ref="language" @input="changeLanguage"/>
+            </div>
+          </div>
+          <template v-for="config in configs">
+            <div v-if="config.status" :key="config.key" class="config-block" :data-key="config.key" ref="block">
+              <div class="block-title row">{{ $t(`robot_config.${config.key}.title`) }}{{ $t('general.setting') }}</div>
+              <div class="row" v-if="!config.alwaysOn">
+                <div class="row-title">{{ $t('general.enable') }}/{{ $t('general.disable') }}{{ $t(`robot_config.${config.key}.title`) }}:</div>
+                <toggle v-model="config.on" @input="handleConfigChange(config, $event)"/>
+              </div>
+              <template v-if="config.on || config.alwaysOn">
+              <template v-if="config.hasValidChildren" >
+              <div class="row">
+                <div class="row-title">{{ $t('robot_config.rule') }}</div>
+                <div class="row-content">
+                <template v-for="child in config.children">
+                  <div v-if="child.status" :key="child.key" class="content-row">
+                    <template v-if="!child.alwaysOn">
+                    <toggle class="content-row-toggle" v-model="child.on" @input="handleConfigChange(child, $event)"/>
                     </template>
-                    <!-- Edit status -->
-                    <template v-else>
-                      <template v-if="child.type === 'threshold'">
-                      {{ $t(`robot_config.${config.key}.${child.key}-pre`) }}
-                      <input v-model="editNumber" ref="edit-input" type="number" max="101" min="0"
-                        @keyup.enter="finishEdit(child)" @input="checkThreshold(config)" @blur="cancelEditConfig" @keyup.esc="cancelEditConfig">
-                      {{ $t(`robot_config.${config.key}.${child.key}-suf`) }}
+                    <div class="content-row-desc" >
+                      <!-- Show status -->
+                      <template v-if="editTarget !== child">
+                        <template v-if="['threshold','string','number','count'].indexOf(child.type) >= 0">
+                        {{ $t(`robot_config.${config.key}.${child.key}-pre`) }} {{ child.value }} {{ $t(`robot_config.${config.key}.${child.key}-suf`) }}
+                        </template>
+                        <template v-if="child.type === 'time-range'">
+                        {{ $t(`robot_config.${config.key}.${child.key}-pre`) }} {{ child.begin }} ~ {{ child.end }} {{ $t(`robot_config.${config.key}.${child.key}-suf`) }}
+                        </template>
+                        <template v-if="child.type === 'switch'">
+                        {{ $t(`robot_config.${config.key}.${child.key}-info`) }}
+                        </template>
                       </template>
-                      <template v-if="child.type === 'number' || child.type === 'count'">
-                      {{ $t(`robot_config.${config.key}.${child.key}-pre`) }}
-                      <input v-model="editNumber" ref="edit-input" type="number"
-                        @keyup.enter="finishEdit(child)" @blur="cancelEditConfig" @keyup.esc="cancelEditConfig">
-                      {{ $t(`robot_config.${config.key}.${child.key}-suf`) }}
+                      <!-- Edit status -->
+                      <template v-else>
+                        <template v-if="child.type === 'threshold'">
+                        {{ $t(`robot_config.${config.key}.${child.key}-pre`) }}
+                        <input v-model="editNumber" ref="edit-input" type="number" max="101" min="0"
+                          @keyup.enter="finishEdit(child)" @input="checkThreshold(config)" @blur="cancelEditConfig" @keyup.esc="cancelEditConfig">
+                        {{ $t(`robot_config.${config.key}.${child.key}-suf`) }}
+                        </template>
+                        <template v-if="child.type === 'number' || child.type === 'count'">
+                        {{ $t(`robot_config.${config.key}.${child.key}-pre`) }}
+                        <input v-model="editNumber" ref="edit-input" type="number"
+                          @keyup.enter="finishEdit(child)" @blur="cancelEditConfig" @keyup.esc="cancelEditConfig">
+                        {{ $t(`robot_config.${config.key}.${child.key}-suf`) }}
+                        </template>
+                        <template v-if="child.type === 'time-range'">
+                        {{ $t(`robot_config.${config.key}.${child.key}-pre`) }}
+                        <time-range-picker ref="edit-range"
+                          :start="child.begin" :end="child.end"
+                          @finish="finishTimeRangeEdit(child, $event)" @cancel="cancelEditConfig"></time-range-picker>
+                        {{ $t(`robot_config.${config.key}.${child.key}-suf`) }}
+                        </template>
+                        <template v-if="child.type === 'string'">
+                        {{ $t(`robot_config.${config.key}.${child.key}-pre`) }}
+                        <input v-model="editString" ref="edit-input"
+                          @keyup.enter="finishEdit(child)" @input="checkInput(config)" @blur="cancelEditConfig" @keyup.esc="cancelEditConfig">
+                        {{ $t(`robot_config.${config.key}.${child.key}-suf`) }}
+                        </template>
                       </template>
-                      <template v-if="child.type === 'time-range'">
-                      {{ $t(`robot_config.${config.key}.${child.key}-pre`) }}
-                      <time-range-picker ref="edit-range"
-                        :start="child.begin" :end="child.end"
-                        @finish="finishTimeRangeEdit(child, $event)" @cancel="cancelEditConfig"></time-range-picker>
-                      {{ $t(`robot_config.${config.key}.${child.key}-suf`) }}
-                      </template>
-                      <template v-if="child.type === 'string'">
-                      {{ $t(`robot_config.${config.key}.${child.key}-pre`) }}
-                      <input v-model="editString" ref="edit-input"
-                        @keyup.enter="finishEdit(child)" @input="checkInput(config)" @blur="cancelEditConfig" @keyup.esc="cancelEditConfig">
-                      {{ $t(`robot_config.${config.key}.${child.key}-suf`) }}
-                      </template>
+                    </div>
+                    <template v-if="child.type !== 'switch' && editTarget === undefined && !robotNameEdit && (child.on || child.alwaysOn)">
+                      <div class="content-row-edit" @click.stop="startEdit(child)">
+                        <icon :size=12 icon-type="edit_blue"></icon>
+                      </div>
                     </template>
                   </div>
-                  <template v-if="child.type !== 'switch' && editTarget === undefined && !robotNameEdit && (child.on || child.alwaysOn)">
-                    <div class="content-row-edit" @click.stop="startEdit(child)">
-                      <icon :size=12 icon-type="edit_blue"></icon>
-                    </div>
-                  </template>
+                </template>
                 </div>
+              </div>
               </template>
-              </div>
-            </div>
-            </template>
-            </template>
-            <template v-if="config.relatives">
-            <div class="row">
-              <div class="row-title">{{ $t('robot_config.relative') }}</div>
-              <div>
-                <div v-for="relative in config.relatives" :key="relative.url">
-                  <div class="relative-link" @click="$router.push(relative.url)">{{ relative.text }}</div>
+              </template>
+              <template v-if="config.relatives">
+              <div class="row">
+                <div class="row-title">{{ $t('robot_config.relative') }}</div>
+                <div>
+                  <div v-for="relative in config.relatives" :key="relative.url">
+                    <div class="relative-link" @click="$router.push(relative.url)">{{ relative.text }}</div>
+                  </div>
                 </div>
               </div>
+              </template>
             </div>
-            </template>
-          </div>
-        </template>
+          </template>
+        </div>
       </div>
     </div>
   </div>
@@ -179,6 +193,10 @@ function setConfigWithMap(config, configMap) {
 
 const BFSystemModule = 'bf-env';
 
+function getFixTop(ele) {
+  return ele.getBoundingClientRect().top;
+}
+
 export default {
   path: 'robot_config',
   privCode: 'robot_config',
@@ -195,6 +213,18 @@ export default {
       'enterpriseID',
       'robotID',
     ]),
+    activeBarStyle() {
+      let index = 0;
+      const that = this;
+      this.configs.forEach((config, idx) => {
+        if (config.key === that.currentActive) {
+          index = idx + 1;
+        }
+      });
+      return {
+        top: `${38 * index}px`,
+      };
+    },
   },
   data() {
     return {
@@ -468,9 +498,82 @@ export default {
       robotNameEdit: false,
       robotLanguage: [],
       origLanguage: '',
+      currentActive: 'robot',
+      targetOffset: 0,
+      scrollTimer: undefined,
     };
   },
   methods: {
+    handleScroll() {
+      const that = this;
+      const container = this.$refs.container;
+      const shift = -40;
+      if (getFixTop(this.$refs['robot-block']) - getFixTop(container) > shift) {
+        that.currentActive = 'robot';
+        return;
+      }
+
+      that.currentActive = '';
+      that.$refs.block.forEach((block) => {
+        if (that.currentActive !== '') {
+          return;
+        }
+        if (getFixTop(block) - getFixTop(container) > shift) {
+          that.currentActive = block.dataset.key;
+        }
+      });
+      if (that.currentActive === '') {
+        that.currentActive = 'robot';
+      }
+    },
+    scrollTo(target) {
+      if (this.scrollTimer !== undefined) {
+        return;
+      }
+      this.currentActive = target;
+      const blocks = this.$refs.block;
+      let targetDiv = this.$refs['robot-block'];
+      blocks.forEach((block) => {
+        if (block.dataset.key === target) {
+          targetDiv = block;
+        }
+      });
+      const parent = targetDiv.parentElement;
+      const targetOffset = targetDiv.offsetTop - parent.offsetTop - 20;
+      this.animateScroll(parent, targetOffset);
+    },
+    animateScroll(element, target) {
+      const that = this;
+      const speed = 10;
+      let interval = 10;
+      const scrollToTarget = () => {
+        const orig = element.scrollTop;
+        if (target > element.scrollTop) {
+          element.scrollTop += speed;
+          if (element.scrollTop > target) {
+            element.scrollTop = target;
+          }
+        } else if (target < element.scrollTop) {
+          element.scrollTop -= speed;
+          if (element.scrollTop < target) {
+            element.scrollTop = target;
+          }
+        }
+        if (that.scrollTimer !== undefined) {
+          clearTimeout(that.scrollTimer);
+          that.scrollTimer = undefined;
+        }
+        if (orig === element.scrollTop) {
+          return;
+        }
+        if (element.scrollTop !== target) {
+          that.scrollTimer = setTimeout(scrollToTarget, interval);
+        }
+      };
+
+      interval = 1000 / (target - element.scrollTop);
+      that.scrollTimer = setTimeout(scrollToTarget, interval);
+    },
     startEdit(child) {
       const that = this;
       that.editNumber = child.value;
@@ -648,9 +751,57 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.content {
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+
+  .nav {
+    flex: 0 0 60px;
+  }
+  .card-content {
+    flex: 1;
+    overflow: hidden;
+  }
+}
+.card-content {
+  display: flex;
+  align-items: stretch;
+  .menu-list {
+    flex: 0 0 150px;
+  }
+  .content {
+    flex: 1;
+    padding: 20px;
+    padding-bottom: 0;
+    overflow: auto;
+    @include customScrollbar();
+  }
+}
+.menu-list {
   padding: 20px;
-  padding-bottom: 0;
+
+  .menu-container {
+    border-left: 2px solid #cccccc;
+    padding-left: 10px;
+    position: relative;
+    .menu {
+      @include font-14px();
+      @include click-button();
+      line-height: 28px;
+      height: 28px;
+      margin-bottom: 10px;
+    }
+    .active-bar {
+      position: absolute;
+      height: 28px;
+      width: 2px;
+      background-color: #1875f0;
+      top: 0;
+      left: -2px;
+      transition: top .5s;
+    }
+  }
 }
 .config-block {
   @include font-14px();
