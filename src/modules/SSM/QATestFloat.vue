@@ -233,6 +233,9 @@ export default {
         if ((typeof answerObj).toLowerCase() !== 'object') {
           throw String('Not object');
         }
+        if (answerObj === null) {
+          throw String('Not object');
+        }
         // transform old format in openAPI
         // TODO: check all format alive to parse
         if (oldAnswerFormat) {
