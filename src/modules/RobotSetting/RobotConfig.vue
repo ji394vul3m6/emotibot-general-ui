@@ -253,7 +253,7 @@ export default {
           module: '',
           children: [
             {
-              key: 'chat-editorial',
+              key: 'chat-robot-custom',
               on: false,
               value: 0,
               module: '',
@@ -267,14 +267,28 @@ export default {
               type: 'threshold',
             },
             {
+              key: 'chat-domain-greeting',
+              on: false,
+              value: 0,
+              module: '',
+              type: 'switch',
+            },
+            {
               key: 'chat-editorial-domain',
               on: false,
               value: 0,
               module: '',
               type: 'threshold',
             },
+            // {
+            //   key: 'chat-editorial-sport',
+            //   on: false,
+            //   value: 0,
+            //   module: '',
+            //   type: 'threshold',
+            // },
             {
-              key: 'chat-editorial-sport',
+              key: 'chat-editorial',
               on: false,
               value: 0,
               module: '',
@@ -282,13 +296,6 @@ export default {
             },
             {
               key: 'chat-robot',
-              on: false,
-              value: 0,
-              module: '',
-              type: 'threshold',
-            },
-            {
-              key: 'chat-robot-custom',
               on: false,
               value: 0,
               module: '',
