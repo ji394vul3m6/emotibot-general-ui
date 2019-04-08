@@ -105,6 +105,16 @@
               </div>
             </div>
             </template>
+            <template v-if="config.files">
+              <div class="row">
+                <div class="row-title">{{ $t('robot_config.files') }}</div>
+                <div class="file-wrap">
+                  <template v-for="file in config.files">
+                    <div class="file-manager" @click="file.action">{{ file.text }}</div>
+                  </template>
+                </div>
+              </div>
+            </template>
           </div>
         </template>
       </div>
@@ -117,6 +127,8 @@ import { mapGetters } from 'vuex';
 import NavBar from '@/components/NavigationBar';
 import TimeRangePicker from '@/components/TimeRangePicker';
 import configAPI from './_api/config';
+import ImportCustomChatPop from './_components/ImportCustomChatPop';
+import eventBus from './_utils/eventBus';
 
 function isOn(valStr) {
   return valStr.toLowerCase() === 'on' || valStr.toLowerCase() === 'true';
@@ -188,6 +200,7 @@ export default {
   components: {
     NavBar,
     TimeRangePicker,
+    ImportCustomChatPop,
   },
   api: configAPI,
   computed: {
@@ -208,243 +221,7 @@ export default {
       editString: '',
       minThreshold: 0,
       maxThreshold: 101,
-      configs: [
-        {
-          key: 'ssm',
-          on: true,
-          alwaysOn: true,
-          children: [
-            {
-              key: 'uploadimg_server',
-              value: '',
-              module: '',
-              alwaysOn: true,
-              type: 'string',
-            },
-            {
-              key: 'ssm_context_support',
-              on: false,
-              value: 0,
-              module: '',
-              type: 'switch',
-            },
-            {
-              key: 'ssm_ml_threshold',
-              on: false,
-              alwaysOn: true,
-              value: 0,
-              module: '',
-              type: 'threshold',
-            },
-            {
-              key: 'ssm_qq_threshold',
-              on: false,
-              alwaysOn: true,
-              value: 0,
-              module: '',
-              type: 'threshold',
-            },
-          ],
-        },
-        {
-          key: 'chat',
-          on: false,
-          alwaysOn: true,
-          module: '',
-          children: [
-            {
-              key: 'chat-editorial',
-              on: false,
-              value: 0,
-              module: '',
-              type: 'threshold',
-            },
-            {
-              key: 'chat-editorial-custom',
-              on: false,
-              value: 0,
-              module: '',
-              type: 'threshold',
-            },
-            {
-              key: 'chat-editorial-domain',
-              on: false,
-              value: 0,
-              module: '',
-              type: 'threshold',
-            },
-            {
-              key: 'chat-editorial-sport',
-              on: false,
-              value: 0,
-              module: '',
-              type: 'threshold',
-            },
-            {
-              key: 'chat-robot',
-              on: false,
-              value: 0,
-              module: '',
-              type: 'threshold',
-            },
-            {
-              key: 'chat-robot-custom',
-              on: false,
-              value: 0,
-              module: '',
-              type: 'threshold',
-            },
-          ],
-        },
-        {
-          key: 'context',
-          on: false,
-        },
-        {
-          key: 'to-human',
-          on: false,
-          module: '',
-          children: [
-            {
-              key: 'to-human-backfill',
-              on: false,
-              value: 0,
-              module: '',
-              type: 'count',
-            },
-            {
-              key: 'to-human-faq-repeat-q',
-              on: false,
-              value: 0,
-              module: '',
-              type: 'count',
-            },
-            {
-              key: 'to-human-emotion',
-              on: false,
-              value: 0,
-              module: '',
-              type: 'switch',
-            },
-            {
-              key: 'to-human-faq-label',
-              on: false,
-              value: 0,
-              module: '',
-              type: 'switch',
-            },
-            {
-              key: 'to-human-intent',
-              on: false,
-              value: 0,
-              module: '',
-              type: 'switch',
-            },
-            {
-              key: 'human-intent',
-              on: false,
-              value: 0,
-              module: '',
-              type: 'switch',
-            },
-            {
-              key: 'to-human-keyword',
-              on: false,
-              value: 0,
-              module: '',
-              type: 'switch',
-            },
-            {
-              key: 'to-human-work',
-              on: false,
-              value: 0,
-              module: '',
-              type: 'time-range',
-              begin_key: 'to-human-begin-time',
-              end_key: 'to-human-end-time',
-              begin: '',
-              end: '',
-            },
-          ],
-          relatives: [
-            {
-              text: this.$t('robot_config.to-human.words-link'),
-              url: '/robot-chat-skill?page=human',
-            },
-          ],
-        },
-        {
-          key: 'faq',
-          on: false,
-          children: [
-            {
-              key: 'faq-similar-question-range',
-              value: 0,
-              module: '',
-              alwaysOn: true,
-              type: 'number',
-            },
-            {
-              key: 'faq-recommand-question-range',
-              value: 0,
-              module: '',
-              alwaysOn: true,
-              type: 'number',
-            },
-          ],
-        },
-        {
-          key: 'task-engine',
-          on: false,
-          children: [
-            {
-              key: 'task-engine-total-timeout',
-              value: 0,
-              module: '',
-              alwaysOn: true,
-              type: 'number',
-            },
-            {
-              key: 'task-engine-web-api-timeout',
-              value: 0,
-              module: '',
-              alwaysOn: true,
-              type: 'number',
-            },
-          ],
-        },
-        {
-          key: 'knowledge',
-          on: false,
-          children: [
-            {
-              key: 'knowledge-threshold',
-              value: 0,
-              module: '',
-              alwaysOn: true,
-              type: 'number',
-            },
-          ],
-        },
-        {
-          key: 'command',
-          on: false,
-        },
-        {
-          key: 'intent',
-          on: true,
-          alwaysOn: true,
-          children: [
-            {
-              key: 'intent-threshold',
-              value: 0,
-              module: '',
-              alwaysOn: true,
-              type: 'number',
-            },
-          ],
-        },
-      ],
+      configs: [],
       flatConfigMap: {},
       languageOption: [
         {
@@ -461,7 +238,264 @@ export default {
       robotNameEdit: false,
       robotLanguage: [],
       origLanguage: '',
+      eventBus: eventBus.eventBus,
     };
+  },
+  created() {
+    const that = this;
+    that.configs = [
+      {
+        key: 'ssm',
+        on: true,
+        alwaysOn: true,
+        children: [
+          {
+            key: 'uploadimg_server',
+            value: '',
+            module: '',
+            alwaysOn: true,
+            type: 'string',
+          },
+          {
+            key: 'ssm_context_support',
+            on: false,
+            value: 0,
+            module: '',
+            type: 'switch',
+          },
+          {
+            key: 'ssm_ml_threshold',
+            on: false,
+            alwaysOn: true,
+            value: 0,
+            module: '',
+            type: 'threshold',
+          },
+          {
+            key: 'ssm_qq_threshold',
+            on: false,
+            alwaysOn: true,
+            value: 0,
+            module: '',
+            type: 'threshold',
+          },
+        ],
+      },
+      {
+        key: 'chat',
+        on: false,
+        alwaysOn: true,
+        module: '',
+        children: [
+          {
+            key: 'chat-editorial',
+            on: false,
+            value: 0,
+            module: '',
+            type: 'threshold',
+          },
+          {
+            key: 'chat-editorial-custom',
+            on: false,
+            value: 0,
+            module: '',
+            type: 'threshold',
+          },
+          {
+            key: 'chat-editorial-domain',
+            on: false,
+            value: 0,
+            module: '',
+            type: 'threshold',
+          },
+          {
+            key: 'chat-editorial-sport',
+            on: false,
+            value: 0,
+            module: '',
+            type: 'threshold',
+          },
+          {
+            key: 'chat-robot',
+            on: false,
+            value: 0,
+            module: '',
+            type: 'threshold',
+          },
+          {
+            key: 'chat-robot-custom',
+            on: false,
+            value: 0,
+            module: '',
+            type: 'threshold',
+          },
+        ],
+        files: [
+          {
+            text: this.$t('robot_config.chat.custom-chat-import'),
+            action() {
+              that.importCustomChat();
+            },
+            key: 'importCustomChat',
+          },
+          {
+            text: this.$t('robot_config.chat.custom-chat-export'),
+            action() {
+              that.exportCustomChat();
+            },
+            key: 'exportCustomChat',
+          },
+        ],
+      },
+      {
+        key: 'context',
+        on: false,
+      },
+      {
+        key: 'to-human',
+        on: false,
+        module: '',
+        children: [
+          {
+            key: 'to-human-backfill',
+            on: false,
+            value: 0,
+            module: '',
+            type: 'count',
+          },
+          {
+            key: 'to-human-faq-repeat-q',
+            on: false,
+            value: 0,
+            module: '',
+            type: 'count',
+          },
+          {
+            key: 'to-human-emotion',
+            on: false,
+            value: 0,
+            module: '',
+            type: 'switch',
+          },
+          {
+            key: 'to-human-faq-label',
+            on: false,
+            value: 0,
+            module: '',
+            type: 'switch',
+          },
+          {
+            key: 'to-human-intent',
+            on: false,
+            value: 0,
+            module: '',
+            type: 'switch',
+          },
+          {
+            key: 'human-intent',
+            on: false,
+            value: 0,
+            module: '',
+            type: 'switch',
+          },
+          {
+            key: 'to-human-keyword',
+            on: false,
+            value: 0,
+            module: '',
+            type: 'switch',
+          },
+          {
+            key: 'to-human-work',
+            on: false,
+            value: 0,
+            module: '',
+            type: 'time-range',
+            begin_key: 'to-human-begin-time',
+            end_key: 'to-human-end-time',
+            begin: '',
+            end: '',
+          },
+        ],
+        relatives: [
+          {
+            text: this.$t('robot_config.to-human.words-link'),
+            url: '/robot-chat-skill?page=human',
+          },
+        ],
+      },
+      {
+        key: 'faq',
+        on: false,
+        children: [
+          {
+            key: 'faq-similar-question-range',
+            value: 0,
+            module: '',
+            alwaysOn: true,
+            type: 'number',
+          },
+          {
+            key: 'faq-recommand-question-range',
+            value: 0,
+            module: '',
+            alwaysOn: true,
+            type: 'number',
+          },
+        ],
+      },
+      {
+        key: 'task-engine',
+        on: false,
+        children: [
+          {
+            key: 'task-engine-total-timeout',
+            value: 0,
+            module: '',
+            alwaysOn: true,
+            type: 'number',
+          },
+          {
+            key: 'task-engine-web-api-timeout',
+            value: 0,
+            module: '',
+            alwaysOn: true,
+            type: 'number',
+          },
+        ],
+      },
+      {
+        key: 'knowledge',
+        on: false,
+        children: [
+          {
+            key: 'knowledge-threshold',
+            value: 0,
+            module: '',
+            alwaysOn: true,
+            type: 'number',
+          },
+        ],
+      },
+      {
+        key: 'command',
+        on: false,
+      },
+      {
+        key: 'intent',
+        on: true,
+        alwaysOn: true,
+        children: [
+          {
+            key: 'intent-threshold',
+            value: 0,
+            module: '',
+            alwaysOn: true,
+            type: 'number',
+          },
+        ],
+      },
+    ];
   },
   methods: {
     startEdit(child) {
@@ -633,6 +667,43 @@ export default {
     cancelEditName() {
       this.robotNameEdit = false;
     },
+    fileActionFunc(funcname) {
+      const that = this;
+      funcname(that);
+    },
+    importCustomChat() {
+      const that = this;
+//      if (!that.allowImport) return;
+      const popOption = {
+        title: that.$t('customchat.importpop.title'),
+        component: ImportCustomChatPop,
+        disable_ok: true,
+        validate: true,
+        callback: {
+          ok(obj) {
+            that.eventBus.$emit('startLoading');
+            that.$api.importCustomChat(obj.upload_type, obj.file)
+              .then((res) => {
+                that.currentVersion = res.version;
+                that.$notify({ text: that.$t('error_msg.save_success') });
+              })
+              .catch((err) => {
+                console.log(err);
+                that.$notifyFail(that.$t('error_msg.save_fail'));
+              })
+              .finally(() => {
+                that.eventBus.$emit('endLoading');
+              });
+          },
+        },
+      };
+      that.$pop(popOption);
+    },
+    exportCustomChat() {
+      const that = this;
+//      if (!that.allowImport) return;
+      that.$api.exportCustomChat();
+    },
   },
   mounted() {
     this.loadAllConfigs();
@@ -701,7 +772,7 @@ export default {
       border-radius: 4px;
       background-color: #f8f8f8;
       padding: 10px;
-      
+
       display: flex;
       flex-direction: column;
       .content-row {
@@ -744,6 +815,15 @@ export default {
     .relative-link {
       @include click-button();
       color: $color-primary;
+    }
+    .file-manager {
+      @include click-button();
+      color: $color-primary;
+      margin-right: 20px;
+    }
+    .file-wrap {
+      display: flex;
+      align-items: center;
     }
   }
 }

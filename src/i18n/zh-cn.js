@@ -3,6 +3,7 @@ export default {
     robot_config: '系统功能配置',
     config_content_error: '设定内容错误',
     relative: '其他设定',
+    files: '文件设定',
     ssm: {
       title: '问答',
       'ssm_context_support-info': '在常用问答中使用上下文',
@@ -27,6 +28,9 @@ export default {
       'chat-robot-suf': '时使用竹间机器人形象',
       'chat-robot-custom-pre': '信心分数高于',
       'chat-robot-custom-suf': '时使用客制机器人形象',
+
+      'custom-chat-import': '导入闲聊',
+      'custom-chat-export': '导出闲聊',
     },
     robot: {
       title: '机器人',
@@ -1482,6 +1486,22 @@ export default {
       size: '条/页',
       goto: '前往',
       page: '页',
+    },
+  },
+  customchat: {
+    importpop: {
+      title: '批量导入',
+      type_title: '导入类型',
+      question: '问题和答案',
+      extend: '语料',
+      upload_file: '上传文件',
+      support_format: '支持格式 .xlsx, 文件大小需介于 0 ~ 2M之间',
+      download_question_template: '问题和答案模板',
+      download_extend_template: '语料模板',
+      choose_file: '请选择文件',
+      upload_file_undefined: '文件无法识别',
+      upload_file_size_error: '文件大小需介于 0 ~ 2M之间',
+      upload_file_type_invalid: '文件需要为.xlsx格式',
     },
   },
 };
