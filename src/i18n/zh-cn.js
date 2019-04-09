@@ -190,6 +190,8 @@ export default {
   statistics: {
     std_question_exists: '标准问题已存在',
     add_new_std_question: '新增标准问题',
+    add_new_intent: '新增意图',
+    choose_sentence_type: '选择为此意图的',
     sessions_time: '会话时间',
     session_id: '会话 ID',
     feedback_score: '满意度分数',
@@ -249,6 +251,8 @@ export default {
     user_nick: '用户昵称',
     module: '模组',
     action: '操作',
+    stdq_mark: '标准问标注',
+    intent_mark: '意图标注',
 
     filter: '筛选条件',
     export_mode: '高级筛选',
@@ -260,7 +264,7 @@ export default {
     recommend_empty_msg_2: '可在右上角查询标准问题',
     search_empty_msg: '无查询结果',
     cluster_info: '通过特有的算法将相似问的句子进行聚类方便统一标注，建议勾选100条以上的用户问题，数量越大分类越准确',
-    action_info: '「忽略功能」：可以将已正确回复的用户问句忽略，方便对其它问句标注。「标注功能」：可以将用户问句标注到正确的标准问上，训练完成后增强机器人理解能力',
+    action_info: '「忽略功能」：可以将已正确回复的用户问句忽略，方便对其它问句标注。「标注功能」：可以将用户问句标注到正确的标准问或意图上，训练完成后增强机器人理解能力',
     clustering_msg: '{num} 条用户问题进行辅助分类中，请勿离开此页面',
     clustering_checking: '准备进行辅助分类...，请勿离开此页面',
     cluster_dropdown: {
