@@ -5,6 +5,10 @@ import VueCookie from 'vue-cookie';
 import VueI18n from 'vue-i18n';
 import 'es6-promise/auto';
 
+import ElementUI from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
+
+
 import TextButton from '@/components/basic/TextButton';
 import SearchInput from '@/components/basic/SearchInput';
 import InfoInput from '@/components/basic/InfoInput';
@@ -39,7 +43,11 @@ import Tooltip from './plugins/tooltip';
 import Dropdown from './plugins/dropdown';
 import './plugins/Polyfill';
 import misc from './utils/js/misc';
-// import Mock from './mock';
+
+import '../static/ueditor/ueditor.config';
+import '../static/ueditor/ueditor.all';
+import '../static/ueditor/lang/zh-cn/zh-cn';
+import '../static/ueditor/ueditor.parse.min';
 
 Vue.config.productionTip = false;
 Vue.use(Tooltip);
@@ -47,6 +55,7 @@ Vue.use(Dropdown);
 Vue.use(VueCookie);
 Vue.use(VueI18n);
 Vue.use(PopWindow);
+Vue.use(ElementUI);
 Vue.use(ContextMenu);
 Vue.use(CustomNotification, {
   delay: 4000,

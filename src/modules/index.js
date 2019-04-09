@@ -6,6 +6,8 @@ import Statistics from './Statistics';
 import TaskEngine from './TaskEngine';
 import Status from './Status';
 import IntentEngine from './IntentEngine';
+import KnowledgeGraphNew from './KnowledgeGraph';
+
 
 export default {
   Status,
@@ -13,6 +15,7 @@ export default {
   TaskEngine,
   IntentEngine,
   Wordbank,
+  KnowledgeGraphNew,
   Statistics,
   Robot,
 };

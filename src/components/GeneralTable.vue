@@ -7,7 +7,7 @@
           <td v-if="checkbox" class="table-col-checkbox">
             <input type="checkbox" @click="checkAll" :checked="isAllChecked">
           </td>
-          <td v-for="header in tableHeader" :key="header.key" 
+          <td v-for="header in tableHeader" :key="header.key"
             :style="{width: header.width}"
             :class="{'fixed': header.width, 'custom-action': header.type === 'action', 'multi-action': hasMultiCustomAction, 'icon-column': header.type === 'icon'}"
             class="table-header-item">
@@ -85,6 +85,11 @@
               </template>
               <template v-else-if="header.type === 'icon'">
                 <icon v-if="data[header.key]" :icon-type="data[header.key].iconType" :size="data[header.key].iconSize"></icon>
+              </template>
+              <template  v-else-if="header.type === 'click'">
+              <span class="href"
+                    @click="data[header.key].onclick(data, idx)"
+              > {{ data[header.key].val }}</span>
               </template>
               <div v-else>{{ data[header.key] }}</div>
             </td>
@@ -603,6 +608,11 @@ table {
       }
     }
   }
+}
+
+.href {
+  color: $color-primary;
+  cursor: pointer;
 }
 
 .tags {
