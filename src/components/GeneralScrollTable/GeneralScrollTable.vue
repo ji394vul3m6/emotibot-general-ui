@@ -57,7 +57,11 @@
           <div class="tr">
             <template v-for="headerRight in tableColumnRight()">
               <div :key="headerRight.key"
-              :style="{width: headerRight.width}"
+              :style="{
+                width: headerRight.width,
+                maxWidth: headerRight.width,
+                flexBasis: headerRight.width,
+              }"
               :class="columnClassObject(headerRight)"
               class="td table-header-item">
                 {{ headerRight.text }}
@@ -230,7 +234,11 @@
             
             <template v-for="headerRight in tableColumnRight()">
               <div :key="uniqueId(headerRight.key, idx)"
-                :style="{width: headerRight.width}"
+                :style="{
+                  width: headerRight.width,
+                  maxWidth: headerRight.width,
+                  flexBasis: headerRight.width,
+                }"
                 :class="columnClassObject(headerRight)"
                 class="td table-body-item"
                 @click="handleOnclickRow(onclickRow, data, idx)"

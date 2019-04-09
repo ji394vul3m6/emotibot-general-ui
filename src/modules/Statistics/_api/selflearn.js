@@ -2,13 +2,13 @@ const RECOMMEND_URL = '/sherlock/clusterRecommend';
 const SEARCH_STD_Q_URL = '/sq/info';
 const RECORD_URL = '/api/v1/stats/records';
 const REPORT_URL = '/api/v1/clustering/reports';
-const RECORT_URL_V2 = '/api/v2/stats/records';
+const RECORD_URL_V2 = '/api/v2/stats/records';
 const STATS_RECORD_EXPORT = '/api/v1/stats/records/export';
 const STATS_RECORD_EXPORT_V2 = '/api/v2/stats/records/export';
 
 // getRecordsV2 use page and limit as parameter is for compatibility with v1
 function getRecordsV2(searchParam, page, limit) {
-  const queryUrl = `${RECORT_URL_V2}/query`;
+  const queryUrl = `${RECORD_URL_V2}/query`;
   return this.$reqPost(queryUrl, {
     ...searchParam,
     limit,
@@ -40,7 +40,7 @@ function setIgnore(records, ignore) {
 }
 
 function setMark(question, records, mark) {
-  const url = `${RECORD_URL}/mark`;
+  const url = `${RECORD_URL_V2}/mark`;
   const params = {
     mark,
     content: question,
@@ -49,9 +49,25 @@ function setMark(question, records, mark) {
   return this.$reqPost(url, params);
 }
 
+function setIntentMark(intentID, positive, records, mark) {
+  const url = `${RECORD_URL_V2}/intent-mark`;
+  const params = {
+    intent: intentID,
+    mark,
+    positive,
+    records,
+  };
+  return this.$reqPost(url, params);
+}
+
 function getMarkedQuestion(recordId) {
-  const url = `${RECORD_URL}/${recordId}/marked`;
+  const url = `${RECORD_URL_V2}/${recordId}/marked`;
   return this.$reqGet(url).then(response => response.data.marked_content);
+}
+
+function getMarkedIntent(recordId) {
+  const url = `${RECORD_URL_V2}/${recordId}/marked-intent`;
+  return this.$reqGet(url).then(response => response.data);
 }
 
 function startCluster(params) {
@@ -102,7 +118,9 @@ export default {
   exportRecords,
   setIgnore,
   setMark,
+  setIntentMark,
   getMarkedQuestion,
+  getMarkedIntent,
   startCluster,
   pollClusterReport,
   getRecommend,
