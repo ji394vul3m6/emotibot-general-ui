@@ -227,10 +227,10 @@ http {
         }
 
         location /BF/login.html {
-            return 301 /login.html;
+            rewrite ^.*$ /login.html;
         }
         location = /im-admin/login {
-            return 301 /login.html;
+            rewrite ^.*$ /login.html;
         }
         location = /BF_login {
             proxy_pass http://$bf_server_url/login;
