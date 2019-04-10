@@ -634,6 +634,10 @@ export default {
           that.robotLanguage = ['zh-cn'];
           that.origLanguage = 'zh-cn';
         }
+
+        if (that.flatConfigMap['robot-name']) {
+          that.robotName = that.flatConfigMap['robot-name'].value;
+        }
         that.$emit('endLoading');
       });
     },
