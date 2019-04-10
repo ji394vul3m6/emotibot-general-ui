@@ -128,7 +128,6 @@ import NavBar from '@/components/NavigationBar';
 import TimeRangePicker from '@/components/TimeRangePicker';
 import configAPI from './_api/config';
 import ImportCustomChatPop from './_components/ImportCustomChatPop';
-import eventBus from './_utils/eventBus';
 
 function isOn(valStr) {
   return valStr.toLowerCase() === 'on' || valStr.toLowerCase() === 'true';
@@ -238,7 +237,6 @@ export default {
       robotNameEdit: false,
       robotLanguage: [],
       origLanguage: '',
-      eventBus: eventBus.eventBus,
     };
   },
   created() {
@@ -681,19 +679,20 @@ export default {
         validate: true,
         callback: {
           ok(obj) {
-            that.eventBus.$emit('startLoading');
-            that.$api.importCustomChat(obj.upload_type, obj.file)
-              .then((res) => {
-                that.currentVersion = res.version;
-                that.$notify({ text: that.$t('error_msg.save_success') });
-              })
-              .catch((err) => {
-                console.log(err);
-                that.$notifyFail(that.$t('error_msg.save_fail'));
-              })
-              .finally(() => {
-                that.eventBus.$emit('endLoading');
-              });
+            that.$startPageLoading();
+            that.$api.importCustomChat(obj.upload_type, obj.file).finally(() => {
+              that.$endPageLoading();
+            });
+//              .then((res) => {
+//                that.currentVersion = res.version;
+//                that.$notify({ text: that.$t('error_msg.save_success') });
+//              })
+//              .catch((err) => {
+//                console.log(err);
+//              })
+//              .finally(() => {
+//                that.$endPageLoading();
+//              });
           },
         },
       };

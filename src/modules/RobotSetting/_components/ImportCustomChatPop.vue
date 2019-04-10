@@ -27,8 +27,8 @@
       {{ $t('customchat.importpop.support_format')}}
     </div>
     <div class="download-template">
-      <span @click="downloadQuestionTemplate">{{ $t('customchat.importpop.download_question_template')}}</span>
-      <span @click="downloadExtendTemplate">{{ $t('customchat.importpop.download_extend_template')}}</span>
+      <div @click="downloadQuestionTemplate">{{ $t('customchat.importpop.download_question_template')}}</div>
+      <div @click="downloadExtendTemplate">{{ $t('customchat.importpop.download_extend_template')}}</div>
     </div>
 
   </div>
@@ -130,7 +130,8 @@
   };
 </script>
 <style lang="scss" scoped>
-
+  @import 'styles/variable';
+  $row-height: 30px;
   .import-block {
     @include font-14px();
     width: 480px;
@@ -173,6 +174,20 @@
       margin-bottom: 20px;
       @include font-12px();
       color: $color-font-mark;
+    }
+    .edit-row {
+      color: $color-font-normal;
+      margin: 10px 0;
+      min-height: $row-height;
+      display: flex;
+      align-items: center;
+      .edit-title {
+        flex: 0 0 70px;
+      }
+      .edit-content {
+        flex: 1 1 auto;
+        max-width: 560px;
+      }
     }
     .download-template {
       @include font-12px-line-height-28px();

@@ -18,13 +18,27 @@ function setConfig(key, mod, value) {
 }
 
 function importCustomChat(type, file) {
-  let ret = '';
   const data = new FormData();
+  let ret = '';
   data.append('file', file);
   if (type === 0) {
-    ret = this.$reqPost(IMPORT_CUSTOM_CHAT_QUESTION_URL, data).then(rsp => rsp.data.result);
+    ret = this.$reqPost(IMPORT_CUSTOM_CHAT_QUESTION_URL, data).then((res) => {
+      this.$notify({ text: this.$t('error_msg.save_success') });
+      console.log(res);
+    })
+      .catch((err) => {
+        this.$notifyFail(err.response.data.message);
+        console.log(err);
+      });
   } else {
-    ret = this.$reqPost(IMPORT_CUSTOM_CHAT_EXTEND_URL, data).then(rsp => rsp.data.result);
+    ret = this.$reqPost(IMPORT_CUSTOM_CHAT_EXTEND_URL, data).then((res) => {
+      this.$notify({ text: this.$t('error_msg.save_success') });
+      console.log(res);
+    })
+      .catch((err) => {
+        this.$notifyFail(err.response.data.message);
+        console.log(err);
+      });
   }
   return ret;
 }
@@ -33,7 +47,8 @@ function exportCustomChat() {
   // let ret = '';
   // ret = this.$reqGet(EXPORT_CUSTOM_CHAT_URL).then(rsp => rsp.data.result);
   // return ret;
-  window.open(EXPORT_CUSTOM_CHAT_URL);
+  const token = window.localStorage.getItem('token');
+  window.open(`${EXPORT_CUSTOM_CHAT_URL}?token=Bearer%20${token}`);
 }
 
 export default {
