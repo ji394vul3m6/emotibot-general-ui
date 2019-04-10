@@ -414,6 +414,8 @@ export default {
     answer_empty: '無',
     similar_question: '相似問題',
     extend_answer: '擴展答案',
+    same_similar_question: '已存在相同的相似問題',
+    same_extend_answer: '已存在相同的擴展答案',
 
     weather: '天氣模塊',
     computation: '數學計算模塊',
