@@ -23,7 +23,8 @@
     <chat-list :records="chatData" ref="chatList"
       v-if="chatData.length > 0"
       :convert-record-to-chat-data=false
-      :default-show-analysis="showAnalysis"/>
+      :default-show-analysis="showAnalysis"
+      @send="sendUserText($event, true)"/>
     <div class="input">
       <div class="dimension">
         <text-button @click="selectDimension">{{ $t('qatest.dimension') }}</text-button>
