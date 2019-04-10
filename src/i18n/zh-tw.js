@@ -39,7 +39,7 @@ export default {
       title: '技能上下文',
     },
     'to-human': {
-      title: '转人工',
+      title: '轉人工',
       'to-human-backfill-pre': '當機器人連續',
       'to-human-backfill-suf': '次無法回答用戶問題時啟動轉人工',
       'to-human-faq-repeat-q-pre': '當用戶連續',
