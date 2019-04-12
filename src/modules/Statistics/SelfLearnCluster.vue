@@ -209,6 +209,13 @@ export default {
         that.clusterRecordData = table;
       });
     },
+    setIntentMark(markedIntent, positive, record) {
+      const that = this;
+      that.apiSetIntentMark(that.tableData, markedIntent, positive, record)
+      .then((table) => {
+        that.tableData = table;
+      });
+    },
     setIgnore(records, ignore) {
       const that = this;
       that.apiSetIgnore(that.clusterRecordData, records, ignore)
