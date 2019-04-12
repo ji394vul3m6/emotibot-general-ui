@@ -809,7 +809,9 @@ export default {
       .then((res) => {
         that.convertAPIData(res.data);
         that.tableData = that.appendTableDataAction(res.data);
-        that.headerInfo = that.receiveAPIHeader(res.table_header);
+        if (that.headerInfo === undefined || that.headerInfo.length <= 0) {
+          that.headerInfo = that.receiveAPIHeader(res.table_header);
+        }
         that.totalCount = res.total_size;
         that.markedCount = res.marked_size;
         that.ignoredCount = res.ignored_size;
