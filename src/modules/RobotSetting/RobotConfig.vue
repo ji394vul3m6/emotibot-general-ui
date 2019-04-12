@@ -288,22 +288,6 @@ export default {
               type: 'threshold',
             },
           ],
-          files: [
-            {
-              text: that.$t('robot_config.chat.custom-chat-import'),
-              action() {
-                that.importCustomChat();
-              },
-              key: 'importCustomChat',
-            },
-            {
-              text: that.$t('robot_config.chat.custom-chat-export'),
-              action() {
-                that.exportCustomChat();
-              },
-              key: 'exportCustomChat',
-            },
-          ],
         },
         {
           key: 'chat',
@@ -359,6 +343,22 @@ export default {
               value: 0,
               module: '',
               type: 'threshold',
+            },
+          ],
+          files: [
+            {
+              text: that.$t('robot_config.chat.custom-chat-import'),
+              action() {
+                that.importCustomChat();
+              },
+              key: 'importCustomChat',
+            },
+            {
+              text: that.$t('robot_config.chat.custom-chat-export'),
+              action() {
+                that.exportCustomChat();
+              },
+              key: 'exportCustomChat',
             },
           ],
         },
