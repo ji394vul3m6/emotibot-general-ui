@@ -1,4 +1,7 @@
 import DropdownMenu from '../components/basic/DropdownMenu';
+import util from '../utils/js/misc';
+
+const dropdownMap = {};
 
 const MyPlugin = {
   getPosition(el, alignLeft) {
@@ -49,16 +52,34 @@ const MyPlugin = {
               options: binding.value.options,
               width: binding.value.width,
               alignLeft: binding.value.alignLeft,
+              optionType: binding.value.optionType,
+              hideAfterOptionClicked: binding.value.hideAfterOptionClicked,
             },
           });
           vm.$mount();
-          el.appendChild(vm.$el);
-          vm.$forceUpdate();
+
+          const body = document.querySelector('body');
+          const useGlobal = binding.value.globalFix;
+          if (useGlobal) {
+            const tempID = util.randomID();
+            el.dataset.id = tempID;
+            dropdownMap[tempID] = vm;
+
+            body.appendChild(vm.$el);
+            vm.$forceUpdate();
+          } else {
+            el.appendChild(vm.$el);
+          }
 
 
           el.addEventListener('dropdown-reload', ({ detail: value = binding.value }) => {
             const newPos = that.getPosition(el, value.alignLeft);
-            el.removeChild(vm.$el);
+            const wasShowing = vm.show;
+            if (useGlobal) {
+              body.removeChild(vm.$el);
+            } else {
+              el.removeChild(vm.$el);
+            }
             vm.$destroy();
             vm = new DropdownGenerator({
               propsData: {
@@ -67,15 +88,28 @@ const MyPlugin = {
                 options: value.options,
                 width: value.width,
                 alignLeft: value.alignLeft,
+                optionType: value.optionType,
+                hideAfterOptionClicked: value.hideAfterOptionClicked,
               },
             });
             vm.$mount();
-            el.appendChild(vm.$el);
+            if (useGlobal) {
+              const id = el.dataset.id;
+              dropdownMap[id] = vm;
+              body.appendChild(vm.$el);
+            } else {
+              el.appendChild(vm.$el);
+            }
             vm.$forceUpdate();
+            if (wasShowing) {
+              vm.$emit('show', that.getPosition(el, binding.value.alignLeft));
+              that.addEventListeners(vm, el, binding.value.alignLeft);
+            }
           });
 
           el.addEventListener('dropdown-show', () => {
             vm.$emit('show', that.getPosition(el, binding.value.alignLeft));
+            that.addEventListeners(vm, el, binding.value.alignLeft);
           });
           el.addEventListener('dropdown-hide', () => {
             el.dispatchEvent(new Event('dropdownHidden'));
@@ -87,6 +121,15 @@ const MyPlugin = {
             that.addEventListeners(vm, el, binding.value.alignLeft);
           });
         });
+      },
+      unbind(el, binding) {
+        if (binding.value.globalFix) {
+          const id = el.dataset.id;
+          const body = document.querySelector('body');
+          body.removeChild(dropdownMap[id].$el);
+          dropdownMap[id].$destroy();
+          delete dropdownMap[id];
+        }
       },
     });
   },

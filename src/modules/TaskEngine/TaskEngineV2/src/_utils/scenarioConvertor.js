@@ -60,6 +60,7 @@ export default {
   getNodeInfo(edges) {
     let isLastNode = true;
     edges.forEach((edge) => {
+      if (edge.edge_type === 'global_normal') return;
       if (!edge.to_node_id) return;
       const toNodeId = edge.to_node_id;
       if (toNodeId !== '0' && toNodeId !== null && toNodeId !== undefined) {

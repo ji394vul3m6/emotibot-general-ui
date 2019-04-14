@@ -7,27 +7,35 @@
       </div>
     </div>
     <div class="chat-item">
-      <template v-if="data.content.type === 'text' && data.content.subType === 'text'">
-        <template v-if="data.html">
+      <template v-if="data.content.type === 'text'">
+        <template v-if="data.content.subType === 'guslist' || data.content.subType === 'relatelist'">
+        <div class="chat-content">{{ data.content.value }}
+          <div v-for="(sentence, idx) in data.content.data" :key="sentence" @click="sendUserText(sentence)" class='click-text'>
+            {{ idx + 1 }}. {{ sentence }}
+          </div>
+        </div>
+        </template>
+        <template v-else-if="data.content.subType === 'text'">
+          <div class="chat-content">{{data.content.value}}</div>
+        </template>
+        <template v-else-if="data.html">
           <div class="chat-content" v-html="data.content.value">
           </div>
         </template>
         <template v-else>
-          <div class="chat-content">{{data.content.value}}</div>
+          <div class="chat-content">{{data.content.value.toString()}}</div>
         </template>
-      </template>
-      <template v-if="data.content.type === 'text' && (data.content.subType === 'guslist' || data.content.subType === 'relatelist')">
-        <div class="chat-content">{{ data.content.value }}
-          <div v-for="(sentence, idx) in data.content.data" :key="sentence" @click="sendUserText(sentence, true)" class='click-text'>
-            {{ idx + 1 }}. {{ sentence }}
-          </div>
-        </div>
       </template>
       <template v-if="data.content.type === 'cmd'">
         <div class="chat-content"> 
-        [{{ $t('qatest.cmd') }}]：
-        {{ $t(`qatest.cmdlist.${data.content.subType}`) !== `qatest.cmdlist.${data.content.subType}`
-        ? $t(`qatest.cmdlist.${data.content.subType}`) : data.content.subType }}
+          <div>
+          [{{ $t('qatest.cmd') }}]：
+          {{ $t(`qatest.cmdlist.${data.content.subType}`) !== `qatest.cmdlist.${data.content.subType}`
+          ? $t(`qatest.cmdlist.${data.content.subType}`) : data.content.subType }}
+          </div>
+          <div v-if="data.content.value">
+            {{ data.content.value.toString() }}
+          </div>
         </div>
       </template>
       <div class="chat-time">{{ data.time }}</div>
@@ -52,6 +60,10 @@ export default {
     defaultShowAnalysis: {
       type: Boolean,
       default: false,
+    },
+    convertRecordToChatData: {
+      type: Boolean,
+      default: true,
     },
   },
   data() {
@@ -97,16 +109,27 @@ export default {
       });
       return chatData;
     },
+    sendUserText(sentence) {
+      this.$emit('send', sentence);
+    },
   },
   mounted() {
-    this.chatData = this.recordToChat(this.records);
-    this.showAnalysis = this.defaultShowAnalysis;
-    this.$on('reload', this.handleReload);
-    this.$on('show-analysis', () => {
-      this.showAnalysis = true;
+    const that = this;
+    if (that.convertRecordToChatData) {
+      that.chatData = that.recordToChat(that.records);
+    } else {
+      that.chatData = that.records;
+    }
+    that.showAnalysis = that.defaultShowAnalysis;
+    that.$on('reload', that.handleReload);
+    that.$on('show-analysis', () => {
+      that.showAnalysis = true;
     });
-    this.$on('hide-analysis', () => {
-      this.showAnalysis = false;
+    that.$on('hide-analysis', () => {
+      that.showAnalysis = false;
+    });
+    that.$on('scroll-bottom', () => {
+      that.$refs.qaBox.scrollTop = that.$refs.qaBox.scrollHeight;
     });
   },
 };

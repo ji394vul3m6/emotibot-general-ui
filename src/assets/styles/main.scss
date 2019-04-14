@@ -3,6 +3,10 @@
 html, body {
   overflow: hidden;
   font-size: $app-dft-font-size;
+  font-family: $app-dft-font-family, 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: $color-font-normal;
 }
 
 input {
@@ -114,10 +118,6 @@ textarea {
 }
 
 #app {
-  font-family: $app-dft-font-family, 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: $color-font-normal;
   // margin-top: 60px;
   overflow: hidden;
   height: 100vh;

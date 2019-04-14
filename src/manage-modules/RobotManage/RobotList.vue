@@ -206,7 +206,7 @@ export default {
           validate: true,
           callback: {
             ok(retData) {
-              that.$emit('startLoading');
+              that.$startPageLoading();
               that.$api.addRobot(that.enterpriseID, retData, that.userInfo.id)
             .then(() => that.updateRobots())
             .finally(() => {
@@ -219,7 +219,7 @@ export default {
     },
     updateRobots() {
       const that = this;
-      that.$emit('startLoading');
+      that.$startPageLoading();
       return that.$loadRobotOfUser(that.userInfo).then((robots) => {
         const robotMap = {};
         robots.forEach((robot) => {

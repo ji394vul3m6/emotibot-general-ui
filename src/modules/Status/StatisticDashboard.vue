@@ -245,7 +245,7 @@ export default {
   },
   mounted() {
     const that = this;
-    that.$emit('startLoading');
+    that.$startPageLoading();
     that.$api.getTagTypes().then((data) => {
       that.tagTypes = data.map(d => ({
         key: d.type,

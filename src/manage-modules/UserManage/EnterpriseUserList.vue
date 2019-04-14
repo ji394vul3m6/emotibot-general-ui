@@ -117,12 +117,12 @@ export default {
       ],
       actions: [
         {
-          text: '编辑',
+          text: this.$t('general.edit'),
           type: 'primary',
           onclick: this.popEditUser,
         },
         {
-          text: '刪除',
+          text: this.$t('general.delete'),
           type: 'error',
           onclick: this.deleteUser,
         },
@@ -148,7 +148,7 @@ export default {
     },
     loadUsers() {
       const that = this;
-      that.$emit('startLoading');
+      that.$startPageLoading();
       that.$api.getEnterpriseUsers(that.enterpriseID)
       .then((users) => {
         that.users = users;
@@ -241,7 +241,7 @@ export default {
         },
       };
 
-      that.$emit('startLoading');
+      that.$startPageLoading();
       Promise.all(promises)
       .then(([roles, groups, robots, users]) => {
         popOption.extData.roles = roles;
@@ -311,7 +311,7 @@ export default {
         },
       };
 
-      that.$emit('startLoading');
+      that.$startPageLoading();
       Promise.all(promises)
       .then(([roles, groups, robots, users]) => {
         popOption.extData.roles = roles;

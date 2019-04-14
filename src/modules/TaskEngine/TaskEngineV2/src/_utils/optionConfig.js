@@ -10,6 +10,7 @@ const ActionType = {
   WebAPI: 'web_api',
   JSScript: 'js_script',
   ResponseText: 'response_text',
+  RemoveKey: 'remove_key',
 };
 const Parsers = ['common_parser', 'task_parser', 'hotel_parser', 'user_custom_parser', 'polarity_parser', 'nlu_parser', 'reg_parser'];
 const NLUParserMap = {
@@ -215,6 +216,10 @@ export default {
     {
       text: context.$t('task_engine_v2.condition_action_block.action.response_text'),
       value: ActionType.ResponseText,
+    },
+    {
+      text: context.$t('task_engine_v2.condition_action_block.action.remove_key'),
+      value: ActionType.RemoveKey,
     }];
   },
   Parsers,

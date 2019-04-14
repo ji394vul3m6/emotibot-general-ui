@@ -154,10 +154,12 @@
         :button-type="totalCount > 0 && hasCheckedDataRow ? 'primary' : 'disable'"
         @click="doIgnore(checkedDataRow)">
         {{ $t('statistics.ignore.batch_ignore') }}</text-button>
-      <text-button
-        :button-type="totalCount > 0 && hasCheckedDataRow ? 'primary' : 'disable'"
-        @click="popSelfLearnMark(checkedDataRow)">
-        {{ $t('statistics.mark.batch_mark') }}</text-button>
+      <div id="markBtn" ref="markBtn" :class="{'disabled': totalCount <= 0 || !hasCheckedDataRow}" v-dropdown="markDropdown">
+        <text-button
+        icon-type="header_dropdown_white" :icon-size="8" icon-align="right"
+          :button-type="totalCount > 0 && hasCheckedDataRow ? 'primary' : 'disable'">
+          {{ $t('statistics.mark.batch_mark') }}</text-button>
+      </div>
       <div id="clusterBtn" ref="clusterBtn" :class="{'disabled': totalCount <= 0}" v-dropdown="clusterDropdown">
         <text-button
           icon-type="header_dropdown_white" :icon-size="8" icon-align="right"
@@ -233,6 +235,7 @@ export default {
   api: [tagAPI, api, auditAPI, SSMAPI],
   mixins: [dailyMixin],
   data() {
+    const that = this;
     return {
       isMount: false, // use to prevent trigger doSearch in activated hook
 
@@ -268,59 +271,59 @@ export default {
       endDisableDate: undefined,
       emotionOptions: [
         {
-          value: this.$t('statistics.emotions.angry'),
-          text: this.$t('statistics.emotions.angry'),
+          value: that.$t('statistics.emotions.angry'),
+          text: that.$t('statistics.emotions.angry'),
         },
         {
-          value: this.$t('statistics.emotions.not_satisfied'),
-          text: this.$t('statistics.emotions.not_satisfied'),
+          value: that.$t('statistics.emotions.not_satisfied'),
+          text: that.$t('statistics.emotions.not_satisfied'),
         },
         {
-          value: this.$t('statistics.emotions.satisfied'),
-          text: this.$t('statistics.emotions.satisfied'),
+          value: that.$t('statistics.emotions.satisfied'),
+          text: that.$t('statistics.emotions.satisfied'),
         },
         {
-          value: this.$t('statistics.emotions.neutral'),
-          text: this.$t('statistics.emotions.neutral'),
+          value: that.$t('statistics.emotions.neutral'),
+          text: that.$t('statistics.emotions.neutral'),
         },
       ],
       moduleOptions: [
-        { value: 'backfill', text: this.$t('statistics.modules.backfill') },
-        { value: 'chat', text: this.$t('statistics.modules.chat') },
-        { value: 'keyword', text: this.$t('statistics.modules.keyword') },
-        { value: 'function', text: this.$t('statistics.modules.function') },
-        { value: 'faq', text: this.$t('statistics.modules.faq') },
-        { value: 'task_engine', text: this.$t('statistics.modules.task_engine') },
-        { value: 'to_human', text: this.$t('statistics.modules.to_human') },
-        { value: 'knowledge', text: this.$t('statistics.modules.knowledge') },
-        { value: 'command', text: this.$t('statistics.modules.command') },
-        { value: 'emotion', text: this.$t('statistics.modules.emotion') },
+        { value: 'backfill', text: that.$t('statistics.modules.backfill') },
+        { value: 'chat', text: that.$t('statistics.modules.chat') },
+        { value: 'keyword', text: that.$t('statistics.modules.keyword') },
+        { value: 'function', text: that.$t('statistics.modules.function') },
+        { value: 'faq', text: that.$t('statistics.modules.faq') },
+        { value: 'task_engine', text: that.$t('statistics.modules.task_engine') },
+        { value: 'to_human', text: that.$t('statistics.modules.to_human') },
+        { value: 'knowledge', text: that.$t('statistics.modules.knowledge') },
+        { value: 'command', text: that.$t('statistics.modules.command') },
+        { value: 'emotion', text: that.$t('statistics.modules.emotion') },
       ],
       platformOptions: [
-        { value: 'weixin', text: this.$t('statistics.platform.wechat') },
-        { value: 'app', text: this.$t('statistics.platform.app') },
-        { value: 'web', text: this.$t('statistics.platform.web') },
-        { value: 'ios', text: this.$t('statistics.platform.ios') },
+        { value: 'weixin', text: that.$t('statistics.platform.wechat') },
+        { value: 'app', text: that.$t('statistics.platform.app') },
+        { value: 'web', text: that.$t('statistics.platform.web') },
+        { value: 'ios', text: that.$t('statistics.platform.ios') },
       ],
       genderOptions: [
-        { value: '', text: this.$t('statistics.sex.all') },
-        { value: '0', text: this.$t('statistics.sex.male') },
-        { value: '1', text: this.$t('statistics.sex.female') },
+        { value: '', text: that.$t('statistics.sex.all') },
+        { value: '0', text: that.$t('statistics.sex.male') },
+        { value: '1', text: that.$t('statistics.sex.female') },
       ],
       ignoreOptions: [
-        { value: '', text: this.$t('statistics.ignore.all') },
-        { value: 'ignore', text: this.$t('statistics.ignore.ignore') },
-        { value: 'not_ignore', text: this.$t('statistics.ignore.not_ignore') },
+        { value: '', text: that.$t('statistics.ignore.all') },
+        { value: 'ignore', text: that.$t('statistics.ignore.ignore') },
+        { value: 'not_ignore', text: that.$t('statistics.ignore.not_ignore') },
       ],
       markOptions: [
-        { value: '', text: this.$t('statistics.mark.all') },
-        { value: 'marked', text: this.$t('statistics.mark.marked') },
-        { value: 'not_marked', text: this.$t('statistics.mark.not_marked') },
+        { value: '', text: that.$t('statistics.mark.all') },
+        { value: 'marked', text: that.$t('statistics.mark.marked') },
+        { value: 'not_marked', text: that.$t('statistics.mark.not_marked') },
       ],
       scoreOptions: [
-        { value: '', text: this.$t('general.all') },
-        { value: 'low', text: this.$t('statistics.confidence_score.low') },
-        { value: 'range', text: this.$t('statistics.confidence_score.range') },
+        { value: '', text: that.$t('general.all') },
+        { value: 'low', text: that.$t('statistics.confidence_score.low') },
+        { value: 'range', text: that.$t('statistics.confidence_score.range') },
       ],
       emotionFilters: [],
       modulesFilter: [''],
@@ -332,34 +335,51 @@ export default {
       scoreType: [''],
       timeOption: [
         {
-          text: `1${this.$t('statistics.day')}`,
+          text: `1${that.$t('statistics.day')}`,
           val: 1,
         },
         {
-          text: `7${this.$t('statistics.day')}`,
+          text: `7${that.$t('statistics.day')}`,
           val: 7,
         },
         {
-          text: `${this.$t('general.custom')}`,
+          text: `${that.$t('general.custom')}`,
           val: -1,
         },
       ],
       dayRange: 1,
       pageInfoTooltip: {
-        msg: this.$t('statistics.tooltip'),
+        msg: that.$t('statistics.tooltip'),
       },
       clusterTooltip: {
-        msg: this.$t('statistics.cluster_info'),
+        msg: that.$t('statistics.cluster_info'),
+      },
+      markDropdown: {
+        width: '120px',
+        options: [
+          {
+            text: that.$t('statistics.stdq_mark'),
+            onclick: () => {
+              that.popSelfLearnMark(that.checkedDataRow);
+            },
+          },
+          {
+            text: that.$t('statistics.intent_mark'),
+            onclick: () => {
+              that.popSelfLearnIntentMark(that.checkedDataRow);
+            },
+          },
+        ],
       },
       clusterDropdown: {
         width: '330px',
         options: [
           {
-            text: this.$t('statistics.cluster_dropdown.by_search', { num: this.totalCount }),
-            onclick: this.runCluster,
+            text: that.$t('statistics.cluster_dropdown.by_search', { num: that.totalCount }),
+            onclick: that.runCluster,
           },
           {
-            text: this.$t('statistics.cluster_dropdown.by_checked'),
+            text: that.$t('statistics.cluster_dropdown.by_checked'),
             disabled: true,
           },
         ],
@@ -367,24 +387,27 @@ export default {
       clusterMsg: '',
       tableMaxRecord: 10000,
       searchTooltip: {
-        msg: this.$t('statistics.search_more_hint'),
+        msg: that.$t('statistics.search_more_hint'),
       },
       searching: false,
       categoryRoot: undefined,
       categoryIDMap: {},
       categoryNameMap: {},
       categoryOption: [],
-      // this map use cn hard-code, because this column is the result of emotion module
+      // that map use cn hard-code, because that column is the result of emotion module
       // it will be zh-cn forever.
       emotionMap: {
-        [this.$t('dimension.emotions.angry')]: [
-          '愤怒'],
-        [this.$t('dimension.emotions.not_satisfied')]: [
-          '疑惑', '沮丧', '尴尬', '不满', '不高兴', '厌烦', '反感', '不喜欢', '厌恶'],
-        [this.$t('dimension.emotions.satisfied')]: [
-          '喜欢', '感动', '高兴', '称赞'],
-        [this.$t('dimension.emotions.neutral')]: [
-          '伤心', '害怕', '惊讶', '无聊', '自责', '难过', '寂寞', '疲惫', '焦虑', '中性'],
+        [that.$t('dimension.emotions.angry')]: [
+          '愤怒', '憤怒'],
+        [that.$t('dimension.emotions.not_satisfied')]: [
+          '疑惑', '沮丧', '尴尬', '不满', '不高兴', '厌烦', '反感', '不喜欢', '厌恶',
+          '疑惑', '沮喪', '尷尬', '不滿', '不高興', '厭煩', '反感', '不喜歡', '厭惡'],
+        [that.$t('dimension.emotions.satisfied')]: [
+          '喜欢', '感动', '高兴', '称赞',
+          '喜歡', '感動', '高興', '稱讚'],
+        [that.$t('dimension.emotions.neutral')]: [
+          '伤心', '害怕', '惊讶', '无聊', '自责', '难过', '寂寞', '疲惫', '焦虑', '中性',
+          '傷心', '害怕', '驚訝', '無聊', '自責', '難過', '寂寞', '疲憊', '焦慮', '中性'],
       },
       emotionRevMap: {},
       labelsFilter: [],
@@ -543,6 +566,13 @@ export default {
         that.tableData = table;
       });
     },
+    setIntentMark(markedIntent, positive, record) {
+      const that = this;
+      that.apiSetIntentMark(that.tableData, markedIntent, positive, record)
+      .then((table) => {
+        that.tableData = table;
+      });
+    },
     setIgnore(records, ignore) {
       const that = this;
       that.apiSetIgnore(that.tableData, records, ignore)
@@ -661,7 +691,7 @@ export default {
         return;
       }
 
-      that.$emit('startLoading');
+      that.$startPageLoading();
       that.$api.auditExportLog({
         module,
         filename,
@@ -779,7 +809,9 @@ export default {
       .then((res) => {
         that.convertAPIData(res.data);
         that.tableData = that.appendTableDataAction(res.data);
-        that.headerInfo = that.receiveAPIHeader(res.table_header);
+        if (that.headerInfo === undefined || that.headerInfo.length <= 0) {
+          that.headerInfo = that.receiveAPIHeader(res.table_header);
+        }
         that.totalCount = res.total_size;
         that.markedCount = res.marked_size;
         that.ignoredCount = res.ignored_size;
@@ -813,11 +845,23 @@ export default {
         headerMap[key].default = true;
       });
       headerData.push({
+        key: 'stdq_mark',
+        text: that.$t('statistics.stdq_mark'),
+        type: 'action',
+        width: '100px',
+        lockedRight: true,
+      }, {
+        key: 'intent_mark',
+        text: that.$t('statistics.intent_mark'),
+        type: 'action',
+        width: '80px',
+        lockedRight: true,
+      }, {
         key: 'action',
         text: that.$t('statistics.action'),
         type: 'action',
         info: that.$t('statistics.action_info'),
-        width: '180px',
+        width: '80px',
         lockedRight: true,
       });
       return headerData;
@@ -963,7 +1007,7 @@ export default {
   mounted() {
     const that = this;
     that.isMount = true;
-    that.$emit('startLoading');
+    that.$startPageLoading();
     that.refreshCategory()
     .then(() => that.refreshLabels())
     .then(() => that.refreshPlatforms())
@@ -1124,6 +1168,13 @@ export default {
     }
   }
   #clusterBtn {
+    margin-left: 10px;
+    position: relative;
+    &.disabled {
+      pointer-events: none;
+    }
+  }
+  #markBtn {
     margin-left: 10px;
     position: relative;
     &.disabled {

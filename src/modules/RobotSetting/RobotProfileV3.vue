@@ -27,13 +27,13 @@
             </div>
             <div class="robot-a row">
               <icon :size=24 icon-type="profile_answer" />
-              <input :placeholder="$t('robot_setting.input_qa_placeholder')" 
+              <input :placeholder="$t('robot_setting.input_qa_placeholder')"
                 @compositionstart="compositionstart"
                 @compositionend="compositionend"
                 @keydown="handleKey($event, robotQA, robotQA.answers[0], 'answer')"
                 @blur="resetShowAnswer(robotQA)"
                 v-model="newAnswer" v-if="canEdit">
-              <span v-else>{{ robotQA.show_answer }}</span> 
+              <span v-else>{{ robotQA.show_answer }}</span>
             </div>
             <div class="close-button">
               <icon icon-type="info_close" :size=18 @click="closeQA($event, robotQA)"/>
@@ -260,6 +260,12 @@ export default {
         return;
       }
       const content = that.newQuestion;
+      const sameQuestion = robotQA.relate_questions.filter(item => item.content === content);
+      if (sameQuestion.length > 0) {
+        this.$notifyWarn(that.$t('robot_setting.same_similar_question'));
+        that.newQuestion = '';
+        return;
+      }
 
       that.$api.addRobotQARelateQuestion(robotQA.id, content).then((data) => {
         robotQA.relate_questions.push(data);
@@ -283,6 +289,12 @@ export default {
           return;
         }
         content = that.newExtAnswer;
+        const sameAnswer = robotQA.answers.filter(item => item.content === content);
+        if (sameAnswer.length > 0) {
+          this.$notifyWarn(that.$t('robot_setting.same_extend_answer'));
+          that.newExtAnswer = '';
+          return;
+        }
         that.newExtAnswer = '';
       }
 
@@ -341,6 +353,9 @@ export default {
         return;
       }
       that.robotQAs.forEach((qa) => {
+        if (qa.expand) {
+          qa.show_answer = qa.answers[0].content;
+        }
         qa.expand = false;
       });
       robotQA.expand = true;
@@ -356,7 +371,7 @@ export default {
     },
     loadQAs() {
       const that = this;
-      that.$emit('startLoading');
+      that.$startPageLoading();
 
       that.$api.getRobotQAs()
       .then((data) => {

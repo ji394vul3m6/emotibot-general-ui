@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" @mousemove="checkDragSpliter" @mouseup="endDragSpliter">
     <div :class="{blur: isBackgroundBlur}">
       <div id="app-logo" :class="$i18n.locale" ref="logo"></div>
       <page-header v-if="ready"></page-header>
@@ -10,15 +10,18 @@
         <!-- <div class="app-header" v-if="!isIFrame">{{ pageName }}</div> -->
         <div v-if="showLoading" class="app-body">
           <div class="loading card h-fill w-fill">
-            <loading-dot></loading-dot>
+            <loading-dot v-if="loadingType==='dot'"></loading-dot>
+            <loading-line v-if="loadingType==='line'"></loading-line>
             <div class="loading-msg"> {{ loadingMsg || $t('general.loading') }}</div>
           </div>
         </div>
         <router-view class="app-body" :class="{iframe: isIFrame}" @startLoading="startLoading" @endLoading="endLoading"/>
       </div>
       <transition name="slide-in">
-      <div id="chat-test-pop" :class="{show: isChatOpen}">
-        <component :is="testComponent"></component>
+      <div id="chat-test-pop" :style="{right: isChatOpen ? 0 : `${-1 * testWidth}px`}">
+        <div class="spliter" @mousedown="startDragSpliter"></div>
+        <component :is="testComponent" :style="{width: `${testWidth}px`, 'flex-basis': `${testWidth}px`}"
+          style="flex-shrink: 0; flex-grow: 0;"></component>
       </div>
       </transition>
       </template>
@@ -27,7 +30,8 @@
         <div id="app-page" class="manage">
           <div v-if="showLoading" class="app-body">
             <div class="loading card h-fill w-fill">
-              <loading-dot></loading-dot>
+              <loading-dot v-if="loadingType==='dot'"></loading-dot>
+              <loading-line v-if="loadingType==='line'"></loading-line>
               <div class="loading-msg"> {{ loadingMsg || $t('general.loading') }}</div>
             </div>
           </div>
@@ -56,6 +60,7 @@ import userAPI from '@/manage-modules/_api/user';
 import adminAPI from '@/manage-modules/SystemManage/_api/system';
 import systemAPI from '@/api/system';
 import misc from '@/utils/js/misc';
+import enterpriseAPI from './manage-modules/SystemManage/_api/enterprise';
 
 const defaultPath = '/statistic-dash';
 
@@ -78,7 +83,7 @@ export default {
     'page-menu': PageMenu,
     'user-preference': UserPreference,
   },
-  api: [userAPI, adminAPI, systemAPI],
+  api: [userAPI, adminAPI, systemAPI, enterpriseAPI],
   computed: {
     pageName() {
       return this.$t(this.currentPage.display);
@@ -107,6 +112,7 @@ export default {
   },
   data() {
     return {
+      loadingType: 'dot',
       showLoading: false,
       loadingMsg: '',
       ready: false,
@@ -115,6 +121,8 @@ export default {
       testComponent: QATest,
       checkCookieMs: 5000,
       checkCookieLoop: undefined,
+      draging: false,
+      testWidth: 700,
     };
   },
   watch: {
@@ -339,7 +347,8 @@ export default {
       that.$router.push(`/${page.path}`);
       that.setCurrentPage(newPage);
     },
-    startLoading(msg) {
+    startLoading(msg, type = 'dot') {
+      this.loadingType = type;
       this.showLoading = true;
       this.loadingMsg = msg;
     },
@@ -511,16 +520,72 @@ export default {
         that.setUser(data.id);
         that.setUserInfo(data);
         that.setPrivilegedEnterprise(enterpriseList);
+
         if (data.type !== 0) {
           const robots = that.$getRobots();
           const userRoleMap = JSON.parse(localStorage.getItem('roleMap'));
           that.setRobotList(robots);
           that.setUserRoleMap(userRoleMap);
           that.setPrivilegeList(that.$getPrivModules());
-          // that.setupPages();
         }
-        that.checkPrivilege();
-        that.ready = true;
+
+        let promise = new Promise(r => r());
+        const lastRobot = window.sessionStorage.getItem('appid');
+        const lastEnterprise = window.sessionStorage.getItem('enterprise');
+        if (enterpriseList.findIndex(e => e.id === lastEnterprise) >= 0) {
+          promise = promise
+            .then(() => that.$api.getEnterpriseModules(lastEnterprise))
+            .then((datas) => {
+              const showModules = datas.filter(mod => mod.status);
+              localStorage.setItem('enterprise', lastEnterprise);
+              localStorage.setItem('modules', JSON.stringify(showModules));
+              this.setEnterprise(lastEnterprise);
+            })
+            .then(() => that.$loadRobotOfUser(that.userInfo))
+            .then((robots) => {
+              const robotMap = {};
+              robots.forEach((robot) => {
+                robotMap[robot.id] = robot;
+              });
+              that.setRobotList(robots);
+              const userRoleMap = JSON.parse(localStorage.getItem('roleMap'));
+              that.setUserRoleMap(userRoleMap);
+              that.setPrivilegeList(that.$getPrivModules());
+              return robots;
+            })
+            .then((robots) => {
+              if (robots.findIndex(e => e.id === lastRobot) >= 0) {
+                that.setRobot(lastRobot);
+                let p;
+                if (data.type === 2) {
+                  const roleIDs = that.userRoleMap[lastRobot];
+                  const roleID = roleIDs[0];
+                  const promises = roleIDs.map(id =>
+                    that.$api.getEnterpriseRole(that.enterpriseID, id));
+
+                  p = Promise.all(promises).then((roles) => {
+                    that.setUserRole(roles);
+                  })
+                  .then(() => that.$api.updateBFUserRole(
+                      that.enterpriseID, that.userInfo.id, roleID));
+                } else {
+                  p = new Promise(r => r());
+                }
+                return p
+                  .then(() => that.$reqGet(
+                    `/robot/stare/${lastRobot}?appid=${lastRobot}&user_id=${that.userInfo.id}`))
+                  .then(() => {
+                    that.setRobot(lastRobot);
+                  });
+              }
+              return new Promise(r => r());
+            });
+        }
+
+        promise.then(() => {
+          that.checkPrivilege();
+          that.ready = true;
+        });
       })
       .then(() => {
         that.loadLogo();
@@ -553,9 +618,30 @@ export default {
 
       window.addEventListener('keydown', that.debugListener);
     },
+    startDragSpliter(e) {
+      this.draging = true;
+      e.stopPropagation();
+      e.preventDefault();
+    },
+    checkDragSpliter(e) {
+      if (!this.draging) {
+        return;
+      }
+      let width = screen.width - e.x;
+      if (width < 300) {
+        width = 300;
+      } else if (width > 700) {
+        width = 700;
+      }
+      this.testWidth = width;
+    },
+    endDragSpliter() {
+      this.draging = false;
+    },
   },
   mounted() {
     this.setup();
+    this.setLanguage(this.$i18n.locale);
   },
 };
 </script>
@@ -581,13 +667,16 @@ export default {
 
 #chat-test-pop {
   position: fixed;
-  right: -700px;
+  // right: -700px;
   top: 0;
   height: 100vh;
-  width: 700px;
+  // width: 500px;
+  min-width: 300px;
+  max-width: 700px;
   background: #EEEEEE;
   box-shadow: 0 0 5px #CCCCCC;
   transition: right 1s;
+  display: flex;
   &.show {
     right: 0px;
   }
@@ -603,6 +692,13 @@ export default {
   }
   &.slide-in-enter-to, &.slide-in-leave {
     right: 0;
+  }
+
+  .spliter {
+    flex: 0 0 4px;
+    width: 4px;
+    margin-left: -4px;
+    cursor: col-resize;
   }
 }
 #app-page {

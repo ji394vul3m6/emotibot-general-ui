@@ -592,6 +592,15 @@ export default {
           },
         };
       }
+      case ActionType.RemoveKey: {
+        return {
+          source: 'global_info',
+          function: {
+            function_name: 'remove_key',
+            content: '',
+          },
+        };
+      }
       default:
         return {};
     }

@@ -99,7 +99,7 @@ export default {
     popGroupEditor(group) {
       // when group is undefined, create new robot group
       const that = this;
-      that.$emit('startLoading');
+      that.$startPageLoading();
       that.getRobotsAndGroups()
       .then((data) => {
         const option = {
@@ -113,7 +113,7 @@ export default {
           },
           callback: {
             ok(retData) {
-              that.$emit('startLoading');
+              that.$startPageLoading();
               let promise;
               if (group === undefined) {
                 promise = that.$api.addRobotGroup(that.enterpriseID, retData);
@@ -164,7 +164,7 @@ export default {
     },
     loadGroup() {
       const that = this;
-      that.$emit('startLoading');
+      that.$startPageLoading();
       that.$api.getRobotGroups(that.enterpriseID).then((groups) => {
         that.robotGroups = groups;
       })

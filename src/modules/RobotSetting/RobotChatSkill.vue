@@ -3,7 +3,8 @@
     <fieldset v-for="group in infoGroups" :key="group.name">
       <legend>{{ group.name }}</legend>
       <div class="card-container">
-        <div v-for="id in group.infoIDs"
+        <template v-for="id in group.infoIDs">
+        <div
           :ref="skillInfos[id].name"
           :key="id" class="card"
           v-if="skillInfos[id] !== undefined">
@@ -28,11 +29,13 @@
             </div>
             </transition>
         </div>
+        </template>
       </div>
     </fieldset>
     <div class="fix-top fixed" ref='top-fix'>
       <div v-for="(group, groupIdx) in infoGroups" :key="group.name" class="quick-link-container">
-        <div v-for="(id, idx) in group.infoIDs"
+        <template v-for="(id, idx) in group.infoIDs">
+        <div 
           :key="skillInfos[id].name"
           v-if="skillInfos[id] !== undefined"
           class="quick-link"
@@ -43,11 +46,13 @@
           @click="clickAndScroll">
           {{ skillInfos[id].name }}
         </div>
+        </template>
       </div>
     </div>
     <div class="fix-bottom fixed" ref='bottom-fix'>
       <div v-for="(group, groupIdx) in infoGroups" :key="group.name" class="quick-link-container">
-        <div v-for="(id, idx) in group.infoIDs"
+        <template v-for="(id, idx) in group.infoIDs">
+        <div
           :key="skillInfos[id].name"
           v-if="skillInfos[id] !== undefined && infoPos[id] === 1"
           class="quick-link"
@@ -58,6 +63,7 @@
           @click="clickAndScroll">
           {{ skillInfos[id].name }}
         </div>
+        </template>
       </div>
     </div>
   </div>
@@ -164,7 +170,7 @@ export default {
       const skillInfos = {};
       const buttonEnable = {};
       const infoPos = {};
-      that.$emit('startLoading');
+      that.$startPageLoading();
       that.$api.getRobotChatDescription().then((data) => {
         data.forEach((info) => {
           skillInfos[info.type] = info;
@@ -210,7 +216,7 @@ export default {
       infoGroups: [
         {
           name: this.$t('chat_skill.group_basic'),
-          infoIDs: [1, 13, 2, 4, 3, 12],
+          infoIDs: [1, 2, 4, 3, 12],
         },
         {
           name: this.$t('chat_skill.group_emotion'),

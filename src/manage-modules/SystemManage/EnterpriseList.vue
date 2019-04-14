@@ -99,9 +99,7 @@ export default {
         localStorage.setItem('modules', JSON.stringify(showModules));
         this.setEnterprise(enterprise.enterpriseID);
 
-        const robots = that.$getRobots();
         const userRoleMap = JSON.parse(localStorage.getItem('roleMap'));
-        that.setRobotList(robots);
         that.setUserRoleMap(userRoleMap);
         that.setPrivilegeList(that.$getPrivModules());
         that.$router.push(robotListPage);
@@ -194,7 +192,7 @@ export default {
     addEnterprise(data) {
       const that = this;
       let imEnable = false;
-      that.$emit('startLoading');
+      that.$startPageLoading();
       that.$api.getEnv().then((rspData) => {
         imEnable = (rspData.IM_ENABLE === '1' || rspData.IM_ENABLE === 'true');
       })
@@ -217,7 +215,7 @@ export default {
     },
     editEnterprise(id, data) {
       const that = this;
-      that.$emit('startLoading');
+      that.$startPageLoading();
       return this.$api.updateEnterprise(id, data)
       .then(() => that.reloadEnterprise())
       .finally(() => {

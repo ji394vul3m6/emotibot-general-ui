@@ -1,24 +1,8 @@
 <template>
   <div class="import-block">
-    <!-- <div class="method-chooser-block">
-      <span class="method-option">
-        <input type="radio" id="byUpdate" name="method" checked/>
-        <label for="byUpdate">{{ $t('intent_engine.import.by_update') }}</label>
-      </span>
-      <span class="method-option">
-        <input type="radio" id="byReplace" name="method"/>
-        <label for="byReplace">{{ $t('intent_engine.import.by_replace') }}</label>
-        <div class="icon-container"
-          @mouseover="toggleIconHover(true)"
-          @mouseout="toggleIconHover(false)"
-          v-tooltip="infoTooltip"
-          >
-          <icon v-if="iconHover" iconType="info_hover" :size=16></icon>
-          <icon v-else iconType="info" :size=16></icon>
-        </div>
-      </span>
-    </div> -->
-    
+    <div class="note">
+      {{$t('intent_engine.import.note')}}
+    </div>
     <div class="file-chooser">
       <input type="file" ref="fileChooser" id="fileChooser" accept=".xlsx" @change="validateFile"/>
       <text-button
@@ -42,6 +26,7 @@
   </div>
 </template>
 <script>
+import { mapGetters } from 'vuex';
 
 export default {
   data() {
@@ -66,9 +51,14 @@ export default {
       }
     },
   },
+  computed: {
+    ...mapGetters([
+      'showLanguage',
+    ]),
+  },
   methods: {
     downloadTemplate() {
-      window.open('/Files/intent_template.xlsx', '_blank');
+      window.open(`/Files/intent_template.xlsx?locale=${this.showLanguage}`, '_blank');
     },
     toggleIconHover(bool) {
       this.iconHover = bool;
@@ -122,16 +112,24 @@ export default {
 .import-block {
   @include font-14px();
   width: 480px;
-  padding: 0 24px;
+  border-top: 1px solid $color-borderline-disabled;
+  border-bottom: 1px solid $color-borderline-disabled;
+  padding: 10px 20px;
+  .note{
+    padding: 10px;
+    background-color: $color-disabled;
+  }
   .file-chooser {
     width: 100%;
     display: flex;
     align-items: center;
+    margin-top: 10px;
     #fileChooser {
       display: none;
     }
     .file-button {
       flex: 0 0 auto;
+      width: 96px;
     }
     .file-name {
       @include font-12px();
@@ -155,46 +153,11 @@ export default {
     color: $color-font-mark;
   }
   .download-template {
-    @include font-12px();
+    @include font-12px-line-height-28px();
     color: $color-primary;
+    margin-bottom: 40px;
     span {
-      cursor: pointer;
-    }
-  }
-  .method-chooser-block {
-    margin-bottom: 32px;
-    display: flex;
-    .method-option {
-      margin: 0 5px;
-      display: flex;
-      align-items: center;
-      input[type=radio] {
-        cursor: pointer;
-      }
-      label{
-        cursor: pointer;
-        margin-left: 6px;
-      }
-      .icon-container{
-        margin-left: 8px;
-        display: flex;
-        align-items: center;
-        cursor: pointer;
-      }
-    }
-  }
-  .devider {
-    display: inline-block;
-    height: 2px;
-    width: 100%;
-    margin: 24px 0;
-    background-color: $color-primary;
-    opacity: 0.25;
-  }
-  .note {
-    li {
-      list-style-type: disc;
-      list-style-position: inside;
+      @include clickable-text();
     }
   }
 }

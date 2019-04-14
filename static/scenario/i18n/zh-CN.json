@@ -8,7 +8,7 @@
   "scenario_list_page": {
     "button_create_new_scenario": "+创建新场景",
     "scenario_list": "场景列表",
-    "placeholder_search": "搜寻...",
+    "placeholder_search": "搜索...",
     "ask_delete_confirm": "是否确认要删除此场景？"
   },
   "scenario_edit_page": {
@@ -153,7 +153,7 @@
   "entity_management": {
     "title": "自定义实体",
     "create_new_entity_type": "新增实体型别",
-    "search_placeholder": "搜寻...",
+    "search_placeholder": "搜索...",
     "entity_type": "实体型别",
     "create_date": "创建日期",
     "cagegory": "分类",
@@ -166,7 +166,7 @@
     "set_as_required":"设定为必要题取信息"
   },
   "general": {
-    "custom": "自订",
+    "custom": "自定义",
     "update_time": "最后刷新时间",
     "close": "关闭",
     "operation": "操作",

@@ -173,7 +173,6 @@ function parseCommands(commands) {
 }
 
 function getRobotCommands() {
-  console.log(COMMANDS_PATH);
   return this.$reqGet(COMMANDS_PATH)
     .then((response) => {
       const commands = response.data.result;

@@ -20,6 +20,7 @@ function addCustomHeader(config) {
     option.headers = {};
   }
   option.headers['X-Appid'] = appid;
+  option.headers['X-Locale'] = localStorage.getItem('locale');
   if (token !== '' && token !== undefined && token !== null) {
     option.headers.Authorization = `Bearer ${token}`;
   }

@@ -1,86 +1,134 @@
 <template>
   <div class="robot-special-words">
     <div class="card w-fill h-fill">
-      <nav-bar :options=pageMap />
-      <div class="content">
-        <div class="config-block">
-          <div class="block-title row">{{ $t('robot_config.robot.title') }}{{ $t('general.setting') }}</div>
-          <div class="row">
-            <div class="row-title">{{ $t('robot_config.robot.title') }}{{ $t('robot_config.robot.name') }}</div>
-            <div v-if="robotNameEdit">
-              <input v-model="robotEditName" :placeholder="$t('robot_config.robot.default')" ref="name-input"
-                @keyup.enter="finishEditName"
-                @keyup.esc="cancelEditName"
-                @blur="cancelEditName">
+      <nav-bar class="nav" :options="pageMap" />
+      <div class="card-content">
+        <div class="menu-list">
+          <div class="menu-container">
+            <div class="active-bar" :style="activeBarStyle"></div>
+            <div class="menu" @click="scrollTo('robot')">{{ $t('robot_config.robot.title') }}{{ $t('general.setting') }}</div>
+            <template v-for="config in configs">
+            <div v-if="config.status" :key="config.key" class="menu"
+              @click="scrollTo(config.key)">
+              <div>{{ $t(`robot_config.${config.key}.title`) }}{{ $t('general.setting') }}</div>
             </div>
-            <div v-else class="row-value">
-              <div>{{ robotName || $t('robot_config.robot.default') }}</div>
-              <div class="row-value-edit" @click.stop="startEditRobotName" v-if="editTarget === undefined">
-                <icon :size=12 icon-type="edit_blue"></icon>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="row-title">{{ $t('robot_config.robot.title') }}{{ $t('robot_config.robot.language') }}</div>
-            <dropdown-select :options="languageOption" width="150px" v-model="robotLanguage" ref="language" @input="changeLanguage"/>
+            </template>
           </div>
         </div>
-        <div v-for="config in configs" :key="config.key" class="config-block">
-          <div class="block-title row">{{ $t(`robot_config.${config.key}.title`) }}{{ $t('general.setting') }}</div>
-          <div class="row" v-if="!config.alwaysOn">
-            <div class="row-title">{{ $t('general.enable') }}/{{ $t('general.disable') }}{{ $t(`robot_config.${config.key}.title`) }}:</div>
-            <toggle v-model="config.on" @input="handleConfigChange(config, $event)"/>
-          </div>
-          <template v-if="config.on || config.alwaysOn">
-          <template v-if="config.children !== undefined">
-          <div class="row">
-            <div class="row-title">{{ $t('robot_config.rule') }}</div>
-            <div class="row-content">
-            <div v-for="child in config.children" :key="child.key" class="content-row">
-              <template v-if="!child.alwaysOn">
-              <toggle class="content-row-toggle" v-model="child.on" @input="handleConfigChange(child, $event)"/>
-              </template>
-              <div class="content-row-desc" >
-                <!-- Show status -->
-                <template v-if="editTarget !== child">
-                  <template v-if="child.type === 'threshold' || child.type === 'string' || child.type === 'number'">
-                  {{ $t(`robot_config.${config.key}.${child.key}-pre`) }} {{ child.value }} {{ $t(`robot_config.${config.key}.${child.key}-suf`) }}
-                  </template>
-                  <template v-if="child.type === 'switch'">
-                  {{ $t(`robot_config.${config.key}.${child.key}-info`) }}
-                  </template>
-                </template>
-                <!-- Edit status -->
-                <template v-else>
-                  <template v-if="child.type === 'threshold'">
-                  {{ $t(`robot_config.${config.key}.${child.key}-pre`) }}
-                  <input v-model="editNumber" ref="edit-input" type="number" max="100" min="0"
-                    @keyup.enter="finishEdit(child)" @input="checkThreshold(config)" @blur="cancelEditConfig" @keyup.esc="cancelEditConfig">
-                  {{ $t(`robot_config.${config.key}.${child.key}-suf`) }}
-                  </template>
-                  <template v-if="child.type === 'number'">
-                  {{ $t(`robot_config.${config.key}.${child.key}-pre`) }}
-                  <input v-model="editNumber" ref="edit-input" type="number"
-                    @keyup.enter="finishEdit(child)" @blur="cancelEditConfig" @keyup.esc="cancelEditConfig">
-                  {{ $t(`robot_config.${config.key}.${child.key}-suf`) }}
-                  </template>
-                  <template v-if="child.type === 'string'">
-                  {{ $t(`robot_config.${config.key}.${child.key}-pre`) }}
-                  <input v-model="editString" ref="edit-input"
-                    @keyup.enter="finishEdit(child)" @input="checkInput(config)" @blur="cancelEditConfig" @keyup.esc="cancelEditConfig">
-                  {{ $t(`robot_config.${config.key}.${child.key}-suf`) }}
-                  </template>
-                </template>
+        <div class="content" @wheel="handleScroll" ref="container">
+          <div class="config-block" ref="robot-block" data-key="robot">
+            <div class="block-title row">{{ $t('robot_config.robot.title') }}{{ $t('general.setting') }}</div>
+            <div class="row">
+              <div class="row-title">{{ $t('robot_config.robot.title') }}{{ $t('robot_config.robot.name') }}</div>
+              <div v-if="robotNameEdit">
+                <input v-model="robotEditName" :placeholder="$t('robot_config.robot.default')" ref="name-input"
+                  @keyup.enter="finishEditName"
+                  @keyup.esc="cancelEditName"
+                  @blur="cancelEditName">
               </div>
-              <template v-if="child.type !== 'switch' && editTarget === undefined && !robotNameEdit && (child.on || child.alwaysOn)">
-                <div class="content-row-edit" @click.stop="startEdit(child)">
+              <div v-else class="row-value">
+                <div>{{ robotName || $t('robot_config.robot.default') }}</div>
+                <div class="row-value-edit" @click.stop="startEditRobotName" v-if="editTarget === undefined">
                   <icon :size=12 icon-type="edit_blue"></icon>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="row-title">{{ $t('robot_config.robot.title') }}{{ $t('robot_config.robot.language') }}</div>
+              <dropdown-select :options="languageOption" width="150px" v-model="robotLanguage" ref="language" @input="changeLanguage"/>
+            </div>
+          </div>
+          <template v-for="config in configs">
+            <div v-if="config.status" :key="config.key" class="config-block" :data-key="config.key" ref="block">
+              <div class="block-title row">{{ $t(`robot_config.${config.key}.title`) }}{{ $t('general.setting') }}</div>
+              <div class="row" v-if="!config.alwaysOn">
+                <div class="row-title">{{ $t('general.enable') }}/{{ $t('general.disable') }}{{ $t(`robot_config.${config.key}.title`) }}:</div>
+                <toggle v-model="config.on" @input="handleConfigChange(config, $event)"/>
+              </div>
+              <template v-if="config.on || config.alwaysOn">
+              <template v-if="config.hasValidChildren" >
+                <div class="row">
+                  <div class="row-title">{{ $t('robot_config.rule') }}</div>
+                  <div class="row-content">
+                  <template v-for="child in config.children">
+                    <div v-if="child.status" :key="child.key" class="content-row">
+                      <template v-if="!child.alwaysOn">
+                      <toggle class="content-row-toggle" v-model="child.on" @input="handleConfigChange(child, $event)"/>
+                      </template>
+                      <div class="content-row-desc" >
+                        <!-- Show status -->
+                        <template v-if="editTarget !== child">
+                          <template v-if="['threshold','string','number','count'].indexOf(child.type) >= 0">
+                          {{ $t(`robot_config.${config.key}.${child.key}-pre`) }} {{ child.value }} {{ $t(`robot_config.${config.key}.${child.key}-suf`) }}
+                          </template>
+                          <template v-if="child.type === 'time-range'">
+                          {{ $t(`robot_config.${config.key}.${child.key}-pre`) }} {{ child.begin }} ~ {{ child.end }} {{ $t(`robot_config.${config.key}.${child.key}-suf`) }}
+                          </template>
+                          <template v-if="child.type === 'switch'">
+                          {{ $t(`robot_config.${config.key}.${child.key}-info`) }}
+                          </template>
+                        </template>
+                        <!-- Edit status -->
+                        <template v-else>
+                          <template v-if="child.type === 'threshold'">
+                          {{ $t(`robot_config.${config.key}.${child.key}-pre`) }}
+                          <input v-model="editNumber" ref="edit-input" type="number" max="101" min="0"
+                            @keyup.enter="finishEdit(child)" @input="checkThreshold(config)" @blur="cancelEditConfig" @keyup.esc="cancelEditConfig">
+                          {{ $t(`robot_config.${config.key}.${child.key}-suf`) }}
+                          </template>
+                          <template v-if="child.type === 'number' || child.type === 'count'">
+                          {{ $t(`robot_config.${config.key}.${child.key}-pre`) }}
+                          <input v-model="editNumber" ref="edit-input" type="number"
+                            @keyup.enter="finishEdit(child)" @blur="cancelEditConfig" @keyup.esc="cancelEditConfig">
+                          {{ $t(`robot_config.${config.key}.${child.key}-suf`) }}
+                          </template>
+                          <template v-if="child.type === 'time-range'">
+                          {{ $t(`robot_config.${config.key}.${child.key}-pre`) }}
+                          <time-range-picker ref="edit-range"
+                            :start="child.begin" :end="child.end"
+                            @finish="finishTimeRangeEdit(child, $event)" @cancel="cancelEditConfig"></time-range-picker>
+                          {{ $t(`robot_config.${config.key}.${child.key}-suf`) }}
+                          </template>
+                          <template v-if="child.type === 'string'">
+                          {{ $t(`robot_config.${config.key}.${child.key}-pre`) }}
+                          <input v-model="editString" ref="edit-input"
+                            @keyup.enter="finishEdit(child)" @input="checkInput(config)" @blur="cancelEditConfig" @keyup.esc="cancelEditConfig">
+                          {{ $t(`robot_config.${config.key}.${child.key}-suf`) }}
+                          </template>
+                        </template>
+                      </div>
+                      <template v-if="child.type !== 'switch' && editTarget === undefined && !robotNameEdit && (child.on || child.alwaysOn)">
+                        <div class="content-row-edit" @click.stop="startEdit(child)">
+                          <icon :size=12 icon-type="edit_blue"></icon>
+                        </div>
+                      </template>
+                    </div>
+                  </template>
+                  </div>
+                </div>
+              </template>
+              </template>
+              <template v-if="config.relatives">
+                <div class="row">
+                  <div class="row-title">{{ $t('robot_config.relative') }}</div>
+                  <div>
+                    <div v-for="relative in config.relatives" :key="relative.url">
+                      <div class="relative-link" @click="$router.push(relative.url)">{{ relative.text }}</div>
+                    </div>
+                  </div>
+                </div>
+              </template>
+              <template v-if="config.files">
+                <div class="row">
+                  <div class="row-title">{{ $t('robot_config.files') }}</div>
+                  <div class="file-wrap">
+                    <template v-for="file in config.files">
+                      <div class="file-manager" @click="file.action" :key="file.text">{{ file.text }}</div>
+                    </template>
+                  </div>
                 </div>
               </template>
             </div>
-            </div>
-          </div>
-          </template>
           </template>
         </div>
       </div>
@@ -91,7 +139,9 @@
 <script>
 import { mapGetters } from 'vuex';
 import NavBar from '@/components/NavigationBar';
+import TimeRangePicker from '@/components/TimeRangePicker';
 import configAPI from './_api/config';
+import ImportCustomChatPop from './_components/ImportCustomChatPop';
 
 function isOn(valStr) {
   return valStr.toLowerCase() === 'on' || valStr.toLowerCase() === 'true';
@@ -118,6 +168,7 @@ function setConfigWithMap(config, configMap) {
         return;
       }
       config.value = target.threadholds;
+      config.status = configMap.ssm_config.status;
     } catch (err) {
       console.log(err);
     }
@@ -126,6 +177,7 @@ function setConfigWithMap(config, configMap) {
     return;
   }
 
+  config.status = configMap[configKey].status;
   config.on = isOn(configMap[configKey].value);
   config.module = configMap[configKey].module;
   if (config.type === 'threshold') {
@@ -133,12 +185,28 @@ function setConfigWithMap(config, configMap) {
     if (configMap[thresholdKey] !== undefined) {
       config.value = parseInt(configMap[thresholdKey].value, 10);
     }
+  } else if (config.type === 'count') {
+    const thresholdKey = `${configKey}-cnt`;
+    if (configMap[thresholdKey] !== undefined) {
+      config.value = parseInt(configMap[thresholdKey].value, 10);
+    }
+  } else if (config.type === 'time-range') {
+    if (configMap[config.begin_key]) {
+      config.begin = configMap[config.begin_key].value;
+    }
+    if (configMap[config.end_key]) {
+      config.end = configMap[config.end_key].value;
+    }
   } else {
     config.value = configMap[configKey].value;
   }
 }
 
 const BFSystemModule = 'bf-env';
+
+function getFixTop(ele) {
+  return ele.getBoundingClientRect().top;
+}
 
 export default {
   path: 'robot_config',
@@ -148,6 +216,8 @@ export default {
   name: 'robot_config',
   components: {
     NavBar,
+    TimeRangePicker,
+    ImportCustomChatPop,
   },
   api: configAPI,
   computed: {
@@ -155,11 +225,24 @@ export default {
       'enterpriseID',
       'robotID',
     ]),
+    activeBarStyle() {
+      let index = 0;
+      const that = this;
+      this.configs.forEach((config, idx) => {
+        if (config.key === that.currentActive) {
+          index = idx + 1;
+        }
+      });
+      return {
+        top: `${38 * index}px`,
+      };
+    },
   },
   data() {
+    const that = this;
     return {
       pageMap: {
-        basic: this.$t('robot_config.robot_config'),
+        basic: that.$t('robot_config.robot_config'),
       },
       wordsList: [],
       secret: '',
@@ -167,7 +250,7 @@ export default {
       editNumber: 0,
       editString: '',
       minThreshold: 0,
-      maxThreshold: 100,
+      maxThreshold: 101,
       configs: [
         {
           key: 'ssm',
@@ -209,10 +292,11 @@ export default {
         {
           key: 'chat',
           on: false,
+          alwaysOn: true,
           module: '',
           children: [
             {
-              key: 'chat-editorial',
+              key: 'chat-robot-custom',
               on: false,
               value: 0,
               module: '',
@@ -226,14 +310,28 @@ export default {
               type: 'threshold',
             },
             {
+              key: 'chat-domain-greeting',
+              on: false,
+              value: 0,
+              module: '',
+              type: 'switch',
+            },
+            {
               key: 'chat-editorial-domain',
               on: false,
               value: 0,
               module: '',
               type: 'threshold',
             },
+            // {
+            //   key: 'chat-editorial-sport',
+            //   on: false,
+            //   value: 0,
+            //   module: '',
+            //   type: 'threshold',
+            // },
             {
-              key: 'chat-editorial-sport',
+              key: 'chat-editorial',
               on: false,
               value: 0,
               module: '',
@@ -246,12 +344,21 @@ export default {
               module: '',
               type: 'threshold',
             },
+          ],
+          files: [
             {
-              key: 'chat-robot-custom',
-              on: false,
-              value: 0,
-              module: '',
-              type: 'threshold',
+              text: that.$t('robot_config.chat.custom-chat-import'),
+              action() {
+                that.importCustomChat();
+              },
+              key: 'importCustomChat',
+            },
+            {
+              text: that.$t('robot_config.chat.custom-chat-export'),
+              action() {
+                that.exportCustomChat();
+              },
+              key: 'exportCustomChat',
             },
           ],
         },
@@ -260,8 +367,77 @@ export default {
           on: false,
         },
         {
-          key: 'human-intent',
+          key: 'to-human',
           on: false,
+          module: '',
+          children: [
+            {
+              key: 'to-human-backfill',
+              on: false,
+              value: 0,
+              module: '',
+              type: 'count',
+            },
+            {
+              key: 'to-human-faq-repeat-q',
+              on: false,
+              value: 0,
+              module: '',
+              type: 'count',
+            },
+            {
+              key: 'to-human-emotion',
+              on: false,
+              value: 0,
+              module: '',
+              type: 'switch',
+            },
+            {
+              key: 'to-human-faq-label',
+              on: false,
+              value: 0,
+              module: '',
+              type: 'switch',
+            },
+            {
+              key: 'to-human-intent',
+              on: false,
+              value: 0,
+              module: '',
+              type: 'switch',
+            },
+            {
+              key: 'human-intent',
+              on: false,
+              value: 0,
+              module: '',
+              type: 'switch',
+            },
+            {
+              key: 'to-human-keyword',
+              on: false,
+              value: 0,
+              module: '',
+              type: 'switch',
+            },
+            {
+              key: 'to-human-work',
+              on: false,
+              value: 0,
+              module: '',
+              type: 'time-range',
+              begin_key: 'to-human-begin-time',
+              end_key: 'to-human-end-time',
+              begin: '',
+              end: '',
+            },
+          ],
+          relatives: [
+            {
+              text: that.$t('robot_config.to-human.words-link'),
+              url: '/robot-chat-skill?page=human',
+            },
+          ],
         },
         {
           key: 'faq',
@@ -339,11 +515,11 @@ export default {
       languageOption: [
         {
           value: 'zh-cn',
-          text: this.$t('general.zh_cn'),
+          text: that.$t('general.zh_cn'),
         },
         {
           value: 'zh-tw',
-          text: this.$t('general.zh_tw'),
+          text: that.$t('general.zh_tw'),
         },
       ],
       robotName: '',
@@ -351,16 +527,94 @@ export default {
       robotNameEdit: false,
       robotLanguage: [],
       origLanguage: '',
+      currentActive: 'robot',
+      targetOffset: 0,
+      scrollTimer: undefined,
     };
   },
   methods: {
+    handleScroll() {
+      const that = this;
+      const container = this.$refs.container;
+      const shift = -40;
+      if (getFixTop(this.$refs['robot-block']) - getFixTop(container) > shift) {
+        that.currentActive = 'robot';
+        return;
+      }
+
+      that.currentActive = '';
+      that.$refs.block.forEach((block) => {
+        if (that.currentActive !== '') {
+          return;
+        }
+        if (getFixTop(block) - getFixTop(container) > shift) {
+          that.currentActive = block.dataset.key;
+        }
+      });
+      if (that.currentActive === '') {
+        that.currentActive = 'robot';
+      }
+    },
+    scrollTo(target) {
+      if (this.scrollTimer !== undefined) {
+        return;
+      }
+      this.currentActive = target;
+      const blocks = this.$refs.block;
+      let targetDiv = this.$refs['robot-block'];
+      blocks.forEach((block) => {
+        if (block.dataset.key === target) {
+          targetDiv = block;
+        }
+      });
+      const parent = targetDiv.parentElement;
+      const targetOffset = targetDiv.offsetTop - parent.offsetTop - 20;
+      this.animateScroll(parent, targetOffset);
+    },
+    animateScroll(element, target) {
+      const that = this;
+      const speed = 5;
+      let interval = 10;
+      const scrollToTarget = () => {
+        const orig = element.scrollTop;
+        if (target > element.scrollTop) {
+          element.scrollTop += speed;
+          if (element.scrollTop > target) {
+            element.scrollTop = target;
+          }
+        } else if (target < element.scrollTop) {
+          element.scrollTop -= speed;
+          if (element.scrollTop < target) {
+            element.scrollTop = target;
+          }
+        }
+        if (that.scrollTimer !== undefined) {
+          clearTimeout(that.scrollTimer);
+          that.scrollTimer = undefined;
+        }
+        if (orig === element.scrollTop) {
+          return;
+        }
+        if (element.scrollTop !== target) {
+          that.scrollTimer = setTimeout(scrollToTarget, interval);
+        }
+      };
+
+      interval = (1000 * speed) / (target - element.scrollTop);
+      that.scrollTimer = setTimeout(scrollToTarget, interval);
+    },
     startEdit(child) {
       const that = this;
       that.editNumber = child.value;
       that.editString = child.value;
       that.editTarget = child;
       that.$nextTick(() => {
-        that.$refs['edit-input'][0].focus();
+        if (that.$refs['edit-input'] !== undefined && that.$refs['edit-input'].length > 0) {
+          that.$refs['edit-input'][0].focus();
+        }
+        if (that.$refs['edit-range'] !== undefined && that.$refs['edit-range'].length > 0) {
+          that.$refs['edit-range'][0].focus();
+        }
       });
     },
     checkInput(config) {
@@ -378,7 +632,7 @@ export default {
     loadAllConfigs() {
       const that = this;
 
-      that.$emit('startLoading');
+      that.$startPageLoading();
       that.$api.getConfigs().then((datas) => {
         datas.forEach((config) => {
           that.flatConfigMap[config.code] = config;
@@ -387,11 +641,15 @@ export default {
         that.configs.forEach((mainConfig) => {
           setConfigWithMap(mainConfig, that.flatConfigMap);
           if (mainConfig.children === undefined) {
+            mainConfig.hasValidChildren = false;
             return;
           }
           mainConfig.children.forEach((child) => {
             setConfigWithMap(child, that.flatConfigMap);
           });
+          mainConfig.hasValidChildren = mainConfig.children.reduce(
+            (val, child) => val || child.status, false);
+          mainConfig.status = mainConfig.status || mainConfig.hasValidChildren;
         });
 
         datas.forEach((config) => {
@@ -405,8 +663,24 @@ export default {
           that.robotLanguage = ['zh-cn'];
           that.origLanguage = 'zh-cn';
         }
+
+        if (that.flatConfigMap['robot-name']) {
+          that.robotName = that.flatConfigMap['robot-name'].value;
+        }
         that.$emit('endLoading');
       });
+    },
+    finishTimeRangeEdit(config, e) {
+      const that = this;
+      config.begin = e.start;
+      config.end = e.end;
+      that.editTarget = undefined;
+      that.$api.setConfig(config.begin_key, config.module, config.begin)
+        .then(() => that.$api.setConfig(config.end_key, config.module, config.end))
+        .then(() => {
+          that.$notify({ text: that.$t('error_msg.save_success') });
+        });
+      that.$forceUpdate();
     },
     finishEdit(config) {
       const that = this;
@@ -440,6 +714,9 @@ export default {
       } else if (config.type === 'threshold') {
         config.value = that.editNumber;
         configKey = `${config.key}-threshold`;
+      } else if (config.type === 'count') {
+        config.value = that.editNumber;
+        configKey = `${config.key}-cnt`;
       } else if (config.type === 'number') {
         config.value = that.editNumber;
       } else if (config.type === 'string') {
@@ -499,6 +776,44 @@ export default {
     cancelEditName() {
       this.robotNameEdit = false;
     },
+    fileActionFunc(funcname) {
+      const that = this;
+      funcname(that);
+    },
+    importCustomChat() {
+      const that = this;
+//      if (!that.allowImport) return;
+      const popOption = {
+        title: that.$t('customchat.importpop.title'),
+        component: ImportCustomChatPop,
+        disable_ok: true,
+        validate: true,
+        callback: {
+          ok(obj) {
+            that.$startPageLoading();
+            that.$api.importCustomChat(obj.upload_type, obj.file).finally(() => {
+              that.$endPageLoading();
+            });
+//              .then((res) => {
+//                that.currentVersion = res.version;
+//                that.$notify({ text: that.$t('error_msg.save_success') });
+//              })
+//              .catch((err) => {
+//                console.log(err);
+//              })
+//              .finally(() => {
+//                that.$endPageLoading();
+//              });
+          },
+        },
+      };
+      that.$pop(popOption);
+    },
+    exportCustomChat() {
+      const that = this;
+//      if (!that.allowImport) return;
+      that.$api.exportCustomChat();
+    },
   },
   mounted() {
     this.loadAllConfigs();
@@ -507,9 +822,57 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.content {
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+
+  .nav {
+    flex: 0 0 60px;
+  }
+  .card-content {
+    flex: 1;
+    overflow: hidden;
+  }
+}
+.card-content {
+  display: flex;
+  align-items: stretch;
+  .menu-list {
+    flex: 0 0 150px;
+  }
+  .content {
+    flex: 1;
+    padding: 20px;
+    padding-bottom: 0;
+    overflow: auto;
+    @include customScrollbar();
+  }
+}
+.menu-list {
   padding: 20px;
-  padding-bottom: 0;
+
+  .menu-container {
+    border-left: 2px solid #cccccc;
+    padding-left: 10px;
+    position: relative;
+    .menu {
+      @include font-14px();
+      @include click-button();
+      line-height: 28px;
+      height: 28px;
+      margin-bottom: 10px;
+    }
+    .active-bar {
+      position: absolute;
+      height: 28px;
+      width: 2px;
+      background-color: #1875f0;
+      top: 0;
+      left: -2px;
+      transition: top .5s;
+    }
+  }
 }
 .config-block {
   @include font-14px();
@@ -567,7 +930,7 @@ export default {
       border-radius: 4px;
       background-color: #f8f8f8;
       padding: 10px;
-      
+
       display: flex;
       flex-direction: column;
       .content-row {
@@ -606,6 +969,19 @@ export default {
           border-radius: 12px;
         }
       }
+    }
+    .relative-link {
+      @include click-button();
+      color: $color-primary;
+    }
+    .file-manager {
+      @include click-button();
+      color: $color-primary;
+      margin-right: 20px;
+    }
+    .file-wrap {
+      display: flex;
+      align-items: center;
     }
   }
 }

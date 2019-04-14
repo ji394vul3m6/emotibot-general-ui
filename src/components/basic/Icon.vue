@@ -259,6 +259,9 @@ export default {
   @include iconType("edit_delete");
   @include iconType("edit_delete_hover");
 
+  /** used on IntentEngine top panel*/
+  @include iconType("slice");
+
 
   // robot icon should a little bit larger than other icons
   .white_robot_icon {

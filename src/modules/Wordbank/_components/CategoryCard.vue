@@ -266,7 +266,7 @@ export default {
     },
     loadWordbanks() {
       const that = this;
-      that.$emit('startLoading');
+      that.$startPageLoading();
       that.$api.getWordbanks()
         .then((data) => {
           that.setWordbank(data);

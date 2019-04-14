@@ -57,7 +57,11 @@
           <div class="tr">
             <template v-for="headerRight in tableColumnRight()">
               <div :key="headerRight.key"
-              :style="{width: headerRight.width}"
+              :style="{
+                width: headerRight.width,
+                maxWidth: headerRight.width,
+                flexBasis: headerRight.width,
+              }"
               :class="columnClassObject(headerRight)"
               class="td table-header-item">
                 {{ headerRight.text }}
@@ -230,7 +234,11 @@
             
             <template v-for="headerRight in tableColumnRight()">
               <div :key="uniqueId(headerRight.key, idx)"
-                :style="{width: headerRight.width}"
+                :style="{
+                  width: headerRight.width,
+                  maxWidth: headerRight.width,
+                  flexBasis: headerRight.width,
+                }"
                 :class="columnClassObject(headerRight)"
                 class="td table-body-item"
                 @click="handleOnclickRow(onclickRow, data, idx)"
@@ -377,6 +385,11 @@ export default {
       required: false,
       default: false,
     },
+    columnBoder: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
@@ -398,6 +411,9 @@ export default {
 
       tableBodyScrollWidth: 0,
       tableBodyClientWidth: 0,
+
+      hintDiv: undefined,
+      showTimer: undefined,
     };
   },
   computed: {
@@ -499,6 +515,7 @@ export default {
         'custom-action': header.type === 'action',
         'multi-action': this.hasMultiCustomAction,
         'icon-column': header.type === 'icon',
+        'column-border': this.columnBoder,
       };
     },
     uniqueId(key, idx) {
@@ -574,21 +591,31 @@ export default {
         return;
       }
       misc.copyToClipboard(text);
+
+      let showText = text.substring(0, 10);
+      if (showText.length !== text.length) {
+        showText = `${showText}...`;
+      }
+      this.$notify({ text: `${this.$t('general.copy')} ${showText}` });
     },
     showFullText(e, text, refName) {
       const that = this;
 
       if (!misc.isEllipsisActive(e.target)) return;
 
-      const columnDom = this.$refs[refName][0];
-      const tableHeaderDom = this.$refs.tableHeader;
+      const columnDom = that.$refs[refName][0];
+      const tableHeaderDom = that.$refs.tableHeader;
       const columnDomRightPos = columnDom.getBoundingClientRect().right;
       const tableHeaderRightPos = tableHeaderDom.getBoundingClientRect().right;
 
+      that.showCopyHint(
+        columnDom.getBoundingClientRect().left + columnDom.offsetWidth,
+        columnDom.getBoundingClientRect().top);
+
       if (tableHeaderRightPos - columnDomRightPos < TOOLTIP_WIDTH) {
-        this.overflowTooltip.alignLeft = true;
+        that.overflowTooltip.alignLeft = true;
       } else {
-        this.overflowTooltip.alignLeft = false;
+        that.overflowTooltip.alignLeft = false;
       }
       that.overflowTooltip.msg = text;
       const ref = Array.isArray(that.$refs[refName]) ? that.$refs[refName][0] : that.$refs[refName];
@@ -598,6 +625,7 @@ export default {
     hideFullText(e, refName) {
       const that = this;
       if (!misc.isEllipsisActive(e.target)) return;
+      that.hideCopyHint();
       const ref = Array.isArray(that.$refs[refName]) ? that.$refs[refName][0] : that.$refs[refName];
       ref.dispatchEvent(event.createEvent('tooltip-hide'));
     },
@@ -668,6 +696,41 @@ export default {
       this.$refs.tableBodyRight.scrollTop += e.deltaY;
       this.syncScroll();
     },
+    showCopyHint(x, y) {
+      if (this.hintDiv) {
+        this.showTimer = setTimeout(() => {
+          this.hintDiv.style.visibility = 'visible';
+          this.hintDiv.style.left = `${x}px`;
+          this.hintDiv.style.top = `${y}px`;
+        }, 1000);
+      }
+    },
+    hideCopyHint() {
+      if (this.hintDiv) {
+        if (this.showTimer) {
+          clearTimeout(this.showTimer);
+          this.showTimer = undefined;
+        }
+        this.hintDiv.style.visibility = 'hidden';
+      }
+    },
+    createCopyHint() {
+      const hintDiv = document.createElement('div');
+      const body = document.querySelector('body');
+      hintDiv.style.backgroundImage = 'url(/static/clickToCopy.png)';
+      hintDiv.style.width = '70px';
+      hintDiv.style.height = '18px';
+      hintDiv.style.position = 'fixed';
+      hintDiv.style.top = '0';
+      hintDiv.style.left = '0';
+      hintDiv.style.visibility = 'hidden';
+      body.appendChild(hintDiv);
+      this.hintDiv = hintDiv;
+    },
+    removeCopyHint() {
+      const body = document.querySelector('body');
+      body.removeChild(this.hintDiv);
+    },
   },
   mounted() {
     console.log(this.$slots);
@@ -694,6 +757,7 @@ export default {
         });
       }
     });
+    this.createCopyHint();
   },
   updated() {
     const that = this;
@@ -702,6 +766,7 @@ export default {
   beforeDestroy() {
     document.body.removeEventListener('click', this.hideMenu, true);
     window.removeEventListener('resize', this.detectTableBodyScroll);
+    this.removeCopyHint();
   },
 };
 </script>
@@ -783,6 +848,7 @@ $table-action-width: 80px;
     .tbody {
       flex: 1;
       position: relative;
+      overflow: hidden;
       .table-layout-left {
         overflow-y: hidden;
       }
@@ -962,6 +1028,9 @@ $table-layout-right-flex-basis: 60px;
             // justify-content: space-between;
           }
         }
+        &.column-border{
+          border-right: 1px solid $table-color-borderline;
+        }
       }
       .table-col-action {
         flex: 0 0 $table-action-width;
@@ -1096,6 +1165,9 @@ $table-layout-right-flex-basis: 60px;
               pointer-events: auto;
             }
           }
+        }
+        &.column-border{
+          border-right: 1px solid $table-color-borderline;
         }
       }
       .table-col-action {

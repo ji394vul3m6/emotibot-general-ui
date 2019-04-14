@@ -5,7 +5,7 @@
     v-if="edgeType!=='pc_succeed' && edgeType!=='pc_failed' && edgeType!=='virtual_global_edges'">
     <icon icon-type="delete" :enableHover="true" :size=24 @click="deleteEdge()"/>
   </div>
-  <div class="normal-edge" v-if="edgeType==='normal'">
+  <div class="normal-edge" v-if="edgeType==='normal' || edgeType==='global_normal'">
     <template v-for="(rule, index) in andRules">
       <div class="rule-block" :key="rule.id">
         <div class="row row-function" v-bind:class="{'not-first': index !== 0}">
@@ -183,8 +183,8 @@
           <div class="row"
             v-if="rule.content.tags === NLUParserMap.SELECT_CUSTOMIZE_OPTIONS">
             <div class="label label-start"></div>
-            <button 
-              class="add-new-option" 
+            <button
+              class="add-new-option"
               v-t="'task_engine_v2.condition_action_block.add_option'"
               @click="addNLUSelectOption(rule)">
             </button>

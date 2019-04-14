@@ -23,6 +23,8 @@ import LoadingDot from '@/components/basic/LoadingDot';
 import '@/components/EasyTable/themes-base/index.css';
 import VPagination from '@/components/EasyTable/v-pagination';
 
+import BFOPMixin from '@/store/BFOPMixin';
+
 import App from './App';
 import router from './router';
 import store from './store';
@@ -37,6 +39,7 @@ import Tooltip from './plugins/tooltip';
 import Dropdown from './plugins/dropdown';
 import './plugins/Polyfill';
 import misc from './utils/js/misc';
+// import Mock from './mock';
 
 Vue.config.productionTip = false;
 Vue.use(Tooltip);
@@ -51,6 +54,7 @@ Vue.use(CustomNotification, {
 Vue.use(request);
 Vue.use(auth);
 Vue.use(api);
+// Mock.start();
 
 Vue.component('text-button', TextButton);
 Vue.component('search-input', SearchInput);
@@ -67,6 +71,8 @@ Vue.component('tag', Tag);
 Vue.component('loading-line', LoadingLine);
 Vue.component('loading-dot', LoadingDot);
 Vue.component('nav-bar', NavBar);
+
+Vue.mixin(BFOPMixin);
 
 let locale = localStorage.getItem('locale');
 if (!locale) {
@@ -88,7 +94,7 @@ router.beforeEach((to, from, next) => {
 });
 
 /* eslint-disable no-new */
-new Vue({
+window.vm = new Vue({
   el: '#app',
   router,
   store,

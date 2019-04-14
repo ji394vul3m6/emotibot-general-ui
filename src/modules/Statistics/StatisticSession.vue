@@ -253,7 +253,7 @@ export default {
       that.viewSession = undefined;
       that.nowPage = page === undefined ? 1 : page;
       const filter = that.getSearchParam();
-      that.$emit('startLoading');
+      that.$startPageLoading();
       that.searching = true;
       this.$api.getSessionList(that.nowPage, that.nowLimit, filter).then((rsp) => {
         that.tableData = that.fixDataFormat(rsp.data);
@@ -277,7 +277,7 @@ export default {
         return;
       }
 
-      that.$emit('startLoading');
+      that.$startPageLoading();
       that.$api.auditExportLog({
         module,
         filename,
@@ -329,7 +329,7 @@ export default {
         that.sessionRecords = session.records;
         that.$refs.chatList.$emit('reload', that.sessionRecords);
       } else {
-        that.$emit('startLoading');
+        that.$startPageLoading();
         that.$api.getRecordOfSession(session.session_id).then((rsp) => {
           rsp.data.sort(x => x.log_time);
           rsp.data.reverse();

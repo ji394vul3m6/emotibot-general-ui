@@ -47,10 +47,12 @@
               :button-type="dataRowCount > 0 && hasCheckedDataRow ? 'primary' : 'disable'"
               @click="doIgnore(checkedDataRow)">
               {{ $t('statistics.ignore.batch_ignore') }}</text-button>
-            <text-button
-              :button-type="dataRowCount > 0 && hasCheckedDataRow ? 'primary' : 'disable'"
-              @click="popSelfLearnMark(checkedDataRow)">
-              {{ $t('statistics.mark.batch_mark') }}</text-button>
+            <div class="markBtn" ref="markBtn" :class="{'disabled': dataRowCount <= 0 || !hasCheckedDataRow}" v-dropdown="markDropdown">
+              <text-button
+                icon-type="header_dropdown_white" :icon-size="8" icon-align="right"
+                :button-type="dataRowCount > 0 && hasCheckedDataRow ? 'primary' : 'disable'">
+                {{ $t('statistics.mark.batch_mark') }}</text-button>
+            </div>
           </div>
           <general-table class="content-table cluster-content"
             :tableHeader="clusterRecordHeader"
@@ -87,6 +89,7 @@ export default {
   api,
   mixins: [dailyMixin],
   data() {
+    const that = this;
     return {
       totalCount: 0,
       ingoredCount: 0,
@@ -104,12 +107,12 @@ export default {
       clusterGroupHeader: [
         {
           key: 'tag',
-          text: this.$t('statistics.cluster.cluster_tag'),
+          text: that.$t('statistics.cluster.cluster_tag'),
           width: '195px',
         },
         {
           key: 'count',
-          text: this.$t('statistics.cluster.cluster_q_count'),
+          text: that.$t('statistics.cluster.cluster_q_count'),
           width: '116px',
         },
       ],
@@ -117,11 +120,11 @@ export default {
       clusterRecordHeader: [
         {
           key: 'user_q',
-          text: this.$t('statistics.user_question'),
+          text: that.$t('statistics.user_question'),
         },
         {
           key: 'action',
-          text: this.$t('general.actions'),
+          text: that.$t('general.actions'),
           type: 'action',
         },
       ],
@@ -144,6 +147,23 @@ export default {
       currentClusterRecord: [],
       currentClusterTitle: '',
       isTableLoading: false,
+      markDropdown: {
+        width: '120px',
+        options: [
+          {
+            text: that.$t('statistics.stdq_mark'),
+            onclick: () => {
+              that.popSelfLearnMark(that.checkedDataRow);
+            },
+          },
+          {
+            text: that.$t('statistics.intent_mark'),
+            onclick: () => {
+              that.popSelfLearnIntentMark(that.checkedDataRow);
+            },
+          },
+        ],
+      },
     };
   },
   computed: {
@@ -187,6 +207,13 @@ export default {
       that.apiSetMark(that.clusterRecordData, markedQuestion, record, tomark)
       .then((table) => {
         that.clusterRecordData = table;
+      });
+    },
+    setIntentMark(markedIntent, positive, record) {
+      const that = this;
+      that.apiSetIntentMark(that.tableData, markedIntent, positive, record)
+      .then((table) => {
+        that.tableData = table;
       });
     },
     setIgnore(records, ignore) {
@@ -434,6 +461,12 @@ export default {
       .cluster-header {
         .text-button {
           margin-left: 10px;
+          &.disabled {
+            pointer-events: none;
+          }
+        }
+        .markBtn {
+          display: inline-block;
           &.disabled {
             pointer-events: none;
           }

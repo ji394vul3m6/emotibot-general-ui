@@ -41,7 +41,7 @@ const robotModule = {
         {
           id: 'robot_setting',
           name: this.$t('pages.robot_setting.module_name'),
-          privCode: ['robot_profile', 'robot_function', 'robot_chat_skill', 'robot_command', 'integration'],
+          privCode: ['robot_profile', 'robot_function', 'robot_chat_skill', 'robot_command', 'integration', 'robot_config', 'robot_custom_chat'],
           operation: ['all', 'add', 'edit', 'delete', 'active', 'deactive'],
         },
       ],

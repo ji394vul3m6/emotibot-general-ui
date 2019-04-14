@@ -89,7 +89,7 @@ export default {
       if (file.size <= 0 || file.size > config.MaximumFileSize) {
         that.$notifyFail(that.$t('error_msg.upload_file_size_error'));
       } else {
-        that.$emit('startLoading');
+        that.$startPageLoading();
         that.$api.uploadMapping(appid, file).then((data) => {
           const res = data.data;
           if (res.return === 0) {
@@ -112,7 +112,7 @@ export default {
       const that = this;
       const fileName = itemData.file_name;
 
-      that.$emit('startLoading');
+      that.$startPageLoading();
       that.$api.deleteMappingList(fileName).then(() => {
         that.$emit('endLoading');
         that.$notify({ text: that.$t('error_msg.delete_success') });
@@ -127,7 +127,7 @@ export default {
       const fileName = itemData.file_name;
       const user = itemData.user;
 
-      that.$emit('startLoading');
+      that.$startPageLoading();
       that.$api.downloadMappingList(fileName, user).then((data) => {
         that.$emit('endLoading');
         const csvData = data.data;
@@ -161,7 +161,7 @@ export default {
     loadList() {
       const that = this;
 
-      that.$emit('startLoading');
+      that.$startPageLoading();
       that.tableData = [];
       const userid = that.$cookie.get('userid');
       if (userid !== '4c8cad6375894d487327cd1e7c5d5ef4') { // add template data for none template user

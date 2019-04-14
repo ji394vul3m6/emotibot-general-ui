@@ -81,6 +81,7 @@ export default {
       'wordbank',
       'currentCategory',
       'isEditMode',
+      'showLanguage',
     ]),
     tableData() { // This is curPage
       // Handle empty data cause curPageIdx to zero;
@@ -202,7 +203,7 @@ export default {
       this.checkedWordbank = [];
     },
     exportWordbank() {
-      window.open('/api/v3/dictionary/export?zh_tw=true', '_blank');
+      window.open(`/api/v3/dictionary/export?locale=${this.showLanguage}`, '_blank');
     },
     viewWordbank(data) {
       this.$api.getWordbank(data.wid)

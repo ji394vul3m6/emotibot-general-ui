@@ -64,6 +64,7 @@
   </div>
 </template>
 <script>
+import { mapGetters } from 'vuex';
 import auditAPI from '@/api/audit';
 import format from '@/utils/js/format';
 import desc from './_data/wordbankImportDesc';
@@ -95,6 +96,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters(['showLanguage']),
     canImport() {
       return this.$hasRight('import');
     },
@@ -107,7 +109,7 @@ export default {
       window.open(path, '_blank');
     },
     downloadTemplate() {
-      window.open('/Files/wordbank_template.xlsx', '_blank');
+      window.open(`/Files/wordbank_template.xlsx?locale=${this.showLanguage}`, '_blank');
     },
     openFileChooser() {
       this.$refs.fileChooser.click();
@@ -133,7 +135,7 @@ export default {
     },
     uploadFile() {
       const that = this;
-      that.$emit('startLoading');
+      that.$startPageLoading();
       that.$api.uploadFile(this.file)
         .then((data) => {
           const res = data.data;
@@ -163,7 +165,7 @@ export default {
     loadAllAjaxStatus(background) {
       const that = this;
       if (!background) {
-        that.$emit('startLoading');
+        that.$startPageLoading();
       }
       that.$api.getLastResult().then((data) => {
         const res = data.data;
