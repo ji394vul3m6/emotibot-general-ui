@@ -33,6 +33,7 @@ export default {
   mounted() {
     this.$api.focusRobot(this.userID, this.robotID);
     window.addEventListener('message', this.checkIFrameMsg);
+    localStorage.removeItem('CONFIGS');
     this.$refs.iframe.src = '/BF/index.html#index';
   },
   beforeDestroy() {
