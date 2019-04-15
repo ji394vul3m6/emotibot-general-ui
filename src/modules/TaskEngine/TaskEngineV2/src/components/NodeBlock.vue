@@ -217,9 +217,16 @@ export default {
       this.lastMouseX = mouseX;
       this.lastMouseY = mouseY;
 
-      const left = this.x + diffX;
-      const top = this.y + diffY;
+      let left = this.x + diffX;
+      let top = this.y + diffY;
       this.hasMoved = true;
+      // 进行边界处理
+      if (top < 0) {
+        top = 0;
+      } else if (left < 0) {
+        left = 0;
+      }
+      console.log(left, top);
       this.$emit('updatePosition', { left, top });
     },
     onMouseUp() {
