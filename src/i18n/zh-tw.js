@@ -28,8 +28,8 @@ export default {
       'chat-robot-suf': '時使用竹間機器人形象',
       'chat-robot-custom-pre': '信心分數高於',
       'chat-robot-custom-suf': '時使用客制機器人形象',
-      'custom-chat-import': '导入闲聊',
-      'custom-chat-export': '导出闲聊',
+      'custom-chat-import': '導入閒聊',
+      'custom-chat-export': '導出閒聊',
     },
     robot: {
       title: '機器人',
