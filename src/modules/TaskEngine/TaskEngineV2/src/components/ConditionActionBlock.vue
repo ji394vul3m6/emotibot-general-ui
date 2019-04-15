@@ -445,6 +445,12 @@
             </div>
             <!-- NLU解析器 -->
             <div :key="action.parser" v-if="action.parser === 'nlu_parser'">
+              <div class="row" v-if="(action.funcUrl !== undefined && action.funcUrl !== '') || hadCustomUrl">
+                <div class="label label-start">
+                  {{$t("task_engine_v2.condition_block.label_link")}}
+                </div>
+                <input v-tooltip="inputTooltip" class="input-content" v-model="action.funcUrl" @focus="onInputFocus">
+              </div>
               <div class="row">
                 <span class="label" v-t="'task_engine_v2.condition_action_block.label_type'"></span>
                 <dropdown-select
@@ -583,6 +589,7 @@ import DropdownSelect from '@/components/DropdownSelect';
 import intentApi from '@/modules/IntentEngine/_api/intent';
 import Toggle from '@/components/basic/Toggle';
 import general from '@/modules/TaskEngine/_utils/general';
+import taskEngineApi from '@/modules/TaskEngine/_api/taskEngine';
 import scenarioInitializer from '../_utils/scenarioInitializer';
 import optionConfig from '../_utils/optionConfig';
 
@@ -672,6 +679,7 @@ export default {
       { text: this.$t('task_engine_v2.condition_action_block.condition_options.all'), value: ConditionOption.AND },
       { text: this.$t('task_engine_v2.condition_action_block.condition_options.any'), value: ConditionOption.OR },
     ];
+    this.getTaskConfigInfo();
     return {
       edge,
       edgeType,
@@ -733,6 +741,7 @@ export default {
         on: this.$t('task_engine_v2.condition_action_block.on'),
         off: this.$t('task_engine_v2.condition_action_block.off'),
       },
+      hadCustomUrl: false,
     };
   },
   computed: {
@@ -804,6 +813,7 @@ export default {
         type: action.type,
         parser: action.parser,
         nluType: action.nluType,
+        funcUrl: action.function.function_url,
       }));
       // render toNode
       const toNode = edge.to_node_id;
@@ -1039,6 +1049,7 @@ export default {
           function: {
             function_name: action.funcName,
             content: action.content,
+            function_url: action.funcUrl,
           },
           type: action.type,
           parser: action.parser,
@@ -1092,6 +1103,13 @@ export default {
     },
     showToolTip() {
       general.showInputContentTooltip(this.$refs['input-content']);
+    },
+    getTaskConfigInfo() {
+      const that = this;
+      taskEngineApi.taskConfig()
+        .then((data) => {
+          that.hadCustomUrl = data.task_engine_v2.enable_custom_url;
+        });
     },
   },
   mounted() {
