@@ -29,8 +29,8 @@ export default {
       'chat-robot-custom-pre': '信心分數高於',
       'chat-robot-custom-suf': '時使用客制機器人形象',
       'chat-domain-greeting-info': '使用普通寒暄',
-      'custom-chat-import': '导入闲聊',
-      'custom-chat-export': '导出闲聊',
+      'custom-chat-import': '導入閒聊',
+      'custom-chat-export': '導出閒聊',
     },
     robot: {
       title: '機器人',
