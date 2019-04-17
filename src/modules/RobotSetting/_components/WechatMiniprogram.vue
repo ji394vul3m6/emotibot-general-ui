@@ -8,6 +8,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import QRCode from 'qrcodejs2';
 
 export default {
@@ -15,6 +16,11 @@ export default {
     return {
       qrCodeGenerated: false,
     };
+  },
+  computed: {
+    ...mapGetters([
+      'robotID',
+    ]),
   },
   mounted() {
     this.generateQRCode();
@@ -26,7 +32,7 @@ export default {
         const qrcode = new QRCode('qrcode', {
           width: 120,
           height: 120,
-          text: 'http://bf.emotibot.com/BF/Wechat/?appid=a7a3238f134c4acbb39ae2ff701ec519',
+          text: `http://bf.emotibot.com/BF/Wechat/?appid=(bfop)${this.robotID}`,
         });
         console.log(qrcode);
       }, 100);
