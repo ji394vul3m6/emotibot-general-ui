@@ -20,6 +20,7 @@ export default {
   computed: {
     ...mapGetters([
       'robotID',
+      'robotName',
     ]),
   },
   mounted() {
@@ -32,7 +33,7 @@ export default {
         const qrcode = new QRCode('qrcode', {
           width: 120,
           height: 120,
-          text: `http://bf.emotibot.com/BF/Wechat/?appid=(bfop)${this.robotID}`,
+          text: `http://bf.emotibot.com/BF/Wechat/?appid=(bfop-${this.robotName})${this.robotID}`,
         });
         console.log(qrcode);
       }, 100);
