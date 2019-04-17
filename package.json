@@ -104,6 +104,7 @@
     "postcss-import": "~11.0.0",
     "postcss-loader": "~2.0.9",
     "postcss-url": "~7.2.1",
+    "qrcodejs2": "0.0.2",
     "rimraf": "~2.6.0",
     "sass-loader": "~6.0.6",
     "selenium-server": "~3.0.1",

@@ -3,13 +3,35 @@
     <img src="../../../assets/images/wx_miniprogram.svg">
     <p class="title">{{$t('robot_setting.scan_qrcode')}}</p>
     <p class="robot-name">{{$t('robot_setting.bf_dolores')}}</p>
-    <div class="qr-code"></div>
+    <div id="qrcode" class="qr-code"></div>
   </div>
 </template>
 
 <script>
-export default {
+import QRCode from 'qrcodejs2';
 
+export default {
+  data() {
+    return {
+      qrCodeGenerated: false,
+    };
+  },
+  mounted() {
+    this.generateQRCode();
+  },
+  methods: {
+    // 生成微信小程序链接二维码
+    generateQRCode() {
+      setTimeout(() => {
+        const qrcode = new QRCode('qrcode', {
+          width: 120,
+          height: 120,
+          text: 'http://bf.emotibot.com/BF/Wechat/?appid=a7a3238f134c4acbb39ae2ff701ec519',
+        });
+        console.log(qrcode);
+      }, 100);
+    },
+  },
 };
 </script>
 

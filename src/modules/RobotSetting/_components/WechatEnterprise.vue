@@ -29,19 +29,20 @@
       <p class="result-title">{{$t('robot_setting.generate_info')}}</p>
       <div class="line">
         <span class="label">URL</span>
-        <input v-model="generateURL" type="password" disabled></input>
-        <span class="copy-btn">{{$t('general.copy')}}</span>
+        <input id="generateURL" v-model="generateURL" type="password" disabled></input>
+        <span class="copy-btn" @click="handleCopyToClipboard('generateURL')">{{$t('general.copy')}}</span>
       </div>
       <div class="line">
         <span class="label">Token</span>
-        <input v-model="generateURL" type="password" disabled></input>
-        <span class="copy-btn">{{$t('general.copy')}}</span>
+        <input id="generateToken" v-model="generateToken" type="password" disabled></input>
+        <span class="copy-btn" @click="handleCopyToClipboard('generateToken')">{{$t('general.copy')}}</span>
       </div>
       <div class="line">
         <span class="label">EncodingASEKey</span>
-        <input v-model="generateURL" type="password" disabled></input>
-        <span class="copy-btn">{{$t('general.copy')}}</span>
+        <input id="generateASEKey" v-model="generateASEKey" type="password" disabled></input>
+        <span class="copy-btn" @click="handleCopyToClipboard('generateASEKey')">{{$t('general.copy')}}</span>
       </div>
+      <input id="copyInputBox"></input>
       <p class="check-bind-wechat" @click="popUpBindWechat">
       {{$t('general.view')}}{{$t('robot_setting.check_bind_wechat')}}</p>
     </div>
@@ -57,7 +58,9 @@ export default {
       inputEnterpriseID: '',
       inputAgentID: '',
       inputSecret: '',
-      generateURL: '***',
+      generateURL: 'generateURL123',
+      generateToken: 'generateToken1111',
+      generateASEKey: 'generateASEKey1111222',
     };
   },
   computed: {
@@ -81,6 +84,17 @@ export default {
         validate: false,
       };
       this.$pop(options);
+    },
+    // 复制链接内容到剪切板
+    handleCopyToClipboard(inputboxId) {
+      const elCopyTxt = document.getElementById(inputboxId);
+      const copyInput = document.getElementById('copyInputBox');
+      if (elCopyTxt === null || !elCopyTxt.value || copyInput === null) {
+        return;
+      }
+      copyInput.value = elCopyTxt.value;
+      copyInput.select();
+      document.execCommand('Copy');
     },
   },
 };
@@ -127,6 +141,7 @@ export default {
   }
   .result-area{
     padding-top: 35px;
+    position: relative;
     .genereate-tip2{
       @include font-14px();
     }
@@ -155,6 +170,12 @@ export default {
         margin-left: 10px;
         cursor: pointer;
       }
+    }
+    #copyInputBox{
+      z-index: -1;
+      position: absolute;
+      bottom: 80px;
+      opacity: 0;
     }
     .check-bind-wechat{
       @include font-14px-line-height-28px();
