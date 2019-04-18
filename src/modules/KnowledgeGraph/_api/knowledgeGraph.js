@@ -34,32 +34,32 @@ function getLastTestResultStatus(robotId, taskId) {
   return this.$reqGet(`${NEW_ENTITY_PATH}/test/${robotId}/${taskId}`);
 }
 
-function submitTestFile(file, robotId = 'csbot') {
+function submitTestFile(file, robotId) {
   const param = new FormData();
   param.append('file', file);
   return this.$reqPost(`${NEW_ENTITY_PATH}/${robotId}/import/test_data`, param);
 }
 
-function initBuildKG(file, robotId = 'csbot') {
+function initBuildKG(file, robotId) {
   const param = new FormData();
   param.append('file', file);
   return this.$reqPost(`${NEW_ENTITY_PATH}/${robotId}/import/all`, param);
 }
 
 
-function batchUploadEntities(file, robotId = 'csbot') {
+function batchUploadEntities(file, robotId) {
   const param = new FormData();
   param.append('file', file);
   return this.$reqPost(`${NEW_ENTITY_PATH}/${robotId}/import/entity?`, param);
 }
 
-function batchUploadSpecialProperties(file, robotId = 'csbot') {
+function batchUploadSpecialProperties(file, robotId) {
   const param = new FormData();
   param.append('file', file);
   return this.$reqPost(`${NEW_ENTITY_PATH}/${robotId}/import/functional_property?`, param);
 }
 
-function batchUploadProperties(file, robotId = 'csbot') {
+function batchUploadProperties(file, robotId) {
   const param = new FormData();
   param.append('file', file);
   return this.$reqPost(`${NEW_ENTITY_PATH}/${robotId}/import/property?`, param);

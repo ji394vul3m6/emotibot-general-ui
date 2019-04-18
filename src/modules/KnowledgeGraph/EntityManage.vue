@@ -88,10 +88,8 @@
   import api from './_api/knowledgeGraph';
   import Header from '../../components/layout/Header';
   import CorpusDisplay from './_components/DisplayCorpusPop';
-  // import RelationGraph from './_components/RelationGraph';
   import CategorySelector from './_components/CategorySelector';
-  // import ReviewInput from './_components/ReviewInput';
-  import reviewApi from './_api/review';
+
 
   export default {
     path: 'relation-manage-new',
@@ -99,7 +97,6 @@
     displayNameKey: 'relation_manage',
     icon: 'white_folder',
     api,
-    reviewApi,
     components: {
       CategorySelector,
       Header,

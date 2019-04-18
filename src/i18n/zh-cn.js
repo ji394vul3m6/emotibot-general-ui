@@ -910,6 +910,8 @@ export default {
       batch_upload_success: '批量导入知识图谱成功',
       batch_upload_tip: '本功能为全量上传，会覆盖已有内容，请谨慎操作',
       no_testcase_is_found: '未发现有效测试集数据',
+      sandbox_sync_msg: '沙箱数据已成功导入',
+      sandbox_withdraw_msg: '已放弃沙箱数据修改',
     },
 
     property_edit: {

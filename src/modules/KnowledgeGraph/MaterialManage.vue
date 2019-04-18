@@ -169,7 +169,7 @@
           this.$api.syncDataAfterTest(this.robotID);
           this.$message({
             showClose: true,
-            message: '沙箱数据已成功导入',
+            message: this.$t('knowledge_graph.material_manage.sandbox_sync_msg'),
             type: 'success',
           });
           this.refreshSandBoxStatus();
@@ -182,7 +182,7 @@
         this.$api.SandboxWithdraw(this.robotID).then(() => {
           this.$message({
             showClose: true,
-            message: '已放弃沙箱数据修改',
+            message: this.$t('knowledge_graph.material_manage.sandbox_withdraw_msg'),
             type: 'success',
           });
           this.refreshSandBoxStatus();

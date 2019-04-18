@@ -611,8 +611,8 @@ table {
 }
 
 .href {
+  @include click-button();
   color: $color-primary;
-  cursor: pointer;
 }
 
 .tags {

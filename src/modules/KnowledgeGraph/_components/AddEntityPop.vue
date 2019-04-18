@@ -70,7 +70,8 @@
               <el-select v-model="item.property"
                          class="selector"
                          size="mini"
-                         filterable placeholder="请选择"
+                         filterable
+                         :placeholder="$t('general.please_choose')"
                          @change="changePropertyDisplayName(item)"
                          :disabled=item.canEdit>
                 <el-option
@@ -92,7 +93,7 @@
                          class="selector"
                          size="mini"
                          filterable
-                         placeholder="请选择"
+                         :placeholder="$t('general.please_choose')"
                          @visible-change="handleVisibleChange(item)"
                          :disabled=item.canEdit
               >
@@ -139,7 +140,7 @@
                            size="mini"
                            filterable
                            multiple
-                           placeholder="请选择"
+                           :placeholder="$t('general.please_choose')"
                            :disabled=item.canEdit>
                   <el-option
                     v-for="prop in item.hierarchyPropertySelection"
@@ -157,7 +158,7 @@
                            size="mini"
                            filterable
                            :multiple=item.allowMutiValue
-                           placeholder="请选择"
+                           :placeholder="$t('general.please_choose')"
                            :disabled=item.canEdit
                            @change="changePropertyHierarchySelections(item)">
                   <el-option
