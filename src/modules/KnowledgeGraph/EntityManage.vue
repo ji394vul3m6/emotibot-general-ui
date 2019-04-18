@@ -88,7 +88,7 @@
   import api from './_api/knowledgeGraph';
   import Header from '../../components/layout/Header';
   import CorpusDisplay from './_components/DisplayCorpusPop';
-  import RelationGraph from './_components/RelationGraph';
+  // import RelationGraph from './_components/RelationGraph';
   import CategorySelector from './_components/CategorySelector';
   // import ReviewInput from './_components/ReviewInput';
   import reviewApi from './_api/review';
@@ -105,7 +105,7 @@
       Header,
       NavBar,
       AddEntityPop,
-      RelationGraph,
+      // RelationGraph,
       CorpusDisplay,
     },
     data() {
@@ -800,6 +800,8 @@
   };
 </script>
 <style lang="scss" scoped>
+  @import '../../assets/styles/variable';
+
   $header-height: 60px;
   $header-font-size: 16px;
   $header-color: #333333;

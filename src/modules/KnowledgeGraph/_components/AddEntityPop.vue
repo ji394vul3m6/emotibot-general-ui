@@ -10,14 +10,6 @@
           <input class="row-input length-auto" v-model="entityName">
         </div>
       </div>
-      <!--<div class="row">-->
-      <!--<div class="row-title">-->
-      <!--{{ $t('knowledge_graph.entity_edit.introduction') }}-->
-      <!--</div>-->
-      <!--<div class="row-input-col">-->
-      <!--<input class="row-input length-auto" v-model="entityIntroduction">-->
-      <!--</div>-->
-      <!--</div>-->
       <div class="row">
         <div class="row-title">
           {{ $t('wordbank.synonym') }}
@@ -126,37 +118,15 @@
               </div>
               <div class="rich_row">
                 <textarea v-if="textType === 'simple'" rows="5" class="row-input" v-model="item.propertyValue[0]"/>
-                <!--<RichTextField-->
-                  <!--v-if="textType === 'rich'"-->
-                  <!--v-model=item.propertyValue[0]-->
-                <!--&gt;</RichTextField>-->
                 <template v-if="textType==='file'">
                   <div class="row">
-                    <!--<el-tag-->
-                      <!--v-for="(file, idx) in item.propertyValue"-->
-                      <!--v-if="file.fileName !== undefined"-->
-                      <!--:key="idx"-->
-                      <!--closable-->
-                      <!--:disable-transitions="false"-->
-                      <!--@close="removeAttachment(file, item.propertyValue, item)"-->
-                    <!--&gt;-->
-                      <!--{{ file.fileName }}-->
-                    <!--</el-tag>-->
                     <input type="file" ref="attachment" id="entityFileChooser" style="display: none" accept=".jpg"
                            @change="validFile(item, idx)"/>
                     <text-button button-type="primary" @click.stop="uploadAttachment(idx)">
                       {{ $t('knowledge_graph.entity_edit.pic_upload') }}
                     </text-button>
                     <div>{{ item.propertyValue[0] }}</div>
-                    <!--<el-button-->
-                               <!--class="button-new-tag"-->
-                               <!--size="small"-->
-                               <!--@click.stop="uploadAttachment(idx)"-->
-                    <!--&gt;{{ $t('knowledge_graph.entity_edit.attach_file')}}-->
-                    <!--</el-button>-->
-
                   </div>
-
                 </template>
               </div>
 
@@ -294,19 +264,15 @@
   import { mapGetters } from 'vuex';
   import DropdownSelector from '@/components/DropdownSelect';
   import NavBar from '@/components/NavigationBar';
-  import format from '@/utils/js/format';
-  import OperationTable from '../_components/OperationTable';
-  import ExpandColumn from '../_components/ExpandColumn';
-  import TextSwitch from '../_components/TextSwitch';
+  import format from '@/utils/js/misc';
   import api from '../_api/knowledgeGraph';
-  import RichTextField from './RichTextField';
+
 
   export default {
-    RichTextField,
     NavBar,
     name: 'AddEntityPop',
     api,
-
+    format,
     props: {
       extData: {
         type: Object,
@@ -318,9 +284,6 @@
 
     components: {
       DropdownSelector,
-      OperationTable,
-      TextSwitch,
-      RichTextField,
       NavBar,
     },
 
@@ -372,13 +335,14 @@
         entityOptions: [],
         // entityType: 'entity',
         entityValue: '',
-
-        colConfigs: [
-          { prop: 'propertyName', label: this.$t('knowledge_graph.property_edit.property_name') },
-          { prop: 'expanded', label: this.$t('knowledge_graph.property_edit.property_type'), component: ExpandColumn },
-          // { prop: 'action', label: this.$t('general.actions'), component: OperationColumn },
-
-        ],
+        //
+        // colConfigs: [
+        //   { prop: 'propertyName', label: this.$t('knowledge_graph.property_edit.property_name') },
+        //   { prop: 'expanded', label: this.$t('knowledge_graph.property_edit.property_type')
+        //   , component: ExpandColumn },
+        //   // { prop: 'action', label: this.$t('general.actions'), component: OperationColumn },
+        //
+        // ],
         propertySet: [],
         currentPropertySet: [],
         lastActiveName: '',
@@ -454,16 +418,16 @@
         this.lastPageIdx = page;
       },
 
-      removeAttachment(file, propertyValue, item) {
-        const fileId = file.fileName;
-        const propIndex = this.currentPropertySet.indexOf(item);
-
-        this.$api.DeleteAttachDoc(fileId).then(() => {
-          const newPropertyValue = propertyValue.filter(prop => prop.fileName !== fileId);
-          item.propertyValue = newPropertyValue;
-          this.currentPropertySet.splice(propIndex, 1, item);
-        });
-      },
+      // removeAttachment(file, propertyValue, item) {
+      //   const fileId = file.fileName;
+      //   const propIndex = this.currentPropertySet.indexOf(item);
+      //
+      //   this.$api.DeleteAttachDoc(fileId).then(() => {
+      //     const newPropertyValue = propertyValue.filter(prop => prop.fileName !== fileId);
+      //     item.propertyValue = newPropertyValue;
+      //     this.currentPropertySet.splice(propIndex, 1, item);
+      //   });
+      // },
 
       toFirstPage() {
         this.curPageIdx = 1;
@@ -493,18 +457,6 @@
         this.currentPropertySet = this.propertySet.slice(startIdx, endIdx)
           .map(data => data);
         this.lastPageIdx = this.curPageIdx;
-      },
-
-      validateValueInput() {
-        // if (value.length > 0
-        //   && !/^[\u4e00-\u9fa5_a-zA-Z0-9\\(\\)
-        // \u3002\uff1b\uff0c\uff1a\u201c\u201d\uff08\uff09\u3001\uff1f\u300a\u300b]+$/.test(value)) {
-        //   this.$message({
-        //     message: this.$t('knowledge_graph.entity_edit.value_warn_msg'),
-        //     type: 'warning',
-        //     showClose: true,
-        //   });
-        // }
       },
 
       validFile(item, idx) {
@@ -546,15 +498,12 @@
       attachDocument(item, idx) {
         // this.$emit('startLoading');
         this.$api.UploadPicture(this.robotID, this.userID, this.file).then((res) => {
-          // if (res.data.code === 200) {
-          //   const fileData = res.data.data[0];
           const fileData = res.data.data;
           const itemIndex = this.currentPropertySet.indexOf(item);
           item.propertyValue[0] = fileData;
           this.currentPropertySet.splice(itemIndex, 1, item);
           this.file = '';
           this.$refs.attachment[idx].value = '';
-          // }
         });
       },
 
@@ -571,21 +520,21 @@
         }
       },
 
-      propertyTypeText(id) {
-        console.log(id);
-        const filterResult = this.entityTypes.filter(item => item.name === id);
-        if (filterResult !== undefined && filterResult.length > 0) {
-          return filterResult.text;
-        } else if (id === 'anonymousEntity') {
-          return this.$t('knowledge_graph.entity_edit.type_a');
-        }
-        return id;
-      },
-
-      propertyTypeName(id) {
-        console.log(id);
-        return this.entityTypes.filter(item => item.value === id)[0].name;
-      },
+      // propertyTypeText(id) {
+      //   console.log(id);
+      //   const filterResult = this.entityTypes.filter(item => item.name === id);
+      //   if (filterResult !== undefined && filterResult.length > 0) {
+      //     return filterResult.text;
+      //   } else if (id === 'anonymousEntity') {
+      //     return this.$t('knowledge_graph.entity_edit.type_a');
+      //   }
+      //   return id;
+      // },
+      //
+      // propertyTypeName(id) {
+      //   console.log(id);
+      //   return this.entityTypes.filter(item => item.value === id)[0].name;
+      // },
 
       removeProperty(item) {
         // const removeIndex = this.propertySet.indexOf(item);

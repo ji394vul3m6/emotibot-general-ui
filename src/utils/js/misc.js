@@ -93,6 +93,34 @@ function randomID() {
   return parseInt(Math.random() * 100000, 10).toString();
 }
 
+function isJsonString(str) {
+  try {
+    if (typeof JSON.parse(str) === 'object') {
+      return true;
+    }
+  } catch (e) {
+    console.log(e);
+  }
+  return false;
+}
+
+function recognizeJSDataType(obj) {
+  let classToType;
+  if (!classToType) {
+    classToType = {};
+    ['Boolean', 'Number', 'String', 'Function', 'Array', 'Date', 'RegExp', 'Object', 'Error'].forEach((e) => {
+      classToType[`[object ${e}]`] = e.toLowerCase();
+    });
+  }
+  if (obj === null) {
+    return 'null';
+  }
+  if (typeof obj === 'object' || typeof obj === 'function') {
+    return classToType[classToType.toString.call(obj)] || 'object';
+  }
+  return typeof obj;
+}
+
 export default {
   useIE,
   isEllipsisActive,
@@ -103,4 +131,6 @@ export default {
   changeFavicon,
   getParameterByName,
   randomID,
+  isJsonString,
+  recognizeJSDataType,
 };

@@ -575,7 +575,7 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "./_components/scss/teVariable.scss";
+  @import '../../assets/styles/variable';
 
   #trigger-page {
     flex: 1 1 auto;

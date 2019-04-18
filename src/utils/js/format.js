@@ -25,7 +25,22 @@ function dateToString(date) {
   return `${date.getFullYear()}${month}${day}`;
 }
 
+function recongizeType(obj) {
+  const classToType = {};
+  'Boolean Number String Function Array Date RegExp Object Error'.split(' ').forEach((e) => {
+    classToType[`[object ${e}]`] = e.toLowerCase();
+  });
+
+  if (obj === null) {
+    return String(obj);
+  }
+  return typeof obj === 'object' || typeof obj === 'function' ?
+    classToType[classToType.toString.call()] || 'object' :
+    typeof obj;
+}
+
 export default {
   datetimeToString,
   dateToString,
+  recongizeType,
 };

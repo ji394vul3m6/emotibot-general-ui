@@ -44,10 +44,10 @@ import Dropdown from './plugins/dropdown';
 import './plugins/Polyfill';
 import misc from './utils/js/misc';
 
-import '../static/ueditor/ueditor.config';
-import '../static/ueditor/ueditor.all';
-import '../static/ueditor/lang/zh-cn/zh-cn';
-import '../static/ueditor/ueditor.parse.min';
+// import '../static/ueditor/ueditor.config';
+// import '../static/ueditor/ueditor.all';
+// import '../static/ueditor/lang/zh-cn/zh-cn';
+// import '../static/ueditor/ueditor.parse.min';
 
 Vue.config.productionTip = false;
 Vue.use(Tooltip);

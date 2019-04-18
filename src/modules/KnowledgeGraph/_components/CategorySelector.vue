@@ -3,21 +3,22 @@
     <div class="head">
       {{ $t('knowledge_graph.entity_edit.entity_hierarchy_tree') }}
     </div>
-    <div class="tree">
-      <el-tree
-        :props="props"
-        :load="loadNode"
-        ref="tree"
-        :key="treeKey"
-        lazy
-        accordion
-        @node-click="handleNodeClick"
-        @node-expand="handleNodeExpand"
-        @node-collapse="handleNodeCollapse"
-      >
-      </el-tree>
+    <div class="content">
+      <div class="tree">
+        <el-tree
+          :props="props"
+          :load="loadNode"
+          ref="tree"
+          :key="treeKey"
+          lazy
+          accordion
+          @node-click="handleNodeClick"
+          @node-expand="handleNodeExpand"
+          @node-collapse="handleNodeCollapse"
+        >
+        </el-tree>
+      </div>
     </div>
-
   </div>
 </template>
 
@@ -145,12 +146,14 @@
 <style lang="scss" scoped>
   @import '../../../assets/styles/variable.scss';
   .category_selector {
-    max-height: calc(100vh - 200px);
+    // max-height: calc(100vh - 200px);
+    height: 100%;
     overflow-y: auto;
     padding: 10px 20px;
     display: flex;
     flex-direction: column;
     .head {
+      height: 60px;
       @include font-16px();
       color: $color-font-active;
       flex: 0 0 60px;
@@ -159,8 +162,14 @@
       justify-content: space-between;
       align-items: center;
     }
-    .tree {
-      padding: 10px 0px;
+    .content {
+      flex: 1 1 auto;
+      // padding: 10px 0px;
+      display: flex;
+      flex-direction: column;
+      .tree {
+        max-height: calc(60vh - 100px);
+      }
     }
 
   }

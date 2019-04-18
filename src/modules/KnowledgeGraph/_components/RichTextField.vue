@@ -1,8 +1,8 @@
 <template>
   <div class="rich-text">
-    <VueUEditor
-      @ready="editorReady"
-      :ueditorConfig="editorConfig"></VueUEditor>
+    <script :id="richTextId" name="content" type="text/plain">
+            {{ richTextContent }}
+        </script>
   </div>
 
 </template>
@@ -10,11 +10,20 @@
 <script>
   import { mapGetters } from 'vuex';
   import VueUEditor from 'vue-ueditor';
+  import '../../../../static/ueditor/ueditor.config';
+  import '../../../../static/ueditor/ueditor.all';
+  import '../../../../static/ueditor/lang/zh-cn/zh-cn';
+  import '../../../../static/ueditor/ueditor.parse.min';
+
 
   export default {
     props: {
       value: {
         default: '',
+      },
+
+      richTextId: {
+
       },
     },
 
@@ -36,7 +45,7 @@
         editor: null,
         currentEditor: '',
         richTextContent: '',
-
+        instance: '',
         editorConfig: {
           toolbars: [
             ['source',
@@ -63,6 +72,24 @@
     },
 
     methods: {
+      initEditor() {
+        this.instance = window.UE.getEditor(this.richTextId, this.editorConfig);
+        this.instance.ready(() => {
+          this.instance.execCommand('serverparam', () => {
+            const param = {
+              appid: this.robotID,
+              userid: this.userID,
+            };
+            return param;
+          });
+          this.instance.setContent(this.value);
+          this.instance.addListener('contentChange', () => {
+            console.log(this.instance.getContent());
+            this.richTextContent = this.instance.getContent();
+          });
+        });
+      },
+
       editorReady(editorInstance) {
         editorInstance.setContent(this.value);
         editorInstance.execCommand('serverparam', () => {
@@ -80,12 +107,13 @@
       },
     },
     mounted() {
+      this.initEditor();
       this.richTextContent = this.value;
     },
 
     beforeDestroy() {
-      console.log(this.currentEditor.getContent());
-      this.richTextContent = this.currentEditor.getContent();
+      console.log(this.instance.getContent());
+      this.richTextContent = this.instance.getContent();
     },
 
   };
