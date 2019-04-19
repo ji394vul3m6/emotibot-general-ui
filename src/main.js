@@ -5,7 +5,7 @@ import VueCookie from 'vue-cookie';
 import VueI18n from 'vue-i18n';
 import 'es6-promise/auto';
 
-import ElementUI from 'element-ui';
+// import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 
 
@@ -48,6 +48,28 @@ import misc from './utils/js/misc';
 // import '../static/ueditor/ueditor.all';
 // import '../static/ueditor/lang/zh-cn/zh-cn';
 // import '../static/ueditor/ueditor.parse.min';
+import('element-ui').then((data) => {
+  Vue.use(data);
+
+  let locale = localStorage.getItem('locale');
+  if (!locale) {
+    locale = misc.getBrowserLanguage();
+  }
+
+  const i18n = new VueI18n({
+    locale,
+    messages,
+  });
+
+  window.vm = new Vue({
+    el: '#app',
+    router,
+    store,
+    template: '<App/>',
+    i18n,
+    components: { App },
+  });
+});
 
 Vue.config.productionTip = false;
 Vue.use(Tooltip);
@@ -55,7 +77,6 @@ Vue.use(Dropdown);
 Vue.use(VueCookie);
 Vue.use(VueI18n);
 Vue.use(PopWindow);
-Vue.use(ElementUI);
 Vue.use(ContextMenu);
 Vue.use(CustomNotification, {
   delay: 4000,
@@ -83,16 +104,6 @@ Vue.component('nav-bar', NavBar);
 
 Vue.mixin(BFOPMixin);
 
-let locale = localStorage.getItem('locale');
-if (!locale) {
-  locale = misc.getBrowserLanguage();
-}
-
-const i18n = new VueI18n({
-  locale,
-  messages,
-});
-
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('token');
   if (token === '') {
@@ -100,14 +111,4 @@ router.beforeEach((to, from, next) => {
   } else {
     next();
   }
-});
-
-/* eslint-disable no-new */
-window.vm = new Vue({
-  el: '#app',
-  router,
-  store,
-  template: '<App/>',
-  i18n,
-  components: { App },
 });
