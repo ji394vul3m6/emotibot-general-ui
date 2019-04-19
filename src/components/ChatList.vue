@@ -8,23 +8,23 @@
     </div>
     <div class="chat-item">
       <template v-if="data.content.type === 'text'">
-        <template v-if="data.html">
-          <div class="chat-content" v-html="data.content.value">
+        <template v-if="data.content.subType === 'guslist' || data.content.subType === 'relatelist'">
+        <div class="chat-content">{{ data.content.value }}
+          <div v-for="(sentence, idx) in data.content.data" :key="sentence" @click="sendUserText(sentence)" class='click-text'>
+            {{ idx + 1 }}. {{ sentence }}
           </div>
+        </div>
         </template>
         <template v-else-if="data.content.subType === 'text'">
           <div class="chat-content">{{data.content.value}}</div>
         </template>
+        <template v-else-if="data.html">
+          <div class="chat-content" v-html="data.content.value">
+          </div>
+        </template>
         <template v-else>
           <div class="chat-content">{{data.content.value.toString()}}</div>
         </template>
-      </template>
-      <template v-if="data.content.type === 'text' && (data.content.subType === 'guslist' || data.content.subType === 'relatelist')">
-        <div class="chat-content">{{ data.content.value }}
-          <div v-for="(sentence, idx) in data.content.data" :key="sentence" @click="sendUserText(sentence, true)" class='click-text'>
-            {{ idx + 1 }}. {{ sentence }}
-          </div>
-        </div>
       </template>
       <template v-if="data.content.type === 'cmd'">
         <div class="chat-content"> 
@@ -108,6 +108,9 @@ export default {
         });
       });
       return chatData;
+    },
+    sendUserText(sentence) {
+      this.$emit('send', sentence);
     },
   },
   mounted() {

@@ -3,6 +3,7 @@ export default {
     robot_config: '系統功能配置',
     config_content_error: '設定內容錯誤',
     relative: '其他設定',
+    files: '文件設定',
     ssm: {
       title: '問答',
       'ssm_context_support-info': '在常用問答中使用上下文',
@@ -28,6 +29,8 @@ export default {
       'chat-robot-custom-pre': '信心分數高於',
       'chat-robot-custom-suf': '時使用客制機器人形象',
       'chat-domain-greeting-info': '使用普通寒暄',
+      'custom-chat-import': '導入閒聊',
+      'custom-chat-export': '導出閒聊',
     },
     robot: {
       title: '機器人',
@@ -39,7 +42,7 @@ export default {
       title: '技能上下文',
     },
     'to-human': {
-      title: '转人工',
+      title: '轉人工',
       'to-human-backfill-pre': '當機器人連續',
       'to-human-backfill-suf': '次無法回答用戶問題時啟動轉人工',
       'to-human-faq-repeat-q-pre': '當用戶連續',
@@ -190,6 +193,8 @@ export default {
   statistics: {
     std_question_exists: '標準問題已存在',
     add_new_std_question: '新增標準問題',
+    add_new_intent: '新增意圖',
+    choose_sentence_type: '選擇為此意圖的',
     sessions_time: '會話時間',
     session_id: '會話 ID',
     feedback_score: '滿意度分數',
@@ -249,6 +254,8 @@ export default {
     user_nick: '用戶暱稱',
     module: '模組',
     action: '操作',
+    stdq_mark: '標準問標註',
+    intent_mark: '意圖標註',
 
     filter: '篩選條件',
     export_mode: '高級篩選',
@@ -260,7 +267,7 @@ export default {
     recommend_empty_msg_2: '可在右上角搜尋標準問題',
     search_empty_msg: '無搜尋結果',
     cluster_info: '通過特有的算法將相似問的句子進行聚類方便統一標註，建議勾選100條以上的用戶問題，數量越大分類越準確',
-    action_info: '「忽略功能」：可以將已正確回覆的用戶問句忽略，方便對其它問句標註。「標註功能」：可以將用戶問句標註到正確的標準問上，訓練完成後增強機器人理解能力',
+    action_info: '「忽略功能」：可以將已正確回覆的用戶問句忽略，方便對其它問句標註。「標註功能」：可以將用戶問句標註到正確的標準問或意圖上，訓練完成後增強機器人理解能力',
     clustering_msg: '{num} 筆用戶問題進行輔助分類中，請勿離開此頁面',
     clustering_checking: '準備進行輔助分類...，請勿離開此頁面',
     cluster_dropdown: {
@@ -410,6 +417,8 @@ export default {
     answer_empty: '無',
     similar_question: '相似問題',
     extend_answer: '擴展答案',
+    same_similar_question: '已存在相同的相似問題',
+    same_extend_answer: '已存在相同的擴展答案',
 
     weather: '天氣模塊',
     computation: '數學計算模塊',
@@ -1632,6 +1641,22 @@ export default {
       size: '條/頁',
       goto: '前往',
       page: '頁',
+    },
+  },
+  customchat: {
+    importpop: {
+      title: '批量導入',
+      type_title: '導入類型',
+      question: '問題和答案',
+      extend: '語料',
+      upload_file: '上傳文件',
+      support_format: '支持格式 .xlsx, 文件大小需介於 0 ~ 2M之間',
+      download_question_template: '問題和答案模板',
+      download_extend_template: '語料模板',
+      choose_file: '請選擇文件',
+      upload_file_undefined: '文件無法識別',
+      upload_file_size_error: '文件大小需介於 0 ~ 2M之間',
+      upload_file_type_invalid: '文件需要為.xlsx格式',
     },
   },
 };

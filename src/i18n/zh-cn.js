@@ -3,6 +3,7 @@ export default {
     robot_config: '系统功能配置',
     config_content_error: '设定内容错误',
     relative: '其他设定',
+    files: '文件设定',
     ssm: {
       title: '问答',
       'ssm_context_support-info': '在常用问答中使用上下文',
@@ -28,6 +29,9 @@ export default {
       'chat-robot-custom-pre': '信心分数高于',
       'chat-robot-custom-suf': '时使用客制机器人形象',
       'chat-domain-greeting-info': '使用普通寒暄',
+
+      'custom-chat-import': '导入闲聊',
+      'custom-chat-export': '导出闲聊',
     },
     robot: {
       title: '机器人',
@@ -190,6 +194,8 @@ export default {
   statistics: {
     std_question_exists: '标准问题已存在',
     add_new_std_question: '新增标准问题',
+    add_new_intent: '新增意图',
+    choose_sentence_type: '选择为此意图的',
     sessions_time: '会话时间',
     session_id: '会话 ID',
     feedback_score: '满意度分数',
@@ -249,6 +255,8 @@ export default {
     user_nick: '用户昵称',
     module: '模组',
     action: '操作',
+    stdq_mark: '标准问标注',
+    intent_mark: '意图标注',
 
     filter: '筛选条件',
     export_mode: '高级筛选',
@@ -260,7 +268,7 @@ export default {
     recommend_empty_msg_2: '可在右上角查询标准问题',
     search_empty_msg: '无查询结果',
     cluster_info: '通过特有的算法将相似问的句子进行聚类方便统一标注，建议勾选100条以上的用户问题，数量越大分类越准确',
-    action_info: '「忽略功能」：可以将已正确回复的用户问句忽略，方便对其它问句标注。「标注功能」：可以将用户问句标注到正确的标准问上，训练完成后增强机器人理解能力',
+    action_info: '「忽略功能」：可以将已正确回复的用户问句忽略，方便对其它问句标注。「标注功能」：可以将用户问句标注到正确的标准问或意图上，训练完成后增强机器人理解能力',
     clustering_msg: '{num} 条用户问题进行辅助分类中，请勿离开此页面',
     clustering_checking: '准备进行辅助分类...，请勿离开此页面',
     cluster_dropdown: {
@@ -410,6 +418,8 @@ export default {
     answer_empty: '无',
     similar_question: '相似问题',
     extend_answer: '扩展答案',
+    same_similar_question: '已存在相同的相似问题',
+    same_extend_answer: '已存在相同的扩展答案',
 
     weather: '天气模块',
     computation: '数学计算模块',
@@ -1626,6 +1636,22 @@ export default {
       size: '条/页',
       goto: '前往',
       page: '页',
+    },
+  },
+  customchat: {
+    importpop: {
+      title: '批量导入',
+      type_title: '导入类型',
+      question: '问题和答案',
+      extend: '语料',
+      upload_file: '上传文件',
+      support_format: '支持格式 .xlsx, 文件大小需介于 0 ~ 2M之间',
+      download_question_template: '问题和答案模板',
+      download_extend_template: '语料模板',
+      choose_file: '请选择文件',
+      upload_file_undefined: '文件无法识别',
+      upload_file_size_error: '文件大小需介于 0 ~ 2M之间',
+      upload_file_type_invalid: '文件需要为.xlsx格式',
     },
   },
 };

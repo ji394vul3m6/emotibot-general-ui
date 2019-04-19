@@ -1,53 +1,55 @@
 <template lang="html">
 <div id="scenario-edit-page" @wheel="onPageWheel()">
   <div class="browse-window" ref="window">
-    <div class="canvas-page"
-      id="canvas-page"
-      ref="page"
-      :style="canvasStyle"
-      @drop="nodeOptionDrop($event)"
-      @dragover="nodeOptionDragOver($event)"
-      @mousemove="canvasMouseMove"
-      @mouseup="canvasMouseUp"
-      @click="canvasClick">
-      <div :style="{width: '100%', height: '100%', transform: `scale(${zoom})`, transformOrigin: '0 0'}">
-        <template v-for="(nodeBlock, index) in nodeBlocks">
-          <node-block class="block"
-            :ref="`nodeBlock_${index}`"
-            :key="nodeBlock.data.nodeId"
-            :x="nodeBlock.x"
-            :y="nodeBlock.y"
-            :nodeBlockWidth="nodeBlockWidth"
-            :nodeBlockHeight="nodeBlockHeight"
-            :nodeTypeName="getNodeTypeName(nodeBlock.data.nodeType)"
-            :initialNode="nodeBlock.data"
-            :initialGlobalEdges="globalEdges"
-            :toNodeOptions="toNodeOptions"
-            :globalVarOptionsMap="globalVarOptionsMap"
-            :linking="linking"
-            :version="moduleData.version"
-            :jsCodeAlias="jsCodeAlias"
-            @updatePosition="updateNodePosition(index, $event)"
-            @savePosition="saveScenario()"
-            @deleteNode="deleteNode(index)"
-            @addTempNodes="addTempNodes(index, $event)"
-            @saveNode="saveNode(index, $event)"
-            @copyNode="copyNode(index)"
-            @linkingStart="linkingStart(index, $event)"
-            @linkingStop="linkingStop(index, $event)"
-            @mouseEnterDstSlot="mouseEnterDstSlot(index, $event)"
-            @mouseLeaveDstSlot="mouseLeaveDstSlot()">
-          </node-block>
-        </template>
-        <edges class="edges"
-          ref="edges"
-          :edges="filteredEdges"
-        ></edges>
-        <edges-on-top class="edgesOnTop"
-          ref="edgesOnTop"
-          :linkingEdge="linkingEdge"
-        ></edges-on-top>
-     </div>
+    <div class='canvas-container' ref='container'>
+      <div class="canvas-page"
+        id="canvas-page"
+        ref="page"
+        :style="canvasStyle"
+        @drop="nodeOptionDrop($event)"
+        @dragover="nodeOptionDragOver($event)"
+        @mousemove="canvasMouseMove"
+        @mouseup="canvasMouseUp"
+        @click="canvasClick">
+          <div :style="{width: '100%', height: '100%', transform: `scale(${zoom})`, transformOrigin: '0 0'}">
+          <template v-for="(nodeBlock, index) in nodeBlocks">
+            <node-block class="block"
+              :ref="`nodeBlock_${index}`"
+              :key="nodeBlock.data.nodeId"
+              :x="nodeBlock.x"
+              :y="nodeBlock.y"
+              :nodeBlockWidth="nodeBlockWidth"
+              :nodeBlockHeight="nodeBlockHeight"
+              :nodeTypeName="getNodeTypeName(nodeBlock.data.nodeType)"
+              :initialNode="nodeBlock.data"
+              :initialGlobalEdges="globalEdges"
+              :toNodeOptions="toNodeOptions"
+              :globalVarOptionsMap="globalVarOptionsMap"
+              :linking="linking"
+              :version="moduleData.version"
+              :jsCodeAlias="jsCodeAlias"
+              @updatePosition="updateNodePosition(index, $event)"
+              @savePosition="saveScenario()"
+              @deleteNode="deleteNode(index)"
+              @addTempNodes="addTempNodes(index, $event)"
+              @saveNode="saveNode(index, $event)"
+              @copyNode="copyNode(index)"
+              @linkingStart="linkingStart(index, $event)"
+              @linkingStop="linkingStop(index, $event)"
+              @mouseEnterDstSlot="mouseEnterDstSlot(index, $event)"
+              @mouseLeaveDstSlot="mouseLeaveDstSlot()">
+            </node-block>
+          </template>
+          <edges class="edges"
+            ref="edges"
+            :edges="filteredEdges"
+          ></edges>
+          <edges-on-top class="edgesOnTop"
+            ref="edgesOnTop"
+            :linkingEdge="linkingEdge"
+          ></edges-on-top>
+        </div>
+      </div>
     </div>
     <div class="addNewEdgeDropdown"
       ref="addNewEdgeDropdown"
@@ -687,11 +689,11 @@ export default {
     },
     onPageWheel() {
       // expand canvas width and height
-      const scrollLeft = this.$refs.window.scrollLeft;
+      const scrollLeft = this.$refs.container.scrollLeft;
       const windowWidth = this.$refs.window.clientWidth;
       const pageWidth = this.$refs.page.clientWidth;
 
-      const scrollTop = this.$refs.window.scrollTop;
+      const scrollTop = this.$refs.container.scrollTop;
       const windowHeight = this.$refs.window.clientHeight;
       const pageHeight = this.$refs.page.clientHeight;
 
@@ -704,6 +706,7 @@ export default {
       if (scrollPercentY >= 95) {
         this.canvasHeight *= 1.1;
       }
+      console.log(this.$refs.container.scrollTop);
     },
     editVarTemplate() {
       const that = this;
@@ -1130,13 +1133,18 @@ export default {
     height: 100%;
     @include auto-overflow();
     @include customScrollbar();
-    .canvas-page {
-      background: url('data:image/svg+xml, \
-      <svg xmlns="http://www.w3.org/2000/svg" \
-        width="40" height="40" fill-opacity=".05"> \
-        <rect x="20" width="20" height="20"/> \
-        <rect y="20" width="20" height="20"/> \
-      </svg>');
+    .canvas-container{
+      width: 1360px;
+      height: 100%;
+      overflow: auto;
+      .canvas-page {
+        background: url('data:image/svg+xml, \
+        <svg xmlns="http://www.w3.org/2000/svg" \
+          width="40" height="40" fill-opacity=".05"> \
+          <rect x="20" width="20" height="20"/> \
+          <rect y="20" width="20" height="20"/> \
+        </svg>');
+        }
     }
     .addNewEdgeDropdown {
       position: absolute;

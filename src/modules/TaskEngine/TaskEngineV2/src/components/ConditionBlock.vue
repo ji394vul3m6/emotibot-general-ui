@@ -127,6 +127,12 @@
         <!-- NLU解析器 -->
         <div class="content-parser"
           v-if="rule.funcName === 'nlu_parser'">
+          <div class="row" v-if="(rule.funcUrl !== undefined && rule.funcUrl !== '') || hadCustomUrl">
+            <div class="label label-start">
+              {{$t("task_engine_v2.condition_block.label_link")}}
+            </div>
+            <input v-tooltip="inputTooltip" class="input-content" v-model="rule.funcUrl" @focus="onInputFocus">
+          </div>
           <div class="row">
             <div class="label label-start">
               {{$t("task_engine_v2.condition_block.label_content")}}
@@ -690,6 +696,7 @@ import DropdownSelect from '@/components/DropdownSelect';
 import Toggle from '@/components/basic/Toggle';
 import intentApi from '@/modules/IntentEngine/_api/intent';
 import general from '@/modules/TaskEngine/_utils/general';
+import taskEngineApi from '@/modules/TaskEngine/_api/taskEngine';
 import scenarioInitializer from '../_utils/scenarioInitializer';
 import optionConfig from '../_utils/optionConfig';
 
@@ -786,6 +793,7 @@ export default {
         text: this.$t(`task_engine_v2.condition_action_block.nlu_select_options.${parser}`),
         value: parser,
       })),
+      hadCustomUrl: false,
     };
   },
   computed: {},
@@ -870,6 +878,7 @@ export default {
               source: rule.source,
               funcName: rule.functions[0].function_name,
               content: rule.functions[0].content,
+              funcUrl: rule.functions[0].function_url,
             };
           }
           return {
@@ -1031,6 +1040,7 @@ export default {
             functions: [{
               function_name: rule.funcName,
               content: rule.content,
+              function_url: rule.funcUrl,
             }],
           }))],
         };
@@ -1154,8 +1164,16 @@ export default {
     showToolTip() {
       general.showInputContentTooltip(this.$refs['input-content']);
     },
+    getTaskConfigInfo() {
+      const that = this;
+      taskEngineApi.taskConfig()
+        .then((data) => {
+          that.hadCustomUrl = data.task_engine_v2.enable_custom_url;
+        });
+    },
   },
   beforeMount() {
+    this.getTaskConfigInfo();
     this.renderConditionContent();
   },
   mounted() {

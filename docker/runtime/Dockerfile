@@ -2,7 +2,7 @@ ARG ARG_build_env
 ARG ARG_admin_api
 ARG ARG_token_auth
 FROM harbor.emotibot.com/bfop/general-ui-build:${ARG_build_env} AS build-env
-FROM docker-reg.emotibot.com.cn:55688/token-auth:${ARG_token_auth} AS authentication
+FROM harbor.emotibot.com/bfop/token-auth:${ARG_token_auth} AS authentication
 FROM harbor.emotibot.com/bfop/admin-api-build:${ARG_admin_api} AS api-server
 
 FROM centos:centos7.4.1708
