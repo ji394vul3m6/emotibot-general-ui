@@ -10,8 +10,8 @@
             </template>
         </command-row>
         <div class="robot-list">
-          <div class="robot-card" 
-            v-for="robot in filteredRobots" :key="robot.id" 
+          <div class="robot-card"
+            v-for="robot in filteredRobots" :key="robot.id"
             @click="goRobot(robot)">
             <div class="card-title">
               <div class="card-title-image">
@@ -208,10 +208,14 @@ export default {
             ok(retData) {
               that.$startPageLoading();
               that.$api.addRobot(that.enterpriseID, retData, that.userInfo.id)
-            .then(() => that.updateRobots())
-            .finally(() => {
-              that.$emit('endLoading');
-            });
+              .then(() => that.updateRobots())
+              .catch((err) => {
+                this.$notifyFail(err.response.data.ret_msg);
+                console.log(err);
+              })
+              .finally(() => {
+                that.$emit('endLoading');
+              });
             },
           },
         });
@@ -262,7 +266,7 @@ export default {
     flex: 1;
     padding: 20px;
     padding-bottom: 0px;
-    
+
     display: flex;
     flex-wrap: wrap;
     align-content: flex-start;
