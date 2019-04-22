@@ -3,7 +3,7 @@
     <div class="tools-top-header">
       <p>测试分析</p>
       <div class="btn-group">
-        <span><a href="/testing/download/template">下载模版</a></span>
+        <span><a href="/testing/download/template" class="template-icon">下载模版</a></span>
         <div id="import_tool">
           <input type="file" ref="fileChooser" id="fileChooser" accept=".xlsx" @change="validateFile"/>
           <text-button
@@ -321,6 +321,13 @@ export default {
       display: flex;
       flex-direction: row;
       margin-left: 20px;
+      .template-icon{
+        width: 16px;
+        height: 18px;
+        background: url('../../assets/icons/down_template_icon.svg') no-repeat;
+        background: contain;
+        padding-left: 20px;
+      }
     }
     p{
       font-size: 18px;
