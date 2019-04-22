@@ -163,6 +163,7 @@ export default {
       management: '权限管理',
       intent_manage: '意图引擎',
       integration: '接入部署',
+      chat_test_tools: '对话测试',
     },
     tools: {
       encrypt: {
@@ -1071,6 +1072,10 @@ export default {
       module_name: '问答管理',
       ssm: '常用标准问题',
       qa_label: '标签管理',
+    },
+    chat_tools: {
+      module_name: '工具',
+      chat: '对话测试工具',
     },
     privileges: {
       module_name: '权限管理',

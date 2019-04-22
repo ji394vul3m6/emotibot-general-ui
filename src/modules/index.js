@@ -6,6 +6,7 @@ import Statistics from './Statistics';
 import TaskEngine from './TaskEngine';
 import Status from './Status';
 import IntentEngine from './IntentEngine';
+import ChatTools from './ChatTools';
 
 export default {
   Status,
@@ -15,4 +16,5 @@ export default {
   Wordbank,
   Statistics,
   Robot,
+  ChatTools,
 };

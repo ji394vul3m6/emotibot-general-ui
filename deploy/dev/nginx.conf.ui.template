@@ -76,6 +76,9 @@ http {
         location /admin {
             proxy_pass http://${REMOTE_IP};
         }
+        location /testing {
+            proxy_pass http://${REMOTE_IP};
+        }
         location = /php/api/ApiKey/tde_register.php {
             proxy_set_header Authorization $appid;
             proxy_set_header X-Real-IP $remote_addr;
