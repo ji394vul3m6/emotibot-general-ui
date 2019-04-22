@@ -13,7 +13,7 @@
           <div class="title">Secret Key：</div><div>{{ secret }}</div>
         </div>
         <div class="wechat-box">
-          <div class="item" @click="popUpWXSubsIntegration">
+          <div class="item" @click="popUpWXOfficalAccount">
             <img src="../../assets/images/wx_subscription.svg">
             <p class="desc">{{$t('robot_setting.wechat_subscription')}}</p>
             <p class="try">{{$t('robot_setting.try_now')}}</p>
@@ -38,9 +38,9 @@
 import { mapGetters } from 'vuex';
 import NavBar from '@/components/NavigationBar';
 import robotAPI from './_api/robot';
-import WechatSubscription from './_components/WechatSubscription';
+import WechatOfficialAccount from './_components/WechatOfficialAccount';
 import WechatMiniprogram from './_components/WechatMiniprogram';
-import WechatEnterprise from './_components/WechatEnterprise';
+import WechatBindEnterprise from './_components/WechatBindEnterprise';
 
 export default {
   path: 'integration',
@@ -74,10 +74,10 @@ export default {
     });
   },
   methods: {
-    popUpWXSubsIntegration() {
+    popUpWXOfficalAccount() {
       const options = {
         title: this.$t('robot_setting.wechat_subscription'),
-        component: WechatSubscription,
+        component: WechatOfficialAccount,
         data: {
           readonly: true,
         },
@@ -103,7 +103,7 @@ export default {
     popUpWXEnterprise() {
       const options = {
         title: this.$t('robot_setting.wechat_enterprise'),
-        component: WechatEnterprise,
+        component: WechatBindEnterprise,
         data: {
           readonly: true,
         },

@@ -449,9 +449,10 @@ export default {
     generate_tip2: '請將生成信息填入企業微信後台：點擊「應用與小程序」，選擇「已啓用API接受」進行編輯。',
     check_guide: '查看接入手冊',
     generate_info: '生成信息',
-    check_bind_wechat: '已綁㱏企業微信',
+    binded_enterprise_list: '已綁㱏企業微信',
     unbind: '解綁',
     title: '標題',
+    enterprise_maximum: '一個賬號只能綁定一個企業微信，可解綁後重新綁定',
   },
   robot_command: {
     view: '查看',
