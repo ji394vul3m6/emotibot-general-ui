@@ -89,7 +89,7 @@ function get(url, config) {
   return this.$reqAjax(option);
 }
 
-function getBolb(url, config) {
+function getBlob(url, config) {
   let option = Object.assign({}, config);
   if (!config) {
     option = {};
@@ -149,7 +149,7 @@ function deleteReq(url, config) {
 const MyPlugin = {
   install(Vue) {
     Vue.prototype.$reqGet = get;
-    Vue.prototype.$reqGetBlob = getBolb;
+    Vue.prototype.$reqGetBlob = getBlob;
     Vue.prototype.$reqCustom = customType;
     Vue.prototype.$reqPost = post;
     Vue.prototype.$reqPostForm = postForm;
