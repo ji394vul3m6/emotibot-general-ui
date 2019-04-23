@@ -12,10 +12,19 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+import robotAPI from '../_api/robot';
+
 export default {
+  api: robotAPI,
+  computed: {
+    ...mapGetters([
+      'robotID',
+    ]),
+  },
   methods: {
     handleClickAuthorize() {
-
+      this.$api.bindWechatOffcialAccount(this.robotID);
     },
   },
 };

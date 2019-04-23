@@ -13,9 +13,9 @@ const REBUILD_QA_PATH = '/api/v1/robot/qabuild';
 const GET_QA_LIST_PATH_V2 = '/api/v2/robot/qas';
 const QA_OPERATION_PATH_V2 = '/api/v2/robot/qa';
 
-const GET_ENT_WECHAT_LIST = '/api/v1/integration/config';
-const BIND_ENT_WECHAT = '/api/v1/integration/config';
-const UNBIND_ENT_WECHAT = '/api/v1/integration/config';
+const GET_ENT_WECHAT_LIST = '/wechat/api/v1/integration/config';
+const BIND_ENT_WECHAT = '/wechat/api/v1/integration/config';
+const UNBIND_ENT_WECHAT = '/wechat/api/v1/integration/config';
 
 function getFunctionsStatus() {
   return this.$reqGet(GET_FUNCTIONS_INFO_PATH).then(rsp => rsp.data.result);
@@ -128,6 +128,10 @@ function unBindEnterpriseWechat() {
   return this.$reqDelete(`${UNBIND_ENT_WECHAT}/workweixin`);
 }
 
+function bindWechatOffcialAccount(appId) {
+  window.open(`http://botx3.applinzi.com/main?appid=${appId}`);
+}
+
 export default {
   getFunctionsStatus,
   setFunctionStatus,
@@ -149,4 +153,5 @@ export default {
   getEnterpriseWechatList,
   bindEnterpriseWechat,
   unBindEnterpriseWechat,
+  bindWechatOffcialAccount,
 };
