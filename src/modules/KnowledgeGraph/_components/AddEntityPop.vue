@@ -250,7 +250,7 @@
               <div v-html="item.propertyValue[0]">
               </div>
             </div>
-            <div class="row-text" v-if="idx > 0" v-for="(value, idx) in item.propertyValue" :key="idx">
+            <div class="row-text" v-show="idx > 0" v-for="(value, idx) in item.propertyValue" :key="idx">
               <div v-if="!isObject(value)" v-html="value">
               </div>
             </div>
@@ -265,7 +265,8 @@
   import { mapGetters } from 'vuex';
   import DropdownSelector from '@/components/DropdownSelect';
   import NavBar from '@/components/NavigationBar';
-  import format from '@/utils/js/misc';
+  import misc from '@/utils/js/misc';
+  import format from '@/utils/js/format';
   import api from '../_api/knowledgeGraph';
 
 
@@ -274,6 +275,7 @@
     name: 'AddEntityPop',
     api,
     format,
+    misc,
     props: {
       extData: {
         type: Object,
@@ -898,7 +900,7 @@
             item.expanded = false;
             item.propertyValue = item.propertyValue.map((value) => {
               // console.log(format.isJsonString(value));
-              if (!format.isJsonString(value)) {
+              if (!misc.isJsonString(value)) {
                 return value;
               }
               // console.log(JSON.parse(value));

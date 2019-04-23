@@ -1619,6 +1619,12 @@ export default {
         view: '机器人设定查看',
         edit: '机器人设定变更',
       },
+      domain_kg: {
+        view: '知识图谱查看',
+        edit: '知识图谱编辑',
+        delete: '知识图谱删除',
+        import: '知识图谱导入',
+      },
     },
   },
   header: {

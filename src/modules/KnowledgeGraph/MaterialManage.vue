@@ -2,7 +2,7 @@
   <div id="material-manage">
     <div class="card content h-fill w-fill">
       <div class="row title">{{ $t('knowledge_graph.material_manage.title') }}
-        <div class="sandbox_operation" v-if="sandboxSwitch">
+        <div class="sandbox_operation" v-if="sandboxSwitch && canEdit">
           <text-button button-type="primary" @click.stop="syncSandBox">{{
             $t('knowledge_graph.material_manage.sandbox_release')
             }}
@@ -13,7 +13,7 @@
           </text-button>
         </div>
       </div>
-      <div class="box-card">
+      <div class="box-card" v-if="canImport">
         <div class="head">{{ $t('knowledge_graph.material_manage.KG_build_title') }}</div>
         <div class="content">
           <div class="toolbar">
@@ -38,7 +38,7 @@
           </div>
         </div>
       </div>
-      <div class="box-card">
+      <div class="box-card" v-if="canEdit">
         <div class="head">{{ $t('knowledge_graph.training.title') }}</div>
         <div class="content">
           <div class="toolbar">
@@ -54,7 +54,7 @@
       </div>
       <div class="box-card">
         <div class="head">{{ $t('knowledge_graph.material_manage.KG_test') }}</div>
-        <div class="content">
+        <div class="content" v-if="canImport">
           <div class="toolbar">
             <input type="file" ref="testFileUploader" id="testFileChooser" style="display: none" accept=".xlsx"
                    @change="validFile('test')"/>
@@ -100,7 +100,7 @@
     name: 'material-manage',
     components: { OperationTable },
     path: 'material-manage-new',
-    privCode: 'wordbank',
+    privCode: 'domain_kg',
     displayNameKey: 'material_manage',
     icon: 'white_task_engine',
     api,
@@ -159,6 +159,15 @@
       ...mapGetters([
         'robotID',
       ]),
+      canDelete() {
+        return this.$hasRight('delete');
+      },
+      canEdit() {
+        return this.$hasRight('edit');
+      },
+      canImport() {
+        return this.$hasRight('import');
+      },
     },
 
     methods: {
