@@ -210,7 +210,7 @@ export default {
               that.$api.addRobot(that.enterpriseID, retData, that.userInfo.id)
               .then(() => that.updateRobots())
               .catch((err) => {
-                this.$notifyFail(err.response.data.ret_msg);
+                this.$notifyFail(`${that.$t('management.err_add_robot_fail')}: ${err.response.data.ret_msg}`);
                 console.log(err);
               })
               .finally(() => {

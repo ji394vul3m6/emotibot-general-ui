@@ -1395,6 +1395,7 @@ export default {
     err_enterprise_admin_duplicate: '企业管理员帐号名已存在',
     err_enterprise_email_duplicate: '企业管理员信箱已存在',
     err_unkown: '发生未知错误',
+    err_add_robot_fail: '新增机器人失败',
 
     go_back: '返回',
 
