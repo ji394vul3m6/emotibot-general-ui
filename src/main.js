@@ -50,6 +50,19 @@ import misc from './utils/js/misc';
 // import '../static/ueditor/ueditor.parse.min';
 import('element-ui').then((data) => {
   Vue.use(data);
+  // Use custom plugin after element-ui
+  Vue.use(Tooltip);
+  Vue.use(Dropdown);
+  Vue.use(VueCookie);
+  Vue.use(VueI18n);
+  Vue.use(PopWindow);
+  Vue.use(ContextMenu);
+  Vue.use(CustomNotification, {
+    delay: 4000,
+  });
+  Vue.use(request);
+  Vue.use(auth);
+  Vue.use(api);
 
   let locale = localStorage.getItem('locale');
   if (!locale) {
@@ -72,18 +85,6 @@ import('element-ui').then((data) => {
 });
 
 Vue.config.productionTip = false;
-Vue.use(Tooltip);
-Vue.use(Dropdown);
-Vue.use(VueCookie);
-Vue.use(VueI18n);
-Vue.use(PopWindow);
-Vue.use(ContextMenu);
-Vue.use(CustomNotification, {
-  delay: 4000,
-});
-Vue.use(request);
-Vue.use(auth);
-Vue.use(api);
 // Mock.start();
 
 Vue.component('text-button', TextButton);
