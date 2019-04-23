@@ -12,6 +12,23 @@
         <div class="line">
           <div class="title">Secret Key：</div><div>{{ secret }}</div>
         </div>
+        <div class="wechat-box">
+          <div class="item" @click="popUpWXOfficalAccount">
+            <img src="../../assets/images/wx_subscription.svg">
+            <p class="desc">{{$t('robot_setting.wechat_subscription')}}</p>
+            <p class="try">{{$t('robot_setting.try_now')}}</p>
+          </div>
+          <div class="item" @click="popUpWXEnterprise">
+            <img src="../../assets/images/wx_enterprise.svg">
+            <p class="desc">{{$t('robot_setting.wechat_enterprise')}}</p>
+            <p class="try">{{$t('robot_setting.try_now')}}</p>
+          </div>
+          <div class="item" @click="popUpWXMiniprogram">
+            <img src="../../assets/images/wx_miniprogram.svg">
+            <p class="desc">{{$t('robot_setting.wechat_miniprogram')}}</p>
+            <p class="try">{{$t('robot_setting.try_now')}}</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -21,6 +38,9 @@
 import { mapGetters } from 'vuex';
 import NavBar from '@/components/NavigationBar';
 import robotAPI from './_api/robot';
+import WechatOfficialAccount from './_components/WechatOfficialAccount';
+import WechatMiniprogram from './_components/WechatMiniprogram';
+import WechatBindEnterprise from './_components/WechatBindEnterprise';
 
 export default {
   path: 'integration',
@@ -53,21 +73,90 @@ export default {
       that.secret = data;
     });
   },
+  methods: {
+    popUpWXOfficalAccount() {
+      const options = {
+        title: this.$t('robot_setting.wechat_subscription'),
+        component: WechatOfficialAccount,
+        data: {
+          readonly: true,
+        },
+        buttons: ['ok'],
+        ok_msg: this.$t('general.close'),
+        validate: false,
+      };
+      this.$pop(options);
+    },
+    popUpWXMiniprogram() {
+      const options = {
+        title: this.$t('robot_setting.wechat_miniprogram'),
+        component: WechatMiniprogram,
+        data: {
+          readonly: true,
+        },
+        buttons: ['ok'],
+        ok_msg: this.$t('general.close'),
+        validate: false,
+      };
+      this.$pop(options);
+    },
+    popUpWXEnterprise() {
+      const options = {
+        title: this.$t('robot_setting.wechat_enterprise'),
+        component: WechatBindEnterprise,
+        data: {
+          readonly: true,
+        },
+        buttons: ['cancel', 'ok'],
+        validate: false,
+      };
+      this.$pop(options);
+    },
+  },
 };
 </script>
 
 <style lang="scss" scoped>
 .content {
   padding: 20px;
-  padding-bottom: 0;
   .line {
     @include font-14px();
     margin-bottom: 10px;
     padding: 4px 0;
-
     display: flex;
     .title {
       margin-right: 4px;
+    }
+  }
+  .wechat-box{
+    @include flex-row();
+    box-shadow: inset 0 1px 0 0 $color-borderline-disabled;
+    margin-top: 20px;
+    padding-top: 20px;
+    .item{
+      width: 200px;
+      min-width: 200px;
+      height: 160px;
+      margin-right: 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border: 1px solid $color-borderline;
+      border-radius: 4px;
+      cursor: pointer;
+      .desc{
+        @include font-14px-line-height-28px();
+      }
+      .try{
+        color: $color-font-mark;
+      }
+      &:hover{
+        box-shadow: 0 5px 8px 0 rgba(228,228,228,0.50), 0 4px 9px 0 rgba(115,115,115,0.20);
+      }
+      img{
+        width: 64px;
+      }
     }
   }
 }
