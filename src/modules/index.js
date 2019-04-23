@@ -7,7 +7,7 @@ import TaskEngine from './TaskEngine';
 import Status from './Status';
 import IntentEngine from './IntentEngine';
 import KnowledgeGraphNew from './KnowledgeGraph';
-
+import ChatTools from './ChatTools';
 
 export default {
   Status,
@@ -18,4 +18,5 @@ export default {
   KnowledgeGraphNew,
   Statistics,
   Robot,
+  ChatTools,
 };

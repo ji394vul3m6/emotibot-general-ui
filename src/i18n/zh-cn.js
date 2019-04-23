@@ -163,6 +163,7 @@ export default {
       management: '权限管理',
       intent_manage: '意图引擎',
       integration: '接入部署',
+      chat_test_tools: '对话测试',
     },
     tools: {
       encrypt: {
@@ -1209,6 +1210,10 @@ export default {
       ssm: '常用标准问题',
       qa_label: '标签管理',
     },
+    chat_tools: {
+      module_name: '工具',
+      chat: '对话测试工具',
+    },
     privileges: {
       module_name: '权限管理',
       role_manage: '角色管理',
@@ -1341,6 +1346,7 @@ export default {
     intent: '意图',
     select_all: '全选',
     download: '下载',
+    batch_import: '批量导入',
   },
   dimension: {
     categories: {
@@ -1653,5 +1659,27 @@ export default {
       upload_file_size_error: '文件大小需介于 0 ~ 2M之间',
       upload_file_type_invalid: '文件需要为.xlsx格式',
     },
+  },
+  chat_tools: {
+    test_analysis: '测试分析',
+    download_template: '下载模版',
+    download_result: '下载测试结果',
+    scenario: '对话场景',
+    test_finish_rate: '测试完成，正确率 {correct}%',
+    start_test: '开始测试',
+
+    test_question: '测试题',
+    test_except_result: '期望结果',
+    test_actual_result: '实际结果',
+    test_module: '出话模块',
+    test_is_pass: '是否通过',
+
+    to_be_test: '待测试',
+    choose_scenario_placeholder: '请选择对话场景',
+
+    test_file_format_error: '对话测试文件格式错误',
+    notify_empty_appid: '请输入APPID',
+    no_data_to_test: '当前没有数据可测试',
+    test_result_filename_template: '测试结果{timestamp}.xlsx',
   },
 };

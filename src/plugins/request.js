@@ -59,7 +59,11 @@ function ajax(config) {
   const that = this;
   const getConfigWithCustomHeader = addCustomHeader.bind(that);
   const header = getConfigWithCustomHeader(config);
-  return axios(header).catch((err) => {
+  let axiosInstance = axios.create();
+  if (config.responseType === 'blob') {
+    axiosInstance = axios.create({ responseType: 'blob' });
+  }
+  return axiosInstance(header).catch((err) => {
     checkAjaxError.bind(this)(that, err);
   });
 }
@@ -82,6 +86,17 @@ function get(url, config) {
   }
   option.method = 'get';
   option.url = url;
+  return this.$reqAjax(option);
+}
+
+function getBlob(url, config) {
+  let option = Object.assign({}, config);
+  if (!config) {
+    option = {};
+  }
+  option.method = 'get';
+  option.url = url;
+  option.responseType = 'blob';
   return this.$reqAjax(option);
 }
 
@@ -134,6 +149,7 @@ function deleteReq(url, config) {
 const MyPlugin = {
   install(Vue) {
     Vue.prototype.$reqGet = get;
+    Vue.prototype.$reqGetBlob = getBlob;
     Vue.prototype.$reqCustom = customType;
     Vue.prototype.$reqPost = post;
     Vue.prototype.$reqPostForm = postForm;
