@@ -1550,6 +1550,7 @@ export default {
     err_enterprise_admin_duplicate: '企業管理員帳號名已存在',
     err_enterprise_email_duplicate: '企業管理員信箱已存在',
     err_unkown: '發生未知錯誤',
+    err_add_robot_fail: '新增機器人失敗',
 
     go_back: '返回',
 
