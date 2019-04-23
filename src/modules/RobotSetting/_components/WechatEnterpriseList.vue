@@ -19,50 +19,25 @@ export default {
     return {
       tableHeader: [
         {
-          key: 'enterpriseID',
+          key: 'corpid',
           text: `${this.$t('robot_setting.enterprise')}ID`,
-          width: '258px',
+          width: '300px',
         },
         {
-          key: 'agentID',
+          key: 'agentid',
           text: 'AgentID',
-          width: '248px',
-        },
-        {
-          key: 'title',
-          text: this.$t('robot_setting.title'),
-          width: '248px',
+          width: '300px',
         },
       ],
       enterpriseList: [],
-      // tableData: [
-      //   {
-      //     enterpriseID: 'wwc1239e9d9',
-      //     agentID: 'agentId',
-      //     title: 'hahahah',
-      //     action_enable: {
-      //       delete: true,
-      //     },
-      //     // hightlight: true,
-      //   },
-      //   {
-      //     enterpriseID: '123',
-      //     agentID: 'xxxxx',
-      //     title: 'xxxxxxxx',
-      //     action_enable: {
-      //       delete: true,
-      //     },
-      //     // hightlight: true,
-      //   },
-      // ],
-      // action: [
-      //   {
-      //     key: 'delete',
-      //     text: this.$t('robot_setting.unbind'),
-      //     type: 'error',
-      //     onclick: this.handleUnbindWechat,
-      //   },
-      // ],
+      action: [
+        {
+          key: 'delete',
+          text: this.$t('robot_setting.unbind'),
+          type: 'error',
+          onclick: this.handleUnbindWechat,
+        },
+      ],
     };
   },
   created() {
@@ -72,11 +47,15 @@ export default {
     getEnterpriseWechatList() {
       this.$api.getEnterpriseWechatList().then((res) => {
         this.enterpriseList = res;
+        this.enterpriseList.forEach((item) => {
+          item.action_enable = {
+            delete: true,
+          };
+        });
       });
     },
     handleUnbindWechat() {
-      this.$api.handleUnbindWechat().then((res) => {
-        console.log(res);
+      this.$api.unBindEnterpriseWechat().then(() => {
         this.getEnterpriseWechatList();
       });
     },

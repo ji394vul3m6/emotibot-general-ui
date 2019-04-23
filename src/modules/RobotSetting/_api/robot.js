@@ -13,9 +13,9 @@ const REBUILD_QA_PATH = '/api/v1/robot/qabuild';
 const GET_QA_LIST_PATH_V2 = '/api/v2/robot/qas';
 const QA_OPERATION_PATH_V2 = '/api/v2/robot/qa';
 
-const GET_ENT_WECHAT_LIST = '/wechat/api/v1/integration/config';
-const BIND_ENT_WECHAT = '/wechat/api/v1/integration/config';
-const UNBIND_ENT_WECHAT = '/wechat/api/v1/integration/config';
+const GET_ENT_WECHAT_LIST = '/api/v1/integration/config';
+const BIND_ENT_WECHAT = '/api/v1/integration/config';
+const UNBIND_ENT_WECHAT = '/api/v1/integration/config';
 
 function getFunctionsStatus() {
   return this.$reqGet(GET_FUNCTIONS_INFO_PATH).then(rsp => rsp.data.result);
@@ -112,16 +112,27 @@ function getRobotSecret(enterprise, appid) {
 }
 
 function getEnterpriseWechatList() {
-  return this.$reqGet(`${GET_ENT_WECHAT_LIST}/workweixin`).then(rsp => rsp.data.result);
+  return this.$reqGet(`${GET_ENT_WECHAT_LIST}/workweixin`).then((rsp) => {
+    const resObj = rsp.data.result || {};
+    let res = [];
+    if (resObj.corpid || resObj.agentid || resObj.secret) {
+      res = [resObj];
+    }
+    return res;
+  });
 }
 
-function bindEnterpriseWechat(corpId, agentId, secretId) {
+function bindEnterpriseWechat(corpid, agentid, secret, appid) {
   const params = {
-    corpId,
-    agentId,
-    secretId,
+    corpid,
+    agentid,
+    secret,
+    'encoded-aes': 'R4jErhKUlpuYXjSGq8NDkUd47KJuon4QP6dIS6uACPL',
+    token: 'Lh9dAGIQvHjXZcb8xBI9LK8UuIJFxpn',
+    url: `${window.location.origin}/api/v1/integration/chat/workweixin/${appid}`,
   };
-  return this.$reqPost(`${BIND_ENT_WECHAT}/workweixin`, qs.stringify(params));
+  // qs.stringify(params)
+  return this.$reqPost(`${BIND_ENT_WECHAT}/workweixin`, params).then(rsp => rsp.data.result);
 }
 
 function unBindEnterpriseWechat() {
@@ -130,6 +141,10 @@ function unBindEnterpriseWechat() {
 
 function bindWechatOffcialAccount(appId) {
   window.open(`http://botx3.applinzi.com/main?appid=${appId}`);
+}
+
+function checkIntegrationGuide() {
+  window.open('/Files/企业微信接入手册(竹间).pdf');
 }
 
 export default {
@@ -154,4 +169,5 @@ export default {
   bindEnterpriseWechat,
   unBindEnterpriseWechat,
   bindWechatOffcialAccount,
+  checkIntegrationGuide,
 };

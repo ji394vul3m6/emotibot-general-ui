@@ -25,7 +25,7 @@
     </div>
     <div class="result-area">
       <span class="genereate-tip2">{{$t('robot_setting.generate_tip2')}}</span>
-      <span class="check-guide">{{$t('robot_setting.check_guide')}}</span>
+      <span class="check-guide" @click="handleCheckIntegrationGuide">{{$t('robot_setting.check_guide')}}</span>
       <p class="result-title">{{$t('robot_setting.generate_info')}}</p>
       <div class="line">
         <span class="label">URL</span>
@@ -50,6 +50,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import WechatEnterpriseList from './WechatEnterpriseList';
 import robotAPI from '../_api/robot';
 
@@ -61,15 +62,18 @@ export default {
       corpId: '',
       agentId: '',
       secret: '',
-      generateURL: 'generateURL123',
-      generateToken: 'generateToken1111',
-      generateASEKey: 'generateASEKey1111222',
+      generateURL: '',
+      generateToken: '',
+      generateASEKey: '',
     };
   },
   created() {
     this.getEnterpriseWechatList();
   },
   computed: {
+    ...mapGetters([
+      'robotID',
+    ]),
     enableGenerate() {
       return this.corpId && this.agentId && this.secret;
     },
@@ -77,18 +81,23 @@ export default {
   methods: {
     getEnterpriseWechatList() {
       this.$api.getEnterpriseWechatList().then((res) => {
-        console.log(res);
         this.enterpriseList = res;
       });
     },
+    handleCheckIntegrationGuide() {
+      this.$api.checkIntegrationGuide();
+    },
     handleBindEntWechat() {
       if (this.enterpriseList.length === 1) {
-        this.$notifyWarn(this.$t('enterprise_maximum'));
+        this.$notifyWarn(this.$t('robot_setting.enterprise_maximum'));
         return;
       }
-      this.$api.bindEnterpriseWechat(this.corpId, this.agentId, this.secret).then((res) => {
-        console.log(res);
-      });
+      this.$api.bindEnterpriseWechat.call(this.corpId, this.agentId,
+        this.secret, this.robotID).then((res) => {
+          this.generateURL = res.url;
+          this.generateToken = res.token;
+          this.generateASEKey = res['encoded-aes'];
+        });
     },
     popUpEnterpriseWechatList() {
       this.$emit('cancel');

@@ -12,11 +12,6 @@ import { mapGetters } from 'vuex';
 import QRCode from 'qrcodejs2';
 
 export default {
-  data() {
-    return {
-      qrCodeGenerated: false,
-    };
-  },
   computed: {
     ...mapGetters([
       'robotID',

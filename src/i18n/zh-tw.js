@@ -451,8 +451,7 @@ export default {
     generate_info: '生成信息',
     binded_enterprise_list: '已綁㱏企業微信',
     unbind: '解綁',
-    title: '標題',
-    enterprise_maximum: '一個賬號只能綁定一個企業微信，可解綁後重新綁定',
+    enterprise_maximum: '一個賬號只能綁定一個企業微信',
   },
   robot_command: {
     view: '查看',
