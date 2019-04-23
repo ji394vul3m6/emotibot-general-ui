@@ -121,6 +121,10 @@ function recognizeJSDataType(obj) {
   return typeof obj;
 }
 
+function setPageTitle(name) {
+  document.title = name;
+}
+
 export default {
   useIE,
   isEllipsisActive,
@@ -133,4 +137,5 @@ export default {
   randomID,
   isJsonString,
   recognizeJSDataType,
+  setPageTitle,
 };

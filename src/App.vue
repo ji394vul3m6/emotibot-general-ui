@@ -494,6 +494,9 @@ export default {
     },
     setup() {
       const that = this;
+
+      misc.setPageTitle(that.$t('general.system_name_default'));
+
       const token = that.$getToken();
       // that.checkCookie();
       that.$setReqToken(token);
