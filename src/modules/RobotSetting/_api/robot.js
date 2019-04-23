@@ -122,14 +122,11 @@ function getEnterpriseWechatList() {
   });
 }
 
-function bindEnterpriseWechat(corpid, agentid, secret, appid) {
+function bindEnterpriseWechat(corpid, agentid, secret) {
   const params = {
     corpid,
     agentid,
     secret,
-    'encoded-aes': 'R4jErhKUlpuYXjSGq8NDkUd47KJuon4QP6dIS6uACPL',
-    token: 'Lh9dAGIQvHjXZcb8xBI9LK8UuIJFxpn',
-    url: `${window.location.origin}/api/v1/integration/chat/workweixin/${appid}`,
   };
   // qs.stringify(params)
   return this.$reqPost(`${BIND_ENT_WECHAT}/workweixin`, params).then(rsp => rsp.data.result);

@@ -29,18 +29,18 @@
       <p class="result-title">{{$t('robot_setting.generate_info')}}</p>
       <div class="line">
         <span class="label">URL</span>
-        <input id="generateURL" v-model="generateURL" type="password" disabled></input>
-        <span class="copy-btn" @click="handleCopyToClipboard('generateURL')">{{$t('general.copy')}}</span>
+        <input id="generatedURL" v-model="generatedURL" type="password" disabled></input>
+        <span class="copy-btn" @click="handleCopyToClipboard(generatedURL)">{{$t('general.copy')}}</span>
       </div>
       <div class="line">
         <span class="label">Token</span>
-        <input id="generateToken" v-model="generateToken" type="password" disabled></input>
-        <span class="copy-btn" @click="handleCopyToClipboard('generateToken')">{{$t('general.copy')}}</span>
+        <input id="generatedToken" v-model="generatedToken" type="password" disabled></input>
+        <span class="copy-btn" @click="handleCopyToClipboard(generatedToken)">{{$t('general.copy')}}</span>
       </div>
       <div class="line">
         <span class="label">EncodingASEKey</span>
-        <input id="generateASEKey" v-model="generateASEKey" type="password" disabled></input>
-        <span class="copy-btn" @click="handleCopyToClipboard('generateASEKey')">{{$t('general.copy')}}</span>
+        <input id="generatedASEKey" v-model="generatedASEKey" type="password" disabled></input>
+        <span class="copy-btn" @click="handleCopyToClipboard(generatedASEKey)">{{$t('general.copy')}}</span>
       </div>
       <input id="copyInputBox"></input>
       <p class="check-bind-wechat" @click="popUpEnterpriseWechatList">
@@ -51,6 +51,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import misc from '@/utils/js/misc';
 import WechatEnterpriseList from './WechatEnterpriseList';
 import robotAPI from '../_api/robot';
 
@@ -62,9 +63,9 @@ export default {
       corpId: '',
       agentId: '',
       secret: '',
-      generateURL: '',
-      generateToken: '',
-      generateASEKey: '',
+      generatedURL: '',
+      generatedToken: '',
+      generatedASEKey: '',
     };
   },
   created() {
@@ -93,10 +94,10 @@ export default {
         return;
       }
       this.$api.bindEnterpriseWechat.call(this.corpId, this.agentId,
-        this.secret, this.robotID).then((res) => {
-          this.generateURL = res.url;
-          this.generateToken = res.token;
-          this.generateASEKey = res['encoded-aes'];
+        this.secret).then((res) => {
+          this.generatedURL = res.url;
+          this.generatedToken = res.token;
+          this.generatedASEKey = res['encoded-aes'];
         });
     },
     popUpEnterpriseWechatList() {
@@ -113,15 +114,8 @@ export default {
       this.$pop(options);
     },
     // 复制链接内容到剪切板
-    handleCopyToClipboard(inputboxId) {
-      const elCopyTxt = document.getElementById(inputboxId);
-      const copyInput = document.getElementById('copyInputBox');
-      if (elCopyTxt === null || !elCopyTxt.value || copyInput === null) {
-        return;
-      }
-      copyInput.value = elCopyTxt.value;
-      copyInput.select();
-      document.execCommand('Copy');
+    handleCopyToClipboard(text) {
+      misc.copyToClipboard(text);
     },
   },
 };
