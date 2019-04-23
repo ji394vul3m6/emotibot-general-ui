@@ -86,6 +86,9 @@ http {
         set $bf_server_url "${ADMIN_BF_SERVER_URL}";
         set $sso_server_url "${ADMIN_SSO_SERVER}";
 
+        set $knowledge_kbqa_url  "${ADMIN_KNOWLEDGE_KBQA_URL}";
+        set $knowledge_graph_url  "${ADMIN_KNOWLEDGE_GRAPH_URL}";
+
         set $utils_server_url "${ADMIN_UTILS_URL}";
 
         set $im_server_url "${ADMIN_IM_SERVER_URL}";
@@ -106,69 +109,69 @@ http {
             proxy_pass http://127.0.0.1:8088;
         }
 
-        location /auth { 
-            # auth_request /auth/v1/appid/validate 
-            proxy_pass http://127.0.0.1:8088; 
+        location /auth {
+            # auth_request /auth/v1/appid/validate
+            proxy_pass http://127.0.0.1:8088;
         }
 
-        location /login/ { 
+        location /login/ {
             proxy_pass http://$sso_server_url;
         }
-        
+
         location = /stats/record {
             proxy_pass http://$stat_server_url;
         }
-        
+
         location /stats {
             proxy_pass http://$elk_stat_server_url;
         }
 
         # ========== legacy houta ==========
-        location = /php/api/ApiKey/task_engine_app.php { 
-            proxy_pass http://127.0.0.1:8181/api/v1/task/apps; 
+        location = /php/api/ApiKey/task_engine_app.php {
+            proxy_pass http://127.0.0.1:8181/api/v1/task/apps;
         }
-        location = /php/api/ApiKey/task_engine_scenario.php { 
-            proxy_pass http://127.0.0.1:8181/api/v1/task/scenarios; 
+        location = /php/api/ApiKey/task_engine_scenario.php {
+            proxy_pass http://127.0.0.1:8181/api/v1/task/scenarios;
         }
-        location = /php/api/ApiKey/scenario_json_upload.php { 
-            proxy_pass http://127.0.0.1:8181/api/v1/task/scenarios-upload; 
+        location = /php/api/ApiKey/scenario_json_upload.php {
+            proxy_pass http://127.0.0.1:8181/api/v1/task/scenarios-upload;
         }
-        location = /php/api/ApiKey/mapping_table_list.php { 
+        location = /php/api/ApiKey/mapping_table_list.php {
             proxy_set_header Authorization $appid;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Appid $appid;
             proxy_set_header X-UserID $user_id;
             proxy_pass http://127.0.0.1:8181/api/v2/task/mapping-tables;
         }
-        location = /php/api/ApiKey/mapping_table_upload.php { 
+        location = /php/api/ApiKey/mapping_table_upload.php {
             proxy_set_header Authorization $appid;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Appid $appid;
             proxy_set_header X-UserID $user_id;
             proxy_pass http://127.0.0.1:8181/api/v1/task/mapping-table/upload;
         }
-        location = /php/api/ApiKey/mapping_table_delete.php { 
+        location = /php/api/ApiKey/mapping_table_delete.php {
             proxy_set_header Authorization $appid;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Appid $appid;
             proxy_set_header X-UserID $user_id;
             proxy_pass http://127.0.0.1:8181/api/v1/task/mapping-table/delete;
         }
-        location = /php/api/ApiKey/mapping_table_download.php { 
+        location = /php/api/ApiKey/mapping_table_download.php {
             proxy_set_header Authorization $appid;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Appid $appid;
             proxy_set_header X-UserID $user_id;
             proxy_pass http://127.0.0.1:8181/api/v1/task/mapping-table/export;
         }
-        location = /php/api/ApiKey/tde_register.php { 
+        location = /php/api/ApiKey/tde_register.php {
             proxy_set_header Authorization $appid;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Appid $appid;
             proxy_set_header X-UserID $user_id;
             proxy_pass http://172.17.0.1:10999/tde/register;
         }
-        location = /php/api/ApiKey/spreadsheet.php { 
+        location = /php/api/ApiKey/spreadsheet.php {
             proxy_set_header Authorization $appid;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Appid $appid;
@@ -310,11 +313,8 @@ http {
         location /Files/ssm {
             proxy_pass http://$bf_server_url;
         }
-        location /utils/testing {
-            rewrite /utils/(.*) /$1  break;
-            proxy_pass http://$utils_server_url;
-            proxy_redirect     off;
-            proxy_set_header   Host $host;
+        location /testing {
+            proxy_pass http://$bf_server_url;
         }
         location /im-admin {
             proxy_set_header   Host    $host;
@@ -341,7 +341,7 @@ http {
 
         # golang /api/v1
         location /api {
-            add_header Cache-Control no-store;  
+            add_header Cache-Control no-store;
             add_header Cache-Control private;
             proxy_pass http://127.0.0.1:8181;
         }
