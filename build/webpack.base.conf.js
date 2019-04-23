@@ -17,6 +17,7 @@ const createLintingRule = () => ({
   options: {
     formatter: require('eslint-friendly-formatter'),
     emitWarning: !config.dev.showEslintErrorsInOverlay,
+    quiet: config.dev.setWarningQuiet === true,
   },
 });
 

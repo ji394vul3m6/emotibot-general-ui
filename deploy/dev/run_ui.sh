@@ -31,6 +31,9 @@ else
   echo "Use remote api service: $1"
 fi
 BF_IP="$REMOTE_IP";
+KG_IP="$REMOTE_IP:15501";
+KG_NEW_IP="$REMOTE_IP:18811";
+UTILS_IP="$REMOTE_IP:15307";
 if [[ -z "$API_IP" ]]; then
   API_IP=$REMOTE_IP
 fi
@@ -40,19 +43,24 @@ fi
 
 rm nginx.conf
 while read line
-do 
+do
   echo $line | sed -e "s/\${SELF_IP}/$SELF_IP/g" | \
     sed -e "s/\${REMOTE_IP}/$REMOTE_IP/g" | \
     sed -e "s/\${BF_IP}/$BF_IP/g" | \
+    sed -e "s/\${KG_NEW_IP}/$KG_NEW_IP/g" | \
+    sed -e "s/\${KG_IP}/$KG_IP/g" | \
     sed -e "s/\${API_IP}/$API_IP/g" | \
-    sed -e "s/\${AUTH_IP}/$AUTH_IP/g" >> nginx.conf
+    sed -e "s/\${AUTH_IP}/$AUTH_IP/g" | \
+    sed -e "s/\${UTILS_IP}/$UTILS_IP/g" >> nginx.conf
 done < nginx.conf.ui.template
 
 echo "REMOTE_IP : $REMOTE_IP";
 echo "BF_IP     : $BF_IP";
 echo "API_IP   : $API_IP";
 echo "AUTH_IP  : $AUTH_IP";
+echo "KG_IP  : $KG_IP";
+echo "KG_NEW_IP  : $KG_NEW_IP";
 
-cmd="docker-compose -f ./docker-compose.yml up --force-recreate -d nginx" 
+cmd="docker-compose -f ./docker-compose.yml up --force-recreate -d nginx"
 echo $cmd
 eval $cmd

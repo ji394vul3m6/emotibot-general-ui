@@ -255,6 +255,15 @@ export default {
         }
       });
 
+
+      if (that.$route.matched.length <= 0) {
+        if (that.$route.fullPath === '/') {
+          that.$router.push(defaultPath);
+        } else {
+          that.$router.push('/error');
+        }
+        return;
+      }
       const route = that.$route.matched[0];
       if (!route.components.default) {
         return;
@@ -295,15 +304,6 @@ export default {
       // TODO: if user has no privileges of this robot, return to list
       if (codes.length === 0) {
         that.$router.push('/manage/robot-manage');
-        return;
-      }
-
-      if (that.$route.matched.length <= 0) {
-        if (that.$route.fullPath === '/') {
-          that.$router.push(defaultPath);
-        } else {
-          that.$router.push('/error');
-        }
         return;
       }
       const commands = privileges[component.privCode];
@@ -494,6 +494,9 @@ export default {
     },
     setup() {
       const that = this;
+
+      misc.setPageTitle(that.$t('general.system_name_default'));
+
       const token = that.$getToken();
       // that.checkCookie();
       that.$setReqToken(token);

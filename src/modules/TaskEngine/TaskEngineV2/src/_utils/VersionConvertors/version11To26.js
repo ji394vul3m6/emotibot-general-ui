@@ -4,6 +4,9 @@ export default {
     jsonData.moduleData.ui_data.nodes = jsonData.moduleData.ui_data.nodes.map(
         node => this.convertNode(node),
     );
+    jsonData.moduleData.global_edges = jsonData.moduleData.global_edges.map(
+      node => this.convertGlobalEdges(node),
+    );
     jsonData.moduleData.version = '2.6';
     return jsonData;
   },
@@ -91,5 +94,10 @@ export default {
       uiNode.edgeTab2.elseInto = 'parseFailedEdge';
     }
   },
-
+  convertGlobalEdges(node) {
+    if (node.edge_type === 'normal') {
+      node.edge_type = 'global_normal';
+    }
+    return node;
+  },
 };
