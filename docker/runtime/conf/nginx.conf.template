@@ -308,6 +308,9 @@ http {
         location /Files/ssm {
             proxy_pass http://$bf_server_url;
         }
+        location /testing {
+            proxy_pass http://$bf_server_url;
+        }
         location /im-admin {
             proxy_set_header   Host    $host;
             proxy_set_header   X-Real-IP   $remote_addr;

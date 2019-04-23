@@ -29,6 +29,7 @@ export default {
       'chat-robot-custom-pre': '信心分數高於',
       'chat-robot-custom-suf': '時使用客制機器人形象',
       'chat-domain-greeting-info': '使用普通寒暄',
+
       'custom-chat-import': '導入閒聊',
       'custom-chat-export': '導出閒聊',
     },
@@ -162,6 +163,7 @@ export default {
       management: '權限管理',
       intent_manage: '意圖引擎',
       integration: '整合部署',
+      chat_test_tools: '對話測試',
     },
     tools: {
       encrypt: {
@@ -1071,6 +1073,10 @@ export default {
       ssm: '常用標準問題',
       qa_label: '標籤管理',
     },
+    chat_tools: {
+      module_name: '工具',
+      chat: '對話測試工具',
+    },
     privileges: {
       module_name: '權限管理',
       role_manage: '角色管理',
@@ -1197,6 +1203,7 @@ export default {
     intent: '意圖',
     select_all: '全選',
     download: '下載',
+    batch_import: '批量匯入',
   },
   dimension: {
     categories: {
@@ -1509,5 +1516,27 @@ export default {
       upload_file_size_error: '文件大小需介於 0 ~ 2M之間',
       upload_file_type_invalid: '文件需要為.xlsx格式',
     },
+  },
+  chat_tools: {
+    test_analysis: '測試分析',
+    download_template: '下載模版',
+    download_result: '下載測試結果',
+    scenario: '對話場景',
+    test_finish_rate: '測試完成，正確率 {correct}%',
+    start_test: '開始測試',
+
+    test_question: '測試題',
+    test_except_result: '期望結果',
+    test_actual_result: '實際結果',
+    test_module: '出話模組',
+    test_is_pass: '是否通過',
+
+    to_be_test: '待測試',
+    choose_scenario_placeholder: '請選擇對話場景',
+
+    test_file_format_error: '對話測試檔案格式錯誤',
+    notify_empty_appid: '請輸入APPID',
+    no_data_to_test: '當前沒有資料可測試',
+    test_result_filename_template: '測試結果{timestamp}.xlsx',
   },
 };

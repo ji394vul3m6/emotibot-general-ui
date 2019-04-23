@@ -1,15 +1,15 @@
 <template>
   <div class="chat-tools">
     <div class="tools-top-header">
-      <p>测试分析</p>
+      <p>{{ $t('chat_tools.test_analysis') }}</p>
       <div class="btn-group">
-        <span><a href="/testing/download/template" class="template-icon">下载模版</a></span>
+        <text-button icon-type="down_template" @click="downloadTemplate">{{ $t('chat_tools.download_template') }}</text-button>
         <div id="import_tool">
           <input type="file" ref="fileChooser" id="fileChooser" accept=".xlsx" @change="validateFile"/>
           <text-button
             width="96px"
             @click="openFileChooser">
-            {{ $t('wordbank.batch_import') }}
+            {{ $t('general.batch_import') }}
           </text-button>
         </div>
       </div>
@@ -18,25 +18,27 @@
       <div class='chat-search-item'>
         <div class="left">
           APPID&nbsp;&nbsp;<input type="text" v-model.trim="appId">
-          对话场景：&nbsp;&nbsp;<dropdown-select class="single-input"
+          {{ $t('chat_tools.scenario') }}：&nbsp;&nbsp;<dropdown-select class="single-input"
               width='300px'
-              placeholder="请选择对话场景"
+              :placeholder="$t('chat_tools.choose_scenario_placeholder')"
               :options="groupOptions" multi v-model="groupFilter"/>
         </div>
         <div class="right">
-          <span class="show-test-result" v-if="correct !== undefined">测试完成，正确率 {{`${correct}%`}}</span>
-          <span class="down-test-result" @click="downResult">下载测试结果</span>
-          <span class="start-testing" :class="{'active': this.sheetGroup.length > 0}" @click="handleTest">开始测试</span>
+          <span class="show-test-result" v-if="correct !== undefined">
+            {{ $t('chat_tools.test_finish_rate', {correct}) }}
+          </span>
+          <text-button @click="downResult">{{ $t('chat_tools.download_result') }}</text-button>
+          <text-button @click="handleTest" :button-type="canStartTest ? 'default' : 'disable'">{{ $t('chat_tools.start_test') }}</text-button>
         </div>
       </div>
     </div>
     <div class="test-result-table">
       <div class="result-teble-header result-box">
-        <span class="test-case">测试题</span>
-        <span class="excepted-result">期望结果</span>
-        <span class="actual-result">实际结果</span>
-        <span class="response-module">出话模块</span>
-        <span class="if-pass">是否通过</span>
+        <span class="test-case">{{ $t('chat_tools.test_question') }}</span>
+        <span class="excepted-result">{{ $t('chat_tools.test_except_result') }}</span>
+        <span class="actual-result">{{ $t('chat_tools.test_actual_result') }}</span>
+        <span class="response-module">{{ $t('chat_tools.test_module') }}</span>
+        <span class="if-pass">{{ $t('chat_tools.test_is_pass') }}</span>
       </div>
       <div class="result-table-body">
         <div class="table-item">
@@ -45,18 +47,25 @@
             <span class="excepted-result">{{val.expected}}</span>
             <span class="actual-result">{{val.actual}}</span>
             <span class="response-module">{{val.actualModule}}</span>
-            <span class="if-pass" v-if="val.result === null">待测试</span>
+            <span class="if-pass" v-if="val.result === null">{{ $t('chat_tools.to_be_test') }}</span>
             <span class="if-pass" v-else :class="{'pass': val.result === true, 'wran': val.result === false}"></span>
           </div>
         </div>
       </div>
-      <v-pagination v-if="curTotal>0" class="fix-bottom" size="small" :total="curTotal" :pageIndex="curPageIdx" :pageSize="pageLimit" :pageSizeOption="[25, 50, 100, 200, 500, 1000]" :layout="['prev', 'pager', 'next','jumper']" @page-change="handlePageChange" @page-size-change="handlePageSizeChange"></v-pagination>
+      <v-pagination v-if="curTotal>0"
+        class="fix-bottom" size="small"
+        :total="curTotal" :pageIndex="curPageIdx" :pageSize="pageLimit"
+        :pageSizeOption="[25, 50, 100, 200, 500, 1000]"
+        :layout="['prev', 'pager', 'next','jumper']"
+        @page-change="handlePageChange"
+        @page-size-change="handlePageSizeChange"></v-pagination>
     </div>
   </div>
 </template>
 
 <script>
 import DropdownSelect from '@/components/DropdownSelect';
+import misc from '@/utils/js/misc';
 import api from './_api/chattools';
 
 export default {
@@ -71,7 +80,7 @@ export default {
   data() {
     return {
       appId: '',
-      backUpdata: {},
+      backupData: {},
       allowImport: true,
       fileValid: false,
       file: undefined,
@@ -105,8 +114,8 @@ export default {
             return true;
           });
         }
-        this.$set(this, 'sheetGroup', filter.slice(this.curPageIdx - 1, this.pageLimit));
-        this.$set(this, 'backUpdata', filter);
+        this.sheetGroup = filter.slice(this.curPageIdx - 1, this.pageLimit);
+        this.backupData = filter;
         const passTotal = this.sheetGroup.filter(item => item.result === true);
         this.correct = (passTotal / this.sheetGroup.length).toFixed(2);
       },
@@ -114,12 +123,14 @@ export default {
     },
   },
   methods: {
+    downloadTemplate() {
+      window.open('/testing/download/template');
+    },
     validateFile() {
       const theFile = this.$refs.fileChooser.files[0];
       if (!theFile) {
         this.fileValid = false;
-        // this.updateFilename(this.$t('wordbank.upload_file_undefined'));
-        this.updateFilename('对话测试文件格式错误');
+        this.updateFilename(this.$t('chat_tools.test_file_format_error'));
       } else {
         this.fileValid = true;
         this.file = theFile;
@@ -131,7 +142,7 @@ export default {
     },
     uploadFile() {
       const that = this;
-      // that.$startPageLoading();
+      that.$startPageLoading();
       that.$api.uploadFile(this.file, this.appId)
         .then((res) => {
           if (res.data.status === 0) {
@@ -139,11 +150,11 @@ export default {
           }
         })
         .catch(() => {
-          that.$notifyFail('上传失败');
+          that.$notifyFail(`${that.$t('general.upload')}${that.$t('general.fail')}`);
         })
         .finally(() => {
           that.$refs.fileChooser.value = '';
-          // that.$emit('endLoading');
+          that.$emit('endLoading');
         });
     },
     updateFilename(msg) {
@@ -166,11 +177,11 @@ export default {
     },
     handleTest() {
       if (this.appId.length === 0) {
-        this.$notifyFail('请输入APPID');
+        this.$notifyFail(this.$t('chat_tools.notify_empty_appid'));
         return;
       }
       if (this.sheetGroup.length === 0) {
-        this.$notifyFail('当前没有数据可测试~');
+        this.$notifyFail(this.$t('chat_tools.no_data_to_test'));
         return;
       }
       const that = this;
@@ -203,11 +214,11 @@ export default {
           return true;
         });
       });
-      // backUpdata 用于前端分页计算总数
-      this.$set(this, 'backUpdata', total);
-      this.$set(this, 'sheetGroup', total.slice(this.curPageIdx - 1, this.pageLimit));
+      // backupData 用于前端分页计算总数
+      this.backupData = total;
+      this.sheetGroup = total.slice(this.curPageIdx - 1, this.pageLimit);
       // allData 用户处理过滤的原始数据
-      this.$set(this, 'allData', total);
+      this.allData = total;
       // 计算正确率
       const passTotal = this.sheetGroup.filter(item => item.result === true);
       this.correct = (passTotal / this.sheetGroup.length).toFixed(2);
@@ -221,18 +232,11 @@ export default {
         .then((res) => {
           const data = res.data;
           const blob = new Blob([data], { type: 'applicatoin/vnd.ms-excel' });
-          const objURL = URL.createObjectURL(blob);
           const curtime = new Date();
-          const filename = `测试结果${curtime.getTime()}.xlsx`;
-          if ('msSaveOrOpenBlob' in navigator) {
-            window.navigator.msSaveOrOpenBlob(blob, filename);
-          } else {
-            a.setAttribute('href', objURL);
-          }
-          a.setAttribute('download', filename);
-          const downloadNode = document.getElementById('exportHotExcel');
-          downloadNode.click();
-          downloadNode.parentNode.removeChild(downloadNode);
+          const filename = that.$t('chat_tools.test_result_filename_template', {
+            timestamp: curtime.getTime(),
+          });
+          misc.downloadRawFile(blob, filename);
         })
         .catch((err) => {
           console.log(err);
@@ -248,7 +252,7 @@ export default {
         this.toCurPage(page);
       }
       const startIndex = (this.curPageIdx - 1) * this.pageLimit;
-      this.$set(this, 'sheetGroup', this.backUpdata.slice(startIndex, startIndex + this.pageLimit));
+      this.$set(this, 'sheetGroup', this.backupData.slice(startIndex, startIndex + this.pageLimit));
     },
     handlePageSizeChange(pageSize) {
       this.pageLimit = pageSize;
@@ -264,10 +268,13 @@ export default {
   },
   computed: {
     curTotal() {
-      return this.backUpdata.length;
+      return this.backupData.length;
     },
     lastPageIdx() {
-      return Math.floor((this.backUpdata - 1) / this.pageLimit) + 1;
+      return Math.floor((this.backupData - 1) / this.pageLimit) + 1;
+    },
+    canStartTest() {
+      return this.sheetGroup.length > 0;
     },
   },
 };
@@ -282,7 +289,7 @@ export default {
   }
   #import_tool {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     margin-left: 20px;
     #fileChooser {
       display: none;
@@ -320,14 +327,7 @@ export default {
     .btn-group{
       display: flex;
       flex-direction: row;
-      margin-left: 20px;
-      .template-icon{
-        width: 16px;
-        height: 18px;
-        background: url('../../assets/icons/down_template_icon.svg') no-repeat;
-        background: contain;
-        padding-left: 20px;
-      }
+      align-items: center;
     }
     p{
       font-size: 18px;
@@ -354,6 +354,7 @@ export default {
     -webkit-box-sizing: border-box;
   }
   .chat-search-item{
+    @include font-14px();
     height: 72px;
     width: 100%;
     background:rgba(247,247,247,1);
@@ -365,10 +366,6 @@ export default {
     justify-content: space-between;
     align-items: center;
     padding: 0 20px;
-    box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    font-size: 14px;
     input{
       margin-right: 20px;
       width: 200px;
@@ -378,23 +375,6 @@ export default {
       display: flex;
       flex-direction: row;
       align-items: center;
-    }
-    .right{
-      span{
-        display: inline-block;
-        height: 32px;
-        line-height: 32px;
-        border-radius:2px;
-        border:1px solid rgba(219,219,219,1);
-        padding: 0 20px;
-        margin-left: 20px;
-        cursor: pointer;
-        &.start-testing.active{
-          background: #4B4B64;
-          color: #ffffff;
-          border:1px solid #4B4B64;
-        }
-      }
     }
   }
   .test-result-table{
