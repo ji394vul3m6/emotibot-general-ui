@@ -11,5 +11,6 @@ $$ADMIN_STAT_SERVER_URL
 $$ADMIN_KNOWLEDGE_KBQA_URL
 $$ADMIN_KNOWLEDGE_GRAPH_URL
 $$ADMIN_ELK_STAT_SERVER_URL
-$$ADMIN_SSO_SERVER' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
+$$ADMIN_SSO_SERVER
+$$ADMIN_UTILS_URL' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
 nginx -g "daemon off;"

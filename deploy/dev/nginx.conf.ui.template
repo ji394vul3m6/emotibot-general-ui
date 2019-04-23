@@ -76,8 +76,11 @@ http {
         location /admin {
             proxy_pass http://${REMOTE_IP};
         }
-        location /testing {
-            proxy_pass http://${REMOTE_IP};
+        location /utils/testing {
+            rewrite /utils/(.*) /$1  break;
+            proxy_pass http://${UTILS_IP};
+            proxy_redirect     off;
+            proxy_set_header   Host $host;
         }
         location = /php/api/ApiKey/tde_register.php {
             proxy_set_header Authorization $appid;
