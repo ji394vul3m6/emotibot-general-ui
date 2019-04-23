@@ -93,7 +93,7 @@ export default {
         this.$notifyWarn(this.$t('robot_setting.enterprise_maximum'));
         return;
       }
-      this.$api.bindEnterpriseWechat.call(this.corpId, this.agentId,
+      this.$api.bindEnterpriseWechat(this.corpId, this.agentId,
         this.secret).then((res) => {
           this.generatedURL = res.url;
           this.generatedToken = res.token;
