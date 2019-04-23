@@ -1,9 +1,11 @@
 import qs from 'qs';
 
-const UPLOAD_PATH = '/testing/testset';
-const TEST_PATH = '/testing/result';
-const DOWN_TEST_RESULT_PATH = '/testing/download/result';
-const DOWN_TEST_HIS_RESULT_PATH = '/testing/result';
+const prefix = '/utils/testing';
+const UPLOAD_PATH = `${prefix}/testset`;
+const TEST_PATH = `${prefix}/result`;
+const DOWN_TEST_RESULT_PATH = `${prefix}/download/result`;
+const DOWN_TEST_HIS_RESULT_PATH = `${prefix}/result`;
+const TEMPLATE_PATH = `${prefix}/download/template`;
 
 function uploadFile(file, appId) {
   if (!file) {
@@ -37,11 +39,16 @@ function getHisResult(appId) {
   return this.$reqGet(`${DOWN_TEST_HIS_RESULT_PATH}/${this.$cookie.get('userid')}/${appId}`);
 }
 
+function getTemplatePath() {
+  return TEMPLATE_PATH;
+}
 
 export default {
   uploadFile,
   startTest,
   getResult,
   getHisResult,
+
+  getTemplatePath,
 };
 

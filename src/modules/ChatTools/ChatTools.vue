@@ -124,7 +124,7 @@ export default {
   },
   methods: {
     downloadTemplate() {
-      window.open('/testing/download/template');
+      window.open(this.$api.getTemplatePath());
     },
     validateFile() {
       const theFile = this.$refs.fileChooser.files[0];

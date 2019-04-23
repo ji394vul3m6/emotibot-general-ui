@@ -86,6 +86,8 @@ http {
         set $bf_server_url "${ADMIN_BF_SERVER_URL}";
         set $sso_server_url "${ADMIN_SSO_SERVER}";
 
+        set $utils_server_url "${ADMIN_UTILS_URL}";
+
         set $im_server_url "${ADMIN_IM_SERVER_URL}";
         set $im_msg_kf "${ADMIN_IM_MSG_KF_URL}";
         set $im_web_agent "${ADMIN_IM_WEB_AGENT}";
@@ -308,8 +310,11 @@ http {
         location /Files/ssm {
             proxy_pass http://$bf_server_url;
         }
-        location /testing {
-            proxy_pass http://$bf_server_url;
+        location /utils/testing {
+            rewrite /utils/(.*) /$1  break;
+            proxy_pass http://$utils_server_url;
+            proxy_redirect     off;
+            proxy_set_header   Host $host;
         }
         location /im-admin {
             proxy_set_header   Host    $host;
