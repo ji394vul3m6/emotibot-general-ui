@@ -28,7 +28,7 @@
                 <!--<text-button v-if="canExport" @click="exportWordbank">{{ $t('wordbank.export_all') }}</text-button>-->
               </div>
               <div id="toolbar">
-                <text-button button-type="primary" @click="popAddEntity">{{
+                <text-button v-if="canCreate" button-type="primary" @click="popAddEntity">{{
                   $t('knowledge_graph.entity_edit.add_entity')
                   }}
                 </text-button>
@@ -56,10 +56,10 @@
                         <div class="clickable edit"
                              @click="popDisplayEntity(entity)">{{ $t('general.browse') }}
                         </div>
-                        <div class="clickable edit"
+                        <div class="clickable edit" v-if="canEditIt"
                              @click="popEditEntity(entity)">{{ $t('general.edit') }}
                         </div>
-                        <div class="clickable delete"
+                        <div class="clickable delete" v-if="canDelete"
                              @click="deleteEntity(entity)">{{ $t('general.delete') }}
                         </div>
                       </div>
@@ -93,7 +93,7 @@
 
   export default {
     path: 'relation-manage-new',
-    privCode: 'wordbank',
+    privCode: 'domain_kg',
     displayNameKey: 'relation_manage',
     icon: 'white_folder',
     api,
@@ -140,17 +140,26 @@
       };
     },
     computed: {
-
       ...mapGetters([
         'robotID',
         'userID',
         'userInfo',
       ]),
-
       curTotal() {
         return this.currentKGEntities.length;
       },
-
+      canCreate() {
+        return this.$hasRight('create');
+      },
+      canDelete() {
+        return this.$hasRight('delete');
+      },
+      canEditIt() {
+        return this.$hasRight('edit');
+      },
+      canExport() {
+        return this.$hasRight('export');
+      },
     },
     watch: {
       propertyType() {
@@ -1038,7 +1047,7 @@
           align-items: center;
           overflow: hidden;
           text-overflow: ellipsis;
-          .content {;
+          .content {
             margin-left: 15px;
             max-width: 80%;
             overflow:hidden;

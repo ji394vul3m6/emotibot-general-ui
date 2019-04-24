@@ -53,7 +53,7 @@
   export default {
     name: 'property-manage',
     path: 'property-manage-new',
-    privCode: 'wordbank',
+    privCode: 'domain_kg',
     displayNameKey: 'property_manage',
     icon: 'white_task_engine',
     api,
@@ -143,9 +143,6 @@
       },
       canEdit() {
         return this.$hasRight('edit');
-      },
-      canExport() {
-        return this.$hasRight('export');
       },
     },
     watch: {
