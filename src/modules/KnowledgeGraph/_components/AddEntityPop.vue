@@ -12,6 +12,14 @@
       </div>
       <div class="row">
         <div class="row-title">
+          {{ $t('knowledge_graph.entity_edit.introduction') }}
+        </div>
+        <div class="row-input-col">
+          <input class="row-input length-auto" v-model="entityIntroduction">
+        </div>
+      </div>
+      <div class="row">
+        <div class="row-title">
           {{ $t('wordbank.synonym') }}
         </div>
       </div>

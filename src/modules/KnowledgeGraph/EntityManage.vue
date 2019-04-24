@@ -774,11 +774,13 @@
       generatePropertyDropList() {
         return this.$api.getPropertiesOfRobot(this.robotID)
           .then((result) => {
-            this.KGPropertyDropList = result.data.properties.map(prop => ({
-              type: prop.type,
-              text: prop.name,
-              value: parseInt(prop.id, 10),
-            }));
+            this.KGPropertyDropList = result.data.properties
+              .filter(item => ['is_a', 'what_is'].indexOf(item.type) < 0)
+              .map(prop => ({
+                type: prop.type,
+                text: prop.name,
+                value: parseInt(prop.id, 10),
+              }));
             return new Promise((resolve) => {
               resolve();
             });
