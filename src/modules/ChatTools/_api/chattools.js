@@ -48,7 +48,6 @@ export default {
   startTest,
   getResult,
   getHisResult,
-
   getTemplatePath,
 };
 

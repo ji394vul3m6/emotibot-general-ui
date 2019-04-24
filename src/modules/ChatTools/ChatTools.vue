@@ -45,8 +45,13 @@
           <div class="result-box result-box-body" v-for="(val, index) in sheetGroup" :key="index">
             <span class="test-case">{{val.input}}</span>
             <span class="excepted-result">{{val.expected}}</span>
-            <span class="actual-result">{{val.actual}}</span>
-            <span class="response-module">{{val.actualModule}}</span>
+            <span class="actual-result" :class="{'error': val.result === false}">{{val.actual}}</span>
+            <span class="response-module" :class="{'error': val.result === false}">
+              {{val.actualModule}}
+              <div class="icon-container" v-tooltip="val.tips" v-if="val.result !== null">
+                <icon icon-type="info" :size="18" enableHover></icon>
+              </div>
+            </span>
             <span class="if-pass" v-if="val.result === null">{{ $t('chat_tools.to_be_test') }}</span>
             <span class="if-pass" v-else :class="{'pass': val.result === true, 'wran': val.result === false}"></span>
           </div>
@@ -147,6 +152,7 @@ export default {
         .then((res) => {
           if (res.data.status === 0) {
             that.calculateRest(res.data.result.scripts);
+            that.groupFilter = [];
           }
         })
         .catch(() => {
@@ -190,6 +196,7 @@ export default {
         .then((res) => {
           if (res.data.status === 0) {
             that.calculateRest(res.data.result.scripts);
+            that.groupFilter = [];
           } else {
             that.$notifyFail(res.data.message);
           }
@@ -210,6 +217,9 @@ export default {
       Object.entries(data).forEach((item) => {
         item[1].map((val) => {
           val.group = item[0];
+          val.tips = {
+            msg: val.expectedModule,
+          };
           total.push(val);
           return true;
         });
@@ -405,6 +415,7 @@ export default {
         -moz-box-sizing: border-box;
         -webkit-box-sizing: border-box;
         font-size: 14px;
+        word-break:break-all;
         &.test-case{
           flex: 8;
         }
@@ -413,9 +424,20 @@ export default {
         }
         &.actual-result{
           flex: 6;
+          &.error{
+            color: #F76260;
+          }
         }
         &.response-module{
           flex: 2;
+          position: relative;
+          .icon-container{
+            display: inline-block;
+            vertical-align: middle;
+          }
+          &.error{
+            color: #F76260;
+          }
         }
         &.if-pass{
           flex: 2;
