@@ -389,7 +389,7 @@
       },
 
       isObject(value) {
-        return format.recongizeType(value) === 'object';
+        return format.recognizeJSDataType(value) === 'object';
       },
 
       changePropertyHierarchySelections(item) {
@@ -708,13 +708,13 @@
 
       packagePropertyValue(item) {
         if (item.propertyType === 'entity') {
-          if (format.recongizeType(item.entity) === 'string') {
+          if (format.recognizeJSDataType(item.entity) === 'string') {
             return [item.entity];
           }
           return item.entity.map(e => e.toString());
         }
         return item.propertyValue.map((value) => {
-          if (format.recongizeType(value) === 'string') {
+          if (format.recognizeJSDataType(value) === 'string') {
             return value;
           }
           return JSON.stringify(value);
