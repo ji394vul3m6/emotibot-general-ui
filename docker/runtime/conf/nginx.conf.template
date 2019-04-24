@@ -313,8 +313,21 @@ http {
         location /Files/ssm {
             proxy_pass http://$bf_server_url;
         }
-        location /testing {
+        location /xeonKgDal {
+            proxy_pass http://$knowledge_graph_url;
+        }
+        location /api/v1/kbqa {
+            proxy_pass http://$knowledge_kbqa_url;
+        }
+        location /dal/upload {
             proxy_pass http://$bf_server_url;
+        }
+
+        location /utils/testing {
+            rewrite /utils/(.*) /$1  break;
+            proxy_pass http://$utils_server_url;
+            proxy_redirect     off;
+            proxy_set_header   Host $host;
         }
         location /im-admin {
             proxy_set_header   Host    $host;

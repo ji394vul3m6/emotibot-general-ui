@@ -33,6 +33,7 @@ fi
 BF_IP="$REMOTE_IP";
 KG_IP="$REMOTE_IP:15501";
 KG_NEW_IP="$REMOTE_IP:18811";
+KBQA_IP="$REMOTE_IP:13508";
 UTILS_IP="$REMOTE_IP:15307";
 if [[ -z "$API_IP" ]]; then
   API_IP=$REMOTE_IP
@@ -49,6 +50,7 @@ do
     sed -e "s/\${BF_IP}/$BF_IP/g" | \
     sed -e "s/\${KG_NEW_IP}/$KG_NEW_IP/g" | \
     sed -e "s/\${KG_IP}/$KG_IP/g" | \
+    sed -e "s/\${KBQA_IP}/$KBQA_IP/g" | \
     sed -e "s/\${API_IP}/$API_IP/g" | \
     sed -e "s/\${AUTH_IP}/$AUTH_IP/g" | \
     sed -e "s/\${UTILS_IP}/$UTILS_IP/g" >> nginx.conf
