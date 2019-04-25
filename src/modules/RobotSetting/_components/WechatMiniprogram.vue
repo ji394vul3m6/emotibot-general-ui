@@ -28,7 +28,7 @@ export default {
         const qrcode = new QRCode('qrcode', {
           width: 120,
           height: 120,
-          text: `http://bf.emotibot.com/BF/Wechat/?appid=(bfop-${this.robotName})${this.robotID}`,
+          text: `http://bf.emotibot.com/BF/Wechat/?appid=${this.robotID}(origin=bfop&robot_name=${this.robotName}&url=${window.location.origin})`,
         });
         console.log(qrcode);
       }, 100);
