@@ -439,7 +439,6 @@ export default {
     wx_authority_platform: '微信授權平台',
     wx_authority_tips: '說明：</br> 1、打開公眾號管理員帳號的微信 </br> 2、點擊「去授權」按鈕，使用微信掃一掃，掃描授權頁面的二維碼 </br>3、在微信列出的公眾號列表中進行選擇並授權接入</br>4、完成授權，進入公眾號使用聊天服務</br>5、在機器人平台上做的設置，都會應用於公眾號聊天中',
     scan_qrcode: '掃描體驗',
-    bf_dolores: 'BF助手-Delores',
     enterprise: '企業',
     enter_enterprise_id: '輸入企業ID',
     search_keyword: '搜尋關鍵字',
