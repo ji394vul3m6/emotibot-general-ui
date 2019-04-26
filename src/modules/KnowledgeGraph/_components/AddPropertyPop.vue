@@ -90,6 +90,10 @@ export default {
     return {
       newSynonym: '',
       inputVisible: false,
+      synonymSet: [],
+      corpusSet: [],
+      propertyIntroduction: this.extData.property.introduction,
+      propertyName: this.extData.property.propertyName,
     };
   },
   computed: {
@@ -100,24 +104,12 @@ export default {
     propertyId() {
       return this.extData.editMode ? this.extData.property.id : '';
     },
-    propertyIntroduction() {
-      return this.extData.property.introduction;
-    },
-    propertyName() {
-      return this.extData.property.propertyName;
-    },
-    synonymSet() {
-      return this.extData.property.synonymSet.map(item => item);
-    },
-    corpusSet() {
-      return this.extData.property.corpusSet.map(item => item);
-    },
   },
   watch: {
 
   },
   methods: {
-    // remove synonym from synonym list of property
+    // add synonym from synonym list of property
     addSynonym() {
       const newValue = this.newSynonym;
       newValue.replace(/[\r\n]/g, '');
@@ -125,7 +117,7 @@ export default {
         this.synonymSet.push(this.newSynonym);
         this.inputVisible = false;
         this.newSynonym = '';
-      } else if (newValue && newValue.length > 0) { // ????
+      } else if (newValue && newValue.length > 0) {
         this.$message({
           message: this.$t('knowledge_graph.entity_edit.value_warn_msg'),
           type: 'error',
@@ -195,7 +187,7 @@ export default {
           };
 
           this.$api.updateProperty(this.robotID, editedProperty.id, param).then((res) => {
-            console.log(res);
+            console.log(JSON.stringify(res, null, 2));
             this.$emit('validateSuccess', editedProperty);
           }).catch((err) => {
             if (err.response.data.propertyExist) {
@@ -233,8 +225,8 @@ export default {
   },
   beforeMount() {
     // case: create new Property
-
-
+    this.synonymSet = this.extData.property.synonymSet.map(item => item);
+    this.corpusSet = this.extData.property.corpusSet.map(item => item);
     this.$on('validate', this.validate);
   },
 };
