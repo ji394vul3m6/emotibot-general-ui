@@ -2,7 +2,7 @@
   <div class="wx-miniprogram-wrapper">
     <img src="../../../assets/images/wx_miniprogram.svg">
     <p class="title">{{$t('robot_setting.scan_qrcode')}}</p>
-    <p class="robot-name">{{$t('robot_setting.bf_dolores')}}</p>
+    <p class="robot-name">{{robotName}}</p>
     <div id="qrcode" class="qr-code"></div>
   </div>
 </template>
@@ -28,7 +28,7 @@ export default {
         const qrcode = new QRCode('qrcode', {
           width: 120,
           height: 120,
-          text: `http://bf.emotibot.com/BF/Wechat/?appid=(bfop-${this.robotName})${this.robotID}`,
+          text: `http://bf.emotibot.com/BF/Wechat/?appid=${this.robotID}(origin=bfop&robot_name=${this.robotName}&url=${window.location.origin})`,
         });
         console.log(qrcode);
       }, 100);

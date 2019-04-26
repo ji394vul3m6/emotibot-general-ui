@@ -439,7 +439,6 @@ export default {
     wx_authority_platform: '微信授权平台',
     wx_authority_tips: '说明：</br> 1、打开公众号管理员帐号的微信</br> 2、点击「去授权」按钮，使用微信扫一扫，扫描授权页面的二维码</br>3、在微信列出的公众号列表中进行选择并授权接入</br>4、完成授权，进入公众号使用聊天服务</br>5、在机器人平台上做的设置，都会应用于公众号聊天中',
     scan_qrcode: '扫描体验',
-    bf_dolores: 'BF助手-Delores',
     enterprise: '企业',
     enter_enterprise_id: '输入企业ID',
     search_keyword: '搜寻关键字',
