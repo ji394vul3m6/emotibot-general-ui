@@ -3,7 +3,7 @@ DIR="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source ${DIR}/../docker/runtime/build.env
 
 TS=`date +%s`
-DIFF=`git log -r ${GIT_PREVIOUS_SUCCESSFUL_COMMIT}..${GIT_COMMIT} --pretty=format:"### %h(%an) - %s"| sed -e 's/"/-/g' | tr -d '\040\011\012\015'`
+DIFF=`git log -r ${GIT_PREVIOUS_SUCCESSFUL_COMMIT}..${GIT_COMMIT} --pretty=format:"### %h(%an) - %s"| sed -e 's/"/-/g' | tr -d '\011\012\015'`
 
 COLOR="#E06064"
 TITLE="Build fail"
