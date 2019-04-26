@@ -117,7 +117,7 @@ export default {
         this.synonymSet.push(this.newSynonym);
         this.inputVisible = false;
         this.newSynonym = '';
-      } else if (0) { // 目前不做tip 后期修改代码
+      } else if (newValue && newValue.length > 0) {
         this.$message({
           message: this.$t('knowledge_graph.entity_edit.value_warn_msg'),
           type: 'error',
