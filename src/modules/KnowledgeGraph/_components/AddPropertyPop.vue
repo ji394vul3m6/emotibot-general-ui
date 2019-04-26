@@ -88,13 +88,8 @@ export default {
   api,
   data() {
     return {
-      propertyIntroduction: null,
       newSynonym: '',
       inputVisible: false,
-      propertyId: '',
-      propertyName: '',
-      synonymSet: [],
-      corpusSet: [],
     };
   },
   computed: {
@@ -102,6 +97,21 @@ export default {
       'robotID',
       'userID',
     ]),
+    propertyId() {
+      return this.extData.editMode ? this.extData.property.id : '';
+    },
+    propertyIntroduction() {
+      return this.extData.property.introduction;
+    },
+    propertyName() {
+      return this.extData.property.propertyName;
+    },
+    synonymSet() {
+      return this.extData.property.synonymSet.map(item => item);
+    },
+    corpusSet() {
+      return this.extData.property.corpusSet.map(item => item);
+    },
   },
   watch: {
 
@@ -115,7 +125,7 @@ export default {
         this.synonymSet.push(this.newSynonym);
         this.inputVisible = false;
         this.newSynonym = '';
-      } else if (newValue && newValue.length > 0) {
+      } else if (newValue && newValue.length > 0) { // ????
         this.$message({
           message: this.$t('knowledge_graph.entity_edit.value_warn_msg'),
           type: 'error',
@@ -223,14 +233,7 @@ export default {
   },
   beforeMount() {
     // case: create new Property
-    this.propertyName = this.extData.property.propertyName;
-    this.propertyIntroduction = this.extData.property.introduction;
-    this.synonymSet = this.extData.property.synonymSet;
-    this.corpusSet = this.extData.property.corpusSet;
 
-    if (this.extData.editMode) {
-      this.propertyId = this.extData.property.id;
-    }
 
     this.$on('validate', this.validate);
   },
