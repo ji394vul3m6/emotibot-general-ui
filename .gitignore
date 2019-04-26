@@ -25,3 +25,5 @@ deploy/dev/nginx.conf
 deploy/dev/persistant_storage/
 
 deploy/dev/\.env
+
+.history
