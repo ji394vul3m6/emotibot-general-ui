@@ -88,6 +88,7 @@
                   :label="item.text"
                   :value="item.value"
                   :disabled="item.disabled"
+                  :title='item.text'
                 >
                 </el-option>
               </el-select>
@@ -110,6 +111,7 @@
                   :key="item.name"
                   :label="item.text"
                   :value="item.name"
+                  :title='item.text'
                   :disabled="item.disabled">
                 </el-option>
               </el-select>
@@ -155,6 +157,7 @@
                     :key="prop.value"
                     :label="prop.text"
                     :value="prop.value"
+                    :title='item.text'
                   >
                   </el-option>
                 </el-select>
@@ -174,6 +177,7 @@
                     :key="item.value"
                     :label="item.text"
                     :value="item.value"
+                    :title='item.text'
                   >
                   </el-option>
                 </el-select>
@@ -239,7 +243,7 @@
         </div>
       </div>
       <div class="row" style="max-height: 500px" v-for="(item, idx) in propertySet" :key="idx">
-        <div class="row-text" style="width: 10%">{{ item.propertyName }}</div>
+        <div class="row-text row-text-ellipsis" style="width: 10%" :title="item.propertyName" >{{ item.propertyName }}</div>
         <template v-if="isFloat(item)">
           <div class="display_values">
             <div class="row-text" v-for="(value, idx) in item.propertyValue" :key="idx">{{ value }}</div>
@@ -248,7 +252,7 @@
         </template>
         <template v-else-if="isEntity(item)">
           <div class="display_values">
-            <div v-if="!isArray(item.propertyValue)" class="row-text" >{{ item.propertyValue }}</div>
+            <div v-if="!isArray(item.propertyValue)" class="row-text row-text-ellipsis" >{{ item.propertyValue }}</div>
             <div v-else class="row-text" v-for="(value, idx) in item.propertyValue" :key="idx">{{ value }}</div>
           </div>
         </template>
@@ -1105,6 +1109,9 @@
         align-items: center;
         justify-content: space-between;
       }
+      .row-text-ellipsis {
+        @include textEllipsis();
+      }
       .row-text {
         margin: 0 8px 0 10px;
         min-width: 60px;
@@ -1125,8 +1132,14 @@
 
   .selector /deep/ {
     flex: 0 0 400px;
+    width: 100%;
     input {
       width: 400px;
     }
   }
+
+  .el-select-dropdown__item{
+    max-width: 400px;
+  }
+
 </style>

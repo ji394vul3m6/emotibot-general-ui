@@ -91,7 +91,7 @@
                     @click="data[header.key].onclick(data, idx)"
               > {{ data[header.key].val }}</span>
               </template>
-              <div v-else>{{ data[header.key] }}</div>
+              <div v-else :title="data[header.key]">{{ data[header.key] }}</div>
             </td>
           </template>
           <td v-if="hasAction" class="table-col-action" :class="{'multi-action': action.length > 1}">
