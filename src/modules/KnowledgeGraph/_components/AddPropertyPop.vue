@@ -196,6 +196,20 @@ export default {
                 message: this.$t('knowledge_graph.property_edit.err_msg_duplicated_property'),
                 type: 'error',
               });
+            } else if (err.response.data.status === 'fail') {
+              if (err.response.data.message.trim() === 'property corpus can not duplicated;') {
+                this.$message({
+                  showClose: true,
+                  message: this.$t('knowledge_graph.property_edit.err_msg_duplicated_corpus'),
+                  type: 'error',
+                });
+              } else {
+                this.$message({
+                  showClose: true,
+                  message: err.response.data.message,
+                  type: 'error',
+                });
+              }
             }
           });
         } else {
@@ -215,6 +229,26 @@ export default {
                 this.$message({
                   showClose: true,
                   message: this.$t('knowledge_graph.property_edit.err_msg_duplicated_property'),
+                  type: 'error',
+                });
+              } else if (err.response.data.status === 'fail') {
+                if (err.response.data.message.trim() === 'property corpus can not duplicated;') {
+                  this.$message({
+                    showClose: true,
+                    message: this.$t('knowledge_graph.property_edit.err_msg_duplicated_corpus'),
+                    type: 'error',
+                  });
+                } else {
+                  this.$message({
+                    showClose: true,
+                    message: err.response.data.message,
+                    type: 'error',
+                  });
+                }
+              } else {
+                this.$message({
+                  showClose: true,
+                  message: err.response.data.message,
                   type: 'error',
                 });
               }
