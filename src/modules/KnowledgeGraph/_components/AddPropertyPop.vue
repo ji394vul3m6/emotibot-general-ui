@@ -205,6 +205,7 @@ export default {
                     break;
                   case 'property corpus can not duplicated;':
                   case 'update CorpusSet failed;':
+                  case 'corpusSet has repeat item':
                     errMsg = this.$t('knowledge_graph.property_edit.err_msg_duplicated_corpus');
                     break;
                   case 'update SynonymSet failed;':
@@ -243,6 +244,18 @@ export default {
                   message: this.$t('knowledge_graph.property_edit.err_msg_duplicated_property'),
                   type: 'error',
                 });
+              } else if (err.response.data.synonymSetRepeat) {
+                this.$message({
+                  showClose: true,
+                  message: this.$t('knowledge_graph.property_edit.err_msg_duplicated_synonym'),
+                  type: 'error',
+                });
+              } else if (err.response.data.corpusSetRepeat) {
+                this.$message({
+                  showClose: true,
+                  message: this.$t('knowledge_graph.property_edit.err_msg_duplicated_corpus'),
+                  type: 'error',
+                });
               } else if (err.response.data.status === 'fail') {
                 let errMsg = '';
                 switch (err.response.data.message.trim()) {
@@ -251,6 +264,7 @@ export default {
                     break;
                   case 'property corpus can not duplicated;':
                   case 'update CorpusSet failed;':
+                  case 'corpusSet has repeat item':
                     errMsg = this.$t('knowledge_graph.property_edit.err_msg_duplicated_corpus');
                     break;
                   case 'update SynonymSet failed;':
