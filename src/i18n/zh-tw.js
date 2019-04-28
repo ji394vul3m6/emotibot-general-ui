@@ -562,7 +562,9 @@ export default {
       corpus: '語料',
       delete_property_msg: '確定要刪除屬性 {name} 嗎？',
       delete_multi_wordbank_msg: '確定要刪除所選屬性嗎？',
-      err_msg_duplicated_property: '新建屬性失敗，屬性名稱重復，請檢查屬性名稱',
+      err_msg_duplicated_property: '屬性名稱重復，請檢查屬性名稱',
+      err_msg_duplicated_corpus: '語料配置錯誤，請檢查語料配置',
+      err_msg_duplicated_synonym: '同義詞配置錯誤，請檢查同義詞配置',
       is_hierarchy_property: '是否為階層屬性',
     },
     entity_edit: {

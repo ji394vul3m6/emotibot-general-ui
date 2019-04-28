@@ -189,18 +189,31 @@ export default {
           this.$api.updateProperty(this.robotID, editedProperty.id, param).then((res) => {
             console.log(JSON.stringify(res, null, 2));
             this.$emit('validateSuccess', editedProperty);
-          }).catch((err) => {
-            if (err.response.data.propertyExist) {
-              this.$message({
-                showClose: true,
-                message: this.$t('knowledge_graph.property_edit.err_msg_duplicated_property'),
-                type: 'error',
-              });
-            } else if (err.response.data.status === 'fail') {
-              if (err.response.data.message.trim() === 'property corpus can not duplicated;') {
+          })
+            .catch((err) => {
+              if (err.response.data.propertyRepeat) {
                 this.$message({
                   showClose: true,
-                  message: this.$t('knowledge_graph.property_edit.err_msg_duplicated_corpus'),
+                  message: this.$t('knowledge_graph.property_edit.err_msg_duplicated_property'),
+                  type: 'error',
+                });
+              } else if (err.response.data.status === 'fail') {
+                let errMsg = '';
+                switch (err.response.data.message.trim()) {
+                  default:
+                    errMsg = err.response.data.message.trim();
+                    break;
+                  case 'property corpus can not duplicated;':
+                  case 'update CorpusSet failed;':
+                    errMsg = this.$t('knowledge_graph.property_edit.err_msg_duplicated_corpus');
+                    break;
+                  case 'update SynonymSet failed;':
+                  case 'synonymSet has repeat item':
+                    errMsg = this.$t('knowledge_graph.property_edit.err_msg_duplicated_synonym');
+                }
+                this.$message({
+                  showClose: true,
+                  message: errMsg,
                   type: 'error',
                 });
               } else {
@@ -210,8 +223,7 @@ export default {
                   type: 'error',
                 });
               }
-            }
-          });
+            });
         } else {
           const param = {
             name: editedProperty.name,
@@ -232,19 +244,24 @@ export default {
                   type: 'error',
                 });
               } else if (err.response.data.status === 'fail') {
-                if (err.response.data.message.trim() === 'property corpus can not duplicated;') {
-                  this.$message({
-                    showClose: true,
-                    message: this.$t('knowledge_graph.property_edit.err_msg_duplicated_corpus'),
-                    type: 'error',
-                  });
-                } else {
-                  this.$message({
-                    showClose: true,
-                    message: err.response.data.message,
-                    type: 'error',
-                  });
+                let errMsg = '';
+                switch (err.response.data.message.trim()) {
+                  default:
+                    errMsg = err.response.data.message.trim();
+                    break;
+                  case 'property corpus can not duplicated;':
+                  case 'update CorpusSet failed;':
+                    errMsg = this.$t('knowledge_graph.property_edit.err_msg_duplicated_corpus');
+                    break;
+                  case 'update SynonymSet failed;':
+                  case 'synonymSet has repeat item':
+                    errMsg = this.$t('knowledge_graph.property_edit.err_msg_duplicated_synonym');
                 }
+                this.$message({
+                  showClose: true,
+                  message: errMsg,
+                  type: 'error',
+                });
               } else {
                 this.$message({
                   showClose: true,
