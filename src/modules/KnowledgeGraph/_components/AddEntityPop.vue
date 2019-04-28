@@ -856,6 +856,8 @@
                   let errMsg = err.response.data.message;
                   if (err.response.data.message.trim() === 'fail to update entity name: have the repeat name;') {
                     errMsg = this.$t('knowledge_graph.entity_edit.err_msg_duplicated_entity_update');
+                  } else {
+                    errMsg = err.response.data.message;
                   }
                   this.$message({
                     showClose: true,
@@ -873,6 +875,8 @@
                   let errMsg = err.response.data.message;
                   if (err.response.data.message.trim() === 'Check exist repeat entity name or synonym value') {
                     errMsg = this.$t('knowledge_graph.entity_edit.err_msg_duplicated_entity');
+                  } else {
+                    errMsg = err.response.data.message;
                   }
 
                   this.$message({

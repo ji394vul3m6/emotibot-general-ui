@@ -968,7 +968,9 @@ export default {
       corpus: '语料',
       delete_property_msg: '确定要删除属性 {name} 吗？',
       delete_multi_wordbank_msg: '确定要删除所选属性吗？',
-      err_msg_duplicated_property: '新建属性失败，属性名称重复，请检查属性名称',
+      err_msg_duplicated_property: '属性名称重复，请检查属性名称',
+      err_msg_duplicated_corpus: '语料配置错误，请检查语料配置',
+      err_msg_duplicated_synonym: '同义词配置错误，请检查同义词配置',
       is_hierarchy_property: '是否为阶层属性',
     },
     entity_edit: {
