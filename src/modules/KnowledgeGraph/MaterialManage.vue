@@ -3,14 +3,14 @@
     <div class="card content h-fill w-fill">
       <div class="row title">{{ $t('knowledge_graph.material_manage.title') }}
         <div class="sandbox_operation" v-if="sandboxSwitch">
-          <text-button button-type="primary" @click.stop="syncSandBox">{{
-            $t('knowledge_graph.material_manage.sandbox_release')
-            }}
-          </text-button>
-          <text-button button-type="fill" @click.stop="withdrawSandBox">{{
-            $t('knowledge_graph.material_manage.sandbox_sync')
-            }}
-          </text-button>
+<!--          <text-button button-type="primary" @click.stop="syncSandBox">{{-->
+<!--            $t('knowledge_graph.material_manage.sandbox_release')-->
+<!--            }}-->
+<!--          </text-button>-->
+<!--          <text-button button-type="fill" @click.stop="withdrawSandBox">{{-->
+<!--            $t('knowledge_graph.material_manage.sandbox_sync')-->
+<!--            }}-->
+<!--          </text-button>-->
         </div>
       </div>
       <div class="box-card">
@@ -314,8 +314,18 @@
                   clearInterval(interval);
                   this.isLastResultSuccess = true;
                   this.listenFlag = false;
-                  this.$api.syncDataAfterTest(this.robotID);
-                  this.refreshSandBoxStatus();
+                  // this.$api.syncDataAfterTest(this.robotID);
+                  this.$api.SandboxSync(this.robotID).then(() => {
+                    this.$api.syncDataAfterTest(this.robotID);
+                    // this.$message({
+                    //   showClose: true,
+                    //   message: this.$t('knowledge_graph.material_manage.sandbox_sync_msg'),
+                    //   type: 'success',
+                    // });
+                    this.refreshSandBoxStatus();
+                    // this.$emit('endLoading');
+                  });
+                  // this.refreshSandBoxStatus();
                 }
               }, 2000);
             }
